@@ -21,7 +21,7 @@
     "caniuse-lite": "1.0.30001726",
     "core-js-builder": "3.45.0",
     "core-js-compat": "3.45.0",
-    "dax-sh": "^0.42.0",
+    "dax-sh": "^0.43.2",
     "doiuse": "^6.0.5",
     "electron-to-chromium": "1.5.173",
     "esbuild": "^0.25.8",
