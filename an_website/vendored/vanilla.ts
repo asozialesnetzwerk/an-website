@@ -1,9 +1,9 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 // @ts-nocheck
 /*
- * core-js 3.43.0
+ * core-js 3.44.0
  * © 2014-2025 Denis Pushkarev (zloirock.ru)
- * license: https://github.com/zloirock/core-js/blob/v3.43.0/LICENSE
+ * license: https://github.com/zloirock/core-js/blob/v3.44.0/LICENSE
  * source: https://github.com/zloirock/core-js
  *//*
  * modules:
@@ -829,10 +829,10 @@ var SHARED = '__core-js_shared__';
 var store = module.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
 (store.versions || (store.versions = [])).push({
-  version: '3.43.0',
+  version: '3.44.0',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2014-2025 Denis Pushkarev (zloirock.ru)',
-  license: 'https://github.com/zloirock/core-js/blob/v3.43.0/LICENSE',
+  license: 'https://github.com/zloirock/core-js/blob/v3.44.0/LICENSE',
   source: 'https://github.com/zloirock/core-js'
 });
 
@@ -2062,7 +2062,7 @@ var isObject = __webpack_require__(18);
 var createNonEnumerableProperty = __webpack_require__(41);
 
 // `InstallErrorCause` abstract operation
-// https://tc39.es/proposal-error-cause/#sec-errorobjects-install-error-cause
+// https://tc39.es/ecma262/#sec-installerrorcause
 module.exports = function (O, options) {
   if (isObject(options) && 'cause' in options) {
     createNonEnumerableProperty(O, 'cause', options.cause);
@@ -2163,7 +2163,7 @@ var FORCED = !$isError || !PROTOTYPE_SETTING_AVAILABLE || fails(function () {
 });
 
 // `Error.isError` method
-// https://github.com/tc39/proposal-is-error
+// https://tc39.es/ecma262/#sec-error.iserror
 $({ target: 'Error', stat: true, sham: true, forced: FORCED }, {
   isError: function isError(arg) {
     if (!isObject(arg)) return false;
@@ -2902,7 +2902,7 @@ var doesNotExceedSafeInteger = __webpack_require__(118);
 var bind = __webpack_require__(101);
 
 // `FlattenIntoArray` abstract operation
-// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
+// https://tc39.es/ecma262/#sec-flattenintoarray
 var flattenIntoArray = function (target, original, source, sourceLen, start, depth, mapper, thisArg) {
   var targetIndex = start;
   var sourceIndex = 0;
@@ -3458,8 +3458,8 @@ addToUnscopables('toReversed');
 
 var lengthOfArrayLike = __webpack_require__(61);
 
-// https://tc39.es/proposal-change-array-by-copy/#sec-array.prototype.toReversed
-// https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.toReversed
+// https://tc39.es/ecma262/#sec-array.prototype.toreversed
+// https://tc39.es/ecma262/#sec-%typedarray%.prototype.toreversed
 module.exports = function (O, C) {
   var len = lengthOfArrayLike(O);
   var A = new C(len);
@@ -3696,8 +3696,8 @@ var toIntegerOrInfinity = __webpack_require__(59);
 
 var $RangeError = RangeError;
 
-// https://tc39.es/proposal-change-array-by-copy/#sec-array.prototype.with
-// https://tc39.es/proposal-change-array-by-copy/#sec-%typedarray%.prototype.with
+// https://tc39.es/ecma262/#sec-array.prototype.with
+// https://tc39.es/ecma262/#sec-%typedarray%.prototype.with
 module.exports = function (O, C, index, value) {
   var len = lengthOfArrayLike(O);
   var relativeIndex = toIntegerOrInfinity(index);
@@ -4554,7 +4554,7 @@ var $ = __webpack_require__(1);
 var $transfer = __webpack_require__(168);
 
 // `ArrayBuffer.prototype.transfer` method
-// https://tc39.es/proposal-arraybuffer-transfer/#sec-arraybuffer.prototype.transfer
+// https://tc39.es/ecma262/#sec-arraybuffer.prototype.transfer
 if ($transfer) $({ target: 'ArrayBuffer', proto: true }, {
   transfer: function transfer() {
     return $transfer(this, arguments.length ? arguments[0] : undefined, true);
@@ -4760,7 +4760,7 @@ var $ = __webpack_require__(1);
 var $transfer = __webpack_require__(168);
 
 // `ArrayBuffer.prototype.transferToFixedLength` method
-// https://tc39.es/proposal-arraybuffer-transfer/#sec-arraybuffer.prototype.transfertofixedlength
+// https://tc39.es/ecma262/#sec-arraybuffer.prototype.transfertofixedlength
 if ($transfer) $({ target: 'ArrayBuffer', proto: true }, {
   transferToFixedLength: function transferToFixedLength() {
     return $transfer(this, arguments.length ? arguments[0] : undefined, false);
@@ -5200,7 +5200,7 @@ $({ target: 'Iterator', proto: true, real: true, forced: FORCED }, {
 
 
 // `GetIteratorDirect(obj)` abstract operation
-// https://tc39.es/proposal-iterator-helpers/#sec-getiteratordirect
+// https://tc39.es/ecma262/#sec-getiteratordirect
 module.exports = function (obj) {
   return {
     iterator: obj,
@@ -6888,7 +6888,7 @@ module.exports = AsyncIteratorPrototype;
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 
-// https://github.com/tc39/proposal-iterator-helpers
+// https://github.com/tc39/proposal-async-iterator-helpers
 // https://github.com/tc39/proposal-array-from-async
 var call = __webpack_require__(6);
 var aCallable = __webpack_require__(28);
@@ -6971,10 +6971,15 @@ var createMethod = function (TYPE) {
 };
 
 module.exports = {
+  // `AsyncIterator.prototype.toArray` / `Array.fromAsync` methods
   toArray: createMethod(0),
+  // `AsyncIterator.prototype.forEach` method
   forEach: createMethod(1),
+  // `AsyncIterator.prototype.every` method
   every: createMethod(2),
+  // `AsyncIterator.prototype.some` method
   some: createMethod(3),
+  // `AsyncIterator.prototype.find` method
   find: createMethod(4)
 };
 
@@ -7680,7 +7685,6 @@ module.exports = function (argument) {
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 
-// https://github.com/tc39/proposal-string-pad-start-end
 var uncurryThis = __webpack_require__(12);
 var toLength = __webpack_require__(62);
 var toString = __webpack_require__(66);
@@ -8002,7 +8006,7 @@ var has = SetHelpers.has;
 var remove = SetHelpers.remove;
 
 // `Set.prototype.difference` method
-// https://github.com/tc39/proposal-set-methods
+// https://tc39.es/ecma262/#sec-set.prototype.difference
 module.exports = function difference(other) {
   var O = aSet(this);
   var otherRec = getSetRecord(other);
@@ -8275,7 +8279,7 @@ var add = SetHelpers.add;
 var has = SetHelpers.has;
 
 // `Set.prototype.intersection` method
-// https://github.com/tc39/proposal-set-methods
+// https://tc39.es/ecma262/#sec-set.prototype.intersection
 module.exports = function intersection(other) {
   var O = aSet(this);
   var otherRec = getSetRecord(other);
@@ -8329,7 +8333,7 @@ var iterateSimple = __webpack_require__(260);
 var iteratorClose = __webpack_require__(107);
 
 // `Set.prototype.isDisjointFrom` method
-// https://tc39.github.io/proposal-set-methods/#Set.prototype.isDisjointFrom
+// https://tc39.es/ecma262/#sec-set.prototype.isdisjointfrom
 module.exports = function isDisjointFrom(other) {
   var O = aSet(this);
   var otherRec = getSetRecord(other);
@@ -8374,7 +8378,7 @@ var iterate = __webpack_require__(259);
 var getSetRecord = __webpack_require__(262);
 
 // `Set.prototype.isSubsetOf` method
-// https://tc39.github.io/proposal-set-methods/#Set.prototype.isSubsetOf
+// https://tc39.es/ecma262/#sec-set.prototype.issubsetof
 module.exports = function isSubsetOf(other) {
   var O = aSet(this);
   var otherRec = getSetRecord(other);
@@ -8418,7 +8422,7 @@ var iterateSimple = __webpack_require__(260);
 var iteratorClose = __webpack_require__(107);
 
 // `Set.prototype.isSupersetOf` method
-// https://tc39.github.io/proposal-set-methods/#Set.prototype.isSupersetOf
+// https://tc39.es/ecma262/#sec-set.prototype.issupersetof
 module.exports = function isSupersetOf(other) {
   var O = aSet(this);
   var otherRec = getSetRecord(other);
@@ -8465,7 +8469,7 @@ var has = SetHelpers.has;
 var remove = SetHelpers.remove;
 
 // `Set.prototype.symmetricDifference` method
-// https://github.com/tc39/proposal-set-methods
+// https://tc39.es/ecma262/#sec-set.prototype.symmetricdifference
 module.exports = function symmetricDifference(other) {
   var O = aSet(this);
   var keysIter = getSetRecord(other).getIterator();
@@ -8507,7 +8511,7 @@ module.exports = function (METHOD_NAME) {
     };
     var result = baseSet[METHOD_NAME](setLike);
 
-    return result.size !== 1 || result.values().next().value !== 4;
+    return result.size === 1 && result.values().next().value === 4;
   } catch (error) {
     return false;
   }
@@ -8545,7 +8549,7 @@ var getSetRecord = __webpack_require__(262);
 var iterateSimple = __webpack_require__(260);
 
 // `Set.prototype.union` method
-// https://github.com/tc39/proposal-set-methods
+// https://tc39.es/ecma262/#sec-set.prototype.union
 module.exports = function union(other) {
   var O = aSet(this);
   var keysIter = getSetRecord(other).getIterator();

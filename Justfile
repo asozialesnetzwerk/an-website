@@ -43,7 +43,7 @@ build_js *args:
 
 [positional-arguments]
 esbuild *args:
-    deno run -A https://deno.land/x/esbuild@v0.25.6/mod.js "--target=$(just target),chrome109,edge135,firefox115,ios11,safari15.6" --charset=utf8 "$@"
+    deno run -A https://deno.land/x/esbuild@v0.25.8/mod.js "--target=$(just target),chrome109,edge135,firefox115,ios11,safari15.6" --charset=utf8 "$@"
 
 target:
     #!/usr/bin/env python3

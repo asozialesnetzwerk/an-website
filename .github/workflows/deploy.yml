@@ -560,7 +560,7 @@ jobs:
           rm -f youki-${VERSION}-x86_64-musl.tar.gz
           chmod +x /opt/youki
         env:
-          VERSION: 0.5.3
+          VERSION: 0.5.4
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
