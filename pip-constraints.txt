@@ -5,19 +5,19 @@ autoflake==2.3.1
 bandit==1.8.6
 beautifulsoup4==4.13.4
 black==24.10.0
-build==1.2.2.post1
+build==1.3.0
 certifi==2024.12.14
 cffi==1.17.1
 cfgv==3.4.0
 charset-normalizer==3.4.2
 click==8.2.1
-coverage==7.10.1
+coverage==7.10.2
 cryptography==45.0.5
 cssselect==1.3.0
 dill==0.4.0
 distlib==0.4.0
 docutils==0.22
-dulwich==0.23.2
+dulwich==0.24.1
 faker==22.7.0
 filelock==3.18.0
 flake8==7.3.0
@@ -64,7 +64,7 @@ pygments==2.19.2
 pylint==3.3.7
 pylint-pytest==1.1.8
 pyproject-hooks==1.2.0
-pyrepl@ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
+pyrepl @ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
 pytest==8.2.0
 pytest-cov==4.1.0
 pytest-is-running==1.5.1
@@ -83,18 +83,18 @@ six==1.17.0
 snowballstemmer==3.0.1
 soupsieve==2.7
 stevedore==5.4.1
-time-machine==2.16.0
+time-machine==2.17.0
 tomlkit==0.13.3
 tornado==6.5.1
 trove-classifiers==2025.4.11.15
 twine==6.1.0
 types-beautifulsoup4==4.12.0.20250516
-types-cffi==1.17.0.20250523
+types-cffi==1.17.0.20250805
 types-html5lib==1.1.11.20250708
 types-lxml==2025.3.30
 types-orjson==3.6.2
 types-pillow==10.2.0.20240822
-types-pycurl==7.45.6.20250309
+types-pycurl==7.45.6.20250801
 types-pyopenssl==24.1.0.20240722
 types-python-dateutil==2.9.0.20250708
 types-pyyaml==6.0.12.20250516
@@ -103,7 +103,7 @@ types-regex==2024.11.6.20250403
 types-setuptools==70.3.0.20240710
 typing-extensions==4.14.1
 urllib3==2.5.0
-virtualenv==20.32.0
+virtualenv==20.33.1
 webencodings==0.5.1
 zopflipy==1.11
 zstandard==0.23.0
