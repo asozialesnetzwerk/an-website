@@ -7,14 +7,14 @@
     "@eslint/eslintrc": "^2.1.4",
     "@eslint/js": "^8.57.1",
     "@pnpm/types": "^1000.6.0",
-    "@std/cli": "jsr:^1.0.20",
+    "@std/cli": "jsr:^1.0.21",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^18.19.120",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "@typescript/lib-dom": "npm:@types/web@^0.0.250",
     "browserslist": "~4.25.1",
     "browserslist-to-esbuild": "^2.1.1",
@@ -41,13 +41,24 @@
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
     "type-fest": "^4.41.0",
     "typescript": "5.9.0-dev.20250703",
-    "typescript-eslint": "^8.37.0",
+    "typescript-eslint": "^8.38.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@10.12.4+sha512.5ea8b0deed94ed68691c9bad4c955492705c5eeb8a87ef86bc62c74a26b037b08ff9570f108b2e4dbd1dd1a9186fea925e527f141c648e85af45631074680184",
+  "packageManager": "pnpm@10.14.0-0+sha512.2cd47a0cbf5f1d1de7693a88307a0ede5be94e0d3b34853d800ee775efbea0650cb562b77605ec80bc8d925f5cd27c4dfe8bb04d3a0b76090784c664450d32d6",
   "engines": {
     "npm": "0",
     "yarn": "0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.2",
+      "onFail": "download"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^10.14.0-0"
+    }
   },
   "pnpm": {
     "overrides": {
