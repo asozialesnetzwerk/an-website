@@ -23,7 +23,7 @@ importers:
     devDependencies:
       '@core-js/builder':
         specifier: 4.0.0-alpha.0
-        version: 4.0.0-alpha.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+        version: 4.0.0-alpha.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
       '@core-js/compat':
         specifier: 4.0.0-alpha.0
         version: 4.0.0-alpha.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
@@ -52,8 +52,8 @@ importers:
         specifier: ^8.42.3
         version: 8.42.3
       '@types/node':
-        specifier: ^18.19.121
-        version: 18.19.121
+        specifier: ^24.2.0
+        version: 24.2.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.39.0
         version: 8.39.0(@typescript-eslint/parser@8.39.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
@@ -74,7 +74,7 @@ importers:
         version: 1.0.30001726
       core-js-builder:
         specifier: 3.45.0
-        version: 3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+        version: 3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
       core-js-compat:
         specifier: 3.45.0
         version: 3.45.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
@@ -124,8 +124,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(stylelint@16.23.0(typescript@5.9.2))
       stylelint-config-standard-scss:
-        specifier: ^14.0.0
-        version: 14.0.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
+        specifier: ^15.0.1
+        version: 15.0.1(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
       stylelint-no-unsupported-browser-features:
         specifier: ^8.0.4
         version: 8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.23.0(typescript@5.9.2))
@@ -134,7 +134,7 @@ importers:
         version: 5.0.3(prettier@3.6.2)(stylelint@16.23.0(typescript@5.9.2))
       ts-node:
         specifier: https://asozial.beer/ts-node-241116.tgz
-        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.121)(typescript@5.9.2)
+        version: https://asozial.beer/ts-node-241116.tgz(@types/node@24.2.0)(typescript@5.9.2)
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -478,8 +478,8 @@ packages:
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
 
-  '@types/node@18.19.121':
-    resolution: {integrity: sha512-bHOrbyztmyYIi4f1R0s17QsPs1uyyYnGcXeZoGEd227oZjry0q6XQBQxd82X1I57zEfwO8h9Xo+Kl5gX1d9MwQ==}
+  '@types/node@24.2.0':
+    resolution: {integrity: sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw==}
 
   '@types/web@0.0.250':
     resolution: {integrity: sha512-LFfswHunkkza8GFsIR746hXLiI54UWYL3MBXK2BMfdvLx5RtuMqtcwGkYUn8HTfYXx726aKU8xq2peQfPr5Qow==}
@@ -1608,37 +1608,37 @@ packages:
     peerDependencies:
       stylelint: '>=11'
 
-  stylelint-config-recommended-scss@14.1.0:
-    resolution: {integrity: sha512-bhaMhh1u5dQqSsf6ri2GVWWQW5iUjBYgcHkh7SgDDn92ijoItC/cfO/W+fpXshgTQWhwFkP1rVcewcv4jaftRg==}
-    engines: {node: '>=18.12.0'}
+  stylelint-config-recommended-scss@15.0.1:
+    resolution: {integrity: sha512-V24bxkNkFGggqPVJlP9iXaBabwSGEG7QTz+PyxrRtjPkcF+/NsWtB3tKYvFYEmczRkWiIEfuFMhGpJFj9Fxe6Q==}
+    engines: {node: '>=20'}
     peerDependencies:
       postcss: ^8.3.3
-      stylelint: ^16.6.1
+      stylelint: ^16.16.0
     peerDependenciesMeta:
       postcss:
         optional: true
 
-  stylelint-config-recommended@14.0.1:
-    resolution: {integrity: sha512-bLvc1WOz/14aPImu/cufKAZYfXs/A/owZfSMZ4N+16WGXLoX5lOir53M6odBxvhgmgdxCVnNySJmZKx73T93cg==}
+  stylelint-config-recommended@16.0.0:
+    resolution: {integrity: sha512-4RSmPjQegF34wNcK1e1O3Uz91HN8P1aFdFzio90wNK9mjgAI19u5vsU868cVZboKzCaa5XbpvtTzAAGQAxpcXA==}
     engines: {node: '>=18.12.0'}
     peerDependencies:
-      stylelint: ^16.1.0
+      stylelint: ^16.16.0
 
-  stylelint-config-standard-scss@14.0.0:
-    resolution: {integrity: sha512-6Pa26D9mHyi4LauJ83ls3ELqCglU6VfCXchovbEqQUiEkezvKdv6VgsIoMy58i00c854wVmOw0k8W5FTpuaVqg==}
-    engines: {node: '>=18.12.0'}
+  stylelint-config-standard-scss@15.0.1:
+    resolution: {integrity: sha512-8pmmfutrMlPHukLp+Th9asmk21tBXMVGxskZCzkRVWt1d8Z0SrXjUUQ3vn9KcBj1bJRd5msk6yfEFM0UYHBRdg==}
+    engines: {node: '>=20'}
     peerDependencies:
       postcss: ^8.3.3
-      stylelint: ^16.11.0
+      stylelint: ^16.18.0
     peerDependenciesMeta:
       postcss:
         optional: true
 
-  stylelint-config-standard@36.0.1:
-    resolution: {integrity: sha512-8aX8mTzJ6cuO8mmD5yon61CWuIM4UD8Q5aBcWKGSf6kg+EC3uhB+iOywpTK4ca6ZL7B49en8yanOFtUW0qNzyw==}
+  stylelint-config-standard@38.0.0:
+    resolution: {integrity: sha512-uj3JIX+dpFseqd/DJx8Gy3PcRAJhlEZ2IrlFOc4LUxBX/PNMEQ198x7LCOE2Q5oT9Vw8nyc4CIL78xSqPr6iag==}
     engines: {node: '>=18.12.0'}
     peerDependencies:
-      stylelint: ^16.1.0
+      stylelint: ^16.18.0
 
   stylelint-no-unsupported-browser-features@8.0.4:
     resolution: {integrity: sha512-MNdjegsgfTu1iDBsJM+1uBVZsIt0EWzqAX5qgUBAGavXkddwRqh+S1KD2VnWqUhiEuyddVrWJH8vKsNI40orxA==}
@@ -1785,11 +1785,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@5.26.5:
-    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
-
   undici-types@5.28.4:
     resolution: {integrity: sha512-3OeMF5Lyowe8VW0skf5qaIE7Or3yS9LS7fvMUI0gg4YxpIBVg0L8BxCmROw2CcYhSkpR68Epz7CGc8MPj94Uww==}
+
+  undici-types@7.10.0:
+    resolution: {integrity: sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==}
 
   update-browserslist-db@1.1.3:
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
@@ -1891,11 +1891,11 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
-  '@core-js/builder@4.0.0-alpha.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)':
+  '@core-js/builder@4.0.0-alpha.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)':
     dependencies:
       '@core-js/compat': 4.0.0-alpha.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       core-js: 4.0.0-alpha.0
-      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2127,9 +2127,9 @@ snapshots:
 
   '@types/minimatch@3.0.5': {}
 
-  '@types/node@18.19.121':
+  '@types/node@24.2.0':
     dependencies:
-      undici-types: 5.26.5
+      undici-types: 7.10.0
 
   '@types/web@0.0.250': {}
 
@@ -2486,12 +2486,12 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  core-js-builder@3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
+  core-js-builder@3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
     dependencies:
       core-js: 3.45.0
       core-js-compat: 3.45.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       mkdirp: 0.5.6
-      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2910,9 +2910,9 @@ snapshots:
 
   isexe@3.1.1: {}
 
-  jest-worker@27.5.1(@types/node@18.19.121):
+  jest-worker@27.5.1(@types/node@24.2.0):
     dependencies:
-      '@types/node': 18.19.121
+      '@types/node': 24.2.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -3213,31 +3213,31 @@ snapshots:
       stylelint: 16.23.0(typescript@5.9.2)
       stylelint-order: 6.0.4(stylelint@16.23.0(typescript@5.9.2))
 
-  stylelint-config-recommended-scss@14.1.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
+  stylelint-config-recommended-scss@15.0.1(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       postcss-scss: 4.0.9(postcss@8.5.6)
       stylelint: 16.23.0(typescript@5.9.2)
-      stylelint-config-recommended: 14.0.1(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-config-recommended: 16.0.0(stylelint@16.23.0(typescript@5.9.2))
       stylelint-scss: 6.12.1(stylelint@16.23.0(typescript@5.9.2))
     optionalDependencies:
       postcss: 8.5.6
 
-  stylelint-config-recommended@14.0.1(stylelint@16.23.0(typescript@5.9.2)):
+  stylelint-config-recommended@16.0.0(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       stylelint: 16.23.0(typescript@5.9.2)
 
-  stylelint-config-standard-scss@14.0.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
+  stylelint-config-standard-scss@15.0.1(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       stylelint: 16.23.0(typescript@5.9.2)
-      stylelint-config-recommended-scss: 14.1.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
-      stylelint-config-standard: 36.0.1(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-config-recommended-scss: 15.0.1(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-config-standard: 38.0.0(stylelint@16.23.0(typescript@5.9.2))
     optionalDependencies:
       postcss: 8.5.6
 
-  stylelint-config-standard@36.0.1(stylelint@16.23.0(typescript@5.9.2)):
+  stylelint-config-standard@38.0.0(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       stylelint: 16.23.0(typescript@5.9.2)
-      stylelint-config-recommended: 14.0.1(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-config-recommended: 16.0.0(stylelint@16.23.0(typescript@5.9.2))
 
   stylelint-no-unsupported-browser-features@8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
@@ -3345,14 +3345,14 @@ snapshots:
 
   tapable@2.2.2: {}
 
-  terser-webpack-plugin@5.3.14(@types/node@18.19.121)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
+  terser-webpack-plugin@5.3.14(@types/node@24.2.0)(esbuild@0.25.8)(webpack@5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.29
-      jest-worker: 27.5.1(@types/node@18.19.121)
+      jest-worker: 27.5.1(@types/node@24.2.0)
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.43.1
-      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     optionalDependencies:
       esbuild: 0.25.8
     transitivePeerDependencies:
@@ -3379,14 +3379,14 @@ snapshots:
     dependencies:
       typescript: 5.9.2
 
-  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.121)(typescript@5.9.2):
+  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@24.2.0)(typescript@5.9.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node14': 14.1.4
       '@tsconfig/node16': 16.1.4
       '@tsconfig/node18': 18.2.4
       '@tsconfig/node20': 20.1.6
-      '@types/node': 18.19.121
+      '@types/node': 24.2.0
       acorn: 8.15.0
       acorn-walk: 8.3.4
       arg: 4.1.3
@@ -3424,9 +3424,9 @@ snapshots:
 
   typescript@5.9.2: {}
 
-  undici-types@5.26.5: {}
-
   undici-types@5.28.4: {}
+
+  undici-types@7.10.0: {}
 
   update-browserslist-db@1.1.3(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173)):
     dependencies:
@@ -3449,7 +3449,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
+  webpack@5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -3473,7 +3473,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.2
-      terser-webpack-plugin: 5.3.14(@types/node@18.19.121)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
+      terser-webpack-plugin: 5.3.14(@types/node@24.2.0)(esbuild@0.25.8)(webpack@5.101.0(@types/node@24.2.0)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
       watchpack: 2.4.4
       webpack-sources: 3.3.3
     transitivePeerDependencies:
