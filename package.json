@@ -12,19 +12,19 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^24.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.39.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "@typescript/lib-dom": "npm:@types/web@^0.0.250",
-    "browserslist": "~4.25.1",
+    "browserslist": "~4.25.3",
     "browserslist-to-esbuild": "^2.1.1",
-    "caniuse-lite": "1.0.30001726",
+    "caniuse-lite": "1.0.30001735",
     "core-js-builder": "3.45.0",
     "core-js-compat": "3.45.0",
     "dax-sh": "^0.43.2",
     "doiuse": "^6.0.5",
-    "electron-to-chromium": "1.5.173",
-    "esbuild": "^0.25.8",
+    "electron-to-chromium": "1.5.204",
+    "esbuild": "^0.25.9",
     "eslint": "^8.57.1",
     "eslint-formatter-codeframe": "^7.32.1",
     "eslint-formatter-table": "^7.32.1",
@@ -33,7 +33,7 @@
     "gzip-size": "^7.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
-    "stylelint": "^16.23.0",
+    "stylelint": "^16.23.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard-scss": "^15.0.1",
     "stylelint-no-unsupported-browser-features": "^8.0.4",
@@ -41,10 +41,10 @@
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
     "type-fest": "^4.41.0",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.39.0",
+    "typescript-eslint": "^8.40.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748",
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
   "engines": {
     "npm": "0",
     "yarn": "0"
@@ -52,7 +52,7 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^24.5.0",
+      "version": "^24.6.0",
       "onFail": "download"
     },
     "packageManager": {
