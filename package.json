@@ -6,7 +6,7 @@
     "@core-js/compat": "4.0.0-alpha.0",
     "@eslint/eslintrc": "^2.1.4",
     "@eslint/js": "^8.57.1",
-    "@pnpm/types": "^1000.6.0",
+    "@pnpm/types": "^1000.7.0",
     "@std/cli": "jsr:^1.0.21",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
@@ -40,7 +40,7 @@
     "stylelint-prettier": "^5.0.3",
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
     "type-fest": "^4.41.0",
-    "typescript": "5.9.0-dev.20250703",
+    "typescript": "5.9.1-rc",
     "typescript-eslint": "^8.38.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
