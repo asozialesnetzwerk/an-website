@@ -1091,8 +1091,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hookified@1.10.0:
-    resolution: {integrity: sha512-dJw0492Iddsj56U1JsSTm9E/0B/29a1AuoSLRAte8vQg/kaTGF3IgjEWT8c8yG4cC10+HisE1x5QAwR0Xwc+DA==}
+  hookified@1.11.0:
+    resolution: {integrity: sha512-aDdIN3GyU5I6wextPplYdfmWCo+aLmjjVbntmX6HLD5RCi/xKsivYEBhnRD+d9224zFf008ZpLMPlWF0ZodYZw==}
 
   html-tags@3.3.1:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
@@ -1301,6 +1301,7 @@ packages:
 
   node@runtime:24.4.1:
     resolution: {integrity: sha256-RCdBdQOwAY7GmoumumD8B8/y01azHxX+DLLQoL6ZI9o=, type: nodeRuntime}
+    hasBin: true
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -1727,8 +1728,8 @@ packages:
     resolution: {integrity: sha512-yd1RBzSGanHkitROoPFd6qsrxt+oFhg/129YzheDGqeustzX0vTZJZsSsQjVQC4yzBQ56K55XU8gaNCtIzOnTg==}
     engines: {node: '>=10.13.0'}
 
-  webpack@5.100.2:
-    resolution: {integrity: sha512-QaNKAvGCDRh3wW1dsDjeMdDXwZm2vqq3zn6Pvq4rHOEOGSaUMgOOjG2Y9ZbIGzpfkJk9ZYTHpDqgDfeBDcnLaw==}
+  webpack@5.101.0:
+    resolution: {integrity: sha512-B4t+nJqytPeuZlHuIKTbalhljIFXeNRqrUGAQgTGlfOl2lXXKXw+yZu6bicycP+PUlM44CxBjCFD6aciKFT3LQ==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     peerDependencies:
@@ -1808,7 +1809,7 @@ snapshots:
     dependencies:
       '@core-js/compat': 4.0.0-alpha.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       core-js: 4.0.0-alpha.0
-      webpack: 5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2355,7 +2356,7 @@ snapshots:
 
   cacheable@1.10.3:
     dependencies:
-      hookified: 1.10.0
+      hookified: 1.11.0
       keyv: 5.4.0
 
   callsites@3.1.0: {}
@@ -2404,7 +2405,7 @@ snapshots:
       core-js: 3.44.0
       core-js-compat: 3.44.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       mkdirp: 0.5.6
-      webpack: 5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2711,7 +2712,7 @@ snapshots:
     dependencies:
       cacheable: 1.10.3
       flatted: 3.3.3
-      hookified: 1.10.0
+      hookified: 1.11.0
 
   flatted@3.3.3: {}
 
@@ -2777,7 +2778,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hookified@1.10.0: {}
+  hookified@1.11.0: {}
 
   html-tags@3.3.1: {}
 
@@ -3258,14 +3259,14 @@ snapshots:
 
   tapable@2.2.2: {}
 
-  terser-webpack-plugin@5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
+  terser-webpack-plugin@5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.29
       jest-worker: 27.5.1(@types/node@18.19.120)
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.43.1
-      webpack: 5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     optionalDependencies:
       esbuild: 0.25.8
     transitivePeerDependencies:
@@ -3362,7 +3363,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
+  webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -3386,7 +3387,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.2
-      terser-webpack-plugin: 5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.100.2(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
+      terser-webpack-plugin: 5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
       watchpack: 2.4.4
       webpack-sources: 3.3.3
     transitivePeerDependencies:
