@@ -23,7 +23,7 @@ importers:
     devDependencies:
       '@core-js/builder':
         specifier: 4.0.0-alpha.0
-        version: 4.0.0-alpha.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+        version: 4.0.0-alpha.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
       '@core-js/compat':
         specifier: 4.0.0-alpha.0
         version: 4.0.0-alpha.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
@@ -52,8 +52,8 @@ importers:
         specifier: ^8.42.3
         version: 8.42.3
       '@types/node':
-        specifier: ^18.19.120
-        version: 18.19.120
+        specifier: ^18.19.121
+        version: 18.19.121
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.39.0
         version: 8.39.0(@typescript-eslint/parser@8.39.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)
@@ -74,7 +74,7 @@ importers:
         version: 1.0.30001726
       core-js-builder:
         specifier: 3.45.0
-        version: 3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+        version: 3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
       core-js-compat:
         specifier: 3.45.0
         version: 3.45.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
@@ -109,8 +109,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       node:
-        specifier: runtime:^24.2
-        version: runtime:24.4.1
+        specifier: runtime:^24.5.0
+        version: runtime:24.5.0
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -118,23 +118,23 @@ importers:
         specifier: ^3.6.2
         version: 3.6.2
       stylelint:
-        specifier: ^16.22.0
-        version: 16.22.0(typescript@5.9.2)
+        specifier: ^16.23.0
+        version: 16.23.0(typescript@5.9.2)
       stylelint-config-idiomatic-order:
         specifier: ^10.0.0
-        version: 10.0.0(stylelint@16.22.0(typescript@5.9.2))
+        version: 10.0.0(stylelint@16.23.0(typescript@5.9.2))
       stylelint-config-standard-scss:
         specifier: ^14.0.0
-        version: 14.0.0(postcss@8.5.6)(stylelint@16.22.0(typescript@5.9.2))
+        version: 14.0.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
       stylelint-no-unsupported-browser-features:
         specifier: ^8.0.4
-        version: 8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.22.0(typescript@5.9.2))
+        version: 8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.23.0(typescript@5.9.2))
       stylelint-prettier:
         specifier: ^5.0.3
-        version: 5.0.3(prettier@3.6.2)(stylelint@16.22.0(typescript@5.9.2))
+        version: 5.0.3(prettier@3.6.2)(stylelint@16.23.0(typescript@5.9.2))
       ts-node:
         specifier: https://asozial.beer/ts-node-241116.tgz
-        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.120)(typescript@5.9.2)
+        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.121)(typescript@5.9.2)
       type-fest:
         specifier: ^4.41.0
         version: 4.41.0
@@ -478,8 +478,8 @@ packages:
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
 
-  '@types/node@18.19.120':
-    resolution: {integrity: sha512-WtCGHFXnVI8WHLxDAt5TbnCM4eSE+nI0QN2NJtwzcgMhht2eNz6V9evJrk+lwC8bCY8OWV5Ym8Jz7ZEyGnKnMA==}
+  '@types/node@18.19.121':
+    resolution: {integrity: sha512-bHOrbyztmyYIi4f1R0s17QsPs1uyyYnGcXeZoGEd227oZjry0q6XQBQxd82X1I57zEfwO8h9Xo+Kl5gX1d9MwQ==}
 
   '@types/web@0.0.250':
     resolution: {integrity: sha512-LFfswHunkkza8GFsIR746hXLiI54UWYL3MBXK2BMfdvLx5RtuMqtcwGkYUn8HTfYXx726aKU8xq2peQfPr5Qow==}
@@ -1192,8 +1192,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  keyv@5.4.0:
-    resolution: {integrity: sha512-TMckyVjEoacG5IteUpUrOBsFORtheqziVyyY2dLUwg1jwTb8u48LX4TgmtogkNl9Y9unaEJ1luj10fGyjMGFOQ==}
+  keyv@5.5.0:
+    resolution: {integrity: sha512-QG7qR2tijh1ftOvClut4YKKg1iW6cx3GZsKoGyJPxHkGWK9oJhG9P3j5deP0QQOGDowBMVQFaP+Vm4NpGYvmIQ==}
 
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
@@ -1299,9 +1299,95 @@ packages:
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
 
-  node@runtime:24.4.1:
-    resolution: {integrity: sha256-RCdBdQOwAY7GmoumumD8B8/y01azHxX+DLLQoL6ZI9o=, type: nodeRuntime}
-    version: 0.0.0
+  node@runtime:24.5.0:
+    resolution:
+      type: variations
+      variants:
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-8oJdIJu3HyTy6IYIJjHptoFj9QRijuAdAaW9JQ6q/sY=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-aix-ppc64.tar.gz
+          targets:
+            - cpu: ppc64
+              os: aix
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-KkFyR0Vl7LjwyHoVIFkOANayinhZTCINOO75kXY9wnY=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-darwin-arm64.tar.gz
+          targets:
+            - cpu: arm64
+              os: darwin
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-I5bD3RSMj84VWT2if4OSSM3qFarZcQeOp8Bsc7qXD2Q=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-darwin-x64.tar.gz
+          targets:
+            - cpu: x64
+              os: darwin
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-xkPBGNkHyNtCpnehJ4nrXVWtbeS44sEbqwjb0jhS2i4=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-linux-arm64.tar.gz
+          targets:
+            - cpu: arm64
+              os: linux
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-f0Xiiu2uWkB3wE+hk0JoyeNiDc+xBWJFF8JBDKHesA0=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-linux-ppc64le.tar.gz
+          targets:
+            - cpu: ppc64le
+              os: linux
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-HRUSRPVQL/fnInHmA4ideJ3sAh8MsoFI2Q9KjOierzA=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-linux-s390x.tar.gz
+          targets:
+            - cpu: s390x
+              os: linux
+        - resolution:
+            archive: tarball
+            bin: bin/node
+            integrity: sha256-Np8qNmjd5+MkaXBA+v3PRC/RmLjBAjFxRUF7PIOpeUo=
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-linux-x64.tar.gz
+          targets:
+            - cpu: x64
+              os: linux
+        - resolution:
+            archive: zip
+            bin: node.exe
+            integrity: sha256-/ZeELDY5+8M++fyMDGrcXUXlZmKkNUxyE8WKVaBDLo4=
+            prefix: node-v24.5.0-win-arm64
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-win-arm64.zip
+          targets:
+            - cpu: arm64
+              os: win32
+        - resolution:
+            archive: zip
+            bin: node.exe
+            integrity: sha256-xqVxQQjKqBvHHjhZwY9Emo9FbidZRsDUKeLXEgsD0g4=
+            prefix: node-v24.5.0-win-x64
+            type: binary
+            url: https://nodejs.org/download/release/v24.5.0/node-v24.5.0-win-x64.zip
+          targets:
+            - cpu: x64
+              os: win32
+    version: 24.5.0
+    hasBin: true
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -1578,8 +1664,8 @@ packages:
     peerDependencies:
       stylelint: ^16.0.2
 
-  stylelint@16.22.0:
-    resolution: {integrity: sha512-SVEMTdjKNV4ollUrIY9ordZ36zHv2/PHzPjfPMau370MlL2VYXeLgSNMMiEbLGRO8RmD2R8/BVUeF2DfnfkC0w==}
+  stylelint@16.23.0:
+    resolution: {integrity: sha512-69T5aS2LUY306ekt1Q1oaSPwz/jaG9HjyMix3UMrai1iEbuOafBe2Dh8xlyczrxFAy89qcKyZWWtc42XLx3Bbw==}
     engines: {node: '>=18.12.0'}
     hasBin: true
 
@@ -1805,11 +1891,11 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
-  '@core-js/builder@4.0.0-alpha.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)':
+  '@core-js/builder@4.0.0-alpha.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)':
     dependencies:
       '@core-js/compat': 4.0.0-alpha.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       core-js: 4.0.0-alpha.0
-      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2041,7 +2127,7 @@ snapshots:
 
   '@types/minimatch@3.0.5': {}
 
-  '@types/node@18.19.120':
+  '@types/node@18.19.121':
     dependencies:
       undici-types: 5.26.5
 
@@ -2357,7 +2443,7 @@ snapshots:
   cacheable@1.10.3:
     dependencies:
       hookified: 1.11.0
-      keyv: 5.4.0
+      keyv: 5.5.0
 
   callsites@3.1.0: {}
 
@@ -2400,12 +2486,12 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  core-js-builder@3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
+  core-js-builder@3.45.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
     dependencies:
       core-js: 3.45.0
       core-js-compat: 3.45.0(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))
       mkdirp: 0.5.6
-      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2824,9 +2910,9 @@ snapshots:
 
   isexe@3.1.1: {}
 
-  jest-worker@27.5.1(@types/node@18.19.120):
+  jest-worker@27.5.1(@types/node@18.19.121):
     dependencies:
-      '@types/node': 18.19.120
+      '@types/node': 18.19.121
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -2850,7 +2936,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  keyv@5.4.0:
+  keyv@5.5.0:
     dependencies:
       '@keyv/serialize': 1.1.0
 
@@ -2936,7 +3022,7 @@ snapshots:
 
   node-releases@2.0.19: {}
 
-  node@runtime:24.4.1: {}
+  node@runtime:24.5.0: {}
 
   normalize-path@3.0.0: {}
 
@@ -3122,59 +3208,59 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  stylelint-config-idiomatic-order@10.0.0(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-config-idiomatic-order@10.0.0(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
-      stylelint: 16.22.0(typescript@5.9.2)
-      stylelint-order: 6.0.4(stylelint@16.22.0(typescript@5.9.2))
+      stylelint: 16.23.0(typescript@5.9.2)
+      stylelint-order: 6.0.4(stylelint@16.23.0(typescript@5.9.2))
 
-  stylelint-config-recommended-scss@14.1.0(postcss@8.5.6)(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-config-recommended-scss@14.1.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       postcss-scss: 4.0.9(postcss@8.5.6)
-      stylelint: 16.22.0(typescript@5.9.2)
-      stylelint-config-recommended: 14.0.1(stylelint@16.22.0(typescript@5.9.2))
-      stylelint-scss: 6.12.1(stylelint@16.22.0(typescript@5.9.2))
+      stylelint: 16.23.0(typescript@5.9.2)
+      stylelint-config-recommended: 14.0.1(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-scss: 6.12.1(stylelint@16.23.0(typescript@5.9.2))
     optionalDependencies:
       postcss: 8.5.6
 
-  stylelint-config-recommended@14.0.1(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-config-recommended@14.0.1(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
-      stylelint: 16.22.0(typescript@5.9.2)
+      stylelint: 16.23.0(typescript@5.9.2)
 
-  stylelint-config-standard-scss@14.0.0(postcss@8.5.6)(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-config-standard-scss@14.0.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
-      stylelint: 16.22.0(typescript@5.9.2)
-      stylelint-config-recommended-scss: 14.1.0(postcss@8.5.6)(stylelint@16.22.0(typescript@5.9.2))
-      stylelint-config-standard: 36.0.1(stylelint@16.22.0(typescript@5.9.2))
+      stylelint: 16.23.0(typescript@5.9.2)
+      stylelint-config-recommended-scss: 14.1.0(postcss@8.5.6)(stylelint@16.23.0(typescript@5.9.2))
+      stylelint-config-standard: 36.0.1(stylelint@16.23.0(typescript@5.9.2))
     optionalDependencies:
       postcss: 8.5.6
 
-  stylelint-config-standard@36.0.1(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-config-standard@36.0.1(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
-      stylelint: 16.22.0(typescript@5.9.2)
-      stylelint-config-recommended: 14.0.1(stylelint@16.22.0(typescript@5.9.2))
+      stylelint: 16.23.0(typescript@5.9.2)
+      stylelint-config-recommended: 14.0.1(stylelint@16.23.0(typescript@5.9.2))
 
-  stylelint-no-unsupported-browser-features@8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-no-unsupported-browser-features@8.0.4(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       doiuse: 6.0.5(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(caniuse-lite@1.0.30001726)
       postcss: 8.5.6
-      stylelint: 16.22.0(typescript@5.9.2)
+      stylelint: 16.23.0(typescript@5.9.2)
     transitivePeerDependencies:
       - browserslist
       - caniuse-lite
 
-  stylelint-order@6.0.4(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-order@6.0.4(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       postcss: 8.5.6
       postcss-sorting: 8.0.2(postcss@8.5.6)
-      stylelint: 16.22.0(typescript@5.9.2)
+      stylelint: 16.23.0(typescript@5.9.2)
 
-  stylelint-prettier@5.0.3(prettier@3.6.2)(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-prettier@5.0.3(prettier@3.6.2)(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       prettier: 3.6.2
       prettier-linter-helpers: 1.0.0
-      stylelint: 16.22.0(typescript@5.9.2)
+      stylelint: 16.23.0(typescript@5.9.2)
 
-  stylelint-scss@6.12.1(stylelint@16.22.0(typescript@5.9.2)):
+  stylelint-scss@6.12.1(stylelint@16.23.0(typescript@5.9.2)):
     dependencies:
       css-tree: 3.1.0
       is-plain-object: 5.0.0
@@ -3184,9 +3270,9 @@ snapshots:
       postcss-resolve-nested-selector: 0.1.6
       postcss-selector-parser: 7.1.0
       postcss-value-parser: 4.2.0
-      stylelint: 16.22.0(typescript@5.9.2)
+      stylelint: 16.23.0(typescript@5.9.2)
 
-  stylelint@16.22.0(typescript@5.9.2):
+  stylelint@16.23.0(typescript@5.9.2):
     dependencies:
       '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
       '@csstools/css-tokenizer': 3.0.4
@@ -3259,14 +3345,14 @@ snapshots:
 
   tapable@2.2.2: {}
 
-  terser-webpack-plugin@5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
+  terser-webpack-plugin@5.3.14(@types/node@18.19.121)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.29
-      jest-worker: 27.5.1(@types/node@18.19.120)
+      jest-worker: 27.5.1(@types/node@18.19.121)
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.43.1
-      webpack: 5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
+      webpack: 5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8)
     optionalDependencies:
       esbuild: 0.25.8
     transitivePeerDependencies:
@@ -3293,14 +3379,14 @@ snapshots:
     dependencies:
       typescript: 5.9.2
 
-  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.120)(typescript@5.9.2):
+  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.121)(typescript@5.9.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node14': 14.1.4
       '@tsconfig/node16': 16.1.4
       '@tsconfig/node18': 18.2.4
       '@tsconfig/node20': 20.1.6
-      '@types/node': 18.19.120
+      '@types/node': 18.19.121
       acorn: 8.15.0
       acorn-walk: 8.3.4
       arg: 4.1.3
@@ -3363,7 +3449,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
+  webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -3387,7 +3473,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.2
       tapable: 2.2.2
-      terser-webpack-plugin: 5.3.14(@types/node@18.19.120)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.120)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
+      terser-webpack-plugin: 5.3.14(@types/node@18.19.121)(esbuild@0.25.8)(webpack@5.101.0(@types/node@18.19.121)(browserslist@4.25.1(patch_hash=7d5f9c6d2c30412e16e81b656e96b0cc227aea6765b6a6f1ea130a2844a147ef)(caniuse-lite@1.0.30001726)(electron-to-chromium@1.5.173))(esbuild@0.25.8))
       watchpack: 2.4.4
       webpack-sources: 3.3.3
     transitivePeerDependencies:
