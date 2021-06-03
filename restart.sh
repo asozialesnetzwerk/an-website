@@ -6,7 +6,7 @@ SERVICE_FILE_LOCATION="$HOME/.config/systemd/user/"
 # get latest files from git:
 git pull
 
-[ ! -d "$SERVICE_FILE_LOCATION" ] && mkdir "$SERVICE_FILE_LOCATION"
+mkdir -p "$SERVICE_FILE_LOCATION"
 
 # update the service file
 sed "s/user-placeholder/$USER/g" "$SERVICE_FILE_NAME" > "$SERVICE_FILE_LOCATION$SERVICE_FILE_NAME"
