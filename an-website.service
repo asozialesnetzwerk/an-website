@@ -6,7 +6,8 @@ After=syslog.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/pypy3 /usr/lib/an-website/main.py
+User=user-placeholder
+ExecStart=/bin/pypy3 /home/user-placeholder/an-website/main.py
 Restart=on-failure
 RestartSec=10
 KillMode=process
