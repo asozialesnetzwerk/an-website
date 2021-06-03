@@ -1,23 +1,17 @@
 #!/bin/sh
 
 SERVICE_FILE_NAME="an-website.service"
-SERVICE_FILE_LOCATION="/etc/systemd/system/$SERVICE_FILE_NAME"
+SERVICE_FILE_LOCATION="$HOME/.config/systemd/user/"
 
 # get latest files from git:
 git pull
 
-if [ ! -f "$SERVICE_FILE_LOCATION" ]
-then
-    # File doesn't exist, so create it:
-    sudo touch "$SERVICE_FILE_LOCATION"
-    # Let the user be the owner:
-    sudo chown "$USER" "$SERVICE_FILE_LOCATION"
-fi
+[ ! -d "$SERVICE_FILE_LOCATION" ] && mkdir "$SERVICE_FILE_LOCATION"
 
 # update the service file
-sed "s/user-placeholder/$USER/g" "$SERVICE_FILE_NAME" > "$SERVICE_FILE_LOCATION"
+sed "s/user-placeholder/$USER/g" "$SERVICE_FILE_NAME" > "$SERVICE_FILE_LOCATION$SERVICE_FILE_NAME"
 
 # enable the service
-systemctl enable "$SERVICE_FILE_NAME"
+systemctl --user enable "$SERVICE_FILE_NAME"
 # restart the service
-systemctl restart "$SERVICE_FILE_NAME"
+systemctl --user restart "$SERVICE_FILE_NAME"
