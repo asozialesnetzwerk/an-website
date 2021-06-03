@@ -1,0 +1,13 @@
+certifi==2021.5.30
+cffi==1.14.5
+chardet==4.0.0
+cheroot==8.5.2
+greenlet==0.4.13
+idna==2.10
+jaraco.functools==3.3.0
+more-itertools==8.8.0
+readline==6.2.4.1
+requests==2.25.1
+six==1.16.0
+urllib3==1.26.5
+web.py==0.62
