@@ -2,7 +2,7 @@ import web
 from discord.discord import Discord
 
 urls = (
-    '/discord/', 'Discord'
+    '/discord', 'Discord'
 )
 
 if __name__ == "__main__":
