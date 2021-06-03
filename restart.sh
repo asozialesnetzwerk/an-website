@@ -4,9 +4,10 @@ git pull
 
 cp an-website.service /etc/systemd/system/an-website.service
 
+
+[ ! -d /usr/lib/an-website/ ] && mkdir /usr/lib/an-website
+
+cp * /usr/lib/an-website/
+
 systemctl enable an-website.service
-
-[ ! -f /usr/lib/an-website/main.py ] && mkdir /usr/lib/an-website
-[ ! -f /usr/lib/an-website/main.py ] && ln main.py /usr/lib/an-website/main.py
-
 systemctl restart an-website.service
