@@ -35,7 +35,7 @@
         .error {
             color:red;
         }
-        button {
+        .button {
             padding: 12px;
             box-sizing: border-box;
             font-size: 20px;
@@ -45,7 +45,7 @@
             color: #fdfdfd;
             float: right;
         }
-        button:focus {
+        .button:focus {
             outline: none;
             border: 2px solid whitesmoke;
         }
@@ -78,27 +78,37 @@
 </head>
 
 <body>
-<label class="money-label" for="euro">Euro:</label><br>
-<input id="euro" value="$euro">
-<br>
-<label class="money-label" for="mark">D-Mark:</label><br>
-<input id="mark" value="$mark">
-<br>
-<label class="money-label" for="ost-mark">Ostmark:</label><br>
-<input id="ost-mark" value="$ost">
-<br>
-<label class="money-label" for="schwarz-mark">Ostmark auf dem Schwarzmarkt:</label><br>
-<input id="schwarz-mark" value="$schwarz">
 
-<br><br><br>
+<form action="$url" method="get">
+    <label class="money-label" for="euro">Euro:</label><br>
+    <input id="euro" name="euro" placeholder="$euro_str">
+    <br>
+    <label class="money-label" for="mark">D-Mark:</label><br>
+    <input id="mark" name="mark" placeholder="$mark_str">
+    <br>
+    <label class="money-label" for="ost">Ostmark:</label><br>
+    <input id="ost" name="ost" placeholder="$ost_str">
+    <br>
+    <label class="money-label" for="schwarz">Ostmark auf dem Schwarzmarkt:</label><br>
+    <input id="schwarz" name="schwarz" placeholder="$schwarz_str">
 
-<div class="container">
+    <br><br>
+    <noscript>
+        <input class="button" type="submit" value="Eingabe!">
+        <br><br><br>
+    </noscript>
+</form>
+<br>
+
+<div class="container" id="container">
     <label for="output" class="output float-left">Als Text:</label>
     <input type="text" readonly class="output output-text float-left" value="${text}" id="output">
-    <button class="output" onclick="copyOutput()">Kopiere Text</button>
 </div>
 
 <script>
+    // append button, so it is only with javascript visible
+    document.getElementById("container").innerHTML += "<button class=\"output button\" onclick=\"copyOutput()\">Kopiere Text</button>"
+
     const output = document.getElementById("output");
     function copyOutput() {
         output.select();
@@ -106,14 +116,12 @@
         document.execCommand("copy");
         alert("Erfolgreich kopiert!")
     }
-</script>
 
-<script>
     const felder = [
         document.getElementById("euro"),
         document.getElementById("mark"),
-        document.getElementById("ost-mark"),
-        document.getElementById("schwarz-mark")
+        document.getElementById("ost"),
+        document.getElementById("schwarz")
     ];
 
     const multiplikator = [
@@ -125,7 +133,7 @@
 
     const regex = /^\d*[.,]\d{2}\$/;
 
-    function bekommeAnzeigeWert (wert) {
+    function bekommeAnzeigeWert(wert) {
         const str = wert.toString().replace(".", ",");
         if (regex.test(str)) {
             return str;
@@ -145,7 +153,7 @@
         history.replaceState("", url, url);
     }
 
-    function setzeAlleFelder (euroWert, ignoriert) {
+    function setzeAlleFelder(euroWert, ignoriert) {
         setEuroParam(euroWert.toString().replace(".", ","));
         for (let i = 0; i < 4; i++) {
             const wert = bekommeAnzeigeWert(euroWert * multiplikator[i]);
@@ -177,5 +185,6 @@
 
     setzeAlleFelder($euro, -1);
 </script>
+
 </body>
 </html>
