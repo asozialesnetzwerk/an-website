@@ -42,9 +42,14 @@ def arguments_to_value_dict(web_input):
 
 class CurrencyConverter:
     def GET(self, test):
-        data = web.input()
-        euro = string_to_num(data.get("euro", "1"))
-        return str(get_value_dict(euro))
+        value_dict = arguments_to_value_dict(web.input())
+        if value_dict is None:
+            value_dict = get_value_dict(16)
+
+        value_dict["url"] = web.ctx.home + web.ctx.path + web.ctx.query
+        print(value_dict)
+        html = web.template.frender("currency_converter/index.html", globals=value_dict)
+        return html()
 
 
 class CurrencyConverterApi:

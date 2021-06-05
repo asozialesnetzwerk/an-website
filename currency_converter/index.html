@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Währungsrechner</title>
+    <meta property="og:title" content="Währungsrechner" />
+    <meta property="og:description" content="$text" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="$url" />
+    $# TODO: <meta property="og:image" content="https://ia.media-imdb.com/images/rock.jpg" />
+    <style>
+        input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 20px;
+            border: 2px solid red;
+            border-radius: 10px;
+            background-color: #0e0e0e;
+            color: #fdfdfd;
+        }
+        input:focus {
+            outline: none;
+            border: 2px solid whitesmoke;
+        }
+        label {
+            font-size: 25px;
+            font-style: initial;
+            color: #fefefe;
+        }
+        body {
+            background-color: #000000;
+        }
+        .error {
+            color:red;
+        }
+        button {
+            padding: 12px;
+            box-sizing: border-box;
+            font-size: 20px;
+            border: 2px solid deepskyblue;
+            border-radius: 10px;
+            background-color: #0e0e0e;
+            color: #fdfdfd;
+            float: right;
+        }
+        button:focus {
+            outline: none;
+            border: 2px solid whitesmoke;
+        }
+        .output-text {
+            float: left;
+            border: 2px solid blue;
+            overflow-x: scroll;
+            width: unset;
+            margin-left: 6px;
+        }
+        .float-left {
+            float: left;
+        }
+        .output {
+            margin: auto 0 auto 3px;
+            top: 50%;
+            -ms-transform: translateY(-50%);
+            transform: translateY(-50%);
+            position: relative;
+        }
+        .container {
+            margin-top: 36px;
+            position: relative;
+            height: auto;
+        }
+        .money-label {
+            margin-bottom: 100px
+        }
+    </style>
+</head>
+
+<body>
+<label class="money-label" for="euro">Euro:</label><br>
+<input id="euro" value="$euro">
+<br>
+<label class="money-label" for="mark">D-Mark:</label><br>
+<input id="mark" value="$mark">
+<br>
+<label class="money-label" for="ost-mark">Ostmark:</label><br>
+<input id="ost-mark" value="$ost">
+<br>
+<label class="money-label" for="schwarz-mark">Ostmark auf dem Schwarzmarkt:</label><br>
+<input id="schwarz-mark" value="$schwarz">
+
+<br><br><br>
+
+<div class="container">
+    <label for="output" class="output float-left">Als Text:</label>
+    <input type="text" readonly class="output output-text float-left" value="${text}" id="output">
+    <button class="output" onclick="copyOutput()">Kopiere Text</button>
+</div>
+
+<script>
+    const output = document.getElementById("output");
+    function copyOutput() {
+        output.select();
+        output.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        alert("Erfolgreich kopiert!")
+    }
+</script>
+
+<script>
+    const felder = [
+        document.getElementById("euro"),
+        document.getElementById("mark"),
+        document.getElementById("ost-mark"),
+        document.getElementById("schwarz-mark")
+    ];
+
+    const multiplikator = [
+        1, //Euro
+        2, //Deutsche Mark
+        4, //Ostmark
+        20 //Ostmark auf dem Schwarzmarkt
+    ];
+
+    const regex = /^\d*[.,]\d{2}\$/;
+
+    function bekommeAnzeigeWert (wert) {
+        const str = wert.toString().replace(".", ",");
+        if (regex.test(str)) {
+            return str;
+        }
+        const split = str.split(",");
+        if (split.length === 1) {
+            return str + ",00";
+        } else {
+            return split[0] + "," + (split[1] + "00").slice(0, 2);
+        }
+    }
+
+    function setEuroParam(euroWert) {
+        let url = window.location.href;
+        const end = url.lastIndexOf("?");
+        url = url.slice(0, end === -1 ? url.length : end) + "?euro=" + euroWert;
+        history.replaceState("", url, url);
+    }
+
+    function setzeAlleFelder (euroWert, ignoriert) {
+        setEuroParam(euroWert.toString().replace(".", ","));
+        for (let i = 0; i < 4; i++) {
+            const wert = bekommeAnzeigeWert(euroWert * multiplikator[i]);
+            felder[i].placeholder = wert;
+            if (i !== ignoriert) {
+                felder[i].classList.remove("error");
+                felder[i].value = wert;
+            }
+        }
+
+        output.value = (felder[0].value + " Euro, das sind ja " + felder[1].value + " Mark; " + felder[2].value + " Ostmark und " + felder[3].value + " Ostmark auf dem Schwarzmarkt!").replace(/\./g, ",").replace(/,00/g, "");
+    }
+
+    for (let i = 0; i < 4; i++) {
+        felder[i].pattern = regex;
+        felder[i].title = "Geldwert mit zwei Nachkommastellen.";
+        felder[i].oninput = function () {
+            if (regex.test(felder[i].value)) {
+                felder[i].classList.remove("error");
+            } else {
+                felder[i].classList.add("error");
+            }
+            let val = felder[i].value.replace(",", ".");
+            if (!isNaN(val)) { //if it is not Not a Number
+                setzeAlleFelder(val / multiplikator[i], i);
+            }
+        }
+    }
+
+    setzeAlleFelder($euro, -1);
+</script>
+</body>
+</html>
