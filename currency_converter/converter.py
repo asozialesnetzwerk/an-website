@@ -3,6 +3,7 @@ from typing import Optional, Awaitable
 from tornado import template
 from tornado import web
 import json
+import re
 
 
 keys = ["euro", "mark", "ost", "schwarz"]
@@ -12,7 +13,15 @@ multipliers = [1, 2, 4, 20]
 def string_to_num(string, divide_by=1):
     if string is None or len(string) is 0:
         return None
-    return float(string.replace(",", ".")) / divide_by
+
+    string = string.replace(",", ".")
+    try:
+        return float(string) / divide_by
+    except ValueError:
+        try:
+            return float(re.sub(r"[^0-9\.]", "", string)) / divide_by
+        except ValueError:
+            return None
 
 
 def num_to_string(num):
@@ -59,7 +68,7 @@ class CurrencyConverter(web.RequestHandler):
 
         value_dict["url"] = self.request.full_url()\
             .replace("http://j", "https://j")  # dirty fix, please remove
-        print(value_dict)
+
         loader = template.Loader("")
         html = loader.load(name="currency_converter/index.html")
         self.add_header("Content-Type", "text/html; charset=UTF-8")
