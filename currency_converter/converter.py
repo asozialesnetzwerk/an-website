@@ -57,7 +57,8 @@ class CurrencyConverter(web.RequestHandler):
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        value_dict["url"] = self.request.full_url()
+        value_dict["url"] = self.request.full_url()\
+            .replace("http://j", "https://j")  # dirty fix, please remove
         print(value_dict)
         loader = template.Loader("")
         html = loader.load(name="currency_converter/index.html")
