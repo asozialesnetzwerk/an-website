@@ -1,4 +1,5 @@
 import web
+import json
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
@@ -62,4 +63,4 @@ class CurrencyConverterApi:
             return "Arguments: " + str(keys)
 
         web.header('Content-Type', 'application/json')
-        return str(value_dict)
+        return json.dumps(value_dict)
