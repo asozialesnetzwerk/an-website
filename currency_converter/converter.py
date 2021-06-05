@@ -19,11 +19,11 @@ def num_to_string(num):
     return f"{num:.2f}".replace(".", ",").replace(",00", "")
 
 
-def conversion_string(euro):
-    return f"{num_to_string(euro)} Euro, " \
-           f"das sind ja {num_to_string(euro * 2)} Mark; " \
-           f"{num_to_string(euro * 4)} Ostmark " \
-           f"und {num_to_string(euro * 20)} Ostmark auf dem Schwarzmarkt!"
+def conversion_string(euro_str, mark_str, ost_str, schwarz_str):
+    return f"{euro_str} Euro, " \
+           f"das sind ja {mark_str} Mark; " \
+           f"{ost_str} Ostmark " \
+           f"und {schwarz_str} Ostmark auf dem Schwarzmarkt!"
 
 
 def get_value_dict(euro):
@@ -34,7 +34,7 @@ def get_value_dict(euro):
         value_dict[keys[i]] = val
         value_dict[keys[i] + "_str"] = num_to_string(val)
 
-    value_dict["text"] = conversion_string(euro)
+    value_dict["text"] = conversion_string(**value_dict)
 
     return value_dict
 
