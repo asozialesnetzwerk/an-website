@@ -6,6 +6,16 @@ SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 # get latest files from git:
 git pull
 
+# install required packages:
+if [ ! -d "venv" ]
+then
+    # venv doesn't exist, so create it:
+    pypy3 -m venv venv
+fi
+
+. venv/bin/activate
+
+pip install -r requirements.txt
 
 if [ ! -f "$SERVICE_FILE_LOCATION" ]
 then
