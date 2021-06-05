@@ -9,5 +9,5 @@ more-itertools==8.8.0
 readline==6.2.4.1
 requests==2.25.1
 six==1.16.0
+tornado==6.1
 urllib3==1.26.5
-web.py==0.62

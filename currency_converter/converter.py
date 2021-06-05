@@ -1,5 +1,9 @@
-import web
+from typing import Optional, Awaitable
+
+from tornado import template
+from tornado import web
 import json
+
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
@@ -35,32 +39,42 @@ def get_value_dict(euro):
     return value_dict
 
 
-def arguments_to_value_dict(web_input):
+def arguments_to_value_dict(request_handler):
     for i in range(len(keys)):
-        num_str = web_input.get(keys[i], None)
+        num_str = request_handler.get_query_argument(name=keys[i], default=None)
         euro = string_to_num(num_str, multipliers[i])
         if euro is not None:
             return get_value_dict(euro)
 
 
-class CurrencyConverter:
-    def GET(self, test):
-        value_dict = arguments_to_value_dict(web.input())
+class CurrencyConverter(web.RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
+    def get(self, arg2):
+        print(arg2)
+        value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        value_dict["url"] = web.ctx.home + web.ctx.path + web.ctx.query
+        value_dict["url"] = self.request.full_url()
         print(value_dict)
-        html = web.template.frender("currency_converter/index.html", globals=value_dict)
-        web.header("Content-Type", "text/html; charset=UTF-8")
-        return html()
+        loader = template.Loader("")
+        html = loader.load(name="currency_converter/index.html")
+        self.add_header("Content-Type", "text/html; charset=UTF-8")
+        self.write(html.generate(**value_dict))
 
 
-class CurrencyConverterApi:
-    def GET(self, test):
-        value_dict = arguments_to_value_dict(web.input())
+class CurrencyConverterApi(web.RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
+    def get(self, arg2):
+        print(arg2)
+        value_dict = arguments_to_value_dict(self)
         if value_dict is None:
-            return "Arguments: " + str(keys)
+            self.write("Arguments: " + str(keys))
+            return
 
-        web.header('Content-Type', 'application/json')
-        return json.dumps(value_dict)
+        self.add_header("Content-Type", "application/json")
+        self.write(json.dumps(value_dict))
