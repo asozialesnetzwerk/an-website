@@ -49,9 +49,7 @@ class CurrencyConverter:
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        value_dict["url"] = web.ctx.env.get("wsgi.url_scheme") + "://" \
-                            + web.ctx.env.get("HTTP_HOST") \
-                            + web.ctx.env.get("PATH_INFO")
+        value_dict["url"] = web.ctx.home + web.ctx.path + web.ctx.query
         print(value_dict)
         html = web.template.frender("currency_converter/index.html", globals=value_dict)
         web.header("Content-Type", "text/html; charset=UTF-8")
