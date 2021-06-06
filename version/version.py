@@ -3,7 +3,7 @@ import os
 
 from tornado import web, template
 
-from ..utils.utils import get_url, hash_string
+from utils.utils import get_url, hash_string
 
 VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 FILE_HASHES = os.popen("git ls-files | xargs sha256sum").read()
