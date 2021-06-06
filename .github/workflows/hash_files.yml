@@ -9,5 +9,8 @@ jobs:
     name: Deployment
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: hash files
         run: sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1"
