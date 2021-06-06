@@ -7,10 +7,8 @@ from utils.utils import get_url, hash_string
 
 
 def get_version():
-    f = open("version/version.txt", "r")
-    version = f.read()
-    f.close()
-    return version
+    res = os.popen("git log -n1 --format=format:'%H'")
+    return res.read()
 
 
 def get_file_hashes():
@@ -23,7 +21,7 @@ class Version(web.RequestHandler):
         pass
 
     async def get(self):
-        file_hashes=get_file_hashes()
+        file_hashes = get_file_hashes()
 
         loader = template.Loader("")
         html = loader.load(name="version/index.html")
