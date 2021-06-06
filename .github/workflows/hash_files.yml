@@ -16,7 +16,7 @@ jobs:
         run: |
           mkdir hash_file_folder
           sh -c "git ls-files | xargs sha256sum > hash_file_folder/version.txt"
-          echo > hash_file_folder/version.txt
+          echo >> hash_file_folder/version.txt
           sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1 >> hash_file_folder/version.txt"
 
       - name: Deploy
