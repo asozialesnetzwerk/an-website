@@ -14,5 +14,11 @@ jobs:
 
       - name: hash files
         run: |
-          sh -c "git ls-files | xargs sha256sum"
-          sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1"
+          mkdir hash_file_folder
+          sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1 > hash_file_folder/index.txt"
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: hash_file_folder
