@@ -1,19 +1,12 @@
-import os
 from typing import Optional, Awaitable
+import os
 
 from tornado import web, template
 
-from utils.utils import get_url, hash_string
+from ..utils.utils import get_url, hash_string
 
-
-def get_version():
-    res = os.popen("git log -n1 --format=format:'%H'")
-    return res.read()
-
-
-def get_file_hashes():
-    res = os.popen("git ls-files | xargs sha256sum")
-    return res.read()
+VERSION = os.popen("git log -n1 --format=format:'%H'").read()
+FILE_HASHES = os.popen("git ls-files | xargs sha256sum").read()
 
 
 class Version(web.RequestHandler):
@@ -21,12 +14,10 @@ class Version(web.RequestHandler):
         pass
 
     async def get(self):
-        file_hashes = get_file_hashes()
-
         loader = template.Loader("")
         html = loader.load(name="version/index.html")
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.write(html.generate(version=get_version(),
-                                 file_hashes=file_hashes,
-                                 hash_of_file_hashes=hash_string(file_hashes),
+        self.write(html.generate(version=VERSION,
+                                 file_hashes=FILE_HASHES,
+                                 hash_of_file_hashes=hash_string(FILE_HASHES),
                                  url=get_url(self)))
