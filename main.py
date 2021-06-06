@@ -3,6 +3,7 @@ import tornado.web
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterApi
 from version.version import Version
+from tornado.web import StaticFileHandler
 
 
 def make_app():
@@ -10,7 +11,8 @@ def make_app():
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
         ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
-        ("/version/?", Version)
+        ("/version/?", Version),
+        ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
     ])
 
 
