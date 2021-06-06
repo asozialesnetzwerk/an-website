@@ -5,6 +5,8 @@ SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 
 # get latest files from git:
 git pull
+# write version to file:
+git log -n1 --format=format:"%H" > version/version.txt
 
 # install required packages:
 if [ ! -d "venv" ]

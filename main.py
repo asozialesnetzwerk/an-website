@@ -2,19 +2,15 @@ import tornado.ioloop
 import tornado.web
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterApi
-
-urls = (
-    "/discord/?", "Discord",
-    "/(waehrungs-)?rechner/?", "CurrencyConverter",
-    "/(waehrungs-)?rechner/api/?", "CurrencyConverterApi"
-)
+from version.version import Version
 
 
 def make_app():
     return tornado.web.Application([
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
-        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi)
+        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
+        ("/version/?", Version)
     ])
 
 

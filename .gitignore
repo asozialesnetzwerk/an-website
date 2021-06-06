@@ -125,3 +125,6 @@ dmypy.json
 
 # Jetbrains:
 .idea/
+
+# Version.txt:
+version/version.txt
