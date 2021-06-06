@@ -14,5 +14,5 @@ jobs:
 
       - name: hash files
         run: |
-          sh -c "git ls-files | xargs sha256sum
+          sh -c "git ls-files | xargs sha256sum"
           sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1"
