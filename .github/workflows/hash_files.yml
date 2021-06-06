@@ -14,5 +14,8 @@ jobs:
 
       - name: hash files
         run: |
+          cat .github/workflows/hash_files.yml
+          echo
           sh -c "git ls-files | xargs sha256sum"
+          echo
           sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1"
