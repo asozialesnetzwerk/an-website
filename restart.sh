@@ -4,7 +4,7 @@ SERVICE_FILE_NAME="an-website.ini"
 SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 
 # get latest files from git:
-git pull
+git pull --rebase
 # write version to file:
 git log -n1 --format=format:"%H" > version/version.txt
 
