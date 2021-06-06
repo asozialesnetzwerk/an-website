@@ -5,6 +5,7 @@ from tornado import web
 import json
 import re
 
+from utils.utils import get_url
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
@@ -66,8 +67,7 @@ class CurrencyConverter(web.RequestHandler):
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        value_dict["url"] = self.request.full_url()\
-            .replace("http://j", "https://j")  # dirty fix, please remove
+        value_dict["url"] = get_url(self)  # dirty fix, please remove
 
         loader = template.Loader("")
         html = loader.load(name="currency_converter/index.html")

@@ -1,0 +1,13 @@
+name: Check PR
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: hash files
+        run: sh -c "git ls-files | xargs sha256sum | sha256sum | cut -d ' ' -f 1"

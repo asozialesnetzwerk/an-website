@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Version der Website</title>
+    <meta property="og:title" content="Version der Website" />
+    <meta property="og:description" content="{{ version }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ url }}" />
+
+    <style>
+        body {
+            background-color: #000000;
+            color: #fefefe;
+        }
+    </style>
+</head>
+<body>
+    Version: {{ version }}
+    <br>
+    File-Hashes:
+    <br>
+    {{ file_hashes }}
+    <br>
+    Hash der File-Hashes:
+    <br>
+    {{ hash_of_file_hashes }}
+</body>
+</html>
