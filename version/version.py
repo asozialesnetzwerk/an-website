@@ -16,6 +16,7 @@ class Version(web.RequestHandler):
     async def get(self):
         loader = template.Loader("")
         html = loader.load(name="version/index.html")
+
         self.add_header("Content-Type", "text/html; charset=UTF-8")
         self.write(html.generate(version=VERSION,
                                  file_hashes=FILE_HASHES,

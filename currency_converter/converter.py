@@ -80,7 +80,6 @@ class CurrencyConverterApi(web.RequestHandler):
         pass
 
     def get(self, arg2):
-        print(arg2)
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
