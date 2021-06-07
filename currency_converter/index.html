@@ -32,9 +32,6 @@
         body {
             background-color: #000000;
         }
-        .error {
-            color:red;
-        }
         .button {
             padding: 12px;
             box-sizing: border-box;
@@ -53,7 +50,7 @@
             float: left;
             border: 2px solid blue;
             overflow-x: scroll;
-            width: unset;
+            width: available;
             margin-left: 6px;
         }
         .float-left {
@@ -61,14 +58,9 @@
         }
         .output {
             margin: auto 0 auto 3px;
-            top: 50%;
-            -ms-transform: translateY(-50%);
-            transform: translateY(-50%);
-            position: relative;
         }
         .container {
             margin-top: 36px;
-            position: relative;
             height: auto;
         }
         .money-label {
@@ -92,11 +84,8 @@
     <label class="money-label" for="schwarz">Ostmark auf dem Schwarzmarkt:</label><br>
     <input id="schwarz" name="schwarz" placeholder="{{ schwarz_str }}">
 
-    <br><br>
-    <noscript>
-        <input class="button" type="submit" value="Eingabe!">
-        <br><br><br>
-    </noscript>
+
+    <input class="button" type="submit" value="Eingabe!">
 </form>
 <br>
 
@@ -104,87 +93,6 @@
     <label for="output" class="output float-left">Als Text:</label>
     <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
 </div>
-
-<script>
-    // append button, so it is only with javascript visible
-    document.getElementById("container").innerHTML += "<button class=\"output button\" onclick=\"copyOutput()\">Kopiere Text</button>"
-
-    const output = document.getElementById("output");
-    function copyOutput() {
-        output.select();
-        output.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-        alert("Erfolgreich kopiert!")
-    }
-
-    const felder = [
-        document.getElementById("euro"),
-        document.getElementById("mark"),
-        document.getElementById("ost"),
-        document.getElementById("schwarz")
-    ];
-
-    const multiplikator = [
-        1, //Euro
-        2, //Deutsche Mark
-        4, //Ostmark
-        20 //Ostmark auf dem Schwarzmarkt
-    ];
-
-    const regex = /^\d*[.,]\d{2}$/;
-
-    function bekommeAnzeigeWert(wert) {
-        const str = wert.toString().replace(".", ",");
-        if (regex.test(str)) {
-            return str;
-        }
-        const split = str.split(",");
-        if (split.length === 1) {
-            return str + ",00";
-        } else {
-            return split[0] + "," + (split[1] + "00").slice(0, 2);
-        }
-    }
-
-    function setEuroParam(euroWert) {
-        let url = window.location.href;
-        const end = url.lastIndexOf("?");
-        url = url.slice(0, end === -1 ? url.length : end) + "?euro=" + euroWert;
-        history.replaceState("", url, url);
-    }
-
-    function setzeAlleFelder(euroWert, ignoriert) {
-        setEuroParam(euroWert.toString().replace(".", ","));
-        for (let i = 0; i < 4; i++) {
-            const wert = bekommeAnzeigeWert(euroWert * multiplikator[i]);
-            felder[i].placeholder = wert;
-            if (i !== ignoriert) {
-                felder[i].classList.remove("error");
-                felder[i].value = wert;
-            }
-        }
-
-        output.value = (felder[0].value + " Euro, das sind ja " + felder[1].value + " Mark; " + felder[2].value + " Ostmark und " + felder[3].value + " Ostmark auf dem Schwarzmarkt!").replace(/\./g, ",").replace(/,00/g, "");
-    }
-
-    for (let i = 0; i < 4; i++) {
-        felder[i].pattern = regex;
-        felder[i].title = "Geldwert mit zwei Nachkommastellen.";
-        felder[i].oninput = function () {
-            if (regex.test(felder[i].value)) {
-                felder[i].classList.remove("error");
-            } else {
-                felder[i].classList.add("error");
-            }
-            let val = felder[i].value.replace(",", ".");
-            if (!isNaN(val)) { //if it is not Not a Number
-                setzeAlleFelder(val / multiplikator[i], i);
-            }
-        }
-    }
-
-    setzeAlleFelder({{ euro }}, -1);
-</script>
 
 </body>
 </html>
