@@ -6,6 +6,6 @@ then
     pypy3 -m venv venv
 fi
 
-. venv/bin/activate
+#. venv/bin/activate
 
-pypy3 main.py
+exec venv/bin/pypy3 main.py
