@@ -46,11 +46,19 @@ def get_value_dict(euro):
 
 
 def arguments_to_value_dict(request_handler):
+    contains_bad_param = False
     for i in range(len(keys)):
         num_str = request_handler.get_query_argument(name=keys[i], default=None)
-        euro = string_to_num(num_str, multipliers[i])
-        if euro is not None:
-            return get_value_dict(euro)
+        if num_str is not None:
+            euro = string_to_num(num_str, multipliers[i])
+            if euro is not None:
+                value_dict = get_value_dict(euro)
+                if contains_bad_param:
+                    value_dict["contained_bad_param"] = True
+                value_dict["key_used"] = keys[i]
+                return value_dict
+            else:
+                contains_bad_param = True
 
 
 class CurrencyConverter(RequestHandlerCustomError):
@@ -58,6 +66,12 @@ class CurrencyConverter(RequestHandlerCustomError):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = get_value_dict(16)
+
+        if value_dict.get("contained_bad_param", False):
+            url = get_url(self).split("?")[0]
+            key = value_dict.get("key_used")
+            self.redirect(f"{url}?{key}={value_dict.get(key + '_str')}")
+            return
 
         self.add_header("Content-Type", "text/html; charset=UTF-8")
         self.render("pages/converter.html", **value_dict, url=get_url(self))
