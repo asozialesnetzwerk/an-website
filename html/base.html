@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="{% block lang %}de{% end %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="theme-color" content="#8B0000">
+    <meta property="og:url" content="{{ url }}" />
+    <meta property="og:type" content="website" />
+    <title>{% block title %}Das Asoziale Netzwerk{% end %}</title>
+    <meta property="og:title" content="{% block title %}Das Asoziale Netzwerk{% end %}" />
+    <meta property="og:description" content="{% block description %}Dies ist die Webseite des Asozialen Netzwerkes!{% end %}" />
+    {% block head %} {% end %}
+    <style>
+        :root {
+            --red: #8B0000;
+            --white: #fefefe;
+            --black: #000;
+            --dark-grey: #111;
+            --light-red: #f00;
+            --light-blue: #00bfff;
+            --blue: #00f;
+        }
+        * {
+            color: var(--white);
+            background-color: var(--black);
+        }
+        a {
+            color: var(--red)
+        }
+        {% block style %} {% end %}
+    </style>
+</head>
+<body>
+
+{% block body %}
+Dies ist die Webseite des Asozialen Netzwerkes!
+{% end %}
+
+{% block footer %}
+<footer style="
+position: absolute;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+text-align: center;
+color: white;
+">
+    Mit Liebe gebacken 🖤
+    <a href="https://github.com/asozialesnetzwerk">
+        Asoziales Netzwerk: Sektion GitHub
+    </a>
+</footer>
+{% end %}
+</body>
+</html>

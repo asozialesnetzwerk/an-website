@@ -1,6 +1,5 @@
 from typing import Optional, Awaitable
 
-from tornado import template
 from tornado import web
 import json
 import re
@@ -66,10 +65,8 @@ class CurrencyConverter(web.RequestHandler):
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        loader = template.Loader("")
-        html = loader.load(name="html/converter.html")
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.write(html.generate(**value_dict, url=get_url(self)))
+        self.render("pages/converter.html", **value_dict, url=get_url(self))
 
 
 class CurrencyConverterApi(web.RequestHandler):

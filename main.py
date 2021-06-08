@@ -13,7 +13,10 @@ def make_app():
         ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
         ("/version/?", Version),
         ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
-    ])
+    ],
+        compress_response=True,
+        template_path="html/"
+    )
 
 
 if __name__ == "__main__":

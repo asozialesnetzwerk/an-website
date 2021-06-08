@@ -1,7 +1,7 @@
 from typing import Optional, Awaitable
 import os
 
-from tornado import web, template
+from tornado import web
 
 from utils.utils import get_url, hash_string
 
@@ -15,12 +15,9 @@ class Version(web.RequestHandler):
         pass
 
     async def get(self):
-        loader = template.Loader("")
-        html = loader.load(name="html/version.html")
-
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.write(html.generate(version=VERSION,
-                                 file_hashes=FILE_HASHES,
-                                 hash_of_file_hashes=hash_string(FILE_HASHES),
-                                 gh_pages_commit_hash=GH_PAGES_COMMIT_HASH,
-                                 url=get_url(self)))
+        await self.render("pages/version.html", version=VERSION,
+                          file_hashes=FILE_HASHES,
+                          hash_of_file_hashes=hash_string(FILE_HASHES),
+                          gh_pages_commit_hash=GH_PAGES_COMMIT_HASH,
+                          url=get_url(self))

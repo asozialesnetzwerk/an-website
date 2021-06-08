@@ -1,0 +1,31 @@
+{% extends "../base.html" %}
+
+{% block head %}
+    <style>
+        p {
+            background-color: #000000;
+            color: #fefefe;
+            white-space: pre-line;
+        }
+    </style>
+{% end %}
+
+{% block body %}
+    <p>
+        Version: <a href="https://github.com/asozialesnetzwerk/an-website/commit/{{ version }}">{{ version }}</a>
+        File-Hashes:
+        {{ file_hashes }}
+        Hash der File-Hashes:
+        {{ hash_of_file_hashes }}
+        <a href="https://github.com/asozialesnetzwerk/an-website/blob/{{ gh_pages_commit_hash }}/version.txt">Hashes der aktuellen Version.</a>
+        <a href="https://asozialesnetzwerk.github.io/an-website/version.txt">Hashes der neusten Version.</a>
+    </p>
+{% end %}
+
+{% block title %}
+    Version der Webseite
+{% end %}
+
+{% block description %}
+    {{ version }}
+{% end %}
