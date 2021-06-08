@@ -3,7 +3,7 @@ import os
 
 def get_url(request_handler):
     return request_handler.request.full_url() \
-        .replace("http://j", "https://j")
+        .replace("http://j", "https://j")  # Dirty fix to force https
 
 
 # Uses sha256sum to keep it the same

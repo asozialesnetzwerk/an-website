@@ -66,12 +66,10 @@ class CurrencyConverter(web.RequestHandler):
         if value_dict is None:
             value_dict = get_value_dict(16)
 
-        value_dict["url"] = get_url(self)  # dirty fix, please remove
-
         loader = template.Loader("")
         html = loader.load(name="currency_converter/converter.html")
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.write(html.generate(**value_dict))
+        self.write(html.generate(**value_dict, url=get_url(self)))
 
 
 class CurrencyConverterApi(web.RequestHandler):
