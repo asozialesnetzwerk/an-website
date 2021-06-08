@@ -6,7 +6,7 @@ from tornado import web, template
 from utils.utils import get_url, hash_string
 
 VERSION = os.popen("git log -n1 --format=format:'%H'").read()
-GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' gh-pages").read()
+GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-pages").read()
 FILE_HASHES = os.popen("git ls-files | xargs sha256sum").read()
 
 
