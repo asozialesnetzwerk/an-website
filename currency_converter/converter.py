@@ -67,7 +67,7 @@ class CurrencyConverter(web.RequestHandler):
             value_dict = get_value_dict(16)
 
         loader = template.Loader("")
-        html = loader.load(name="currency_converter/converter.html")
+        html = loader.load(name="html/converter.html")
         self.add_header("Content-Type", "text/html; charset=UTF-8")
         self.write(html.generate(**value_dict, url=get_url(self)))
 
