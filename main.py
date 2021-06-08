@@ -15,7 +15,7 @@ def make_app():
         ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
     ],
         compress_response=True,
-        template_path="html/"
+        template_path="templates/"
     )
 
 

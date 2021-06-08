@@ -1,0 +1,36 @@
+{% extends "../base.html" %}
+
+{% block title %}Währungsrechner{% end %}
+
+{% block description %}{{ text }}{% end %}
+
+{% block body %}
+<body>
+
+<form action="{{ url }}" method="get">
+    <label class="money-label" for="euro">Euro:</label><br>
+    <input id="euro" name="euro" placeholder="{{ euro_str }}">
+    <br>
+    <label class="money-label" for="mark">D-Mark:</label><br>
+    <input id="mark" name="mark" placeholder="{{ mark_str }}">
+    <br>
+    <label class="money-label" for="ost">Ostmark:</label><br>
+    <input id="ost" name="ost" placeholder="{{ ost_str }}">
+    <br>
+    <label class="money-label" for="schwarz">Ostmark auf dem Schwarzmarkt:</label><br>
+    <input id="schwarz" name="schwarz" placeholder="{{ schwarz_str }}">
+
+
+    <input class="button" type="submit" value="Eingabe!">
+</form>
+<br>
+
+<div class="container" id="container">
+    <label for="output" class="output float-left">Als Text:</label>
+    <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
+</div>
+{% end %}
+
+{% block style %}
+    {% include "../styles/converter.css" %}
+{% end %}}

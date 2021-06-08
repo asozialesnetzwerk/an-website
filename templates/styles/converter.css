@@ -1,0 +1,52 @@
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 20px;
+    border: 2px solid var(--light-red);
+    border-radius: 10px;
+    background-color: var(--dark-grey);
+}
+input:focus {
+    outline: none;
+    border: 2px solid whitesmoke;
+}
+label {
+    font-size: 25px;
+    font-style: initial;
+}
+.button {
+    padding: 12px;
+    box-sizing: border-box;
+    font-size: 20px;
+    border: 2px solid var(--light-blue);
+    border-radius: 10px;
+    background-color: var(--dark-grey);
+    color: #fdfdfd;
+    float: right;
+}
+.button:focus {
+    outline: none;
+    border: 2px solid whitesmoke;
+}
+.output-text {
+    float: left;
+    border: 2px solid var(--blue);
+    overflow-x: scroll;
+    width: available;
+    margin-left: 6px;
+}
+.float-left {
+    float: left;
+}
+.output {
+    margin: auto 0 auto 3px;
+}
+.container {
+    margin-top: 36px;
+    height: auto;
+}
+.money-label {
+    margin-bottom: 100px
+}
