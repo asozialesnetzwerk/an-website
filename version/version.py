@@ -1,19 +1,14 @@
 from typing import Optional, Awaitable
 import os
 
-from tornado import web
-
-from utils.utils import get_url, hash_string
+from utils.utils import get_url, hash_string, RequestHandlerCustomError
 
 VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-pages").read()
 FILE_HASHES = os.popen("git ls-files | xargs sha256sum").read()
 
 
-class Version(web.RequestHandler):
-    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
-        pass
-
+class Version(RequestHandlerCustomError):
     async def get(self):
         self.add_header("Content-Type", "text/html; charset=UTF-8")
         await self.render("pages/version.html", version=VERSION,

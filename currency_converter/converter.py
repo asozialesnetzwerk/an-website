@@ -4,7 +4,7 @@ from tornado import web
 import json
 import re
 
-from utils.utils import get_url
+from utils.utils import get_url, RequestHandlerCustomError
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
@@ -56,10 +56,7 @@ def arguments_to_value_dict(request_handler):
             return get_value_dict(euro)
 
 
-class CurrencyConverter(web.RequestHandler):
-    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
-        pass
-
+class CurrencyConverter(RequestHandlerCustomError):
     def get(self, arg2):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
@@ -69,10 +66,7 @@ class CurrencyConverter(web.RequestHandler):
         self.render("pages/converter.html", **value_dict, url=get_url(self))
 
 
-class CurrencyConverterApi(web.RequestHandler):
-    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
-        pass
-
+class CurrencyConverterApi(RequestHandlerCustomError):
     def get(self, arg2):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:

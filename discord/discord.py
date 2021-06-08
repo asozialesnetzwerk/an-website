@@ -1,13 +1,14 @@
 from typing import Optional, Awaitable
 import json
 
-from tornado import web
 from tornado.httpclient import AsyncHTTPClient, HTTPError
+
+from utils.utils import RequestHandlerCustomError
 
 WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
 
-class Discord(web.RequestHandler):
+class Discord(RequestHandlerCustomError):
     async def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
 

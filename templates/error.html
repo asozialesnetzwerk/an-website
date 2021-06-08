@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{error_code}}{% end %}
+
+{% block description %}Ein Fehler ist aufgetreten.{% end %}
+
+{% block body %}
+<p id="error">
+    {{error_code}}
+</p>
+{% end %}
+
+{% block style %}
+#error {
+    position: absolute;
+    font-size: 100px;
+    color: var(--red);
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+}
+{% end %}

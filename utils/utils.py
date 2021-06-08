@@ -1,4 +1,7 @@
 import os
+from typing import Optional, Awaitable, Any
+
+from tornado.web import RequestHandler
 
 
 def get_url(request_handler):
@@ -11,3 +14,11 @@ def hash_string(string):
     string = string.strip().replace('"', '\\"')
     res = os.popen(f"echo \"{string}\" | sha256sum | cut -d ' ' -f 1")
     return res.read()
+
+
+class RequestHandlerCustomError(RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        self.render("error.html", error_code=status_code, url=get_url(self))
