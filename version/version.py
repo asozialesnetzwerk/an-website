@@ -1,4 +1,3 @@
-from typing import Optional, Awaitable
 import os
 
 from utils.utils import get_url, hash_string, RequestHandlerCustomError
