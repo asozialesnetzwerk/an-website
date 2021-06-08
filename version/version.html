@@ -16,11 +16,12 @@
     </style>
 </head>
 <body>
-Version: {{ version }}
+Version: <a href="https://github.com/asozialesnetzwerk/an-website/commit/{{ version }}">{{ version }}</a>
     File-Hashes:
     {{ file_hashes }}
     Hash der File-Hashes:
     {{ hash_of_file_hashes }}
-    <a href="https://asozialesnetzwerk.github.io/an-website/version.txt">Hash der letzten Version.</a>
+    <a href="https://github.com/asozialesnetzwerk/an-website/blob/{{ gh_pages_commit_hash }}/version.txt">Hashes der aktuellen Version.</a>
+    <a href="https://asozialesnetzwerk.github.io/an-website/version.txt">Hashes der neusten Version.</a>
 </body>
 </html>
