@@ -1,4 +1,3 @@
-from typing import Optional, Awaitable
 import json
 
 from tornado.httpclient import AsyncHTTPClient, HTTPError
@@ -9,9 +8,6 @@ WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
 
 class Discord(RequestHandlerCustomError):
-    async def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
-        pass
-
     async def get(self):
         http_client = AsyncHTTPClient()
         try:
