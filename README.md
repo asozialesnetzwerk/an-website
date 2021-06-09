@@ -28,4 +28,4 @@ should work similar to linux
 restart.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
 
 ### MacOS:
-Why? (same as FreeBSD)
+Why? (same as FreeBSD, probably)
