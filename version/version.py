@@ -4,7 +4,7 @@ from utils.utils import get_url, hash_string, RequestHandlerCustomError
 
 VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-pages").read()
-FILE_HASHES = os.popen("git ls-files | xargs sha256sum").read()
+FILE_HASHES = os.popen("git ls-files | xargs sha1sum").read()
 
 
 class Version(RequestHandlerCustomError):
