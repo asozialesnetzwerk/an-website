@@ -20,7 +20,7 @@
 
     <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="has-umlauts">
-            <input type="checkbox" class="cb no-select" id="has-umlauts" name="has-umlauts">
+            <input type="checkbox" class="cb no-select" id="has-umlauts" name="allow-umlauts" {% if allow_umlauts %} checked {% end %}">
             <span class="checkmark no-select"></span>
             Erlaube Umlaute
         </label>
@@ -29,7 +29,7 @@
 
     <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="crossword-mode">
-            <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword-mode">
+            <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword-mode" {% if crossword_mode %} checked {% end %}">
             <span class="checkmark no-select"></span>
             Kreuzworträtselmodus
         </label>
@@ -46,9 +46,11 @@
 <br><br><br><br>
 
 <div class="output">
-    Mögliche Buchstaben:
-    {% for letter in letters %}
-        {{ letter }}: {{ letters[letter]}},
+    {% if letters %}
+        Mögliche Buchstaben:
+        {% for letter in letters %}
+            {{ letter }}: {{ letters[letter]}},
+        {% end %}
     {% end %}
 </div>
 <br><br>
