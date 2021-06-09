@@ -1,3 +1,5 @@
+import sys
+
 import tornado.ioloop
 import tornado.web
 from tornado.web import StaticFileHandler
@@ -13,12 +15,17 @@ def make_app():
         ("/version/?", Version),
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
-        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
-        ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
+        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi)
     ],
+        # General settings
+        autoreload=False
         compress_response=True,
+        debug=bool(sys.flags.dev_mode)
+        default_handler_class=RequestHandlerCustomError,
+        # Template settings
         template_path="templates/",
-        default_handler_class=RequestHandlerCustomError
+        # Static file settings
+        static_path="static/"
     )
 
 
