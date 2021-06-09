@@ -13,7 +13,7 @@ then
     pypy3 -m venv venv
 fi
 
-venv/bin/pip install -r requirements.txt
+venv/bin/pip install -U -r requirements.txt
 
 if [ ! -f "$SERVICE_FILE_LOCATION" ]
 then
