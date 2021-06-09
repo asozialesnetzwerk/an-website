@@ -9,12 +9,12 @@ You need:
 
 How:
 - clone this repo in the home directory of a user
-- add the following to /etc/supervisord.conf
+- (if necessary) add the following to the end of /etc/supervisord.conf
 ```
   [include]
   files = /etc/supervisor.d/*.ini
 ```
-- create /etc/supervisor.d/
+- (if necessary) create /etc/supervisor.d/
 - run restart.sh as the user of the home directory
 
 ### Windows:
