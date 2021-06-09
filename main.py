@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.web
 from tornado.web import StaticFileHandler
 
+from hangman_solver.solver import HangmanSolver, HangmanSolverApi
 from utils.utils import RequestHandlerCustomError
 from version.version import Version
 from discord.discord import Discord
@@ -14,6 +15,8 @@ def make_app():
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
         ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
+        ("/hangman-l(ö|oe)ser/?", HangmanSolver),
+        ("/hangman-l(ö|oe)ser/api/?", HangmanSolverApi),
         ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
     ],
         compress_response=True,

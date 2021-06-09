@@ -1,0 +1,65 @@
+{% extends "../base.html" %}
+
+{% block title %}Hangman-Solver{% end %}
+
+{% block description %}Eine Webseite, die dir bei Hangman hilft.{% end %}
+
+{% block body %}
+<form>
+    <label class="text-input-label no-select" for="input">Eingabe (Nutze "_" für nicht bekannte Buchstaben):</label>
+    <br>
+    <input class="text-input" id="input" name="input" value="{{ input }}">
+
+    <br>
+
+    <label class="text-input-label no-select" for="invalid">Falsche Buchstaben:</label>
+    <br>
+    <input class="text-input" id="invalid" name="invalid">
+
+    <br><br>
+
+    <div class="tooltip no-select">
+        <label class="cbl float-left no-select" for="has-umlauts">
+            <input type="checkbox" class="cb no-select" id="has-umlauts" name="has-umlauts">
+            <span class="checkmark no-select"></span>
+            Erlaube Umlaute
+        </label>
+        <span class="tooltip-text no-select">Nutze ä, ö, ü & ß, anstatt ae, oe, ue & ss.</span>
+    </div>
+
+    <div class="tooltip no-select">
+        <label class="cbl float-left no-select" for="crossword-mode">
+            <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword-mode">
+            <span class="checkmark no-select"></span>
+            Kreuzworträtselmodus
+        </label>
+        <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
+    </div>
+
+
+    <div class="tooltip no-select button-container">
+        <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe""/>
+        <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
+    </div>
+</form>
+
+<br><br><br><br>
+
+<div class="output">
+    Mögliche Buchstaben:
+    {% for letter in letters %}
+        {{ letter }}: {{ letters[letter]}},
+    {% end %}
+</div>
+<br><br>
+<ul class="output">
+    {% for word in words %}
+        <li>{{ word }}</li>
+    {% end %}
+</ul>
+
+{% end %}
+
+{% block style %}
+    {% include "../styles/hangman_solver.css" %}
+{% end %}
