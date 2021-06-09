@@ -1,25 +1,24 @@
-name: Hash Files
+name: Deploy
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  deploy:
-    name: Deployment
+  hash_files:
+    name: Hash files
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: hash files
+      - name: Hash files
         run: |
           mkdir hash_file_folder
-          sh -c "git ls-files | xargs sha1sum > hash_file_folder/version.txt"
+          echo "File-Hashes:" > hash_file_folder/version.txt
+          sh -c "git ls-files | xargs sha1sum >> hash_file_folder/version.txt"
           echo >> hash_file_folder/version.txt
+          echo "Hash der File-Hashes:" >> hash_file_folder/version.txt
           sh -c "git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1 >> hash_file_folder/version.txt"
-
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
