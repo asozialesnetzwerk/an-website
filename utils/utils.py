@@ -9,10 +9,10 @@ def get_url(request_handler):
         .replace("http://j", "https://j")  # Dirty fix to force https
 
 
-# Uses sha256sum to keep it the same
+# Uses sha1sum to keep it the same
 def hash_string(string):
     string = string.strip().replace('"', '\\"')
-    res = os.popen(f"echo \"{string}\" | sha256sum | cut -d ' ' -f 1")
+    res = os.popen(f"echo \"{string}\" | sha1sum | cut -d ' ' -f 1")
     return res.read()
 
 
