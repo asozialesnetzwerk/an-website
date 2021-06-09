@@ -18,7 +18,7 @@ def find_words(request_handler):
     if not crossword_mode:
         invalid += input_str
 
-    folder = f"hangman_solver/words_{language}"
+    folder = f"hangman_solver/words/words_{language}"
     if language == "de" and not allow_umlauts:
         folder += "_only_a-z"
 
