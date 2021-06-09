@@ -20,9 +20,6 @@ def find_words(request_handler):
     allow_umlauts = bool(strtobool(allow_umlauts_str))  # if the words can contain ä,ö,ü
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
 
-    print("au", allow_umlauts )
-    print("cm", crossword_mode)
-
     input_str = request_handler.get_query_argument("input", default="")
     input_len = len(input_str)
     if input_len == 0:  # input is empty:
