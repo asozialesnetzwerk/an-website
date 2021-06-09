@@ -21,4 +21,4 @@ class RequestHandlerCustomError(RequestHandler):
         pass
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
-        self.render("error.html", error_code=status_code, url=get_url(self))
+        self.render("error.html", error_code=status_code, url=get_url(self), exc_info=kwargs.get("exc_info"))
