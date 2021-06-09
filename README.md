@@ -21,10 +21,10 @@ How:
 DO NOT USE WINDOWS
 
 ### FreeBSD:
-should work similar to linux
-`/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`
-`/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`
-`/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`
+should work similar to linux  
+`/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`  
+`/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`  
+`/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`  
 restart.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
 
 ### MacOS:
