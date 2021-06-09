@@ -125,3 +125,6 @@ dmypy.json
 
 # Jetbrains:
 .idea/
+
+# hangman-solver word lists:
+full_wordlist.txt
