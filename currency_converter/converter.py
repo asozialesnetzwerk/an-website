@@ -62,7 +62,7 @@ def arguments_to_value_dict(request_handler):
 
 
 class CurrencyConverter(RequestHandlerCustomError):
-    def get(self, arg2):
+    def get(self, *args):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = get_value_dict(16)
@@ -78,7 +78,7 @@ class CurrencyConverter(RequestHandlerCustomError):
 
 
 class CurrencyConverterApi(RequestHandlerCustomError):
-    def get(self, arg2):
+    def get(self, *args):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
