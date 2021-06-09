@@ -1,18 +1,19 @@
 import tornado.ioloop
 import tornado.web
+from tornado.web import StaticFileHandler
+
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterApi
 from utils.utils import RequestHandlerCustomError
 from version.version import Version
-from tornado.web import StaticFileHandler
 
 
 def make_app():
     return tornado.web.Application([
+        ("/version/?", Version),
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
         ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
-        ("/version/?", Version),
         ("/favicon.ico()", StaticFileHandler, {'path': 'img/favicon.ico'})
     ],
         compress_response=True,
