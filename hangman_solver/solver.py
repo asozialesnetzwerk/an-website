@@ -59,7 +59,7 @@ def search_words(file_name, pattern):
 
 
 def get_letters(words, input_str):
-    input_set = set(input_str)
+    input_set = set(input_str.lower())
 
     letters = {}
     for word in words:
