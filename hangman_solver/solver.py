@@ -5,7 +5,11 @@ import json
 from utils.utils import get_url, RequestHandlerCustomError
 
 
-def get_word_dict(input_str="", words=[], letters={}, allow_umlauts=False, crossword_mode=False):
+def get_word_dict(input_str="", words=None, letters=None, allow_umlauts=False, crossword_mode=False):
+    if letters is None:
+        letters = {}
+    if words is None:
+        words = []
     return {"input": input_str,
             "words": words,
             "letters": letters,
@@ -13,6 +17,8 @@ def get_word_dict(input_str="", words=[], letters={}, allow_umlauts=False, cross
             "crossword_mode": crossword_mode
             }
 
+
+def
 
 def find_words(request_handler):
     allow_umlauts_str = request_handler.get_query_argument("allow-umlauts", default="False")
