@@ -64,8 +64,8 @@ def get_letters(words):
 
 def find_words(request_handler):
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
-    allow_umlauts_str = request_handler.get_query_argument("allow-umlauts", default="False")
-    crossword_mode_str = request_handler.get_query_argument("crossword-mode", default="False")
+    allow_umlauts_str = request_handler.get_query_argument("allow_umlauts", default="False")
+    crossword_mode_str = request_handler.get_query_argument("crossword_mode", default="False")
     allow_umlauts = bool(strtobool(allow_umlauts_str))  # if the words can contain ä,ö,ü
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
 
