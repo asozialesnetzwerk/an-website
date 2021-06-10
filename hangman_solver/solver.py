@@ -9,12 +9,12 @@ WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, crossword_mode=False):
+def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, crossword_mode=False, max_words=100):
     if words is None:
         words = []
     return {"input": input_str,
             "invalid": invalid,
-            "words": words,
+            "words": words[:max_words],
             "letters": get_letters(words),
             "allow_umlauts": allow_umlauts,
             "crossword_mode": crossword_mode
@@ -63,7 +63,7 @@ def get_letters(words):
 
 
 def find_words(request_handler):
-    max_words =
+    max_words = int(request_handler.get_query_argument("max_words", default="100"))
     allow_umlauts_str = request_handler.get_query_argument("allow-umlauts", default="False")
     crossword_mode_str = request_handler.get_query_argument("crossword-mode", default="False")
     allow_umlauts = bool(strtobool(allow_umlauts_str))  # if the words can contain ä,ö,ü
@@ -95,19 +95,19 @@ def find_words(request_handler):
 
 class HangmanSolver(RequestHandlerCustomError):
     def get(self, *args):
-        words = find_words(self)
+        words_dict = find_words(self)
 
-        if words.get("error"):
-            self.write_error(400, exc_info=words.get("error"))
+        if words_dict.get("error"):
+            self.write_error(400, exc_info=words_dict.get("error"))
             return
 
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.render("pages/hangman_solver.html", **words, url=get_url(self))
+        self.render("pages/hangman_solver.html", **words_dict, url=get_url(self))
 
 
 class HangmanSolverApi(RequestHandlerCustomError):
     def get(self, *args):
-        words = find_words(self)
+        words_dict = find_words(self)
 
         self.add_header("Content-Type", "application/json")
-        self.write(json.dumps(words))
+        self.write(json.dumps(words_dict))
