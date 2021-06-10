@@ -18,14 +18,14 @@ def make_app():
         ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi)
     ],
         # General settings
-        autoreload=False
-        compress_response=True,
-        debug=bool(sys.flags.dev_mode)
-        default_handler_class=RequestHandlerCustomError,
+        autoreload = False,
+        compress_response = True,
+        debug = bool(sys.flags.dev_mode),
+        default_handler_class = RequestHandlerNotFound,
         # Template settings
-        template_path="templates/",
+        template_path = "templates/",
         # Static file settings
-        static_path="static/"
+        static_path = "static/"
     )
 
 
