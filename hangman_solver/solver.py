@@ -33,7 +33,8 @@ def generate_pattern_str(input_str, invalid, crossword_mode):
     invalid = invalid.lower()
 
     # in crossword_mode it doesn't matter if the letters are already in input_str:
-    if crossword_mode:
+    if not crossword_mode:
+        # add if not cw_mode
         invalid += input_str
 
     invalid_chars = NOT_WORD_CHAR.sub("", invalid)  # replace stuff that could be bad
@@ -48,6 +49,7 @@ def generate_pattern_str(input_str, invalid, crossword_mode):
 
 
 def search_words(file_name, pattern):
+    print(pattern)
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as f:
