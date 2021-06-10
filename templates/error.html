@@ -5,18 +5,24 @@
 {% block description %}Ein Fehler ist aufgetreten.{% end %}
 
 {% block body %}
-<p id="error">
-    {{error_code}}
-</p>
+<div id="container">
+    <div id="error">{{error_code}}</div>
+    {{exc_info}}
+</div>
+
 {% end %}
 
 {% block style %}
-#error {
+#container {
     position: absolute;
-    font-size: 100px;
-    color: var(--red);
+    color: var(--light-red);
     left: 50%;
     top: 40%;
     transform: translate(-50%, -50%);
+    text-align: center;
+}
+#error {
+    font-size: 100px;
+    color: var(--red);
 }
 {% end %}
