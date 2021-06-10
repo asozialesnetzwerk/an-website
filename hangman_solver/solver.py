@@ -15,9 +15,11 @@ def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, cro
     return {"input": input_str,
             "invalid": invalid,
             "words": words[:max_words],
+            "word_count": len(words),
             "letters": get_letters(words),
             "allow_umlauts": allow_umlauts,
-            "crossword_mode": crossword_mode
+            "crossword_mode": crossword_mode,
+            "max_words": max_words
             }
 
 
