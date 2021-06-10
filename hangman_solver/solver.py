@@ -16,7 +16,7 @@ def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, cro
             "invalid": invalid,
             "words": words[:max_words],
             "word_count": len(words),
-            "letters": get_letters(words),
+            "letters": get_letters(words, input_str),
             "allow_umlauts": allow_umlauts,
             "crossword_mode": crossword_mode,
             "max_words": max_words
@@ -58,11 +58,14 @@ def search_words(file_name, pattern):
     return words
 
 
-def get_letters(words):
+def get_letters(words, input_str):
+    input_set = set(input_str)
+
     letters = {}
     for word in words:
-        for letter in word:
-            letters[letter] = letters.get(letter, default=0) + 1
+        for letter in set(word):
+            if letter not in input_set:
+                letters[letter] = letters.get(letter, default=0) + 1
 
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
