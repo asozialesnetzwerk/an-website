@@ -31,7 +31,7 @@ def length_of_match(m):
 def generate_pattern_str(input_str, invalid, crossword_mode):
     input_str = input_str.lower()
     invalid = invalid.lower()
-    
+
     # in crossword_mode it doesn't matter if the letters are already in input_str:
     if crossword_mode:
         invalid += input_str
@@ -64,7 +64,8 @@ def get_letters(words):
         for letter in word:
             letters[letter] = letters.get(letter, default=0) + 1
 
-    return letters
+    return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
+
 
 
 def find_words(request_handler):
