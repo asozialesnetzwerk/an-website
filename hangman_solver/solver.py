@@ -67,7 +67,6 @@ def get_letters(words):
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
 
-
 def find_words(request_handler):
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
     allow_umlauts_str = request_handler.get_query_argument("allow_umlauts", default="False")
@@ -78,7 +77,7 @@ def find_words(request_handler):
     input_str = request_handler.get_query_argument("input", default="")
     input_len = len(input_str)
     if input_len == 0:  # input is empty:
-        return get_word_dict(allow_umlauts=allow_umlauts, crossword_mode=crossword_mode)
+        return get_word_dict(allow_umlauts=allow_umlauts, crossword_mode=crossword_mode, max_words=max_words)
 
     invalid = request_handler.get_query_argument("invalid", default="")
     language = request_handler.get_query_argument("lang", default="de")
@@ -96,7 +95,7 @@ def find_words(request_handler):
 
     words = search_words(file_name, pattern)
 
-    return get_word_dict(input_str, invalid, words, allow_umlauts, crossword_mode)
+    return get_word_dict(input_str, invalid, words, allow_umlauts, crossword_mode, max_words)
 
 
 class HangmanSolver(RequestHandlerCustomError):
