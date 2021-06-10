@@ -29,6 +29,9 @@ def length_of_match(m):
 
 
 def generate_pattern_str(input_str, invalid, crossword_mode):
+    input_str = input_str.lower()
+    invalid = invalid.lower()
+    
     # in crossword_mode it doesn't matter if the letters are already in input_str:
     if crossword_mode:
         invalid += input_str
