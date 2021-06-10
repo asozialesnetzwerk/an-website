@@ -17,6 +17,9 @@ def hash_string(string):
 
 
 class RequestHandlerCustomError(RequestHandler):
+    def get(self, *args):
+        self.write_error(404, exc_info="Not found!")
+
     def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
         pass
 
