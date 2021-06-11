@@ -8,6 +8,7 @@ from utils.utils import RequestHandlerCustomError
 from version.version import Version
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterApi
+from hangman_solver.solver import HangmanSolver, HangmanSolverApi
 
 
 def make_app():
@@ -15,7 +16,9 @@ def make_app():
         ("/version/?", Version),
         ("/discord/?", Discord),
         ("/(waehrungs-)?rechner/?", CurrencyConverter),
-        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi)
+        ("/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
+        ("/hangman-l(ö|oe)ser/?", HangmanSolver),
+        ("/hangman-l(ö|oe)ser/api/?", HangmanSolverApi)
     ],
         # General settings
         autoreload = False,

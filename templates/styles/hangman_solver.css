@@ -1,0 +1,217 @@
+.text-input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 20px;
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: #0e0e0e;
+    color: #fdfdfd;
+}
+
+.text-input:focus {
+    outline: none;
+    border: 2px solid whitesmoke;
+}
+.text-input-label {
+    font-size: 25px;
+}
+
+label {
+    font-style: initial;
+    color: #fefefe;
+}
+
+body {
+    background-color: #000000;
+}
+
+.button {
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    background-color: #0e0e0e;
+    color: #fdfdfd;
+}
+
+.button-container {
+    float: right;
+}
+
+.button-blue {
+    border-color: rgba(0, 191, 255, 0.8);
+}
+
+.button-blue:hover {
+    border-color: rgba(0, 191, 255, 1);
+}
+
+.button-yellow {
+    margin-right: 15px;
+    border-color: rgba(255, 255, 0, 0.8);
+}
+
+.button-yellow:hover {
+    border-color: rgba(255, 255, 0, 1);
+}
+
+.button-green {
+    margin-right: 15px;
+    border-color: rgba(0, 255, 0, 0.8);
+}
+
+.button-green:hover {
+    border-color: rgba(0, 255, 0, 1);
+}
+
+.button:active {
+    border-width: 1px;
+    border-color: whitesmoke;
+}
+
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.output-text {
+    float: left;
+    border: 2px solid blue;
+    overflow-x: scroll;
+    width: unset;
+    margin-left: 6px;
+}
+
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 140px;
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -70px;/* Use half of the width (140/2 = 70), to center the tooltip */
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.tooltip .tooltip-text::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: darkgrey transparent transparent transparent;
+}
+
+.float-left {
+    float: left;
+}
+
+.output {
+    display:block;
+    margin: auto 3px auto 0;
+    top: 50%;
+    color: white;
+}
+
+.container {
+    margin-top: 36px;
+    position: relative;
+    height: auto;
+}
+
+.label {
+    margin-bottom: 100px
+}
+
+#has-umlauts {
+    margin: auto 3px auto 0;
+}
+
+.match-list {
+    overflow: auto;
+}
+
+
+/*Cool checkboxes:*/
+input[type="checkbox"] {
+    visibility: hidden;
+}
+
+.cbl {
+    font-size: 20px;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: relative;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    height: 21px;
+    width: 21px;
+    border-radius: 3px;
+    border-color: darkred;
+    background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+.cbl:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the checkbox is checked, add a darkred background */
+.cbl input:checked ~ .checkmark {
+    background-color: darkred;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the checkmark when checked */
+.cbl input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the checkmark/indicator */
+.cbl .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
