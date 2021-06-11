@@ -20,7 +20,7 @@
 
     <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="has-umlauts">
-            <input type="checkbox" class="cb no-select" id="has-umlauts" name="allow_umlauts" {% if allow_umlauts %} checked {% end %}">
+            <input type="checkbox" class="cb no-select" id="has-umlauts" name="allow_umlauts" {% if allow_umlauts %} checked {% end %}>
             <span class="checkmark no-select"></span>
             Erlaube Umlaute
         </label>
@@ -29,12 +29,28 @@
 
     <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="crossword-mode">
-            <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}">
+            <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
             <span class="checkmark no-select"></span>
             Kreuzworträtselmodus
         </label>
         <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
     </div>
+
+    <div class="tooltip no-select">
+        <label class="cbl float-left no-select" for="max_words">
+            <input class="cb no-select" id="max_words" name="max_words" value="{{max_words}}">
+            <span class="checkmark no-select"></span>
+            Maximale Wortanzahl:
+        </label>
+        <span class="tooltip-text no-select">Wie viele Wörter maximal angezeigt werden dürfen.</span>
+    </div>
+
+    <label for="lang">Sprache der Wörter:</label>
+
+    <select name="lang" id="lang" selected="{{lang}}">
+        <option value="de">Deutsch</option>
+        <option value="en">Englisch</option>
+    </select>
 
 
     <div class="tooltip no-select button-container">
