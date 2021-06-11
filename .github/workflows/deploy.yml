@@ -13,11 +13,11 @@ jobs:
       - name: Hash files
         run: |
           mkdir hash_file_folder
-          echo "Datei-Hashes:" > hash_file_folder/version.txt
+          echo "Hash der Datei-Hashes:" > hash_file_folder/version.txt
+          sh -c "git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1 >> hash_file_folder/version.txt"
+          echo "Datei-Hashes:" >> hash_file_folder/version.txt
           sh -c "git ls-files | xargs sha1sum >> hash_file_folder/version.txt"
           echo >> hash_file_folder/version.txt
-          echo "Hash der Datei-Hashes:" >> hash_file_folder/version.txt
-          sh -c "git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1 >> hash_file_folder/version.txt"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
