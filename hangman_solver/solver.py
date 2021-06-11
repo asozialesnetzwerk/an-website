@@ -49,7 +49,6 @@ def generate_pattern_str(input_str, invalid, crossword_mode):
 
 
 def search_words(file_name, pattern):
-    print(pattern)
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as f:

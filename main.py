@@ -16,20 +16,20 @@ def make_app():
         (r"/error/?", RequestHandlerDivideByZero),
         (r"/version/?", Version),
         (r"/discord/?", Discord),
-        (r"/(waehrungs-)?rechner/?", CurrencyConverter),
-        (r"/(waehrungs-)?rechner/api/?", CurrencyConverterApi),
-        (r"/hangman-l(ö|oe)ser/?", HangmanSolver),
-        (r"/hangman-l(ö|oe)ser/api/?", HangmanSolverApi)
+        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
+        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterApi),
+        (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
+        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverApi)
     ],
         # General settings
-        autoreload = False,
-        compress_response = True,
-        debug = bool(sys.flags.dev_mode),
-        default_handler_class = RequestHandlerNotFound,
+        autoreload=False,
+        compress_response=True,
+        debug=bool(sys.flags.dev_mode),
+        default_handler_class=RequestHandlerNotFound,
         # Template settings
-        template_path = "templates/",
+        template_path="templates/",
         # Static file settings
-        static_path = "static/"
+        static_path="static/"
     )
 
 
