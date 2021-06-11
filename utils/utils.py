@@ -18,12 +18,12 @@ class RequestHandlerBase(RequestHandler):
 
     def get_error_message(self, **kwargs):
         if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
-            if handler.settings.get("serve_traceback"):
+            if self.settings.get("serve_traceback"):
                 return ''.join(traceback.format_exception(*kwargs["exc_info"]))
             else:
                 return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
         else:
-	    return handler._reason
+            return self._reason
 
 
 class RequestHandlerCustomError(RequestHandlerBase):
