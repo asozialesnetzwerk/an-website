@@ -16,6 +16,5 @@ class Version(RequestHandlerCustomError):
                           version=VERSION,
                           file_hashes=FILE_HASHES,
                           hash_of_file_hashes=HASH_OF_FILE_HASHES,
-                          gh_pages_commit_hash=GH_PAGES_COMMIT_HASH,
-                          url=get_url(self)
-                         )
+                          gh_pages_commit_hash=GH_PAGES_COMMIT_HASH
+                          )
