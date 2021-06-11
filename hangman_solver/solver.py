@@ -1,9 +1,8 @@
 import os
 import re
 from distutils.util import strtobool
-import json
 
-from utils.utils import get_url, RequestHandlerCustomError
+from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonApi
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
@@ -51,8 +50,8 @@ def generate_pattern_str(input_str, invalid, crossword_mode):
 def search_words(file_name, pattern):
     regex = re.compile(pattern, re.ASCII)
     words = []
-    with open(file_name) as f:
-        for line in f.read().splitlines():
+    with open(file_name) as file:
+        for line in file:
             if regex.fullmatch(line.strip()) is not None:
                 words.append(line)
 
@@ -110,13 +109,11 @@ class HangmanSolver(RequestHandlerCustomError):
             self.write_error(400, exc_info=words_dict.get("error"))
             return
 
-        self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.render("pages/hangman_solver.html", **words_dict, url=get_url(self))
+        self.render("pages/hangman_solver.html", **words_dict)
 
 
-class HangmanSolverApi(RequestHandlerCustomError):
+class HangmanSolverApi(RequestHandlerJsonApi):
     def get(self, *args):
         words_dict = find_words(self)
 
-        self.add_header("Content-Type", "application/json")
-        self.write(json.dumps(words_dict))
+        self.write_json(words_dict)

@@ -1,7 +1,6 @@
-import json
 import re
 
-from utils.utils import get_url, RequestHandlerCustomError
+from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonApi
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
@@ -74,15 +73,14 @@ class CurrencyConverter(RequestHandlerCustomError):
             return
 
         self.add_header("Content-Type", "text/html; charset=UTF-8")
-        self.render("pages/converter.html", **value_dict, url=get_url(self))
+        self.render("pages/converter.html", **value_dict)
 
 
-class CurrencyConverterApi(RequestHandlerCustomError):
+class CurrencyConverterApi(RequestHandlerJsonApi):
     def get(self, *args):
         value_dict = arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
             return
 
-        self.add_header("Content-Type", "application/json")
-        self.write(json.dumps(value_dict))
+        self.write_json(value_dict)

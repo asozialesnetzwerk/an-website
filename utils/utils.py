@@ -1,5 +1,7 @@
+import json
 import os
 import traceback
+from typing import Optional, Awaitable, Any
 
 from tornado.web import RequestHandler, HTTPError
 
@@ -10,19 +12,42 @@ def get_url(request_handler):
         .replace("http://j", "https://j")
 
 
+def get_error_message(request_handler: RequestHandler, kwargs) -> str:
+    if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
+        if request_handler.settings.get("serve_traceback"):
+            return ''.join(traceback.format_exception(*kwargs["exc_info"]))
+        else:
+            return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
+    else:
+        return request_handler._reason
+
+
 class RequestHandlerCustomError(RequestHandler):
     def data_received(self, chunk):
         pass
 
+    def render(self, template_name: str, **kwargs: Any) -> "Future[None]":
+        #self.add_header("Content-Type", "text/html; charset=UTF-8")
+        return super().render(template_name, **kwargs, url=get_url(self))
+
     def write_error(self, status_code, **kwargs):
-        if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
-            if self.settings.get("serve_traceback"):
-                message = ''.join(traceback.format_exception(*kwargs["exc_info"]))
-            else:
-                message = traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
-        else:
-            message = self._reason
-        self.render("error.html", url=get_url(self), code=status_code, message=message)
+        self.render("error.html",
+                    code=status_code,
+                    message=get_error_message(self, kwargs))
+
+
+class RequestHandlerJsonApi(RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
+    def write_json(self, obj) -> None:
+        self.add_header("Content-Type", "application/json")
+        self.write(json.dumps(obj))
+
+    def write_error(self, status_code, **kwargs):
+        self.write_json({"status": status_code,
+                         "message": get_error_message(self, kwargs)
+                         })
 
 
 class RequestHandlerNotFound(RequestHandlerCustomError):
