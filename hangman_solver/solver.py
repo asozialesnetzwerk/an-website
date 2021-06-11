@@ -11,17 +11,18 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
 def get_word_dict(input_str: str = "", invalid: str = "", words: list = None, allow_umlauts: bool = False,
-                  crossword_mode: bool = False, max_words: int = 100) -> dict:
+                  crossword_mode: bool = False, max_words: int = 100, lang: str = "de") -> dict:
     if words is None:
         words = []
     return {"input": input_str,
             "invalid": invalid,
-            "words": words[:max_words],
-            "word_count": len(words),
-            "letters": get_letters(words, input_str),
+            "lang": lang,
             "allow_umlauts": allow_umlauts,
             "crossword_mode": crossword_mode,
-            "max_words": max_words
+            "max_words": max_words,
+            "words": words[:max_words],
+            "word_count": len(words),
+            "letters": get_letters(words, input_str)
             }
 
 
@@ -80,17 +81,18 @@ def find_words(request_handler: RequestHandler) -> dict:
     allow_umlauts = bool(strtobool(allow_umlauts_str))  # if the words can contain ä,ö,ü
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
 
-    input_str = request_handler.get_query_argument("input", default="")
-    input_len = len(input_str)
-    if input_len == 0:  # input is empty:
-        return get_word_dict(allow_umlauts=allow_umlauts, crossword_mode=crossword_mode, max_words=max_words)
-
-    invalid = request_handler.get_query_argument("invalid", default="")
     language = request_handler.get_query_argument("lang", default="de")
 
     folder = f"hangman_solver/words/words_{language}"
     if language == "de" and not allow_umlauts:
         folder += "_only_a-z"
+
+    input_str = request_handler.get_query_argument("input", default="")
+    input_len = len(input_str)
+    if input_len == 0:  # input is empty:
+        return get_word_dict(allow_umlauts=allow_umlauts, crossword_mode=crossword_mode, max_words=max_words,lang=language)
+
+    invalid = request_handler.get_query_argument("invalid", default="")
 
     if not os.path.isdir(folder):
         return {"error": "Invalid language."}
