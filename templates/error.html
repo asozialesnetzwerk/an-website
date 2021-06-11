@@ -6,8 +6,8 @@
 
 {% block body %}
 <div id="container">
-    <div id="error">{{error_code}}</div>
-    {{exc_info}}
+    <div id="code">{{code}}</div>
+    <div id="message">{{message}}</div>
 </div>
 
 {% end %}
@@ -15,14 +15,18 @@
 {% block style %}
 #container {
     position: absolute;
-    color: var(--light-red);
     left: 50%;
     top: 40%;
     transform: translate(-50%, -50%);
     text-align: center;
 }
-#error {
+#code {
     font-size: 100px;
     color: var(--red);
+}
+#message {
+    white-space: pre;
+    font-family: monospace;
+    color: var(--light-red);
 }
 {% end %}
