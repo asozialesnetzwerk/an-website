@@ -7,7 +7,7 @@ from tornado.web import RequestHandler, HTTPError
 def get_url(request_handler):
     "Dirty fix to force https"
     return request_handler.request.full_url() \
-        .replace("http://", "https://")
+        .replace("http://j", "https://j")
 
 def hash_string(string):
     "Uses sha1sum to keep it the same"
