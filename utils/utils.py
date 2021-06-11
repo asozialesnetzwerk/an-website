@@ -1,6 +1,5 @@
 import os
 import traceback
-from typing import Optional, Awaitable
 
 from tornado.web import RequestHandler, HTTPError
 
@@ -11,15 +10,8 @@ def get_url(request_handler):
         .replace("http://j", "https://j")
 
 
-def hash_string(string):
-    """Uses sha1sum to keep it the same"""
-    string = string.strip().replace('"', '\\"')
-    res = os.popen(f"echo \"{string}\" | sha1sum | cut -d ' ' -f 1")
-    return res.read()
-
-
 class RequestHandlerCustomError(RequestHandler):
-    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+    def data_received(self, chunk):
         pass
 
     def write_error(self, status_code, **kwargs):

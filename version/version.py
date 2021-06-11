@@ -1,10 +1,11 @@
 import os
+import hashlib
 
-from utils.utils import get_url, hash_string, RequestHandlerCustomError
+from utils.utils import get_url, RequestHandlerCustomError
 
 VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 FILE_HASHES = os.popen("git ls-files | xargs sha1sum").read()
-HASH_OF_FILE_HASHES = hash_string(FILE_HASHES)
+HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
 GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-pages").read()
 
 
