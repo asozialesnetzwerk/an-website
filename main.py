@@ -2,9 +2,8 @@ import sys
 
 import tornado.ioloop
 import tornado.web
-from tornado.web import StaticFileHandler
 
-from utils.utils import RequestHandlerCustomError, RequestHandlerNotFound, RequestHandlerDivideByZero
+from utils.utils import RequestHandlerNotFound, RequestHandlerDivideByZero
 from version.version import Version
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterApi

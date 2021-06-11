@@ -2,13 +2,16 @@ import os
 import re
 from distutils.util import strtobool
 
+from tornado.web import RequestHandler
+
 from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonApi
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, crossword_mode=False, max_words=100):
+def get_word_dict(input_str: str = "", invalid: str = "", words: list = None, allow_umlauts: bool = False,
+                  crossword_mode: bool = False, max_words: int = 100) -> dict:
     if words is None:
         words = []
     return {"input": input_str,
@@ -22,12 +25,12 @@ def get_word_dict(input_str="", invalid="", words=None, allow_umlauts=False, cro
             }
 
 
-def length_of_match(m):
+def length_of_match(m: re.Match) -> int:
     span = m.span()
     return span[1] - span[0]
 
 
-def generate_pattern_str(input_str, invalid, crossword_mode):
+def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> str:
     input_str = input_str.lower()
     invalid = invalid.lower()
 
@@ -40,14 +43,14 @@ def generate_pattern_str(input_str, invalid, crossword_mode):
 
     if len(invalid_chars) == 0:
         # there are no invalid chars, so the wildcard can be replaced with just "."
-        return WILDCARDS_REGEX.sub(lambda m: "."*length_of_match(m), input_str)
+        return WILDCARDS_REGEX.sub(lambda m: "." * length_of_match(m), input_str)
 
     wild_card_replacement = "[^" + invalid_chars + "]"
 
     return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
 
 
-def search_words(file_name, pattern):
+def search_words(file_name: str, pattern: str) -> list:
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as file:
@@ -58,7 +61,7 @@ def search_words(file_name, pattern):
     return words
 
 
-def get_letters(words, input_str):
+def get_letters(words: list, input_str: str) -> dict:
     input_set = set(input_str.lower())
 
     letters = {}
@@ -70,7 +73,7 @@ def get_letters(words, input_str):
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
 
-def find_words(request_handler):
+def find_words(request_handler: RequestHandler) -> dict:
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
     allow_umlauts_str = request_handler.get_query_argument("allow_umlauts", default="False")
     crossword_mode_str = request_handler.get_query_argument("crossword_mode", default="False")

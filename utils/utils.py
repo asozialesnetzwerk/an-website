@@ -1,18 +1,17 @@
 import json
-import os
 import traceback
 from typing import Optional, Awaitable, Any
 
 from tornado.web import RequestHandler, HTTPError
 
 
-def get_url(request_handler):
+def get_url(request_handler: RequestHandler) -> str:
     """Dirty fix to force https"""
     return request_handler.request.full_url() \
         .replace("http://j", "https://j")
 
 
-def get_error_message(request_handler: RequestHandler, kwargs) -> str:
+def get_error_message(request_handler: RequestHandler, **kwargs) -> str:
     if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
         if request_handler.settings.get("serve_traceback"):
             return ''.join(traceback.format_exception(*kwargs["exc_info"]))
@@ -27,13 +26,12 @@ class RequestHandlerCustomError(RequestHandler):
         pass
 
     def render(self, template_name: str, **kwargs: Any) -> "Future[None]":
-        #self.add_header("Content-Type", "text/html; charset=UTF-8")
         return super().render(template_name, **kwargs, url=get_url(self))
 
     def write_error(self, status_code, **kwargs):
         self.render("error.html",
                     code=status_code,
-                    message=get_error_message(self, kwargs))
+                    message=get_error_message(self, **kwargs))
 
 
 class RequestHandlerJsonApi(RequestHandler):
@@ -46,7 +44,7 @@ class RequestHandlerJsonApi(RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         self.write_json({"status": status_code,
-                         "message": get_error_message(self, kwargs)
+                         "message": get_error_message(self, **kwargs)
                          })
 
 

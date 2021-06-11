@@ -1,4 +1,7 @@
 import re
+from typing import Optional
+
+from tornado.web import RequestHandler
 
 from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonApi
 
@@ -6,7 +9,7 @@ keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
 
 
-def string_to_num(string, divide_by=1):
+def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
     if string is None or len(string) is 0:
         return None
 
@@ -20,18 +23,18 @@ def string_to_num(string, divide_by=1):
             return None
 
 
-def num_to_string(num):
+def num_to_string(num: float) -> str:
     return f"{num:.2f}".replace(".", ",").replace(",00", "")
 
 
-def conversion_string(value_dict):
+def conversion_string(value_dict: dict) -> str:
     return f"{value_dict.get('euro_str')} Euro, " \
            f"das sind ja {value_dict.get('mark_str')} Mark; " \
            f"{value_dict.get('ost_str')} Ostmark " \
            f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
 
 
-def get_value_dict(euro):
+def get_value_dict(euro: float) -> dict:
     value_dict = {}
 
     for i in range(len(keys)):
@@ -44,7 +47,7 @@ def get_value_dict(euro):
     return value_dict
 
 
-def arguments_to_value_dict(request_handler):
+def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
     contains_bad_param = False
     for i in range(len(keys)):
         num_str = request_handler.get_query_argument(name=keys[i], default=None)
