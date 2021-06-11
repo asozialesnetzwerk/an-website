@@ -6,8 +6,8 @@ import tornado.web
 from utils.utils import RequestHandlerNotFound, RequestHandlerDivideByZero
 from version.version import Version
 from discord.discord import Discord
-from currency_converter.converter import CurrencyConverter, CurrencyConverterApi
-from hangman_solver.solver import HangmanSolver, HangmanSolverApi
+from currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
+from hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 
 
 def make_app():
@@ -16,9 +16,9 @@ def make_app():
         (r"/version/?", Version),
         (r"/discord/?", Discord),
         (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
-        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterApi),
+        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
         (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
-        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverApi)
+        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI)
     ],
         # General settings
         autoreload=False,

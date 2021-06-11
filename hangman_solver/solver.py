@@ -4,7 +4,7 @@ from distutils.util import strtobool
 
 from tornado.web import RequestHandler
 
-from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonApi
+from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonAPI
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
@@ -115,8 +115,8 @@ class HangmanSolver(RequestHandlerCustomError):
         self.render("pages/hangman_solver.html", **words_dict)
 
 
-class HangmanSolverApi(RequestHandlerJsonApi):
+class HangmanSolverAPI(RequestHandlerJsonAPI):
     def get(self, *args):
         words_dict = find_words(self)
 
-        self.write_json(words_dict)
+        self.write(words_dict)
