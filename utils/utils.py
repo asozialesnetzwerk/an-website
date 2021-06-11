@@ -18,7 +18,7 @@ def get_error_message(request_handler: RequestHandler, **kwargs) -> str:
         else:
             return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
     else:
-        return request_handler._reason
+        return request_handler._reason # ???
 
 
 class RequestHandlerCustomError(RequestHandler):
