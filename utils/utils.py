@@ -52,6 +52,6 @@ class RequestHandlerNotFound(RequestHandlerCustomError):
         raise HTTPError(404)
 
 
-class RequestHandlerDivideByZero(RequestHandlerCustomError):
+class RequestHandlerZeroDivision(RequestHandlerCustomError):
     def get(self):
         0 / 0

@@ -3,7 +3,7 @@ import sys
 import tornado.ioloop
 import tornado.web
 
-from utils.utils import RequestHandlerNotFound, RequestHandlerDivideByZero
+from utils.utils import RequestHandlerNotFound, RequestHandlerZeroDivision
 from version.version import Version
 from discord.discord import Discord
 from currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
@@ -12,7 +12,7 @@ from hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 
 def make_app():
     return tornado.web.Application([
-        (r"/error/?", RequestHandlerDivideByZero),
+        (r"/error/?", RequestHandlerZeroDivision),
         (r"/version/?", Version),
         (r"/discord/?", Discord),
         (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
