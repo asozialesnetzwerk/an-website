@@ -142,10 +142,6 @@ body {
     margin-bottom: 100px
 }
 
-#has-umlauts {
-    margin: auto 3px auto 0;
-}
-
 .match-list {
     overflow: auto;
 }
@@ -153,11 +149,10 @@ body {
 
 /*Cool checkboxes:*/
 input[type="checkbox"] {
+    position: absolute;
+    width: 0;
+    height: 0;
     visibility: hidden;
-}
-
-.cbl {
-    font-size: 20px;
 }
 
 /* Create a custom checkbox */

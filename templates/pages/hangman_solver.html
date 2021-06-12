@@ -19,19 +19,10 @@
     <br><br>
 
     <div class="tooltip no-select">
-        <label class="cbl float-left no-select" for="has-umlauts">
-            <input type="checkbox" class="cb no-select" id="has-umlauts" name="allow_umlauts" {% if allow_umlauts %} checked {% end %}>
-            <span class="checkmark no-select"></span>
-            Erlaube Umlaute
-        </label>
-        <span class="tooltip-text no-select">Nutze ä, ö, ü & ß, anstatt ae, oe, ue & ss.</span>
-    </div>
-
-    <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="crossword-mode">
+            Kreuzworträtselmodus:
             <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
             <span class="checkmark no-select"></span>
-            Kreuzworträtselmodus
         </label>
         <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
     </div>
@@ -46,6 +37,7 @@
     <br>
     <label for="lang">Sprache der Wörter:</label>
     <select class="small-input" name="lang" id="lang" selected="{{lang}}">
+        <option value="de_only_a-z">Deutsch ohne Umlaute</option>
         <option value="de">Deutsch</option>
         <option value="en">Englisch</option>
     </select>
