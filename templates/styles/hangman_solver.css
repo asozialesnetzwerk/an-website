@@ -7,13 +7,23 @@
     border: 2px solid var(--light-red);
     border-radius: 10px;
     background-color: var(--dark-grey);
-    color: var(--white);
 }
 
 .text-input:focus {
     outline: none;
     border: 2px solid var(--white);
 }
+
+.small-input {
+    border-radius: 8px;
+    border: 2px solid var(--light-red);
+    background-color: var(--dark-grey);
+}
+.small-input:focus {
+    outline: none;
+    border: 2px solid var(--white);
+}
+
 .text-input-label {
     font-size: 25px;
 }
