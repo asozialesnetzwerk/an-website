@@ -55,8 +55,9 @@ def search_words(file_name: str, pattern: str) -> list:
     words = []
     with open(file_name) as file:
         for line in file:
-            if regex.fullmatch(line.strip()) is not None:
-                words.append(line)
+            stripped_line = line.strip()
+            if regex.fullmatch(stripped_line) is not None:
+                words.append(stripped_line)
 
     return words
 
