@@ -4,15 +4,15 @@
     margin: 8px 0;
     box-sizing: border-box;
     font-size: 20px;
-    border: 2px solid red;
+    border: 2px solid var(--light-red);
     border-radius: 10px;
-    background-color: #0e0e0e;
-    color: #fdfdfd;
+    background-color: var(--dark-grey);
+    color: var(--white);
 }
 
 .text-input:focus {
     outline: none;
-    border: 2px solid whitesmoke;
+    border: 2px solid var(--white);
 }
 .text-input-label {
     font-size: 25px;
@@ -20,11 +20,11 @@
 
 label {
     font-style: initial;
-    color: #fefefe;
+    color: var(--white);
 }
 
 body {
-    background-color: #000000;
+    background-color: var(--black);
 }
 
 .button {
@@ -34,8 +34,8 @@ body {
     border-width: 2px;
     border-style: solid;
     border-radius: 10px;
-    background-color: #0e0e0e;
-    color: #fdfdfd;
+    background-color: var(--dark-grey);
+    color: var(--white);
 }
 
 .button-container {
@@ -43,34 +43,16 @@ body {
 }
 
 .button-blue {
-    border-color: rgba(0, 191, 255, 0.8);
+    border-color: var(--light-blue);
 }
 
 .button-blue:hover {
-    border-color: rgba(0, 191, 255, 1);
-}
-
-.button-yellow {
-    margin-right: 15px;
-    border-color: rgba(255, 255, 0, 0.8);
-}
-
-.button-yellow:hover {
-    border-color: rgba(255, 255, 0, 1);
-}
-
-.button-green {
-    margin-right: 15px;
-    border-color: rgba(0, 255, 0, 0.8);
-}
-
-.button-green:hover {
-    border-color: rgba(0, 255, 0, 1);
+    filter: brightness(120%);
 }
 
 .button:active {
     border-width: 1px;
-    border-color: whitesmoke;
+    border-color: var(--light-grey);
 }
 
 .no-select {
@@ -84,7 +66,7 @@ body {
 
 .output-text {
     float: left;
-    border: 2px solid blue;
+    border: 2px solid var(--blue);
     overflow-x: scroll;
     width: unset;
     margin-left: 6px;
@@ -100,8 +82,8 @@ body {
 .tooltip .tooltip-text {
     visibility: hidden;
     width: 140px;
-    background-color: #222;
-    color: #fff;
+    background-color: var(--grey);
+    color: var(--white);
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
@@ -126,7 +108,7 @@ body {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: darkgrey transparent transparent transparent;
+    border-color: var(--light-grey) transparent transparent transparent;
 }
 
 .float-left {
@@ -178,17 +160,17 @@ input[type="checkbox"] {
     width: 21px;
     border-radius: 3px;
     border-color: darkred;
-    background-color: #eee;
+    background-color: var(--white);
 }
 
 /* On mouse-over, add a grey background color */
 .cbl:hover input ~ .checkmark {
-    background-color: #ccc;
+    background-color: var(--light-grey);
 }
 
 /* When the checkbox is checked, add a darkred background */
 .cbl input:checked ~ .checkmark {
-    background-color: darkred;
+    background-color: var(--red);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -209,7 +191,7 @@ input[type="checkbox"] {
     top: 3px;
     width: 5px;
     height: 10px;
-    border: solid white;
+    border: solid var(--white);
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
