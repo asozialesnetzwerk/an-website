@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 
 from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonAPI
@@ -6,7 +7,7 @@ keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
 
 
-async def string_to_num(string, divide_by = 1):
+async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
     if string is None or len(string) is 0:
         return None
 
@@ -20,18 +21,18 @@ async def string_to_num(string, divide_by = 1):
             return None
 
 
-async def num_to_string(num):
+async def num_to_string(num: float) -> str:
     return f"{num:.2f}".replace(".", ",").replace(",00", "")
 
 
-async def conversion_string(value_dict):
+async def conversion_string(value_dict: dict) -> str:
     return f"{value_dict.get('euro_str')} Euro, " \
            f"das sind ja {value_dict.get('mark_str')} Mark; " \
            f"{value_dict.get('ost_str')} Ostmark " \
            f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
 
 
-async def get_value_dict(euro):
+async def get_value_dict(euro: float) -> dict:
     value_dict = {}
 
     for i in range(len(keys)):
