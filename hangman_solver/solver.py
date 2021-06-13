@@ -4,14 +4,14 @@ from distutils.util import strtobool
 
 from tornado.web import RequestHandler
 
-from utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI
+from utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, length_of_match
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-def get_word_dict(input_str: str = "", invalid: str = "", words: list = None,
-                  crossword_mode: bool = False, max_words: int = 100, lang: str = "de_only_a-z") -> dict:
+async def get_word_dict(input_str: str = "", invalid: str = "", words: list = None,
+                        crossword_mode: bool = False, max_words: int = 100, lang: str = "de_only_a-z") -> dict:
     if words is None:
         words = []
     return {"input": input_str,
@@ -21,13 +21,8 @@ def get_word_dict(input_str: str = "", invalid: str = "", words: list = None,
             "max_words": max_words,
             "words": words[:max_words],
             "word_count": len(words),
-            "letters": get_letters(words, input_str)
+            "letters": await get_letters(words, input_str)
             }
-
-
-def length_of_match(m: re.Match) -> int:
-    span = m.span()
-    return span[1] - span[0]
 
 
 def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> str:
@@ -50,7 +45,7 @@ def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> 
     return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
 
 
-def search_words(file_name: str, pattern: str) -> list:
+async def search_words(file_name: str, pattern: str) -> list:
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as file:
@@ -62,7 +57,7 @@ def search_words(file_name: str, pattern: str) -> list:
     return words
 
 
-def get_letters(words: list, input_str: str) -> dict:
+async def get_letters(words: list, input_str: str) -> dict:
     input_set = set(input_str.lower())
 
     letters = {}
@@ -74,7 +69,7 @@ def get_letters(words: list, input_str: str) -> dict:
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
 
-def find_words(request_handler: RequestHandler) -> dict:
+async def find_words(request_handler: RequestHandler) -> dict:
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
     crossword_mode_str = request_handler.get_query_argument("crossword_mode", default="False")
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
@@ -89,31 +84,31 @@ def find_words(request_handler: RequestHandler) -> dict:
     input_str = request_handler.get_query_argument("input", default="")
     input_len = len(input_str)
     if input_len == 0:  # input is empty:
-        return get_word_dict(crossword_mode=crossword_mode, max_words=max_words, lang=language)
+        return await get_word_dict(crossword_mode=crossword_mode, max_words=max_words, lang=language)
 
     invalid = request_handler.get_query_argument("invalid", default="")
 
     file_name = f"{folder}/{input_len}.txt"
 
     pattern = generate_pattern_str(input_str, invalid, crossword_mode)
-    words = search_words(file_name, pattern)
+    words = await search_words(file_name, pattern)
 
-    return get_word_dict(input_str, invalid, words, crossword_mode, max_words)
+    return await get_word_dict(input_str, invalid, words, crossword_mode, max_words)
 
 
 class HangmanSolver(RequestHandlerCustomError):
-    def get(self, *args):
-        words_dict = find_words(self)
+    async def get(self, *args):
+        words_dict = await find_words(self)
 
         if words_dict.get("error"):
             self.write_error(400, exc_info=words_dict.get("error"))
             return
 
-        self.render("pages/hangman_solver.html", **words_dict)
+        await self.render("pages/hangman_solver.html", **words_dict)
 
 
 class HangmanSolverAPI(RequestHandlerJsonAPI):
-    def get(self, *args):
-        words_dict = find_words(self)
+    async def get(self, *args):
+        words_dict = await find_words(self)
 
         self.write(words_dict)
