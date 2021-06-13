@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.pylint.d
-          key: ${{ hashFiles('~/.pylint.d') }}
+          key: ${{ runner.os }}-${{ hashFiles('~/.pylint.d') }}
       - name: Install Pylint
         run: |
           sudo apt-get install -y pylint
