@@ -4,9 +4,22 @@ on:
     branches: [main]
 
 jobs:
+  #lint:
+  #  name: Check for errors
+  #  runs-on: ubuntu-20.04
+  #  steps:
+  #    - name: Checkout repository
+  #      uses: actions/checkout@v2
+  #    - name: Install Pylint
+  #      run: |
+  #        sudo apt-get install -y pylint
+  #    - name: Run Pylint
+  #      run: |
+  #        pip install -r requirements.txt
+  #        git ls-files "*.py" | xargs pylint --jobs=0 --errors-only --persistent=no
   hash_files:
     name: Hash files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

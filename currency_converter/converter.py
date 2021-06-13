@@ -1,7 +1,5 @@
 import re
 
-from tornado.web import RequestHandler
-
 from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonAPI
 
 keys = ["euro", "mark", "ost", "schwarz"]

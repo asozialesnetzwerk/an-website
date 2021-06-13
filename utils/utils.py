@@ -3,6 +3,8 @@ import traceback
 
 from tornado.web import RequestHandler, HTTPError
 
+import version
+
 
 def length_of_match(m: re.Match):
     span = m.span()
@@ -16,20 +18,18 @@ def get_url(request_handler: RequestHandler):
 
 
 class RequestHandlerBase(RequestHandler):
-    async def data_received(self, chunk):
+    def data_received(self, chunk):
         pass
 
     def render(self, template_name, **kwargs):
-        return super().render(template_name, **kwargs, url=get_url(self))
+        return super().render(template_name, **kwargs, url=get_url(self), version=version.VERSION)
 
     def get_error_message(self, **kwargs):
         if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
             if self.settings.get("serve_traceback"):
                 return ''.join(traceback.format_exception(*kwargs["exc_info"]))
-            else:
-                return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
-        else:
-            return self._reason
+            return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
+        return self._reason
 
 
 class RequestHandlerCustomError(RequestHandlerBase):
@@ -60,4 +60,4 @@ class RequestHandlerNotFound(RequestHandlerCustomError):
 
 class RequestHandlerZeroDivision(RequestHandlerCustomError):
     def get(self):
-        0 / 0
+        0 / 0 # pylint: disable=pointless-statement

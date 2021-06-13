@@ -13,4 +13,3 @@ for word in words_sorted:
         file.write(word)
         file.write("\n")
     print(word)
-

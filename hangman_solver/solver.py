@@ -2,8 +2,6 @@ import os
 import re
 from distutils.util import strtobool
 
-from tornado.web import RequestHandler
-
 from utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, length_of_match
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
