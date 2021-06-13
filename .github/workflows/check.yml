@@ -38,4 +38,4 @@ jobs:
           sudo apt-get install -y mypy
       - name: Run mypy
         run: |
-          mypy -p .
+          git ls-files "*.py" | xargs mypy
