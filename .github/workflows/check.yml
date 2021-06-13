@@ -15,10 +15,27 @@ jobs:
         with:
           path: ~/.pylint.d
           key: ${{ runner.os }}-${{ hashFiles('~/.pylint.d') }}
+      - name: Install requirements
+      - run |
+          pip install -r requirements.txt
       - name: Install Pylint
         run: |
           sudo apt-get install -y pylint
       - name: Run Pylint
         run: |
-          pip install -r requirements.txt
           git ls-files "*.py" | xargs pylint --jobs=0 --exit-zero --output-format=colorized
+  check_types:
+    name: Check types
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      -	name: Install requirements
+      -	run |
+          pip install -r requirements.txt
+      - name: Install mypy
+        run: |
+          sudo apt-get install -y mypy
+      - name: Run mypy
+        run: |
+          mypy -p .
