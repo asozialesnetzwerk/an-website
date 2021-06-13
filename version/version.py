@@ -11,7 +11,7 @@ GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-page
 
 class Version(RequestHandlerCustomError):
     async def get(self):
-        self.add_header("Content-Type", "text/html; charset=UTF-8")
+        #self.add_header("Content-Type", "text/html; charset=UTF-8")
         await self.render("pages/version.html",
                           version=VERSION,
                           file_hashes=FILE_HASHES,

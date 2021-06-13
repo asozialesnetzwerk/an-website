@@ -4,7 +4,7 @@ import traceback
 from tornado.web import RequestHandler, HTTPError
 
 
-def length_of_match(m: re.Match) -> int:
+def length_of_match(m: re.Match):
     span = m.span()
     return span[1] - span[0]
 
@@ -16,7 +16,7 @@ def get_url(request_handler: RequestHandler):
 
 
 class RequestHandlerBase(RequestHandler):
-    def data_received(self, chunk):
+    async def data_received(self, chunk):
         pass
 
     def render(self, template_name, **kwargs):

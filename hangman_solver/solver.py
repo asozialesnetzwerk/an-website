@@ -10,8 +10,8 @@ WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-async def get_word_dict(input_str: str = "", invalid: str = "", words: list = None,
-                        crossword_mode: bool = False, max_words: int = 100, lang: str = "de_only_a-z") -> dict:
+async def get_word_dict(input_str = "", invalid = "", words = None,
+                        crossword_mode = False, max_words = 100, lang = "de_only_a-z"):
     if words is None:
         words = []
     return {"input": input_str,
@@ -25,7 +25,7 @@ async def get_word_dict(input_str: str = "", invalid: str = "", words: list = No
             }
 
 
-def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> str:
+async def generate_pattern_str(input_str, invalid, crossword_mode):
     input_str = input_str.lower()
     invalid = invalid.lower()
 
@@ -45,7 +45,7 @@ def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> 
     return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
 
 
-async def search_words(file_name: str, pattern: str) -> list:
+async def search_words(file_name, pattern):
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as file:
@@ -57,7 +57,7 @@ async def search_words(file_name: str, pattern: str) -> list:
     return words
 
 
-async def get_letters(words: list, input_str: str) -> dict:
+async def get_letters(words, input_str):
     input_set = set(input_str.lower())
 
     letters = {}
@@ -69,7 +69,7 @@ async def get_letters(words: list, input_str: str) -> dict:
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
 
-async def find_words(request_handler: RequestHandler) -> dict:
+async def find_words(request_handler):
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
     crossword_mode_str = request_handler.get_query_argument("crossword_mode", default="False")
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
@@ -90,7 +90,7 @@ async def find_words(request_handler: RequestHandler) -> dict:
 
     file_name = f"{folder}/{input_len}.txt"
 
-    pattern = generate_pattern_str(input_str, invalid, crossword_mode)
+    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     words = await search_words(file_name, pattern)
 
     return await get_word_dict(input_str, invalid, words, crossword_mode, max_words)
