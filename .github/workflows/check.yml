@@ -42,7 +42,7 @@ jobs:
           venv/bin/pip install -r requirements.txt
       - name: Install mypy
         run: |
-           venv/bin/pippip install mypy<2.0
+           venv/bin/pip install mypy<2.0
       - name: Run mypy
         continue-on-error: true
         run: |
