@@ -26,9 +26,9 @@ def make_app():
         debug=bool(sys.flags.dev_mode),
         default_handler_class=RequestHandlerNotFound,
         # Template settings
-        template_path="templates/",
+        template_path="an_website/templates/",
         # Static file settings
-        static_path="static/"
+        static_path="an_website/static/"
     )
 
 
