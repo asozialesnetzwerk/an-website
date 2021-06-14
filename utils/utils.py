@@ -1,3 +1,4 @@
+import os
 import re
 import traceback
 
@@ -13,6 +14,13 @@ def get_url(request_handler: RequestHandler):
     """Dirty fix to force https"""
     return request_handler.request.full_url() \
         .replace("http://j", "https://j")
+
+
+def run_shell_command(command: str) -> str:
+    shell = os.popen(command)
+    result = shell.read()
+    shell.close()
+    return result
 
 
 class RequestHandlerBase(RequestHandler):

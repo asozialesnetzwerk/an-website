@@ -1,13 +1,13 @@
 import os
 import hashlib
 
-from utils.utils import RequestHandlerCustomError
+from utils.utils import RequestHandlerCustomError, run_shell_command
 
-VERSION = os.popen("git log -n1 --format=format:'%H'").read()
-FILE_HASHES = os.popen("git ls-files | xargs sha1sum").read()
+VERSION = run_shell_command("git log -n1 --format=format:'%H'")
+FILE_HASHES = run_shell_command("git ls-files | xargs sha1sum")
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = os.popen("git log -n1 --format=format:'%H' origin/gh-pages").read()
-
+GH_PAGES_COMMIT_HASH = run_shell_command("git log -n1 --format=format:'%H' origin/gh-pages")
+print("t")
 
 class Version(RequestHandlerCustomError):
     async def get(self):
