@@ -2,14 +2,16 @@ import os
 import re
 from distutils.util import strtobool
 
+from tornado.web import RequestHandler
+
 from utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, length_of_match
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-async def get_word_dict(input_str = "", invalid = "", words = None,
-                        crossword_mode = False, max_words = 100, lang = "de_only_a-z"):
+async def get_word_dict(input_str: str = "", invalid: str = "", words: list = None,
+                        crossword_mode: bool = False, max_words: int = 100, lang: str = "de_only_a-z") -> dict:
     if words is None:
         words = []
     return {"input": input_str,
@@ -23,7 +25,7 @@ async def get_word_dict(input_str = "", invalid = "", words = None,
             }
 
 
-async def generate_pattern_str(input_str, invalid, crossword_mode):
+async def generate_pattern_str(input_str: str, invalid: str, crossword_mode: bool) -> str:
     input_str = input_str.lower()
     invalid = invalid.lower()
 
@@ -43,7 +45,7 @@ async def generate_pattern_str(input_str, invalid, crossword_mode):
     return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
 
 
-async def search_words(file_name, pattern):
+async def search_words(file_name: str, pattern: str) -> list:
     regex = re.compile(pattern, re.ASCII)
     words = []
     with open(file_name) as file:
@@ -55,7 +57,7 @@ async def search_words(file_name, pattern):
     return words
 
 
-async def get_letters(words, input_str):
+async def get_letters(words: list, input_str: str) -> dict:
     input_set = set(input_str.lower())
 
     letters = {}
@@ -67,7 +69,7 @@ async def get_letters(words, input_str):
     return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
 
 
-async def find_words(request_handler):
+async def find_words(request_handler: RequestHandler) -> dict:
     max_words = int(request_handler.get_query_argument("max_words", default="100"))
     crossword_mode_str = request_handler.get_query_argument("crossword_mode", default="False")
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode

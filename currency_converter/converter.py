@@ -1,5 +1,8 @@
 from __future__ import annotations
 import re
+from typing import Optional
+
+from tornado.web import RequestHandler
 
 from utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonAPI
 
@@ -45,7 +48,7 @@ async def get_value_dict(euro: float) -> dict:
     return value_dict
 
 
-async def arguments_to_value_dict(request_handler):
+async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
     contains_bad_param = False
     for i in range(len(keys)):
         num_str = request_handler.get_query_argument(name=keys[i], default=None)
