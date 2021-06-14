@@ -1,6 +1,7 @@
 import os
 import re
 from distutils.util import strtobool
+from typing import Dict, Iterable, Tuple, List
 
 from tornado.web import RequestHandler
 
@@ -57,16 +58,18 @@ async def search_words(file_name: str, pattern: str) -> list:
     return words
 
 
-async def get_letters(words: list, input_str: str) -> dict:
+async def get_letters(words: list, input_str: str) -> Dict[str, int]:
     input_set = set(input_str.lower())
 
-    letters = {}
+    letters: Dict[str, int] = {}
     for word in words:
         for letter in set(word):
             if letter not in input_set:
                 letters[letter] = letters.get(letter, default=0) + 1
 
-    return dict(sorted(letters.items(), key=lambda item: item[1], reverse=True))
+    letters_items: List[Tuple[str, int]] = [(k, v) for k, v in letters.items()]
+    sorted_letters: List[Tuple[str, int]] = sorted(letters_items, key=lambda item: item[1], reverse=True)
+    return dict(sorted_letters)
 
 
 async def find_words(request_handler: RequestHandler) -> dict:
