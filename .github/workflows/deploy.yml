@@ -10,13 +10,15 @@ jobs:
   #  steps:
   #    - name: Checkout repository
   #      uses: actions/checkout@v2
+  #    - name: Install requirements
+  #      run: |
+  #        pip install --user -r requirements.txt
   #    - name: Install Pylint
   #      run: |
-  #        sudo apt-get install -y pylint
+  #        pip install --user pylint>=2.8.3,<3.0
   #    - name: Run Pylint
   #      run: |
-  #        pip install -r requirements.txt
-  #        git ls-files "*.py" | xargs pylint --jobs=0 --errors-only --persistent=no
+  #        git ls-files "*.py" | xargs pylint --persistent=no --errors-only --output-format=colorized
   hash_files:
     name: Hash files
     runs-on: ubuntu-20.04

@@ -1,11 +1,7 @@
-import os
 import re
 import traceback
 
 from tornado.web import RequestHandler, HTTPError
-
-
-VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 
 
 def length_of_match(m: re.Match):
@@ -24,7 +20,7 @@ class RequestHandlerBase(RequestHandler):
         pass
 
     def render(self, template_name, **kwargs):
-        return super().render(template_name, **kwargs, url=get_url(self), version=VERSION)
+        return super().render(template_name, **kwargs, url=get_url(self))
 
     def get_error_message(self, **kwargs):
         if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):

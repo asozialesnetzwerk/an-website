@@ -14,16 +14,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.pylint.d
-          key: ${{ runner.os }}-${{ hashFiles('~/.pylint.d') }}
+          key: ${{ runner.os }}-${{ hashFiles('~/.pylint.d/*') }}
       - name: Install requirements
         run: |
-          pip install -r requirements.txt
+          pip install --user -r requirements.txt
       - name: Install Pylint
         run: |
-          sudo apt-get install -y pylint
+          pip install --user pylint>=2.8.3,<3.0
       - name: Run Pylint
+        continue-on-error: true
         run: |
-          git ls-files "*.py" | xargs pylint --jobs=0 --exit-zero --output-format=colorized
+          git ls-files "*.py" | xargs pylint --output-format=colorized
   check_types:
     name: Check types
     runs-on: ubuntu-20.04
@@ -34,13 +35,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .mypy_cache
-          key: ${{ runner.os }}-${{ hashFiles('.mypy_cache') }}
+          key: ${{ runner.os }}-${{ hashFiles('.mypy_cache/*') }}
       - name: Install requirements
         run: |
-          pip install -r requirements.txt
+          pip install --user -r requirements.txt
       - name: Install mypy
         run: |
-          sudo apt-get install -y mypy
+          pip install --user mypy<2.0
       - name: Run mypy
+        continue-on-error: true
         run: |
-           git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" | xargs mypy --show-column-numbers --show-error-codes --pretty
+          git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" | xargs mypy --show-column-numbers --show-error-codes
