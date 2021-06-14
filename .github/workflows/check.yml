@@ -46,5 +46,5 @@ jobs:
       - name: Run mypy
         continue-on-error: true
         run: |
-          MYPYPATH=".,venv/lib/python*/site-packages/,venv/lib64/python*/site-packages/" git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" |  xargs venv/bin/mypy --show-column-numbers --show-error-codes --namespace-packages --explicit-package-base
+          git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" |  xargs venv/bin/mypy --show-column-numbers --show-error-codes --namespace-packages --explicit-package-base --pretty
 
