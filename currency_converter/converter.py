@@ -11,7 +11,7 @@ multipliers = [1, 2, 4, 20]
 
 
 async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
-    if string is None or len(string) is 0:
+    if string is None or len(string) == 0:
         return None
 
     string = string.replace(",", ".")
