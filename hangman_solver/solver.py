@@ -44,30 +44,31 @@ async def generate_pattern_str(input_str: str, invalid: str, crossword_mode: boo
     return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
 
 
-async def search_words(file_name: str, pattern: str) -> list:
+async def get_words_and_letters(file_name: str, input_str: str, invalid: str, crossword_mode: bool) \
+        -> tuple[list[str], dict[str, int]]:
+    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
+
+    input_set = set(input_str.lower())
+
     words = []
+    letters: dict[str, int] = {}
     with open(file_name) as file:
         for line in file:
             stripped_line = line.strip()
             if regex.fullmatch(stripped_line) is not None:
                 words.append(stripped_line)
 
-    return words
+                # do letter stuff:
+                for letter in set(stripped_line):
+                    if letter not in input_set:
+                        letters[letter] = letters.setdefault(letter, 0) + 1
 
-
-async def get_letters(words: list, input_str: str) -> dict[str, int]:
-    input_set = set(input_str.lower())
-
-    letters: dict[str, int] = {}
-    for word in words:
-        for letter in set(word):
-            if letter not in input_set:
-                letters[letter] = letters.setdefault(letter, 0) + 1
-
+    # sort letters:
     letters_items: List[Tuple[str, int]] = [(k, v) for k, v in letters.items()]
     sorted_letters: List[Tuple[str, int]] = sorted(letters_items, key=lambda item: item[1], reverse=True)
-    return dict(sorted_letters)
+
+    return words, dict(sorted_letters)
 
 
 async def solve_hangman(request_handler: RequestHandler) -> Hangman:
@@ -91,9 +92,9 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
     file_name = f"{folder}/{input_len}.txt"
 
-    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
-    words = await search_words(file_name, pattern)
-    letters = await get_letters(words, input_str)
+    words_and_letters = await get_words_and_letters(file_name, input_str, invalid, crossword_mode)
+    words = words_and_letters[0]
+    letters = words_and_letters[1]
 
     return Hangman(input_str, invalid, words, len(words), letters, crossword_mode, max_words)
 
@@ -101,7 +102,6 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 class HangmanSolver(RequestHandlerCustomError):
     async def get(self, *args):
         hangman = await solve_hangman(self)
-
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
