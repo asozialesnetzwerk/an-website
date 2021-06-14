@@ -38,11 +38,13 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.mypy_cache/*') }}
       - name: Install requirements
         run: |
-          pip install --user -r requirements.txt
+          python3 -m venv venv
+          venv/bin/pip install -r requirements.txt
       - name: Install mypy
         run: |
-          pip install --user mypy<2.0
+           venv/bin/pippip install mypy<2.0
       - name: Run mypy
         continue-on-error: true
         run: |
-          git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" | xargs mypy --show-column-numbers --show-error-codes
+          MYPYPATH=".,venv/lib/python3.9/site-packages/,venv/lib64/python3.9/site-packages/" git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" |  xargs venv/bin/mypy --show-column-numbers --show-error-codes --namespace-packages --explicit-package-base
+
