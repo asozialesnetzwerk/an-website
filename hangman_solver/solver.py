@@ -79,7 +79,7 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
     language = str(request_handler.get_query_argument("lang", default="de"))
 
-    folder = f"hangman_solver/words/words_{language}"
+    folder = f"an_website/hangman_solver/words/words_{language}"
 
     if not os.path.isdir(folder):
         raise HTTPError(400, f"'{language}' is an invalid language")
