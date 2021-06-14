@@ -1,9 +1,11 @@
+import os
 import re
 import traceback
 
 from tornado.web import RequestHandler, HTTPError
 
-from version.version import VERSION
+
+VERSION = os.popen("git log -n1 --format=format:'%H'").read()
 
 
 def length_of_match(m: re.Match):
