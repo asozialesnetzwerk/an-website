@@ -20,7 +20,7 @@ jobs:
           pip install --user -r requirements.txt
       - name: Install Pylint
         run: |
-          pip install --user pylint "=2.8.3,<3.0"
+          pip install --user "pylint>=2.8.3,<3.0"
       - name: Run Pylint
         continue-on-error: true
         run: |
