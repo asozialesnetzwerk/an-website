@@ -35,7 +35,9 @@ async def conversion_string(value_dict: dict) -> str:
            f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
 
 
-async def get_value_dict(euro: float) -> dict:
+async def get_value_dict(euro):
+    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float, "euro_str": str,
+    # "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})
     value_dict = {}
 
     for i in range(len(keys)):
@@ -62,6 +64,7 @@ async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
                 return value_dict
             else:
                 contains_bad_param = True
+    return {}
 
 
 class CurrencyConverter(RequestHandlerCustomError):
