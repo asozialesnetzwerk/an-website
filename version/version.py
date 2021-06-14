@@ -7,7 +7,7 @@ VERSION = run_shell_command("git log -n1 --format=format:'%H'")
 FILE_HASHES = run_shell_command("git ls-files | xargs sha1sum")
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
 GH_PAGES_COMMIT_HASH = run_shell_command("git log -n1 --format=format:'%H' origin/gh-pages")
-print("t")
+
 
 class Version(RequestHandlerCustomError):
     async def get(self):
