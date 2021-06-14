@@ -15,10 +15,10 @@ jobs:
   #        pip install --user -r requirements.txt
   #    - name: Install Pylint
   #      run: |
-  #        pip install --user pylint>=2.8.3,<3.0
+  #        pip install --user "pylint>=2.8.3,<3.0"
   #    - name: Run Pylint
   #      run: |
-  #        git ls-files "*.py" | xargs pylint --persistent=no --errors-only --output-format=colorized
+  #        git ls-files "*.py" | PYTHONPATH=$PWD xargs pylint --persistent=no --errors-only --output-format=colorized
   hash_files:
     name: Hash files
     runs-on: ubuntu-20.04
