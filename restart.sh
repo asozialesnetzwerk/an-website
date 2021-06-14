@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SERVICE_FILE_NAME="an-website.ini"
+SERVICE_FILE_NAME="an_website.ini"
 SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 
 # get latest files from git:
@@ -27,4 +27,4 @@ fi
 sed "s/user-placeholder/$USER/g" "$SERVICE_FILE_NAME" > "$SERVICE_FILE_LOCATION"
 
 sudo supervisorctl reread
-sudo supervisorctl restart an-website
+sudo supervisorctl restart an_website
