@@ -17,9 +17,9 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 class Hangman:
     input: str = ""
     invalid: str = ""
-    words: list[str] = field(default_factory=list[str])
+    words: list[str] = field(default_factory=list)
     word_count: int = 0
-    letters: dict[str, int] = field(default_factory=dict[str, int])
+    letters: dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
     max_words: int = 100
     lang: str = "de_only_a-z"
