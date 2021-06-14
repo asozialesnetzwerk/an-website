@@ -1,7 +1,7 @@
 import os
 import hashlib
 
-from utils.utils import RequestHandlerCustomError, run_shell_command
+from ..utils.utils import RequestHandlerCustomError, run_shell_command
 
 VERSION = run_shell_command("git log -n1 --format=format:'%H'")
 FILE_HASHES = run_shell_command("git ls-files | xargs sha1sum")
