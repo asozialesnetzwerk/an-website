@@ -42,9 +42,10 @@ jobs:
           venv/bin/pip install -r requirements.txt
       - name: Install mypy
         run: |
-           venv/bin/pip install mypy<2.0
+           venv/bin/pip install "mypy<2.0"
       - name: Run mypy
         continue-on-error: true
         run: |
-          MYPYPATH=".,venv/lib/python3.9/site-packages/,venv/lib64/python3.9/site-packages/" git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" |  xargs venv/bin/mypy --show-column-numbers --show-error-codes --namespace-packages --explicit-package-base
+          ls venv/lib/
+          MYPYPATH=".,venv/lib/python*/site-packages/,venv/lib64/python*/site-packages/" git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" |  xargs venv/bin/mypy --show-column-numbers --show-error-codes --namespace-packages --explicit-package-base
 
