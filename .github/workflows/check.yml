@@ -43,4 +43,4 @@ jobs:
           sudo apt-get install -y mypy
       - name: Run mypy
         run: |
-          git ls-files "*.py" | xargs mypy --install-types --show-column-numbers --show-error-codes --pretty ; exit 0
+          git ls-files "*.py" | xargs mypy --show-column-numbers --show-error-codes --pretty ; exit 0
