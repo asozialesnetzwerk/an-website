@@ -1,4 +1,5 @@
 import sys
+import os
 
 import tornado.ioloop
 import tornado.web
@@ -8,6 +9,8 @@ from .version.version import Version
 from .discord.discord import Discord
 from .currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
 from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
+
+DIR = os.path.dirname(__file__)
 
 
 def make_app():
@@ -26,9 +29,9 @@ def make_app():
         debug=bool(sys.flags.dev_mode),
         default_handler_class=RequestHandlerNotFound,
         # Template settings
-        template_path="an_website/templates/",
+        template_path=f"{DIR}/templates",
         # Static file settings
-        static_path="an_website/static/"
+        static_path=f"{DIR}/static"
     )
 
 

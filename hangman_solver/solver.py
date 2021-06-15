@@ -9,6 +9,8 @@ from tornado.web import RequestHandler, HTTPError
 
 from ..utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, length_of_match
 
+DIR = os.path.dirname(__file__)
+
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
@@ -79,7 +81,7 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
     language = str(request_handler.get_query_argument("lang", default="de"))
 
-    folder = f"an_website/hangman_solver/words/words_{language}"
+    folder = f"{DIR}/hangman_solver/words/words_{language}"
 
     if not os.path.isdir(folder):
         raise HTTPError(400, f"'{language}' is an invalid language")
