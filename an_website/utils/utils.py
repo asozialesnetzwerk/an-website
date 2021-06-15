@@ -1,6 +1,8 @@
 import os
 import re
 import traceback
+import asyncio
+import asyncio.subprocess
 
 from tornado.web import RequestHandler, HTTPError
 
@@ -16,11 +18,24 @@ def get_url(request_handler: RequestHandler):
         .replace("http://j", "https://j")
 
 
-def run_shell_command(command: str) -> str:
-    shell = os.popen(command)
-    result = shell.read()
-    shell.close()
-    return result
+async def run_shell(cmd, stdin=asyncio.subprocess.PIPE):
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdin=stdin,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+    stdout, stderr = await proc.communicate()
+    return proc.returncode, stdout, stderr
+
+
+async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
+    proc = await asyncio.create_subprocess_exec(
+        cmd,
+        stdin=stdin,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE)
+    stdout, stderr = await proc.communicate()
+    return proc.returncode, stdout, stderr
 
 
 class RequestHandlerBase(RequestHandler):

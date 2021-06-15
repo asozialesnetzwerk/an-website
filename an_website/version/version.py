@@ -1,11 +1,11 @@
 import hashlib
 
-from ..utils.utils import RequestHandlerCustomError, run_shell_command
+from ..utils.utils import RequestHandlerCustomError, run_shell
 
-VERSION = run_shell_command("cd an_website && git log -n1 --format=format:'%H'")
-FILE_HASHES = run_shell_command("cd an_website && git ls-files | xargs sha1sum")
+VERSION = await run_shell("cd an_website && git log -n1 --format=format:'%H'")[1].decode('utf-8')
+FILE_HASHES = await run_shell("cd an_website && git ls-files | xargs sha1sum")[1].decode('utf-8')
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = run_shell_command("cd an_website && git log -n1 --format=format:'%H' origin/gh-pages")
+GH_PAGES_COMMIT_HASH = await run_shell("cd an_website && git log -n1 --format=format:'%H' origin/gh-pages")[1].decode('utf-8') # pylint: disable=line-too-long
 
 
 class Version(RequestHandlerCustomError):

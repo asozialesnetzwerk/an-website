@@ -44,10 +44,10 @@ async def generate_pattern_str(input_str: str, invalid: str, crossword_mode: boo
 
     wild_card_replacement = "[^" + invalid_chars + "]"
 
-    return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str)
+    return WILDCARDS_REGEX.sub(lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"), input_str) # pylint: disable=line-too-long
 
 
-async def get_words_and_letters(file_name: str, input_str: str, invalid: str, crossword_mode: bool) \
+async def get_words_and_letters(file_name: str, input_str: str, invalid: str, crossword_mode: bool) \ # pylint: disable=line-too-long
         -> tuple[list[str], dict[str, int]]:
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
@@ -69,7 +69,7 @@ async def get_words_and_letters(file_name: str, input_str: str, invalid: str, cr
 
     # sort letters:
     letters_items: List[Tuple[str, int]] = [(k, v) for k, v in letters.items()]
-    sorted_letters: List[Tuple[str, int]] = sorted(letters_items, key=lambda item: item[1], reverse=True)
+    sorted_letters: List[Tuple[str, int]] = sorted(letters_items, key=lambda item: item[1], reverse=True) # pylint: disable=line-too-long
 
     return words, dict(sorted_letters)
 
