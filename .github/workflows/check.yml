@@ -23,7 +23,7 @@ jobs:
           pip install --user "pylint>=2.8.3,<3.0"
       - name: Run Pylint
         run: |
-          pylint --output-format=colorized -d all -e W,E,F -d python3 an_website
+          pylint --output-format=colorized -d R,line-too-long an_website
   check_types:
     name: Check types
     runs-on: ubuntu-20.04

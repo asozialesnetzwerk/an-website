@@ -5,7 +5,7 @@ import traceback
 from tornado.web import RequestHandler, HTTPError
 
 
-def length_of_match(m: re.Match):
+def length_of_match(m: re.Match): # pylint: disable=invalid-name
     span = m.span()
     return span[1] - span[0]
 
