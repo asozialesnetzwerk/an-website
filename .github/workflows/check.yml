@@ -22,9 +22,8 @@ jobs:
         run: |
           pip install --user "pylint>=2.8.3,<3.0"
       - name: Run Pylint
-        continue-on-error: true
         run: |
-          git ls-files "*.py" | PYTHONPATH=$PWD xargs pylint --output-format=colorized
+          pylint --output-format=colorized -d all -e W,E,F -d python3 an_website
   check_types:
     name: Check types
     runs-on: ubuntu-20.04
@@ -43,7 +42,5 @@ jobs:
         run: |
           pip install --user "mypy<2.0"
       - name: Run mypy
-        continue-on-error: true
         run: |
-          #git ls-files "*.py" | grep -v "gen_words.py" | grep -v "replace_umlauts.py" | xargs mypy --show-column-numbers --show-error-codes
-          cd .. && mypy --show-column-numbers --show-error-codes -p an_website
+          mypy --show-column-numbers --show-error-codes -p an_website

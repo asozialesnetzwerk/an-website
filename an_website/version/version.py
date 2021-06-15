@@ -1,4 +1,3 @@
-import os
 import hashlib
 
 from ..utils.utils import RequestHandlerCustomError, run_shell_command

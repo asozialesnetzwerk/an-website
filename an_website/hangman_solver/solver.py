@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Tuple, List
+from typing import Tuple, List
 from distutils.util import strtobool
 from dataclasses import dataclass, field, asdict
 import os
@@ -103,12 +103,12 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
 
 class HangmanSolver(RequestHandlerCustomError):
-    async def get(self, *args):
+    async def get(self):
         hangman = await solve_hangman(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(RequestHandlerJsonAPI):
-    async def get(self, *args):
+    async def get(self):
         hangman = await solve_hangman(self)
         self.write(asdict(hangman))

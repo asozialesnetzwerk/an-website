@@ -1,8 +1,9 @@
 import sys
 import os
 
-import tornado.ioloop
-import tornado.web
+from tornado.ioloop import IOLoop
+from tornado.web import Application
+from tornado.httpclient import AsyncHTTPClient
 
 from .utils.utils import RequestHandlerNotFound, RequestHandlerZeroDivision
 from .version.version import Version
@@ -13,8 +14,11 @@ from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 DIR = os.path.dirname(__file__)
 
 
+AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+
+
 def make_app():
-    return tornado.web.Application([
+    return Application([
         (r"/error/?", RequestHandlerZeroDivision),
         (r"/version/?", Version),
         (r"/discord/?", Discord),
@@ -38,4 +42,4 @@ def make_app():
 if __name__ == "__main__":
     app = make_app()
     app.listen(8080)
-    tornado.ioloop.IOLoop.current().start()
+    IOLoop.current().start()
