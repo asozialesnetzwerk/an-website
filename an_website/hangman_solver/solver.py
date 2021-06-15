@@ -79,9 +79,9 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     crossword_mode_str = str(request_handler.get_query_argument("crossword_mode", default="False"))
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
 
-    language = str(request_handler.get_query_argument("lang", default="de"))
+    language = str(request_handler.get_query_argument("lang", default="de_only_a-z"))
 
-    folder = f"{DIR}/hangman_solver/words/words_{language}"
+    folder = f"{DIR}/words/words_{language}"
 
     if not os.path.isdir(folder):
         raise HTTPError(400, f"'{language}' is an invalid language")
