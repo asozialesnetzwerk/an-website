@@ -103,12 +103,12 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
 
 class HangmanSolver(RequestHandlerCustomError):
-    async def get(self):
+    async def get(self, *args): # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(RequestHandlerJsonAPI):
-    async def get(self):
+    async def get(self, *args): # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
         self.write(asdict(hangman))

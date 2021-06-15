@@ -14,7 +14,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.pylint.d
-          key: ${{ runner.os }}-${{ hashFiles('~/.pylint.d/*') }}
+          key: pylint-${{ github.sha }}
+          restore-keys: pylint-
       - name: Install requirements
         run: |
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
@@ -34,7 +35,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .mypy_cache
-          key: ${{ runner.os }}-${{ hashFiles('.mypy_cache/*') }}
+          key: mypy-${{ github.sha }}
+          restore-keys: mypy-
       - name: Install requirements
         run: |
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user

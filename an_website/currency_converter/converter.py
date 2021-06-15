@@ -36,8 +36,8 @@ async def conversion_string(value_dict: dict) -> str:
 
 
 async def get_value_dict(euro):
-    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float, "euro_str": str,
-    # "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})
+    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float,
+    # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})
     value_dict = {}
 
     for key in enumerate(keys):
@@ -68,7 +68,7 @@ async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
 
 
 class CurrencyConverter(RequestHandlerCustomError):
-    async def get(self):
+    async def get(self, *args): # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(16)
@@ -83,7 +83,7 @@ class CurrencyConverter(RequestHandlerCustomError):
 
 
 class CurrencyConverterAPI(RequestHandlerJsonAPI):
-    async def get(self):
+    async def get(self, *args): # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
