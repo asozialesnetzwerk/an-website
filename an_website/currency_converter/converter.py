@@ -40,10 +40,10 @@ async def get_value_dict(euro):
     # "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})
     value_dict = {}
 
-    for i in range(len(keys)):
-        val = multipliers[i] * euro
-        value_dict[keys[i]] = val
-        value_dict[keys[i] + "_str"] = await num_to_string(val)
+    for key in enumerate(keys):
+        val = multipliers[key[0]] * euro
+        value_dict[keys[key[0]]] = val
+        value_dict[keys[key[0]] + "_str"] = await num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
 
@@ -52,15 +52,15 @@ async def get_value_dict(euro):
 
 async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
     contains_bad_param = False
-    for i in range(len(keys)):
-        num_str = request_handler.get_query_argument(name=keys[i], default=None)
+    for key in enumerate(keys):
+        num_str = request_handler.get_query_argument(name=keys[key[0]], default=None)
         if num_str is not None:
-            euro = await string_to_num(num_str, multipliers[i])
+            euro = await string_to_num(num_str, multipliers[key[0]])
             if euro is not None:
                 value_dict = await get_value_dict(euro)
                 if contains_bad_param:
                     value_dict["contained_bad_param"] = True
-                value_dict["key_used"] = keys[i]
+                value_dict["key_used"] = keys[key[0]]
                 return value_dict
             else:
                 contains_bad_param = True
