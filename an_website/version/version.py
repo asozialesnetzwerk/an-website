@@ -1,18 +1,24 @@
 import hashlib
+import asyncio
 
 from ..utils.utils import RequestHandlerCustomError, run_shell
 
-VERSION = await run_shell("cd an_website && git log -n1 --format=format:'%H'")[1].decode('utf-8')
-FILE_HASHES = await run_shell("cd an_website && git ls-files | xargs sha1sum")[1].decode('utf-8')
-HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = await run_shell("cd an_website && git log -n1 --format=format:'%H' origin/gh-pages")[1].decode('utf-8') # pylint: disable=line-too-long
+loop = asyncio.get_event_loop() # pylint: disable=invalid-name
+VERSION = loop.create_task(run_shell("cd an_website && git log -n1 --format=format:'%H'"))
+FILE_HASHES = loop.create_task(run_shell("cd an_website && git ls-files | xargs sha1sum"))
+GH_PAGES_COMMIT_HASH = loop.create_task(run_shell("cd an_website && git log -n1 --format=format:'%H' origin/gh-pages")) # pylint: disable=line-too-long
+del loop
 
 
 class Version(RequestHandlerCustomError):
     async def get(self):
+        version = (await VERSION)[1].decode("utf-8")
+        file_hashes = (await FILE_HASHES)[1].decode("utf-8")
+        hash_of_file_hashes = hashlib.sha1(file_hashes.encode("utf-8")).hexdigest()
+        gh_pages_commit_hash = (await GH_PAGES_COMMIT_HASH)[1].decode("utf-8")
         await self.render("pages/version.html",
-                          version=VERSION,
-                          file_hashes=FILE_HASHES,
-                          hash_of_file_hashes=HASH_OF_FILE_HASHES,
-                          gh_pages_commit_hash=GH_PAGES_COMMIT_HASH
+                          version=version,
+                          file_hashes=file_hashes,
+                          hash_of_file_hashes=hash_of_file_hashes,
+                          gh_pages_commit_hash=gh_pages_commit_hash
                           )
