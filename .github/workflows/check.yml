@@ -37,7 +37,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.mypy_cache/*') }}
       - name: Install requirements
         run: |
-          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user -r requirements.txt
+          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install mypy
         run: |
           pip install --user "mypy<2.0"
