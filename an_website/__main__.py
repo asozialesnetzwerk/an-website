@@ -4,6 +4,7 @@ import os
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 from tornado.httpclient import AsyncHTTPClient
+from tornado.platform.caresresolver import CaresResolver
 
 from .utils.utils import RequestHandlerNotFound, RequestHandlerZeroDivision
 from .version.version import Version
@@ -14,7 +15,7 @@ from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 DIR = os.path.dirname(__file__)
 
 
-AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient", resolver=CaresResolver)
 
 
 def make_app():
