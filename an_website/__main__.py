@@ -14,7 +14,7 @@ from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 DIR = os.path.dirname(__file__)
 
 
-AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000)
 
 
 def make_app():
