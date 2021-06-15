@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install requirements
         run: |
-          pip install --user -r requirements.txt
+          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user -r requirements.txt
       - name: Install Pylint
         run: |
           pip install --user "pylint>=2.8.3,<3.0"
