@@ -7,7 +7,7 @@ import asyncio.subprocess
 from tornado.web import RequestHandler, HTTPError
 
 
-def length_of_match(m: re.Match): # pylint: disable=invalid-name
+def length_of_match(m: re.Match):  # pylint: disable=invalid-name
     span = m.span()
     return span[1] - span[0]
 
@@ -81,4 +81,4 @@ class RequestHandlerNotFound(RequestHandlerCustomError):
 
 class RequestHandlerZeroDivision(RequestHandlerCustomError):
     def get(self):
-        0 / 0 # pylint: disable=pointless-statement
+        0 / 0  # pylint: disable=pointless-statement

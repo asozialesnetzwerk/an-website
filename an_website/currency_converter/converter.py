@@ -68,7 +68,7 @@ async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
 
 
 class CurrencyConverter(RequestHandlerCustomError):
-    async def get(self, *args): # pylint: disable=unused-argument
+    async def get(self, *args):  # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(16)
@@ -83,7 +83,7 @@ class CurrencyConverter(RequestHandlerCustomError):
 
 
 class CurrencyConverterAPI(RequestHandlerJsonAPI):
-    async def get(self, *args): # pylint: disable=unused-argument
+    async def get(self, *args):  # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
