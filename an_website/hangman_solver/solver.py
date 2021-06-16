@@ -52,7 +52,7 @@ async def generate_pattern_str(
 
     return WILDCARDS_REGEX.sub(
         lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"),
-        input_str
+        input_str,
     )
 
 
