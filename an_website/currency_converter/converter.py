@@ -52,7 +52,7 @@ async def get_value_dict(euro):
     return value_dict
 
 
-async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
+async def arguments_to_value_dict(request_handler: RequestHandler) -> Optional[dict]:
     contains_bad_param = False
     for key in enumerate(keys):
         num_str = request_handler.get_query_argument(name=keys[key[0]], default=None)
@@ -66,7 +66,7 @@ async def arguments_to_value_dict(request_handler: RequestHandler) -> dict:
                 return value_dict
             else:
                 contains_bad_param = True
-    return {}
+    return None
 
 
 class CurrencyConverter(RequestHandlerCustomError):
