@@ -1,43 +1,25 @@
 name: Check
-on: [push, pull_request]
+on: [push, pull_request, pull_request_target]
 
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Cache collected data
-        uses: pat-s/always-upload-cache@v2
-        with:
-          path: ~/.pylint.d
-          key: pylint-${{ github.sha }}
-          restore-keys: pylint-
-      - name: Install requirements
-        run: |
-          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
-      - name: Install Pylint
-        run: |
-          pip install --user "pylint<3.0"
-      - name: Run Pylint
-        run: |
-          pylint --output-format=colorized -d R an_website
   check_formatting:
     name: Check formatting
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install requirements
-        run: |
-          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
+        with:
+          ref: ${{ github.head_ref }}
       - name: Install Black
         run: |
           pip install --user "black"
       - name: Run Black
         run: |
-          git ls-files "*.py" | xargs black --check --diff --color -t py38
+          git ls-files "*.py" | xargs black -t py38 --color
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: fix formatting
   check_types:
     name: Check types
     runs-on: ubuntu-20.04
@@ -59,3 +41,24 @@ jobs:
       - name: Run mypy
         run: |
           mypy --show-column-numbers --show-error-codes -p an_website
+  lint:
+    name: Lint
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache collected data
+        uses: pat-s/always-upload-cache@v2
+        with:
+          path: ~/.pylint.d
+          key: pylint-${{ github.sha }}
+          restore-keys: pylint-
+      - name: Install requirements
+        run: |
+          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
+      - name: Install Pylint
+        run: |
+          pip install --user "pylint<3.0"
+      - name: Run Pylint
+        run: |
+          pylint --output-format=colorized -d R an_website
