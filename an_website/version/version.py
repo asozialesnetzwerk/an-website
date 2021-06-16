@@ -18,9 +18,10 @@ class Version(RequestHandlerCustomError):
         file_hashes = (await FILE_HASHES)[1].decode("utf-8")
         hash_of_file_hashes = hashlib.sha1(file_hashes.encode("utf-8")).hexdigest()
         gh_pages_commit_hash = (await GH_PAGES_COMMIT_HASH)[1].decode("utf-8")
-        await self.render("pages/version.html",
-                          version=version,
-                          file_hashes=file_hashes,
-                          hash_of_file_hashes=hash_of_file_hashes,
-                          gh_pages_commit_hash=gh_pages_commit_hash
-                          )
+        await self.render(
+            "pages/version.html",
+            version=version,
+            file_hashes=file_hashes,
+            hash_of_file_hashes=hash_of_file_hashes,
+            gh_pages_commit_hash=gh_pages_commit_hash,
+        )
