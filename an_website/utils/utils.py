@@ -49,7 +49,9 @@ class RequestHandlerBase(RequestHandler):
 
 class RequestHandlerCustomError(RequestHandlerBase):
     def write_error(self, status_code, **kwargs):
-        self.render("error.html", code=status_code, message=self.get_error_message(**kwargs))
+        self.render(
+            "error.html", code=status_code, message=self.get_error_message(**kwargs)
+        )
 
 
 class RequestHandlerJsonAPI(RequestHandlerBase):

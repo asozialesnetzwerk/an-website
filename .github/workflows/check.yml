@@ -37,7 +37,7 @@ jobs:
           pip install --user "black"
       - name: Run Black
         run: |
-          git ls-files "*.py" | xargs black --check --diff --color -t py38 -l 100
+          git ls-files "*.py" | xargs black --check --diff --color -t py38
   check_types:
     name: Check types
     runs-on: ubuntu-20.04

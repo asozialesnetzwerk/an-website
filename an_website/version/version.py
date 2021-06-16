@@ -4,8 +4,12 @@ import asyncio
 from ..utils.utils import RequestHandlerCustomError, run_shell
 
 loop = asyncio.get_event_loop()
-VERSION = loop.create_task(run_shell("cd an_website && git log -n1 --format=format:'%H'"))
-FILE_HASHES = loop.create_task(run_shell("cd an_website && git ls-files | xargs sha1sum"))
+VERSION = loop.create_task(
+    run_shell("cd an_website && git log -n1 --format=format:'%H'")
+)
+FILE_HASHES = loop.create_task(
+    run_shell("cd an_website && git ls-files | xargs sha1sum")
+)
 GH_PAGES_COMMIT_HASH = loop.create_task(
     run_shell("cd an_website && git log -n1 --format=format:'%H' origin/gh-pages")
 )
