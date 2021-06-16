@@ -19,10 +19,25 @@ jobs:
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install Pylint
         run: |
-          pip install --user "pylint>=2.8.3,<3.0"
+          pip install --user "pylint<3.0"
       - name: Run Pylint
         run: |
           pylint --output-format=colorized -d R an_website
+  check_formatting:
+    name: Check formatting
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install requirements
+        run: |
+          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
+      - name: Install Black
+        run: |
+          pip install --user "black"
+      - name: Run Black
+        run: |
+          git ls-files "*.py" | xargs black --check --diff --color -t py38 -l 100
   check_types:
     name: Check types
     runs-on: ubuntu-20.04

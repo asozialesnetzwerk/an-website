@@ -18,15 +18,16 @@ AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient", max_cli
 
 
 def make_app():
-    return Application([
-        (r"/error/?", RequestHandlerZeroDivision),
-        (r"/version/?", Version),
-        (r"/discord/?", Discord),
-        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
-        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
-        (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
-        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI)
-    ],
+    return Application(
+        [
+            (r"/error/?", RequestHandlerZeroDivision),
+            (r"/version/?", Version),
+            (r"/discord/?", Discord),
+            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
+            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
+            (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
+            (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+        ],
         # General settings
         autoreload=False,
         compress_response=True,
@@ -35,7 +36,7 @@ def make_app():
         # Template settings
         template_path=f"{DIR}/templates",
         # Static file settings
-        static_path=f"{DIR}/static"
+        static_path=f"{DIR}/static",
     )
 
 

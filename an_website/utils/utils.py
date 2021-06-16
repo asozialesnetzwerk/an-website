@@ -13,26 +13,21 @@ def length_of_match(m: re.Match):  # pylint: disable=invalid-name
 
 def get_url(request_handler: RequestHandler):
     """Dirty fix to force https"""
-    return request_handler.request.full_url() \
-        .replace("http://j", "https://j")
+    return request_handler.request.full_url().replace("http://j", "https://j")
 
 
 async def run_shell(cmd, stdin=asyncio.subprocess.PIPE):
     proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
+        cmd, stdin=stdin, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout, stderr
 
 
 async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
     proc = await asyncio.create_subprocess_exec(
-        cmd,
-        stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
+        cmd, stdin=stdin, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout, stderr
 
@@ -47,23 +42,19 @@ class RequestHandlerBase(RequestHandler):
     def get_error_message(self, **kwargs):
         if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
             if self.settings.get("serve_traceback"):
-                return ''.join(traceback.format_exception(*kwargs["exc_info"]))
+                return "".join(traceback.format_exception(*kwargs["exc_info"]))
             return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
         return self._reason
 
 
 class RequestHandlerCustomError(RequestHandlerBase):
     def write_error(self, status_code, **kwargs):
-        self.render("error.html",
-                    code=status_code,
-                    message=self.get_error_message(**kwargs))
+        self.render("error.html", code=status_code, message=self.get_error_message(**kwargs))
 
 
 class RequestHandlerJsonAPI(RequestHandlerBase):
     def write_error(self, status_code, **kwargs):
-        self.write({"status": status_code,
-                    "message": self.get_error_message(**kwargs)
-                    })
+        self.write({"status": status_code, "message": self.get_error_message(**kwargs)})
 
 
 class RequestHandlerNotFound(RequestHandlerCustomError):

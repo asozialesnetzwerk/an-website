@@ -15,5 +15,5 @@ class Discord(RequestHandlerCustomError):
         except HTTPError:
             self.redirect("https://disboard.org/server/join/367648314184826880")
         else:
-            response_json = json.loads(response.body.decode('utf-8'))
-            self.redirect(response_json['instant_invite'])
+            response_json = json.loads(response.body.decode("utf-8"))
+            self.redirect(response_json["instant_invite"])

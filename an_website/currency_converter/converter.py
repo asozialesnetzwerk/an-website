@@ -29,10 +29,12 @@ async def num_to_string(num: float) -> str:
 
 
 async def conversion_string(value_dict: dict) -> str:
-    return f"{value_dict.get('euro_str')} Euro, " \
-           f"das sind ja {value_dict.get('mark_str')} Mark; " \
-           f"{value_dict.get('ost_str')} Ostmark " \
-           f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
+    return (
+        f"{value_dict.get('euro_str')} Euro, "
+        f"das sind ja {value_dict.get('mark_str')} Mark; "
+        f"{value_dict.get('ost_str')} Ostmark "
+        f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
+    )
 
 
 async def get_value_dict(euro):
