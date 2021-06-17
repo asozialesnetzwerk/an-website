@@ -18,7 +18,7 @@ jobs:
           pip install --user "pyflakes<3"
       - name: Run Pyflakes
         run: |
-          git ls-files "*.py" | xargs pyflakes
+          pyflakes an_website
   hash_files:
     name: Hash files
     runs-on: ubuntu-20.04
