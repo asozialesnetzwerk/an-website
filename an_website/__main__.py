@@ -10,6 +10,7 @@ from .version.version import Version
 from .discord.discord import Discord
 from .currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
 from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
+from .quotes.quotes import Quotes
 
 DIR = os.path.dirname(__file__)
 
@@ -29,6 +30,7 @@ def make_app():
             (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
             (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
             (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+            (r"/zitate/?", Quotes),
         ],
         # General settings
         autoreload=False,
