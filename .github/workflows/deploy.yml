@@ -13,12 +13,12 @@ jobs:
       - name: Install requirements
         run: |
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
-      - name: Install Pylint
+      - name: Install Pyflakes
         run: |
-          pip install --user "pylint>=2.8.3,<3.0"
-      - name: Run Pylint
+          pip install --user "pyflakes<3"
+      - name: Run Pyflakes
         run: |
-          pylint --persistent=no --errors-only --output-format=colorized an_website
+          git ls-files "*.py" | xargs pyflakes
   hash_files:
     name: Hash files
     runs-on: ubuntu-20.04

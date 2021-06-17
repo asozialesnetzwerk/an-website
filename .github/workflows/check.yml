@@ -12,7 +12,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Install Black
         run: |
-          pip install --user "black"
+          pip install --user black
       - name: Run Black
         run: |
           git ls-files "*.py" | xargs black -t py38 --color
@@ -37,7 +37,7 @@ jobs:
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install mypy
         run: |
-          pip install --user "mypy<2.0"
+          pip install --user "mypy<2"
       - name: Run mypy
         run: |
           mypy --show-column-numbers --show-error-codes -p an_website
@@ -58,7 +58,7 @@ jobs:
           cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install Pylint
         run: |
-          pip install --user "pylint<3.0"
+          pip install --user "pylint<3"
       - name: Run Pylint
         run: |
-          pylint --output-format=colorized -d R an_website
+          pylint --output-format=colorized -d R,line-too-long an_website
