@@ -1,13 +1,11 @@
 # pylint: disable=subprocess-run-check
 
 import hashlib
-import os
 import subprocess
 
+from .. import DIR
 from ..utils.utils import RequestHandlerCustomError
 
-
-DIR = os.path.dirname(__file__)
 
 VERSION = subprocess.run(
     "git rev-parse HEAD", cwd=DIR, shell=True, capture_output=True, text=True

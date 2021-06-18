@@ -5,14 +5,13 @@ from tornado.ioloop import IOLoop
 from tornado.web import Application
 from tornado.httpclient import AsyncHTTPClient
 
+from . import DIR
 from .utils.utils import RequestHandlerNotFound, RequestHandlerZeroDivision
 from .version.version import Version
 from .discord.discord import Discord
 from .currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
 from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
 from .quotes.quotes import Quotes
-
-DIR = os.path.dirname(__file__)
 
 
 AsyncHTTPClient.configure(

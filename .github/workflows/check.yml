@@ -10,12 +10,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-      - name: Install Black
+      - name: Install Black and isort
         run: |
-          pip install --user black
+          pip install --user black "isort<6"
       - name: Run Black
         run: |
-          git ls-files "*.py" | xargs black -t py38 --color
+          black -t py38 .
+      - name: Run isort
+        run: |
+          isort .
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -61,4 +64,4 @@ jobs:
           pip install --user "pylint<3"
       - name: Run Pylint
         run: |
-          pylint --output-format=colorized -d R,line-too-long an_website
+          pylint -d R,line-too-long an_website
