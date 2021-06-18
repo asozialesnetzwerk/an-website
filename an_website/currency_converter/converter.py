@@ -1,10 +1,11 @@
 from __future__ import annotations
-from typing import Optional
+
 import re
+from typing import Optional
 
 from tornado.web import RequestHandler
 
-from ..utils.utils import get_url, RequestHandlerCustomError, RequestHandlerJsonAPI
+from ..utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, get_url
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]

@@ -6,7 +6,6 @@ import subprocess
 from .. import DIR
 from ..utils.utils import RequestHandlerCustomError
 
-
 VERSION = subprocess.run(
     "git rev-parse HEAD", cwd=DIR, shell=True, capture_output=True, text=True
 ).stdout

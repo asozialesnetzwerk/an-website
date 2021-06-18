@@ -1,9 +1,9 @@
-import re
-import traceback
 import asyncio
 import asyncio.subprocess
+import re
+import traceback
 
-from tornado.web import RequestHandler, HTTPError
+from tornado.web import HTTPError, RequestHandler
 
 
 def length_of_match(m: re.Match):  # pylint: disable=invalid-name

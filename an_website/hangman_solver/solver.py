@@ -1,17 +1,18 @@
 from __future__ import annotations
-from typing import Tuple, List
-from distutils.util import strtobool
-from dataclasses import dataclass, field, asdict
+
 import re
+from dataclasses import asdict, dataclass, field
+from distutils.util import strtobool
+from typing import List, Tuple
 
-from tornado.web import RequestHandler, HTTPError
+from tornado.web import HTTPError, RequestHandler
 
-from . import DIR
 from ..utils.utils import (
     RequestHandlerCustomError,
     RequestHandlerJsonAPI,
     length_of_match,
 )
+from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
