@@ -37,10 +37,6 @@ async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
     return proc.returncode, stdout, stderr
 
 
-def handle_error_message(request_handler: RequestHandler, **kwargs) -> str:
-
-
-
 class RequestHandlerBase(RequestHandler):
     def data_received(self, chunk):
         pass
