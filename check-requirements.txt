@@ -1,0 +1,5 @@
+pyflakes<3
+pylint<3
+mypy<2
+black
+isort<6
