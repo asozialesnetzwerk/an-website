@@ -19,6 +19,13 @@ WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
+def get_handlers() -> list[tuple]:
+    return [
+        (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
+        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+    ]
+
+
 @dataclass()
 class Hangman:
     input: str = ""

@@ -7,6 +7,10 @@ from ..utils.utils import RequestHandlerCustomError
 WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
 
+def get_handlers():
+    return r"/discord/?", Discord
+
+
 class Discord(RequestHandlerCustomError):
     async def get(self):
         http_client = AsyncHTTPClient()

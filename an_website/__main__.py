@@ -5,36 +5,37 @@ from tornado.web import Application
 from tornado.httpclient import AsyncHTTPClient
 
 from . import DIR
-from .utils.utils import RequestHandlerNotFound, RequestHandlerZeroDivision
-from .version.version import Version
-from .discord.discord import Discord
-from .currency_converter.converter import CurrencyConverter, CurrencyConverterAPI
-from .hangman_solver.solver import HangmanSolver, HangmanSolverAPI
-from .quotes.quotes import Quotes
-
+from .utils import utils
+from .version import version
+from .discord import discord
+from .currency_converter import converter
+from .hangman_solver import solver
+from .quotes import quotes
+from .kangaroo_soundboard import soundboard
 
 AsyncHTTPClient.configure(
     "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000
 )
 
+handlers_list: list[tuple] = [
+    *soundboard.get_handlers(),
+    quotes.get_handlers(),
+    utils.get_handlers(),
+    version.get_handlers(),
+    discord.get_handlers(),
+    *converter.get_handlers(),
+    *solver.get_handlers(),
+]
+
 
 def make_app():
     return Application(
-        [
-            (r"/error/?", RequestHandlerZeroDivision),
-            (r"/version/?", Version),
-            (r"/discord/?", Discord),
-            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
-            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
-            (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
-            (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
-            (r"/zitate/?", Quotes),
-        ],
+        handlers_list,
         # General settings
         autoreload=False,
         compress_response=True,
         debug=bool(sys.flags.dev_mode),
-        default_handler_class=RequestHandlerNotFound,
+        default_handler_class=utils.RequestHandlerNotFound,
         # Template settings
         template_path=f"{DIR}/templates",
         # Static file settings

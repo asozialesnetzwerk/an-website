@@ -18,6 +18,10 @@ GH_PAGES_COMMIT_HASH = subprocess.run(
 ).stdout
 
 
+def get_handlers() -> tuple:
+    return r"/version/?", Version
+
+
 class Version(RequestHandlerCustomError):
     async def get(self):
         await self.render(

@@ -11,6 +11,13 @@ keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
 
 
+def get_handlers() -> list[tuple]:
+    return [
+        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
+        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
+    ]
+
+
 async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
     if string is None or len(string) == 0:
         return None

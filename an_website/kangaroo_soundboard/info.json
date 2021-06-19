@@ -1,0 +1,156 @@
+{
+  "personen": {
+    "muk": "Marc-Uwe Kling",
+    "känguru": "Das Känguru",
+    "gott": "Maria (Gott)",
+    "jesus": "Jesus",
+    "fw": "Friedrich-Wilhelm",
+    "otto": "Otto-Von",
+    "pinguin": "Der Pinguin",
+    "kuh": "Julia Müller",
+    "lektor": "Der Lektor",
+    "sarah": "Sarah",
+    "schredder": "Der Schredder",
+    "psychiater": "Der Psychiater",
+    "dietmar": "Dietmar Kötke",
+    "wenzel": "Wenzel R.R. Skowronek",
+    "dwigs1": "Jörg Dwigs",
+    "dwigs2": "Jörn Dwigs"
+  },
+  "bücher": [
+    {
+      "name": "Die Känguru-Chroniken",
+      "kapitel": [
+        {
+          "name": "Kapitel 1 - Das Känguru von gegenüber: (Sehr alte Version)",
+          "dateien": [
+            "muk-Ja, herzlich willkommen!",
+            "känguru-Hallo!",
+            "känguru-Ohh Hee!",
+            "känguru-Kein Problem, ich hab Zeit.",
+            "känguru-Aber nicht zu Lidl!"
+          ]
+        },
+        {
+          "name": "Kapitel 2 - Kleinkunst: (Sehr alte Version)",
+          "dateien": [
+            "känguru-Ich bin Kommunist.",
+            "känguru-Köstlich!",
+            "känguru-Hier sind wir, jetzt unterhalte uns.",
+            "känguru-Wolln wir uns dutzen?",
+            "muk-Von mir aus."
+          ]
+        },
+        {
+          "name": "Kapitel 3 - Tütensuppentotalitarismus: (Sehr alte Version)",
+          "dateien": [
+            "känguru-Ich darf nich und ich will nich.",
+            "känguru-Alles Kapitalismus, alles Nestle, alles Hähnchen!"
+          ]
+        },
+        {
+          "name": "Kapitel 4 - 69 Cent pro Minute: (Sehr alte Version)",
+          "dateien": [
+            "känguru-Ja! Ja!"
+          ]
+        },
+        {
+          "name": "Kapitel 11 - Jüdisch-bolschewistische Weltverschwörung e.V:",
+          "dateien": [
+            "muk-Du bist also Teil der jüdisch-bolschewistischen Weltverschörung?",
+            "muk-Und mich dann auch noch beschneiden lassen?",
+            "känguru-Das ist freiwillig!",
+            "känguru-Man darf nie aufhören alles kritisch zu hinterfragen!",
+            "känguru-Wir kämpfen für eine gerechte Weltordnung, Brot für alle und die Ächtung von sogennanntem Musikfernsehen",
+            "känguru-Finsterstes Mittelalter, Alter!"
+
+          ]
+        },
+        {
+          "name": "Kapitel 44 - Eine nette Teegesellschaft:",
+          "dateien": [
+            "psychiater-Aha!"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Das Känguru-Manifest",
+      "kapitel": [
+        {
+          "name": "Kapitel 1 - Intro:",
+          "dateien": [
+            "muk-Für nichts und wieder nichts."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Die Känguru-Offenbarung",
+      "kapitel": [
+        {
+          "name": "Teil 2, Kapitel 5 - Whatever:",
+          "dateien": [
+            "muk-I'm just here for the famous breakfast.",
+            "muk-Yeah!",
+            "sarah-I love life!",
+            "sarah-Yes, it's just perfect.",
+            "sarah-The world is so beautiful.",
+            "sarah-That's amazing, it's like you know I don't know kind of like whatever and stuff."
+          ]
+        },
+        {
+          "name": "Teil 2, Kapitel 7 - Das zähe Verfließen der Zeit, genannt Leben:",
+          "dateien": [
+            "muk-I am bored!",
+            "muk-I am bored in the USA!"
+          ]
+        },
+        {
+          "name": "Teil 2, Kapitel 13 - Die durch die Hölle gehen:",
+          "dateien": [
+            "sarah-Well that's just like you know amazing!",
+            "sarah-Hey, that's cool.",
+            "känguru-This kinda feels really really awesome!",
+            "känguru-I love it!",
+            "känguru-I'm so happy for no reason but i don't care!"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Die Känguru-Apokryphen",
+      "kapitel": [
+        {
+          "name": "Kapitel 12 - Dabei:",
+          "dateien": [
+            "fw-Ihr linken intellektuellen Fuzzies.",
+            "känguru-Wir sind keine Intellektuellen.",
+            "muk-Sprich bitte nur für dich.",
+            "muk-Über mich hat die Zeit geschrieben, dass ich der wahrscheinlich einflussreichste linke Interlektulelle Deutschlands sei."
+          ]
+        },
+        {
+          "name": "Kapitel 27 - Kleine Künstler:",
+          "dateien": [
+            "gott-Das ist privat!",
+            "jesus-Guck mal, was ich kann!"
+          ]
+        },
+        {
+          "name": "Kapitel 34 - Einfach so:",
+          "dateien": [
+            "dietmar-Ich hab seine Hausaufgaben aufgegessen."
+          ]
+        },
+        {
+          "name": "Kapitel 48 - Die neue Nachbarin:",
+          "dateien": [
+            "muk-Und da ist mir aufgefallen, dass ich keine Eier hab.",
+            "gott-So, so, du hast also keine Eier?"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -128,3 +128,6 @@ dmypy.json
 
 # hangman-solver word lists:
 full_wordlist.txt
+
+# Känguru-Soundboard:
+kangaroo_soundboard/build
