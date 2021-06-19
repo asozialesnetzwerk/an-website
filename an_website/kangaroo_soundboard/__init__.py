@@ -1,8 +1,7 @@
 import json
-import re
 import os
+import re
 import shutil
-
 
 DIR = os.path.dirname(__file__)
 
