@@ -10,7 +10,7 @@ git pull --rebase
 if [ ! -d "venv" ]
 then
     # venv doesn't exist, so create it:
-    pypy3 -m venv venv
+    python3 -m venv venv
 fi
 
 venv/bin/pip install -U -r requirements.txt
