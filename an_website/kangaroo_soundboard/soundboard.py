@@ -1,3 +1,5 @@
+from typing import List
+
 from tornado.web import StaticFileHandler
 
 from . import DIR
@@ -6,7 +8,7 @@ PATH = f"{DIR}/build/"
 OPTIONS = {"path": PATH, "default_filename": "index.html"}
 
 
-def get_handlers() -> list[tuple]:
+def get_handlers() -> List[tuple]:
     return [
         (
             r"/kaenguru-soundboard/(.*)",

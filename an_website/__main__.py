@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 from tornado.ioloop import IOLoop
 from tornado.web import Application
@@ -17,7 +18,7 @@ AsyncHTTPClient.configure(
     "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000
 )
 
-handlers_list: list[tuple] = [
+handlers_list: List[tuple] = [
     *soundboard.get_handlers(),
     quotes.get_handlers(),
     utils.get_handlers(),

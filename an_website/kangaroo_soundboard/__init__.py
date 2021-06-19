@@ -2,10 +2,11 @@ import json
 import os
 import re
 import shutil
+from typing import Dict
 
 DIR = os.path.dirname(__file__)
 
-rss_string = """<?xml version="1.0" encoding="UTF-8"?>
+RSS_STRING = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>Kaenguru-Soundboard{extra_title}</title>
@@ -17,7 +18,7 @@ rss_string = """<?xml version="1.0" encoding="UTF-8"?>
 </rss>
 """
 
-item_string = """    <item>
+RSS_ITEM_STRING = """    <item>
       <title>{title}</title>
       <link>https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3</link>
       <enclosure url="https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3"
@@ -25,9 +26,9 @@ item_string = """    <item>
       <guid>{file_name}</guid>          
     </item>"""
 
-title_string = "[{book}, {chapter}] {file_name}"
+RSS_TITLE_STRING = "[{book}, {chapter}] {file_name}"
 
-html_string = """
+HTML_STRING = """
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -106,8 +107,8 @@ def create_heading(heading_type, text):
 
 rss_items = ""
 
-persons_stuff: dict[str, str] = {}
-persons_rss: dict[str, str] = {}
+persons_stuff: Dict[str, str] = {}
+persons_rss: Dict[str, str] = {}
 persons = info["personen"]
 index_html = "<h1>Känguru-Soundboard:</h1>"
 for book in info["bücher"]:
@@ -141,15 +142,15 @@ for book in info["bücher"]:
                 + "«"
             )
             rss = (
-                item_string.format(
-                    title=title_string.format(
+                    RSS_ITEM_STRING.format(
+                    title=RSS_TITLE_STRING.format(
                         book=book_name,
                         chapter=chapter_name.split(":")[0],
                         file_name=title_file_name,
                     ),
                     file_name=file,
                 )
-                + "\n"
+                    + "\n"
             )
             rss_items += rss
             persons_rss[person] = persons_rss.get(person, "") + rss
@@ -158,7 +159,7 @@ for book in info["bücher"]:
 # write main page:
 with open(f"{DIR}/build/index.html", "w+") as main_page:
     main_page.write(
-        html_string.format(
+        HTML_STRING.format(
             extra_title="", extra_desc="", extra_link="", content=index_html
         )
     )
@@ -184,7 +185,7 @@ for key in persons_stuff:
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
     with open(f"{_dir}/index.html", "w+") as person_page:
         person_page.write(
-            html_string.format(
+            HTML_STRING.format(
                 extra_title=extra_title,
                 extra_desc=extra_desc,
                 extra_link=key,
@@ -198,7 +199,7 @@ for key in persons_stuff:
     # rss for every person:
     with open(f"{_dir}/feed.rss", "w+") as person_rss:
         person_rss.write(
-            rss_string.format(
+            RSS_STRING.format(
                 items=persons_rss[key],
                 extra_title=extra_title,
                 extra_desc=extra_desc,
@@ -209,7 +210,7 @@ for key in persons_stuff:
 # write persons page:
 with open(f"{DIR}/build/persons.html", "w+") as persons_page:
     persons_page.write(
-        html_string.format(
+        HTML_STRING.format(
             extra_title="", extra_desc="", extra_link="", content=persons_html
         )
     )
@@ -217,7 +218,7 @@ with open(f"{DIR}/build/persons.html", "w+") as persons_page:
 # write rss:
 with open(f"{DIR}/build/feed.rss", "w") as feed:
     feed.write(
-        rss_string.format(items=rss_items, extra_title="", extra_desc="", extra_link="")
+        RSS_STRING.format(items=rss_items, extra_title="", extra_desc="", extra_link="")
     )
 
 # copy files to build folder:
