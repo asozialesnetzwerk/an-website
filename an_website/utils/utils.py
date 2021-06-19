@@ -2,9 +2,8 @@ import asyncio
 import asyncio.subprocess
 import re
 import traceback
-from typing import Awaitable, Optional
 
-from tornado.web import HTTPError, RequestHandler, StaticFileHandler
+from tornado.web import HTTPError, RequestHandler
 
 
 def get_handlers() -> tuple:
