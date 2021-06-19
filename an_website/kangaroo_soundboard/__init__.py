@@ -89,21 +89,24 @@ with open(f"{DIR}/info.json", "r") as my_file:
 
 
 def replace_umlauts(text: str) -> str:
-    return text.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    return (
+        text.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    )
 
 
 def name_to_id(val: str) -> str:
     return re.sub(r"[^a-zäöüß0-9-]", "", val.lower().replace(" ", "-"))
 
 
-def create_anchor(href: str, inner_html: str, color: str = "var(--red)", classes:str = "a_hover")\
-        -> str:
+def create_anchor(
+    href: str, inner_html: str, color: str = "var(--red)", classes: str = "a_hover"
+) -> str:
     return (
         f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"
     )
 
 
-def create_heading(heading_type: str, text:str) -> str:
+def create_heading(heading_type: str, text: str) -> str:
     el_id = name_to_id(text)
     return (
         f"<{heading_type} id='{el_id}'>"
@@ -125,7 +128,11 @@ for book in info["bücher"]:
         chapter_name = chapter["name"]
         index_html += create_heading("h3", chapter_name) + "<ul>"
         for file_text in chapter["dateien"]:
-            file = re.sub(r"[^a-z0-9_-]+", "", replace_umlauts(file_text.lower().replace(" ", "_")))
+            file = re.sub(
+                r"[^a-z0-9_-]+",
+                "",
+                replace_umlauts(file_text.lower().replace(" ", "_")),
+            )
             full_file = f"files/{file}.mp3"
             person = file_text.split("-")[0]
             to_write = (
