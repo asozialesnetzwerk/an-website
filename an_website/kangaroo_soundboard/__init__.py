@@ -106,8 +106,8 @@ def create_heading(heading_type, text):
 
 rss_items = ""
 
-persons_stuff = {}
-persons_rss = {}
+persons_stuff: dict[str, str] = {}
+persons_rss: dict[str, str] = {}
 persons = info["personen"]
 index_html = "<h1>Känguru-Soundboard:</h1>"
 for book in info["bücher"]:
