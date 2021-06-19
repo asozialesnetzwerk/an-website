@@ -2,7 +2,7 @@ import asyncio
 import asyncio.subprocess
 import re
 import traceback
-from typing import Optional, Awaitable
+from typing import Awaitable, Optional
 
 from tornado.web import HTTPError, RequestHandler, StaticFileHandler
 
