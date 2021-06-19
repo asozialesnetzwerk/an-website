@@ -38,11 +38,7 @@ async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
 
 
 def handle_error_message(request_handler: RequestHandler, **kwargs) -> str:
-    if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
-        if request_handler.settings.get("serve_traceback"):
-            return "".join(traceback.format_exception(*kwargs["exc_info"]))
-        return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
-    return request_handler._reason
+
 
 
 class RequestHandlerBase(RequestHandler):
@@ -53,20 +49,12 @@ class RequestHandlerBase(RequestHandler):
         return super().render(template_name, **kwargs, url=get_url(self))
 
     def get_error_message(self, **kwargs):
-        return handle_error_message(self, **kwargs)
+        if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
+            if self.settings.get("serve_traceback"):
+                return "".join(traceback.format_exception(*kwargs["exc_info"]))
+            return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
+        return self._reason
 
-
-class StaticFileHandlerCustomError(StaticFileHandler):
-    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
-        pass
-
-    def get_error_message(self, **kwargs):
-        return handle_error_message(self, **kwargs)
-
-    def write_error(self, status_code, **kwargs):
-        self.render(
-            "error.html", code=status_code, message=self.get_error_message(**kwargs)
-        )
 
 
 class RequestHandlerCustomError(RequestHandlerBase):
