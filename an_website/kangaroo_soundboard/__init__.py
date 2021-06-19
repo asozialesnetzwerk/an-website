@@ -4,6 +4,8 @@ import re
 import shutil
 from typing import Dict
 
+# pylint: disable=invalid-name
+
 DIR = os.path.dirname(__file__)
 
 RSS_STRING = """<?xml version="1.0" encoding="UTF-8"?>
@@ -136,20 +138,20 @@ for book in info["bücher"]:
             )
             # rss:
             title_file_name = (
-                persons[file_text.split("-", 1)[0]]
-                + ": »"
-                + file_text.split("-", 1)[1]
-                + "«"
+                    persons[file_text.split("-", 1)[0]]
+                    + ": »"
+                    + file_text.split("-", 1)[1]
+                    + "«"
             )
             rss = (
                     RSS_ITEM_STRING.format(
-                    title=RSS_TITLE_STRING.format(
-                        book=book_name,
-                        chapter=chapter_name.split(":")[0],
-                        file_name=title_file_name,
-                    ),
-                    file_name=file,
-                )
+                        title=RSS_TITLE_STRING.format(
+                            book=book_name,
+                            chapter=chapter_name.split(":")[0],
+                            file_name=title_file_name,
+                        ),
+                        file_name=file,
+                    )
                     + "\n"
             )
             rss_items += rss
@@ -174,12 +176,12 @@ for key in persons_stuff:
         persons[key].replace("Das", "dem").replace("Der", "dem").replace("Die", "der")
     )
     content = (
-        "<h1>Känguru-Soundboard</h1><h2>"
-        + persons[key]
-        + "</h2>"
-        + persons_stuff[key]
-        .replace("(files/", "(../files/")
-        .replace("src='files/", "src='../files/")
+            "<h1>Känguru-Soundboard</h1><h2>"
+            + persons[key]
+            + "</h2>"
+            + persons_stuff[key]
+            .replace("(files/", "(../files/")
+            .replace("src='files/", "src='../files/")
     )
     extra_title = " (Coole Sprüche/Sounds von " + person + ")"
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
