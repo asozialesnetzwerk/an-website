@@ -144,15 +144,15 @@ for book in info["bücher"]:
                     + "«"
             )
             rss = (
-                    RSS_ITEM_STRING.format(
-                        title=RSS_TITLE_STRING.format(
-                            book=book_name,
-                            chapter=chapter_name.split(":")[0],
-                            file_name=title_file_name,
-                        ),
-                        file_name=file,
-                    )
-                    + "\n"
+                RSS_ITEM_STRING.format(
+                    title=RSS_TITLE_STRING.format(
+                        book=book_name,
+                        chapter=chapter_name.split(":")[0],
+                        file_name=title_file_name,
+                    ),
+                    file_name=file,
+                )
+                + "\n"
             )
             rss_items += rss
             persons_rss[person] = persons_rss.get(person, "") + rss
