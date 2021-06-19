@@ -52,7 +52,6 @@ class RequestHandlerBase(RequestHandler):
         return self._reason
 
 
-
 class RequestHandlerCustomError(RequestHandlerBase):
     def write_error(self, status_code, **kwargs):
         self.render(
