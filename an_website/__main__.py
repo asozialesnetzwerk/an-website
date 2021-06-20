@@ -51,7 +51,7 @@ if __name__ == "__main__":
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
-        logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+        logging.Formatter("%(asctime)s | %(levelname)s:%(name)s:%(message)s")
     )
     root_logger.addHandler(stream_handler)
     if not sys.flags.dev_mode:

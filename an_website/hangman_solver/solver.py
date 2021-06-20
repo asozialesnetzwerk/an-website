@@ -23,7 +23,7 @@ def get_handlers():
 
 
 @dataclass()
-class Hangman:
+class Hangman:  # pylint: disable=too-many-instance-attributes
     input: str = ""
     invalid: str = ""
     words: list[str] = field(default_factory=list)
@@ -81,7 +81,7 @@ async def get_words_and_letters(
                         letters[letter] = letters.setdefault(letter, 0) + 1
 
     # sort letters:
-    letters_items: List[Tuple[str, int]] = [(k, v) for k, v in letters.items()]
+    letters_items: List[Tuple[str, int]] = list(letters.items())
     sorted_letters: List[Tuple[str, int]] = sorted(
         letters_items, key=lambda item: item[1], reverse=True
     )
