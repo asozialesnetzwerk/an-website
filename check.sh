@@ -30,4 +30,4 @@ python3 -m mypy --show-column-numbers --show-error-codes --pretty -p an_website
 
 # lint
 echo Pylint:
-python3 -m pylint --output-format=colorized an_website
+python3 -m pylint -d R --output-format=colorized an_website
