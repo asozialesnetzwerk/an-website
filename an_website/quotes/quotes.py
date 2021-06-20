@@ -1,7 +1,7 @@
 from ..utils.utils import RequestHandlerCustomError
 
 
-def get_handlers() -> tuple:
+def get_handler() -> tuple:
     return r"/zitate/?", Quotes
 
 

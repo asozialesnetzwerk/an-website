@@ -18,7 +18,7 @@ GH_PAGES_COMMIT_HASH = subprocess.run(
 ).stdout
 
 
-def get_handlers() -> tuple:
+def get_handler() -> tuple:
     return r"/version/?", Version
 
 

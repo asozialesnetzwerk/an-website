@@ -6,7 +6,7 @@ import traceback
 from tornado.web import HTTPError, RequestHandler
 
 
-def get_handlers() -> tuple:
+def get_handler() -> tuple:
     return r"/error/?", RequestHandlerZeroDivision
 
 

@@ -20,10 +20,10 @@ AsyncHTTPClient.configure(
 
 handlers_list: List[tuple] = [
     *soundboard.get_handlers(),
-    quotes.get_handlers(),
-    utils.get_handlers(),
-    version.get_handlers(),
-    discord.get_handlers(),
+    quotes.get_handler(),
+    utils.get_handler(),
+    version.get_handler(),
+    discord.get_handler(),
     *converter.get_handlers(),
     *solver.get_handlers(),
 ]

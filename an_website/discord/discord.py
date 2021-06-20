@@ -7,7 +7,7 @@ from ..utils.utils import RequestHandlerCustomError
 WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
 
-def get_handlers():
+def get_handler():
     return r"/discord/?", Discord
 
 
