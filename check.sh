@@ -1,6 +1,13 @@
 #!/bin/sh
 
-python3 -m pip install --user -r check-requirements.txt --quiet
+if [ -d venv ];
+then
+    . venv/bin/activate
+    python3 -m pip install -r check-requirements.txt --quiet
+else
+    python3 -m pip install --user -r check-requirements.txt --quiet
+fi
+
 
 # test hashing files (important to see if umlaute are used)
 git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
