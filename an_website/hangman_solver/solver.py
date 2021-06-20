@@ -4,26 +4,22 @@ import os
 import re
 from dataclasses import asdict, dataclass, field
 from distutils.util import strtobool
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from tornado.web import HTTPError, RequestHandler
 
-from ..utils.utils import (
-    RequestHandlerCustomError,
-    RequestHandlerJsonAPI,
-    length_of_match,
-)
+from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
 from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
-def get_handlers() -> list[tuple]:
-    return [
+def get_handlers():
+    return (
         (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
         (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
-    ]
+    )
 
 
 @dataclass()
@@ -65,7 +61,7 @@ async def generate_pattern_str(
 
 async def get_words_and_letters(
     file_name: str, input_str: str, invalid: str, crossword_mode: bool
-) -> tuple[list[str], dict[str, int]]:
+) -> Tuple[List[str], Dict[str, int]]:
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
 
@@ -129,13 +125,13 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     )
 
 
-class HangmanSolver(RequestHandlerCustomError):
+class HangmanSolver(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
-class HangmanSolverAPI(RequestHandlerJsonAPI):
+class HangmanSolverAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
         self.write(asdict(hangman))

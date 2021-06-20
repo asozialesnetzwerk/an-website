@@ -6,18 +6,8 @@ import traceback
 from tornado.web import HTTPError, RequestHandler
 
 
-def get_handler() -> tuple:
-    return r"/error/?", RequestHandlerZeroDivision
-
-
-def length_of_match(m: re.Match):  # pylint: disable=invalid-name
-    span = m.span()
-    return span[1] - span[0]
-
-
-def get_url(request_handler: RequestHandler):
-    """Dirty fix to force https"""
-    return request_handler.request.full_url().replace("http://j", "https://j")
+def get_handlers():
+    return ((r"/error/?", ZeroDivision),)
 
 
 async def run_shell(cmd, stdin=asyncio.subprocess.PIPE):
@@ -36,12 +26,24 @@ async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
     return proc.returncode, stdout, stderr
 
 
-class RequestHandlerBase(RequestHandler):
+def length_of_match(m: re.Match):  # pylint: disable=invalid-name
+    span = m.span()
+    return span[1] - span[0]
+
+
+class BaseRequestHandler(RequestHandler):
     def data_received(self, chunk):
         pass
 
-    def render(self, template_name, **kwargs):
-        return super().render(template_name, **kwargs, url=get_url(self))
+    def render_string(self, template_name, **kwargs):
+        return super().render_string(
+            template_name, **kwargs, url=self.get_url(), rum=self.get_rum()
+        )
+
+    def write_error(self, status_code, **kwargs):
+        self.render(
+            "error.html", code=status_code, message=self.get_error_message(**kwargs)
+        )
 
     def get_error_message(self, **kwargs):
         if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
@@ -50,31 +52,35 @@ class RequestHandlerBase(RequestHandler):
             return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
         return self._reason
 
+    def get_url(self):
+        """Dirty fix to force https"""
+        return self.request.full_url().replace("http://joshix", "https://joshix")
 
-class RequestHandlerCustomError(RequestHandlerBase):
-    def write_error(self, status_code, **kwargs):
-        self.render(
-            "error.html", code=status_code, message=self.get_error_message(**kwargs)
-        )
+    def get_rum(self):
+        return f"""
+        <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
+        <script>
+          elasticApm.init({{
+            active: {"true" if self.settings.get("ELASTIC_APM")["ENABLED"] else "false"},
+            serverUrl: '{self.settings.get("ELASTIC_APM")["SERVER_URL"]}',
+            serviceName: '{self.settings.get("ELASTIC_APM")["SERVICE_NAME"]}',
+            serviceVersion: '{self.settings.get("ELASTIC_APM")["SERVICE_VERSION"]}',
+            environment: '{self.settings.get("ELASTIC_APM")["ENVIRONMENT"]}',
+          }})
+        </script>
+        """
 
 
-class RequestHandlerJsonAPI(RequestHandlerBase):
+class APIRequestHandler(BaseRequestHandler):
     def write_error(self, status_code, **kwargs):
         self.write({"status": status_code, "message": self.get_error_message(**kwargs)})
 
 
-class RequestHandlerNotFound(RequestHandlerCustomError):
-    # def options(self): self.set_status(404)
-    # def head(self): self.set_status(404)
-    # def get(self): self.write_error(404)
-    # def post(self): self.write_error(404)
-    # def delete(self): self.write_error(404)
-    # def patch(self): self.write_error(404)
-    # def put(self): self.write_error(404)
+class NotFound(BaseRequestHandler):
     def prepare(self):
         raise HTTPError(404)
 
 
-class RequestHandlerZeroDivision(RequestHandlerCustomError):
+class ZeroDivision(BaseRequestHandler):
     def get(self):
-        0 / 0  # pylint: disable=pointless-statement
+        self.finish(0 / 0)

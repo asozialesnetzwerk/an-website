@@ -1,10 +1,12 @@
-from ..utils.utils import RequestHandlerCustomError
+from __future__ import annotations
+
+from ..utils.utils import BaseRequestHandler
 
 
-def get_handler() -> tuple:
-    return r"/zitate/?", Quotes
+def get_handlers():
+    return ((r"/zitate/?", Quotes),)
 
 
-class Quotes(RequestHandlerCustomError):
+class Quotes(BaseRequestHandler):
     async def get(self):
         await self.render("pages/quotes.html")

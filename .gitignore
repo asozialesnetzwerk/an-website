@@ -54,17 +54,17 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
+# Django stuff
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 
-# Flask stuff:
+# Flask stuff
 instance/
 .webassets-cache
 
-# Scrapy stuff:
+# Scrapy stuff
 .scrapy
 
 # Sphinx documentation
@@ -123,11 +123,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Jetbrains:
+# Jetbrains
 .idea/
 
-# hangman-solver word lists:
+# configuration
+config.ini
+
+# hangman-solver word lists
 full_wordlist.txt
 
-# Känguru-Soundboard:
+# Känguru-Soundboard
 kangaroo_soundboard/build

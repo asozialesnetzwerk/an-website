@@ -1,24 +1,26 @@
 #!/bin/sh
 
-venv/bin/python3 -m pip install -r check-requirements.txt
+python3 -m pip install --user -r check-requirements.txt --quiet
 
-# test hashing files (important to see if umlaute are used):
-git ls-files | xargs sha1sum | sha1sum
+# test hashing files (important to see if umlaute are used)
+git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
 
-# fix code:
-echo black:
-venv/bin/black -t py38 .
+# check for errors
+echo Pyflakes:
+python3 -m pyflakes an_website || exit 1
+
+# sort imports
 echo isort:
-venv/bin/isort .
+python3 -m isort .
 
-# Check for errors
-echo pyflakes:
-venv/bin/pyflakes an_website
+# check formatting
+echo Black:
+python3 -m black -t py38 --check --diff --color . || echo 'Run "python3 -m black -t py38 ." to reformat.'
 
-# lint:
-echo pylint:
-venv/bin/pylint -d R,line-too-long an_website
-
-# Check types:
+# check types
 echo mypy:
-venv/bin/mypy --show-column-numbers --show-error-codes -p an_website
+python3 -m mypy --show-column-numbers --show-error-codes --pretty -p an_website
+
+# lint
+echo Pylint:
+python3 -m pylint --output-format=colorized an_website

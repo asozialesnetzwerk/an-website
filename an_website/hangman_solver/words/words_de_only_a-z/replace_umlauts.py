@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # pylint: disable=invalid-name
 
+from __future__ import annotations
+
 file = "full_wordlist.txt"
 
 text = (

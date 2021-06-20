@@ -1,10 +1,12 @@
 # pylint: disable=subprocess-run-check
 
+from __future__ import annotations
+
 import hashlib
 import subprocess
 
 from .. import DIR
-from ..utils.utils import RequestHandlerCustomError
+from ..utils.utils import BaseRequestHandler
 
 VERSION = subprocess.run(
     "git rev-parse HEAD", cwd=DIR, shell=True, capture_output=True, text=True
@@ -18,11 +20,11 @@ GH_PAGES_COMMIT_HASH = subprocess.run(
 ).stdout
 
 
-def get_handler() -> tuple:
-    return r"/version/?", Version
+def get_handlers():
+    return ((r"/version/?", Version),)
 
 
-class Version(RequestHandlerCustomError):
+class Version(BaseRequestHandler):
     async def get(self):
         await self.render(
             "pages/version.html",

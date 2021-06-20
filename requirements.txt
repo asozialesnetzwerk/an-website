@@ -1,2 +1,4 @@
-tornado>=6.1,<7.0
-pycurl>=7.43.0.6,<8.0
+tornado>=6.1,<7
+pycurl>=7.43.0.6,<8
+elastic-apm>=6,<7
+ecs-logging>=1,<2

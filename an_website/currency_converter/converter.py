@@ -5,17 +5,17 @@ from typing import Optional
 
 from tornado.web import RequestHandler
 
-from ..utils.utils import RequestHandlerCustomError, RequestHandlerJsonAPI, get_url
+from ..utils.utils import APIRequestHandler, BaseRequestHandler
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
 
 
-def get_handlers() -> list[tuple]:
-    return [
+def get_handlers():
+    return (
         (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
         (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
-    ]
+    )
 
 
 async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
@@ -72,19 +72,18 @@ async def arguments_to_value_dict(request_handler: RequestHandler) -> Optional[d
                     value_dict["contained_bad_param"] = True
                 value_dict["key_used"] = keys[key[0]]
                 return value_dict
-            else:
-                contains_bad_param = True
+            contains_bad_param = True
     return None
 
 
-class CurrencyConverter(RequestHandlerCustomError):
+class CurrencyConverter(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(16)
 
         if value_dict.get("contained_bad_param", False):
-            url = get_url(self).split("?")[0]
+            url = self.get_url().split("?")[0]
             key = value_dict.get("key_used")
             self.redirect(f"{url}?{key}={value_dict.get(key + '_str')}")
             return
@@ -92,7 +91,7 @@ class CurrencyConverter(RequestHandlerCustomError):
         await self.render("pages/converter.html", **value_dict)
 
 
-class CurrencyConverterAPI(RequestHandlerJsonAPI):
+class CurrencyConverterAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -25,7 +27,7 @@ RSS_ITEM_STRING = """    <item>
       <link>https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3</link>
       <enclosure url="https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3"
                  type="audio/mpeg">
-      <guid>{file_name}</guid>          
+      <guid>{file_name}</guid>
     </item>"""
 
 RSS_TITLE_STRING = "[{book}, {chapter}] {file_name}"
@@ -57,7 +59,7 @@ HTML_STRING = """
             color: var(--white);
             background-color: var(--black);
         }}
-       
+
     </style>
 </head>
 <body>
