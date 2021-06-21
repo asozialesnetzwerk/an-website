@@ -54,9 +54,7 @@ if __name__ == "__main__":
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(
-        LogFormatter()
-    )
+    stream_handler.setFormatter(LogFormatter())
     root_logger.addHandler(stream_handler)
     if not sys.flags.dev_mode:
         file_handler = logging.handlers.TimedRotatingFileHandler(
