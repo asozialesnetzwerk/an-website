@@ -10,9 +10,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install requirements
-        run: |
-          cat requirements.txt | grep -v "pycurl*" | xargs pip install --user
+      #- name: Install requirements
+      #  run: |
+      #    cat requirements.txt | grep -v "#*" -v "pycurl*" | xargs pip install --user
       - name: Install Pyflakes
         run: |
           pip install --user "pyflakes<3"
