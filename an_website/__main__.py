@@ -18,6 +18,7 @@ from . import DIR
 from .currency_converter import converter
 from .discord import discord
 from .hangman_solver import solver
+from .host_info import host_info
 from .kangaroo_soundboard import soundboard
 from .quotes import quotes
 from .utils import utils
@@ -31,6 +32,7 @@ handlers_list = (
     *solver.get_handlers(),
     *quotes.get_handlers(),
     *soundboard.get_handlers(),
+    *host_info.get_handlers(),
 )
 
 
