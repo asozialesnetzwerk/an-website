@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
-from . import DIR
+from . import DIR, words
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
@@ -67,18 +67,17 @@ async def get_words_and_letters(
 
     input_set = set(input_str.lower())
 
-    words = []
+    current_words = []
     letters: dict[str, int] = {}
-    with open(file_name) as file:
-        for line in file:
-            stripped_line = line.strip()
-            if regex.fullmatch(stripped_line) is not None:
-                words.append(stripped_line)
 
-                # do letter stuff:
-                for letter in set(stripped_line):
-                    if letter not in input_set:
-                        letters[letter] = letters.setdefault(letter, 0) + 1
+    for line in words[file_name]:
+        if regex.fullmatch(line) is not None:
+            current_words.append(line)
+
+            # do letter stuff:
+            for letter in set(line):
+                if letter not in input_set:
+                    letters[letter] = letters.setdefault(letter, 0) + 1
 
     # sort letters:
     letters_items: List[Tuple[str, int]] = list(letters.items())
@@ -86,11 +85,11 @@ async def get_words_and_letters(
         letters_items, key=lambda item: item[1], reverse=True
     )
 
-    return words, dict(sorted_letters)
+    return current_words, dict(sorted_letters)
 
 
 async def solve_hangman(request_handler: RequestHandler) -> Hangman:
-    max_words = int(str(request_handler.get_query_argument("max_words", default="100")))
+    max_words = int(str(request_handler.get_query_argument("max_words", default="50")))
     crossword_mode_str = str(
         request_handler.get_query_argument("crossword_mode", default="False")
     )
@@ -112,26 +111,27 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
     invalid = str(request_handler.get_query_argument("invalid", default=""))
 
-    file_name = f"{folder}/{input_len}.txt"
+    # to be short (is only the key of the words dict in __init__.py
+    file_name = f"words_{language}/{input_len}.txt"
 
     words_and_letters = await get_words_and_letters(
         file_name, input_str, invalid, crossword_mode
     )
-    words = words_and_letters[0]
+    matched_words = words_and_letters[0]
     letters = words_and_letters[1]
 
     return Hangman(
-        input_str, invalid, words, len(words), letters, crossword_mode, max_words
+        input_str, invalid, matched_words, len(matched_words), letters, crossword_mode, max_words
     )
 
 
 class HangmanSolver(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
-        await self.render("pages/hangman_solver.html", **asdict(hangman))
+        return await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
-        self.write(asdict(hangman))
+        return self.write(asdict(hangman))
