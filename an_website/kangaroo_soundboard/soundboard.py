@@ -1,4 +1,4 @@
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
 from tornado.web import StaticFileHandler
 

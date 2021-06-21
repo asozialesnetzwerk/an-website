@@ -1,6 +1,9 @@
-[MESSAGES_CONTROL]
+[MESSAGES CONTROL]
 disable=
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,
     line-too-long
+
+[IMPORTS]
+preferred-modules=xml:defusedxml,json:orjson

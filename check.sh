@@ -26,7 +26,7 @@ python3 -m black -t py38 --check --diff --color . || echo 'Run "python3 -m black
 
 # check types
 echo mypy:
-python3 -m mypy --show-column-numbers --show-error-codes --pretty -p an_website
+python3 -m mypy --show-column-numbers --show-error-codes --pretty --install-types -p an_website
 
 # lint
 echo Pylint:

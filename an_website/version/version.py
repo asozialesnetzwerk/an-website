@@ -1,6 +1,6 @@
 # pylint: disable=subprocess-run-check
 
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
 import hashlib
 import subprocess

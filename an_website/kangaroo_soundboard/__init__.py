@@ -1,10 +1,11 @@
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
-import json
 import os
 import re
 import shutil
 from typing import Dict
+
+import orjson
 
 # pylint: disable=invalid-name
 
@@ -87,7 +88,7 @@ os.makedirs(f"{DIR}/build", exist_ok=True)
 # Känguru-Chroniken.\"\n---\n"
 
 with open(f"{DIR}/info.json", "r") as my_file:
-    info = json.loads(my_file.read())
+    info = orjson.loads(my_file.read())
 
 
 def replace_umlauts(text: str) -> str:

@@ -1,7 +1,6 @@
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
-import json
-
+import orjson
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 
 from ..utils.utils import BaseRequestHandler
@@ -21,5 +20,5 @@ class Discord(BaseRequestHandler):
         except HTTPError:
             self.redirect("https://disboard.org/server/join/367648314184826880")
         else:
-            response_json = json.loads(response.body.decode("utf-8"))
+            response_json = orjson.loads(response.body.decode("utf-8"))
             self.redirect(response_json["instant_invite"])
