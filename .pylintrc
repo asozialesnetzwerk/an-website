@@ -1,3 +1,6 @@
+[MASTER]
+extension-pkg-allow-list=orjson
+
 [MESSAGES CONTROL]
 disable=
     missing-module-docstring,
