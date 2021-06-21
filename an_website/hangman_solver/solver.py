@@ -121,7 +121,13 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     letters = words_and_letters[1]
 
     return Hangman(
-        input_str, invalid, matched_words, len(matched_words), letters, crossword_mode, max_words
+        input_str,
+        invalid,
+        matched_words,
+        len(matched_words),
+        letters,
+        crossword_mode,
+        max_words,
     )
 
 
