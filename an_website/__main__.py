@@ -1,33 +1,35 @@
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
+import asyncio
 import configparser
 import logging
 import logging.handlers
 import sys
 
-from tornado.ioloop import IOLoop
-from tornado.web import Application
-from tornado.httpclient import AsyncHTTPClient
-from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 import ecs_logging
+import uvloop
+from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
+from tornado.httpclient import AsyncHTTPClient
+from tornado.platform.asyncio import AsyncIOMainLoop
+from tornado.web import Application
 
 from . import DIR
+from .currency_converter import converter
+from .discord import discord
+from .hangman_solver import solver
+from .kangaroo_soundboard import soundboard
+from .quotes import quotes
 from .utils import utils
 from .version import version
-from .discord import discord
-from .currency_converter import converter
-from .hangman_solver import solver
-from .quotes import quotes
-from .kangaroo_soundboard import soundboard
 
 handlers_list = (
-    *soundboard.get_handlers(),
-    *quotes.get_handlers(),
     *utils.get_handlers(),
     *version.get_handlers(),
     *discord.get_handlers(),
     *converter.get_handlers(),
     *solver.get_handlers(),
+    *quotes.get_handlers(),
+    *soundboard.get_handlers(),
 )
 
 
@@ -47,6 +49,7 @@ def make_app():
 
 
 if __name__ == "__main__":
+    # defusedxml.defuse_stdlib()
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
@@ -84,7 +87,9 @@ if __name__ == "__main__":
         if not sys.flags.dev_mode:
             raise
     app.listen(8080)
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    AsyncIOMainLoop().install()
     try:
-        IOLoop.current().start()
+        asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
         pass

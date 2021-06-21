@@ -46,7 +46,7 @@ jobs:
           pip install --user "mypy<2"
       - name: Run mypy
         run: |
-          mypy --show-column-numbers --show-error-codes -p an_website
+          mypy -p an_website
   lint:
     name: Lint
     runs-on: ubuntu-20.04
