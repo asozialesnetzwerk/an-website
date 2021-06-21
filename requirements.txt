@@ -1,4 +1,6 @@
 tornado>=6.1,<7
 pycurl>=7.43.0.6,<8
-elastic-apm>=6,<7
 ecs-logging>=1,<2
+elastic-apm>=6,<7
+orjson>=3.5.3,<4
+#defusedxml<2
