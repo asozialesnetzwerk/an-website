@@ -33,8 +33,8 @@ jobs:
         uses: pat-s/always-upload-cache@v2
         with:
           path: .mypy_cache
-          key: mypy-${{ github.head_ref }}-${{ github.sha }}
-          restore-keys: mypy-${{ github.head_ref }}-
+          key: mypy-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: mypy-${{ github.repository }}-${{ github.ref }}-
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
@@ -54,8 +54,8 @@ jobs:
         uses: pat-s/always-upload-cache@v2
         with:
           path: ~/.pylint.d
-          key: pylint-${{ github.head_ref }}-${{ github.sha }}
-          restore-keys: pylint-${{ github.head_ref }}-
+          key: pylint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: pylint-${{ github.repository }}-${{ github.ref }}-
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
