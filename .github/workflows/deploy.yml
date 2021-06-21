@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v2
       #- name: Install requirements
       #  run: |
-      #    cat requirements.txt | grep -v "#*" | grep -v "pycurl*" | xargs pip install --user
+      #    grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install Pyflakes
         run: |
           pip install --user "pyflakes<3"
