@@ -86,9 +86,9 @@ if __name__ == "__main__":
     except ModuleNotFoundError:
         if not sys.flags.dev_mode:
             raise
-    app.listen(8080)
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     AsyncIOMainLoop().install()
+    app.listen(8080)
     try:
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
