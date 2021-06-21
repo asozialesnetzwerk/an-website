@@ -1,6 +1,5 @@
 from __future__ import annotations, barry_as_FLUFL
 
-import os
 import re
 from dataclasses import asdict, dataclass, field
 from distutils.util import strtobool
@@ -9,7 +8,7 @@ from typing import Dict, List, Tuple
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
-from . import DIR, words
+from . import words
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
@@ -97,22 +96,21 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 
     language = str(request_handler.get_query_argument("lang", default="de_only_a-z"))
 
-    folder = f"{DIR}/words/words_{language}"
-
-    if not os.path.isdir(folder):
-        raise HTTPError(400, f"'{language}' is an invalid language")
-
     input_str = str(request_handler.get_query_argument("input", default=""))
     input_len = len(input_str)
+
+    # to be short (is only the key of the words dict in __init__.py)
+    file_name = f"words_{language}/{input_len}.txt"
+
+    if file_name not in words:
+        raise HTTPError(400, f"'{language}' is an invalid language")
+
     if input_len == 0:  # input is empty:
         return Hangman(
             crossword_mode=crossword_mode, max_words=max_words, lang=language
         )
 
     invalid = str(request_handler.get_query_argument("invalid", default=""))
-
-    # to be short (is only the key of the words dict in __init__.py
-    file_name = f"words_{language}/{input_len}.txt"
 
     words_and_letters = await get_words_and_letters(
         file_name, input_str, invalid, crossword_mode
