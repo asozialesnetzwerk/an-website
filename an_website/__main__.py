@@ -10,6 +10,7 @@ import ecs_logging
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from tornado.httpclient import AsyncHTTPClient
+from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
@@ -54,7 +55,7 @@ if __name__ == "__main__":
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
-        logging.Formatter("%(asctime)s | %(levelname)s:%(name)s:%(message)s")
+        LogFormatter()
     )
     root_logger.addHandler(stream_handler)
     if not sys.flags.dev_mode:
