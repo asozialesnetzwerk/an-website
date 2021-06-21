@@ -37,7 +37,7 @@ jobs:
           restore-keys: mypy-
       - name: Install requirements
         run: |
-          cat requirements.txt | grep -v "#*" -v "pycurl*" | xargs pip install --user
+          cat requirements.txt | grep -v "#*" | grep -v "pycurl*" | xargs pip install --user
       - name: Install mypy
         run: |
           pip install --user "mypy<2"
@@ -58,7 +58,7 @@ jobs:
           restore-keys: pylint-
       - name: Install requirements
         run: |
-          cat requirements.txt | grep -v "#*" -v "pycurl*" | xargs pip install --user
+          cat requirements.txt | grep -v "#*" | grep -v "pycurl*" | xargs pip install --user
       - name: Install Pylint
         run: |
           pip install --user "pylint<3"
