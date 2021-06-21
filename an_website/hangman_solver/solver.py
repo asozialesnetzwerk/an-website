@@ -1,5 +1,6 @@
 from __future__ import annotations, barry_as_FLUFL
 
+import os
 import re
 from dataclasses import asdict, dataclass, field
 from distutils.util import strtobool
@@ -8,10 +9,25 @@ from typing import Dict, List, Tuple
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
-from . import words
+from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
+
+# example: {"words_en/3.txt": ["you", "she", ...]}
+WORDS: Dict[str, List[str]] = {}
+
+# load word lists
+BASE_WORDS_DIR = f"{DIR}/words"
+for folder in os.listdir(BASE_WORDS_DIR):
+    if folder.startswith("words_"):
+        words_dir = f"{BASE_WORDS_DIR}/{folder}"
+        for file_name in os.listdir(words_dir):
+            if file_name.endswith(".txt"):
+                with open(f"{words_dir}/{file_name}") as file:
+                    WORDS[f"{folder}/{file_name}"] = file.read().splitlines()
+
+del folder, words_dir, file_name, file  # pylint: disable=undefined-loop-variable
 
 
 def get_handlers():
@@ -59,7 +75,10 @@ async def generate_pattern_str(
 
 
 async def get_words_and_letters(
-    file_name: str, input_str: str, invalid: str, crossword_mode: bool
+    file_name: str,  # pylint: disable=redefined-outer-name
+    input_str: str,
+    invalid: str,
+    crossword_mode: bool,
 ) -> Tuple[List[str], Dict[str, int]]:
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
@@ -69,7 +88,7 @@ async def get_words_and_letters(
     current_words = []
     letters: dict[str, int] = {}
 
-    for line in words[file_name]:
+    for line in WORDS[file_name]:
         if regex.fullmatch(line) is not None:
             current_words.append(line)
 
@@ -100,9 +119,11 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     input_len = len(input_str)
 
     # to be short (is only the key of the words dict in __init__.py)
-    file_name = f"words_{language}/{input_len}.txt"
+    file_name = (  # pylint: disable=redefined-outer-name
+        f"words_{language}/{input_len}.txt"
+    )
 
-    if file_name not in words:
+    if file_name not in WORDS:
         raise HTTPError(400, f"'{language}' is an invalid language")
 
     if input_len == 0:  # input is empty:
@@ -132,10 +153,10 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
 class HangmanSolver(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
-        return await self.render("pages/hangman_solver.html", **asdict(hangman))
+        await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await solve_hangman(self)
-        return self.write(asdict(hangman))
+        self.write(asdict(hangman))
