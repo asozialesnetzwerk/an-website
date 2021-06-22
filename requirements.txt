@@ -1,6 +1,6 @@
 tornado>=6.1,<7
 pycurl>=7.43.0.6,<8
-#asyncpg>=0.20,<2
+#asyncpg>=0.23,<2
 ecs-logging>=1,<2
 elastic-apm>=6,<7
 uvloop>=0.15.2,<2
