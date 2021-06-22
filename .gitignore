@@ -130,6 +130,9 @@ dmypy.json
 config.ini
 logs/
 
+# screenFetch
+screenfetch
+
 # hangman-solver word lists
 full_wordlist.txt
 

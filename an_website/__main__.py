@@ -7,7 +7,6 @@ import logging.handlers
 import sys
 
 import ecs_logging
-import orjson
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from tornado import escape
@@ -16,7 +15,7 @@ from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
-from . import DIR
+from . import DIR, json
 from .currency_converter import converter
 from .discord import discord
 from .hangman_solver import solver
@@ -55,8 +54,7 @@ def make_app():
 
 if __name__ == "__main__":
     # defusedxml.defuse_stdlib()
-    escape.json_encode = utils.json_encode
-    escape.json_decode = orjson.loads  # type: ignore
+    escape.json = json
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)

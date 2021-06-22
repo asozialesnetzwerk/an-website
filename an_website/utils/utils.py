@@ -5,16 +5,11 @@ import asyncio.subprocess
 import re
 import traceback
 
-import orjson
 from tornado.web import HTTPError, RequestHandler
 
 
 def get_handlers():
     return ((r"/error/?", ZeroDivision),)
-
-
-def json_encode(value):
-    return orjson.dumps(value).decode("utf-8").replace("</", "<\\/")
 
 
 def length_of_match(m: re.Match):  # pylint: disable=invalid-name
