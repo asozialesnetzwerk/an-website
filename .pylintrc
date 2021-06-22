@@ -13,8 +13,5 @@ include-naming-hint=yes
 [FORMAT]
 expected-line-ending-format=LF
 
-[LOGGING]
-logging-format-style=new
-
 [IMPORTS]
 preferred-modules=xml:defusedxml,json:orjson
