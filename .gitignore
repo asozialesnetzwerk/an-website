@@ -126,8 +126,9 @@ dmypy.json
 # Jetbrains
 .idea/
 
-# configuration
+# configuration and logs
 config.ini
+logs/
 
 # hangman-solver word lists
 full_wordlist.txt
