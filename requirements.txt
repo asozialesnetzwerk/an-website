@@ -6,7 +6,7 @@ elastic-apm>=6,<7
 uvloop>=0.15.2,<2
 orjson>=3.5.3,<4
 #defusedxml<2
-ansi2html~=1.6.0
+ansi2html>=1.6.0,<1
 
 # may fail to install
 # not required in dev mode
