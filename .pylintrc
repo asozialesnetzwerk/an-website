@@ -7,5 +7,11 @@ disable=
     missing-class-docstring,
     missing-function-docstring,
 
+[BASIC]
+include-naming-hint=yes
+
+[FORMAT]
+expected-line-ending-format=LF
+
 [IMPORTS]
 preferred-modules=xml:defusedxml,json:orjson
