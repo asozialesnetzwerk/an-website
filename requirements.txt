@@ -6,4 +6,7 @@ elastic-apm>=6,<7
 uvloop>=0.15.2,<2
 orjson>=3.5.3,<4
 #defusedxml<2
+
+# may fail to install
+# not required in dev mode
 pycurl>=7.43.0.6,<8
