@@ -56,7 +56,7 @@ def make_app():
 if __name__ == "__main__":
     # defusedxml.defuse_stdlib()
     escape.json_encode = utils.json_encode
-    escape.json_decode = orjson.loads
+    escape.json_decode = orjson.loads  # type: ignore
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
