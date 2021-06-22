@@ -1,0 +1,15 @@
+{% extends "../base.html" %}
+
+{% block title %}Host-Informationen{% end %}
+
+{% block description %}Informationen über den Host dieser Seite.{% end %}
+
+{% block body %}
+
+{% autoescape None %}
+
+<pre>
+{{ screen_fetch }}
+</pre>
+
+{% end %}
