@@ -124,7 +124,7 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     )
 
     if file_name not in WORDS:
-        raise HTTPError(400, f"'{language}' is an invalid language")
+        raise HTTPError(400, reason=f"'{language}' is an invalid language")
 
     if input_len == 0:  # input is empty:
         return Hangman(
