@@ -1,6 +1,6 @@
 from __future__ import annotations, barry_as_FLUFL
 
-from ansi2html import Ansi2HTMLConverter
+from ansi2html import Ansi2HTMLConverter  # type: ignore
 
 from ..utils.utils import BaseRequestHandler, run_shell
 
