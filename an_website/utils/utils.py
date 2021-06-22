@@ -5,11 +5,21 @@ import asyncio.subprocess
 import re
 import traceback
 
+import orjson
 from tornado.web import HTTPError, RequestHandler
 
 
 def get_handlers():
     return ((r"/error/?", ZeroDivision),)
+
+
+def json_encode(value):
+    return orjson.dumps(value).decode("utf-8").replace("</", "<\\/")
+
+
+def length_of_match(m: re.Match):  # pylint: disable=invalid-name
+    span = m.span()
+    return span[1] - span[0]
 
 
 async def run_shell(cmd, stdin=asyncio.subprocess.PIPE):
@@ -26,11 +36,6 @@ async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
     )
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout, stderr
-
-
-def length_of_match(m: re.Match):  # pylint: disable=invalid-name
-    span = m.span()
-    return span[1] - span[0]
 
 
 class BaseRequestHandler(RequestHandler):
@@ -85,4 +90,4 @@ class NotFound(BaseRequestHandler):
 
 class ZeroDivision(BaseRequestHandler):
     def get(self):
-        self.finish(0 / 0)
+        self.finish(str(0/0))
