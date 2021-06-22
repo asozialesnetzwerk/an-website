@@ -90,4 +90,4 @@ class NotFound(BaseRequestHandler):
 
 class ZeroDivision(BaseRequestHandler):
     def get(self):
-        self.finish(str(0/0))
+        self.finish(str(0 / 0))
