@@ -10,7 +10,5 @@ def get_handlers():
 class Neofetch(BaseRequestHandler):
     async def get(self):
         self.finish(
-            "<pre>"
-            + (await run_shell("screenfetch -N"))[1].decode("utf-8")
-            + "<pre/>"
+            "<pre>" + (await run_shell("screenfetch -N"))[1].decode("utf-8") + "<pre/>"
         )  # quick and dirty
