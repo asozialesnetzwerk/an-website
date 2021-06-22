@@ -10,7 +10,7 @@ import ecs_logging
 import orjson
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
-from tornade import escape
+from tornado import escape
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
