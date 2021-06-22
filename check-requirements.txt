@@ -1,5 +1,5 @@
 pyflakes>=2,<3
-pylint>=2,<3
+pylint>=2.8,<3
 mypy<2
 black
 isort>=5,<6
