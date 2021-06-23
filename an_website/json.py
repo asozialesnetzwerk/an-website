@@ -2,7 +2,16 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
+from json.decoder import JSONDecoder, JSONDecodeError
+from json.encoder import JSONEncoder
+
+import ecs_logging._utils
+import elasticapm.utils.json_encoder
+import elasticapm.utils.cloud
 import orjson
+import tornado.escape
+
+from . import json  # pylint: disable=import-self
 
 
 def dumps(
@@ -52,3 +61,11 @@ def loads(
     **kw,
 ):
     return orjson.loads(s)
+
+
+def patch():
+    escape.json = json
+    ecs_logging._utils.json = json
+    elasticapm.utils.json_encoder.json = json
+    elasticapm.utils.cloud = json
+    
