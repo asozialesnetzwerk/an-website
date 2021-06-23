@@ -130,9 +130,7 @@ async def solve_hangman(
         )
 
     # to be short (is only the key of the words dict in __init__.py)
-    file_name = (  # pylint: disable=redefined-outer-name
-        f"words_{language}/{input_len}"
-    )
+    file_name = f"words_{language}/{input_len}"  # pylint: disable=redefined-outer-name
 
     if file_name not in WORDS:
         raise HTTPError(400, reason=f"'{language}' is an invalid language")
