@@ -20,7 +20,17 @@ def dumps(
     **kw,
 ):
     if cls is not None:
-        _ = cls(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular, allow_nan=allow_nan, indent=indent, separators=separators, default=default, sort_keys=sort_keys, **kw)
+        _ = cls(
+            skipkeys=skipkeys,
+            ensure_ascii=ensure_ascii,
+            check_circular=check_circular,
+            allow_nan=allow_nan,
+            indent=indent,
+            separators=separators,
+            default=default,
+            sort_keys=sort_keys,
+            **kw,
+        )
         default = lambda o: _.default(_, o)
     option = orjson.OPT_UTC_Z
     if indent:
