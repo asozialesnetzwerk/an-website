@@ -44,7 +44,7 @@ def make_app():
         compress_response=True,
         debug=bool(sys.flags.dev_mode),
         default_handler_class=utils.NotFound,
-        websocket_ping_interval = 10,
+        websocket_ping_interval=10,
         # Template settings
         template_path=f"{DIR}/templates",
         # Static file settings
