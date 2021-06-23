@@ -20,7 +20,7 @@ def dumps(
     **kw,
 ):
     option = 0
-    if isinstance(indent, int):
+    if isinstance(indent, int) and indent > 0:
         option = option | orjson.OPT_INDENT_2
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
