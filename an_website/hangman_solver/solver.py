@@ -106,17 +106,15 @@ async def get_words_and_letters(
     return current_words, dict(sorted_letters)
 
 
-async def solve_hangman(request_handler: RequestHandler) -> Hangman:
-    max_words = int(str(request_handler.get_query_argument("max_words", default="50")))
-    crossword_mode_str = str(
-        request_handler.get_query_argument("crossword_mode", default="False")
-    )
-    crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
-
-    language = str(request_handler.get_query_argument("lang", default="de_only_a-z"))
-
-    input_str = str(request_handler.get_query_argument("input", default=""))
+async def solve_hangman(
+    input_str: str, invalid: str, language: str, max_words: int, crossword_mode: bool
+) -> Hangman:
     input_len = len(input_str)
+
+    if input_len == 0:  # input is empty:
+        return Hangman(
+            crossword_mode=crossword_mode, max_words=max_words, lang=language
+        )
 
     # to be short (is only the key of the words dict in __init__.py)
     file_name = (  # pylint: disable=redefined-outer-name
@@ -126,18 +124,10 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     if file_name not in WORDS:
         raise HTTPError(400, reason=f"'{language}' is an invalid language")
 
-    if input_len == 0:  # input is empty:
-        return Hangman(
-            crossword_mode=crossword_mode, max_words=max_words, lang=language
-        )
-
-    invalid = str(request_handler.get_query_argument("invalid", default=""))
-
-    words_and_letters = await get_words_and_letters(
+    # do the solving:
+    matched_words, letters = await get_words_and_letters(
         file_name, input_str, invalid, crossword_mode
     )
-    matched_words = words_and_letters[0]
-    letters = words_and_letters[1]
 
     return Hangman(
         input_str,
@@ -150,13 +140,36 @@ async def solve_hangman(request_handler: RequestHandler) -> Hangman:
     )
 
 
+async def handle_request(request_handler: RequestHandler) -> Hangman:
+    max_words = int(str(request_handler.get_query_argument("max_words", default="50")))
+
+    crossword_mode_str = str(
+        request_handler.get_query_argument("crossword_mode", default="False")
+    )
+    crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
+
+    language = str(request_handler.get_query_argument("lang", default="de_only_a-z"))
+
+    input_str = str(request_handler.get_query_argument("input", default=""))
+
+    invalid = str(request_handler.get_query_argument("invalid", default=""))
+
+    return await solve_hangman(
+        max_words=max_words,
+        crossword_mode=crossword_mode,
+        language=language,
+        input_str=input_str,
+        invalid=invalid,
+    )
+
+
 class HangmanSolver(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
-        hangman = await solve_hangman(self)
+        hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
-        hangman = await solve_hangman(self)
+        hangman = await handle_request(self)
         self.write(asdict(hangman))
