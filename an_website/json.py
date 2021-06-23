@@ -2,12 +2,12 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
-from json.decoder import JSONDecoder, JSONDecodeError
+from json.decoder import JSONDecodeError, JSONDecoder
 from json.encoder import JSONEncoder
 
 import ecs_logging._utils
-import elasticapm.utils.json_encoder
 import elasticapm.utils.cloud
+import elasticapm.utils.json_encoder
 import orjson
 import tornado.escape
 
@@ -68,4 +68,3 @@ def patch():
     ecs_logging._utils.json = json
     elasticapm.utils.json_encoder.json = json
     elasticapm.utils.cloud = json
-    
