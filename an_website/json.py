@@ -1,4 +1,4 @@
-# pylint: disable=unused-argument,invalid-name
+# pylint: disable=unused-argument
 
 from __future__ import annotations, barry_as_FLUFL
 
@@ -20,7 +20,7 @@ def dumps(
     **kw,
 ):
     option = 0
-    if isinstance(indent, int) and indent > 0:
+    if indent:
         option = option | orjson.OPT_INDENT_2
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
@@ -28,7 +28,7 @@ def dumps(
 
 
 def loads(
-    s,
+    s,  # pylint: disable=invalid-name
     *,
     cls=None,
     object_hook=None,
