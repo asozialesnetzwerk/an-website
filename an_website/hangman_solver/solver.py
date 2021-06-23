@@ -1,7 +1,9 @@
 from __future__ import annotations, barry_as_FLUFL
 
+import json
 import os
 import re
+import time
 from dataclasses import asdict, dataclass, field
 from distutils.util import strtobool
 from typing import Dict, List, Tuple
@@ -16,18 +18,22 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 # example: {"words_en/3.txt": ["you", "she", ...]}
 WORDS: Dict[str, List[str]] = {}
-
+LETTERS: Dict[str, Dict[str, int]] = {}
 # load word lists
 BASE_WORDS_DIR = f"{DIR}/words"
 for folder in os.listdir(BASE_WORDS_DIR):
     if folder.startswith("words_"):
         words_dir = f"{BASE_WORDS_DIR}/{folder}"
         for file_name in os.listdir(words_dir):
+            key = f"{folder}/{file_name}".split(".")[0]
             if file_name.endswith(".txt"):
                 with open(f"{words_dir}/{file_name}") as file:
-                    WORDS[f"{folder}/{file_name}"] = file.read().splitlines()
+                    WORDS[key] = file.read().splitlines()
+            if file_name.endswith(".json"):
+                with open(f"{words_dir}/{file_name}") as file:
+                    LETTERS[key] = json.loads(file.read())
 
-del folder, words_dir, file_name, file  # pylint: disable=undefined-loop-variable
+del folder, words_dir, file_name, file, key  # pylint: disable=undefined-loop-variable
 
 
 def get_handlers():
@@ -41,9 +47,9 @@ def get_handlers():
 class Hangman:  # pylint: disable=too-many-instance-attributes
     input: str = ""
     invalid: str = ""
-    words: list[str] = field(default_factory=list)
+    words: List[str] = field(default_factory=list)
     word_count: int = 0
-    letters: dict[str, int] = field(default_factory=dict)
+    letters: Dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
     max_words: int = 100
     lang: str = "de_only_a-z"
@@ -74,6 +80,14 @@ async def generate_pattern_str(
     )
 
 
+def sort_letters(letters: Dict[str, int]) -> Dict[str, int]:
+    letters_items: List[Tuple[str, int]] = list(letters.items())
+    sorted_letters: List[Tuple[str, int]] = sorted(
+        letters_items, key=lambda item: item[1], reverse=True
+    )
+    return dict(sorted_letters)
+
+
 async def get_words_and_letters(
     file_name: str,  # pylint: disable=redefined-outer-name
     input_str: str,
@@ -82,9 +96,11 @@ async def get_words_and_letters(
 ) -> Tuple[List[str], Dict[str, int]]:
     matches_always = len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
 
-    if not matches_always:
-        pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
-        regex = re.compile(pattern, re.ASCII)
+    if matches_always:
+        return WORDS[file_name], LETTERS[file_name]
+
+    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
+    regex = re.compile(pattern, re.ASCII)
 
     input_set = set(input_str.lower())
 
@@ -92,7 +108,7 @@ async def get_words_and_letters(
     letters: dict[str, int] = {}
 
     for line in WORDS[file_name]:
-        if matches_always or regex.fullmatch(line) is not None:
+        if regex.fullmatch(line) is not None:
             current_words.append(line)
 
             # do letter stuff:
@@ -100,13 +116,7 @@ async def get_words_and_letters(
                 if letter not in input_set:
                     letters[letter] = letters.setdefault(letter, 0) + 1
 
-    # sort letters:
-    letters_items: List[Tuple[str, int]] = list(letters.items())
-    sorted_letters: List[Tuple[str, int]] = sorted(
-        letters_items, key=lambda item: item[1], reverse=True
-    )
-
-    return current_words, dict(sorted_letters)
+    return current_words, sort_letters(letters)
 
 
 async def solve_hangman(
@@ -121,7 +131,7 @@ async def solve_hangman(
 
     # to be short (is only the key of the words dict in __init__.py)
     file_name = (  # pylint: disable=redefined-outer-name
-        f"words_{language}/{input_len}.txt"
+        f"words_{language}/{input_len}"
     )
 
     if file_name not in WORDS:
@@ -144,7 +154,7 @@ async def solve_hangman(
 
 
 async def handle_request(request_handler: RequestHandler) -> Hangman:
-    max_words = int(str(request_handler.get_query_argument("max_words", default="50")))
+    max_words = int(str(request_handler.get_query_argument("max_words", default="20")))
 
     crossword_mode_str = str(
         request_handler.get_query_argument("crossword_mode", default="False")

@@ -3,6 +3,9 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
+import json
+from typing import List, Tuple
+
 file = "full_wordlist.txt"
 
 text = open(file).read().lower()
@@ -10,7 +13,6 @@ words = text.splitlines()
 words_sorted = sorted(set(words))  # sort words unique
 
 letters = {}
-
 for word in words_sorted:
     length = str(len(word))
     with open(length + ".txt", "a") as file:
@@ -25,14 +27,14 @@ for word in words_sorted:
 
 print("Generating letters:")
 
+
 for key, value in letters.items():
-    print("length: " + key)
-    print_val = []
-    for k2, v2 in sorted(value.items(), key=lambda x: x[1], reverse=True):
-        print_val.append(k2)
-        print_val.append(": ")
-        print_val.append(str(v2))
-        print_val.append(", ")
-    del print_val[-1]  # delete last item
-    with open(key + "_letters.txt", "w") as file:
-        file.write("".join(print_val))
+    letters_items: List[Tuple[str, int]] = list(value.items())
+    sorted_letters: List[Tuple[str, int]] = sorted(
+        letters_items, key=lambda item: item[1], reverse=True
+    )
+    sorted_letters_json = json.dumps(dict(sorted_letters))
+    print(key, sorted_letters_json)
+
+    with open(key + ".json", "w") as file:
+        file.write(sorted_letters_json)
