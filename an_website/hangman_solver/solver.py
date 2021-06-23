@@ -80,8 +80,11 @@ async def get_words_and_letters(
     invalid: str,
     crossword_mode: bool,
 ) -> Tuple[List[str], Dict[str, int]]:
-    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
-    regex = re.compile(pattern, re.ASCII)
+    matches_always = len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
+
+    if not matches_always:
+        pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
+        regex = re.compile(pattern, re.ASCII)
 
     input_set = set(input_str.lower())
 
@@ -89,7 +92,7 @@ async def get_words_and_letters(
     letters: dict[str, int] = {}
 
     for line in WORDS[file_name]:
-        if regex.fullmatch(line) is not None:
+        if matches_always or regex.fullmatch(line) is not None:
             current_words.append(line)
 
             # do letter stuff:
