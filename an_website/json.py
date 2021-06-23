@@ -2,8 +2,8 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
-from json.decoder import JSONDecodeError, JSONDecoder
-from json.encoder import JSONEncoder
+from json.decoder import JSONDecodeError, JSONDecoder  # noqa
+from json.encoder import JSONEncoder  # noqa
 
 import ecs_logging._utils
 import elasticapm.utils.cloud
@@ -64,7 +64,7 @@ def loads(
 
 
 def patch():
-    escape.json = json
+    tornado.escape.json = json
     ecs_logging._utils.json = json
     elasticapm.utils.json_encoder.json = json
     elasticapm.utils.cloud = json
