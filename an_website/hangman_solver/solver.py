@@ -1,13 +1,12 @@
 from __future__ import annotations, barry_as_FLUFL
 
-import json
 import os
 import re
-import time
 from dataclasses import asdict, dataclass, field
 from distutils.util import strtobool
 from typing import Dict, List, Tuple
 
+import orjson
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
@@ -31,7 +30,7 @@ for folder in os.listdir(BASE_WORDS_DIR):
                     WORDS[key] = file.read().splitlines()
             if file_name.endswith(".json"):
                 with open(f"{words_dir}/{file_name}") as file:
-                    LETTERS[key] = json.loads(file.read())
+                    LETTERS[key] = orjson.loads(file.read())
 
 del folder, words_dir, file_name, file, key  # pylint: disable=undefined-loop-variable
 
