@@ -73,4 +73,4 @@ def patch():
 def make_pyflakes_shut_up():
     JSONDecodeError()
     JSONDecoder()
-    JSONENcoder()
+    JSONEncoder()
