@@ -2,11 +2,11 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
-from json import dumps as stdlib_json_dumps
-from json import loads as stdlib_json_loads
 import json as stdlib_json
 import logging
 import os
+from json import dumps as stdlib_json_dumps
+from json import loads as stdlib_json_loads
 
 import ecs_logging._utils
 import elasticapm.utils.cloud  # type: ignore
@@ -24,12 +24,15 @@ def apply():
 
 def patch_json():
     logger = logging.getLogger(json.__name__)
+
     def dumps(*args, **kwargs):
         logger.debug("json.dumps() has been called!", stack_info=True, stacklevel=2)
         return stdlib_json_dumps(*args, **kwargs)
+
     def loads(*args, **kwargs):
         logger.debug("json.loads() has been called!", stack_info=True, stacklevel=2)
         return stdlib_json_loads(*args, **kwargs)
+
     stdlib_json.dumps = dumps
     stdlib_json.loads = loads
     tornado.escape.json = json
