@@ -14,7 +14,7 @@ from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
-from . import DIR, json
+from . import DIR, patches
 from .currency_converter import converter
 from .discord import discord
 from .hangman_solver import solver
@@ -54,7 +54,7 @@ def make_app():
 
 if __name__ == "__main__":
     # defusedxml.defuse_stdlib()
-    json.patch()
+    patches.apply()
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)

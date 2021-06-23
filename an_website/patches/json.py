@@ -2,16 +2,10 @@
 
 from __future__ import annotations, barry_as_FLUFL
 
-from json.decoder import JSONDecodeError, JSONDecoder  # noqa
-from json.encoder import JSONEncoder  # noqa
+from json.decoder import JSONDecodeError, JSONDecoder
+from json.encoder import JSONEncoder
 
-import ecs_logging._utils
-import elasticapm.utils.cloud  # type: ignore
-import elasticapm.utils.json_encoder  # type: ignore
 import orjson
-import tornado.escape
-
-from . import json  # pylint: disable=import-self
 
 
 def dumps(
@@ -63,14 +57,7 @@ def loads(
     return orjson.loads(s)
 
 
-def patch():
-    tornado.escape.json = json
-    ecs_logging._utils.json = json
-    elasticapm.utils.json_encoder.json = json
-    elasticapm.utils.cloud = json
-
-
 def make_pyflakes_shut_up():
-    JSONDecodeError()
+    JSONDecodeError(..., ..., ...)
     JSONDecoder()
     JSONEncoder()

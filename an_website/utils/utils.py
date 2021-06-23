@@ -17,16 +17,8 @@ def length_of_match(m: re.Match):  # pylint: disable=invalid-name
     return span[1] - span[0]
 
 
-async def run_shell(cmd, stdin=asyncio.subprocess.PIPE):
+async def run(cmd, stdin=asyncio.subprocess.PIPE):
     proc = await asyncio.create_subprocess_shell(
-        cmd, stdin=stdin, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
-    stdout, stderr = await proc.communicate()
-    return proc.returncode, stdout, stderr
-
-
-async def run_exec(cmd, stdin=asyncio.subprocess.PIPE):
-    proc = await asyncio.create_subprocess_exec(
         cmd, stdin=stdin, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
     )
     stdout, stderr = await proc.communicate()

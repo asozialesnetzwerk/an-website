@@ -67,4 +67,4 @@ jobs:
           pip install --user "pylint<3"
       - name: Run Pylint
         run: |
-          pylint --confidence=HIGH,INFERENCE an_website
+          pylint an_website
