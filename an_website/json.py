@@ -1,4 +1,4 @@
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument,invalid-name
 
 from __future__ import annotations, barry_as_FLUFL
 
@@ -28,7 +28,7 @@ def dumps(
 
 
 def loads(
-    s,  # pylint: disable=invalid-name
+    s,
     *,
     cls=None,
     object_hook=None,
