@@ -19,7 +19,12 @@ def dumps(
     sort_keys=False,
     **kw,
 ):
-    return orjson.dumps(obj).decode("utf-8")
+    option = 0
+    if isinstance(indent, int):
+        option = option | orjson.OPT_INDENT_2
+    if sort_keys:
+        option = option | orjson.OPT_SORT_KEYS
+    return orjson.dumps(obj, option).decode("utf-8")
 
 
 def loads(
