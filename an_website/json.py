@@ -69,6 +69,7 @@ def patch():
     elasticapm.utils.json_encoder.json = json
     elasticapm.utils.cloud = json
 
+
 def make_pyflakes_shut_up():
     JSONDecodeError()
     JSONDecoder()
