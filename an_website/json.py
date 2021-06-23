@@ -24,7 +24,7 @@ def dumps(
         option = option | orjson.OPT_INDENT_2
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
-    return orjson.dumps(obj, option).decode("utf-8")
+    return orjson.dumps(obj, option, default=default).decode("utf-8")
 
 
 def loads(
