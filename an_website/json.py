@@ -19,12 +19,15 @@ def dumps(
     sort_keys=False,
     **kw,
 ):
-    option = 0
+    if cls is not None:
+        _ = cls(skipkeys=skipkeys, ensure_ascii=ensure_ascii, check_circular=check_circular, allow_nan=allow_nan, indent=indent, separators=separators, default=default, sort_keys=sort_keys, **kw)
+        default = lambda o: _.default(_, o)
+    option = orjson.OPT_UTC_Z
     if indent:
         option = option | orjson.OPT_INDENT_2
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
-    return orjson.dumps(obj, option, default=default).decode("utf-8")
+    return orjson.dumps(obj, default=default, option).decode("utf-8")
 
 
 def loads(
