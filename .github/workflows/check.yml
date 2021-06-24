@@ -67,4 +67,4 @@ jobs:
           pip install --user "pylint<3"
       - name: Run Pylint
         run: |
-          pylint an_website
+          pylint -d line-too-long an_website
