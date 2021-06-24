@@ -36,8 +36,8 @@ def dumps(
         )
         default = lambda o: _.default(_, o)
     option = (
-        orjson.OPT_SERIALIZE_NUMPY
-        | orjson.OPT_STRICT_INTEGER
+        orjson.OPT_STRICT_INTEGER
+        | orjson.OPT_SERIALIZE_NUMPY
         | orjson.OPT_NAIVE_UTC
         | orjson.OPT_UTC_Z
     )
@@ -105,7 +105,7 @@ def load(
     object_pairs_hook=None,
     **kw,
 ):
-    loads(
+    return loads(
         fp.read(),
         cls=cls,
         object_hook=object_hook,
