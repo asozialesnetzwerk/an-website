@@ -48,20 +48,6 @@ def dumps(
     return orjson.dumps(obj, default, option).decode("utf-8")
 
 
-def loads(
-    s,
-    *,
-    cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
-    **kw,
-):
-    return orjson.loads(s)
-
-
 def dump(
     obj,
     fp,
@@ -92,6 +78,20 @@ def dump(
             **kw,
         )
     )
+
+
+def loads(
+    s,
+    *,
+    cls=None,
+    object_hook=None,
+    parse_float=None,
+    parse_int=None,
+    parse_constant=None,
+    object_pairs_hook=None,
+    **kw,
+):
+    return orjson.loads(s)
 
 
 def load(
