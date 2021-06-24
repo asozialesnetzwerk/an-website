@@ -1,4 +1,4 @@
-# pylint: disable=protected-access, preferred-module, reimported
+# pylint: disable=protected-access, preferred-module, reimported, invalid-name
 
 from __future__ import annotations, barry_as_FLUFL
 
@@ -25,23 +25,25 @@ def apply():
 def patch_json():
     logger = logging.getLogger(json.__name__)
 
-    def dump(obj, fp, *args, **kwargs):
+    def dump(obj, fp, **kwargs):
         logger.debug("json.dump() has been called!", stack_info=True, stacklevel=2)
-        fp.write(stdlib_json_dumps(obj, *args, **kwargs))
+        fp.write(stdlib_json_dumps(obj, **kwargs))
 
-    def dumps(obj, *args, **kwargs):
+    def dumps(obj, **kwargs):
         logger.debug("json.dumps() has been called!", stack_info=True, stacklevel=2)
-        return stdlib_json_dumps(obj, *args, **kwargs)
+        return stdlib_json_dumps(obj, **kwargs)
 
-    def load(fp, *args, **kwargs):
+    def load(fp, **kwargs):
         logger.debug("json.load() has been called!", stack_info=True, stacklevel=2)
-        return stdlib_json_loads(fp.read(), *args, **kwargs)
+        return stdlib_json_loads(fp.read(), **kwargs)
 
-    def loads(s, *args, **kwargs):
+    def loads(s, **kwargs):
         logger.debug("json.loads() has been called!", stack_info=True, stacklevel=2)
-        return stdlib_json_loads(s, *args, **kwargs)
+        return stdlib_json_loads(s, **kwargs)
 
+    stdlib_json.dump = dump
     stdlib_json.dumps = dumps
+    stdlib_json.load = load
     stdlib_json.loads = loads
     tornado.escape.json = json
     ecs_logging._utils.json = json
