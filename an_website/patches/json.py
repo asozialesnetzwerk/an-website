@@ -35,11 +35,11 @@ def dumps(
             **kw,
         )
         default = lambda o: _.default(_, o)
-    option = orjson.OPT_STRICT_INTEGER | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
-    if indent:
-        option = option | orjson.OPT_INDENT_2
+    option = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_STRICT_INTEGER | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
+    if indent:
+        option = option | orjson.OPT_INDENT_2
     return orjson.dumps(obj, default, option).decode("utf-8")
 
 
