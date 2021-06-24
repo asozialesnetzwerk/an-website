@@ -45,6 +45,10 @@ jobs:
           path: .mypy_cache
           key: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
+      - name: Install build requirements for orjson (temporary fix)
+      - run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2021-05-25 --profile minimal -y
+          pip install --user maturin
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
@@ -79,6 +83,10 @@ jobs:
           path: ~/.pylint.d
           key: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
+      - name: Install build requirements for orjson (temporary fix)
+      - run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2021-05-25 --profile minimal -y
+          pip install --user maturin
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
