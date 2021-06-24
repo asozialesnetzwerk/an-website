@@ -25,21 +25,21 @@ def apply():
 def patch_json():
     logger = logging.getLogger(json.__name__)
 
-    def dumps(*args, **kwargs):
-        logger.debug("json.dumps() has been called!", stack_info=True, stacklevel=2)
-        return stdlib_json_dumps(*args, **kwargs)
-
-    def loads(*args, **kwargs):
-        logger.debug("json.loads() has been called!", stack_info=True, stacklevel=2)
-        return stdlib_json_loads(*args, **kwargs)
-
-    def dump(fp, *args, **kwargs):
+    def dump(obj, fp, *args, **kwargs):
         logger.debug("json.dump() has been called!", stack_info=True, stacklevel=2)
-        fp.write(stdlib_json_dumps(*args, **kwargs))
+        fp.write(stdlib_json_dumps(obj, *args, **kwargs))
+
+    def dumps(obj, *args, **kwargs):
+        logger.debug("json.dumps() has been called!", stack_info=True, stacklevel=2)
+        return stdlib_json_dumps(obj, *args, **kwargs)
 
     def load(fp, *args, **kwargs):
         logger.debug("json.load() has been called!", stack_info=True, stacklevel=2)
         return stdlib_json_loads(fp.read(), *args, **kwargs)
+
+    def loads(s, *args, **kwargs):
+        logger.debug("json.loads() has been called!", stack_info=True, stacklevel=2)
+        return stdlib_json_loads(s, *args, **kwargs)
 
     stdlib_json.dumps = dumps
     stdlib_json.loads = loads
