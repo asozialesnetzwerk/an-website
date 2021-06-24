@@ -46,7 +46,7 @@ jobs:
           key: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
       - name: Install build requirements for orjson (temporary fix)
-      - run: |
+        run: |
           curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2021-05-25 --profile minimal -y
           pip install --user maturin
       - name: Install requirements
@@ -84,7 +84,7 @@ jobs:
           key: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
       - name: Install build requirements for orjson (temporary fix)
-      - run: |
+        run: |
           curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2021-05-25 --profile minimal -y
           pip install --user maturin
       - name: Install requirements
