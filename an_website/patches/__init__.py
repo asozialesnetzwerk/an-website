@@ -37,5 +37,5 @@ def patch_json():
     stdlib_json.loads = loads
     tornado.escape.json = json
     ecs_logging._utils.json = json
-    elasticapm.utils.json_encoder.json = json
-    elasticapm.utils.cloud = json
+    # elasticapm.utils.json_encoder.json = json
+    # elasticapm.utils.cloud = json
