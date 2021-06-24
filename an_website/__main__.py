@@ -7,7 +7,7 @@ import logging.handlers
 import ssl
 import sys
 
-import defusedxml
+import defusedxml  # type: ignore
 import ecs_logging
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
