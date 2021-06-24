@@ -33,6 +33,14 @@ def patch_json():
         logger.debug("json.loads() has been called!", stack_info=True, stacklevel=2)
         return stdlib_json_loads(*args, **kwargs)
 
+    def dump(fp, *args, **kwargs):
+        logger.debug("json.dump() has been called!", stack_info=True, stacklevel=2)
+        fp.write(stdlib_json_dumps(*args, **kwargs))
+
+    def load(fp, *args, **kwargs):
+        logger.debug("json.load() has been called!", stack_info=True, stacklevel=2)
+        return stdlib_json_loads(fp.read(), *args, **kwargs)
+
     stdlib_json.dumps = dumps
     stdlib_json.loads = loads
     tornado.escape.json = json
