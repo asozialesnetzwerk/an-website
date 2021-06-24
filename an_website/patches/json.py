@@ -86,7 +86,7 @@ def dump(
             allow_nan=allow_nan,
             cls=cls,
             indent=indent,
-            separators=seperators,
+            separators=separators,
             default=default,
             sort_keys=sort_keys,
             **kw,
