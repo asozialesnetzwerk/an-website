@@ -2,7 +2,7 @@ name: Deploy
 on:
   push:
     branches: [main]
-    paths: ['an_website/**']
+    paths: ["an_website/**", ".github/workflows/**"]
 
 jobs:
   check:
@@ -11,9 +11,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      #- name: Install requirements
-      #  run: |
-      #    grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --user
       - name: Install Pyflakes
         run: |
           pip install --user "pyflakes<3"

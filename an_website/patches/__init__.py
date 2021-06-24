@@ -1,4 +1,4 @@
-# pylint: disable=protected-access, preferred-module, reimported, invalid-name
+# pylint: disable=preferred-module, protected-access, invalid-name
 
 from __future__ import annotations, barry_as_FLUFL
 
@@ -13,7 +13,7 @@ import elasticapm.utils.cloud  # type: ignore
 import elasticapm.utils.json_encoder  # type: ignore
 import tornado.escape
 
-from . import json
+from . import json  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 

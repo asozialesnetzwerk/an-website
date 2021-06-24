@@ -4,8 +4,10 @@ import asyncio
 import configparser
 import logging
 import logging.handlers
+import ssl
 import sys
 
+import defusedxml
 import ecs_logging
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
@@ -53,8 +55,8 @@ def make_app():
 
 
 if __name__ == "__main__":
-    # defusedxml.defuse_stdlib()
     patches.apply()
+    defusedxml.defuse_stdlib()
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
@@ -94,7 +96,22 @@ if __name__ == "__main__":
             raise
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     AsyncIOMainLoop().install()
-    app.listen(8080)
+    if config.getboolean("SSL", "ENABLED", fallback=False):
+        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_ctx.load_cert_chain(
+            config.get("SSL", "CERTFILE"),
+            config.get("SSL", "KEYFILE", fallback=None),
+            config.get("SSL", "PASSWORD", fallback=None),
+        )
+    else:
+        ssl_ctx = None  # type: ignore  # pylint: disable=invalid-name
+    app.listen(
+        config.getint("TORNADO", "PORT", fallback=8080),
+        xheaders=config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False),
+        ssl_options=ssl_ctx,
+        protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
+        decompress_request=True,
+    )
     try:
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
