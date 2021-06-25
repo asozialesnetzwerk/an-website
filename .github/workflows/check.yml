@@ -1,9 +1,21 @@
 name: Check
 on:
   push:
-    paths: ["an_website/**", ".github/workflows/**"]
+    paths:
+      - "an_website/**"
+      - ".github/workflows/check.yml"
+      - "requirements.txt"
+      - ".isort.cfg"
+      - ".mypy.ini"
+      - ".pylintrc"
   pull_request:
-    paths: ["an_website/**", ".github/workflows/**"]
+    paths:
+      - "an_website/**"
+      - ".github/workflows/check.yml"
+      - "requirements.txt"
+      - ".isort.cfg"
+      - ".mypy.ini"
+      - ".pylintrc"
   pull_request_target:
 jobs:
   check_formatting:
@@ -57,15 +69,12 @@ jobs:
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
-      - name: Install type stubs
-        run: |
-          pip install types-orjson
       - name: Install mypy
         run: |
           pip install "mypy<2"
       - name: Run mypy
         run: |
-          mypy -p an_website
+          mypy --install-types --non-interactive -p an_website
   lint:
     name: Lint
     runs-on: ubuntu-latest
