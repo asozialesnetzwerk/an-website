@@ -43,7 +43,7 @@ def dumps(
     )
     if sort_keys:
         option = option | orjson.OPT_SORT_KEYS
-    if indent:
+    if indent is not None:
         option = option | orjson.OPT_INDENT_2
     return orjson.dumps(obj, default, option).decode("utf-8")
 

@@ -60,10 +60,9 @@ if __name__ == "__main__":
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
-    if sys.flags.dev_mode:
-        stream_handler.setFormatter(logging.Formatter())
-    else:
-        stream_handler.setFormatter(LogFormatter())
+    stream_handler.setFormatter(
+        LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
+    )
     root_logger.addHandler(stream_handler)
     if not sys.flags.dev_mode:
         file_handler = logging.handlers.TimedRotatingFileHandler(
@@ -107,10 +106,10 @@ if __name__ == "__main__":
         ssl_ctx = None  # type: ignore  # pylint: disable=invalid-name
     app.listen(
         config.getint("TORNADO", "PORT", fallback=8080),
-        xheaders=config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False),
-        ssl_options=ssl_ctx,
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
+        xheaders=config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False),
         decompress_request=True,
+        ssl_options=ssl_ctx,
     )
     try:
         asyncio.get_event_loop().run_forever()

@@ -1,5 +1,5 @@
 pyflakes~=2.0
 pylint~=2.8
-mypy<2
+mypy>=0.910,<2
 black>=21.6b0
 isort~=5.0
