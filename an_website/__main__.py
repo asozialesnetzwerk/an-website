@@ -2,10 +2,13 @@ from __future__ import annotations, barry_as_FLUFL
 
 import asyncio
 import configparser
+import importlib
 import logging
 import logging.handlers
+import os
 import ssl
 import sys
+from typing import Any, List, Tuple
 
 import defusedxml  # type: ignore
 import ecs_logging
@@ -17,30 +20,56 @@ from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
 from . import DIR, patches
-from .currency_converter import converter
-from .discord import discord
-from .hangman_solver import solver
-from .host_info import host_info
-from .kangaroo_soundboard import soundboard
-from .quotes import quotes
 from .utils import utils
 from .version import version
 
-handlers_list = (
-    *utils.get_handlers(),
-    *version.get_handlers(),
-    *discord.get_handlers(),
-    *converter.get_handlers(),
-    *solver.get_handlers(),
-    *quotes.get_handlers(),
-    *soundboard.get_handlers(),
-    *host_info.get_handlers(),
-)
+# list of blocked modules
+BLOCK_LIST = ("patches.*",)
+
+
+# add all the tornado handlers from the packages to a list
+# this calls the get_handlers function in every file
+# stuff starting with '_' gets ignored
+def get_all_handlers():
+    handlers_list: List[Tuple[str, Any, ...]] = []
+    errors: List[str] = []
+    for potential_module in os.listdir(DIR):
+        if (
+            not potential_module.startswith("_")
+            and f"{potential_module}.*" not in BLOCK_LIST
+            and os.path.isdir(f"{DIR}/{potential_module}")
+        ):
+            for potential_file in os.listdir(f"{DIR}/{potential_module}"):
+                if (
+                    potential_file.endswith(".py")
+                    and f"{potential_module}."
+                    f"{potential_file[:-3]}" not in BLOCK_LIST
+                    and not potential_file.startswith("_")
+                ):
+                    module = importlib.import_module(
+                        f".{potential_module}.{potential_file[:-3]}",
+                        package="an_website",
+                    )
+                    if "get_handlers" in dir(module):
+                        handlers_list += module.get_handlers()  # type: ignore
+                    else:
+                        errors.append(
+                            f"{DIR}/{potential_module}/{potential_file} has "
+                            f"no 'get_handlers' method. Please add the "
+                            f"method or add '{potential_module}.*' or "
+                            f"'{potential_module}.{potential_file[:-3]}' "
+                            f"to BLOCK_LIST."
+                        )
+
+    if len(errors) > 0:
+        sys.exit("\n".join(errors))
+
+    return handlers_list
 
 
 def make_app():
     return Application(
-        handlers_list,
+        get_all_handlers(),
         # General settings
         autoreload=False,
         compress_response=True,
