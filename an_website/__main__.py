@@ -58,7 +58,9 @@ if __name__ == "__main__":
     patches.apply()
     defusedxml.defuse_stdlib()
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO if not sys.flags.dev_mode else logging.DEBUG)
+    root_logger.setLevel(
+        logging.INFO if not sys.flags.dev_mode else logging.DEBUG
+    )
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
         LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
@@ -79,11 +81,15 @@ if __name__ == "__main__":
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
         "SERVER_URL": config.get("ELASTIC_APM", "SERVER_URL", fallback=None),
-        "SECRET_TOKEN": config.get("ELASTIC_APM", "SECRET_TOKEN", fallback=None),
+        "SECRET_TOKEN": config.get(
+            "ELASTIC_APM", "SECRET_TOKEN", fallback=None
+        ),
         "API_KEY": config.get("ELASTIC_APM", "API_KEY", fallback=None),
         "SERVICE_NAME": "an-website",
         "SERVICE_VERSION": version.VERSION.strip(),
-        "ENVIRONMENT": "production" if not sys.flags.dev_mode else "development",
+        "ENVIRONMENT": "production"
+        if not sys.flags.dev_mode
+        else "development",
     }
     apm = ElasticAPM(app)
     try:

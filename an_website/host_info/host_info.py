@@ -12,7 +12,7 @@ def get_handlers():
 
 class HostInfo(BaseRequestHandler):
     async def get(self):
-        screenfetch_result = (await run(f"{DIR}/screenfetch"))[1].decode("utf-8")
+        result = (await run(f"{DIR}/screenfetch"))[1].decode("utf-8")
         conv = Ansi2HTMLConverter(inline=True, scheme="xterm")
-        html = conv.convert(screenfetch_result, full=False)
+        html = conv.convert(result, full=False)
         await self.render("pages/host_info.html", screenfetch=html)

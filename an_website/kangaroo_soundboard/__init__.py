@@ -93,7 +93,10 @@ with open(f"{DIR}/info.json", "r") as my_file:
 
 def replace_umlauts(text: str) -> str:
     return (
-        text.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+        text.replace("ä", "ae")
+        .replace("ö", "oe")
+        .replace("ü", "ue")
+        .replace("ß", "ss")
     )
 
 
@@ -102,11 +105,12 @@ def name_to_id(val: str) -> str:
 
 
 def create_anchor(
-    href: str, inner_html: str, color: str = "var(--red)", classes: str = "a_hover"
+    href: str,
+    inner_html: str,
+    color: str = "var(--red)",
+    classes: str = "a_hover",
 ) -> str:
-    return (
-        f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"
-    )
+    return f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"
 
 
 def create_heading(heading_type: str, text: str) -> str:
@@ -188,7 +192,10 @@ for key in persons_stuff:
     _dir = f"{DIR}/build/" + replace_umlauts(key)
     os.makedirs(_dir, exist_ok=True)
     person = (
-        persons[key].replace("Das", "dem").replace("Der", "dem").replace("Die", "der")
+        persons[key]
+        .replace("Das", "dem")
+        .replace("Der", "dem")
+        .replace("Die", "der")
     )
     content = (
         "<h1>Känguru-Soundboard</h1><h2>"
@@ -235,7 +242,9 @@ with open(f"{DIR}/build/persons.html", "w+") as persons_page:
 # write rss:
 with open(f"{DIR}/build/feed.rss", "w") as feed:
     feed.write(
-        RSS_STRING.format(items=rss_items, extra_title="", extra_desc="", extra_link="")
+        RSS_STRING.format(
+            items=rss_items, extra_title="", extra_desc="", extra_link=""
+        )
     )
 
 # copy files to build folder:

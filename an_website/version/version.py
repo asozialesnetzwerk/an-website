@@ -12,11 +12,19 @@ VERSION = subprocess.run(
     "git rev-parse HEAD", cwd=DIR, shell=True, capture_output=True, text=True
 ).stdout
 FILE_HASHES = subprocess.run(
-    "git ls-files | xargs sha1sum", cwd=DIR, shell=True, capture_output=True, text=True
+    "git ls-files | xargs sha1sum",
+    cwd=DIR,
+    shell=True,
+    capture_output=True,
+    text=True,
 ).stdout
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
 GH_PAGES_COMMIT_HASH = subprocess.run(
-    "git rev-parse origin/gh-pages", cwd=DIR, shell=True, capture_output=True, text=True
+    "git rev-parse origin/gh-pages",
+    cwd=DIR,
+    shell=True,
+    capture_output=True,
+    text=True,
 ).stdout
 
 

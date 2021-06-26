@@ -22,11 +22,11 @@ python3 -m isort .
 
 # check formatting
 echo Black:
-python3 -m black -t py38 --check --diff --color . || echo 'Run "python3 -m black -t py38 ." to reformat.'
+python3 -m black --check --diff --color . || echo 'Run "python3 -m black ." to reformat.'
 
 # check types
 echo mypy:
-python3 -m mypy --pretty --install-types -p an_website
+python3 -m mypy --pretty -p an_website
 
 # lint
 echo Pylint:

@@ -9,7 +9,11 @@ from typing import Dict, List, Tuple
 import orjson
 from tornado.web import HTTPError, RequestHandler
 
-from ..utils.utils import APIRequestHandler, BaseRequestHandler, length_of_match
+from ..utils.utils import (
+    APIRequestHandler,
+    BaseRequestHandler,
+    length_of_match,
+)
 from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
@@ -32,7 +36,13 @@ for folder in os.listdir(BASE_WORDS_DIR):
                 with open(f"{words_dir}/{file_name}") as file:
                     LETTERS[key] = orjson.loads(file.read())
 
-del folder, words_dir, file_name, file, key  # pylint: disable=undefined-loop-variable
+del (  # pylint: disable=undefined-loop-variable
+    folder,
+    words_dir,
+    file_name,
+    file,
+    key,
+)
 
 
 def get_handlers():
@@ -65,16 +75,22 @@ async def generate_pattern_str(
         # add if not cw_mode
         invalid += input_str
 
-    invalid_chars = NOT_WORD_CHAR.sub("", invalid)  # replace stuff that could be bad
+    invalid_chars = NOT_WORD_CHAR.sub(
+        "", invalid
+    )  # replace stuff that could be bad
 
     if len(invalid_chars) == 0:
         # there are no invalid chars, so the wildcard can be replaced with just "."
-        return WILDCARDS_REGEX.sub(lambda m: "." * length_of_match(m), input_str)
+        return WILDCARDS_REGEX.sub(
+            lambda m: "." * length_of_match(m), input_str
+        )
 
     wild_card_replacement = "[^" + invalid_chars + "]"
 
     return WILDCARDS_REGEX.sub(
-        lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"),
+        lambda m: (
+            wild_card_replacement + "{" + str(length_of_match(m)) + "}"
+        ),
         input_str,
     )
 
@@ -93,7 +109,9 @@ async def get_words_and_letters(
     invalid: str,
     crossword_mode: bool,
 ) -> Tuple[List[str], Dict[str, int]]:
-    matches_always = len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
+    matches_always = (
+        len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
+    )
 
     if matches_always:
         return WORDS[file_name], LETTERS[file_name]
@@ -119,7 +137,11 @@ async def get_words_and_letters(
 
 
 async def solve_hangman(
-    input_str: str, invalid: str, language: str, max_words: int, crossword_mode: bool
+    input_str: str,
+    invalid: str,
+    language: str,
+    max_words: int,
+    crossword_mode: bool,
 ) -> Hangman:
     input_len = len(input_str)
 
@@ -129,7 +151,9 @@ async def solve_hangman(
         )
 
     # to be short (is only the key of the words dict in __init__.py)
-    file_name = f"words_{language}/{input_len}"  # pylint: disable=redefined-outer-name
+    file_name = (  # pylint: disable=redefined-outer-name
+        f"words_{language}/{input_len}"
+    )
 
     if file_name not in WORDS:
         raise HTTPError(400, reason=f"'{language}' is an invalid language")
@@ -151,14 +175,18 @@ async def solve_hangman(
 
 
 async def handle_request(request_handler: RequestHandler) -> Hangman:
-    max_words = int(str(request_handler.get_query_argument("max_words", default="20")))
+    max_words = int(
+        str(request_handler.get_query_argument("max_words", default="20"))
+    )
 
     crossword_mode_str = str(
         request_handler.get_query_argument("crossword_mode", default="False")
     )
     crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
 
-    language = str(request_handler.get_query_argument("lang", default="de_only_a-z"))
+    language = str(
+        request_handler.get_query_argument("lang", default="de_only_a-z")
+    )
 
     input_str = str(request_handler.get_query_argument("input", default=""))
 

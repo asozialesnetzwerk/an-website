@@ -19,7 +19,10 @@ def length_of_match(m: re.Match):  # pylint: disable=invalid-name
 
 async def run(cmd, stdin=asyncio.subprocess.PIPE):
     proc = await asyncio.create_subprocess_shell(
-        cmd, stdin=stdin, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        cmd,
+        stdin=stdin,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
     )
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout, stderr
@@ -36,19 +39,25 @@ class BaseRequestHandler(RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         self.render(
-            "error.html", code=status_code, message=self.get_error_message(**kwargs)
+            "error.html",
+            code=status_code,
+            message=self.get_error_message(**kwargs),
         )
 
     def get_error_message(self, **kwargs):
-        if "exc_info" in kwargs and not issubclass(kwargs["exc_info"][0], HTTPError):
+        if "exc_info" in kwargs and not issubclass(
+            kwargs["exc_info"][0], HTTPError
+        ):
             if self.settings.get("serve_traceback"):
                 return "".join(traceback.format_exception(*kwargs["exc_info"]))
-            return traceback.format_exception_only(*kwargs["exc_info"][0:2])[-1]
+            return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
 
     def get_url(self):
         """Dirty fix to force https"""
-        return self.request.full_url().replace("http://joshix", "https://joshix")
+        return self.request.full_url().replace(
+            "http://joshix", "https://joshix"
+        )
 
     def get_rum(self):
         return f"""
@@ -67,7 +76,12 @@ class BaseRequestHandler(RequestHandler):
 
 class APIRequestHandler(BaseRequestHandler):
     def write_error(self, status_code, **kwargs):
-        self.write({"status": status_code, "message": self.get_error_message(**kwargs)})
+        self.write(
+            {
+                "status": status_code,
+                "message": self.get_error_message(**kwargs),
+            }
+        )
 
 
 class NotFound(BaseRequestHandler):

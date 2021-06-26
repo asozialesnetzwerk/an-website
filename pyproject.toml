@@ -1,0 +1,11 @@
+[tool.black]
+line-length = 79
+target-version = ['py38']
+
+[tool.isort]
+atomic = true
+profile = "black"
+py_version = "38"
+line_length = 79
+skip_gitignore = true
+add_imports = ["from __future__ import annotations, barry_as_FLUFL"]

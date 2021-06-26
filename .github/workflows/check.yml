@@ -5,7 +5,7 @@ on:
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
-      - ".isort.cfg"
+      - "pyproject.toml"
       - ".mypy.ini"
       - ".pylintrc"
   pull_request:
@@ -13,7 +13,7 @@ on:
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
-      - ".isort.cfg"
+      - "pyproject.toml"
       - ".mypy.ini"
       - ".pylintrc"
   pull_request_target:
@@ -31,7 +31,7 @@ jobs:
           pip install black "isort<6"
       - name: Run Black
         run: |
-          black -t py38 .
+          black .
       - name: Run isort
         run: |
           isort .
