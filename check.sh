@@ -29,5 +29,7 @@ echo mypy:
 python3 -m mypy --pretty -p an_website
 
 # lint
+echo Flake8:
+python3 -m flake8
 echo Pylint:
 python3 -m pylint --output-format=colorized an_website

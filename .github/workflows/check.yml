@@ -105,9 +105,12 @@ jobs:
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
-      - name: Install Pylint
+      - name: Install Flake8 and Pylint
         run: |
-          pip install "pylint<3"
+          pip install "flake8<4" "pylint<3"
+      - name: Run Flake8
+        run:
+          flake8
       - name: Run Pylint
         run: |
-          pylint -d line-too-long an_website
+          pylint an_website

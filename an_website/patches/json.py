@@ -34,7 +34,7 @@ def dumps(
             sort_keys=sort_keys,
             **kw,
         )
-        default = lambda o: _.default(_, o)
+        default = lambda o: _.default(_, o)  # noqa
     option = (
         orjson.OPT_STRICT_INTEGER
         | orjson.OPT_SERIALIZE_NUMPY
