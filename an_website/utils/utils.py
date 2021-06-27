@@ -71,10 +71,7 @@ class BaseRequestHandler(RequestHandler):
         return self._reason
 
     def get_url(self):
-        """Dirty fix to force https."""
-        return self.request.full_url().replace(
-            "http://joshix", "https://joshix"
-        )
+        return self.request.full_url()
 
 
 class APIRequestHandler(BaseRequestHandler):
