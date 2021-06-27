@@ -4,7 +4,6 @@ import asyncio
 import configparser
 import importlib
 import logging
-import logging.handlers
 import os
 import ssl
 import sys
@@ -24,7 +23,7 @@ from .utils import utils
 from .version import version
 
 # list of blocked modules
-BLOCK_LIST = ("patches.*",)
+BLOCK_LIST = ("patches.*", "static.*", "templates.*")
 
 
 # add all the tornado handlers from the packages to a list
