@@ -6,7 +6,7 @@ import hashlib
 import subprocess
 
 from .. import DIR
-from ..utils.utils import BaseRequestHandler
+from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 VERSION = subprocess.run(
     "git rev-parse HEAD", cwd=DIR, shell=True, capture_output=True, text=True
@@ -28,8 +28,13 @@ GH_PAGES_COMMIT_HASH = subprocess.run(
 ).stdout
 
 
-def get_handlers():
-    return ((r"/version/?", Version),)
+def get_module_info() -> ModuleInfo:
+    return ModuleInfo(
+        handlers=((r"/version/?", Version),),
+        name="Versions-Informationen",
+        description="Die aktuelle Version der Webseite.",
+        path="/version/",
+    )
 
 
 class Version(BaseRequestHandler):

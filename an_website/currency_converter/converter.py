@@ -5,16 +5,22 @@ from typing import Optional
 
 from tornado.web import RequestHandler
 
-from ..utils.utils import APIRequestHandler, BaseRequestHandler
+from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]
 
 
-def get_handlers():
-    return (
-        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
-        (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
+def get_module_info() -> ModuleInfo:
+    return ModuleInfo(
+        handlers=(
+            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
+            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
+        ),
+        name="Währungsrechner",
+        description="Ein Währungsrechner für teilweise veraltete deutsche "
+        "Währungen",
+        path="/waehrungs-rechner/",
     )
 
 

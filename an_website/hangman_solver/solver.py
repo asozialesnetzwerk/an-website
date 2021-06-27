@@ -12,6 +12,7 @@ from tornado.web import HTTPError, RequestHandler
 from ..utils.utils import (
     APIRequestHandler,
     BaseRequestHandler,
+    ModuleInfo,
     length_of_match,
 )
 from . import DIR
@@ -45,10 +46,15 @@ del (  # pylint: disable=undefined-loop-variable
 )
 
 
-def get_handlers():
-    return (
-        (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
-        (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+def get_module_info() -> ModuleInfo:
+    return ModuleInfo(
+        handlers=(
+            (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
+            (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+        ),
+        name="Hangman-Löser",
+        description="Ein Website, die Lösungen für Galgenmännchen findet.",
+        path="/hangman-loeser/",
     )
 
 

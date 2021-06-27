@@ -4,12 +4,22 @@ import asyncio
 import asyncio.subprocess
 import re
 import traceback
+from dataclasses import dataclass
+from typing import Optional, Tuple
 
 from tornado.web import HTTPError, RequestHandler
 
 
-def get_handlers():
-    return ((r"/error/?", ZeroDivision),)
+@dataclass()
+class ModuleInfo:
+    handlers: Tuple[Tuple, ...] = ((),)
+    name: Optional[str] = None
+    description: Optional[str] = None
+    path: Optional[str] = None
+
+
+def get_module_info() -> ModuleInfo:
+    return ModuleInfo(handlers=((r"/error/?", ZeroDivision),))
 
 
 def length_of_match(m: re.Match):  # pylint: disable=invalid-name

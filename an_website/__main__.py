@@ -22,18 +22,19 @@ from tornado.web import Application
 from . import DIR, patches
 from .utils import utils
 from .version import version
+from .main_page import main_page
 
 # list of blocked modules
 BLOCK_LIST = ("patches.*", "static.*", "templates.*")
 
 
-# add all the tornado handlers from the packages to a list
-# this calls the get_handlers function in every file
-# stuff starting with '_' gets ignored
-def get_all_handlers():
-    handlers_list: List[Tuple[str, Any, ...]] = []
-    errors: List[str] = []
+# add all the information from the packages to a list
+# this calls the get_module_info function in every file
+# files/dirs starting with '_' gets ignored
+def get_module_infos() -> List[utils.ModuleInfo]:
+    module_info_list: List[utils.ModuleInfo] = []
     loaded_modules: List[str] = []
+    errors: List[str] = []
     for potential_module in os.listdir(DIR):
         if (
             not potential_module.startswith("_")
@@ -51,13 +52,13 @@ def get_all_handlers():
                         f".{module_name}",
                         package="an_website",
                     )
-                    if "get_handlers" in dir(module):
+                    if "get_module_info" in dir(module):
+                        module_info_list.append(module.get_module_info())
                         loaded_modules.append(module_name)
-                        handlers_list += module.get_handlers()  # type: ignore
                     else:
                         errors.append(
-                            f"{DIR}/{potential_module}/{potential_file} "
-                            f"has no 'get_handlers' method. Please add the "
+                            f"{DIR}/{potential_module}/{potential_file} has "
+                            f"no 'get_module_info' method. Please add the "
                             f"method or add '{potential_module}.*' or "
                             f"'{module_name}' to BLOCK_LIST."
                         )
@@ -71,15 +72,28 @@ def get_all_handlers():
             root_logger.error("\n".join(errors))
 
     root_logger.info(
-        "loaded %d modules: %s", len(loaded_modules), ", ".join(loaded_modules)
+        "loaded %d modules: %s",
+        len(loaded_modules),
+        ", ".join(loaded_modules),
     )
+
+    return module_info_list
+
+
+def get_all_handlers(
+    module_info_list: List[utils.ModuleInfo],
+) -> List[Tuple[str, Any, ...]]:
+    handlers_list: List[Tuple[str, Any, ...]] = []
+
+    for module_info in module_info_list:
+        handlers_list += module_info.handlers
 
     return handlers_list
 
 
-def make_app():
+def make_app(handlers: List[Tuple[str, Any, ...]]):
     return Application(
-        get_all_handlers(),
+        handlers,
         # General settings
         autoreload=False,
         compress_response=True,
@@ -112,7 +126,10 @@ if __name__ == "__main__":
         file_handler.setFormatter(ecs_logging.StdlibFormatter())
         root_logger.addHandler(file_handler)
     logging.captureWarnings(True)
-    app = make_app()
+
+    module_infos = get_module_infos()
+    # TODO: make module_infos accessible to main_page
+    app = make_app(get_all_handlers(module_infos))
     config = configparser.ConfigParser(interpolation=None)
     config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
     config.read("config.ini")
