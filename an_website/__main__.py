@@ -33,6 +33,7 @@ BLOCK_LIST = ("patches.*",)
 def get_all_handlers():
     handlers_list: List[Tuple[str, Any, ...]] = []
     errors: List[str] = []
+    loaded_modules: List[str] = []
     for potential_module in os.listdir(DIR):
         if (
             not potential_module.startswith("_")
@@ -46,23 +47,32 @@ def get_all_handlers():
                     f"{potential_file[:-3]}" not in BLOCK_LIST
                     and not potential_file.startswith("_")
                 ):
+                    module_name = f"{potential_module}.{potential_file[:-3]}"
                     module = importlib.import_module(
-                        f".{potential_module}.{potential_file[:-3]}",
+                        f".{module_name}",
                         package="an_website",
                     )
+                    loaded_modules.append(module_name)
                     if "get_handlers" in dir(module):
                         handlers_list += module.get_handlers()  # type: ignore
                     else:
                         errors.append(
-                            f"{DIR}/{potential_module}/{potential_file} has "
-                            f"no 'get_handlers' method. Please add the "
+                            f"{DIR}/{potential_module}/{potential_file} "
+                            f"has no 'get_handlers' method. Please add the "
                             f"method or add '{potential_module}.*' or "
-                            f"'{potential_module}.{potential_file[:-3]}' "
-                            f"to BLOCK_LIST."
+                            f"'{module_name}' to BLOCK_LIST."
                         )
 
+    root_logger.info("loaded %d modules: %s", len(loaded_modules),
+                     ", ".join(loaded_modules))
+
     if len(errors) > 0:
-        sys.exit("\n".join(errors))
+        if sys.flags.dev_mode:
+            # exit to make sure it gets fixed:
+            sys.exit("\n".join(errors))
+        else:
+            # don't exit in production to keep stuff running:
+            root_logger.warning("\n".join(errors))
 
     return handlers_list
 
