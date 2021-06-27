@@ -108,7 +108,7 @@ def make_app(module_info_list: List[utils.ModuleInfo]):
         # Static file settings
         static_path=f"{DIR}/static",
         # module information:
-        module_info_list=module_info_list
+        module_info_list=module_info_list,
     )
 
 
