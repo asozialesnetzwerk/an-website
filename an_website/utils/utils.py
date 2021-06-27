@@ -5,14 +5,21 @@ import asyncio.subprocess
 import re
 import traceback
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Union
 
 from tornado.web import HTTPError, RequestHandler
+
+Handler = Union[
+    Tuple[str, Any],
+    Tuple[str, Any, Dict[str, Any]],
+    Tuple[str, Any, Dict[str, Any], str],
+]
+HandlerList = Tuple[Handler, ...]
 
 
 @dataclass()
 class ModuleInfo:
-    handlers: Tuple[Tuple, ...] = ((),)
+    handlers: HandlerList
     name: Optional[str] = None
     description: Optional[str] = None
     path: Optional[str] = None

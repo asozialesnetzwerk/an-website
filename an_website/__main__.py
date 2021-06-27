@@ -7,7 +7,7 @@ import logging
 import os
 import ssl
 import sys
-from typing import Any, List, Tuple
+from typing import List
 
 import defusedxml  # type: ignore
 import ecs_logging
@@ -18,6 +18,8 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
+
+from an_website.utils.utils import Handler
 
 from . import DIR, patches
 from .utils import utils
@@ -52,7 +54,9 @@ def get_module_infos() -> List[utils.ModuleInfo]:
                         package="an_website",
                     )
                     if "get_module_info" in dir(module):
-                        module_info_list.append(module.get_module_info())
+                        module_info_list.append(
+                            module.get_module_info()  # type: ignore
+                        )
                         loaded_modules.append(module_name)
                     else:
                         errors.append(
@@ -81,8 +85,8 @@ def get_module_infos() -> List[utils.ModuleInfo]:
 
 def get_all_handlers(
     module_info_list: List[utils.ModuleInfo],
-) -> List[Tuple[Any]]:
-    handlers_list: List[Tuple[Any]] = []
+) -> List[Handler]:
+    handlers_list: List[Handler] = []
 
     for module_info in module_info_list:
         handlers_list += module_info.handlers
@@ -90,9 +94,9 @@ def get_all_handlers(
     return handlers_list
 
 
-def make_app(handlers: _RuleList:
+def make_app(handlers: List[Handler]):
     return Application(
-        handlers,
+        handlers,  # type: ignore
         # General settings
         autoreload=False,
         compress_response=True,
