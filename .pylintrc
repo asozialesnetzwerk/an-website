@@ -3,7 +3,6 @@ extension-pkg-allow-list=orjson
 
 [MESSAGES CONTROL]
 disable=
-    line-too-long,
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,

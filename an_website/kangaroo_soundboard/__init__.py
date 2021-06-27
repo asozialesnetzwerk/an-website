@@ -110,7 +110,7 @@ def create_anchor(
     color: str = "var(--red)",
     classes: str = "a_hover",
 ) -> str:
-    return f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"
+    return f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"  # noqa
 
 
 def create_heading(heading_type: str, text: str) -> str:
@@ -143,8 +143,8 @@ for book in info["bücher"]:
             full_file = f"files/{file}.mp3"
             person = file_text.split("-")[0]
             to_write = (
-                f"»{create_anchor(full_file, file_text.split('-', 1)[1], 'var(--light-grey)')}"
-                f"«<br><audio controls><source src='{full_file}' type='audio/mpeg'></audio>"
+                f"»{create_anchor(full_file, file_text.split('-', 1)[1], 'var(--light-grey)')}"  # noqa  # pylint: disable=line-too-long
+                f"«<br><audio controls><source src='{full_file}' type='audio/mpeg'></audio>"  # noqa
             )
 
             persons_stuff[
@@ -152,7 +152,7 @@ for book in info["bücher"]:
             ] = f"{persons_stuff.get(person, '')}<li>{to_write}</li>"
 
             index_html += (
-                f"<li>{create_anchor(person, persons[person], 'var(--light-red)')}"
+                f"<li>{create_anchor(person, persons[person], 'var(--light-red)')}"  # noqa
                 f": {to_write}</li>"
             )
             # rss:

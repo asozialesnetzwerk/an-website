@@ -18,11 +18,11 @@ python3 -m pyflakes an_website || exit 1
 
 # sort imports
 echo isort:
-python3 -m isort .
+python3 -m isort an_website
 
 # check formatting
 echo Black:
-python3 -m black --check --diff --color . || echo 'Run "python3 -m black ." to reformat.'
+python3 -m black --check --diff --color an_website || echo 'Run "python3 -m black an_website" to reformat.'
 
 # check types
 echo mypy:
@@ -30,6 +30,6 @@ python3 -m mypy --pretty -p an_website
 
 # lint
 echo Flake8:
-python3 -m flake8 an_website
+python3 -m flake8 --extend-ignore=D100,D101,D102,D103,D104,E501 an_website
 echo Pylint:
 python3 -m pylint --output-format=colorized an_website

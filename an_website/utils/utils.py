@@ -34,7 +34,7 @@ class BaseRequestHandler(RequestHandler):
 
     def render_string(self, template_name, **kwargs):
         return super().render_string(
-            template_name, **kwargs, url=self.get_url(), rum=self.get_rum()
+            template_name, **kwargs, settings=self.settings, url=self.get_url()
         )
 
     def write_error(self, status_code, **kwargs):
@@ -54,24 +54,10 @@ class BaseRequestHandler(RequestHandler):
         return self._reason
 
     def get_url(self):
-        """Dirty fix to force https"""
+        """Dirty fix to force https."""
         return self.request.full_url().replace(
             "http://joshix", "https://joshix"
         )
-
-    def get_rum(self):
-        return f"""
-        <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
-        <script>
-          elasticApm.init({{
-            active: {"true" if self.settings.get("ELASTIC_APM")["ENABLED"] else "false"},
-            serverUrl: '{self.settings.get("ELASTIC_APM")["SERVER_URL"]}',
-            serviceName: '{self.settings.get("ELASTIC_APM")["SERVICE_NAME"]}',
-            serviceVersion: '{self.settings.get("ELASTIC_APM")["SERVICE_VERSION"]}',
-            environment: '{self.settings.get("ELASTIC_APM")["ENVIRONMENT"]}',
-          }})
-        </script>
-        """
 
 
 class APIRequestHandler(BaseRequestHandler):

@@ -46,8 +46,8 @@ async def conversion_string(value_dict: dict) -> str:
 
 
 async def get_value_dict(euro):
-    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float,
-    # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})
+    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float,  # noqa
+    # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})  # noqa
     value_dict = {}
 
     for key in enumerate(keys):

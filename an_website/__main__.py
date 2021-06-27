@@ -13,6 +13,7 @@ import defusedxml  # type: ignore
 import ecs_logging
 import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
+from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
@@ -67,7 +68,7 @@ def get_all_handlers():
             sys.exit("\n".join(errors))
         else:
             # don't exit in production to keep stuff running:
-            root_logger.warning("\n".join(errors))
+            root_logger.error("\n".join(errors))
 
     root_logger.info(
         "loaded %d modules: %s", len(loaded_modules), ", ".join(loaded_modules)
@@ -129,7 +130,19 @@ if __name__ == "__main__":
         if not sys.flags.dev_mode
         else "development",
     }
-    apm = ElasticAPM(app)
+    app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
+    app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
+        hosts=[config.get("ELASTICSEARCH", "HOST", fallback=None)],
+        verify_certs=config.getboolean(
+            "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
+        ),
+        sniff_on_start=True,
+        sniff_on_connection_fail=True,
+        sniffer_timeout=60,
+    )
+    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
+        "ELASTICSEARCH", "PREFIX", fallback="an-website-"
+    )
     try:
         AsyncHTTPClient.configure(
             "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000

@@ -107,10 +107,10 @@ jobs:
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
       - name: Install Flake8 and Pylint
         run: |
-          pip install "flake8<4" "pylint<3"
+          pip install "flake8<4" "flake8-docstrings<1" "pylint<3"
       - name: Run Flake8
         run:
-          flake8
+          flake8 --extend-ignore=D100,D101,D102,D103,D104,E501
       - name: Run Pylint
         run: |
-          pylint an_website
+          pylint -d line-too-long an_website

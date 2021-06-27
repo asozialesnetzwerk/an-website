@@ -70,8 +70,8 @@ async def generate_pattern_str(
     input_str = input_str.lower()
     invalid = invalid.lower()
 
-    # in crossword_mode it doesn't matter if the letters are already in
-    # input_str:
+    # in crossword_mode it doesn't matter
+    # if the letters are already in input_str:
     if not crossword_mode:
         # add if not cw_mode
         invalid += input_str
@@ -81,8 +81,8 @@ async def generate_pattern_str(
     )  # replace stuff that could be bad
 
     if len(invalid_chars) == 0:
-        # there are no invalid chars, so the wildcard can be replaced with
-        # just "."
+        # there are no invalid chars,
+        # so the wildcard can be replaced with just "."
         return WILDCARDS_REGEX.sub(
             lambda m: "." * length_of_match(m), input_str
         )

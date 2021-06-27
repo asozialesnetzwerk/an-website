@@ -11,6 +11,8 @@ from json import loads as stdlib_json_loads
 import ecs_logging._utils
 import elasticapm.utils.cloud  # type: ignore
 import elasticapm.utils.json_encoder  # type: ignore
+import elasticsearch.connection.base
+import elasticsearch.serializer
 import tornado.escape
 
 from . import json  # pylint: disable=reimported
@@ -53,7 +55,10 @@ def patch_json():
     stdlib_json.dumps = dumps
     stdlib_json.load = load
     stdlib_json.loads = loads
-    tornado.escape.json = json
+
     ecs_logging._utils.json = json
-    elasticapm.utils.json_encoder.json = json
     elasticapm.utils.cloud.json = json
+    elasticapm.utils.json_encoder.json = json
+    elasticsearch.connection.base.json = json
+    elasticsearch.serializer.json = json
+    tornado.escape.json = json

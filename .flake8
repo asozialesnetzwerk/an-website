@@ -1,4 +1,18 @@
 [flake8]
-ignore =
-    E501,
-    W503,
+extend-ignore =
+    # Missing docstring in public module
+    D100,
+    # Missing docstring in public class
+    D101,
+    # Missing docstring in public method
+    D102,
+    # Missing docstring in public function
+    D103,
+    # Missing docstring in public package
+    D104,
+exclude = __pycache__
+show-source = True
+statistics = True
+doctests = True
+max-complexity = 10
+inline-quotes = double
