@@ -22,7 +22,6 @@ from tornado.web import Application
 from . import DIR, patches
 from .utils import utils
 from .version import version
-from .main_page import main_page
 
 # list of blocked modules
 BLOCK_LIST = ("patches.*", "static.*", "templates.*")
@@ -82,8 +81,8 @@ def get_module_infos() -> List[utils.ModuleInfo]:
 
 def get_all_handlers(
     module_info_list: List[utils.ModuleInfo],
-) -> List[Tuple[str, Any, ...]]:
-    handlers_list: List[Tuple[str, Any, ...]] = []
+) -> List[Tuple[Any]]:
+    handlers_list: List[Tuple[Any]] = []
 
     for module_info in module_info_list:
         handlers_list += module_info.handlers
@@ -91,7 +90,7 @@ def get_all_handlers(
     return handlers_list
 
 
-def make_app(handlers: List[Tuple[str, Any, ...]]):
+def make_app(handlers: _RuleList:
     return Application(
         handlers,
         # General settings
