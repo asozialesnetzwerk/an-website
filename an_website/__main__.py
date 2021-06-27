@@ -41,19 +41,18 @@ def get_all_handlers():
             and os.path.isdir(f"{DIR}/{potential_module}")
         ):
             for potential_file in os.listdir(f"{DIR}/{potential_module}"):
+                module_name = f"{potential_module}.{potential_file[:-3]}"
                 if (
                     potential_file.endswith(".py")
-                    and f"{potential_module}."
-                    f"{potential_file[:-3]}" not in BLOCK_LIST
+                    and module_name not in BLOCK_LIST
                     and not potential_file.startswith("_")
                 ):
-                    module_name = f"{potential_module}.{potential_file[:-3]}"
                     module = importlib.import_module(
                         f".{module_name}",
                         package="an_website",
                     )
-                    loaded_modules.append(module_name)
                     if "get_handlers" in dir(module):
+                        loaded_modules.append(module_name)
                         handlers_list += module.get_handlers()  # type: ignore
                     else:
                         errors.append(
@@ -63,10 +62,6 @@ def get_all_handlers():
                             f"'{module_name}' to BLOCK_LIST."
                         )
 
-    root_logger.info(
-        "loaded %d modules: %s", len(loaded_modules), ", ".join(loaded_modules)
-    )
-
     if len(errors) > 0:
         if sys.flags.dev_mode:
             # exit to make sure it gets fixed:
@@ -74,6 +69,10 @@ def get_all_handlers():
         else:
             # don't exit in production to keep stuff running:
             root_logger.warning("\n".join(errors))
+
+    root_logger.info(
+        "loaded %d modules: %s", len(loaded_modules), ", ".join(loaded_modules)
+    )
 
     return handlers_list
 
