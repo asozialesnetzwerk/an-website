@@ -5,9 +5,19 @@
 {% block description %}Hier gibt es coole Sachen :){% end %}
 
 {% block body %}
-    <p>
-        Hallo Welt!
-    </p>
+<h1>
+    Liste von Unterseiten:
+</h1>
+<ul>
+{% for info in module_infos %}
+{% if not info.path is None %}
+<li>
+    <a href="{{info.path}}">{{info.name}}</a>:
+    {{info.description}}
+</li>
+{% end %}
+{% end %}
+</ul>
 {% end %}
 
 

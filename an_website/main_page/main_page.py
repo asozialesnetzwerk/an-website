@@ -13,4 +13,10 @@ def get_module_info() -> ModuleInfo:
 
 class MainPage(BaseRequestHandler):
     async def get(self):
-        await self.render("pages/main_page.html")
+        base_url="/".join(self.get_url().split("/")[:-1])
+        print("/".join(self.get_url().split("/")[:-1]))
+        await self.render(
+            "pages/main_page.html",
+            module_infos=self.settings.get("module_info_list"),
+            base_url=base_url
+        )

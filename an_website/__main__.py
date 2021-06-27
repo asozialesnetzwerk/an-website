@@ -94,9 +94,9 @@ def get_all_handlers(
     return handlers_list
 
 
-def make_app(handlers: List[Handler]):
+def make_app(module_info_list: List[utils.ModuleInfo]):
     return Application(
-        handlers,  # type: ignore
+        get_all_handlers(module_info_list),  # type: ignore
         # General settings
         autoreload=False,
         compress_response=True,
@@ -107,6 +107,8 @@ def make_app(handlers: List[Handler]):
         template_path=f"{DIR}/templates",
         # Static file settings
         static_path=f"{DIR}/static",
+        # module information:
+        module_info_list=module_info_list
     )
 
 
@@ -130,9 +132,7 @@ if __name__ == "__main__":
         root_logger.addHandler(file_handler)
     logging.captureWarnings(True)
 
-    module_infos = get_module_infos()
-    # TODO: make module_infos accessible to main_page
-    app = make_app(get_all_handlers(module_infos))
+    app = make_app(get_module_infos())
     config = configparser.ConfigParser(interpolation=None)
     config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
     config.read("config.ini")
