@@ -63,8 +63,9 @@ def get_all_handlers():
                             f"'{module_name}' to BLOCK_LIST."
                         )
 
-    root_logger.info("loaded %d modules: %s", len(loaded_modules),
-                     ", ".join(loaded_modules))
+    root_logger.info(
+        "loaded %d modules: %s", len(loaded_modules), ", ".join(loaded_modules)
+    )
 
     if len(errors) > 0:
         if sys.flags.dev_mode:
