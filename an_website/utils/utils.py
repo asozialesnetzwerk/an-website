@@ -20,8 +20,8 @@ HandlerList = Tuple[Handler, ...]
 @dataclass()
 class ModuleInfo:
     handlers: HandlerList
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str = "name"
+    description: str = "description"
     path: Optional[str] = None
 
 
