@@ -35,6 +35,10 @@ jobs:
       - name: Run isort
         run: |
           isort .
+      - name: Sort requirements
+        run: |
+          sort -o requirements.txt requirements.txt
+          sort -o check-requirements.txt check-requirements.txt
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

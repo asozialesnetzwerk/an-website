@@ -116,6 +116,11 @@ def make_app(module_info_list: List[utils.ModuleInfo]):
 if __name__ == "__main__":
     patches.apply()
     defusedxml.defuse_stdlib()
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+    AsyncIOMainLoop().install()
+    AsyncHTTPClient.configure(
+        "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000
+    )
     config = configparser.ConfigParser(interpolation=None)
     config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
     config.read("config.ini")
@@ -163,15 +168,6 @@ if __name__ == "__main__":
     app.settings["ELASTICSEARCH_PREFIX"] = config.get(
         "ELASTICSEARCH", "PREFIX", fallback="an-website-"
     )
-    try:
-        AsyncHTTPClient.configure(
-            "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000
-        )
-    except ModuleNotFoundError:
-        if not sys.flags.dev_mode:
-            raise
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    AsyncIOMainLoop().install()
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(
