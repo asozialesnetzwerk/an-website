@@ -54,7 +54,7 @@ def get_module_info() -> ModuleInfo:
         ),
         name="Hangman-Löser",
         description="Ein Website, die Lösungen für Galgenmännchen findet.",
-        path="/hangman-loeser/",
+        path="/hangman-loeser",
     )
 
 

@@ -28,6 +28,8 @@ from .version import version
 # list of blocked modules
 BLOCK_LIST = ("patches.*", "static.*", "templates.*")
 
+logger = logging.getLogger(__name__)
+
 
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file
@@ -72,9 +74,9 @@ def get_module_infos() -> List[utils.ModuleInfo]:
             sys.exit("\n".join(errors))
         else:
             # don't exit in production to keep stuff running:
-            root_logger.error("\n".join(errors))
+            logger.error("\n".join(errors))
 
-    root_logger.info(
+    logger.info(
         "loaded %d modules: %s",
         len(loaded_modules),
         ", ".join(loaded_modules),
@@ -97,6 +99,7 @@ def get_all_handlers(
 def make_app(module_info_list: List[utils.ModuleInfo]):
     return Application(
         get_all_handlers(module_info_list),  # type: ignore
+        MODULE_INFO_LIST=module_info_list,
         # General settings
         autoreload=False,
         compress_response=True,
@@ -107,14 +110,15 @@ def make_app(module_info_list: List[utils.ModuleInfo]):
         template_path=f"{DIR}/templates",
         # Static file settings
         static_path=f"{DIR}/static",
-        # module information:
-        module_info_list=module_info_list,
     )
 
 
 if __name__ == "__main__":
     patches.apply()
     defusedxml.defuse_stdlib()
+    config = configparser.ConfigParser(interpolation=None)
+    config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
+    config.read("config.ini")
     root_logger = logging.getLogger()
     root_logger.setLevel(
         logging.INFO if not sys.flags.dev_mode else logging.DEBUG
@@ -131,11 +135,7 @@ if __name__ == "__main__":
         file_handler.setFormatter(ecs_logging.StdlibFormatter())
         root_logger.addHandler(file_handler)
     logging.captureWarnings(True)
-
     app = make_app(get_module_infos())
-    config = configparser.ConfigParser(interpolation=None)
-    config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
-    config.read("config.ini")
     app.settings["CONFIG"] = config
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),

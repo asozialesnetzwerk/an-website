@@ -11,7 +11,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/host-info/?", HostInfo),),
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Website",
-        path="/host-info/",
+        path="/host-info",
     )
 
 

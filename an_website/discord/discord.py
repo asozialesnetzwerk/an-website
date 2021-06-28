@@ -13,7 +13,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/discord/?", Discord),),
         name="Discord-Einladung",
         description="Eine permanente Einladung zu unserem Discord-Server",
-        path="/discord/",
+        path="/discord",
     )
 
 

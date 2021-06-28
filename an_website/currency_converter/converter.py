@@ -20,7 +20,7 @@ def get_module_info() -> ModuleInfo:
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "
         "Währungen",
-        path="/waehrungs-rechner/",
+        path="/waehrungs-rechner",
     )
 
 
@@ -93,7 +93,7 @@ class CurrencyConverter(BaseRequestHandler):
             value_dict = await get_value_dict(16)
 
         if value_dict.get("contained_bad_param", False):
-            url = self.get_url().split("?")[0]
+            url = self.request.full_url().split("?")[0]
             key = value_dict.get("key_used")
             self.redirect(f"{url}?{key}={value_dict.get(key + '_str')}")
             return

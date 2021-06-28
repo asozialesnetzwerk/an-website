@@ -7,7 +7,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/", MainPage), ("/index.html", MainPage)),
         name="Hauptseite",
-        description="Die Hauptseite der Wesbeite",
+        description="Die Hauptseite der Wesbeite",  # Was ist eine Wesbeite?
     )
 
 
@@ -15,5 +15,5 @@ class MainPage(BaseRequestHandler):
     async def get(self):
         await self.render(
             "pages/main_page.html",
-            module_infos=self.settings.get("module_info_list"),
+            module_infos=self.settings.get("MODULE_INFO_LIST"),
         )

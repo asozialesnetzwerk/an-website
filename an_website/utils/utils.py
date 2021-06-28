@@ -49,11 +49,6 @@ class BaseRequestHandler(RequestHandler):
     def data_received(self, chunk):
         pass
 
-    def render_string(self, template_name, **kwargs):
-        return super().render_string(
-            template_name, **kwargs, settings=self.settings, url=self.get_url()
-        )
-
     def write_error(self, status_code, **kwargs):
         self.render(
             "error.html",
@@ -69,9 +64,6 @@ class BaseRequestHandler(RequestHandler):
                 return "".join(traceback.format_exception(*kwargs["exc_info"]))
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
-
-    def get_url(self):
-        return self.request.full_url()
 
 
 class APIRequestHandler(BaseRequestHandler):
