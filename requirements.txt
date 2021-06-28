@@ -1,7 +1,7 @@
 #aiohttp[speedups]>=3.8
 #aioredis~=2.0 (not released yet)
-ansi2html~=1.6
 #asyncpg>=0.23,<2
+ansi2html~=1.6
 defusedxml>=0.7.1,<2
 ecs-logging~=1.0
 elastic-apm~=6.0
