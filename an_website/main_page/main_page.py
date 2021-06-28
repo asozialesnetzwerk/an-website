@@ -7,7 +7,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/", MainPage), ("/index.html", MainPage)),
         name="Hauptseite",
-        description="Die Hauptseite der Wesbeite",  # Was ist eine Wesbeite?
+        description="Die Hauptseite der Webseite",
     )
 
 
