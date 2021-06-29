@@ -190,7 +190,7 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
     crossword_mode_str = str(
         request_handler.get_query_argument("crossword_mode", default="False")
     )
-    crossword_mode = bool(strtobool(crossword_mode_str))  # if crossword mode
+    crossword_mode = strtobool(crossword_mode_str)  # if crossword mode
 
     language = str(
         request_handler.get_query_argument("lang", default="de_only_a-z")

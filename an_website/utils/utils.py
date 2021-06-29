@@ -36,12 +36,12 @@ def length_of_match(m: re.Match):  # pylint: disable=invalid-name
 
 
 def strtobool(val):
-    """Convert a string representation of truth to true (1) or false (0)."""
+    """Convert a string representation of truth to True or False."""
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):
-        return 1
+        return True
     if val in ("nope", "n", "no", "f", "false", "off", "0"):
-        return 0
+        return False
     raise ValueError("invalid truth value %r" % (val,))
 
 
