@@ -20,10 +20,9 @@ from tornado.log import LogFormatter
 from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
-from an_website.utils.utils import Handler
-
 from . import DIR, patches
 from .utils import utils
+from .utils.utils import Handler, ModuleInfo
 from .version import version
 
 # list of blocked modules
@@ -35,11 +34,13 @@ logger = logging.getLogger(__name__)
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file
 # files/dirs starting with '_' gets ignored
-def get_module_infos() -> List[utils.ModuleInfo]:
-    module_info_list: List[utils.ModuleInfo] = []
+def get_module_infos() -> List[ModuleInfo]:
+    module_info_list: List[ModuleInfo] = []
     loaded_modules: List[str] = []
     errors: List[str] = []
-    for potential_module in os.listdir(DIR):
+    for (  # pylint: disable=too-many-nested-blocks
+        potential_module
+    ) in os.listdir(DIR):
         if (
             not potential_module.startswith("_")
             and f"{potential_module}.*" not in BLOCK_LIST
@@ -57,10 +58,24 @@ def get_module_infos() -> List[utils.ModuleInfo]:
                         package="an_website",
                     )
                     if "get_module_info" in dir(module):
-                        module_info_list.append(
-                            module.get_module_info()  # type: ignore
-                        )
-                        loaded_modules.append(module_name)
+                        if (
+                            module.get_module_info.__annotations__.get(  # type: ignore
+                                "return", ""
+                            )
+                            == "ModuleInfo"
+                        ):
+                            module_info_list.append(
+                                module.get_module_info()  # type: ignore
+                            )
+                            loaded_modules.append(module_name)
+                        else:
+                            errors.append(
+                                f"'get_module_info' in {DIR}"
+                                f"/{potential_module}/{potential_file} does "
+                                f"not return ModuleInfo. Please add/fix the "
+                                f"return type or add '{potential_module}.*' "
+                                f"or '{module_name}' to BLOCK_LIST."
+                            )
                     else:
                         errors.append(
                             f"{DIR}/{potential_module}/{potential_file} has "
@@ -87,7 +102,7 @@ def get_module_infos() -> List[utils.ModuleInfo]:
 
 
 def get_all_handlers(
-    module_info_list: List[utils.ModuleInfo],
+    module_info_list: List[ModuleInfo],
 ) -> List[Handler]:
     handlers_list: List[Handler] = []
 
@@ -97,7 +112,7 @@ def get_all_handlers(
     return handlers_list
 
 
-def make_app(module_info_list: List[utils.ModuleInfo]):
+def make_app(module_info_list: List[ModuleInfo]):
     return Application(
         get_all_handlers(module_info_list),  # type: ignore
         MODULE_INFO_LIST=module_info_list,
