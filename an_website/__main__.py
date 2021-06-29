@@ -93,9 +93,14 @@ def get_module_infos() -> List[ModuleInfo]:
             logger.error("\n".join(errors))
 
     logger.info(
-        "loaded %d modules: %s",
+        "loaded %d modules: '%s'",
         len(loaded_modules),
-        ", ".join(loaded_modules),
+        "', '".join(loaded_modules),
+    )
+    logger.info(
+        "ignored %d modules: '%s'",
+        len(IGNORED_MODULES),
+        "', '".join(IGNORED_MODULES),
     )
 
     return module_info_list
