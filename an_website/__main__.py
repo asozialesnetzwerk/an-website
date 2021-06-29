@@ -171,8 +171,8 @@ if __name__ == "__main__":
         sniff_on_connection_fail=True,
         sniffer_timeout=60,
     )
-    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
-        "ELASTICSEARCH", "PREFIX", fallback="an-website-"
+    app.settings["ELASTICSEARCH_PREFIX"] = (
+        config.get("ELASTICSEARCH", "PREFIX", fallback="an-website") + "-"
     )
     app.settings["REDIS"] = aioredis.Redis(
         connection_pool=aioredis.BlockingConnectionPool.from_url(
@@ -182,8 +182,8 @@ if __name__ == "__main__":
             password=config.get("REDIS", "PASSWORD", fallback=None),
         )
     )
-    app.settings["REDIS_PREFIX"] = config.get(
-        "REDIS", "PREFIX", fallback="an-website:"
+    app.settings["REDIS_PREFIX"] = (
+        config.get("REDIS", "PREFIX", fallback="an-website") + ":"
     )
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)

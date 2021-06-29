@@ -3,6 +3,7 @@ from __future__ import annotations, barry_as_FLUFL
 import asyncio
 import asyncio.subprocess
 import re
+import sys
 import traceback
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple, Union
@@ -49,6 +50,25 @@ class BaseRequestHandler(RequestHandler):
     def data_received(self, chunk):
         pass
 
+    async def prepare(self):  # pylint: disable=invalid-overridden-method
+        if not sys.flags.dev_mode and not self.request.method == "OPTIONS":
+            redis = self.settings.get("REDIS")
+            prefix = self.settings.get("REDIS_PREFIX")
+            result = await redis.execute_command(
+                "CL.THROTTLE",
+                prefix + "ratelimit:" + self.request.remote_ip,
+                15,  # max burst
+                30,  # count per period
+                60,  # period
+            )
+            self.set_header("X-RateLimit-Limit", result[1])
+            self.set_header("X-RateLimit-Remaining", result[2])
+            self.set_header("Retry-After", result[3])
+            self.set_header("X-RateLimit-Reset", result[4])
+            if result[0]:
+                self.set_status(420, "Enhance Your Calm")
+                self.write_error(420)
+
     def write_error(self, status_code, **kwargs):
         self.render(
             "error.html",
@@ -77,7 +97,7 @@ class APIRequestHandler(BaseRequestHandler):
 
 
 class NotFound(BaseRequestHandler):
-    def prepare(self):
+    async def prepare(self):
         raise HTTPError(404)
 
 
