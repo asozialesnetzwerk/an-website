@@ -98,7 +98,7 @@ class BaseRequestHandler(RequestHandler):
 
 class APIRequestHandler(BaseRequestHandler):
     def write_error(self, status_code, **kwargs):
-        self.write(
+        self.finish(
             {
                 "status": status_code,
                 "message": self.get_error_message(**kwargs),
