@@ -47,7 +47,7 @@ def get_module_infos() -> List[ModuleInfo]:
             and os.path.isdir(f"{DIR}/{potential_module}")
         ):
             for potential_file in os.listdir(f"{DIR}/{potential_module}"):
-                module_name = f"{potential_module}.{potential_file[:-3]}"
+                module_name = f"{potential_module}.{potential_file[:-3]}"  # pylint: disable=redefined-outer-name
                 if (
                     potential_file.endswith(".py")
                     and module_name not in IGNORED_MODULES
