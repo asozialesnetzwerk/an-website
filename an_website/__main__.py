@@ -26,7 +26,7 @@ from .utils.utils import Handler, ModuleInfo
 from .version import version
 
 # list of blocked modules
-BLOCK_LIST = ("patches.*", "static.*", "templates.*")
+IGNORED_MODULES = ["patches.*", "static.*", "templates.*"]
 
 logger = logging.getLogger(__name__)
 
@@ -43,14 +43,14 @@ def get_module_infos() -> List[ModuleInfo]:
     ) in os.listdir(DIR):
         if (
             not potential_module.startswith("_")
-            and f"{potential_module}.*" not in BLOCK_LIST
+            and f"{potential_module}.*" not in IGNORED_MODULES
             and os.path.isdir(f"{DIR}/{potential_module}")
         ):
             for potential_file in os.listdir(f"{DIR}/{potential_module}"):
                 module_name = f"{potential_module}.{potential_file[:-3]}"
                 if (
                     potential_file.endswith(".py")
-                    and module_name not in BLOCK_LIST
+                    and module_name not in IGNORED_MODULES
                     and not potential_file.startswith("_")
                 ):
                     module = importlib.import_module(
@@ -74,14 +74,14 @@ def get_module_infos() -> List[ModuleInfo]:
                                 f"/{potential_module}/{potential_file} does "
                                 f"not return ModuleInfo. Please add/fix the "
                                 f"return type or add '{potential_module}.*' "
-                                f"or '{module_name}' to BLOCK_LIST."
+                                f"or '{module_name}' to IGNORED_MODULES."
                             )
                     else:
                         errors.append(
                             f"{DIR}/{potential_module}/{potential_file} has "
                             f"no 'get_module_info' method. Please add the "
                             f"method or add '{potential_module}.*' or "
-                            f"'{module_name}' to BLOCK_LIST."
+                            f"'{module_name}' to IGNORED_MODULES."
                         )
 
     if len(errors) > 0:
@@ -154,6 +154,12 @@ if __name__ == "__main__":
         file_handler.setFormatter(ecs_logging.StdlibFormatter())
         root_logger.addHandler(file_handler)
     logging.captureWarnings(True)
+    for module_name in config.get(
+        "GENERAL", "IGNORED_MODULES", fallback=""
+    ).split(","):
+        module_name = module_name.strip()
+        if len(module_name) > 0:
+            IGNORED_MODULES.append(module_name)
     app = make_app(get_module_infos())
     app.settings["CONFIG"] = config
     app.settings["ELASTIC_APM"] = {
