@@ -9,6 +9,7 @@ import ssl
 import sys
 from typing import List
 
+import aioredis  # type: ignore
 import defusedxml  # type: ignore
 import ecs_logging
 import uvloop
@@ -118,9 +119,7 @@ if __name__ == "__main__":
     defusedxml.defuse_stdlib()
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     AsyncIOMainLoop().install()
-    AsyncHTTPClient.configure(
-        "tornado.curl_httpclient.CurlAsyncHTTPClient", max_clients=1000
-    )
+    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)
     config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
     config.read("config.ini")
@@ -157,16 +156,34 @@ if __name__ == "__main__":
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
-        hosts=[config.get("ELASTICSEARCH", "HOST", fallback=None)],
+        hosts=[config.get("ELASTICSEARCH", "SEED_HOST", fallback="localhost")],
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
         ),
+        http_auth=(
+            config.get("ELASTICSEARCH", "USERNAME"),
+            config.get("ELASTICSEARCH", "PASSWORD"),
+        )
+        if config.get("ELASTICSEARCH", "USERNAME", fallback=None)
+        and config.get("ELASTICSEARCH", "PASSWORD", fallback=None)
+        else None,
         sniff_on_start=True,
         sniff_on_connection_fail=True,
         sniffer_timeout=60,
     )
     app.settings["ELASTICSEARCH_PREFIX"] = config.get(
         "ELASTICSEARCH", "PREFIX", fallback="an-website-"
+    )
+    app.settings["REDIS"] = aioredis.Redis(
+        connection_pool=aioredis.BlockingConnectionPool.from_url(
+            config.get("REDIS", "URL", fallback="redis://localhost"),
+            db=config.getint("REDIS", "DB", fallback=None),
+            username=config.get("REDIS", "USERNAME", fallback=None),
+            password=config.get("REDIS", "PASSWORD", fallback=None),
+        )
+    )
+    app.settings["REDIS_PREFIX"] = config.get(
+        "REDIS", "PREFIX", fallback="an-website:"
     )
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)

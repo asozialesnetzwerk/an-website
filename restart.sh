@@ -4,7 +4,7 @@ SERVICE_FILE_NAME="an_website.ini"
 SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 
 # get latest files from git:
-git pull --rebase
+git pull --rebase --autostash
 
 # install required packages:
 if [ ! -d "venv" ]
@@ -13,7 +13,7 @@ then
     python3 -m venv venv
 fi
 
-venv/bin/pip install -U -r requirements.txt
+venv/bin/pip install --disable-pip-version-check -U -r requirements.txt
 
 if [ ! -f "$SERVICE_FILE_LOCATION" ]
 then

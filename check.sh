@@ -3,9 +3,9 @@
 if [ -d venv ];
 then
     . venv/bin/activate
-    python3 -m pip install -U -r check-requirements.txt --quiet
+    python3 -m pip install --disable-pip-version-check -U -r check-requirements.txt --quiet
 else
-    python3 -m pip install -U -r check-requirements.txt --quiet --user
+    python3 -m pip install --disable-pip-version-check -U -r check-requirements.txt --quiet --user
 fi
 
 
