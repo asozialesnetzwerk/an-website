@@ -3,7 +3,6 @@ from __future__ import annotations, barry_as_FLUFL
 import os
 import re
 from dataclasses import asdict, dataclass, field
-from distutils.util import strtobool
 from typing import Dict, List, Tuple
 
 import orjson
@@ -14,6 +13,7 @@ from ..utils.utils import (
     BaseRequestHandler,
     ModuleInfo,
     length_of_match,
+    strtobool,
 )
 from . import DIR
 

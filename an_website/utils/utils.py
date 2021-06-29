@@ -35,6 +35,16 @@ def length_of_match(m: re.Match):  # pylint: disable=invalid-name
     return span[1] - span[0]
 
 
+def strtobool(val):
+    """Convert a string representation of truth to true (1) or false (0)."""
+    val = val.lower()
+    if val in ("sure", "y", "yes", "t", "true", "on", "1"):
+        return 1
+    if val in ("nope", "n", "no", "f", "false", "off", "0"):
+        return 0
+    raise ValueError("invalid truth value %r" % (val,))
+
+
 async def run(cmd, stdin=asyncio.subprocess.PIPE):
     proc = await asyncio.create_subprocess_shell(
         cmd,

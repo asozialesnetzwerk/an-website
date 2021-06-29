@@ -188,7 +188,7 @@ with open(f"{DIR}/build/index.html", "w+") as main_page:
 persons_html = "<h1>Känguru-Soundboard</h1>"
 
 # pages for every person:
-for key in persons_stuff:
+for key in persons_stuff:  # pylint: disable=consider-using-dict-items
     _dir = f"{DIR}/build/" + replace_umlauts(key)
     os.makedirs(_dir, exist_ok=True)
     person = (

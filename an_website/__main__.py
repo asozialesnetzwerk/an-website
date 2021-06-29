@@ -153,6 +153,8 @@ if __name__ == "__main__":
         "ENVIRONMENT": "production"
         if not sys.flags.dev_mode
         else "development",
+        "DEBUG": True,
+        "CAPTURE_BODY": "errors",
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
