@@ -8,7 +8,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/", MainPage), ("/index.html", MainPage)),
         name="Hauptseite",
         description="Die Hauptseite der Webseite",
-        path="/"
+        path="/",
     )
 
 
