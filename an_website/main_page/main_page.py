@@ -15,5 +15,4 @@ class MainPage(BaseRequestHandler):
     async def get(self):
         await self.render(
             "pages/main_page.html",
-            module_infos=self.settings.get("MODULE_INFO_LIST"),
         )

@@ -20,32 +20,20 @@
     </script>
     {% block head %} {% end %}
     <style>
-        :root {
-            --red: #8B0000;
-            --white: #fefefe;
-            --light-grey: #9e9e9e;
-            --grey: #242424;
-            --black: #000;
-            --dark-grey: #111111;
-            --light-red: #f00;
-            --light-blue: #00bfff;
-            --blue: #00f;
-        }
-        * {
-            color: var(--white);
-            background-color: var(--black);
-        }
-        a {
-            color: var(--red)
-        }
+        {% include "styles/base.css" %}
         {% block style %} {% end %}
     </style>
 </head>
 <body>
+{% block header %}
+    {% include "header.html" %}
+{% end %}
 
+<div id="body">
 {% block body %}
 Dies ist die Webseite des Asozialen Netzwerkes!
 {% end %}
+</div>
 
 {% block footer %}
     {% include "footer.html" %}

@@ -1,0 +1,64 @@
+.header {
+    left: 0;
+    top: 0;
+    width: 100%;
+    position: fixed;
+    background-color: var(--red);
+    padding: 5px;
+    color: #fff;
+    height: var(--header-height);
+}
+
+.header * {
+    background-color:  var(--red);
+}
+
+.open-pane {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    position: fixed;
+}
+
+.open-pane:hover {
+    transform: rotateY(30deg);
+}
+
+.site-pane {
+    right: -30%;
+    top: 0;
+    z-index: 1000000;
+    position: fixed;
+    background-color: var(--dark-grey);
+    color: #fff;
+    width: 30%;
+    height: 100%;
+
+    transition: right 0.5s;
+}
+
+.open-pane:hover + .site-pane {
+    right: 0;
+}
+
+.site-pane:hover {
+    right: 0;
+}
+
+.site-pane * {
+    background-color: var(--dark-grey);
+}
+
+.site-pane h1 {
+    margin: 10px;
+}
+
+.menu-list {
+    margin: 5px;
+}
+
+.menu-list li {
+    padding: 7px;
+}
+
