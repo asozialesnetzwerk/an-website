@@ -79,8 +79,8 @@ class BaseRequestHandler(RequestHandler):
                 self.set_status(420, "Enhance Your Calm")
                 self.write_error(420)
 
-    async def render(self, template_name: str, **kwargs: Any):
-        await super().render(
+    def render(self, template_name: str, **kwargs: Any):
+        return super().render(
             template_name,
             module_infos=self.settings.get("MODULE_INFO_LIST"),
             **kwargs,
