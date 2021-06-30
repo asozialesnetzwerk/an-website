@@ -140,8 +140,10 @@ if __name__ == "__main__":
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     AsyncIOMainLoop().install()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
+        {"sure": True, "nope": False}
+    )
     config = configparser.ConfigParser(interpolation=None)
-    config.BOOLEAN_STATES = {"sure": True, "nope": False}  # type: ignore
     config.read("config.ini")
     root_logger = logging.getLogger()
     root_logger.setLevel(
@@ -169,7 +171,9 @@ if __name__ == "__main__":
     app.settings["CONFIG"] = config
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
-        "SERVER_URL": config.get("ELASTIC_APM", "SERVER_URL", fallback=None),
+        "SERVER_URL": config.get(
+            "ELASTIC_APM", "SERVER_URL", fallback="http://localhost:8200"
+        ),
         "SECRET_TOKEN": config.get(
             "ELASTIC_APM", "SECRET_TOKEN", fallback=None
         ),
@@ -184,7 +188,9 @@ if __name__ == "__main__":
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
-        hosts=[config.get("ELASTICSEARCH", "SEED_HOST", fallback="localhost")],
+        host=config.get("ELASTICSEARCH", "HOST", fallback="localhost"),
+        port=config.get("ELASTICSEARCH", "PORT", fallback=None),
+        use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
         ),
@@ -195,10 +201,13 @@ if __name__ == "__main__":
         if config.get("ELASTICSEARCH", "USERNAME", fallback=None)
         and config.get("ELASTICSEARCH", "PASSWORD", fallback=None)
         else None,
+        api_key=config.get("ELASTICSEARCH", "API_KEY", fallback=None),
+        http_compress=True,
         sniff_on_start=True,
         sniff_on_connection_fail=True,
         sniffer_timeout=60,
     )
+    # print(asyncio.get_event_loop().run_until_complete(app.settings["ELASTICSEARCH"].info()))
     app.settings["ELASTICSEARCH_PREFIX"] = (
         config.get("ELASTICSEARCH", "PREFIX", fallback="an-website") + "-"
     )
