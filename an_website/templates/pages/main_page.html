@@ -9,7 +9,7 @@
     Liste von Unterseiten:
 </h1>
 <ul>
-{% for info in module_infos %}
+{% for info in handler.settings.get("MODULE_INFOS") %}
 {% if not info.path is None and not info.path == "/" %}
 <li>
     <a href="{{info.path}}">{{info.name}}</a>:

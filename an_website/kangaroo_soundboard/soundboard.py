@@ -35,5 +35,5 @@ def get_module_info() -> ModuleInfo:
         ),
         name="Känguru-Soundboard",
         description="Kurze Sounds aus den Känguru Chroniken",
-        path="/kaenguru-soundboard/",  # the / in the end is important
+        path="/kaenguru-soundboard/",  # the / at the end is important
     )

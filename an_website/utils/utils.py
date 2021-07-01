@@ -57,6 +57,8 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
 
 
 class BaseRequestHandler(RequestHandler):
+    RATELIMIT_TOKENS = 1  # can be overridden in subclasses
+
     def data_received(self, chunk):
         pass
 
@@ -70,6 +72,7 @@ class BaseRequestHandler(RequestHandler):
                 15,  # max burst
                 30,  # count per period
                 60,  # period
+                self.RATELIMIT_TOKENS,
             )
             self.set_header("X-RateLimit-Limit", result[1])
             self.set_header("X-RateLimit-Remaining", result[2])
@@ -78,13 +81,6 @@ class BaseRequestHandler(RequestHandler):
             if result[0]:
                 self.set_status(420, "Enhance Your Calm")
                 self.write_error(420)
-
-    def render(self, template_name: str, **kwargs: Any):
-        return super().render(
-            template_name,
-            module_infos=self.settings.get("MODULE_INFO_LIST"),
-            **kwargs,
-        )
 
     def write_error(self, status_code, **kwargs):
         self.render(

@@ -19,8 +19,10 @@ server_url = http://localhost:8200
 #api_key = ...
 
 [ELASTICSEARCH]
+#cloud_id = ...
 host = localhost
 port = 9200
+url_prefix = /
 use_ssl = nope
 verify_certs = sure
 #username = elastic

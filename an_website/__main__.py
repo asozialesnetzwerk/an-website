@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # this calls the get_module_info function in every file
 # files/dirs starting with '_' gets ignored
 def get_module_infos() -> List[ModuleInfo]:
-    module_info_list: List[ModuleInfo] = []
+    module_infos: List[ModuleInfo] = []
     loaded_modules: List[str] = []
     errors: List[str] = []
     for (  # pylint: disable=too-many-nested-blocks
@@ -64,7 +64,7 @@ def get_module_infos() -> List[ModuleInfo]:
                             )
                             == "ModuleInfo"
                         ):
-                            module_info_list.append(
+                            module_infos.append(
                                 module.get_module_info()  # type: ignore
                             )
                             loaded_modules.append(module_name)
@@ -103,24 +103,24 @@ def get_module_infos() -> List[ModuleInfo]:
         "', '".join(IGNORED_MODULES),
     )
 
-    return module_info_list
+    return module_infos
 
 
 def get_all_handlers(
-    module_info_list: List[ModuleInfo],
+    module_infos: List[ModuleInfo],
 ) -> List[Handler]:
-    handlers_list: List[Handler] = []
+    handlers: List[Handler] = []
 
-    for module_info in module_info_list:
-        handlers_list += module_info.handlers
+    for module_info in module_infos:
+        handlers += module_info.handlers
 
-    return handlers_list
+    return handlers
 
 
-def make_app(module_info_list: List[ModuleInfo]):
+def make_app(module_infos: List[ModuleInfo]):
     return Application(
-        get_all_handlers(module_info_list),  # type: ignore
-        MODULE_INFO_LIST=module_info_list,
+        get_all_handlers(module_infos),  # type: ignore
+        MODULE_INFOS=module_infos,
         # General settings
         autoreload=False,
         compress_response=True,
@@ -188,8 +188,10 @@ if __name__ == "__main__":
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
+        cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         host=config.get("ELASTICSEARCH", "HOST", fallback="localhost"),
         port=config.get("ELASTICSEARCH", "PORT", fallback=None),
+        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=None),
         use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
@@ -206,8 +208,11 @@ if __name__ == "__main__":
         sniff_on_start=True,
         sniff_on_connection_fail=True,
         sniffer_timeout=60,
+        headers={
+            "accept": "application/vnd.elasticsearch+json; compatible-with=7"
+        },
     )
-    # print(asyncio.get_event_loop().run_until_complete(app.settings["ELASTICSEARCH"].info()))
+    # sys.exit(asyncio.get_event_loop().run_until_complete(app.settings["ELASTICSEARCH"].info()))
     app.settings["ELASTICSEARCH_PREFIX"] = (
         config.get("ELASTICSEARCH", "PREFIX", fallback="an-website") + "-"
     )

@@ -4,7 +4,7 @@
   <div class="site-pane">
     <h1>Unterseiten:</h1>
     <ul class="menu-list">
-      {% for info in module_infos %}
+      {% for info in handler.settings.get("MODULE_INFOS") %}
         {% if not info.path is None %}
         <li class="tooltip">
           <a href="{{info.path}}">{{info.name}}</a>
