@@ -220,10 +220,14 @@ if __name__ == "__main__":
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
-    # sys.exit(asyncio.get_event_loop().run_until_complete(app.settings["ELASTICSEARCH"].info()))
     app.settings["ELASTICSEARCH_PREFIX"] = (
         config.get("ELASTICSEARCH", "PREFIX", fallback="an-website") + "-"
     )
+    # sys.exit(
+    #     asyncio.get_event_loop().run_until_complete(
+    #         app.settings["ELASTICSEARCH"].info()
+    #     )
+    # )
     app.settings["REDIS"] = aioredis.Redis(
         connection_pool=aioredis.BlockingConnectionPool.from_url(
             config.get("REDIS", "URL", fallback="redis://localhost"),
@@ -232,10 +236,14 @@ if __name__ == "__main__":
             password=config.get("REDIS", "PASSWORD", fallback=None),
         )
     )
-    # sys.exit(asyncio.get_event_loop().run_until_complete(app.settings["REDIS"].execute_command("LOLWUT")).decode("utf-8"))
     app.settings["REDIS_PREFIX"] = (
         config.get("REDIS", "PREFIX", fallback="an-website") + ":"
     )
+    # sys.exit(
+    #     asyncio.get_event_loop()
+    #     .run_until_complete(app.settings["REDIS"].execute_command("LOLWUT"))
+    #     .decode("utf-8")
+    # )
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(
