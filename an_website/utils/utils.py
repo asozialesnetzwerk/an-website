@@ -115,5 +115,6 @@ class NotFound(BaseRequestHandler):
 
 
 class ZeroDivision(BaseRequestHandler):
-    def get(self):
+    async def prepare(self):
+        await super().prepare()
         self.finish(str(0 / 0))

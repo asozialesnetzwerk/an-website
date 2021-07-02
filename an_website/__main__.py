@@ -204,6 +204,14 @@ if __name__ == "__main__":
         and config.get("ELASTICSEARCH", "PASSWORD", fallback=None)
         else None,
         api_key=config.get("ELASTICSEARCH", "API_KEY", fallback=None),
+        client_cert=config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None),
+        client_key=config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None),
+        retry_on_timeout=config.get(
+            "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
+        ),
+        send_get_body_as=config.get(
+            "ELASTICSEARCH", "SEND_GET_BODY_AS", fallback=None
+        ),
         http_compress=True,
         sniff_on_start=True,
         sniff_on_connection_fail=True,
@@ -224,6 +232,7 @@ if __name__ == "__main__":
             password=config.get("REDIS", "PASSWORD", fallback=None),
         )
     )
+    # sys.exit(asyncio.get_event_loop().run_until_complete(app.settings["REDIS"].execute_command("LOLWUT")).decode("utf-8"))
     app.settings["REDIS_PREFIX"] = (
         config.get("REDIS", "PREFIX", fallback="an-website") + ":"
     )
