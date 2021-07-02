@@ -1,7 +1,7 @@
 #aiohttp[speedups]>=3.8 (not released yet)
-#asyncpg>=0.23,<2
 aioredis[hiredis]>=2.0.0a1,<3
 ansi2html~=1.6
+#asyncpg>=0.23,<2
 certifi
 defusedxml>=0.7.1,<2
 ecs-logging~=1.0
