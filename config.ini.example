@@ -1,5 +1,5 @@
 [GENERAL]
-ignored_modules = spam, eggs
+#ignored_modules = spam, eggs
 
 [SSL]
 enabled = nope

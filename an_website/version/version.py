@@ -32,7 +32,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/version/?", Version),),
         name="Versions-Informationen",
-        description="Die aktuelle Version der Webseite.",
+        description="Die aktuelle Version der Webseite",
         path="/version",
     )
 

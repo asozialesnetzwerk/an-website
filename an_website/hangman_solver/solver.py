@@ -54,7 +54,7 @@ def get_module_info() -> ModuleInfo:
             (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
         ),
         name="Hangman-Löser",
-        description="Ein Website, die Lösungen für Galgenmännchen findet.",
+        description="Ein Website, die Lösungen für Galgenmännchen findet",
         path="/hangman-loeser",
     )
 
