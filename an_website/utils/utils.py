@@ -66,13 +66,17 @@ class BaseRequestHandler(RequestHandler):
         if not sys.flags.dev_mode and not self.request.method == "OPTIONS":
             redis = self.settings.get("REDIS")
             prefix = self.settings.get("REDIS_PREFIX")
+            tokens = (
+                getattr(self, "RATELIMIT_TOKENS_" + self.request.method, None)
+                or self.RATELIMIT_TOKENS
+            )
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 prefix + "ratelimit:" + self.request.remote_ip,
                 15,  # max burst
                 30,  # count per period
                 60,  # period
-                self.RATELIMIT_TOKENS,
+                tokens,
             )
             self.set_header("X-RateLimit-Limit", result[1])
             self.set_header("X-RateLimit-Remaining", result[2])

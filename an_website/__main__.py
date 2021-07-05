@@ -10,14 +10,11 @@ import sys
 from typing import List
 
 import aioredis  # type: ignore
-import defusedxml  # type: ignore
 import ecs_logging
-import uvloop
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
-from tornado.platform.asyncio import AsyncIOMainLoop
 from tornado.web import Application
 
 from . import DIR, patches
@@ -136,13 +133,7 @@ def make_app(module_infos: List[ModuleInfo]):
 
 if __name__ == "__main__":
     patches.apply()
-    defusedxml.defuse_stdlib()
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    AsyncIOMainLoop().install()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
-    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
-        {"sure": True, "nope": False}
-    )
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini")
     root_logger = logging.getLogger()
