@@ -6,10 +6,8 @@
 
 {% block body %}
 
-{% autoescape None %}
-
 <pre>
-{{ screenfetch }}
+{% raw ansi2html.convert(screenfetch, full=False) %}
 </pre>
 
 {% end %}

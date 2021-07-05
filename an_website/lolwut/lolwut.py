@@ -1,6 +1,5 @@
 from __future__ import annotations, barry_as_FLUFL
 
-from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado.web import HTTPError
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
@@ -24,11 +23,9 @@ class LOLWUT(BaseRequestHandler):
             for argument in arguments:
                 if not argument:
                     raise HTTPError(404)
-            lolwut = "LOLWUT VERSION " + " ".join(arguments)
+            command = "LOLWUT VERSION " + " ".join(arguments)
         else:
-            lolwut = "LOLWUT"
+            command = "LOLWUT"
         redis = self.settings.get("REDIS")
-        result = (await redis.execute_command(lolwut)).decode("utf-8")
-        conv = Ansi2HTMLConverter(inline=True, scheme="xterm")
-        html = conv.convert(result, full=False)
-        await self.render("pages/lolwut.html", lolwut=html)
+        lolwut = (await redis.execute_command(command)).decode("utf-8")
+        await self.render("pages/lolwut.html", lolwut=lolwut)

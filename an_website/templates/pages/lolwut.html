@@ -6,10 +6,8 @@
 
 {% block body %}
 
-{% autoescape None %}
-
 <pre>
-{{ lolwut }}
+{% raw ansi2html.convert(lolwut, full=False) %}
 </pre>
 
 {% end %}

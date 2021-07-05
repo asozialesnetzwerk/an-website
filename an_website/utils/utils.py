@@ -8,6 +8,7 @@ import traceback
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple, Union
 
+from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado.web import HTTPError, RequestHandler
 
 Handler = Union[
@@ -101,6 +102,13 @@ class BaseRequestHandler(RequestHandler):
                 return "".join(traceback.format_exception(*kwargs["exc_info"]))
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
+
+    def get_template_namespace(self):
+        namespace = super().get_template_namespace()
+        namespace.update(
+            {"ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm")}
+        )
+        return namespace
 
 
 class APIRequestHandler(BaseRequestHandler):
