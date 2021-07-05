@@ -26,7 +26,7 @@
     </div>
     <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
     <span class="checkmark no-select"></span>
-    
+
     <br>
     <div class="tooltip no-select">
         <label class="cbl float-left no-select" for="max_words">
@@ -69,7 +69,7 @@
 {{min(word_count, max_words)}}/{{word_count}} passenden Wörter:
 
     <ul class="output">
-        {% for word in words %}
+        {% for word in words[:max_words] %}
             <li>{{ word }}</li>
         {% end %}
     </ul>

@@ -21,7 +21,7 @@ from . import DIR
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
-# example: {"words_en/3.txt": ["you", "she", ...]}
+# example: {"words_en/3": ["you", "she", ...]}
 WORDS: Dict[str, List[str]] = {}
 LETTERS: Dict[str, Dict[str, int]] = {}
 # load word lists
@@ -67,7 +67,7 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
     word_count: int = 0
     letters: Dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
-    max_words: int = 100
+    max_words: int = 20
     lang: str = "de_only_a-z"
 
 
@@ -171,7 +171,7 @@ async def solve_hangman(
     return Hangman(
         input_str,
         invalid,
-        matched_words,
+        matched_words[:max_words],
         len(matched_words),
         letters,
         crossword_mode,
