@@ -2,6 +2,7 @@ from __future__ import annotations, barry_as_FLUFL
 
 import os
 import re
+from collections import Counter
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List, Tuple
 
@@ -103,14 +104,6 @@ async def generate_pattern_str(
     )
 
 
-def sort_letters(letters: Dict[str, int]) -> Dict[str, int]:
-    letters_items: List[Tuple[str, int]] = list(letters.items())
-    sorted_letters: List[Tuple[str, int]] = sorted(
-        letters_items, key=lambda item: item[1], reverse=True
-    )
-    return dict(sorted_letters)
-
-
 async def get_words_and_letters(
     file_name: str,  # pylint: disable=redefined-outer-name
     input_str: str,
@@ -127,21 +120,25 @@ async def get_words_and_letters(
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
 
-    input_set = set(input_str.lower())
-
     current_words = []
-    letters: dict[str, int] = {}
+    letter_list: List[str] = []
 
     for line in WORDS[file_name]:
         if regex.fullmatch(line) is not None:
             current_words.append(line)
 
             # do letter stuff:
-            for letter in set(line):
-                if letter not in input_set:
-                    letters[letter] = letters.setdefault(letter, 0) + 1
+            letter_list.extend(set(line))
 
-    return current_words, sort_letters(letters)
+    letters = Counter(letter_list)
+    sorted_letters: Dict[str, int] = dict(letters.most_common(30))  # 26 + äöüß
+
+    # remove letters that are already in string
+    for letter in set(input_str.lower()):
+        if letter in sorted_letters:
+            del sorted_letters[letter]
+
+    return current_words, sorted_letters
 
 
 async def solve_hangman(
