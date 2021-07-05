@@ -180,8 +180,11 @@ async def solve_hangman(
 
 
 async def handle_request(request_handler: RequestHandler) -> Hangman:
-    max_words = int(
-        str(request_handler.get_query_argument("max_words", default="20"))
+    max_words = min(
+        100,
+        int(
+            str(request_handler.get_query_argument("max_words", default="20"))
+        ),
     )
 
     crossword_mode_str = str(
