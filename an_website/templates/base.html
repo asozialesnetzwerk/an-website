@@ -9,6 +9,27 @@
     <meta property="og:title" content="{% block title %}Das Asoziale Netzwerk{% end %}" />
     <meta property="og:description" content="{% block description %}Dies ist die Webseite des Asozialen Netzwerkes!{% end %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head %} {% end %}
+    <style>
+        {% include "styles/base.css" %}
+        {% block style %} {% end %}
+    </style>
+</head>
+<body>
+    {% block header %}
+        {% include "header.html" %}
+    {% end %}
+
+    <div id="body">
+        {% block body %}
+            Dies ist die Webseite des Asozialen Netzwerkes!
+        {% end %}
+    </div>
+
+    {% block footer %}
+        {% include "footer.html" %}
+    {% end %}
+
     <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
     <script>
         elasticApm.init({
@@ -19,25 +40,5 @@
             environment: '{% raw handler.settings.get("ELASTIC_APM")["ENVIRONMENT"] %}',
         })
     </script>
-    {% block head %} {% end %}
-    <style>
-        {% include "styles/base.css" %}
-        {% block style %} {% end %}
-    </style>
-</head>
-<body>
-{% block header %}
-    {% include "header.html" %}
-{% end %}
-
-<div id="body">
-{% block body %}
-Dies ist die Webseite des Asozialen Netzwerkes!
-{% end %}
-</div>
-
-{% block footer %}
-    {% include "footer.html" %}
-{% end %}
 </body>
 </html>
