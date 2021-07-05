@@ -4,7 +4,7 @@ import os
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
 import orjson
 from tornado.web import HTTPError, RequestHandler
@@ -14,6 +14,7 @@ from ..utils.utils import (
     BaseRequestHandler,
     ModuleInfo,
     length_of_match,
+    n_from_set,
     strtobool,
 )
 from . import DIR
@@ -22,7 +23,7 @@ WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 # example: {"words_en/3": ["you", "she", ...]}
-WORDS: Dict[str, List[str]] = {}
+WORDS: Dict[str, Set[str]] = {}
 LETTERS: Dict[str, Dict[str, int]] = {}
 # load word lists
 BASE_WORDS_DIR = f"{DIR}/words"
@@ -33,7 +34,7 @@ for folder in os.listdir(BASE_WORDS_DIR):
             key = f"{folder}/{file_name}".split(".")[0]
             if file_name.endswith(".txt"):
                 with open(f"{words_dir}/{file_name}") as file:
-                    WORDS[key] = file.read().splitlines()
+                    WORDS[key] = set(file.read().splitlines())
             if file_name.endswith(".json"):
                 with open(f"{words_dir}/{file_name}") as file:
                     LETTERS[key] = orjson.loads(file.read())
@@ -63,7 +64,7 @@ def get_module_info() -> ModuleInfo:
 class Hangman:  # pylint: disable=too-many-instance-attributes
     input: str = ""
     invalid: str = ""
-    words: List[str] = field(default_factory=list)
+    words: Set[str] = field(default_factory=set)
     word_count: int = 0
     letters: Dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
@@ -109,7 +110,7 @@ async def get_words_and_letters(
     input_str: str,
     invalid: str,
     crossword_mode: bool,
-) -> Tuple[List[str], Dict[str, int]]:
+) -> Tuple[Set[str], Dict[str, int]]:
     matches_always = (
         len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
     )
@@ -120,12 +121,12 @@ async def get_words_and_letters(
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
 
-    current_words = []
+    current_words = set()
     letter_list: List[str] = []
 
     for line in WORDS[file_name]:
         if regex.fullmatch(line) is not None:
-            current_words.append(line)
+            current_words.add(line)
 
             # do letter stuff:
             letter_list.extend(set(line))
@@ -171,7 +172,7 @@ async def solve_hangman(
     return Hangman(
         input_str,
         invalid,
-        matched_words[:max_words],
+        n_from_set(matched_words, max_words),
         len(matched_words),
         letters,
         crossword_mode,
@@ -218,4 +219,6 @@ class HangmanSolver(BaseRequestHandler):
 class HangmanSolverAPI(APIRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await handle_request(self)
-        self.write(asdict(hangman))
+        hangman_dict = asdict(hangman)
+        hangman_dict["words"] = list(hangman_dict["words"])
+        self.write(hangman_dict)

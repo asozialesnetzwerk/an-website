@@ -31,6 +31,18 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(handlers=((r"/error/?", ZeroDivision),))
 
 
+def n_from_set(_set: set, _n: int) -> set:
+    i = 0
+    new_set = set()
+    for _el in _set:
+        if i < _n:
+            i += 1
+            new_set.add(_el)
+        else:
+            break
+    return new_set
+
+
 def length_of_match(m: re.Match):  # pylint: disable=invalid-name
     span = m.span()
     return span[1] - span[0]

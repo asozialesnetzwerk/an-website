@@ -69,7 +69,7 @@
 {{min(word_count, max_words)}}/{{word_count}} passenden Wörter:
 
     <ul class="output">
-        {% for word in words[:max_words] %}
+        {% for word in words %}
             <li>{{ word }}</li>
         {% end %}
     </ul>
