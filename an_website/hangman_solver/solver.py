@@ -75,11 +75,22 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
     lang: str = "de_only_a-z"
 
 
+def fix_input_str(_input):
+    return WILDCARDS_REGEX.sub(
+        lambda m: "_" * length_of_match(m), _input.lower().strip()
+    )
+
+
+def fix_invalid(invalid):
+    return NOT_WORD_CHAR.sub(
+        "", "".join(set(invalid.lower()))
+    )  # replace stuff that could be bad
+
+
 async def generate_pattern_str(
     input_str: str, invalid: str, crossword_mode: bool
 ) -> str:
     input_str = input_str.lower()
-    invalid = invalid.lower()
 
     # in crossword_mode it doesn't matter
     # if the letters are already in input_str:
@@ -87,9 +98,7 @@ async def generate_pattern_str(
         # add if not cw_mode
         invalid += input_str
 
-    invalid_chars = NOT_WORD_CHAR.sub(
-        "", invalid
-    )  # replace stuff that could be bad
+    invalid_chars = fix_invalid(invalid)
 
     if len(invalid_chars) == 0:
         # there are no invalid chars,
@@ -171,6 +180,9 @@ async def solve_hangman(
 ) -> Hangman:
     if language not in LANGUAGES:
         raise HTTPError(400, reason=f"'{language}' is an invalid language")
+
+    input_str = fix_input_str(input_str)
+    invalid = fix_invalid(invalid)
 
     input_len = len(input_str)
 
