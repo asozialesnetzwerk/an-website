@@ -92,9 +92,9 @@ class BaseRequestHandler(RequestHandler):
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 prefix + "ratelimit:" + self.request.remote_ip,
-                RATELIMIT_MAX_BURST,  # max burst
-                RATELIMIT_COUNT_PER_PERIOD,  # count per period
-                RATELIMIT_PERIOD,  # period
+                self.RATELIMIT_MAX_BURST,  # max burst
+                self.RATELIMIT_COUNT_PER_PERIOD,  # count per period
+                self.RATELIMIT_PERIOD,  # period
                 tokens,
             )
             self.set_header("X-RateLimit-Limit", result[1])
