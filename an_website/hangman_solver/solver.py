@@ -114,7 +114,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = len(invalid) == 0 and len(input_letters) == 0
 
-    if matches_always:
+    if matches_always and not crossword_mode:
         return WORDS[file_name], LETTERS[file_name]
 
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
@@ -124,7 +124,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     letter_list: List[str] = []
 
     for line in WORDS[file_name]:
-        if regex.fullmatch(line) is not None:
+        if matches_always or regex.fullmatch(line) is not None:
             current_words.add(line)
 
             # add letters to list
