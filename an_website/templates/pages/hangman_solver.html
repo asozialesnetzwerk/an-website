@@ -38,10 +38,10 @@
 
     <br>
     <label for="lang">Sprache der Wörter:</label>
-    <select class="small-input" name="lang" id="lang" selected="{{lang}}">
-        <option value="de_only_a-z">Deutsch ohne Umlaute</option>
-        <option value="de">Deutsch</option>
-        <option value="en">Englisch</option>
+    <select class="small-input" name="lang" id="lang"">
+        <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
+        <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
+        <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
     </select>
 
 
