@@ -25,10 +25,13 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 # example: {"words_en/3": ["you", "she", ...]}
 WORDS: Dict[str, Set[str]] = {}
 LETTERS: Dict[str, Dict[str, int]] = {}
+LANGUAGES: Set[str] = set()
+
 # load word lists
 BASE_WORDS_DIR = f"{DIR}/words"
 for folder in os.listdir(BASE_WORDS_DIR):
     if folder.startswith("words_"):
+        LANGUAGES.add(folder[6:])  # without: "words_"
         words_dir = f"{BASE_WORDS_DIR}/{folder}"
         for file_name in os.listdir(words_dir):
             key = f"{folder}/{file_name}".split(".")[0]
@@ -166,12 +169,10 @@ async def solve_hangman(
     max_words: int,
     crossword_mode: bool,
 ) -> Hangman:
-    input_len = len(input_str)
+    if language not in LANGUAGES:
+        raise HTTPError(400, reason=f"'{language}' is an invalid language")
 
-    if input_len == 0:  # input is empty:
-        return Hangman(
-            crossword_mode=crossword_mode, max_words=max_words, lang=language
-        )
+    input_len = len(input_str)
 
     # to be short (is only the key of the words dict in __init__.py)
     file_name = (  # pylint: disable=redefined-outer-name
@@ -179,7 +180,10 @@ async def solve_hangman(
     )
 
     if file_name not in WORDS:
-        raise HTTPError(400, reason=f"'{language}' is an invalid language")
+        # no words with the length
+        return Hangman(
+            crossword_mode=crossword_mode, max_words=max_words, lang=language
+        )
 
     # do the solving:
     matched_words, letters = await get_words_and_letters(
