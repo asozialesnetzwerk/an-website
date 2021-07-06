@@ -151,5 +151,6 @@ class ZeroDivision(BaseRequestHandler):
     RATELIMIT_TOKENS = 10
 
     async def prepare(self):
-        await super().prepare()
-        self.finish(str(0 / 0))
+        if not self.request.method == "OPTIONS":
+            await super().prepare()
+            self.finish(str(0 / 0))
