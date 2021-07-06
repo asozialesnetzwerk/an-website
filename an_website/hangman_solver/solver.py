@@ -105,15 +105,14 @@ async def generate_pattern_str(
     )
 
 
-async def get_words_and_letters(
+async def get_words_and_letters(  # pylint: disable=too-many-locals
     file_name: str,  # pylint: disable=redefined-outer-name
     input_str: str,
     invalid: str,
     crossword_mode: bool,
 ) -> Tuple[Set[str], Dict[str, int]]:
-    matches_always = (
-        len(invalid) == 0 and len(WILDCARDS_REGEX.sub("", input_str)) == 0
-    )
+    input_letters: str = WILDCARDS_REGEX.sub("", input_str)
+    matches_always = len(invalid) == 0 and len(input_letters) == 0
 
     if matches_always:
         return WORDS[file_name], LETTERS[file_name]
@@ -121,23 +120,41 @@ async def get_words_and_letters(
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
 
-    current_words = set()
+    current_words: Set[str] = set()
     letter_list: List[str] = []
 
     for line in WORDS[file_name]:
         if regex.fullmatch(line) is not None:
             current_words.add(line)
 
-            # do letter stuff:
-            letter_list.extend(set(line))
+            # add letters to list
+            if crossword_mode:
+                letter_list.extend(line)
+            else:
+                # add every letter only once
+                letter_list.extend(set(line))
 
+    # count letters:
     letters = Counter(letter_list)
+
+    if crossword_mode:
+        n_word_count = -1 * len(current_words)
+        input_chars: List[Tuple[str, int]] = Counter(
+            input_letters
+        ).most_common(30)
+        update_dict: Dict[str, int] = {}
+        for (_k, _v) in input_chars:
+            update_dict[_k] = n_word_count * _v
+        letters.update(update_dict)
+
+    # put letters in sorted dict:
     sorted_letters: Dict[str, int] = dict(letters.most_common(30))  # 26 + äöüß
 
-    # remove letters that are already in string
-    for letter in set(input_str.lower()):
-        if letter in sorted_letters:
-            del sorted_letters[letter]
+    if not crossword_mode:
+        # remove letters that are already in input
+        for letter in set(input_letters.lower()):
+            if letter in sorted_letters:
+                del sorted_letters[letter]
 
     return current_words, sorted_letters
 
