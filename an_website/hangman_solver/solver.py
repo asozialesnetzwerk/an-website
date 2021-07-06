@@ -182,7 +182,11 @@ async def solve_hangman(
     if file_name not in WORDS:
         # no words with the length
         return Hangman(
-            crossword_mode=crossword_mode, max_words=max_words, lang=language
+            input=input_str,
+            invalid=invalid,
+            crossword_mode=crossword_mode,
+            max_words=max_words,
+            lang=language,
         )
 
     # do the solving:
@@ -198,6 +202,7 @@ async def solve_hangman(
         letters,
         crossword_mode,
         max_words,
+        language,
     )
 
 
