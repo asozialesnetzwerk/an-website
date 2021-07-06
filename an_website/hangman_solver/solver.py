@@ -238,6 +238,7 @@ class HangmanSolver(BaseRequestHandler):
     RATELIMIT_MAX_BURST = 5
     RATELIMIT_COUNT_PER_PERIOD = 8
     RATELIMIT_PERIOD = 10
+
     async def get(self, *args):  # pylint: disable=unused-argument
         hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
