@@ -72,6 +72,9 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
 
 class BaseRequestHandler(RequestHandler):
     RATELIMIT_TOKENS = 1  # can be overridden in subclasses
+    RATELIMIT_MAX_BURST = 15
+    RATELIMIT_COUNT_PER_PERIOD = 30
+    RATELIMIT_PERIOD = 60
 
     def data_received(self, chunk):
         pass
@@ -89,9 +92,9 @@ class BaseRequestHandler(RequestHandler):
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 prefix + "ratelimit:" + self.request.remote_ip,
-                15,  # max burst
-                30,  # count per period
-                60,  # period
+                RATELIMIT_MAX_BURST,  # max burst
+                RATELIMIT_COUNT_PER_PERIOD,  # count per period
+                RATELIMIT_PERIOD,  # period
                 tokens,
             )
             self.set_header("X-RateLimit-Limit", result[1])
