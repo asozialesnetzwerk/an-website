@@ -6,6 +6,7 @@ import re
 import sys
 import traceback
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Union
 
 from ansi2html import Ansi2HTMLConverter  # type: ignore
@@ -31,6 +32,11 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(handlers=((r"/error/?", ZeroDivision),))
 
 
+def length_of_match(m: re.Match):  # pylint: disable=invalid-name
+    span = m.span()
+    return span[1] - span[0]
+
+
 def n_from_set(_set: set, _n: int) -> set:
     i = 0
     new_set = set()
@@ -41,11 +47,6 @@ def n_from_set(_set: set, _n: int) -> set:
         else:
             break
     return new_set
-
-
-def length_of_match(m: re.Match):  # pylint: disable=invalid-name
-    span = m.span()
-    return span[1] - span[0]
 
 
 def strtobool(val):
@@ -77,12 +78,14 @@ class BaseRequestHandler(RequestHandler):
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
         if not sys.flags.dev_mode and not self.request.method == "OPTIONS":
+            now = datetime.utcnow()
             redis = self.settings.get("REDIS")
             prefix = self.settings.get("REDIS_PREFIX")
-            tokens = (
-                getattr(self, "RATELIMIT_TOKENS_" + self.request.method, None)
-                or self.RATELIMIT_TOKENS
+            tokens = getattr(
+                self, "RATELIMIT_TOKENS_" + self.request.method, None
             )
+            if tokens is None:
+                tokens = self.RATELIMIT_TOKENS
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 prefix + "ratelimit:" + self.request.remote_ip,
@@ -96,14 +99,18 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("Retry-After", result[3])
             self.set_header("X-RateLimit-Reset", result[4])
             if result[0]:
-                self.set_status(420, "Enhance Your Calm")
-                self.write_error(420)
+                if now.month == 4 and now.day == 20:
+                    self.set_status(420, "Enhance Your Calm")
+                    self.write_error(420)
+                else:
+                    self.set_status(429)
+                    self.write_error(429)
 
     def write_error(self, status_code, **kwargs):
         self.render(
             "error.html",
-            code=status_code,
-            message=self.get_error_message(**kwargs),
+            status=status_code,
+            reason=self.get_error_message(**kwargs),
         )
 
     def get_error_message(self, **kwargs):
@@ -128,17 +135,21 @@ class APIRequestHandler(BaseRequestHandler):
         self.finish(
             {
                 "status": status_code,
-                "message": self.get_error_message(**kwargs),
+                "reason": self.get_error_message(**kwargs),
             }
         )
 
 
 class NotFound(BaseRequestHandler):
+    RATELIMIT_TOKENS = 0
+
     async def prepare(self):
         raise HTTPError(404)
 
 
 class ZeroDivision(BaseRequestHandler):
+    RATELIMIT_TOKENS = 10
+
     async def prepare(self):
         await super().prepare()
         self.finish(str(0 / 0))

@@ -9,7 +9,6 @@ enabled = nope
 
 [TORNADO]
 port = 8080
-#protocol = http
 behind_proxy = nope
 
 [ELASTIC_APM]

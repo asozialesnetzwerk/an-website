@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}{{code}}{% end %}
+{% block title %}{{status}}{% end %}
 
 {% block description %}Ein Fehler ist aufgetreten.{% end %}
 
 {% block body %}
 <div id="container">
-    <div id="code">{{code}}</div>
-    <div id="message">{{message}}</div>
+    <div id="status">{{status}}</div>
+    <div id="reason">{{reason}}</div>
 </div>
 
 {% end %}
@@ -20,11 +20,11 @@
     transform: translate(-50%, -50%);
     text-align: center;
 }
-#code {
+#status {
     font-size: 100px;
     color: var(--red);
 }
-#message {
+#reason {
     white-space: pre;
     font-family: monospace;
     color: var(--light-red);
