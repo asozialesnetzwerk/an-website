@@ -78,7 +78,7 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 def fix_input_str(_input):
     return WILDCARDS_REGEX.sub(
         lambda m: "_" * length_of_match(m), _input.lower().strip()
-    )
+    )[:100]
 
 
 def fix_invalid(invalid):
