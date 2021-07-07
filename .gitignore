@@ -135,3 +135,6 @@ full_wordlist.txt
 
 # Känguru-Soundboard
 kangaroo_soundboard/build
+
+# nano backup files:
+*~
