@@ -5,7 +5,7 @@ from tornado.web import StaticFileHandler
 from ..utils.utils import ModuleInfo
 from . import DIR
 
-PATH = f"{DIR}/build/"
+PATH = f"{DIR}/build/"  # folder with all pages of the page
 OPTIONS = {"path": PATH, "default_filename": "index.html"}
 
 

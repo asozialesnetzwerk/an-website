@@ -125,7 +125,13 @@ class BaseRequestHandler(RequestHandler):
     def get_template_namespace(self):
         namespace = super().get_template_namespace()
         namespace.update(
-            {"ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm")}
+            {
+                "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
+                # this is important because we need the templates in a context
+                # without the request for soundboard and wiki
+                "url": self.request.full_url(),
+                "settings": self.settings,
+            }
         )
         return namespace
 
