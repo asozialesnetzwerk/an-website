@@ -3,13 +3,43 @@ from __future__ import annotations, barry_as_FLUFL
 import os
 import re
 import shutil
-from typing import Dict
+from dataclasses import dataclass, field
+from typing import Dict, List, Union
 
 import orjson
 
 # pylint: disable=invalid-name
 
 DIR = os.path.dirname(__file__)
+
+
+@dataclass
+class HtmlElement:
+    tag: str = "div"
+    content: Union[str, HtmlElement] = ""
+    classes: str = ""
+
+    def to_html(self) -> str:
+        return (
+            f"<{self.tag} class='{self.classes}'>{self.content}</{self.tag}>"
+        )
+
+
+@dataclass
+class HtmlSection(HtmlElement):
+    tag: str = "h1"  # h1, h2, h3, ...
+    id: str = ""  # unique id
+    children: List[HtmlElement] = field(default_factory=list)
+
+    def to_html(self) -> str:
+        return (
+            f"<{self.tag} id='{self.id}'>"
+            f"<a href='#{id}' class='{self.classes} {self.tag}-a'>"
+            f"🔗 {self.content}</a>"
+            f"</{self.tag}"
+            "\n".join("".join(child.to_html() for child in self.children))
+        )
+
 
 RSS_STRING = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
