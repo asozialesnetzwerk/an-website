@@ -17,11 +17,34 @@ DIR = os.path.dirname(__file__)
 class HtmlElement:
     tag: str = "div"
     content: Union[str, HtmlElement] = ""
-    classes: str = ""
+    properties: Dict[str, str] = field(default_factory=dict)
+
+    def get_content_str(self) -> str:
+        if type(self.content) == HtmlElement:
+            return self.content.to_html()
+        return str(self.content)
+
+    def get_properties_str(self) -> str:
+        return " ".join(f"{_k}='{_v}'" for (_k, _v) in self.properties.items())
 
     def to_html(self) -> str:
         return (
-            f"<{self.tag} class='{self.classes}'>{self.content}</{self.tag}>"
+            f"<{self.tag} {self.get_properties_str()}>"
+            f"{self.get_content_str()}</{self.tag}>"
+        )
+
+
+@dataclass
+class HtmlAudio(HtmlElement):
+    tag: str = "li"
+    anchor: HtmlElement = None
+    source: HtmlElement = None
+
+    def get_content_str(self) -> str:
+        return (
+            f"{super().get_content_str()}"
+            f"»{self.anchor.to_html()}«<br>"
+            f"<audio controls>{self.source.to_html()}</audio>"
         )
 
 
@@ -33,11 +56,11 @@ class HtmlSection(HtmlElement):
 
     def to_html(self) -> str:
         return (
-            f"<{self.tag} id='{self.id}'>"
-            f"<a href='#{id}' class='{self.classes} {self.tag}-a'>"
-            f"🔗 {self.content}</a>"
+            f"<{self.tag} id='{self.id}' {self.get_properties_str()}>"
+            f"<a href='#{self.id}' class='{self.tag}-a'>"
+            f"🔗 {self.get_content_str()}</a>"
             f"</{self.tag}"
-            "\n".join("".join(child.to_html() for child in self.children))
+            "\n".join(child.to_html() for child in self.children)
         )
 
 
@@ -63,56 +86,6 @@ RSS_ITEM_STRING = """    <item>
 
 RSS_TITLE_STRING = "[{book}, {chapter}] {file_name}"
 
-HTML_STRING = """
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="theme-color" content="#8B0000">
-    <meta property="og:url" content="https://asozial.org/kaenguru-soundboard/{extra_link}" />
-    <meta property="og:type" content="website" />
-    <title>Känguru-Soundboard{extra_title}</title>
-    <meta property="og:title" content="Känguru-Soundboard{extra_title}" />
-    <meta property="og:description" content="Ein Soundboard zu den Känguru Chroniken{extra_desc}" />
-    <style>
-        :root {{
-            --red: #8B0000;
-            --white: #fefefe;
-            --light-grey: #9e9e9e;
-            --grey: #242424;
-            --black: #000;
-            --dark-grey: #111111;
-            --light-red: #f00;
-            --light-blue: #00bfff;
-            --blue: #00f;
-        }}
-        * {{
-            color: var(--white);
-            background-color: var(--black);
-        }}
-
-    </style>
-</head>
-<body>
-<div id="container">{content}</div>
-<footer style="
-position: fixed;
-bottom: 20px;
-left: 50%;
-transform: translateX(-50%);
-text-align: center;
-color: var(--white);
-background-color: transparent;
-">
-  Mit Liebe gebacken 🖤
-  <a style="color: var(--red); background-color: transparent;"
-     href="https://github.com/asozialesnetzwerk">
-    Asoziales Netzwerk: Sektion GitHub
-  </a>
-</footer>
-</body>
-</html>
-"""
 
 os.makedirs(f"{DIR}/build", exist_ok=True)
 # Känguru-Chroniken.\"\n---\n"
@@ -131,7 +104,13 @@ def replace_umlauts(text: str) -> str:
 
 
 def name_to_id(val: str) -> str:
-    return re.sub(r"[^a-zäöüß0-9-]", "", val.lower().replace(" ", "-"))
+    return re.sub(
+        r"-+",
+        "-",
+        re.sub(
+            r"[^a-z0-9-]", "", replace_umlauts(val.lower().replace(" ", "-"))
+        ),
+    )
 
 
 def create_anchor(
@@ -140,16 +119,20 @@ def create_anchor(
     color: str = "var(--red)",
     classes: str = "a_hover",
 ) -> str:
-    return f"<a href='{href}' class='{classes}' style='color: {color};'>{inner_html}</a>"  # noqa
+    props: Dict[str, str] = {
+        "href": href,
+        "class": classes,
+        "style": f"color: {color};",
+    }
+    return HtmlElement(tag="a", content=inner_html, properties=props).to_html()
 
 
-def create_heading(heading_type: str, text: str) -> str:
-    el_id = name_to_id(text)
-    return (
-        f"<{heading_type} id='{el_id}'>"
-        f"{create_anchor('#' + el_id, '🔗 ' + text)}"
-        f"</{heading_type}>"
+def create_audio_el(file_name: str, text: str, content: str = "") -> HtmlAudio:
+    anchor = HtmlElement(tag="a", content=text, properties={"href": file_name})
+    source = HtmlElement(
+        tag="source", properties={"src": file_name, "type": "audio/mpeg"}
     )
+    return HtmlAudio(anchor=anchor, source=source, content=content)
 
 
 rss_items = ""
@@ -157,13 +140,21 @@ rss_items = ""
 persons_stuff: Dict[str, str] = {}
 persons_rss: Dict[str, str] = {}
 persons = info["personen"]
-index_html = "<h1>Känguru-Soundboard:</h1>"
+
+index_elements: List[HtmlSection] = []
+
 for book in info["bücher"]:
     book_name = book["name"]
-    index_html += create_heading("h2", book_name)
+    book_html = HtmlSection(
+        tag="h2", content=book_name, id=name_to_id(book_name)
+    )
+    index_elements.append(book_html)
     for chapter in book["kapitel"]:
         chapter_name = chapter["name"]
-        index_html += create_heading("h3", chapter_name) + "<ul>"
+        chapter_html = HtmlSection(
+            tag="h3", content=chapter_name, id=name_to_id(chapter_name)
+        )
+        book_html.children.append(chapter_html)
         for file_text in chapter["dateien"]:
             file = re.sub(
                 r"[^a-z0-9_-]+",
@@ -172,19 +163,15 @@ for book in info["bücher"]:
             )
             full_file = f"files/{file}.mp3"
             person = file_text.split("-")[0]
-            to_write = (
-                f"»{create_anchor(full_file, file_text.split('-', 1)[1], 'var(--light-grey)')}"  # noqa  # pylint: disable=line-too-long
-                f"«<br><audio controls><source src='{full_file}' type='audio/mpeg'></audio>"  # noqa
-            )
+
+            audio_html = create_audio_el(full_file, file_text.split("-", 1)[1])
 
             persons_stuff[
                 person
-            ] = f"{persons_stuff.get(person, '')}<li>{to_write}</li>"
+            ] = f"{persons_stuff.get(person, '')}\n{audio_html.to_html()}"
 
-            index_html += (
-                f"<li>{create_anchor(person, persons[person], 'var(--light-red)')}"  # noqa
-                f": {to_write}</li>"
-            )
+            audio_html.content = create_anchor(person, persons[person]) + ":"
+            chapter_html.children.append(audio_html)
             # rss:
             title_file_name = (
                 persons[file_text.split("-", 1)[0]]
@@ -205,14 +192,18 @@ for book in info["bücher"]:
             )
             rss_items += rss
             persons_rss[person] = persons_rss.get(person, "") + rss
-        index_html += "</ul>"
+
+index_html = "<h1>Känguru-Soundboard:</h1>" + "\n\n".join(
+    _el.to_html() for _el in index_elements
+)
 
 # write main page:
 with open(f"{DIR}/build/index.html", "w+") as main_page:
     main_page.write(
-        HTML_STRING.format(
-            extra_title="", extra_desc="", extra_link="", content=index_html
-        )
+        index_html
+        # HTML_STRING.format(
+        #    extra_title="", extra_desc="", extra_link="", content=index_html
+        # )
     )
 
 persons_html = "<h1>Känguru-Soundboard</h1>"
@@ -239,16 +230,17 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
     with open(f"{_dir}/index.html", "w+") as person_page:
         person_page.write(
-            HTML_STRING.format(
-                extra_title=extra_title,
-                extra_desc=extra_desc,
-                extra_link=key,
-                content=content,
-            )
+            content
+            # HTML_STRING.format(
+            #    extra_title=extra_title,
+            #    extra_desc=extra_desc,
+            #    extra_link=key,
+            #    content=content,
+            # )
         )
 
     # page with sounds sorted by persons:
-    persons_html += create_heading("h2", persons[key]) + persons_stuff[key]
+    # TODO: persons_html += create_heading("h2", persons[key]) + persons_stuff[key]
 
     # rss for every person:
     with open(f"{_dir}/feed.rss", "w+") as person_rss:
@@ -264,9 +256,10 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
 # write persons page:
 with open(f"{DIR}/build/persons.html", "w+") as persons_page:
     persons_page.write(
-        HTML_STRING.format(
-            extra_title="", extra_desc="", extra_link="", content=persons_html
-        )
+        persons_html
+        # HTML_STRING.format(
+        #    extra_title="", extra_desc="", extra_link="", content=persons_html
+        # )
     )
 
 # write rss:
