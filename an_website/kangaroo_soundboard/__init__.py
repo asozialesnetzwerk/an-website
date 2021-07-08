@@ -4,9 +4,10 @@ import os
 import re
 import shutil
 from dataclasses import dataclass, field
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import orjson
+from tornado import template
 
 # pylint: disable=invalid-name
 
@@ -37,10 +38,12 @@ class HtmlElement:
 @dataclass
 class HtmlAudio(HtmlElement):
     tag: str = "li"
-    anchor: HtmlElement = None
-    source: HtmlElement = None
+    anchor: Optional[HtmlElement] = None
+    source: Optional[HtmlElement] = None
 
     def get_content_str(self) -> str:
+        if self.anchor is None or self.source is None:
+            return super().get_content_str()
         return (
             f"{super().get_content_str()}"
             f"»{self.anchor.to_html()}«<br>"
@@ -59,7 +62,7 @@ class HtmlSection(HtmlElement):
             f"<{self.tag} id='{self.id}' {self.get_properties_str()}>"
             f"<a href='#{self.id}' class='{self.tag}-a'>"
             f"🔗 {self.get_content_str()}</a>"
-            f"</{self.tag}"
+            f"</{self.tag}>\n"
             "\n".join(child.to_html() for child in self.children)
         )
 
@@ -197,11 +200,21 @@ index_html = "<h1>Känguru-Soundboard:</h1>" + "\n\n".join(
     _el.to_html() for _el in index_elements
 )
 
+parent_dir = os.path.dirname(DIR)
+template_loader = template.Loader(f"{parent_dir}/templates/")
+templ = template_loader.load("pages/soundboard.html")
+base_url = "https://joshix.asozial.org/soundboard/"
+
 # write main page:
 with open(f"{DIR}/build/index.html", "w+") as main_page:
     main_page.write(
-        index_html
-        # HTML_STRING.format(
+        str(
+            templ.generate(
+                content=index_html,
+                url=base_url,
+                settings=None,
+            )
+        )  # HTML_STRING.format(
         #    extra_title="", extra_desc="", extra_link="", content=index_html
         # )
     )
@@ -230,7 +243,11 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
     with open(f"{_dir}/index.html", "w+") as person_page:
         person_page.write(
-            content
+            str(
+                templ.generate(
+                    content=content, url=base_url + key, settings=None
+                )
+            )
             # HTML_STRING.format(
             #    extra_title=extra_title,
             #    extra_desc=extra_desc,
@@ -240,7 +257,12 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
         )
 
     # page with sounds sorted by persons:
-    # TODO: persons_html += create_heading("h2", persons[key]) + persons_stuff[key]
+    persons_html += (
+        HtmlSection(
+            tag="h2", id=name_to_id(persons[key]), content=persons[key]
+        ).to_html()
+        + persons_stuff[key]
+    )
 
     # rss for every person:
     with open(f"{_dir}/feed.rss", "w+") as person_rss:
@@ -256,8 +278,13 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
 # write persons page:
 with open(f"{DIR}/build/persons.html", "w+") as persons_page:
     persons_page.write(
-        persons_html
-        # HTML_STRING.format(
+        str(
+            templ.generate(
+                content=persons_html,
+                url=base_url + "persons.html",
+                settings=None,
+            )
+        )  # HTML_STRING.format(
         #    extra_title="", extra_desc="", extra_link="", content=persons_html
         # )
     )

@@ -1,10 +1,11 @@
 <div class="header">
   <h1>Das Asoziale Netzwerk</h1>
+  {% if not settings is None %}
   <img class="open-pane" src="/static/hamburger-menu-icon.svg" alt="Menü">
   <div class="site-pane">
     <h1>Unterseiten:</h1>
     <ul class="menu-list">
-      {% for info in handler.settings.get("MODULE_INFOS") %}
+      {% for info in settings.get("MODULE_INFOS") %}
         {% if not info.path is None %}
         <li class="tooltip">
           <a href="{{info.path}}">{{info.name}}</a>
@@ -14,6 +15,7 @@
     {% end %}
     </ul>
   </div>
+  {% end %}
 </div>
 
 
