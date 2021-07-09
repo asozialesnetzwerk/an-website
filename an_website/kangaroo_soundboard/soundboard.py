@@ -1,8 +1,8 @@
 from __future__ import annotations, barry_as_FLUFL
 
-from tornado.web import HTTPError, StaticFileHandler
-
 import os
+
+from tornado.web import HTTPError, StaticFileHandler
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
 from . import DIR
