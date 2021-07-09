@@ -208,13 +208,8 @@ base_url = "https://joshix.asozial.org/soundboard/"
 # write main page:
 with open(f"{DIR}/build/index.html", "w+") as main_page:
     main_page.write(
-        str(
-            templ.generate(
-                content=index_html,
-                url=base_url,
-                settings=None,
-            )
-        )  # HTML_STRING.format(
+        index_html
+        # HTML_STRING.format(
         #    extra_title="", extra_desc="", extra_link="", content=index_html
         # )
     )
@@ -243,11 +238,7 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
     with open(f"{_dir}/index.html", "w+") as person_page:
         person_page.write(
-            str(
-                templ.generate(
-                    content=content, url=base_url + key, settings=None
-                )
-            )
+            content
             # HTML_STRING.format(
             #    extra_title=extra_title,
             #    extra_desc=extra_desc,
@@ -278,13 +269,8 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
 # write persons page:
 with open(f"{DIR}/build/persons.html", "w+") as persons_page:
     persons_page.write(
-        str(
-            templ.generate(
-                content=persons_html,
-                url=base_url + "persons.html",
-                settings=None,
-            )
-        )  # HTML_STRING.format(
+        persons_html
+        # HTML_STRING.format(
         #    extra_title="", extra_desc="", extra_link="", content=persons_html
         # )
     )
