@@ -60,10 +60,10 @@ class HtmlSection(HtmlElement):
     def to_html(self) -> str:
         return (
             f"<{self.tag} id='{self.id}' {self.get_properties_str()}>"
-            f"<a href='#{self.id}' class='{self.tag}-a'>"
-            f"🔗 {self.get_content_str()}</a>"
-            f"</{self.tag}>\n"
-            "\n".join(child.to_html() for child in self.children)
+            + f"<a href='#{self.id}' class='{self.tag}-a'>"
+            + f"🔗 {self.get_content_str()}</a>"
+            + f"</{self.tag}>\n"
+            + "\n".join(child.to_html() for child in self.children)
         )
 
 
@@ -122,21 +122,15 @@ PATH_TO_MAIN: str = "/kaenguru-soundboard/"
 def create_anchor(
     href: str,
     inner_html: str,
-    color: str = "var(--red)",
     classes: str = "a_hover",
-) -> str:
-    props: Dict[str, str] = {
-        "href": PATH_TO_MAIN + href,
-        "class": classes,
-        "style": f"color: {color};",
-    }
-    return HtmlElement(tag="a", content=inner_html, properties=props).to_html()
+) -> HtmlElement:
+    props: Dict[str, str] = {"href": PATH_TO_MAIN + href, "class": classes}
+    return HtmlElement(tag="a", content=inner_html, properties=props)
 
 
 def create_audio_el(file_name: str, text: str, content: str = "") -> HtmlAudio:
-    anchor = HtmlElement(
-        tag="a", content=text, properties={"href": PATH_TO_MAIN + file_name}
-    )
+    anchor = create_anchor(file_name, text, "quote-a")
+
     source = HtmlElement(
         tag="source",
         properties={"src": PATH_TO_MAIN + file_name, "type": "audio/mpeg"},
@@ -157,13 +151,11 @@ for book in info["bücher"]:
     book_html = HtmlSection(
         tag="h2", content=book_name, id=name_to_id(book_name)
     )
-    index_elements.append(book_html)
     for chapter in book["kapitel"]:
         chapter_name = chapter["name"]
         chapter_html = HtmlSection(
             tag="h3", content=chapter_name, id=name_to_id(chapter_name)
         )
-        book_html.children.append(chapter_html)
         for file_text in chapter["dateien"]:
             file = re.sub(
                 r"[^a-z0-9_-]+",
@@ -179,7 +171,9 @@ for book in info["bücher"]:
                 person
             ] = f"{persons_stuff.get(person, '')}\n{audio_html.to_html()}"
 
-            audio_html.content = create_anchor(person, persons[person]) + ":"
+            audio_html.content = (
+                create_anchor(person, persons[person]).to_html() + ":"
+            )
             chapter_html.children.append(audio_html)
             # rss:
             title_file_name = (
@@ -201,6 +195,11 @@ for book in info["bücher"]:
             )
             rss_items += rss
             persons_rss[person] = persons_rss.get(person, "") + rss
+
+        book_html.children.append(chapter_html)
+
+    index_elements.append(book_html)
+
 
 index_html = "<h1>Känguru-Soundboard:</h1>" + "\n\n".join(
     _el.to_html() for _el in index_elements
