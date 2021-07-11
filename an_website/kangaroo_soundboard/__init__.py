@@ -116,6 +116,9 @@ def name_to_id(val: str) -> str:
     )
 
 
+PATH_TO_MAIN: str = "/kaenguru-soundboard/"
+
+
 def create_anchor(
     href: str,
     inner_html: str,
@@ -123,7 +126,7 @@ def create_anchor(
     classes: str = "a_hover",
 ) -> str:
     props: Dict[str, str] = {
-        "href": href,
+        "href": PATH_TO_MAIN + href,
         "class": classes,
         "style": f"color: {color};",
     }
@@ -131,9 +134,12 @@ def create_anchor(
 
 
 def create_audio_el(file_name: str, text: str, content: str = "") -> HtmlAudio:
-    anchor = HtmlElement(tag="a", content=text, properties={"href": file_name})
+    anchor = HtmlElement(
+        tag="a", content=text, properties={"href": PATH_TO_MAIN + file_name}
+    )
     source = HtmlElement(
-        tag="source", properties={"src": file_name, "type": "audio/mpeg"}
+        tag="source",
+        properties={"src": PATH_TO_MAIN + file_name, "type": "audio/mpeg"},
     )
     return HtmlAudio(anchor=anchor, source=source, content=content)
 

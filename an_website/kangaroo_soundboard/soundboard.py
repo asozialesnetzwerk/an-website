@@ -15,27 +15,9 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/kaenguru-soundboard/(.*mp3)", StaticFileHandler, OPTIONS),
-            (r"/känguru-soundboard/(/.*mp3)", StaticFileHandler, OPTIONS),
-            (r"/k%C3%A4nguru-soundboard/(.*mp3)", StaticFileHandler, OPTIONS),
-            (r"/soundboard/(.*mp3)", StaticFileHandler, OPTIONS),
             (r"/kaenguru-soundboard/(.*rss)", StaticFileHandler, OPTIONS),
-            (r"/känguru-soundboard/(/.*rss)", StaticFileHandler, OPTIONS),
-            (r"/k%C3%A4nguru-soundboard/(.*rss)", StaticFileHandler, OPTIONS),
-            (r"/soundboard/(.*rss)", StaticFileHandler, OPTIONS),
             (
                 r"/kaenguru-soundboard(/.*)?",
-                SoundboardHandler,
-            ),
-            (
-                r"/känguru-soundboard(/.*)?",
-                SoundboardHandler,
-            ),
-            (
-                r"/k%C3%A4nguru-soundboard(/.*)?",
-                SoundboardHandler,
-            ),
-            (
-                r"/soundboard(/.*)?",
                 SoundboardHandler,
             ),
         ),
