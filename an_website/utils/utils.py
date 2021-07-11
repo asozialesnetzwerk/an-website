@@ -72,6 +72,12 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
 
 class BaseRequestHandler(RequestHandler):
     RATELIMIT_TOKENS = 1  # can be overridden in subclasses
+    header_text = "Das Asoziale Netzwerk"
+
+    def initialize(self, **kwargs):
+        header_text = kwargs.get("header_text", None)
+        if header_text is not None:
+            self.header_text = header_text
 
     def data_received(self, chunk):
         pass
@@ -127,6 +133,7 @@ class BaseRequestHandler(RequestHandler):
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
+                "header_text": self.header_text,
                 # this is important because we need the templates in a context
                 # without the request for soundboard and wiki
                 "url": self.request.full_url(),

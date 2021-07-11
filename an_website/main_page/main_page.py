@@ -5,7 +5,8 @@ from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 def get_module_info() -> ModuleInfo:
     return ModuleInfo(
-        handlers=((r"/", MainPage), ("/index.html", MainPage)),
+        # the empty dict prevents the header from being changed
+        handlers=((r"/", MainPage, {}), ("/index.html", MainPage, {})),
         name="Hauptseite",
         description="Die Hauptseite der Webseite",
         path="/",

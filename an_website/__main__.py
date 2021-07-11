@@ -109,7 +109,17 @@ def get_all_handlers(
     handlers: List[Handler] = []
 
     for module_info in module_infos:
-        handlers += module_info.handlers
+        for handler in module_info.handlers:
+            if len(handler) == 2:
+                # if dict as third arg is needed
+                # the "header_text" has to be specified
+                # other wise the name is the default
+                handler = (
+                    handler[0],
+                    handler[1],
+                    {"header_text": module_info.name},
+                )
+            handlers.append(handler)
 
     return handlers
 

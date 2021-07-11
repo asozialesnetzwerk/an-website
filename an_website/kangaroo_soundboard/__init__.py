@@ -21,7 +21,7 @@ class HtmlElement:
     properties: Dict[str, str] = field(default_factory=dict)
 
     def get_content_str(self) -> str:
-        if type(self.content) == HtmlElement:
+        if isinstance(self.content, HtmlElement):
             return self.content.to_html()
         return str(self.content)
 
@@ -128,14 +128,16 @@ def create_anchor(
     return HtmlElement(tag="a", content=inner_html, properties=props)
 
 
-def create_audio_el(file_name: str, text: str, content: str = "") -> HtmlAudio:
+def create_audio_el(
+    file_name: str, text: str, content_str: str = ""
+) -> HtmlAudio:
     anchor = create_anchor(file_name, text, "quote-a")
 
     source = HtmlElement(
         tag="source",
         properties={"src": PATH_TO_MAIN + file_name, "type": "audio/mpeg"},
     )
-    return HtmlAudio(anchor=anchor, source=source, content=content)
+    return HtmlAudio(anchor=anchor, source=source, content=content_str)
 
 
 rss_items = ""
@@ -149,12 +151,12 @@ index_elements: List[HtmlSection] = []
 for book in info["bücher"]:
     book_name = book["name"]
     book_html = HtmlSection(
-        tag="h2", content=book_name, id=name_to_id(book_name)
+        tag="h1", content=book_name, id=name_to_id(book_name)
     )
     for chapter in book["kapitel"]:
         chapter_name = chapter["name"]
         chapter_html = HtmlSection(
-            tag="h3", content=chapter_name, id=name_to_id(chapter_name)
+            tag="h2", content=chapter_name, id=name_to_id(chapter_name)
         )
         for file_text in chapter["dateien"]:
             file = re.sub(
@@ -201,9 +203,7 @@ for book in info["bücher"]:
     index_elements.append(book_html)
 
 
-index_html = "<h1>Känguru-Soundboard:</h1>" + "\n\n".join(
-    _el.to_html() for _el in index_elements
-)
+index_html = "\n\n".join(_el.to_html() for _el in index_elements)
 
 parent_dir = os.path.dirname(DIR)
 template_loader = template.Loader(f"{parent_dir}/templates/")
@@ -219,7 +219,7 @@ with open(f"{DIR}/build/index.html", "w+") as main_page:
         # )
     )
 
-persons_html = "<h1>Känguru-Soundboard</h1>"
+persons_html = ""
 
 # pages for every person:
 for key in persons_stuff:  # pylint: disable=consider-using-dict-items
@@ -231,14 +231,7 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
         .replace("Der", "dem")
         .replace("Die", "der")
     )
-    content = (
-        "<h1>Känguru-Soundboard</h1><h2>"
-        + persons[key]
-        + "</h2>"
-        + persons_stuff[key]
-        .replace("(files/", "(../files/")
-        .replace("src='files/", "src='../files/")
-    )
+    content = "<h1>" + persons[key] + "</h1>" + persons_stuff[key]
     extra_title = " (Coole Sprüche/Sounds von " + person + ")"
     extra_desc = " mit coolen Sprüchen/Sounds von " + person
     with open(f"{_dir}/index.html", "w+") as person_page:
@@ -255,7 +248,7 @@ for key in persons_stuff:  # pylint: disable=consider-using-dict-items
     # page with sounds sorted by persons:
     persons_html += (
         HtmlSection(
-            tag="h2", id=name_to_id(persons[key]), content=persons[key]
+            tag="h1", id=name_to_id(persons[key]), content=persons[key]
         ).to_html()
         + persons_stuff[key]
     )
