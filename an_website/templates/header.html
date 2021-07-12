@@ -8,7 +8,11 @@
       {% for info in settings.get("MODULE_INFOS") %}
         {% if not info.path is None %}
         <li class="tooltip">
+          {% if no_js %}
+          <a href="{{info.path}}?no_js=sure">{{info.name}}</a>
+          {% else %}
           <a href="{{info.path}}">{{info.name}}</a>
+          {% end %}
           <div class="tooltip-text">{{info.description}}</div>
         </li>
       {% end %}

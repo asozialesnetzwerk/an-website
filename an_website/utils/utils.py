@@ -134,13 +134,19 @@ class BaseRequestHandler(RequestHandler):
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "header_text": self.header_text,
-                # this is important because we need the templates in a context
-                # without the request for soundboard and wiki
+                "no_js": self.get_query_argument_as_bool("no_js", False),
+                # this is not important because we don't need the templates
+                # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
                 "settings": self.settings,
             }
         )
         return namespace
+
+    def get_query_argument_as_bool(self, name: str, default: bool = False):
+        return strtobool(
+            str(self.get_query_argument(name, default=str(default)))
+        )
 
 
 class APIRequestHandler(BaseRequestHandler):

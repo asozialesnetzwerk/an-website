@@ -12,7 +12,11 @@
 {% for info in handler.settings.get("MODULE_INFOS") %}
 {% if not info.path is None and not info.path == "/" %}
 <li>
+{% if no_js %}
+    <a href="{{info.path}}?no_js=sure">{{info.name}}</a>:
+{% else %}
     <a href="{{info.path}}">{{info.name}}</a>:
+{% end %}
     {{info.description}}
 </li>
 {% end %}
