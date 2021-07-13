@@ -20,9 +20,7 @@
     <label class="money-label" for="schwarz">Ostmark auf dem Schwarzmarkt:</label><br>
     <input id="schwarz" name="schwarz" placeholder="{{ schwarz_str }}">
 
-{% if no_js %}
-    <input type="checkbox" name="no_js" style="display: none; width: 0; height: 0; opacity: 0" checked>
-{% end %}
+{% raw form_appendix %}
 
     <input class="button" type="submit" value="Eingabe!">
 </form>

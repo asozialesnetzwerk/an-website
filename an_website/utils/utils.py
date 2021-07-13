@@ -130,11 +130,20 @@ class BaseRequestHandler(RequestHandler):
 
     def get_template_namespace(self):
         namespace = super().get_template_namespace()
+        no_js: bool = self.get_query_argument_as_bool("no_js", False)
+        form_appendix: str = (
+            "<input name='no_js' style='display: none;"
+            + "width: 0; height: 0; opacity: 0' value='sure'>"
+            if no_js
+            else ""
+        )
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "header_text": self.header_text,
-                "no_js": self.get_query_argument_as_bool("no_js", False),
+                "no_js": no_js,
+                "url_appendix": "?no_js=sure" if no_js else "",
+                "form_appendix": form_appendix,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),

@@ -44,9 +44,7 @@
         <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
     </select>
 
-{% if no_js %}
-    <input type="checkbox" name="no_js" style="display: none; width: 0; height: 0; opacity: 0" checked>
-{% end %}
+{% raw form_appendix %}
 
     <div class="tooltip no-select button-container">
         <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
