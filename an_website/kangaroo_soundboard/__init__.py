@@ -2,7 +2,7 @@ from __future__ import annotations, barry_as_FLUFL
 
 import os
 import re
-import time
+import email.utils
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
@@ -89,9 +89,7 @@ class SoundInfo(Info):
         file_size = os.path.getsize(DIR + path)
         mod_time_since_epoch = os.path.getmtime(DIR + path)
         # Convert seconds since epoch to readable timestamp
-        modification_time = time.strftime(
-            "%Y-%m-%d %H:%M:%S", time.localtime(mod_time_since_epoch)
-        )
+        modification_time = email.utils.formatdate(mod_time_since_epoch, True)
         link = f"/kaenguru-soundboard{path}"
         text = self.get_text()
         if url is not None:
@@ -107,7 +105,7 @@ class SoundInfo(Info):
             f"<link>{link}</link>\n"
             f"<enclosure url='{link}' type='audio/mpeg' "
             f"length='{file_size}'></enclosure>\n"
-            f"<guid>{file_name}</guid>\n"
+            f"<guid>{link}</guid>\n"
             f"<pubDate>{modification_time}</pubDate>\n"
             f"</item>"
         )
