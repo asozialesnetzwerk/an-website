@@ -61,7 +61,7 @@ class SoundInfo(Info):
     chapter: Chapter
     person: Person
 
-    def get_file(self) -> str:
+    def get_file_name(self) -> str:
         return re.sub(
             r"[^a-z0-9_-]+",
             "",
@@ -69,7 +69,7 @@ class SoundInfo(Info):
         )
 
     def to_html(self) -> str:
-        file = self.get_file()
+        file = self.get_file_name()
         return (
             f"<li><a href='/kaenguru-soundboard/{self.person.value}' "
             f"class='a_hover'>{self.person.name}</a>"
@@ -80,8 +80,10 @@ class SoundInfo(Info):
         )
 
     def to_rss(self, url: Optional[str]) -> str:
-        file = self.get_file()
-        link = f"/kaenguru-soundboard/files/{file}.mp3"
+        file_name = self.get_file_name()
+        path = f"/files/{file_name}.mp3"
+        file_size = os.path.getsize(DIR + path)
+        link = f"/kaenguru-soundboard{path}"
         if url is not None:
             link = url + link
         return (
@@ -92,9 +94,10 @@ class SoundInfo(Info):
             f"<book>{self.book.name}</book>\n"
             f"<chapter>{self.chapter.name}</chapter>\n"
             f"<person>{self.person.value}</person>\n"
-            f"<link>{file}</link>\n"
-            f"<enclosure url='{link}' type='audio/mpeg'></enclosure>\n"
-            f"<guid>{file}</guid>\n"
+            f"<link>{link}</link>\n"
+            f"<enclosure url='{link}' type='audio/mpeg' "
+            f"length='{file_size}'></enclosure>\n"
+            f"<guid>{file_name}</guid>\n"
             f"</item>"
         )
 
@@ -118,9 +121,9 @@ def name_to_id(val: str) -> str:
     )
 
 
-all_sounds: List[SoundInfo] = []
-person_sounds: Dict[str, List[SoundInfo]] = {}
-main_page_info: List[Info] = []
+ALL_SOUNDS: List[SoundInfo] = []
+MAIN_PAGE_INFO: List[Info] = []
+PERSON_SOUNDS: Dict[str, List[SoundInfo]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]
@@ -135,6 +138,6 @@ for book_info in info["bücher"]:
             person = Person[person_short]
 
             sound_info = SoundInfo(file_text, book, chapter, person)
-            all_sounds.append(sound_info)
-            main_page_info.append(sound_info)
-            person_sounds.setdefault(person_short, []).append(sound_info)
+            ALL_SOUNDS.append(sound_info)
+            MAIN_PAGE_INFO.append(sound_info)
+            PERSON_SOUNDS.setdefault(person_short, []).append(sound_info)
