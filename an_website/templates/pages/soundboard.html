@@ -5,7 +5,9 @@
 {% block description %}Ein Soundboard mit coolen Sprüchen und Sounds aus den Känguru-Chroniken{% end %}
 
 {% block body %}
-    {% raw content %}
+    {% for sound_info in sound_info_list %}
+{% raw sound_info.to_html() %}
+    {% end %}
 {% end %}
 
 

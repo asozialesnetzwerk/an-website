@@ -49,7 +49,7 @@ class HeaderInfo(Info):
         _id = name_to_id(self.text)
         return (
             f"<{self.tag} id='{_id}'>"
-            f"<a href='{_id}' class='{self.tag}-a'>"
+            f"<a href='#{_id}' class='{self.tag}-a'>"
             f"🔗 {self.text}</a>"
             f"</{self.tag}>"
         )
@@ -61,6 +61,9 @@ class SoundInfo(Info):
     chapter: Chapter
     person: Person
 
+    def get_text(self) -> str:
+        return self.text.split("-", 1)[1]
+
     def get_file_name(self) -> str:
         return re.sub(
             r"[^a-z0-9_-]+",
@@ -71,10 +74,10 @@ class SoundInfo(Info):
     def to_html(self) -> str:
         file = self.get_file_name()
         return (
-            f"<li><a href='/kaenguru-soundboard/{self.person.value}' "
-            f"class='a_hover'>{self.person.name}</a>"
-            f":»<a href='/kaenguru-soundboard/{file}' "
-            f"class='quote-a'>{self.text}</a>«<br><audio controls>"
+            f"<li><a href='/kaenguru-soundboard/{self.person.name}' "
+            f"class='a_hover'>{self.person.value}</a>"
+            f": »<a href='/kaenguru-soundboard/files/{file}.mp3' "
+            f"class='quote-a'>{self.get_text()}</a>«<br><audio controls>"
             f"<source src='/kaenguru-soundboard/files/{file}.mp3' "
             f"type='audio/mpeg'></source></audio></li>"
         )
@@ -84,7 +87,7 @@ class SoundInfo(Info):
         path = f"/files/{file_name}.mp3"
         file_size = os.path.getsize(DIR + path)
         link = f"/kaenguru-soundboard{path}"
-        text = self.text.split("-", 1)[1]
+        text = self.get_text()
         if url is not None:
             link = url + link
         return (
