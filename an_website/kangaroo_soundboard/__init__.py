@@ -79,9 +79,24 @@ class SoundInfo(Info):
             f"type='audio/mpeg'></source></audio></li>"
         )
 
-    def to_rss(self) -> str:
+    def to_rss(self, url: Optional[str]) -> str:
         file = self.get_file()
-        return file
+        link = f"/kaenguru-soundboard/files/{file}.mp3"
+        if not url is None:
+            link = url + link
+        return (
+            f"<item>\n"
+            f"<title>[{self.book.name} - {self.chapter.name}] "
+            f"{self.person.value}: »{self.text}«</title>\n"
+            f"<quote>{self.text}</quote>\n"
+            f"<book>{self.book.name}</book>\n"
+            f"<chapter>{self.chapter.name}</chapter>\n"
+            f"<person>{self.person.value}</person>\n"
+            f"<link>{file}</link>\n"
+            f"<enclosure url='{link}' type='audio/mpeg'></enclosure>\n"
+            f"<guid>{file}</guid>\n"
+            f"</item>"
+        )
 
 
 def replace_umlauts(text: str) -> str:
@@ -120,7 +135,7 @@ for book_info in info["bücher"]:
             person = Person[person_short]
 
             sound_info = SoundInfo(file_text, book, chapter, person)
-
+            print(sound_info.to_rss("https://joshix.asozial.org"))
             all_sounds.append(sound_info)
             main_page_info.append(sound_info)
             person_sounds.setdefault(person_short, []).append(sound_info)
