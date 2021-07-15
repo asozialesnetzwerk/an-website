@@ -27,11 +27,11 @@ def get_module_info() -> ModuleInfo:
                 {"path": PATH, "default_filename": "index.html"},
             ),
             (
-                r"/kaenguru-soundboard/(.*)(\.rss|\.xss|/feed|/feed.rss)",
+                r"/kaenguru-soundboard/(.+)(\.rss|\.xss|/feed|/feed\.rss)",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard/()(feed|feed.rss)",
+                r"/kaenguru-soundboard/(.{0})(feed|feed\.rss|feed\.xml)",
                 SoundboardRssHandler,
             ),
             (
@@ -47,7 +47,7 @@ def get_module_info() -> ModuleInfo:
 
 class SoundboardRssHandler(BaseRequestHandler):
     async def get(self, path, path_end):  # pylint: disable=unused-argument
-        self.set_header("Content-Type", "text/xml")
+        self.set_header("Content-Type", "application/xml")
         if path is None or len(path) == 0 or path == "index":
             return self.render(
                 "rss/soundboard.xml", sound_info_list=ALL_SOUNDS
@@ -63,7 +63,6 @@ class SoundboardRssHandler(BaseRequestHandler):
 
 class SoundboardHtmlHandler(BaseRequestHandler):
     async def get(self, path, path_end):  # pylint: disable=unused-argument
-        print(path, path_end)
         if path is None or len(path) == 0 or path == "index":
             return self.render(
                 "pages/soundboard.html", sound_info_list=MAIN_PAGE_INFO
