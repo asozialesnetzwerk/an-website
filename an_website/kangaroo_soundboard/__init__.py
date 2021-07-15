@@ -4,7 +4,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import orjson
 
@@ -82,7 +82,7 @@ class SoundInfo(Info):
     def to_rss(self, url: Optional[str]) -> str:
         file = self.get_file()
         link = f"/kaenguru-soundboard/files/{file}.mp3"
-        if not url is None:
+        if url is not None:
             link = url + link
         return (
             f"<item>\n"
@@ -135,7 +135,6 @@ for book_info in info["bücher"]:
             person = Person[person_short]
 
             sound_info = SoundInfo(file_text, book, chapter, person)
-            print(sound_info.to_rss("https://joshix.asozial.org"))
             all_sounds.append(sound_info)
             main_page_info.append(sound_info)
             person_sounds.setdefault(person_short, []).append(sound_info)
