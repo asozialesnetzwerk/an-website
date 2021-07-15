@@ -37,11 +37,13 @@ RSS_ITEM_STRING = """<item>
 
 RSS_TITLE_STRING = "[{book}, {chapter}] {file_name}"
 
+
 class Book(Enum):
     CHRONIKEN = "Die Känguru-Chroniken"
     MANIFEST = "Das Känguru-Manifest"
     OFFENBAHRUNG = "Die Känguru-Offenbarung"
     APOKRYPHEN = "Die Känguru-Apokryphen"
+
 
 @dataclass
 class Info:
@@ -49,6 +51,7 @@ class Info:
 
     def to_html() -> str:
         return self.text
+
 
 @dataclass
 class HeaderInfo(Info):
@@ -62,6 +65,7 @@ class HeaderInfo(Info):
             f"🔗 {self.text}</a>"
             f"</{self.tag}>"
         )
+
 
 @dataclass
 class SoundInfo(Info):
@@ -80,6 +84,7 @@ class SoundInfo(Info):
             f"<audio controls><source src='/kaenguru-soundboard/{self.file}' "
             f"type='audio/mpeg'></source></audio></li>"
         )
+
 
 os.makedirs(f"{DIR}/build", exist_ok=True)
 # Känguru-Chroniken.\"\n---\n"
