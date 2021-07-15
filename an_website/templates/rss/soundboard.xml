@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Kaenguru-Soundboard</title>
+    <description>Ein Soundboard zu den Känguru Chroniken mit coolen Sprüchen/Sounds</description>
+    <language>de-de</language>
+    <link>{{url}}</link>
+
+    {% for sound_info in sound_info_list %}
+{% raw sound_info.to_rss(f"{request.protocol}://{request.host}") %}
+    {% end %}
+  </channel>
+</rss>

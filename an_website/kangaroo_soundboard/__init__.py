@@ -84,13 +84,14 @@ class SoundInfo(Info):
         path = f"/files/{file_name}.mp3"
         file_size = os.path.getsize(DIR + path)
         link = f"/kaenguru-soundboard{path}"
+        text = self.text.split("-", 1)[1]
         if url is not None:
             link = url + link
         return (
             f"<item>\n"
             f"<title>[{self.book.name} - {self.chapter.name}] "
-            f"{self.person.value}: »{self.text}«</title>\n"
-            f"<quote>{self.text}</quote>\n"
+            f"{self.person.value}: »{text}«</title>\n"
+            f"<quote>{text}</quote>\n"
             f"<book>{self.book.name}</book>\n"
             f"<chapter>{self.chapter.name}</chapter>\n"
             f"<person>{self.person.value}</person>\n"
@@ -127,11 +128,11 @@ PERSON_SOUNDS: Dict[str, List[SoundInfo]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]
-    main_page_info.append(HeaderInfo(book.name, "h1"))
+    MAIN_PAGE_INFO.append(HeaderInfo(book.name, "h1"))
 
     for chapter_info in book_info["kapitel"]:
         chapter = Chapter[chapter_info["name"]]
-        main_page_info.append(HeaderInfo(chapter.name, "h2"))
+        MAIN_PAGE_INFO.append(HeaderInfo(chapter.name, "h2"))
 
         for file_text in chapter_info["dateien"]:
             person_short = file_text.split("-")[0]

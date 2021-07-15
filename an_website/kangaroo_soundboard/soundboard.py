@@ -5,9 +5,10 @@ import os
 from tornado.web import HTTPError, StaticFileHandler
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
-from . import DIR
+from . import DIR, ALL_SOUNDS, MAIN_PAGE_INFO, PERSON_SOUNDS
 
-PATH = f"{DIR}/build"  # folder with all pages of the page
+
+PATH = f"{DIR}/"  # folder with all pages of the page
 OPTIONS = {"path": PATH, "default_filename": "index.html"}
 
 
@@ -15,10 +16,17 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/kaenguru-soundboard/(.*mp3)", StaticFileHandler, OPTIONS),
-            (r"/kaenguru-soundboard/(.*rss)", StaticFileHandler, OPTIONS),
+            (
+                r"/kaenguru-soundboard/(.*)(\.rss|\.xss|/feed|/feed.rss)",
+                SoundboardRssHandler,
+            ),
+            (
+                r"/kaenguru-soundboard(/)(feed|feed.rss)",
+                SoundboardRssHandler,
+            ),
             (
                 r"/kaenguru-soundboard(/.*)?",
-                SoundboardHandler,
+                SoundboardHtmlHandler,
             ),
         ),
         name="Känguru-Soundboard",
@@ -27,7 +35,23 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class SoundboardHandler(BaseRequestHandler):
+class SoundboardRssHandler(BaseRequestHandler):
+    async def get(self, path, path_end):
+        self.set_header("Content-Type", "text/xml")
+        if path is None or len(path) == 0 or path == "index":
+            return self.render(
+                "rss/soundboard.xml", sound_info_list=ALL_SOUNDS
+            )
+
+        if path in PERSON_SOUNDS:
+            return self.render(
+                "rss/soundboard.xml", sound_info_list=PERSON_SOUNDS[path]
+            )
+
+        raise HTTPError(404, reason="Feed not found")
+
+
+class SoundboardHtmlHandler(BaseRequestHandler):
     async def get(self, path_end):
         if path_end is None:
             path = PATH
