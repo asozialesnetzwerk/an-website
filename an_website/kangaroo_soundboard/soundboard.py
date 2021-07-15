@@ -5,8 +5,7 @@ import os
 from tornado.web import HTTPError, StaticFileHandler
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
-from . import DIR, ALL_SOUNDS, MAIN_PAGE_INFO, PERSON_SOUNDS
-
+from . import ALL_SOUNDS, DIR, MAIN_PAGE_INFO, PERSON_SOUNDS
 
 PATH = f"{DIR}/"  # folder with all pages of the page
 OPTIONS = {"path": PATH, "default_filename": "index.html"}
