@@ -1,8 +1,8 @@
 from __future__ import annotations, barry_as_FLUFL
 
+import email.utils
 import os
 import re
-import email.utils
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List, Optional
