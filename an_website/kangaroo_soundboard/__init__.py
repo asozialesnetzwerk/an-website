@@ -4,6 +4,7 @@ import os
 import re
 import shutil
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, List, Optional, Union
 
 import orjson
@@ -12,60 +13,6 @@ from tornado import template
 # pylint: disable=invalid-name
 
 DIR = os.path.dirname(__file__)
-
-
-@dataclass
-class HtmlElement:
-    tag: str = "div"
-    content: Union[str, HtmlElement] = ""
-    properties: Dict[str, str] = field(default_factory=dict)
-
-    def get_content_str(self) -> str:
-        if isinstance(self.content, HtmlElement):
-            return self.content.to_html()
-        return str(self.content)
-
-    def get_properties_str(self) -> str:
-        return " ".join(f"{_k}='{_v}'" for (_k, _v) in self.properties.items())
-
-    def to_html(self) -> str:
-        return (
-            f"<{self.tag} {self.get_properties_str()}>"
-            f"{self.get_content_str()}</{self.tag}>"
-        )
-
-
-@dataclass
-class HtmlAudio(HtmlElement):
-    tag: str = "li"
-    anchor: Optional[HtmlElement] = None
-    source: Optional[HtmlElement] = None
-
-    def get_content_str(self) -> str:
-        if self.anchor is None or self.source is None:
-            return super().get_content_str()
-        return (
-            f"{super().get_content_str()}"
-            f"»{self.anchor.to_html()}«<br>"
-            f"<audio controls>{self.source.to_html()}</audio>"
-        )
-
-
-@dataclass
-class HtmlSection(HtmlElement):
-    tag: str = "h1"  # h1, h2, h3, ...
-    id: str = ""  # unique id
-    children: List[HtmlElement] = field(default_factory=list)
-
-    def to_html(self) -> str:
-        return (
-            f"<{self.tag} id='{self.id}' {self.get_properties_str()}>"
-            + f"<a href='#{self.id}' class='{self.tag}-a'>"
-            + f"🔗 {self.get_content_str()}</a>"
-            + f"</{self.tag}>\n"
-            + "\n".join(child.to_html() for child in self.children)
-        )
-
 
 RSS_STRING = """<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
@@ -79,16 +26,60 @@ RSS_STRING = """<?xml version="1.0" encoding="UTF-8"?>
 </rss>
 """
 
-RSS_ITEM_STRING = """    <item>
-      <title>{title}</title>
-      <link>https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3</link>
-      <enclosure url="https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3"
+RSS_ITEM_STRING = """<item>
+    <title>{title}</title>
+    <link>https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3</link>
+    <enclosure url="https://asozial.org/kaenguru-soundboard/files/{file_name}.mp3"
                  type="audio/mpeg">
-      <guid>{file_name}</guid>
-    </item>"""
+    <guid>{file_name}</guid>
+</item>
+"""
 
 RSS_TITLE_STRING = "[{book}, {chapter}] {file_name}"
 
+class Book(Enum):
+    CHRONIKEN = "Die Känguru-Chroniken"
+    MANIFEST = "Das Känguru-Manifest"
+    OFFENBAHRUNG = "Die Känguru-Offenbarung"
+    APOKRYPHEN = "Die Känguru-Apokryphen"
+
+@dataclass
+class Info:
+    text: str
+
+    def to_html() -> str:
+        return self.text
+
+@dataclass
+class HeaderInfo(Info):
+    tag: str = "h1"
+
+    def to_html() -> str:
+        _id = name_to_id(self.text)
+        return (
+            f"<{self.tag} id='{_id}'>"
+            f"<a href='{_id}' class='{self.tag}-a'>"
+            f"🔗 {self.text}</a>"
+            f"</{self.tag}>"
+        )
+
+@dataclass
+class SoundInfo(Info):
+    file: str
+    person: str
+    book: Book
+    chapter: str
+
+    def to_html() -> str:
+        person_name = self.person
+        return (
+            f"<li><a href='/kaenguru-soundboard/{self.person}' "
+            f"class='a_hover'>{person_name}</a>"
+            f":»<a href='/kaenguru-soundboard/{self.file}' "
+            f"class='quote-a'>{self.text}</a>«<br>"
+            f"<audio controls><source src='/kaenguru-soundboard/{self.file}' "
+            f"type='audio/mpeg'></source></audio></li>"
+        )
 
 os.makedirs(f"{DIR}/build", exist_ok=True)
 # Känguru-Chroniken.\"\n---\n"
@@ -116,48 +107,21 @@ def name_to_id(val: str) -> str:
     )
 
 
-PATH_TO_MAIN: str = "/kaenguru-soundboard/"
-
-
-def create_anchor(
-    href: str,
-    inner_html: str,
-    classes: str = "a_hover",
-) -> HtmlElement:
-    props: Dict[str, str] = {"href": PATH_TO_MAIN + href, "class": classes}
-    return HtmlElement(tag="a", content=inner_html, properties=props)
-
-
-def create_audio_el(
-    file_name: str, text: str, content_str: str = ""
-) -> HtmlAudio:
-    anchor = create_anchor(file_name, text, "quote-a")
-
-    source = HtmlElement(
-        tag="source",
-        properties={"src": PATH_TO_MAIN + file_name, "type": "audio/mpeg"},
-    )
-    return HtmlAudio(anchor=anchor, source=source, content=content_str)
-
-
 rss_items = ""
-
-persons_stuff: Dict[str, str] = {}
 persons_rss: Dict[str, str] = {}
-persons = info["personen"]
 
-index_elements: List[HtmlSection] = []
+all_sounds: List[SoundInfo] = []
+person_sounds: Dict[str, List[SoundInfo]] = {}
+main_page_info: List[Info]
 
-for book in info["bücher"]:
-    book_name = book["name"]
-    book_html = HtmlSection(
-        tag="h1", content=book_name, id=name_to_id(book_name)
-    )
-    for chapter in book["kapitel"]:
+for book_info in info["bücher"]:
+    book = Book(book_info["name"])
+
+    main_page_info.append(HeaderInfo(book.value, "h1"))
+
+    for chapter in book_info["kapitel"]:
         chapter_name = chapter["name"]
-        chapter_html = HtmlSection(
-            tag="h2", content=chapter_name, id=name_to_id(chapter_name)
-        )
+
         for file_text in chapter["dateien"]:
             file = re.sub(
                 r"[^a-z0-9_-]+",
