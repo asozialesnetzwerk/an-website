@@ -72,6 +72,18 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
+    def contains(self, _str: str) -> bool:
+        content = " ".join(
+            [self.book.name, self.chapter.name, self.person.value, self.text]
+        )
+        content = replace_umlauts(content.lower())
+
+        for word in _str.split(" "):
+            if word not in content:
+                return False
+
+        return True
+
     def to_html(self) -> str:
         file = self.get_file_name()
         return (

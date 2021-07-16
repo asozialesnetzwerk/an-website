@@ -75,6 +75,15 @@ class SoundboardHtmlHandler(BaseRequestHandler):
             return self.render(
                 "pages/soundboard.html", sound_info_list=persons_list
             )
+        if path == "search":
+            query = self.get_query_argument("q", "")
+            found: List[Info] = []
+            for sound_info in ALL_SOUNDS:
+                if sound_info.contains(query):
+                    found.append(sound_info)
+
+            return self.render("pages/soundboard.html", sound_info_list=found)
+
         if path in PERSON_SOUNDS:
             return self.render(
                 "pages/soundboard.html",
