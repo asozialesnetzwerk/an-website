@@ -22,7 +22,7 @@
       "name": "Die Känguru-Chroniken",
       "kapitel": [
         {
-          "name": "Kapitel 1 - Das Känguru von gegenüber: (Sehr alte Version)",
+          "name": "Kapitel 1 - Das Känguru von gegenüber (Sehr alte Version)",
           "dateien": [
             "muk-Ja, herzlich willkommen!",
             "känguru-Hallo!",
@@ -32,7 +32,7 @@
           ]
         },
         {
-          "name": "Kapitel 2 - Kleinkunst: (Sehr alte Version)",
+          "name": "Kapitel 2 - Kleinkunst (Sehr alte Version)",
           "dateien": [
             "känguru-Ich bin Kommunist.",
             "känguru-Köstlich!",
@@ -42,20 +42,20 @@
           ]
         },
         {
-          "name": "Kapitel 3 - Tütensuppentotalitarismus: (Sehr alte Version)",
+          "name": "Kapitel 3 - Tütensuppentotalitarismus (Sehr alte Version)",
           "dateien": [
             "känguru-Ich darf nich und ich will nich.",
             "känguru-Alles Kapitalismus, alles Nestle, alles Hähnchen!"
           ]
         },
         {
-          "name": "Kapitel 4 - 69 Cent pro Minute: (Sehr alte Version)",
+          "name": "Kapitel 4 - 69 Cent pro Minute (Sehr alte Version)",
           "dateien": [
             "känguru-Ja! Ja!"
           ]
         },
         {
-          "name": "Kapitel 11 - Jüdisch-bolschewistische Weltverschwörung e.V:",
+          "name": "Kapitel 11 - Jüdisch-bolschewistische Weltverschwörung e.V",
           "dateien": [
             "muk-Du bist also Teil der jüdisch-bolschewistischen Weltverschörung?",
             "muk-Und mich dann auch noch beschneiden lassen?",
@@ -67,7 +67,7 @@
           ]
         },
         {
-          "name": "Kapitel 44 - Eine nette Teegesellschaft:",
+          "name": "Kapitel 44 - Eine nette Teegesellschaft",
           "dateien": [
             "psychiater-Aha!"
           ]
@@ -78,7 +78,7 @@
       "name": "Das Känguru-Manifest",
       "kapitel": [
         {
-          "name": "Kapitel 1 - Intro:",
+          "name": "Kapitel 1 - Intro",
           "dateien": [
             "muk-Für nichts und wieder nichts."
           ]
@@ -89,7 +89,7 @@
       "name": "Die Känguru-Offenbarung",
       "kapitel": [
         {
-          "name": "Teil 2, Kapitel 5 - Whatever:",
+          "name": "Teil 2, Kapitel 5 - Whatever",
           "dateien": [
             "muk-I'm just here for the famous breakfast.",
             "muk-Yeah!",
@@ -100,14 +100,14 @@
           ]
         },
         {
-          "name": "Teil 2, Kapitel 7 - Das zähe Verfließen der Zeit, genannt Leben:",
+          "name": "Teil 2, Kapitel 7 - Das zähe Verfließen der Zeit, genannt Leben",
           "dateien": [
             "muk-I am bored!",
             "muk-I am bored in the USA!"
           ]
         },
         {
-          "name": "Teil 2, Kapitel 13 - Die durch die Hölle gehen:",
+          "name": "Teil 2, Kapitel 13 - Die durch die Hölle gehen",
           "dateien": [
             "sarah-Well that's just like you know amazing!",
             "sarah-Hey, that's cool.",
@@ -122,7 +122,7 @@
       "name": "Die Känguru-Apokryphen",
       "kapitel": [
         {
-          "name": "Kapitel 12 - Dabei:",
+          "name": "Kapitel 12 - Dabei",
           "dateien": [
             "fw-Ihr linken intellektuellen Fuzzies.",
             "känguru-Wir sind keine Intellektuellen.",
@@ -131,20 +131,20 @@
           ]
         },
         {
-          "name": "Kapitel 27 - Kleine Künstler:",
+          "name": "Kapitel 27 - Kleine Künstler",
           "dateien": [
             "gott-Das ist privat!",
             "jesus-Guck mal, was ich kann!"
           ]
         },
         {
-          "name": "Kapitel 34 - Einfach so:",
+          "name": "Kapitel 34 - Einfach so",
           "dateien": [
             "dietmar-Ich hab seine Hausaufgaben aufgegessen."
           ]
         },
         {
-          "name": "Kapitel 48 - Die neue Nachbarin:",
+          "name": "Kapitel 48 - Die neue Nachbarin",
           "dateien": [
             "muk-Und da ist mir aufgefallen, dass ich keine Eier hab.",
             "gott-So, so, du hast also keine Eier?"
@@ -154,3 +154,4 @@
     }
   ]
 }
+
