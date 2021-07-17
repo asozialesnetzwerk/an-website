@@ -38,7 +38,7 @@ del books, chapters, persons
 class Info:
     text: str
 
-    def to_html(self) -> str:
+    def to_html(self, url_app: str) -> str:
         return self.text
 
 
@@ -46,7 +46,7 @@ class Info:
 class HeaderInfo(Info):
     tag: str = "h1"
 
-    def to_html(self) -> str:
+    def to_html(self, url_app: str) -> str:
         _id = name_to_id(self.text)
         return (
             f"<{self.tag} id='{_id}'>"
@@ -78,16 +78,16 @@ class SoundInfo(Info):
         )
         content = replace_umlauts(content.lower())
 
-        for word in _str.split(" "):
+        for word in _str.lower().split(" "):
             if word not in content:
                 return False
 
         return True
 
-    def to_html(self) -> str:
+    def to_html(self, url_app: str) -> str:
         file = self.get_file_name()
         return (
-            f"<li><a href='/kaenguru-soundboard/{self.person.name}' "
+            f"<li><a href='/kaenguru-soundboard/{self.person.name}{url_app}' "
             f"class='a_hover'>{self.person.value}</a>"
             f": »<a href='/kaenguru-soundboard/files/{file}.mp3' "
             f"class='quote-a'>{self.get_text()}</a>«<br><audio controls>"

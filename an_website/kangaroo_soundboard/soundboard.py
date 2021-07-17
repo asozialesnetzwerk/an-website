@@ -65,7 +65,9 @@ class SoundboardHtmlHandler(BaseRequestHandler):
     async def get(self, path, path_end):  # pylint: disable=unused-argument
         if path is None or len(path) == 0 or path == "index":
             return self.render(
-                "pages/soundboard.html", sound_info_list=MAIN_PAGE_INFO
+                "pages/soundboard.html",
+                sound_info_list=MAIN_PAGE_INFO,
+                query=None,
             )
         if path == "persons":
             persons_list: List[Info] = []
@@ -73,7 +75,9 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 persons_list.append(HeaderInfo(Person[_k].value))
                 persons_list += person_sounds
             return self.render(
-                "pages/soundboard.html", sound_info_list=persons_list
+                "pages/soundboard.html",
+                sound_info_list=persons_list,
+                query=None,
             )
         if path == "search":
             query = self.get_query_argument("q", "")
@@ -82,7 +86,9 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 if sound_info.contains(query):
                     found.append(sound_info)
 
-            return self.render("pages/soundboard.html", sound_info_list=found)
+            return self.render(
+                "pages/soundboard.html", sound_info_list=found, query=query
+            )
 
         if path in PERSON_SOUNDS:
             return self.render(
@@ -90,6 +96,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 sound_info_list=(
                     [HeaderInfo(Person[path].value)] + PERSON_SOUNDS[path]
                 ),
+                query=None,
             )
 
         raise HTTPError(404, reason="Page not found")

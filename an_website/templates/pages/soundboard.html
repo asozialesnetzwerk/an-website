@@ -5,8 +5,16 @@
 {% block description %}Ein Soundboard mit coolen Sprüchen und Sounds aus den Känguru-Chroniken{% end %}
 
 {% block body %}
+    {% if query is not None %}
+<form>
+    <input type="text" value="{{query}}" name="q">
+    {{form_appendix}}
+    <input type="button" value="Suche!">
+</form>
+    {% end %}
+
     {% for sound_info in sound_info_list %}
-{% raw sound_info.to_html() %}
+{% raw sound_info.to_html(url_appendix) %}
     {% end %}
 {% end %}
 

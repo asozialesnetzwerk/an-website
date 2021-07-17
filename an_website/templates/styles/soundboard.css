@@ -2,3 +2,6 @@
     color: var(--light-grey) !important;
 }
 
+input {
+    margin-bottom: 5px;
+}
