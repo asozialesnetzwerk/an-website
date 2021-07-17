@@ -38,7 +38,7 @@ del books, chapters, persons
 class Info:
     text: str
 
-    def to_html(self, url_app: str) -> str:
+    def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
         return self.text
 
 
@@ -46,7 +46,7 @@ class Info:
 class HeaderInfo(Info):
     tag: str = "h1"
 
-    def to_html(self, url_app: str) -> str:
+    def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
         _id = name_to_id(self.text)
         return (
             f"<{self.tag} id='{_id}'>"

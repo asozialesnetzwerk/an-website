@@ -8,9 +8,14 @@
     {% if query is not None %}
 <form>
     <input type="text" value="{{query}}" name="q">
-    {{form_appendix}}
+    {% raw form_appendix %}
     <input type="button" value="Suche!">
 </form>
+
+        {% if len(sound_info_list) == 0 %}
+Nichts gefunden. :( <br>
+Bitte überprüfe die Rechtschreibung oder nutze eine kürzere Suche.
+        {% end %}
     {% end %}
 
     {% for sound_info in sound_info_list %}
