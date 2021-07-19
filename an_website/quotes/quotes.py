@@ -6,8 +6,8 @@ from ..utils.utils import BaseRequestHandler, ModuleInfo
 def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/zitate/?", Quotes),),
-        name="Falschzugeordnete Zitate",
-        description="Eine Website mit falschzugeordneten Zitaten",
+        name="Falsch zugeordnete Zitate",
+        description="Eine Website mit falsch zugeordneten Zitaten",
         path="/zitate",
     )
 
