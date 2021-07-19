@@ -49,14 +49,14 @@ def get_module_info() -> ModuleInfo:
             PageInfo(
                 "Känguru-Soundboard-Suche",
                 "Durchsuche das Känguru-Soundboard",
-                "/kaenguru-soundboard/suche"
+                "/kaenguru-soundboard/suche",
             ),
             PageInfo(
                 "Känguru-Soundboard nach Personen sortiert",
                 "Das Känguru-Soundboard mit Sortierung nach Personen",
-                "/kaenguru-soundboard/personen"
+                "/kaenguru-soundboard/personen",
             ),
-        )
+        ),
     )
 
 
