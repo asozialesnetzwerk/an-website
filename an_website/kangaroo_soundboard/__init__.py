@@ -76,9 +76,9 @@ class SoundInfo(Info):
         content = " ".join(
             [self.book.name, self.chapter.name, self.person.value, self.text]
         )
-        content = replace_umlauts(content.lower())
+        content = replace_umlauts(content)
 
-        for word in _str.lower().split(" "):
+        for word in replace_umlauts(_str).split(" "):
             if word not in content:
                 return False
 
@@ -125,7 +125,8 @@ class SoundInfo(Info):
 
 def replace_umlauts(text: str) -> str:
     return (
-        text.replace("ä", "ae")
+        text.lower()
+        .replace("ä", "ae")
         .replace("ö", "oe")
         .replace("ü", "ue")
         .replace("ß", "ss")
@@ -137,7 +138,7 @@ def name_to_id(val: str) -> str:
         r"-+",
         "-",
         re.sub(
-            r"[^a-z0-9-]", "", replace_umlauts(val.lower().replace(" ", "-"))
+            r"[^a-z0-9-]", "", replace_umlauts(val.replace(" ", "-"))
         ),
     )
 
