@@ -61,7 +61,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class SoundboardRssHandler(BaseRequestHandler):
-    async def get(self, path, path_end):  # pylint: disable=unused-argument
+    async def get(self, path, _end=None):  # pylint: disable=unused-argument
         self.set_header("Content-Type", "application/xml")
         if path is not None:
             path = path.lower()
@@ -79,7 +79,7 @@ class SoundboardRssHandler(BaseRequestHandler):
 
 
 class SoundboardHtmlHandler(BaseRequestHandler):
-    async def get(self, path, **kwargs):  # pylint: disable=unused-argument
+    async def get(self, path, _end=None):  # pylint: disable=unused-argument
         if path is not None:
             path = path.lower()
         if path in (None, "", "index", "/"):
