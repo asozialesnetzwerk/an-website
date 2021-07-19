@@ -137,9 +137,7 @@ def name_to_id(val: str) -> str:
     return re.sub(
         r"-+",
         "-",
-        re.sub(
-            r"[^a-z0-9-]", "", replace_umlauts(val.replace(" ", "-"))
-        ),
+        re.sub(r"[^a-z0-9-]", "", replace_umlauts(val.replace(" ", "-"))),
     )
 
 
