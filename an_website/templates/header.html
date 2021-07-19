@@ -6,10 +6,22 @@
     <h1>Unterseiten:</h1>
     <ul class="menu-list">
       {% for info in settings.get("MODULE_INFOS") %}
-        {% if not info.path is None %}
-        <li class="tooltip">
-          <a href="{{info.path}}{{url_appendix}}">{{info.name}}</a>
-          <div class="tooltip-text">{{info.description}}</div>
+        {% if info.path is not None %}
+        <li>
+          <div class="tooltip">
+            <a href="{{info.path}}{{url_appendix}}">{{info.name}}</a>
+            <div class="tooltip-text">{{info.description}}</div>
+          </div>
+          {% if info.sub_pages is not None %}
+            <ul class="menu-sub-list">
+              {% for page_info in info.sub_pages %}
+                <li class="tooltip">
+                  <a href="{{page_info.path}}{{url_appendix}}">{{page_info.name}}</a>
+                  <div class="tooltip-text">{{page_info.description}}</div>
+                </li>
+              {% end %}
+            </ul>
+          {% end %}
         </li>
       {% end %}
     {% end %}

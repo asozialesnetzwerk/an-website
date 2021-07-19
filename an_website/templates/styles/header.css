@@ -27,13 +27,13 @@
 }
 
 .site-pane {
-    right: -30%;
+    right: -70%;
     top: 0;
-    z-index: 1000000;
+    z-index: 10000;
     position: fixed;
     background-color: var(--dark-grey);
     color: #fff;
-    width: 30%;
+    max-width: 70%;
     height: 100%;
 
     transition: right 0.5s;
@@ -57,9 +57,23 @@
 
 .menu-list {
     margin: 5px;
+    list-style-type: circle;
 }
 
 .menu-list li {
-    padding: 7px;
+    display: inherit;
+    margin-bottom: 5px;
+    color: var(--white)
+}
+
+.menu-sub-list {
+    margin: 5px;
+    list-style-type: square;
+}
+
+.menu-sub-list li {
+    display: inherit;
+    margin-top: 3px;
+    color: var(--white)
 }
 

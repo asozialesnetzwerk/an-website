@@ -5,7 +5,7 @@ import asyncio.subprocess
 import re
 import sys
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -21,19 +21,28 @@ HandlerList = Tuple[Handler, ...]
 
 
 @dataclass()
-class ModuleInfo:
-    handlers: HandlerList
-    name: str = "name"
-    description: str = "description"
+class PageInfo:
+    name: str
+    description: str
     path: Optional[str] = None
 
 
+@dataclass()
+class ModuleInfo(PageInfo):
+    handlers: HandlerList = field(default_factory=HandlerList)
+    sub_pages: Optional[Tuple[PageInfo, ...]] = None
+
+
 def get_module_info() -> ModuleInfo:
-    return ModuleInfo(handlers=((r"/error/?", ZeroDivision),))
+    return ModuleInfo(
+        "Utilitys",
+        "Nütliche Werkzeuge für alle möglichen Sachen.",
+        handlers=((r"/error/?", ZeroDivision),),
+    )
 
 
-def length_of_match(m: re.Match):  # pylint: disable=invalid-name
-    span = m.span()
+def length_of_match(_m: re.Match):
+    span = _m.span()
     return span[1] - span[0]
 
 

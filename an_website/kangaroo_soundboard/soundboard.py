@@ -4,7 +4,7 @@ from typing import List
 
 from tornado.web import HTTPError, StaticFileHandler
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.utils import BaseRequestHandler, ModuleInfo, PageInfo
 from . import (
     ALL_SOUNDS,
     DIR,
@@ -15,40 +15,57 @@ from . import (
     Person,
 )
 
-PATH = f"{DIR}/"  # folder with all pages of the page
-
 
 def get_module_info() -> ModuleInfo:
     return ModuleInfo(
-        handlers=(
+        "Känguru-Soundboard",
+        "Kurze Sounds aus den Känguru Chroniken",
+        "/kaenguru-soundboard",
+        (
             (
-                r"/kaenguru-soundboard/(.*mp3)",
+                r"/kaenguru-soundboard/files/(.*mp3)",
                 StaticFileHandler,
-                {"path": PATH, "default_filename": "index.html"},
+                {"path": f"{DIR}/files/"},
             ),
             (
                 r"/kaenguru-soundboard/(.+)(\.rss|\.xss|/feed|/feed\.rss)",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard/(.{0})(feed|feed\.rss|feed\.xml)",
+                r"/kaenguru-soundboard(/)(feed|feed\.rss|feed\.xml|feed/)",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard/([^./]*)(\.html|\.htm|/|/index.html|/index.htm)?",
+                r"/kaenguru-soundboard/([^./]+)"
+                r"(\.html|\.htm|/|/index.html|/index.htm)?",
+                SoundboardHtmlHandler,
+            ),
+            (
+                r"/kaenguru-soundboard(/?)",
                 SoundboardHtmlHandler,
             ),
         ),
-        name="Känguru-Soundboard",
-        description="Kurze Sounds aus den Känguru Chroniken",
-        path="/kaenguru-soundboard/",  # the / at the end is important
+        (
+            PageInfo(
+                "Känguru-Soundboard-Suche",
+                "Durchsuche das Känguru-Soundboard",
+                "/kaenguru-soundboard/suche"
+            ),
+            PageInfo(
+                "Känguru-Soundboard nach Personen sortiert",
+                "Das Känguru-Soundboard mit Sortierung nach Personen",
+                "/kaenguru-soundboard/personen"
+            ),
+        )
     )
 
 
 class SoundboardRssHandler(BaseRequestHandler):
     async def get(self, path, path_end):  # pylint: disable=unused-argument
         self.set_header("Content-Type", "application/xml")
-        if path is None or len(path) == 0 or path == "index":
+        if path is not None:
+            path = path.lower()
+        if path in (None, "index", "/", ""):
             return self.render(
                 "rss/soundboard.xml", sound_info_list=ALL_SOUNDS
             )
@@ -62,14 +79,16 @@ class SoundboardRssHandler(BaseRequestHandler):
 
 
 class SoundboardHtmlHandler(BaseRequestHandler):
-    async def get(self, path, path_end):  # pylint: disable=unused-argument
-        if path is None or len(path) == 0 or path == "index":
+    async def get(self, path, **kwargs):  # pylint: disable=unused-argument
+        if path is not None:
+            path = path.lower()
+        if path in (None, "", "index", "/"):
             return self.render(
                 "pages/soundboard.html",
                 sound_info_list=MAIN_PAGE_INFO,
                 query=None,
             )
-        if path == "persons":
+        if path in ("persons", "personen"):
             persons_list: List[Info] = []
             for _k, person_sounds in PERSON_SOUNDS.items():
                 persons_list.append(HeaderInfo(Person[_k].value))
@@ -79,7 +98,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 sound_info_list=persons_list,
                 query=None,
             )
-        if path == "search":
+        if path in ("search", "suche"):
             query = self.get_query_argument("q", "")
             found: List[Info] = []
             for sound_info in ALL_SOUNDS:
