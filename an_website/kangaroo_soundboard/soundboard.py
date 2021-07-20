@@ -19,7 +19,8 @@ from . import (
 def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         "Känguru-Soundboard",
-        "Kurze Sounds aus den Känguru Chroniken",
+        "Ein Soundboard mit coolen Sprüchen und Sounds aus den "
+        "Känguru-Chroniken",
         "/kaenguru-soundboard",
         (
             (

@@ -90,7 +90,10 @@ class CurrencyConverter(BaseRequestHandler):
     async def get(self, *args):  # pylint: disable=unused-argument
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
-            value_dict = await get_value_dict(16)
+            value_dict = await get_value_dict(0)
+            description = self.description
+        else:
+            description = value_dict["text"]
 
         if value_dict.get("contained_bad_param", False):
             url = self.request.full_url().split("?")[0]
@@ -98,7 +101,9 @@ class CurrencyConverter(BaseRequestHandler):
             self.redirect(f"{url}?{key}={value_dict.get(key + '_str')}")
             return
 
-        await self.render("pages/converter.html", **value_dict)
+        await self.render(
+            "pages/converter.html", **value_dict, description=description
+        )
 
 
 class CurrencyConverterAPI(APIRequestHandler):

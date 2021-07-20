@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html lang="{% block lang %}de{% end %}">
+<html lang="{{lang}}">
 <head>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#8B0000">
-    <meta property="og:url" content="{{ url }}" />
+    <meta property="og:url" content="{{url}}" />
     <meta property="og:type" content="website" />
-    <title>{% block title %}Das Asoziale Netzwerk{% end %}</title>
-    <meta property="og:title" content="{% block title %}Das Asoziale Netzwerk{% end %}" />
-    <meta property="og:description" content="{% block description %}Dies ist die Webseite des Asozialen Netzwerkes!{% end %}" />
+    <title>{{title}}</title>
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description"
+          content="{% block description %}{{ description }}{% end %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if not no_js and not settings is None %}
-    <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
-    <script>
-        elasticApm.init({
-            active: {% raw "true" if settings.get("ELASTIC_APM")["ENABLED"] else "false" %},
-            serverUrl: '{% raw settings.get("ELASTIC_APM")["SERVER_URL"] %}',
-            serviceName: '{% raw settings.get("ELASTIC_APM")["SERVICE_NAME"] %}',
-            serviceVersion: '{% raw settings.get("ELASTIC_APM")["SERVICE_VERSION"] %}',
-            environment: '{% raw settings.get("ELASTIC_APM")["ENVIRONMENT"] %}',
-        })
-    </script>
+        <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
+        <script>
+            elasticApm.init({
+                active: {% raw "true" if settings.get("ELASTIC_APM")["ENABLED"] else "false" %},
+                serverUrl: '{% raw settings.get("ELASTIC_APM")["SERVER_URL"] %}',
+                serviceName: '{% raw settings.get("ELASTIC_APM")["SERVICE_NAME"] %}',
+                serviceVersion: '{% raw settings.get("ELASTIC_APM")["SERVICE_VERSION"] %}',
+                environment: '{% raw settings.get("ELASTIC_APM")["ENVIRONMENT"] %}',
+            })
+        </script>
     {% end %}
+
     {% block head %} {% end %}
     <style>
         {% include "styles/base.css" %}
@@ -34,7 +36,7 @@
 
 <div id="body">
 {% block body %}
-Dies ist die Webseite des Asozialen Netzwerkes!
+    {{ content }}
 {% end %}
 </div>
 

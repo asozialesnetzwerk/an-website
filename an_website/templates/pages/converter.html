@@ -1,13 +1,9 @@
 {% extends "../base.html" %}
 
-{% block title %}Währungsrechner{% end %}
-
-{% block description %}{{ text }}{% end %}
-
 {% block body %}
 <body>
 
-<form action="{{ request.full_url() }}" method="get">
+<form action="{{url}}" method="get">
     <label class="money-label" for="euro">Euro:</label><br>
     <input id="euro" name="euro" placeholder="{{ euro_str }}">
     <br>

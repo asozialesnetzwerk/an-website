@@ -112,12 +112,15 @@ def get_all_handlers(
         for handler in module_info.handlers:
             if len(handler) == 2:
                 # if dict as third arg is needed
-                # the "header_text" has to be specified
-                # other wise the name is the default
+                # "title" and "description" have to be specified
+                # other wise the info is taken from the module info
                 handler = (
                     handler[0],
                     handler[1],
-                    {"header_text": module_info.name},
+                    {
+                        "title": module_info.name,
+                        "description": module_info.description,
+                    },
                 )
             handlers.append(handler)
 

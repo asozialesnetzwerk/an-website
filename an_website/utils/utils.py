@@ -81,12 +81,12 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
 
 class BaseRequestHandler(RequestHandler):
     RATELIMIT_TOKENS = 1  # can be overridden in subclasses
-    header_text = "Das Asoziale Netzwerk"
+    title = "Das Asoziale Netzwerk"
+    description = "Die tolle Webseite des Asozialen Netzwerkes"
 
     def initialize(self, **kwargs):
-        header_text = kwargs.get("header_text", None)
-        if header_text is not None:
-            self.header_text = header_text
+        self.title = kwargs.get("title", self.title)
+        self.description = kwargs.get("description", self.description)
 
     def data_received(self, chunk):
         pass
@@ -149,8 +149,10 @@ class BaseRequestHandler(RequestHandler):
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
-                "header_text": self.header_text,
+                "title": self.title,
+                "description": self.description,
                 "no_js": no_js,
+                "lang": "de",
                 "url_appendix": "?no_js=sure" if no_js else "",
                 "form_appendix": form_appendix,
                 # this is not important because we don't need the templates
