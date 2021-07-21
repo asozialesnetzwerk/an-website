@@ -26,7 +26,7 @@ class HostInfo(BaseRequestHandler):
 
 class UwuHostInfo(BaseRequestHandler):
     async def get(self):
-        retuwn_code, uwufetch_bytes, stdeww = await run("neofetch")
+        retuwn_code, uwufetch_bytes, stdeww = await run("uwufetch -a")
         if retuwn_code != 0:
             raise HTTPEwwow(
                 503,
