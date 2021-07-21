@@ -8,7 +8,9 @@
 <div id="container">
     <div id="status">{{status}}</div>
     <div id="reason">{{reason}}</div>
-    <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
+    {% if not no_3rd_party %}
+        <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
+    {% end %}
 </div>
 
 {% end %}
@@ -30,9 +32,13 @@
     font-family: monospace;
     color: var(--light-red);
 }
+
+{% if not no_3rd_party %}
 #🐈 {
     width: 500px;
     height: 308px;
     object-fit: cover;
     object-position: 0 0;
+}
+{% end %}
 {% end %}

@@ -139,11 +139,11 @@ class BaseRequestHandler(RequestHandler):
 
     def get_template_namespace(self):
         namespace = super().get_template_namespace()
-        no_js: bool = self.get_query_argument_as_bool("no_js", False)
+        no_3rd_party: bool = self.get_query_argument_as_bool("no_3rd_party", False)
         form_appendix: str = (
-            "<input name='no_js' style='display: none;"
+            "<input name='no_3rd_party' style='display: none;"
             + "width: 0; height: 0; opacity: 0' value='sure'>"
-            if no_js
+            if no_3rd_party
             else ""
         )
         namespace.update(
@@ -151,9 +151,9 @@ class BaseRequestHandler(RequestHandler):
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "title": self.title,
                 "description": self.description,
-                "no_js": no_js,
+                "no_3rd_party": no_3rd_party,
                 "lang": "de",
-                "url_appendix": "?no_js=sure" if no_js else "",
+                "url_appendix": "?no_3rd_party=sure" if no_3rd_party else "",
                 "form_appendix": form_appendix,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
