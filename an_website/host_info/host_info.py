@@ -32,9 +32,9 @@ class UwuHostInfo(BaseRequestHandler):
                 503,
                 reason=(
                     str(retuwn_code)
-                    + "\n"
-                    + uwufetch_bytes.decode("utf-8")
-                    + "\n"
+                    + " "
+                    + uwufetch_bytes.decode("utf-8").replace("\n", " ").strip()
+                    + " "
                     + stdeww.decode("utf-8").replace("\n", " ").strip()
                 ),
             )
