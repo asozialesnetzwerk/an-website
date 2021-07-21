@@ -29,7 +29,11 @@ class UwuHostInfo(BaseRequestHandler):
         retuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
         if retuwn_code != 0:
             raise HTTPEwwow(
-                503, reason=stdeww.decode("utf-8").replace("\n", " ").strip()
+                503,
+                reason=(
+                    str(retuwn_code)
+                    + stdeww.decode("utf-8").replace("\n", " ").strip()
+                ),
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         return await self.render("pages/ansi2html.html", ansi=uwufetch)
