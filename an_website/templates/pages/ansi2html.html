@@ -1,0 +1,19 @@
+{% extends "../base.html" %}
+
+{% block body %}
+
+{% whitespace all %}
+
+{% if isinstance(ansi, list) %}
+    {% for _a in ansi %}
+<pre style="display: inline-block; vertical-align: top;">
+{% raw ansi2html.convert(_a, full=False) %}
+</pre>
+    {% end %}
+{% else %}
+<pre>
+{% raw ansi2html.convert(ansi, full=False) %}
+</pre>
+{% end %}
+
+{% end %}
