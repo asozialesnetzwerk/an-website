@@ -1,8 +1,9 @@
 from __future__ import annotations, barry_as_FLUFL
 
+import datetime
 import re
 import time
-import datetime
+
 from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 START_TIME = time.time()
@@ -19,9 +20,7 @@ def get_module_info() -> ModuleInfo:
 
 class Version(BaseRequestHandler):
     async def get(self):
-        uptime = datetime.timedelta(
-            seconds=round(time.time() - START_TIME, 3)
-        )
+        uptime = datetime.timedelta(seconds=round(time.time() - START_TIME, 3))
 
         uptime_str = str(uptime)
         uptime_str = re.sub("0{3}$", "", uptime_str, count=1)

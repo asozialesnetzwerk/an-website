@@ -139,7 +139,9 @@ class BaseRequestHandler(RequestHandler):
 
     def get_template_namespace(self):
         namespace = super().get_template_namespace()
-        no_3rd_party: bool = self.get_query_argument_as_bool("no_3rd_party", False)
+        no_3rd_party: bool = self.get_query_argument_as_bool(
+            "no_3rd_party", False
+        )
         form_appendix: str = (
             "<input name='no_3rd_party' style='display: none;"
             + "width: 0; height: 0; opacity: 0' value='sure'>"
