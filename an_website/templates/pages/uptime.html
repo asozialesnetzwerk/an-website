@@ -1,0 +1,23 @@
+{% extends "../base.html" %}
+
+{% block description %}Diese Webseite läuft bereits {{uptime}}{% end %}
+
+{% block body %}
+    <link href="https://fonts.googleapis.com/css?family=Orbitron"
+          rel="stylesheet"
+          type="text/css">
+
+    Diese Webseite läuft bereits <div class="clock-font">{{uptime}}</div>
+{% end %}
+
+
+{% block style %}
+#body {
+    font-size: 20px;
+}
+
+.clock-font {
+    display: inline;
+    font-family: 'Orbitron', sans-serif;
+}
+{% end %}
