@@ -11,14 +11,14 @@ START_TIME = time.time()
 
 def get_module_info() -> ModuleInfo:
     return ModuleInfo(
-        handlers=((r"/version/?", Version),),
+        handlers=((r"/uptime/?", UptimeHandler),),
         name="Betriebszeit",
         description="Die Dauer die die Webseite am Stück in Betrieb ist.",
-        path="/version",
+        path="/uptime",
     )
 
 
-class Version(BaseRequestHandler):
+class UptimeHandler(BaseRequestHandler):
     async def get(self):
         uptime = datetime.timedelta(seconds=round(time.time() - START_TIME, 3))
 
