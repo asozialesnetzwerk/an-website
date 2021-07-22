@@ -56,10 +56,10 @@ async def get_value_dict(euro):
     # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})  # noqa
     value_dict = {}
 
-    for _i, _k in enumerate(keys):
+    for _i, key in enumerate(keys):
         val = multipliers[_i] * euro
-        value_dict[_k] = val
-        value_dict[_k + "_str"] = await num_to_string(val)
+        value_dict[key] = val
+        value_dict[key + "_str"] = await num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
 
@@ -69,20 +69,29 @@ async def get_value_dict(euro):
 async def arguments_to_value_dict(
     request_handler: RequestHandler,
 ) -> Optional[dict]:
-    contains_bad_param = False
-    for _i, _k in enumerate(keys):
-        num_str = request_handler.get_query_argument(
-            name=_k, default=None
-        )
+    arg_list: List[Tuple[int, str, str]] = []
+
+    for _i, key in enumerate(keys):
+        num_str = request_handler.get_query_argument(name=key, default=None)
         if num_str is not None:
-            euro = await string_to_num(num_str, multipliers[_i])
-            if euro is not None:
-                value_dict = await get_value_dict(euro)
-                if contains_bad_param:
-                    value_dict["contained_bad_param"] = True
-                value_dict["key_used"] = _k
-                return value_dict
-            contains_bad_param = True
+            arg_list.append((_i, key, num_str))
+
+    print(arg_list)
+
+    too_many_params: bool = len(arg_list) > 1
+
+    for _i, key, num_str in arg_list:
+        euro = await string_to_num(num_str, multipliers[_i])
+
+        if euro is not None:
+            value_dict = await get_value_dict(euro)
+
+            if too_many_params:
+                value_dict["too_many_params"] = True
+
+            value_dict["key_used"] = key
+
+            return value_dict
     return None
 
 
@@ -95,10 +104,12 @@ class CurrencyConverter(BaseRequestHandler):
         else:
             description = value_dict["text"]
 
-        if value_dict.get("contained_bad_param", False):
+        if value_dict.get("too_many_params", False):
             url = self.request.full_url().split("?")[0]
             key = value_dict.get("key_used")
             redirect_url = f"{url}?{key}={value_dict.get(key + '_str')}"
+            if self.get_no_3rd_party():
+                redirect_url += "&no_3rd_party=sure"
             self.redirect(redirect_url)
             return
 

@@ -137,11 +137,12 @@ class BaseRequestHandler(RequestHandler):
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
 
+    def get_no_3rd_party(self) -> bool:
+        return self.get_query_argument_as_bool("no_3rd_party", False)
+
     def get_template_namespace(self):
         namespace = super().get_template_namespace()
-        no_3rd_party: bool = self.get_query_argument_as_bool(
-            "no_3rd_party", False
-        )
+        no_3rd_party: bool = self.get_no_3rd_party()
         form_appendix: str = (
             "<input name='no_3rd_party' style='display: none;"
             + "width: 0; height: 0; opacity: 0' value='sure'>"
