@@ -56,10 +56,10 @@ async def get_value_dict(euro):
     # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})  # noqa
     value_dict = {}
 
-    for key in enumerate(keys):
-        val = multipliers[key[0]] * euro
-        value_dict[keys[key[0]]] = val
-        value_dict[keys[key[0]] + "_str"] = await num_to_string(val)
+    for _i, _k in enumerate(keys):
+        val = multipliers[_i] * euro
+        value_dict[_k] = val
+        value_dict[_k + "_str"] = await num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
 
@@ -70,17 +70,17 @@ async def arguments_to_value_dict(
     request_handler: RequestHandler,
 ) -> Optional[dict]:
     contains_bad_param = False
-    for key in enumerate(keys):
+    for _i, _k in enumerate(keys):
         num_str = request_handler.get_query_argument(
-            name=keys[key[0]], default=None
+            name=_k, default=None
         )
         if num_str is not None:
-            euro = await string_to_num(num_str, multipliers[key[0]])
+            euro = await string_to_num(num_str, multipliers[_i])
             if euro is not None:
                 value_dict = await get_value_dict(euro)
                 if contains_bad_param:
                     value_dict["contained_bad_param"] = True
-                value_dict["key_used"] = keys[key[0]]
+                value_dict["key_used"] = _k
                 return value_dict
             contains_bad_param = True
     return None
@@ -98,7 +98,8 @@ class CurrencyConverter(BaseRequestHandler):
         if value_dict.get("contained_bad_param", False):
             url = self.request.full_url().split("?")[0]
             key = value_dict.get("key_used")
-            self.redirect(f"{url}?{key}={value_dict.get(key + '_str')}")
+            redirect_url = f"{url}?{key}={value_dict.get(key + '_str')}"
+            self.redirect(redirect_url)
             return
 
         await self.render(

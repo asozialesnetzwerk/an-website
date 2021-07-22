@@ -166,9 +166,12 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_query_argument_as_bool(self, name: str, default: bool = False):
-        return strtobool(
-            str(self.get_query_argument(name, default=str(default)))
-        )
+        try:
+            return strtobool(
+                str(self.get_query_argument(name, default=str(default)))
+            )
+        except ValueError:
+            return default
 
 
 class APIRequestHandler(BaseRequestHandler):
