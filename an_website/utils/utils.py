@@ -75,7 +75,20 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
-    stdout, stderr = await proc.communicate()
+
+    com = proc.communicate()
+    if "ps -p" not in cmd:
+        with open(f"/proc/{proc.pid}/stat") as file:
+            print(file.read())
+        await (run(f"ps -p {proc.pid} all | grep -E 'PID|{proc.pid}'"))
+
+    stdout, stderr = await com
+
+    if "ps -p" in cmd:
+        print(proc.returncode)
+        print(stdout.decode("utf-8"))
+        print(stderr.decode("utf-8"))
+
     return proc.returncode, stdout, stderr
 
 
