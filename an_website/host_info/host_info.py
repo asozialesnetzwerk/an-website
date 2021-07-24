@@ -39,4 +39,4 @@ class UwuHostInfo(BaseRequestHandler):
                 ),
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
-        return await self.render("pages/ansi2html.html", ansi=uwufetch)
+        await self.render("pages/ansi2html.html", ansi=uwufetch)

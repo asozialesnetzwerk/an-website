@@ -2,6 +2,7 @@ from __future__ import annotations, barry_as_FLUFL
 
 import asyncio
 import asyncio.subprocess
+import logging
 import re
 import sys
 import traceback
@@ -85,9 +86,16 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
     stdout, stderr = await com
 
     if "ps -p" in cmd:
-        print(proc.returncode)
-        print(stdout.decode("utf-8"))
-        print(stderr.decode("utf-8"))
+        logger = logging.getLogger(__name__)
+        logger.error(
+            str(
+                {
+                    "code": proc.returncode,
+                    "stdout": stdout.decode("utf-8"),
+                    "stderr": stderr.decode("utf-8"),
+                }
+            )
+        )
 
     return proc.returncode, stdout, stderr
 
