@@ -7,7 +7,7 @@ import logging
 import os
 import ssl
 import sys
-from typing import List
+from typing import List, Optional
 
 import aioredis  # type: ignore
 import ecs_logging
@@ -127,7 +127,8 @@ def get_all_handlers(
     return handlers
 
 
-def make_app(module_infos: List[ModuleInfo]):
+def make_app() -> Application:
+    module_infos: List[ModuleInfo] = get_module_infos()
     return Application(
         get_all_handlers(module_infos),  # type: ignore
         MODULE_INFOS=module_infos,
@@ -144,34 +145,7 @@ def make_app(module_infos: List[ModuleInfo]):
     )
 
 
-if __name__ == "__main__":
-    patches.apply()
-    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
-    config = configparser.ConfigParser(interpolation=None)
-    config.read("config.ini")
-    root_logger = logging.getLogger()
-    root_logger.setLevel(
-        logging.INFO if not sys.flags.dev_mode else logging.DEBUG
-    )
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(
-        LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
-    )
-    root_logger.addHandler(stream_handler)
-    if not sys.flags.dev_mode:
-        file_handler = logging.handlers.TimedRotatingFileHandler(
-            "logs/an-website.log", "midnight", backupCount=7, utc=True
-        )
-        file_handler.setFormatter(ecs_logging.StdlibFormatter())
-        root_logger.addHandler(file_handler)
-    logging.captureWarnings(True)
-    for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=""
-    ).split(","):
-        module_name = module_name.strip()
-        if len(module_name) > 0:
-            IGNORED_MODULES.append(module_name)
-    app = make_app(get_module_infos())
+def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     app.settings["CONFIG"] = config
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
@@ -248,6 +222,11 @@ if __name__ == "__main__":
     #     .run_until_complete(app.settings["REDIS"].execute_command("LOLWUT"))
     #     .decode("utf-8")
     # )
+
+
+def get_ssl_context(
+    config: configparser.ConfigParser,
+) -> Optional[ssl.SSLContext]:
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(
@@ -255,16 +234,65 @@ if __name__ == "__main__":
             config.get("SSL", "KEYFILE", fallback=None),
             config.get("SSL", "PASSWORD", fallback=None),
         )
-    else:
-        ssl_ctx = None  # type: ignore  # pylint: disable=invalid-name
+        return ssl_ctx
+
+    return None
+
+
+def setup_logger():
+    root_logger = logging.getLogger()
+    root_logger.setLevel(
+        logging.INFO if not sys.flags.dev_mode else logging.DEBUG
+    )
+    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler.setFormatter(
+        LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
+    )
+    root_logger.addHandler(stream_handler)
+
+    if not sys.flags.dev_mode:
+        file_handler = logging.handlers.TimedRotatingFileHandler(
+            "logs/an-website.log", "midnight", backupCount=7, utc=True
+        )
+        file_handler.setFormatter(ecs_logging.StdlibFormatter())
+        root_logger.addHandler(file_handler)
+
+    logging.captureWarnings(True)
+
+
+def main():
+    patches.apply()
+    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+    config = configparser.ConfigParser(interpolation=None)
+    config.read("config.ini")
+
+    setup_logger()
+
+    # read ignored modules from the config
+    for module_name in config.get(
+        "GENERAL", "IGNORED_MODULES", fallback=""
+    ).split(","):
+        module_name = module_name.strip()
+        if len(module_name) > 0:
+            IGNORED_MODULES.append(module_name)
+
+    app = make_app()
+
+    apply_config_to_app(app, config)
+
     app.listen(
         config.getint("TORNADO", "PORT", fallback=8080),
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
         xheaders=config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False),
         decompress_request=True,
-        ssl_options=ssl_ctx,
+        ssl_options=get_ssl_context(config),
     )
+
     try:
         asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
         pass
+
+
+if __name__ == "__main__":
+    main()
