@@ -113,7 +113,7 @@ def get_all_handlers(
             if len(handler) == 2:
                 # if dict as third arg is needed
                 # "title" and "description" have to be specified
-                # other wise the info is taken from the module info
+                # otherwise the info is taken from the module info
                 handler = (
                     handler[0],
                     handler[1],
