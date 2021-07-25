@@ -7,7 +7,7 @@
 <ul>
 {% for info in handler.settings.get("MODULE_INFOS") %}
 {% if not info.path is None and not info.path == "/" %}
-<li>
+<li class="sub-pages-list">
     <a href="{{info.path}}{{url_appendix}}">{{info.name}}</a>:
     {{info.description}}
 </li>
@@ -18,7 +18,7 @@
 
 
 {% block style %}
-p {
-color: pink !important;
+.sub-pages-list {
+    margin-bottom: 3px;
 }
 {% end %}
