@@ -18,19 +18,21 @@ Handler = Union[
     Tuple[str, Any, Dict[str, Any]],
     Tuple[str, Any, Dict[str, Any], str],
 ]
-HandlerList = Tuple[Handler, ...]
+HandlerTuple = Tuple[Handler, ...]
 
 
-@dataclass()
+# sortable so the pages can be linked in a order
+# frozen so it's immutable
+@dataclass(order=True, frozen=True)
 class PageInfo:
     name: str
     description: str
     path: Optional[str] = None
 
 
-@dataclass()
+@dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
-    handlers: HandlerList = field(default_factory=HandlerList)
+    handlers: HandlerTuple = field(default_factory=HandlerTuple)
     sub_pages: Optional[Tuple[PageInfo, ...]] = None
 
 

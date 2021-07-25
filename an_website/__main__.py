@@ -7,7 +7,7 @@ import logging
 import os
 import ssl
 import sys
-from typing import List, Optional
+from typing import Optional
 
 import aioredis  # type: ignore
 import ecs_logging
@@ -19,7 +19,7 @@ from tornado.web import Application
 
 from . import DIR, patches
 from .utils import utils
-from .utils.utils import Handler, ModuleInfo
+from .utils.utils import Handler, HandlerTuple, ModuleInfo
 from .version import version
 
 # list of blocked modules
@@ -31,10 +31,10 @@ logger = logging.getLogger(__name__)
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file
 # files/dirs starting with '_' gets ignored
-def get_module_infos() -> List[ModuleInfo]:
-    module_infos: List[ModuleInfo] = []
-    loaded_modules: List[str] = []
-    errors: List[str] = []
+def get_module_infos() -> tuple[ModuleInfo, ...]:
+    module_infos: list[ModuleInfo] = []
+    loaded_modules: list[str] = []
+    errors: list[str] = []
     for (  # pylint: disable=too-many-nested-blocks
         potential_module
     ) in os.listdir(DIR):
@@ -99,14 +99,16 @@ def get_module_infos() -> List[ModuleInfo]:
         len(IGNORED_MODULES),
         "', '".join(IGNORED_MODULES),
     )
-
-    return module_infos
+    # sort it so the order makes sense.
+    module_infos.sort()
+    # make it immutable so it never changes:
+    return tuple(module_infos)
 
 
 def get_all_handlers(
-    module_infos: List[ModuleInfo],
-) -> List[Handler]:
-    handlers: List[Handler] = []
+    module_infos: tuple[ModuleInfo, ...],
+) -> HandlerTuple:
+    handlers: list[Handler] = []
 
     for module_info in module_infos:
         for handler in module_info.handlers:
@@ -124,11 +126,11 @@ def get_all_handlers(
                 )
             handlers.append(handler)
 
-    return handlers
+    return tuple(handlers)
 
 
 def make_app() -> Application:
-    module_infos: List[ModuleInfo] = get_module_infos()
+    module_infos: tuple[ModuleInfo, ...] = get_module_infos()
     return Application(
         get_all_handlers(module_infos),  # type: ignore
         MODULE_INFOS=module_infos,
@@ -248,6 +250,7 @@ def setup_logger():
     stream_handler.setFormatter(
         LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
     )
+
     root_logger.addHandler(stream_handler)
 
     if not sys.flags.dev_mode:
