@@ -1,7 +1,7 @@
 from __future__ import annotations, barry_as_FLUFL
 
 import re
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from tornado.web import RequestHandler
 
@@ -69,7 +69,7 @@ async def get_value_dict(euro):
 async def arguments_to_value_dict(
     request_handler: RequestHandler,
 ) -> Optional[dict]:
-    arg_list: List[Tuple[int, str, str]] = []
+    arg_list: list[tuple[int, str, str]] = []
 
     for _i, key in enumerate(keys):
         num_str = request_handler.get_query_argument(name=key, default=None)

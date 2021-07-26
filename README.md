@@ -3,7 +3,7 @@
 ## How to run:
 ### Linux (tested with arch):
 You need:
-- python3
+- python3.9
 - packages from requirements.txt
 - supervisord
 

@@ -5,7 +5,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Optional
 
 import orjson
 
@@ -15,11 +15,11 @@ with open(f"{DIR}/info.json", "r") as my_file:
     info = orjson.loads(my_file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
-persons: Dict[str, str] = info["personen"]
+persons: dict[str, str] = info["personen"]
 Person = Enum("Person", {**persons}, module=__name__)  # type: ignore
 
-books: List[str] = []
-chapters: List[str] = []
+books: list[str] = []
+chapters: list[str] = []
 for book in info["bücher"]:
     books.append(book["name"])
 
@@ -141,9 +141,9 @@ def name_to_id(val: str) -> str:
     )
 
 
-ALL_SOUNDS: List[SoundInfo] = []
-MAIN_PAGE_INFO: List[Info] = []
-PERSON_SOUNDS: Dict[str, List[SoundInfo]] = {}
+ALL_SOUNDS: list[SoundInfo] = []
+MAIN_PAGE_INFO: list[Info] = []
+PERSON_SOUNDS: dict[str, list[SoundInfo]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]

@@ -8,16 +8,17 @@ import sys
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado.web import HTTPError, RequestHandler
 
 Handler = Union[
-    Tuple[str, Any],
-    Tuple[str, Any, Dict[str, Any]],
-    Tuple[str, Any, Dict[str, Any], str],
+    tuple[str, Any],
+    tuple[str, Any, dict[str, Any]],
+    tuple[str, Any, dict[str, Any], str],
 ]
+# following should be tuple[Handler, ...] but mypy then complains
 HandlerTuple = Tuple[Handler, ...]
 
 
@@ -33,7 +34,7 @@ class PageInfo:
 @dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
     handlers: HandlerTuple = field(default_factory=HandlerTuple)
-    sub_pages: Optional[Tuple[PageInfo, ...]] = None
+    sub_pages: Optional[tuple[PageInfo, ...]] = None
 
 
 def get_module_info() -> ModuleInfo:

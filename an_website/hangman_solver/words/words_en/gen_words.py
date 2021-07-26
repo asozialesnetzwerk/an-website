@@ -4,7 +4,6 @@
 from __future__ import annotations, barry_as_FLUFL
 
 import json
-from typing import List, Tuple
 
 file = "full_wordlist.txt"
 
@@ -29,8 +28,8 @@ print("Generating letters:")
 
 
 for key, value in letters.items():
-    letters_items: List[Tuple[str, int]] = list(value.items())
-    sorted_letters: List[Tuple[str, int]] = sorted(
+    letters_items: list[tuple[str, int]] = list(value.items())
+    sorted_letters: list[tuple[str, int]] = sorted(
         letters_items, key=lambda item: item[1], reverse=True
     )
     sorted_letters_json = json.dumps(dict(sorted_letters))

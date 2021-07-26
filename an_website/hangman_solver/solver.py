@@ -4,7 +4,6 @@ import os
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
-from typing import Dict, List, Set, Tuple
 
 import orjson
 from tornado.web import HTTPError, RequestHandler
@@ -23,9 +22,9 @@ WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 # example: {"words_en/3": ["you", "she", ...]}
-WORDS: Dict[str, Set[str]] = {}
-LETTERS: Dict[str, Dict[str, int]] = {}
-LANGUAGES: Set[str] = set()
+WORDS: dict[str, set[str]] = {}
+LETTERS: dict[str, dict[str, int]] = {}
+LANGUAGES: set[str] = set()
 
 # load word lists
 BASE_WORDS_DIR = f"{DIR}/words"
@@ -67,9 +66,9 @@ def get_module_info() -> ModuleInfo:
 class Hangman:  # pylint: disable=too-many-instance-attributes
     input: str = ""
     invalid: str = ""
-    words: Set[str] = field(default_factory=set)
+    words: set[str] = field(default_factory=set)
     word_count: int = 0
-    letters: Dict[str, int] = field(default_factory=dict)
+    letters: dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
     max_words: int = 20
     lang: str = "de_only_a-z"
@@ -122,7 +121,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     input_str: str,
     invalid: str,
     crossword_mode: bool,
-) -> Tuple[Set[str], Dict[str, int]]:
+) -> tuple[set[str], dict[str, int]]:
     input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = len(invalid) == 0 and len(input_letters) == 0
 
@@ -132,8 +131,8 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
 
-    current_words: Set[str] = set()
-    letter_list: List[str] = []
+    current_words: set[str] = set()
+    letter_list: list[str] = []
 
     for line in WORDS[file_name]:
         if matches_always or regex.fullmatch(line) is not None:
@@ -151,16 +150,16 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
 
     if crossword_mode:
         n_word_count = -1 * len(current_words)
-        input_chars: List[Tuple[str, int]] = Counter(
+        input_chars: list[tuple[str, int]] = Counter(
             input_letters
         ).most_common(30)
-        update_dict: Dict[str, int] = {}
+        update_dict: dict[str, int] = {}
         for (_k, _v) in input_chars:
             update_dict[_k] = n_word_count * _v
         letters.update(update_dict)
 
     # put letters in sorted dict:
-    sorted_letters: Dict[str, int] = dict(letters.most_common(30))  # 26 + äöüß
+    sorted_letters: dict[str, int] = dict(letters.most_common(30))  # 26 + äöüß
 
     if not crossword_mode:
         # remove letters that are already in input

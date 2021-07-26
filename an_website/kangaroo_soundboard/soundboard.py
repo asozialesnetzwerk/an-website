@@ -1,7 +1,5 @@
 from __future__ import annotations, barry_as_FLUFL
 
-from typing import List
-
 from tornado.web import HTTPError, StaticFileHandler
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo, PageInfo
@@ -90,7 +88,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 query=None,
             )
         if path in ("persons", "personen"):
-            persons_list: List[Info] = []
+            persons_list: list[Info] = []
             for _k, person_sounds in PERSON_SOUNDS.items():
                 persons_list.append(HeaderInfo(Person[_k].value))
                 persons_list += person_sounds
@@ -101,7 +99,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
             )
         if path in ("search", "suche"):
             query = self.get_query_argument("q", "")
-            found: List[Info] = []
+            found: list[Info] = []
             for sound_info in ALL_SOUNDS:
                 if sound_info.contains(query):
                     found.append(sound_info)
