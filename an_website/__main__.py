@@ -56,14 +56,20 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
                     )
                     if "get_module_info" in dir(module):
                         if (
-                            module.get_module_info.__annotations__.get(  # type: ignore
-                                "return", ""
+                            (  # check if the annotations specify the return
+                                # type as Module info
+                                module.get_module_info.__annotations__.get(  # type: ignore
+                                    "return", ""
+                                )
+                                == "ModuleInfo"
                             )
-                            == "ModuleInfo"
+                            # check if returned module_info is type ModuleInfo
+                            and isinstance(
+                                module_info := module.get_module_info(),  # type: ignore
+                                ModuleInfo,
+                            )
                         ):
-                            module_infos.append(
-                                module.get_module_info()  # type: ignore
-                            )
+                            module_infos.append(module_info)
                             loaded_modules.append(module_name)
                         else:
                             errors.append(
