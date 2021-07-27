@@ -1,6 +1,8 @@
 # pylint: disable=subprocess-run-check
 
 
+from __future__ import annotations
+
 import hashlib
 import subprocess
 

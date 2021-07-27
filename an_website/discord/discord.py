@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import orjson
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 

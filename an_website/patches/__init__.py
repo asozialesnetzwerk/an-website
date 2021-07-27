@@ -1,6 +1,8 @@
 # pylint: disable=preferred-module, protected-access, invalid-name
 
 
+from __future__ import annotations
+
 import asyncio
 import configparser
 import json as stdlib_json

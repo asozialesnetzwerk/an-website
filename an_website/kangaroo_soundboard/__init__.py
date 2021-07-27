@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import email.utils
 import os
 import re

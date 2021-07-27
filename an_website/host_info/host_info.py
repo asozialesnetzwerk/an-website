@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR

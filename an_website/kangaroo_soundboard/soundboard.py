@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tornado.web import HTTPError, StaticFileHandler
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo, PageInfo

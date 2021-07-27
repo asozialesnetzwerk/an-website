@@ -2,6 +2,8 @@
 # pylint: disable=invalid-name
 
 
+from __future__ import annotations
+
 import json
 
 file = "full_wordlist.txt"

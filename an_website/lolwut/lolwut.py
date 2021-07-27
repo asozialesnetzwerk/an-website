@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tornado.web import HTTPError
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
