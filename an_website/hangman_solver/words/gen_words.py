@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # pylint: disable=invalid-name
 
-from __future__ import annotations, barry_as_FLUFL
 
 import json
 

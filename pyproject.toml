@@ -8,7 +8,7 @@ profile = "black"
 py_version = "38"
 line_length = 79
 skip_gitignore = true
-add_imports = ["from __future__ import annotations, barry_as_FLUFL"]
+#add_imports = ["from __future__ import annotations, barry_as_FLUFL"]
 
 [tool.mypy]
 show_column_numbers = true

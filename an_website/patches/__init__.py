@@ -1,6 +1,5 @@
 # pylint: disable=preferred-module, protected-access, invalid-name
 
-from __future__ import annotations, barry_as_FLUFL
 
 import asyncio
 import configparser

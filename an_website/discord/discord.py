@@ -1,5 +1,3 @@
-from __future__ import annotations, barry_as_FLUFL
-
 import orjson
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 

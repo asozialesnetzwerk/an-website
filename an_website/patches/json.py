@@ -1,6 +1,5 @@
 # pylint: disable=unused-argument,invalid-name
 
-from __future__ import annotations, barry_as_FLUFL
 
 from json.decoder import JSONDecodeError, JSONDecoder
 from json.encoder import JSONEncoder

@@ -1,5 +1,3 @@
-from __future__ import annotations, barry_as_FLUFL
-
 import re
 from typing import Optional
 

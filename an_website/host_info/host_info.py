@@ -1,5 +1,3 @@
-from __future__ import annotations, barry_as_FLUFL
-
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
