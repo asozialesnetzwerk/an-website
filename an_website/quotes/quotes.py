@@ -41,7 +41,7 @@ class Quote(BaseRequestHandler):
             quote_id=quote_id,
             author_id=author_id,
             id=f"{quote_id}-{author_id}",
-            next_href=f"/zitate/{await self.get_next_id()}"
+            next_href=f"/zitate/{await self.get_next_id()}",
         )
 
     async def get_next_id(self):
