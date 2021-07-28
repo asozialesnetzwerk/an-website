@@ -1,0 +1,272 @@
+body {
+    background-color: #212121;
+    color: white;
+}
+
+.invisible {
+    opacity: 0;
+    display: none;
+}
+
+footer {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+}
+
+footer a {
+    text-decoration: none;
+    color: #CD0000;
+}
+
+.text {
+    font-size: 20px;
+    font-family: "Times New Roman";
+}
+
+.select {
+    margin-top: 15px;
+}
+
+.button-img-no-rotation:hover {
+    transform: scale(1.08);
+    -webkit-filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
+}
+
+.tooltip .tooltip-text {
+    letter-spacing: normal;
+    visibility: hidden;
+    width: auto;
+    background-color: #111;
+    color: #fff;
+    font-size: 17px;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    -webkit-filter: drop-shadow(3px 3px 2px rgba(15, 15, 15, 0.42));
+}
+
+.tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip .tooltip-bottom-text {
+    top: 100%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+.tooltip .tooltip-top-text {
+    bottom: 100%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 0.9;
+}
+
+.tweet-img {
+    transform: rotate(270deg);
+    rotation: 270deg;
+}
+
+.tweet-img:hover {
+    transform: scale(1.08) rotate(270deg);
+    -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
+}
+
+.button-img {
+    width: 69px;
+    height: 69px;
+}
+
+.plus-img:hover {
+    transform: scale(1.08);
+    -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
+}
+
+
+
+
+div.quote-container:before {
+    content:url("/static/ZitateBackground.svg");
+}
+
+.quote-container {
+    background: #000000;
+    width: 30em;
+    height: auto;
+    display: block;
+    margin: 3rem auto;
+    text-align: center;
+    padding: 4rem;
+}
+
+@media (orientation:landscape) {
+    div.quote-container:before {
+        content:url("");
+    }
+
+    .quote-container {
+        background: #000000 url("/static/ZitateBackground.svg") no-repeat right top 5px;
+
+        /*background-position: right 10px top 5px;*/
+        width: 50rem;
+        min-height: 380px;
+        display: block;
+        margin: 1rem auto;
+        text-align: center;
+        padding: 0 2rem 2rem;
+    }
+
+    #quote-important {
+        position: relative; z-index: 1;
+    }
+
+    #top {
+        position: absolute; z-index: -1;
+    }
+
+    .quote-text {
+        width: 32rem;
+    }
+
+    .quote-author {
+        margin-right: 18rem;
+    }
+}
+
+
+.quote-text {
+    font-size: 1.9rem;
+    text-align: left;
+    line-height: 1.8rem;
+}
+
+.quote-author {
+    font-size: 1.4rem;
+    text-align: right;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.buttons {
+    margin: auto;
+    letter-spacing: 1rem;
+    padding: 1rem;
+}
+
+.rating-container {
+    font-size: 1.4rem;
+    text-align: left;
+    align-items: start;
+}
+
+.rating-image {
+    height: 2.2rem;
+}
+
+.nicht-witzig {
+    bottom: 0.008rem;
+}
+
+@media (orientation:landscape) {
+    .buttons {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+
+    .rating-container {
+        position: absolute;
+        bottom: 20px;
+    }
+
+    .quote-rating{
+        right: 1px;
+    }
+
+    .quote-id {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+    }
+}
+
+.buttons a {
+    color: darkred;
+    position: relative;
+    display: inline-block;
+}
+
+.download-img {
+    transform: rotate(90deg);
+    rotation: 90deg;
+}
+
+.download-img:hover {
+    transform: scale(1.08) rotate(90deg);
+    -webkit-filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
+}
+
+.vote-container {
+    margin: 0 auto 40px;
+}
+
+.vote {
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 20px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    background-color: #0e0e0e;
+    color: #fdfdfd;
+    width: 42%;
+    height: 60px;
+}
+
+.already-voted {
+    filter: grayscale(69%);
+}
+
+/*.vote:active {
+    border-width: 1px;
+    border-color: whitesmoke;
+}*/
+
+#upvote {
+    border-color: rgb(0, 200, 0);
+    margin-left: auto;
+}
+
+#upvote:hover {
+    border-color: rgb(20, 255, 20);
+    transform: scale(1.005);
+}
+
+#downvote {
+    border-color: rgb(200, 0, 0);
+    margin-right: auto;
+}
+
+#downvote:hover {
+    border-color: rgb(255, 20, 20);
+    transform: scale(1.005);
+}

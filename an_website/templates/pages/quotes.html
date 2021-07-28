@@ -1,9 +1,66 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    <p>
-        Hallo Welt!
-    </p>
+<div>
+            <div id="quote-important" class="quote-container">
+                <div id="bottom">
+                    <div class="quote-id"></div>
+                    <div class="buttons" data-html2canvas-ignore="true">
+                        <a class="download tooltip">
+                            <img class="download-img button-img" src="/static/arrow.svg" alt="Zitat downloaden.">
+                            <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
+                        </a>
+                        <a class="tweet tooltip" href="">
+                            <img class="tweet-img button-img" src="/static/arrow.svg" alt="Zitat teilen.">
+                            <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
+                        </a>
+                        <a class="get-quote tooltip" href="{{next_href}}">
+                            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/arrow.svg">
+                            <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
+                        </a>
+                    </div>
+                </div>
+                <div id="top">
+                    <div class="quote-text">»{{quote}}«</div>
+                    <div class="quote-author">- {{author}}</div>
+                </div>
+
+                <div class="rating-container">
+                    <div class="quote-rating">
+                        <table>
+                            <tr>
+                                <th><div class="rating-text">{{rating}}</div></th>
+                                {% if int(rating) < 0 %}
+                                    <th>
+                                        <img class="rating-image nicht-witzig" src="/static/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
+                                    </th>
+                                {% else %}
+                                    <th>
+                                        <img class="rating-image witzig" src="/static/StempelWitzig.svg" alt=">Witzig-Stempel"/>
+                                    </th>
+                                {% end %}
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!--TODO: Make this prettier:-->
+            <div class="vote-container">
+                <input id="upvote" class="vote" type="image" src="/static/StempelWitzig.svg" alt="WITZIG!">
+                <input id="downvote" class="vote" type="image" src="/static/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+
+                <a class="tooltip" href="https://asozial.org/zitate/create/">
+                    <img class="button-img plus-img" src="/static/plus.svg" alt="Zitat hinzufügen.">
+                    <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
+                </a>
+
+                <a class="report tooltip" href="mailto:contact@asozial.org">
+                    <img class="get-quote-img button-img button-img-no-rotation" alt="Zitat melden." src="/static/report.svg">
+                    <div class="tooltip-top-text  tooltip-text">Melde das Zitat.</div>
+                </a>
+            </div>
+        </div>
 {% end %}
 
 
