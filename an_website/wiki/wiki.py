@@ -19,4 +19,7 @@ def get_module_info() -> ModuleInfo:
 
 class WikiHandler(BaseRequestHandler):
     async def get(self, path):
-        return self.finish(f"/wiki{path} isn't ready yet.")
+        return self.render(
+            "base.html",
+            content=f"/wiki{path} isn't ready yet."
+        )
