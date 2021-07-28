@@ -64,3 +64,13 @@ a {
     border-style: solid;
     border-color: var(--light-grey) transparent transparent transparent;
 }
+
+#github-footer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: var(--white);
+    background-color: transparent;
+}

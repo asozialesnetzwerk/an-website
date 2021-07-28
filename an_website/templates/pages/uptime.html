@@ -13,16 +13,18 @@
 {% end %}
 
 
-{% block style %}
-#body {
-    font-size: 20px;
-}
+{% block head %}
+<style>
+    #body {
+        font-size: 20px;
+    }
 
-.clock-font {
-    display: inline;
+    .clock-font {
+        display: inline;
 
-{% if not no_3rd_party %}
-    font-family: 'Orbitron', sans-serif;
-{% end %}
-}
+    {% if not no_3rd_party %}
+        font-family: 'Orbitron', sans-serif;
+    {% end %}
+    }
+</style>
 {% end %}

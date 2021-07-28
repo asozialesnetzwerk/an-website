@@ -15,30 +15,32 @@
 
 {% end %}
 
-{% block style %}
-#container {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
-#status {
-    font-size: 100px;
-    color: var(--red);
-}
-#reason {
-    white-space: pre;
-    font-family: monospace;
-    color: var(--light-red);
-}
+{% block head %}
+<style>
+    #container {
+        position: absolute;
+        left: 50%;
+        top: 40%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    #status {
+        font-size: 100px;
+        color: var(--red);
+    }
+    #reason {
+        white-space: pre;
+        font-family: monospace;
+        color: var(--light-red);
+    }
 
-{% if not no_3rd_party %}
-#🐈 {
-    width: 500px;
-    height: 308px;
-    object-fit: cover;
-    object-position: 0 0;
-}
-{% end %}
+    {% if not no_3rd_party %}
+    #🐈 {
+        width: 500px;
+        height: 308px;
+        object-fit: cover;
+        object-position: 0 0;
+    }
+    {% end %}
+</style>
 {% end %}
