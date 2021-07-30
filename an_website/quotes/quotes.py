@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
-
 from dataclasses import dataclass
+
+from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -78,16 +78,10 @@ async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
         quote=Quote(
             id=quote_id,
             quote=f"Quote({quote_id})",
-            author=Author(
-                id=quote_id + 13,
-                name=f"Author({quote_id + 13})"
-            )
+            author=Author(id=quote_id + 13, name=f"Author({quote_id + 13})"),
         ),
-        author=Author(
-            id=author_id,
-            name=f"Author({author_id})"
-        ),
-        rating=quote_id - author_id
+        author=Author(id=author_id, name=f"Author({author_id})"),
+        rating=quote_id - author_id,
     )
 
 
