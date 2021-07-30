@@ -4,7 +4,8 @@
 <div>
             <div id="quote-important" class="quote-container">
                 <div id="bottom">
-                    <div class="quote-id"></div>
+
+                    <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
                     <div class="buttons" data-html2canvas-ignore="true">
                         <a class="download tooltip">
                             <img class="download-img button-img" src="/static/arrow.svg" alt="Zitat downloaden.">
@@ -21,16 +22,16 @@
                     </div>
                 </div>
                 <div id="top">
-                    <div class="quote-text">»{{quote}}«</div>
-                    <div class="quote-author">- {{author}}</div>
+                    <div class="quote-text">»{{wrong_quote.quote}}«</div>
+                    <div class="quote-author">- {{wrong_quote.author}}</div>
                 </div>
 
                 <div class="rating-container">
                     <div class="quote-rating">
                         <table>
                             <tr>
-                                <th><div class="rating-text">{{rating}}</div></th>
-                                {% if int(rating) < 0 %}
+                                <th><div class="rating-text">{{wrong_quote.rating}}</div></th>
+                                {% if int(wrong_quote.rating) < 0 %}
                                     <th>
                                         <img class="rating-image nicht-witzig" src="/static/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
                                     </th>
