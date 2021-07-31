@@ -9,6 +9,7 @@ WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/discord/?", Discord),),
         name="Discord-Einladung",

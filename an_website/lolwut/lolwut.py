@@ -6,6 +6,7 @@ from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/lolwut/?", LOLWUT), (r"/lolwut/([0-9/]+)", LOLWUT)),
         name="LOLWUT",

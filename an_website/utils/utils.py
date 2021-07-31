@@ -1,3 +1,4 @@
+"""The utilities module with many helpful things used by other modules."""
 from __future__ import annotations
 
 import asyncio
@@ -26,6 +27,8 @@ HandlerTuple = Tuple[Handler, ...]
 # frozen so it's immutable
 @dataclass(order=True, frozen=True)
 class PageInfo:
+    """The page info class that is used for the subpages of a module info."""
+
     name: str
     description: str
     path: Optional[str] = None
@@ -33,11 +36,19 @@ class PageInfo:
 
 @dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
+    """
+    The module info class that adds handles and sub pages to the page
+    info.
+
+    This gets created by every module to add the handlers.
+    """
+
     handlers: HandlerTuple = field(default_factory=HandlerTuple)
     sub_pages: Optional[tuple[PageInfo, ...]] = None
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         "Utilitys",
         "Nütliche Werkzeuge für alle möglichen Sachen.",
@@ -46,11 +57,13 @@ def get_module_info() -> ModuleInfo:
 
 
 def length_of_match(_m: re.Match):
+    """Calculate the length of the regex match and return it."""
     span = _m.span()
     return span[1] - span[0]
 
 
 def n_from_set(_set: set, _n: int) -> set:
+    """Get and return _n elements of the set as a new set."""
     i = 0
     new_set = set()
     for _el in _set:
@@ -72,7 +85,13 @@ def strtobool(val):
     raise ValueError("invalid truth value %r" % (val,))
 
 
-async def run(cmd, stdin=asyncio.subprocess.PIPE):
+async def run(
+    cmd, stdin=asyncio.subprocess.PIPE
+) -> tuple[Optional[int], bytes, bytes]:
+    """
+    Run the cmd as a subprocess and return the return code, stdout and
+    stderr in a tuple.
+    """
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdin=stdin,
@@ -81,13 +100,17 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
     )
 
     com = proc.communicate()
+
+    # debugging stuff:
     if "ps -p" not in cmd:
         with open(f"/proc/{proc.pid}/stat") as file:
             print(file.read())
         await (run(f"ps -p {proc.pid} all | grep -E 'PID|{proc.pid}'"))
 
+    # important:
     stdout, stderr = await com
 
+    # debugging stuff:
     if "ps -p" in cmd:
         logger = logging.getLogger(__name__)
         logger.error(
@@ -104,18 +127,26 @@ async def run(cmd, stdin=asyncio.subprocess.PIPE):
 
 
 class BaseRequestHandler(RequestHandler):
+    """The base tornado request handler used by every page."""
+
     RATELIMIT_TOKENS = 1  # can be overridden in subclasses
     title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
 
     def initialize(self, **kwargs):
+        """
+        Get title and description from the kwargs and override the
+        default values if they are present.
+        """
         self.title = kwargs.get("title", self.title)
         self.description = kwargs.get("description", self.description)
 
     def data_received(self, chunk):
+        """Do nothing."""
         pass
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
+        """Check rate limits with redis."""
         if not sys.flags.dev_mode and not self.request.method == "OPTIONS":
             now = datetime.utcnow()
             redis = self.settings.get("REDIS")
@@ -146,6 +177,10 @@ class BaseRequestHandler(RequestHandler):
                     self.write_error(429)
 
     def write_error(self, status_code, **kwargs):
+        """
+        Render the error as a html page with the status code and the
+        reason extracted from the kwargs.
+        """
         self.render(
             "error.html",
             status=status_code,
@@ -153,6 +188,12 @@ class BaseRequestHandler(RequestHandler):
         )
 
     def get_error_message(self, **kwargs):
+        """
+        Get the error message and return it.
+
+        If the server_traceback setting is true (debug mode is activated)
+        the traceback gets returned.
+        """
         if "exc_info" in kwargs and not issubclass(
             kwargs["exc_info"][0], HTTPError
         ):
@@ -162,9 +203,12 @@ class BaseRequestHandler(RequestHandler):
         return self._reason
 
     def get_no_3rd_party(self) -> bool:
+        """Return the no_3rd_party query argument as boolean."""
         return self.get_query_argument_as_bool("no_3rd_party", False)
 
     def get_template_namespace(self):
+        """Add useful things to the template namespace that are needed by
+        most of the pages (like title and description) and return it."""
         namespace = super().get_template_namespace()
         no_3rd_party: bool = self.get_no_3rd_party()
         form_appendix: str = (
@@ -179,7 +223,7 @@ class BaseRequestHandler(RequestHandler):
                 "title": self.title,
                 "description": self.description,
                 "no_3rd_party": no_3rd_party,
-                "lang": "de",
+                "lang": "de",  # can change in future
                 "url_appendix": "?no_3rd_party=sure" if no_3rd_party else "",
                 "form_appendix": form_appendix,
                 # this is not important because we don't need the templates
@@ -191,16 +235,23 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_query_argument_as_bool(self, name: str, default: bool = False):
+        """Get a query argument by name as boolean with out throwing an error
+        and returning the default (by default False) if the argument isn't
+        found or not a boolean value specified by the strtobool function."""
+        if name not in self.request.query_arguments:
+            return default
         try:
-            return strtobool(
-                str(self.get_query_argument(name, default=str(default)))
-            )
+            return strtobool(str(self.get_query_argument(name)))
         except ValueError:
             return default
 
 
 class APIRequestHandler(BaseRequestHandler):
+    """The base api request handler that overrides
+    the write error method to return errors as json."""
+
     def write_error(self, status_code, **kwargs):
+        """Finish with the status code and the reason as dict"""
         self.finish(
             {
                 "status": status_code,
@@ -210,16 +261,25 @@ class APIRequestHandler(BaseRequestHandler):
 
 
 class NotFound(BaseRequestHandler):
+    """
+    The default request handler that is used to return 404 if the page
+    isn't found.'
+    """
+
     RATELIMIT_TOKENS = 0
 
     async def prepare(self):
+        """Throw a 404 http error."""
         raise HTTPError(404)
 
 
 class ZeroDivision(BaseRequestHandler):
+    """A fun request handler that throws an error."""
+
     RATELIMIT_TOKENS = 10
 
     async def prepare(self):
+        """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
             await super().prepare()
-            self.finish(str(0 / 0))
+            await self.finish(str(0 / 0))

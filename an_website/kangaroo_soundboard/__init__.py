@@ -1,3 +1,4 @@
+"""Create the required stuff for the soundboard from the info in info.json."""
 from __future__ import annotations
 
 import email.utils
@@ -36,17 +37,28 @@ del books, chapters, persons
 
 @dataclass
 class Info:
+    """Info class that is used as a base for HeaderInfo and SoundInfo."""
+
     text: str
 
     def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
+        """Return the text of the info."""
         return self.text
 
 
 @dataclass
 class HeaderInfo(Info):
+    """A header with a tag and href to itself."""
+
     tag: str = "h1"
 
     def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
+        """
+        Return a html element with the tag and the content of the HeaderInfo.
+
+        The html element gets a id and a href with a # to
+        itself based on the text content.
+        """
         _id = name_to_id(self.text)
         return (
             f"<{self.tag} id='{_id}'>"
@@ -58,14 +70,18 @@ class HeaderInfo(Info):
 
 @dataclass
 class SoundInfo(Info):
+    """The information about a sound."""
+
     book: Book
     chapter: Chapter
     person: Person
 
     def get_text(self) -> str:
+        """Parse the text to only return the quote."""
         return self.text.split("-", 1)[1]
 
     def get_file_name(self) -> str:
+        """Parse the text to return the name of the file."""
         return re.sub(
             r"[^a-z0-9_-]+",
             "",
@@ -73,6 +89,7 @@ class SoundInfo(Info):
         )
 
     def contains(self, _str: str) -> bool:
+        """Check whether this sound info contains a given string."""
         content = " ".join(
             [self.book.name, self.chapter.name, self.person.value, self.text]
         )
@@ -85,6 +102,7 @@ class SoundInfo(Info):
         return True
 
     def to_html(self, url_app: str) -> str:
+        """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
         return (
             f"<li><a href='/kaenguru-soundboard/{self.person.name}{url_app}' "
@@ -96,6 +114,7 @@ class SoundInfo(Info):
         )
 
     def to_rss(self, url: Optional[str]) -> str:
+        """Parse the info to a rss item."""
         file_name = self.get_file_name()
         path = f"/files/{file_name}.mp3"
         file_size = os.path.getsize(DIR + path)
@@ -124,6 +143,7 @@ class SoundInfo(Info):
 
 
 def replace_umlauts(text: str) -> str:
+    """Make a string lower case and replace ä,ö,ü,ß."""
     return (
         text.lower()
         .replace("ä", "ae")
@@ -134,6 +154,7 @@ def replace_umlauts(text: str) -> str:
 
 
 def name_to_id(val: str) -> str:
+    """Replace umlauts and whitespaces in a string so it is a valid html id."""
     return re.sub(
         r"-+",
         "-",

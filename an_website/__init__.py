@@ -1,3 +1,4 @@
+"""Website for the AN."""
 from __future__ import annotations
 
 import os

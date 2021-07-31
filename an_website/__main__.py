@@ -1,3 +1,4 @@
+"""Website of the AN. Loads config and modules and starts tornado."""
 from __future__ import annotations
 
 import asyncio
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 # this calls the get_module_info function in every file
 # files/dirs starting with '_' gets ignored
 def get_module_infos() -> tuple[ModuleInfo, ...]:
+    """Import the modules and return the loaded module infos in a tuple."""
     module_infos: list[ModuleInfo] = []
     loaded_modules: list[str] = []
     errors: list[str] = []
@@ -114,6 +116,12 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
 def get_all_handlers(
     module_infos: tuple[ModuleInfo, ...],
 ) -> HandlerTuple:
+    """
+    Parse the module information and return the handlers in a tuple.
+
+    If a handler has only 2 elements a dict with title and description gets
+    added. This information is gotten from the module info.
+    """
     handlers: list[Handler] = []
 
     for module_info in module_infos:
@@ -136,6 +144,7 @@ def get_all_handlers(
 
 
 def make_app() -> Application:
+    """Create the tornado application and return it."""
     module_infos: tuple[ModuleInfo, ...] = get_module_infos()
     return Application(
         get_all_handlers(module_infos),  # type: ignore
@@ -154,6 +163,7 @@ def make_app() -> Application:
 
 
 def apply_config_to_app(app: Application, config: configparser.ConfigParser):
+    """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),

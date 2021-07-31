@@ -10,6 +10,7 @@ START_TIME = time.time()
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/uptime/?", UptimeHandler),),
         name="Betriebszeit",

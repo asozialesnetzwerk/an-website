@@ -6,6 +6,7 @@ from ..utils.utils import BaseRequestHandler, ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
             (r"/zitate/?", QuoteMainPage),
@@ -26,7 +27,8 @@ class QuotesObjBase:
         return str(self.id)
 
     def __str__(self):
-        return f"Obj({self.id})"
+        """Return a basic string with the id."""
+        return f"QuotesObj({self.id})"
 
 
 @dataclass
@@ -34,6 +36,7 @@ class Author(QuotesObjBase):
     name: str
 
     def __str__(self):
+        """Return the name of the author."""
         return self.name
 
 
@@ -43,6 +46,7 @@ class Quote(QuotesObjBase):
     author: Author
 
     def __str__(self):
+        """Return the the content of the quote."""
         return self.quote
 
 
@@ -56,6 +60,11 @@ class WrongQuote(QuotesObjBase):
         return f"{self.quote.id}-{self.author.id}"
 
     def __str__(self):
+        r"""
+        Return the wrong quote.
+
+        like: '»quote«\n - author'.
+        """
         return f"»{self.quote}«\n - {self.author}"
 
 

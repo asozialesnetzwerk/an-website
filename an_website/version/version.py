@@ -1,3 +1,4 @@
+"""The /version page of the website."""
 # pylint: disable=subprocess-run-check
 
 
@@ -30,6 +31,7 @@ GH_PAGES_COMMIT_HASH = subprocess.run(
 
 
 def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/version/?", Version),),
         name="Versions-Informationen",
@@ -39,7 +41,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class Version(BaseRequestHandler):
+    """The tornado request handler for the version page."""
+
     async def get(self):
+        """Handle the get request to the version page."""
         await self.render(
             "pages/version.html",
             version=VERSION,
