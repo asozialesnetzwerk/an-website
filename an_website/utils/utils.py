@@ -285,8 +285,20 @@ class ErrorPage(BaseRequestHandler):
     async def get(self, code: str):
         """Raise the error_code."""
         status_code: int = int(code)
-        self.set_status(status_code)
-        self.write_error(status_code)
+
+        # get the reason
+        reason: str = httputil.responses.get(status_code, "")
+
+        # set the status code if tornado doesn't throw an error if it is set
+        if status_code not in (204, 304) and not (100 <= status_code < 200):
+            # set the status code
+            self.set_status(status_code)
+
+        return await self.render(
+            "error.html",
+            status=status_code,
+            reason=reason,
+        )
 
 
 class ZeroDivision(BaseRequestHandler):
