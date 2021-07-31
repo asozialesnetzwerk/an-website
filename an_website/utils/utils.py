@@ -12,6 +12,7 @@ from datetime import datetime
 from typing import Any, Optional, Tuple, Union
 
 from ansi2html import Ansi2HTMLConverter  # type: ignore
+from tornado import httputil
 from tornado.web import HTTPError, RequestHandler
 
 Handler = Union[
@@ -52,7 +53,10 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         "Utilitys",
         "Nütliche Werkzeuge für alle möglichen Sachen.",
-        handlers=((r"/error/?", ZeroDivision),),
+        handlers=(
+            (r"/error/?", ZeroDivision, {}),
+            (r"/([1-5][0-9]{2}).html", ErrorPage, {})
+        ),
     )
 
 
@@ -263,7 +267,7 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFound(BaseRequestHandler):
     """
     The default request handler that is used to return 404 if the page
-    isn't found.'
+    isn't found.
     """
 
     RATELIMIT_TOKENS = 0
@@ -271,6 +275,18 @@ class NotFound(BaseRequestHandler):
     async def prepare(self):
         """Throw a 404 http error."""
         raise HTTPError(404)
+
+
+class ErrorPage(BaseRequestHandler):
+    """A request handler that throws an error."""
+
+    RATELIMIT_TOKENS = 0
+
+    async def get(self, code: str):
+        """Raise the error_code."""
+        status_code: int = int(code)
+        self.set_status(status_code)
+        self.write_error(status_code)
 
 
 class ZeroDivision(BaseRequestHandler):
