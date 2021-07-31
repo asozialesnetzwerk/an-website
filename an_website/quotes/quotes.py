@@ -20,7 +20,7 @@ def get_module_info() -> ModuleInfo:
 
 @dataclass
 class QuotesObjBase:
-    id: int
+    id: int  # pylint: disable=invalid-name
 
     def get_id_as_str(self):
         return str(self.id)
