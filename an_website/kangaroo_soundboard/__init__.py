@@ -40,13 +40,10 @@ def mark_query(text: str, query: Optional[str]) -> str:
     if query is None or query == "":
         return text
 
-    query = (
-        query.lower()
-        .replace("ä", "(ä|ae)")
-        .replace("ö", "(ö|oe)")
-        .replace("ü", "(ü|ue)")
-        .replace("ß", "(ß|ss)")
-    )
+    query = re.sub("(ä|ae)", "(ä|ae)", query.lower())
+    query = re.sub("(ö|oe)", "(ö|oe)", query)
+    query = re.sub("(ü|ue)", "(ü|ue)", query)
+    query = re.sub("(ü|ue)", "(ü|ue)", query)
 
     for word in query.split(" "):
         text = re.sub(
