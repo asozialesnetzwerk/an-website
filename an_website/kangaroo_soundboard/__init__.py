@@ -118,9 +118,7 @@ class SoundInfo(Info):
 
     def contains(self, _str: str) -> bool:
         """Check whether this sound info contains a given string."""
-        content = " ".join(
-            [self.chapter.name, self.person.value, self.text]
-        )
+        content = " ".join([self.chapter.name, self.person.value, self.text])
         content = replace_umlauts(content)
 
         for word in replace_umlauts(_str).split(" "):
