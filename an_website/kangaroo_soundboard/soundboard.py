@@ -1,4 +1,7 @@
+"""Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
+
+from typing import Optional
 
 from tornado.web import HTTPError, StaticFileHandler
 
@@ -11,6 +14,7 @@ from . import (
     HeaderInfo,
     Info,
     Person,
+    SoundInfo,
 )
 
 
@@ -61,7 +65,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class SoundboardRssHandler(BaseRequestHandler):
+    """The tornado handler that handles requests to the rss feeds."""
+
     async def get(self, path, _end=None):  # pylint: disable=unused-argument
+        """Handle the get request and generate the feed content."""
         self.set_header("Content-Type", "application/xml")
         if path is not None:
             path = path.lower()
@@ -75,47 +82,80 @@ class SoundboardRssHandler(BaseRequestHandler):
                 "rss/soundboard.xml", sound_info_list=PERSON_SOUNDS[path]
             )
 
-        raise HTTPError(404, reason="Feed not found")
+        raise HTTPError(404, reason="Feed not found.")
+
+
+async def handle_search(query) -> list[Info]:
+    """Get a info list based on the query and return it."""
+    found: list[Info] = []
+    for info in MAIN_PAGE_INFO:
+        if isinstance(info, SoundInfo):
+            if info.contains(query):
+                found.append(info)
+        elif isinstance(info, HeaderInfo):
+            tag = info.tag
+            while (
+                len(found) > 0
+                and isinstance(last := found[-1], HeaderInfo)
+                and (
+                    tag == "h1"  # if it gets to h3 this doesn't work as
+                    # then this should also be done for h2 when the ones
+                    # before are h3
+                    or last.tag == tag  # type: ignore
+                )
+            ):
+                del found[-1]
+            found.append(info)
+
+    while (
+            len(found) > 0
+            and isinstance(found[-1], HeaderInfo)
+    ):
+        del found[-1]
+
+    return found
 
 
 class SoundboardHtmlHandler(BaseRequestHandler):
+    """The tornado handler that handles requests to the html pages."""
+
     async def get(self, path, _end=None):  # pylint: disable=unused-argument
+        """Handle the get request and generate the page content."""
         if path is not None:
             path = path.lower()
+
+        parsed_info = await self.parse_path(path)
+        if parsed_info is None:
+            raise HTTPError(404, reason="Page not found")
+
+        return self.render(
+            "pages/soundboard.html",
+            sound_info_list=parsed_info[0],
+            query=parsed_info[1],
+        )
+
+    async def parse_path(
+        self, path
+    ) -> Optional[tuple[list[Info], Optional[str]]]:
+        """Get a info list based on the path and return it with the query."""
+
         if path in (None, "", "index", "/"):
-            return self.render(
-                "pages/soundboard.html",
-                sound_info_list=MAIN_PAGE_INFO,
-                query=None,
-            )
+            return MAIN_PAGE_INFO, None
+
         if path in ("persons", "personen"):
             persons_list: list[Info] = []
             for _k, person_sounds in PERSON_SOUNDS.items():
                 persons_list.append(HeaderInfo(Person[_k].value))
                 persons_list += person_sounds
-            return self.render(
-                "pages/soundboard.html",
-                sound_info_list=persons_list,
-                query=None,
-            )
+            return persons_list, None
+
         if path in ("search", "suche"):
             query = self.get_query_argument("q", "")
-            found: list[Info] = []
-            for sound_info in ALL_SOUNDS:
-                if sound_info.contains(query):
-                    found.append(sound_info)
+            if query == "":
+                return MAIN_PAGE_INFO, query
 
-            return self.render(
-                "pages/soundboard.html", sound_info_list=found, query=query
-            )
+            return await handle_search(query), query
 
         if path in PERSON_SOUNDS:
-            return self.render(
-                "pages/soundboard.html",
-                sound_info_list=(
-                    [HeaderInfo(Person[path].value)] + PERSON_SOUNDS[path]
-                ),
-                query=None,
-            )
-
-        raise HTTPError(404, reason="Page not found")
+            header_info: list[Info] = [HeaderInfo(Person[path].value)]
+            return header_info + PERSON_SOUNDS[path], None
