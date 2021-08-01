@@ -142,7 +142,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
         if path in ("persons", "personen"):
             persons_list: list[Info] = []
             for _k, person_sounds in PERSON_SOUNDS.items():
-                persons_list.append(HeaderInfo(Person[_k].value))
+                persons_list.append(HeaderInfo(Person[_k].value, type=Person))
                 persons_list += person_sounds
             return persons_list, None
 
@@ -154,5 +154,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
             return await handle_search(query), query
 
         if path in PERSON_SOUNDS:
-            header_info: list[Info] = [HeaderInfo(Person[path].value)]
+            header_info: list[Info] = [
+                HeaderInfo(Person[path].value, type=Person)
+            ]
             return header_info + PERSON_SOUNDS[path], None

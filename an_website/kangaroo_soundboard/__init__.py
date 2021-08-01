@@ -74,6 +74,7 @@ class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
+    type: Enum = Book
 
     def to_html(
         self, url_app: str, query: Optional[str]
@@ -87,9 +88,14 @@ class HeaderInfo(Info):
         _id = name_to_id(self.text)
         return (
             f"<{self.tag} id='{_id}'>"
-            f"<a href='#{_id}' class='{self.tag}-a'>"
-            f"🔗 {mark_query(self.text, query)}</a>"
-            f"</{self.tag}>"
+            f"<a href='#{_id}' class='{self.tag}-a'>🔗 "
+            + (
+                self.text  # no need to mark query if type
+                # is  book as the book title is excluded from the search
+                if self.type == Book
+                else mark_query(self.text, query)
+            )
+            + "</a></{self.tag}>"
         )
 
 
@@ -192,11 +198,11 @@ PERSON_SOUNDS: dict[str, list[SoundInfo]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]
-    MAIN_PAGE_INFO.append(HeaderInfo(book.name, "h1"))
+    MAIN_PAGE_INFO.append(HeaderInfo(book.name, "h1", Book))
 
     for chapter_info in book_info["kapitel"]:
         chapter = Chapter[chapter_info["name"]]
-        MAIN_PAGE_INFO.append(HeaderInfo(chapter.name, "h2"))
+        MAIN_PAGE_INFO.append(HeaderInfo(chapter.name, "h2", Chapter))
 
         for file_text in chapter_info["dateien"]:
             person_short = file_text.split("-")[0]
