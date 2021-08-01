@@ -5,3 +5,8 @@
 input {
     margin-bottom: 5px;
 }
+
+.marked {
+    display: inline !important;
+    color: var(--light-blue);
+}

@@ -35,15 +35,41 @@ Chapter = Enum("Chapter", [*chapters], module=__name__)  # type: ignore
 del books, chapters, persons
 
 
+def mark_query(text: str, query: Optional[str]) -> str:
+    """Replace the instances of the query with itself in a div."""
+    if query is None or query == "":
+        return text
+
+    query = (
+        query.lower()
+        .replace("ä", "(ä|ae)")
+        .replace("ö", "(ö|oe)")
+        .replace("ü", "(ü|ue)")
+        .replace("ß", "(ß|ss)")
+    )
+
+    for word in query.split(" "):
+        text = re.sub(
+            word,
+            lambda match: f'<div class="marked">{match.group()}</div>',
+            text,
+            flags=re.RegexFlag.IGNORECASE,
+        )
+
+    return text
+
+
 @dataclass
 class Info:
     """Info class that is used as a base for HeaderInfo and SoundInfo."""
 
     text: str
 
-    def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
-        """Return the text of the info."""
-        return self.text
+    def to_html(
+        self, url_app: str, query: Optional[str]
+    ) -> str:  # pylint: disable=unused-argument
+        """Return the text of the info and mark the query."""
+        return mark_query(self.text, query)
 
 
 @dataclass
@@ -52,7 +78,9 @@ class HeaderInfo(Info):
 
     tag: str = "h1"
 
-    def to_html(self, url_app: str) -> str:  # pylint: disable=unused-argument
+    def to_html(
+        self, url_app: str, query: Optional[str]
+    ) -> str:  # pylint: disable=unused-argument
         """
         Return a html element with the tag and the content of the HeaderInfo.
 
@@ -63,7 +91,7 @@ class HeaderInfo(Info):
         return (
             f"<{self.tag} id='{_id}'>"
             f"<a href='#{_id}' class='{self.tag}-a'>"
-            f"🔗 {self.text}</a>"
+            f"🔗 {mark_query(self.text, query)}</a>"
             f"</{self.tag}>"
         )
 
@@ -101,14 +129,15 @@ class SoundInfo(Info):
 
         return True
 
-    def to_html(self, url_app: str) -> str:
+    def to_html(self, url_app: str, query: Optional[str]) -> str:
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
         return (
             f"<li><a href='/kaenguru-soundboard/{self.person.name}{url_app}' "
-            f"class='a_hover'>{self.person.value}</a>"
+            f"class='a_hover'>{mark_query(self.person.value, query)}</a>"
             f": »<a href='/kaenguru-soundboard/files/{file}.mp3' "
-            f"class='quote-a'>{self.get_text()}</a>«<br><audio controls>"
+            f"class='quote-a'>{mark_query(self.get_text(), query)}</a>"
+            f"«<br><audio controls>"
             f"<source src='/kaenguru-soundboard/files/{file}.mp3' "
             f"type='audio/mpeg'></source></audio></li>"
         )

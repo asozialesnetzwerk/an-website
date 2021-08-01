@@ -107,10 +107,7 @@ async def handle_search(query) -> list[Info]:
                 del found[-1]
             found.append(info)
 
-    while (
-            len(found) > 0
-            and isinstance(found[-1], HeaderInfo)
-    ):
+    while len(found) > 0 and isinstance(found[-1], HeaderInfo):
         del found[-1]
 
     return found
