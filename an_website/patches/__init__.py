@@ -1,6 +1,5 @@
 # pylint: disable=preferred-module, protected-access, invalid-name
-
-
+"""Patches that break everything."""
 from __future__ import annotations
 
 import asyncio
@@ -28,6 +27,7 @@ DIR = os.path.dirname(__file__)
 
 
 def apply():
+    """Apply the patches."""
     patch_json()
     defusedxml.defuse_stdlib()
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
@@ -46,6 +46,7 @@ def apply():
 
 
 def patch_json():
+    """Patch json."""
     logger = logging.getLogger(json.__name__)
 
     def dump(obj, fp, **kwargs):

@@ -1,5 +1,5 @@
-# pylint: disable=unused-argument,invalid-name
-
+# pylint: disable=unused-argument,invalid-name,missing-function-docstring
+"""Patches for json stuff that break everything."""
 
 from __future__ import annotations
 
