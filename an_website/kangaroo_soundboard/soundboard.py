@@ -1,7 +1,7 @@
 """Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Iterable, Callable
 
 from tornado.web import HTTPError, StaticFileHandler
 
@@ -10,11 +10,12 @@ from . import (
     ALL_SOUNDS,
     DIR,
     MAIN_PAGE_INFO,
-    PERSON_SOUNDS,
+    PERSON_SHORTS,
     HeaderInfo,
     Info,
     Person,
     SoundInfo,
+    PERSON_SOUNDS,
 )
 
 
@@ -40,8 +41,7 @@ def get_module_info() -> ModuleInfo:
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard/([^./]+)"
-                r"(\.html|\.htm|/|/index.html|/index.htm)?",
+                r"/kaenguru-soundboard/([^./]+)(\.html?|/|/index.html?)?",
                 SoundboardHtmlHandler,
             ),
             (
@@ -85,12 +85,15 @@ class SoundboardRssHandler(BaseRequestHandler):
         raise HTTPError(404, reason="Feed not found.")
 
 
-async def handle_search(query) -> list[Info]:
-    """Get a info list based on the query and return it."""
+async def search_main_page_info(
+    check_func: Callable[[SoundInfo], bool],
+    info_list: Iterable[Info] = MAIN_PAGE_INFO,
+) -> list[Info]:
+    """Get a info list based on the query and the check_func and return it."""
     found: list[Info] = []
-    for info in MAIN_PAGE_INFO:
+    for info in info_list:
         if isinstance(info, SoundInfo):
-            if info.contains(query):
+            if check_func(info):
                 found.append(info)
         elif isinstance(info, HeaderInfo):
             tag = info.tag
@@ -133,7 +136,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
 
     async def parse_path(
         self, path
-    ) -> Optional[tuple[list[Info], Optional[str]]]:
+    ) -> Optional[tuple[Iterable[Info], Optional[str]]]:
         """Get a info list based on the path and return it with the query."""
 
         if path in (None, "", "index", "/"):
@@ -151,10 +154,16 @@ class SoundboardHtmlHandler(BaseRequestHandler):
             if query == "":
                 return MAIN_PAGE_INFO, query
 
-            return await handle_search(query), query
+            return (
+                await search_main_page_info(lambda info: info.contains(query)),
+                query,
+            )
 
-        if path in PERSON_SOUNDS:
-            header_info: list[Info] = [
-                HeaderInfo(Person[path].value, type=Person)
-            ]
-            return header_info + PERSON_SOUNDS[path], None
+        if path in PERSON_SHORTS:
+            person = Person[path]
+            return (
+                await search_main_page_info(
+                    lambda info: info.person == person
+                ),
+                None,
+            )

@@ -16,8 +16,10 @@ with open(f"{DIR}/info.json", "r") as my_file:
     info = orjson.loads(my_file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
-persons: dict[str, str] = info["personen"]
-Person = Enum("Person", {**persons}, module=__name__)  # type: ignore
+person_dict: dict[str, str] = info["personen"]
+Person = Enum("Person", {**person_dict}, module=__name__)  # type: ignore
+
+PERSON_SHORTS: tuple[str] = tuple(person_dict.keys())
 
 books: list[str] = []
 chapters: list[str] = []
@@ -32,7 +34,7 @@ Book = Enum("Book", [*books], module=__name__)  # type: ignore
 Chapter = Enum("Chapter", [*chapters], module=__name__)  # type: ignore
 
 
-del books, chapters, persons
+del books, chapters, person_dict
 
 
 def mark_query(text: str, query: Optional[str]) -> str:
@@ -192,23 +194,29 @@ def name_to_id(val: str) -> str:
     )
 
 
-ALL_SOUNDS: list[SoundInfo] = []
-MAIN_PAGE_INFO: list[Info] = []
+all_sounds: list[SoundInfo] = []
+main_page_info: list[Info] = []
 PERSON_SOUNDS: dict[str, list[SoundInfo]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]
-    MAIN_PAGE_INFO.append(HeaderInfo(book.name, "h1", Book))
+    main_page_info.append(HeaderInfo(book.name, "h1", Book))
 
     for chapter_info in book_info["kapitel"]:
         chapter = Chapter[chapter_info["name"]]
-        MAIN_PAGE_INFO.append(HeaderInfo(chapter.name, "h2", Chapter))
+        main_page_info.append(HeaderInfo(chapter.name, "h2", Chapter))
 
         for file_text in chapter_info["dateien"]:
             person_short = file_text.split("-")[0]
             person = Person[person_short]
 
             sound_info = SoundInfo(file_text, book, chapter, person)
-            ALL_SOUNDS.append(sound_info)
-            MAIN_PAGE_INFO.append(sound_info)
+            all_sounds.append(sound_info)
+            main_page_info.append(sound_info)
             PERSON_SOUNDS.setdefault(person_short, []).append(sound_info)
+
+# convert to tuple for immutability
+ALL_SOUNDS: tuple[SoundInfo] = tuple(all_sounds)
+MAIN_PAGE_INFO: tuple[Info] = tuple(main_page_info)
+
+del all_sounds, main_page_info
