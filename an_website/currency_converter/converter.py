@@ -1,7 +1,8 @@
+"""The currency converter page that converts german currencies."""
 from __future__ import annotations
 
 import re
-from typing import Optional
+from typing import Optional, Union
 
 from tornado.web import RequestHandler
 
@@ -26,6 +27,7 @@ def get_module_info() -> ModuleInfo:
 
 
 async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
+    """Convert a string to a number and divide it by divide_by."""
     if string is None or len(string) == 0:
         return None
 
@@ -40,10 +42,16 @@ async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
 
 
 async def num_to_string(num: float) -> str:
+    """
+    Convert a float to the german representation of a number.
+
+    The number has 2 or 0 digits after the comma.
+    """
     return f"{num:.2f}".replace(".", ",").replace(",00", "")
 
 
 async def conversion_string(value_dict: dict) -> str:
+    """Generate a text that complains how expensive everything is."""
     return (
         f"{value_dict.get('euro_str')} Euro, "
         f"das sind ja {value_dict.get('mark_str')} Mark; "
@@ -52,11 +60,22 @@ async def conversion_string(value_dict: dict) -> str:
     )
 
 
-async def get_value_dict(euro):
-    # TypedDict('value_dict', {"euro": float, "mark": float, "ost": float, "schwarz": float,  # noqa
-    # "euro_str": str, "mark_str": str, "ost_str": str, "schwarz_str": str, "text": str})  # noqa
-    value_dict = {}
+# class ValueDict(TypedDict):
+#     euro: float
+#     mark: float
+#     ost: float
+#     schwarz: float
+#     euro_str: str
+#     mark_str: str
+#     ost_str: str
+#     schwarz_str: str
+#     text: str
+ValueDict = dict[str, Union[str, float, bool]]
 
+
+async def get_value_dict(euro: float) -> ValueDict:
+    """Create the value dict base on the euro."""
+    value_dict: dict[str, Union[str, float]] = {}
     for _i, key in enumerate(keys):
         val = multipliers[_i] * euro
         value_dict[key] = val
@@ -69,7 +88,12 @@ async def get_value_dict(euro):
 
 async def arguments_to_value_dict(
     request_handler: RequestHandler,
-) -> Optional[dict]:
+) -> Optional[ValueDict]:
+    """
+    Parse the arguments to get the value dict and return it.
+
+    Return None if no argument is given.
+    """
     arg_list: list[tuple[int, str, str]] = []
 
     for _i, key in enumerate(keys):
@@ -85,7 +109,7 @@ async def arguments_to_value_dict(
         euro = await string_to_num(num_str, multipliers[_i])
 
         if euro is not None:
-            value_dict = await get_value_dict(euro)
+            value_dict: ValueDict = await get_value_dict(euro)
 
             if too_many_params:
                 value_dict["too_many_params"] = True
@@ -97,7 +121,10 @@ async def arguments_to_value_dict(
 
 
 class CurrencyConverter(BaseRequestHandler):
+    """Request handler for the currency converter page."""
+
     async def get(self, *args):  # pylint: disable=unused-argument
+        """Handle the get request and display the page."""
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(0)
@@ -120,7 +147,14 @@ class CurrencyConverter(BaseRequestHandler):
 
 
 class CurrencyConverterAPI(APIRequestHandler):
+    """Request handler for the currency converter json api."""
+
     async def get(self, *args):  # pylint: disable=unused-argument
+        """
+        Handle the get request and return the value dict as json.
+
+        If no arguments are given the potential arguments are displayed.
+        """
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             self.write("Arguments: " + str(keys))
