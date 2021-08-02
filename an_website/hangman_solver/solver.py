@@ -67,6 +67,7 @@ def get_module_info() -> ModuleInfo:
 @dataclass()
 class Hangman:  # pylint: disable=too-many-instance-attributes
     """Hangman object that holds all the important information."""
+
     input: str = ""
     invalid: str = ""
     words: set[str] = field(default_factory=set)
@@ -265,6 +266,7 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
 
 class HangmanSolver(BaseRequestHandler):
     """Request handler for the hangman solver page."""
+
     RATELIMIT_TOKENS = 3
 
     async def get(self, *args):  # pylint: disable=unused-argument
@@ -275,6 +277,7 @@ class HangmanSolver(BaseRequestHandler):
 
 class HangmanSolverAPI(APIRequestHandler):
     """Request handler for the hangman solver json api."""
+
     RATELIMIT_TOKENS = 3
 
     async def get(self, *args):  # pylint: disable=unused-argument
