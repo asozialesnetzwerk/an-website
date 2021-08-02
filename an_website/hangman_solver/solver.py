@@ -1,3 +1,4 @@
+"""The pages that helps solving hangman puzzles."""
 from __future__ import annotations
 
 import os
@@ -65,6 +66,7 @@ def get_module_info() -> ModuleInfo:
 
 @dataclass()
 class Hangman:  # pylint: disable=too-many-instance-attributes
+    """Hangman object that holds all the important information."""
     input: str = ""
     invalid: str = ""
     words: set[str] = field(default_factory=set)
@@ -75,13 +77,15 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
     lang: str = "de_only_a-z"
 
 
-def fix_input_str(_input):
+def fix_input_str(_input: str) -> str:
+    """Make the input lower case, strips it and replace wildcards with _."""
     return WILDCARDS_REGEX.sub(
         lambda m: "_" * length_of_match(m), _input.lower().strip()
     )[:100]
 
 
-def fix_invalid(invalid):
+def fix_invalid(invalid: str) -> str:
+    """Replace chars that aren't word chars and remove duplicate chars."""
     return NOT_WORD_CHAR.sub(
         "", "".join(set(invalid.lower()))
     )  # replace stuff that could be bad
@@ -90,6 +94,7 @@ def fix_invalid(invalid):
 async def generate_pattern_str(
     input_str: str, invalid: str, crossword_mode: bool
 ) -> str:
+    """Generate a pattern string that matches a word."""
     input_str = input_str.lower()
 
     # in crossword_mode it doesn't matter
@@ -123,6 +128,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     invalid: str,
     crossword_mode: bool,
 ) -> tuple[set[str], dict[str, int]]:
+    """Generate a word set and a letters dict and return them in a tuple."""
     input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = len(invalid) == 0 and len(input_letters) == 0
 
@@ -178,6 +184,7 @@ async def solve_hangman(
     max_words: int,
     crossword_mode: bool,
 ) -> Hangman:
+    """Generate a hangman object based on the input and return it."""
     if language not in LANGUAGES:
         raise HTTPError(400, reason=f"'{language}' is an invalid language")
 
@@ -219,6 +226,7 @@ async def solve_hangman(
 
 
 async def handle_request(request_handler: RequestHandler) -> Hangman:
+    """Get the info from the request handler and return the Hangman object."""
     max_words = max(
         0,
         min(
@@ -256,18 +264,23 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
 
 
 class HangmanSolver(BaseRequestHandler):
+    """Request handler for the hangman solver page."""
     RATELIMIT_TOKENS = 3
 
     async def get(self, *args):  # pylint: disable=unused-argument
+        """Handle the get request and render the page."""
         hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler):
+    """Request handler for the hangman solver json api."""
     RATELIMIT_TOKENS = 3
 
     async def get(self, *args):  # pylint: disable=unused-argument
+        """Handle the get request and write the Hangman object as json."""
         hangman = await handle_request(self)
         hangman_dict = asdict(hangman)
+        # convert set to list, because the set can't be converted to json.
         hangman_dict["words"] = list(hangman_dict["words"])
-        self.write(hangman_dict)
+        await self.finish(hangman_dict)
