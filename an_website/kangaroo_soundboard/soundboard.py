@@ -51,12 +51,12 @@ def get_module_info() -> ModuleInfo:
         ),
         (
             PageInfo(
-                "Känguru-Soundboard-Suche",
+                "Suche",
                 "Durchsuche das Känguru-Soundboard",
                 "/kaenguru-soundboard/suche",
             ),
             PageInfo(
-                "Känguru-Soundboard nach Personen sortiert",
+                "Personen",
                 "Das Känguru-Soundboard mit Sortierung nach Personen",
                 "/kaenguru-soundboard/personen",
             ),
