@@ -1,3 +1,4 @@
+"""The wiki with stuff about the AN."""
 from __future__ import annotations
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
@@ -19,7 +20,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class WikiHandler(BaseRequestHandler):
+    """The request handler for the wiki page."""
+
     async def get(self, path):
+        """Handle the get requests to the wiki page."""
         return self.render(
             "base.html", content=f"/wiki{path} isn't ready yet."
         )

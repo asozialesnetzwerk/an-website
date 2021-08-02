@@ -259,7 +259,7 @@ def get_ssl_context(
 
 
 def setup_logger():
-    """Setup the root_logger."""
+    """Configure the root logger."""
     root_logger = logging.getLogger()
     root_logger.setLevel(
         logging.INFO if not sys.flags.dev_mode else logging.DEBUG
@@ -282,7 +282,7 @@ def setup_logger():
 
 
 def main():
-    """"
+    """
     Start everything.
 
     This is the main function that is called when running this file.

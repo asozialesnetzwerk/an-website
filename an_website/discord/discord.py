@@ -1,3 +1,4 @@
+"""A permanent redirect to an invite of the discord guild."""
 from __future__ import annotations
 
 import orjson
@@ -19,7 +20,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class Discord(BaseRequestHandler):
+    """The request handler that gets the discord invite and redirects to it."""
+
     async def get(self):
+        """Get the discord invite and redirect to it."""
         http_client = AsyncHTTPClient()
         try:
             response = await http_client.fetch(WIDGET_URL)

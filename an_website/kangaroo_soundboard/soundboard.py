@@ -101,10 +101,11 @@ async def search_main_page_info(
                 len(found) > 0
                 and isinstance(last := found[-1], HeaderInfo)
                 and (
-                    tag in (
+                    tag
+                    in (
                         "h1",  # if it gets to h3 this doesn't work as
-                    # then this should also be done for h2 when the ones
-                    # before are h3
+                        # then this should also be done for h2 when the ones
+                        # before are h3
                         last.tag,  # type: ignore
                     )
                 )

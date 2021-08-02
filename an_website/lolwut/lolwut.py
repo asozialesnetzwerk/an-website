@@ -1,3 +1,4 @@
+"""The page that displays the redis version."""
 from __future__ import annotations
 
 from tornado.web import HTTPError
@@ -16,7 +17,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class LOLWUT(BaseRequestHandler):
+    """The request handler for the LOLWUT page."""
+
     async def get(self, args=""):
+        """Handle get requests to the LOLWUT page."""
         if args:
             arguments = args.split("/")
             if not len(arguments) == 1 and not arguments[-1]:
