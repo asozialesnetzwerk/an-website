@@ -1,3 +1,4 @@
+"""The uptime page that shows the time the website is running."""
 from __future__ import annotations
 
 import datetime
@@ -20,7 +21,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class UptimeHandler(BaseRequestHandler):
+    """The request handler for the uptime page."""
+
     async def get(self):
+        """Handle the get request and render the page."""
         uptime = datetime.timedelta(seconds=round(time.time() - START_TIME, 3))
 
         uptime_str = str(uptime)

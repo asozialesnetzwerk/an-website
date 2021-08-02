@@ -1,3 +1,4 @@
+"""The main page of the website."""
 from __future__ import annotations
 
 from ..utils.utils import BaseRequestHandler, ModuleInfo
@@ -15,7 +16,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class MainPage(BaseRequestHandler):
+    """The request handler of the main page."""
+
     async def get(self):
+        """Handle the get requests and display the main page."""
         await self.render(
             "pages/main_page.html",
         )

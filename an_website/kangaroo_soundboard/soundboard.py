@@ -101,10 +101,12 @@ async def search_main_page_info(
                 len(found) > 0
                 and isinstance(last := found[-1], HeaderInfo)
                 and (
-                    tag == "h1"  # if it gets to h3 this doesn't work as
+                    tag in (
+                        "h1",  # if it gets to h3 this doesn't work as
                     # then this should also be done for h2 when the ones
                     # before are h3
-                    or last.tag == tag  # type: ignore
+                        last.tag,  # type: ignore
+                    )
                 )
             ):
                 del found[-1]
@@ -138,7 +140,6 @@ class SoundboardHtmlHandler(BaseRequestHandler):
         self, path
     ) -> Optional[tuple[Iterable[Info], Optional[str]]]:
         """Get a info list based on the path and return it with the query."""
-
         if path in (None, "", "index", "/"):
             return MAIN_PAGE_INFO, None
 
@@ -151,7 +152,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
 
         if path in ("search", "suche"):
             query = self.get_query_argument("q", "")
-            if query == "":
+            if query is None or query == "":
                 return MAIN_PAGE_INFO, query
 
             return (
@@ -167,3 +168,5 @@ class SoundboardHtmlHandler(BaseRequestHandler):
                 ),
                 None,
             )
+
+        return None

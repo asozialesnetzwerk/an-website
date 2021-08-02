@@ -245,6 +245,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
 def get_ssl_context(
     config: configparser.ConfigParser,
 ) -> Optional[ssl.SSLContext]:
+    """Create SSL config and configure using the config."""
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(
@@ -258,6 +259,7 @@ def get_ssl_context(
 
 
 def setup_logger():
+    """Setup the root_logger."""
     root_logger = logging.getLogger()
     root_logger.setLevel(
         logging.INFO if not sys.flags.dev_mode else logging.DEBUG
@@ -280,6 +282,11 @@ def setup_logger():
 
 
 def main():
+    """"
+    Start everything.
+
+    This is the main function that is called when running this file.
+    """
     patches.apply()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)

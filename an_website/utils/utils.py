@@ -38,8 +38,7 @@ class PageInfo:
 @dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
     """
-    The module info class that adds handles and sub pages to the page
-    info.
+    The module info class adds handlers and sub pages to the page info.
 
     This gets created by every module to add the handlers.
     """
@@ -92,10 +91,7 @@ def strtobool(val):
 async def run(
     cmd, stdin=asyncio.subprocess.PIPE
 ) -> tuple[Optional[int], bytes, bytes]:
-    """
-    Run the cmd as a subprocess and return the return code, stdout and
-    stderr in a tuple.
-    """
+    """Run the cmd and return the return code, stdout and stderr in a tuple."""
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdin=stdin,
@@ -139,15 +135,16 @@ class BaseRequestHandler(RequestHandler):
 
     def initialize(self, **kwargs):
         """
-        Get title and description from the kwargs and override the
-        default values if they are present.
+        Get title and description from the kwargs.
+
+        If title and description are present in the kwargs they
+        override self.title and self.description.
         """
         self.title = kwargs.get("title", self.title)
         self.description = kwargs.get("description", self.description)
 
     def data_received(self, chunk):
         """Do nothing."""
-        pass
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
         """Check rate limits with redis."""
@@ -181,10 +178,7 @@ class BaseRequestHandler(RequestHandler):
                     self.write_error(429)
 
     def write_error(self, status_code, **kwargs):
-        """
-        Render the error as a html page with the status code and the
-        reason extracted from the kwargs.
-        """
+        """Render the error page with the status_code as a html page."""
         self.render(
             "error.html",
             status=status_code,
@@ -211,8 +205,12 @@ class BaseRequestHandler(RequestHandler):
         return self.get_query_argument_as_bool("no_3rd_party", False)
 
     def get_template_namespace(self):
-        """Add useful things to the template namespace that are needed by
-        most of the pages (like title and description) and return it."""
+        """
+        Add useful things to the template namespace and return it.
+
+        They are mostly needed by most of the pages (like title,
+        description and no_3rd_party).
+        """
         namespace = super().get_template_namespace()
         no_3rd_party: bool = self.get_no_3rd_party()
         form_appendix: str = (
@@ -239,9 +237,12 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_query_argument_as_bool(self, name: str, default: bool = False):
-        """Get a query argument by name as boolean with out throwing an error
-        and returning the default (by default False) if the argument isn't
-        found or not a boolean value specified by the strtobool function."""
+        """
+        Get a query argument by name as boolean with out throwing an error.
+
+        If the argument isn't found or not a boolean value specified by the
+        strtobool function return the default (by default False)
+        """
         if name not in self.request.query_arguments:
             return default
         try:
@@ -251,11 +252,14 @@ class BaseRequestHandler(RequestHandler):
 
 
 class APIRequestHandler(BaseRequestHandler):
-    """The base api request handler that overrides
-    the write error method to return errors as json."""
+    """
+    The base api request handler.
+
+    It overrides the write error method to return errors as json.
+    """
 
     def write_error(self, status_code, **kwargs):
-        """Finish with the status code and the reason as dict"""
+        """Finish with the status code and the reason as dict."""
         self.finish(
             {
                 "status": status_code,
@@ -265,10 +269,7 @@ class APIRequestHandler(BaseRequestHandler):
 
 
 class NotFound(BaseRequestHandler):
-    """
-    The default request handler that is used to return 404 if the page
-    isn't found.
-    """
+    """Show a 404 page if no other RequestHandler is used."""
 
     RATELIMIT_TOKENS = 0
 
@@ -290,7 +291,7 @@ class ErrorPage(BaseRequestHandler):
         reason: str = httputil.responses.get(status_code, "")
 
         # set the status code if tornado doesn't throw an error if it is set
-        if status_code not in (204, 304) and not (100 <= status_code < 200):
+        if status_code not in (204, 304) and not 100 <= status_code < 200:
             # set the status code
             self.set_status(status_code)
 

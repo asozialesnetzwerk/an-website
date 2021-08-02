@@ -6,7 +6,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, Type, Union
 
 import orjson
 
@@ -19,7 +19,7 @@ with open(f"{DIR}/info.json", "r") as my_file:
 person_dict: dict[str, str] = info["personen"]
 Person = Enum("Person", {**person_dict}, module=__name__)  # type: ignore
 
-PERSON_SHORTS: tuple[str] = tuple(person_dict.keys())
+PERSON_SHORTS: tuple[str, ...] = tuple(person_dict.keys())
 
 books: list[str] = []
 chapters: list[str] = []
@@ -65,8 +65,10 @@ class Info:
     text: str
 
     def to_html(
-        self, url_app: str, query: Optional[str]
-    ) -> str:  # pylint: disable=unused-argument
+        self,
+        url_app: str,  # pylint: disable=unused-argument
+        query: Optional[str],
+    ) -> str:
         """Return the text of the info and mark the query."""
         return mark_query(self.text, query)
 
@@ -76,7 +78,7 @@ class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
-    type: Enum = Book
+    type: Type[Union[Book, Chapter, Person]] = Book
 
     def to_html(
         self, url_app: str, query: Optional[str]
@@ -121,8 +123,11 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
-    def contains(self, _str: str) -> bool:
+    def contains(self, _str: Optional[str]) -> bool:
         """Check whether this sound info contains a given string."""
+        if _str is None:
+            return False
+
         content = " ".join([self.chapter.name, self.person.value, self.text])
         content = replace_umlauts(content)
 
@@ -216,7 +221,7 @@ for book_info in info["bücher"]:
             PERSON_SOUNDS.setdefault(person_short, []).append(sound_info)
 
 # convert to tuple for immutability
-ALL_SOUNDS: tuple[SoundInfo] = tuple(all_sounds)
-MAIN_PAGE_INFO: tuple[Info] = tuple(main_page_info)
+ALL_SOUNDS: tuple[SoundInfo, ...] = tuple(all_sounds)
+MAIN_PAGE_INFO: tuple[Info, ...] = tuple(main_page_info)
 
 del all_sounds, main_page_info
