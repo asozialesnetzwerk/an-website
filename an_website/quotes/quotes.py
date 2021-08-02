@@ -1,3 +1,8 @@
+"""
+The quotes page of the website.
+
+It displays funny, but wrong, quotes.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,9 +26,12 @@ def get_module_info() -> ModuleInfo:
 
 @dataclass
 class QuotesObjBase:
+    """An object with an id."""
+
     id: int  # pylint: disable=invalid-name
 
     def get_id_as_str(self):
+        """Get the id of the object as a string."""
         return str(self.id)
 
     def __str__(self):
@@ -33,6 +41,8 @@ class QuotesObjBase:
 
 @dataclass
 class Author(QuotesObjBase):
+    """The author object with a name."""
+
     name: str
 
     def __str__(self):
@@ -42,6 +52,8 @@ class Author(QuotesObjBase):
 
 @dataclass
 class Quote(QuotesObjBase):
+    """The quote object with a quote text and an author."""
+
     quote: str
     author: Author
 
@@ -52,11 +64,18 @@ class Quote(QuotesObjBase):
 
 @dataclass
 class WrongQuote(QuotesObjBase):
+    """The wrong quote object with a quote, an author and a rating."""
+
     quote: Quote
     author: Author
     rating: int
 
     def get_id_as_str(self):
+        """
+        Get the id of the wrong quote as a string.
+
+        Format: quote_id-author_id
+        """
         return f"{self.quote.id}-{self.author.id}"
 
     def __str__(self):
@@ -72,16 +91,19 @@ API_URL: str = "https://zitate.prapsschnalinen.de/api"
 
 
 async def get_quote_by_id(quote_id: int) -> Quote:
+    """Get a quote by its id."""
     # do db query here
     return Quote(quote_id, f"Hallo {quote_id}", Author(1, "Autor"))
 
 
 async def get_author_by_id(author_id: int) -> Author:
+    """Get an author by its id."""
     # do db query here
     return Author(author_id, f"Frau {author_id}")
 
 
 async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
+    """Get a wrong quote with a quote id and an author id."""
     return WrongQuote(
         id=quote_id * 10_000 + author_id,
         quote=Quote(
@@ -95,7 +117,10 @@ async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
 
 
 class QuoteBaseHandler(BaseRequestHandler):
+    """The base request handler for the quotes package."""
+
     async def render_quote(self, quote_id: int, author_id: int):
+        """Get and render a wrong quote based on author id and author id."""
         return await self.render(
             "pages/quotes.html",
             wrong_quote=await get_wrong_quote(quote_id, author_id),
@@ -103,14 +128,21 @@ class QuoteBaseHandler(BaseRequestHandler):
         )
 
     async def get_next_id(self):
+        """Get the id of the next quote."""
         return "0-0"
 
 
 class QuoteMainPage(QuoteBaseHandler):
+    """The main quote page that should render a random quote."""
+
     async def get(self):
+        """Handle the get request to the main quote page and render a quote."""
         await self.render_quote(-1, -1)
 
 
 class QuoteById(QuoteBaseHandler):
+    """The page with a specified quote that then gets rendered."""
+
     async def get(self, quote_id: str, author_id: str):
+        """Handle the get request to this page and render the quote."""
         await self.render_quote(int(quote_id), int(author_id))
