@@ -19,7 +19,7 @@ How:
 - run restart.sh as the user of the home directory
 
 ### Windows:
-DO NOT USE WINDOWS
+Why?
 
 ### FreeBSD:
 should work similar to linux  
