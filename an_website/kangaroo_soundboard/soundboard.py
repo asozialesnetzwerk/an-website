@@ -1,7 +1,7 @@
 """Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
-from typing import Optional, Iterable, Callable
+from typing import Callable, Iterable, Optional
 
 from tornado.web import HTTPError, StaticFileHandler
 
@@ -11,11 +11,11 @@ from . import (
     DIR,
     MAIN_PAGE_INFO,
     PERSON_SHORTS,
+    PERSON_SOUNDS,
     HeaderInfo,
     Info,
     Person,
     SoundInfo,
-    PERSON_SOUNDS,
 )
 
 
