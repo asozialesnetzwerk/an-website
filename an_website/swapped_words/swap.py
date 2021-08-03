@@ -6,7 +6,7 @@ from re import Match, Pattern
 
 from tornado.web import HTTPError
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -15,12 +15,17 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (r"/vertauschte-woerter/?", SwappedWords),
             (r"/swapped-words/?", SwappedWords),
+            (r"/vertauschte-woerter/api", SwappedWordsApi),
+            (r"/swapped-words/api", SwappedWordsApi),
         ),
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",
         path="/vertauschte-woerter",
     )
 
+
+# the max char code of the text to process.
+MAX_CHAR_COUNT: int = 32768
 
 TO_SWAP: dict[str, str] = {
     "amüsant": "relevant",
@@ -52,8 +57,6 @@ WORDS_REGEX: Pattern[str] = re.compile(
 )
 del words
 
-print(WORDS_REGEX)
-
 
 def get_replaced_word_with_same_case(match: Match[str]) -> str:
     """Get the replaced word with the same case as the match."""
@@ -79,16 +82,53 @@ def swap_words(text: str) -> str:
     return test
 
 
+def get_text_too_long_error_message(len_of_text: int) -> str:
+    """Get the error message for a text that is too long."""
+    return (
+        f"The text has {len_of_text} characters, but it is only allowed "
+        f"to have {MAX_CHAR_COUNT} characters. That's "
+        f"{len_of_text-MAX_CHAR_COUNT} characters too much."
+    )
+
+
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
     def get(self):
         """Handle get requests to the swapped words page."""
         text = self.get_query_argument("text", default="")
+        len_text = len(text)
 
-        if len(text) > 10_000:
-            raise HTTPError(413)
+        if len_text > MAX_CHAR_COUNT:
+            raise HTTPError(
+                413, reason=get_text_too_long_error_message(len_text)
+            )
 
         self.render(
-            "pages/swapped_words.html", text=text, output=swap_words(text)
+            "pages/swapped_words.html",
+            text=text,
+            output=swap_words(text),
+            MAX_CHAR_COUNT=MAX_CHAR_COUNT,
+        )
+
+
+class SwappedWordsApi(APIRequestHandler):
+    """The request handler for the swapped words api."""
+
+    def get(self):
+        """Handle get requests to the swapped words api."""
+        text = self.get_query_argument("text", default="")
+        len_text = len(text)
+
+        if len_text > MAX_CHAR_COUNT:
+            raise HTTPError(
+                413, reason=get_text_too_long_error_message(len_text)
+            )
+
+        replaced_text = swap_words(text)
+
+        self.finish(
+            {
+                "replaced_text": replaced_text
+            }
         )
