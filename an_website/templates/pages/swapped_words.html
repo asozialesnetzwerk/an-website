@@ -1,0 +1,32 @@
+{% extends "../base.html" %}
+
+{% block body %}
+<form>
+  <label for="text-input">
+    Der Text dessen Wörter vertauscht werden sollen:
+  </label>
+  <br>
+  <textarea
+          name="text"
+          id="text-input"
+          placeholder="Gebe witzigen Text ein.">
+    {{text}}
+  </textarea>
+
+  <br><br>
+
+  {% raw form_appendix %}
+
+  <div class="tooltip no-select button-container">
+    <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
+    <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
+  </div>
+</form>
+
+<br><br>
+
+<div class="output">
+    {{output}}
+</div>
+
+{% end %}
