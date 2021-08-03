@@ -46,7 +46,7 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
             and os.path.isdir(f"{DIR}/{potential_module}")
         ):
             for potential_file in os.listdir(f"{DIR}/{potential_module}"):
-                module_name = f"{potential_module}.{potential_file[:-3]}"  # pylint: disable=redefined-outer-name
+                module_name = f"{potential_module}.{potential_file[:-3]}"
                 if (
                     potential_file.endswith(".py")
                     and module_name not in IGNORED_MODULES
@@ -107,10 +107,23 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
         len(IGNORED_MODULES),
         "', '".join(IGNORED_MODULES),
     )
+
+    sort_module_infos(module_infos)
+
+    # make module_infos immutable so it never changes:
+    return tuple(module_infos)
+
+
+def sort_module_infos(module_infos: list[ModuleInfo]):
+    """Sort a list of module info and move the main page to the top."""
     # sort it so the order makes sense.
     module_infos.sort()
-    # make it immutable so it never changes:
-    return tuple(module_infos)
+
+    # move the main page to the top:
+    for _i, info in enumerate(module_infos):
+        if info.path == "/":
+            module_infos.insert(0, module_infos.pop(_i))
+            break
 
 
 def get_all_handlers(
