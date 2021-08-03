@@ -127,8 +127,4 @@ class SwappedWordsApi(APIRequestHandler):
 
         replaced_text = swap_words(text)
 
-        self.finish(
-            {
-                "replaced_text": replaced_text
-            }
-        )
+        self.finish({"replaced_text": replaced_text})
