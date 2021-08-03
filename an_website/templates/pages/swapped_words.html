@@ -9,9 +9,10 @@
   <textarea
           name="text"
           id="text-input"
-          placeholder="Gebe witzigen Text ein.">
-    {{text}}
-  </textarea>
+          placeholder="Gebe witzigen Text ein."
+          rows="10"
+          maxlength="10000"
+  >{{text}}</textarea>
 
   <br><br>
 
@@ -23,10 +24,24 @@
   </div>
 </form>
 
-<br><br>
+<br>
 
-<div class="output">
-    {{output}}
-</div>
+{% if len(output) > 0 %}
 
+<label for="output">Ausgabe:</label>
+<br>
+<textarea
+        rows=10
+        id="output"
+>{{output}}</textarea>
+{% end %}
+
+{% end %}
+
+{% block head %}
+<style>
+  textarea {
+    width: 100%
+  }
+</style>
 {% end %}
