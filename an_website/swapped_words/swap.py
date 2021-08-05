@@ -109,7 +109,7 @@ class SwappedWords(BaseRequestHandler):
 
     def get(self):
         """Handle get requests to the swapped words page."""
-        text = self.get_query_argument("text", default="")
+        text = self.get_query_argument("text", default="").strip()
         len_text = len(text)
 
         if len_text > MAX_CHAR_COUNT:

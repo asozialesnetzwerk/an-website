@@ -12,6 +12,7 @@
           placeholder="Gebe witzigen Text ein."
           rows="10"
           maxlength="{{MAX_CHAR_COUNT}}"
+          spellcheck="true"
   >{{text}}</textarea>
 
   <br><br>
@@ -33,6 +34,7 @@
 <textarea
         rows=10
         id="output"
+        readonly
 >{{output}}</textarea>
 {% end %}
 
