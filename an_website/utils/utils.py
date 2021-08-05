@@ -15,6 +15,9 @@ from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado import httputil
 from tornado.web import HTTPError, RequestHandler
 
+GIT_URL: str = "https://github.com/asozialesnetzwerk"
+REPO_URL: str = f"{GIT_URL}/an-website"
+
 Handler = Union[
     tuple[str, Any],
     tuple[str, Any, dict[str, Any]],
@@ -228,6 +231,7 @@ class BaseRequestHandler(RequestHandler):
                 "lang": "de",  # can change in future
                 "url_appendix": "?no_3rd_party=sure" if no_3rd_party else "",
                 "form_appendix": form_appendix,
+                "REPO_URL": REPO_URL,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),

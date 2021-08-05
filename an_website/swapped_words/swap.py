@@ -6,7 +6,13 @@ from re import Match, Pattern
 
 from tornado.web import HTTPError
 
-from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
+from ..utils.utils import (
+    GIT_URL,
+    APIRequestHandler,
+    BaseRequestHandler,
+    ModuleInfo,
+    PageInfo,
+)
 
 
 def get_module_info() -> ModuleInfo:
@@ -21,6 +27,13 @@ def get_module_info() -> ModuleInfo:
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",
         path="/vertauschte-woerter",
+        sub_pages=(
+            PageInfo(
+                "Plugin",
+                "Ein Browser-Plugin, welches Wörter vertauscht.",
+                f"{GIT_URL}/VertauschteWoerterPlugin/",
+            ),
+        ),
     )
 
 
@@ -117,7 +130,8 @@ class SwappedWordsApi(APIRequestHandler):
 
     def get(self):
         """Handle get requests to the swapped words api."""
-        text = self.get_query_argument("text", default="")
+        text = self.get_argument("text", default="")
+
         len_text = len(text)
 
         if len_text > MAX_CHAR_COUNT:
