@@ -9,14 +9,14 @@
         {% if info.path is not None %}
         <li>
           <div class="tooltip">
-            <a href="{{info.path}}{{url_appendix}}">{{info.name}}</a>
+            <a href="{{ fix_url(info.path) }}">{{info.name}}</a>
             <div class="tooltip-text">{{info.description}}</div>
           </div>
           {% if info.sub_pages is not None %}
             <ul class="menu-sub-list">
               {% for page_info in info.sub_pages %}
                 <li class="tooltip">
-                  <a href="{{page_info.path}}{{url_appendix}}">{{page_info.name}}</a>
+                  <a href="{{ fix_url(info.path) }}">{{page_info.name}}</a>
                   <div class="tooltip-text">{{page_info.description}}</div>
                 </li>
               {% end %}

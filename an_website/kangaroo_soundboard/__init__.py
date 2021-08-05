@@ -6,7 +6,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Type, Union
+from typing import Callable, Optional, Type, Union
 
 import orjson
 
@@ -66,8 +66,10 @@ class Info:
 
     def to_html(
         self,
-        url_app: str,  # pylint: disable=unused-argument
-        query: Optional[str],
+        fix_url_func: Callable[  # pylint: disable=unused-argument
+            [str], str
+        ] = lambda url: url,
+        query: Optional[str] = None,
     ) -> str:
         """Return the text of the info and mark the query."""
         return mark_query(self.text, query)
@@ -81,8 +83,12 @@ class HeaderInfo(Info):
     type: Type[Union[Book, Chapter, Person]] = Book
 
     def to_html(
-        self, url_app: str, query: Optional[str]
-    ) -> str:  # pylint: disable=unused-argument
+        self,
+        fix_url_func: Callable[  # pylint: disable=unused-argument
+            [str], str
+        ] = lambda url: url,
+        query: Optional[str] = None,
+    ) -> str:
         """
         Return a html element with the tag and the content of the HeaderInfo.
 
@@ -137,11 +143,16 @@ class SoundInfo(Info):
 
         return True
 
-    def to_html(self, url_app: str, query: Optional[str]) -> str:
+    def to_html(
+        self,
+        fix_url_func: Callable[[str], str] = lambda url: url,
+        query: Optional[str] = None,
+    ) -> str:  # pylint: disable=unused-argument
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
+        href = fix_url_func(f"/kaenguru-soundboard/{self.person.name}")
         return (
-            f"<li><a href='/kaenguru-soundboard/{self.person.name}{url_app}' "
+            f"<li><a href='{href}' "
             f"class='a_hover'>{mark_query(self.person.value, query)}</a>"
             f": »<a href='/kaenguru-soundboard/files/{file}.mp3' "
             f"class='quote-a'>{mark_query(self.get_text(), query)}</a>"

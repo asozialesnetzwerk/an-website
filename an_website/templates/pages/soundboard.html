@@ -15,7 +15,7 @@ Bitte überprüfe die Rechtschreibung oder nutze eine kürzere Suche.
     {% end %}
 
     {% for sound_info in sound_info_list %}
-{% raw sound_info.to_html(url_appendix, query) %}
+{% raw sound_info.to_html(fix_url, query) %}
     {% end %}
 
 {% end %}

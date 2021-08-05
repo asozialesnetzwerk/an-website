@@ -8,14 +8,14 @@
 {% for info in handler.settings.get("MODULE_INFOS") %}
     {% if not info.path is None and not info.path == "/" %}
 <li class="menu-list">
-    <a href="{{info.path}}{{url_appendix}}">{{info.name}}</a>:
+    <a href="{{ fix_url(info.path) }}">{{info.name}}</a>:
     {{info.description}}
 </li>
         {% if info.sub_pages is not None %}
 <ul class="menu-sub-list">
             {% for page_info in info.sub_pages %}
     <li class="tooltip">
-        <a href="{{page_info.path}}{{url_appendix}}">{{page_info.name}}</a>:
+        <a href="{{ fix_url(info.path) }}">{{page_info.name}}</a>:
         {{page_info.description}}
     </li>
             {% end %}

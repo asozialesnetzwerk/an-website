@@ -224,16 +224,15 @@ class BaseRequestHandler(RequestHandler):
                 f"/redirect?to={quote_plus(url)}&from"
                 f"={quote_plus(this_url)}"
             )
-        return url + (
-            (
+
+        if self.get_no_3rd_party():
+            return url + (
                 # if "?" already is in the url then use &
                 ("&" if "?" in url else "?")
-                # no_3rd_party if it is activated
                 + "no_3rd_party=sure"
             )
-            if self.get_no_3rd_party()
-            else ""
-        )
+
+        return url
 
     def get_template_namespace(self):
         """
@@ -257,8 +256,8 @@ class BaseRequestHandler(RequestHandler):
                 "description": self.description,
                 "no_3rd_party": no_3rd_party,
                 "lang": "de",  # can change in future
-                "url_appendix": "?no_3rd_party=sure" if no_3rd_party else "",
                 "form_appendix": form_appendix,
+                "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
