@@ -27,11 +27,11 @@ class RedirectPage(BaseRequestHandler):
         redirect_url = self.get_query_argument("to", default="")
 
         if redirect_url in ("", "/"):
-            return self.redirect("/")
+            return self.redirect(self.fix_url("/"))
 
         if not redirect_url.startswith("http"):
             # it is a local url on
-            return self.redirect(redirect_url)
+            return self.redirect(self.fix_url(redirect_url))
 
         from_url = self.get_query_argument("from", default="/")
 

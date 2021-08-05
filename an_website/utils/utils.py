@@ -225,12 +225,14 @@ class BaseRequestHandler(RequestHandler):
                 f"={quote_plus(this_url)}"
             )
 
-        if self.get_no_3rd_party():
-            return url + (
-                # if "?" already is in the url then use &
-                ("&" if "?" in url else "?")
-                + "no_3rd_party=sure"
-            )
+        if self.get_no_3rd_party() and "no_3rd_party" not in url:
+            # if "?" already is in the url then use &
+            if "?" in url:
+                url += "&"
+            else:
+                url += "?"
+
+            return url + "no_3rd_party=sure"
 
         return url
 

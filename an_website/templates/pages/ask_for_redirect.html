@@ -11,8 +11,9 @@
             >Weiter nach {{redirect_url}}</button>
         </form>
         <form>
+            {% raw form_appendix %}
             <button  type="submit"
-                     formaction="{{ fix_url(from_url) }}"
+                     formaction="{{from_url}}"
                      class="stay redirect"
             >Wieder zurück</button>
         </form>
