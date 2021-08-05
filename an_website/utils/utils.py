@@ -209,13 +209,18 @@ class BaseRequestHandler(RequestHandler):
         return self.get_query_argument_as_bool("no_3rd_party", False)
 
     def fix_url(self, url: str, this_url: str = None) -> str:
-        """Fix an url."""
+        """
+        Fix an url and return it.
+
+        If the url is from another website, link to it with the redirect page.
+        Otherwise just return the url with no_3rd_party appended.
+        """
         if this_url is None:
             this_url = self.request.full_url()
 
         if url.startswith("http") and f"//{self.request.host_name}" not in url:
             # url is to other website:
-            url = (
+            return (
                 f"/redirect?to={quote_plus(url)}&from"
                 f"={quote_plus(this_url)}"
             )

@@ -30,7 +30,7 @@ class Discord(BaseRequestHandler):
         except HTTPError:
             self.redirect(
                 self.fix_url(
-                    "https://disboard.org/server/join/367648314184826880"
+                    "https://disboard.org/server/join/367648314184826880", "/"
                 )
             )
         else:
