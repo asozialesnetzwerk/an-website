@@ -10,6 +10,7 @@ import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional, Tuple, Union
+from urllib.parse import quote_plus
 
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado import httputil
@@ -207,6 +208,28 @@ class BaseRequestHandler(RequestHandler):
         """Return the no_3rd_party query argument as boolean."""
         return self.get_query_argument_as_bool("no_3rd_party", False)
 
+    def fix_url(self, url: str, this_url: str = None) -> str:
+        """Fix an url."""
+        if this_url is None:
+            this_url = self.request.full_url()
+
+        if url.startswith("http") and f"//{self.request.host_name}" not in url:
+            # url is to other website:
+            url = (
+                f"/redirect?to={quote_plus(url)}&from"
+                f"={quote_plus(this_url)}"
+            )
+        return url + (
+            (
+                # if "?" already is in the url then use &
+                ("&" if "?" in url else "?")
+                # no_3rd_party if it is activated
+                + "no_3rd_party=sure"
+            )
+            if self.get_no_3rd_party()
+            else ""
+        )
+
     def get_template_namespace(self):
         """
         Add useful things to the template namespace and return it.
@@ -231,7 +254,7 @@ class BaseRequestHandler(RequestHandler):
                 "lang": "de",  # can change in future
                 "url_appendix": "?no_3rd_party=sure" if no_3rd_party else "",
                 "form_appendix": form_appendix,
-                "REPO_URL": REPO_URL,
+                "REPO_URL": self.fix_url(REPO_URL),
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),

@@ -1,0 +1,45 @@
+{% extends "../base.html" %}
+
+{% block body %}
+<div class="redirect_content">
+    Willst du wirklich diese Seite verlassen? Für die Inhalte auf fremden
+    Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
+        <form target="_blank">
+            <button  type="submit"
+                     formaction="{{redirect_url}}"
+                     class="leave redirect"
+            >Weiter nach {{redirect_url}}</button>
+        </form>
+        <form>
+            <button  type="submit"
+                     formaction="{{from_url}}{{url_appendix}}"
+                     class="stay redirect"
+            >Wieder zurück</button>
+        </form>
+</div>
+{% end %}
+
+
+{% block head %}
+<style>
+    .redirect_content {
+        font-size: xx-large;
+    }
+    .redirect {
+        width: 100%;
+        float: top;
+        margin-bottom: 30px;
+        padding: 40px;
+        min-height: 200px;
+        color: black;
+        text-align: center;
+        font-size: xxx-large;
+    }
+    .leave {
+        background-color: var(--light-blue);
+    }
+    .stay {
+        background-color: var(--light-red);
+    }
+</style>
+{% end %}

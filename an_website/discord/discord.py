@@ -29,8 +29,10 @@ class Discord(BaseRequestHandler):
             response = await http_client.fetch(WIDGET_URL)
         except HTTPError:
             self.redirect(
-                "https://disboard.org/server/join/367648314184826880"
+                self.fix_url(
+                    "https://disboard.org/server/join/367648314184826880"
+                )
             )
         else:
             response_json = orjson.loads(response.body.decode("utf-8"))
-            self.redirect(response_json["instant_invite"])
+            self.redirect(self.fix_url(response_json["instant_invite"], "/"))
