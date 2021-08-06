@@ -77,3 +77,18 @@
     color: var(--white)
 }
 
+.no-3rd-party-button {
+    margin-top: 20px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding: 7px;
+}
+
+.no-3rd-party-button.no-third-party-sure {
+    background-color: var(--light-blue);
+}
+
+.no-3rd-party-button.no-third-party-nope {
+    background-color: var(--blue);
+}
+

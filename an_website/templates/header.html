@@ -26,8 +26,20 @@
       {% end %}
     {% end %}
     </ul>
+
+    <form>
+      {% if not no_3rd_party %}
+      <input name="no_3rd_party" style="display: none;width: 0; height: 0; opacity: 0" value="sure">
+      {% end %}
+      <button  type="submit"
+               formaction="{{url}}"
+               class="no-3rd-party-button {% if no_3rd_party %}no-third-party-sure{% else %}no-third-party-nope{% end %}"
+      >{% if no_3rd_party %}
+Erlaube Inhalte von Drittanbietern.
+{% else %}
+Deaktiviere Inhalte von Drittanbietern.
+{% end %}</button>
+    </form>
   </div>
   {% end %}
 </div>
-
-<link rel="stylesheet" type="text/css" href="/static/style/header.css">
