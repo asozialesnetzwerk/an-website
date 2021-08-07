@@ -132,9 +132,10 @@ logs/
 
 # hangman-solver word lists
 full_wordlist.txt
+an_website/hangman_solver/cache/
 
 # Känguru-Soundboard
-an-website/kangaroo_soundboard/build
+an_website/kangaroo_soundboard/build/
 
 # nano backup files:
 *~

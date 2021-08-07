@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import os
+import pickle
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
+from functools import lru_cache
 
 import orjson
 from tornado.web import HTTPError, RequestHandler
@@ -14,6 +16,7 @@ from ..utils.utils import (
     BaseRequestHandler,
     ModuleInfo,
     length_of_match,
+    mkdir,
     n_from_set,
     strtobool,
 )
@@ -22,33 +25,43 @@ from . import DIR
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
-# example: {"words_en/3": ["you", "she", ...]}
-WORDS: dict[str, set[str]] = {}
-LETTERS: dict[str, dict[str, int]] = {}
 LANGUAGES: set[str] = set()
 
-# load word lists
-BASE_WORDS_DIR = f"{DIR}/words"
-for folder in os.listdir(BASE_WORDS_DIR):
-    if folder.startswith("words_"):
-        LANGUAGES.add(folder[6:])  # without: "words_"
-        words_dir = f"{BASE_WORDS_DIR}/{folder}"
-        for file_name in os.listdir(words_dir):
-            key = f"{folder}/{file_name}".split(".")[0]
-            if file_name.endswith(".txt"):
-                with open(f"{words_dir}/{file_name}") as file:
-                    WORDS[key] = set(file.read().splitlines())
-            if file_name.endswith(".json"):
-                with open(f"{words_dir}/{file_name}") as file:
-                    LETTERS[key] = orjson.loads(file.read())
+CACHE_DIR = f"{DIR}/cache"
 
-del (  # pylint: disable=undefined-loop-variable
-    folder,
-    words_dir,
-    file_name,
-    file,
-    key,
-)
+
+def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
+    """
+    Load all words and letters, pickle them and return a list of their names.
+
+    This is done, because pickle is faster than json.
+    """
+    mkdir(CACHE_DIR)
+    file_names: set[str] = set()
+    base_words_dir = f"{DIR}/words"
+    for folder in os.listdir(base_words_dir):
+        if folder.startswith("words_"):
+            mkdir(os.path.join(CACHE_DIR, folder))
+            LANGUAGES.add(folder[6:])  # without: "words_"
+            words_dir = f"{base_words_dir}/{folder}"
+            for file_name in os.listdir(words_dir):
+                rel_file_name = f"{folder}/{file_name}"
+                pickle_file_name = str(os.path.join(CACHE_DIR, rel_file_name))
+                if file_name.endswith(".txt"):
+                    with open(f"{words_dir}/{file_name}", "r") as file:
+                        words: set[str] = set(file.read().splitlines())
+                        with open(pickle_file_name, "wb") as pickle_file:
+                            pickle.dump(words, pickle_file)
+                elif file_name.endswith(".json"):
+                    with open(f"{words_dir}/{file_name}") as file:
+                        letters: dict[str, int] = orjson.loads(file.read())
+                        with open(pickle_file_name, "wb") as pickle_file:
+                            pickle.dump(letters, pickle_file)
+                file_names.add(rel_file_name.split(".", 1)[0])
+    return tuple(file_names)
+
+
+CACHED_FILES: tuple[str, ...] = cache_words_and_letters_in_pickles()
 
 
 def get_module_info() -> ModuleInfo:
@@ -76,6 +89,20 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
     crossword_mode: bool = False
     max_words: int = 20
     lang: str = "de_only_a-z"
+
+
+@lru_cache(maxsize=10)
+def get_words(file_name: str) -> set[str]:
+    """Get the pickled word set and return it."""
+    with open(f"{CACHE_DIR}/{file_name}.txt", "rb") as file:
+        return pickle.load(file)
+
+
+@lru_cache(maxsize=10)
+def get_letters(file_name: str) -> dict[str, int]:
+    """Get the pickled letters dict and return it."""
+    with open(f"{CACHE_DIR}/{file_name}.json", "rb") as file:
+        return pickle.load(file)
 
 
 def fix_input_str(_input: str) -> str:
@@ -134,7 +161,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     matches_always = len(invalid) == 0 and len(input_letters) == 0
 
     if matches_always and not crossword_mode:
-        return WORDS[file_name], LETTERS[file_name]
+        return get_words(file_name), get_letters(file_name)
 
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
     regex = re.compile(pattern, re.ASCII)
@@ -142,7 +169,7 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
     current_words: set[str] = set()
     letter_list: list[str] = []
 
-    for line in WORDS[file_name]:
+    for line in get_words(file_name):
         if matches_always or regex.fullmatch(line) is not None:
             current_words.add(line)
 
@@ -199,7 +226,8 @@ async def solve_hangman(
         f"words_{language}/{input_len}"
     )
 
-    if file_name not in WORDS:
+    if file_name not in CACHED_FILES:
+        print(file_name, CACHED_FILES)
         # no words with the length
         return Hangman(
             input=input_str,

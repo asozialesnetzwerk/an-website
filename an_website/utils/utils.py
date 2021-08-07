@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import asyncio.subprocess
 import logging
+import os
 import re
 import sys
 import traceback
@@ -61,6 +62,15 @@ def get_module_info() -> ModuleInfo:
             (r"/([1-5][0-9]{2}).html", ErrorPage, {}),
         ),
     )
+
+
+def mkdir(path: str) -> bool:
+    """Create a dir and return whether it got created."""
+    try:
+        os.mkdir(path)
+        return True
+    except FileExistsError:
+        return False
 
 
 def length_of_match(_m: re.Match):
