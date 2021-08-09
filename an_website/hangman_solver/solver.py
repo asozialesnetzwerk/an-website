@@ -7,6 +7,7 @@ import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
+from typing import Union
 
 import orjson
 from tornado.web import HTTPError, RequestHandler
@@ -150,8 +151,70 @@ async def generate_pattern_str(
     )
 
 
-async def get_words_and_letters(  # pylint: disable=too-many-locals
-    file_name: str,  # pylint: disable=redefined-outer-name
+def fix_letter_counter_crossword_mode(
+    letter_counter: Counter[str], input_letters: str, matched_words_count: int
+):
+    """Fix the letter count for crossword mode."""
+    n_word_count = -1 * matched_words_count
+    update_dict: dict[str, int] = {}
+    for (_k, _v) in Counter(input_letters).most_common(30):
+        update_dict[_k] = n_word_count * _v
+    letter_counter.update(update_dict)
+
+
+@lru_cache(5)
+def filter_words(
+    words: Union[set[str], str],
+    regex: re.Pattern,
+    input_letters: str,
+    crossword_mode: bool = False,
+    matches_always: bool = False,
+) -> tuple[set[str], dict[str, int]]:
+    """Filter a set of words to get only those that match the regex."""
+    # if "words" is string it is a file_name
+    if isinstance(words, str):
+        words = get_words(words)
+
+    matched_words: set[str] = set()
+    letter_list: list[str] = []
+    for line in words:
+        if matches_always or regex.fullmatch(line) is not None:
+            matched_words.add(line)
+
+            # add letters to list
+            if crossword_mode:
+                letter_list.extend(line)
+            else:
+                # add every letter only once
+                letter_list.extend(set(line))
+
+    # count letters:
+    letter_counter = Counter(letter_list)
+
+    # fix count for crossword_mode:
+    if crossword_mode:
+        fix_letter_counter_crossword_mode(
+            letter_counter,
+            input_letters,
+            len(matched_words),
+        )
+
+    # put letters in sorted dict:
+    sorted_letters: dict[str, int] = dict(
+        letter_counter.most_common(30)
+    )  # 26 + äöüß
+
+    if not crossword_mode:
+        # remove letters that are already in input
+        for letter in set(input_letters.lower()):
+            if letter in sorted_letters:
+                del sorted_letters[letter]
+
+    return matched_words, sorted_letters
+
+
+async def get_words_and_letters(
+    file_name: str,
     input_str: str,
     invalid: str,
     crossword_mode: bool,
@@ -164,45 +227,14 @@ async def get_words_and_letters(  # pylint: disable=too-many-locals
         return get_words(file_name), get_letters(file_name)
 
     pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
-    regex = re.compile(pattern, re.ASCII)
 
-    current_words: set[str] = set()
-    letter_list: list[str] = []
-
-    for line in get_words(file_name):
-        if matches_always or regex.fullmatch(line) is not None:
-            current_words.add(line)
-
-            # add letters to list
-            if crossword_mode:
-                letter_list.extend(line)
-            else:
-                # add every letter only once
-                letter_list.extend(set(line))
-
-    # count letters:
-    letters = Counter(letter_list)
-
-    if crossword_mode:
-        n_word_count = -1 * len(current_words)
-        input_chars: list[tuple[str, int]] = Counter(
-            input_letters
-        ).most_common(30)
-        update_dict: dict[str, int] = {}
-        for (_k, _v) in input_chars:
-            update_dict[_k] = n_word_count * _v
-        letters.update(update_dict)
-
-    # put letters in sorted dict:
-    sorted_letters: dict[str, int] = dict(letters.most_common(30))  # 26 + äöüß
-
-    if not crossword_mode:
-        # remove letters that are already in input
-        for letter in set(input_letters.lower()):
-            if letter in sorted_letters:
-                del sorted_letters[letter]
-
-    return current_words, sorted_letters
+    return filter_words(
+        file_name,
+        re.compile(pattern, re.ASCII),
+        input_letters,
+        crossword_mode,
+        matches_always,
+    )
 
 
 async def solve_hangman(
@@ -222,9 +254,7 @@ async def solve_hangman(
     input_len = len(input_str)
 
     # to be short (is only the key of the words dict in __init__.py)
-    file_name = (  # pylint: disable=redefined-outer-name
-        f"words_{language}/{input_len}"
-    )
+    file_name = f"words_{language}/{input_len}"
 
     if file_name not in CACHED_FILES:
         print(file_name, CACHED_FILES)
