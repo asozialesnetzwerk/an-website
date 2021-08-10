@@ -132,7 +132,6 @@ logs/
 
 # hangman-solver word lists
 full_wordlist.txt
-an_website/hangman_solver/cache/
 
 # Känguru-Soundboard
 an_website/kangaroo_soundboard/build/

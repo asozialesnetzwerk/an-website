@@ -26,26 +26,20 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 LANGUAGES: set[str] = set()
 
-# CACHE_DIR = f"{DIR}/cache"
 BASE_WORD_DIR = f"{DIR}/words"
 
 
-def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
+def get_file_names_words_and_letters() -> tuple[str, ...]:
     """
-    Load all words and letters, pickle them and return a list of their names.
+    Find all the words and return a tuple of their file_names.
 
-    This is done, because pickle is faster than json.
-    The returned list is used to easily check if a language has words with
-    the given length.
+    Additionally add all the languages to LANGUAGES.
     """
-    # mkdir(CACHE_DIR)
     file_names: set[str] = set()
     # iterate over the folders in the words dir
     for folder in os.listdir(BASE_WORD_DIR):
         # check if the folder is a words folder
         if folder.startswith("words_"):
-            # create the cache dir for the folder
-            # mkdir(os.path.join(CACHE_DIR, folder))
             # add the language found in the word dir to LANGUAGES
             LANGUAGES.add(folder[6:])  # without: "words_"
             # the dir with the words in the current lang
@@ -53,21 +47,8 @@ def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
             for file_name in os.listdir(words_dir):
                 # ignore python files
                 if not file_name.endswith(".py"):
-                    # read the file to parse the content:
-                    # with open(f"{words_dir}/{file_name}", "r") as file:
-                    #     if file_name.endswith(".txt"):
-                    #         to_dump: set[str] = set(file.read().splitlines())
-                    #     elif file_name.endswith(".json"):
-                    #         to_dump: dict[str, int] = orjson.loads(
-                    #         file.read())
-
                     # the relativ file name
                     rel_file_name = f"{folder}/{file_name}"
-                    # with open(
-                    #     os.path.join(CACHE_DIR, rel_file_name), "wb"
-                    # ) as pickle_file:
-                    #     #pickle_file.write(pickle.dumps(to_dump))
-                    #     pickle.dump(to_dump, pickle_file)
 
                     # add the file name without the extension to file_names
                     file_names.add(rel_file_name.split(".", 1)[0])
@@ -75,7 +56,7 @@ def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
     return tuple(file_names)
 
 
-CACHED_FILES: tuple[str, ...] = cache_words_and_letters_in_pickles()
+FILE_NAMES: tuple[str, ...] = get_file_names_words_and_letters()
 
 
 def get_module_info() -> ModuleInfo:
@@ -269,8 +250,8 @@ async def solve_hangman(
     # to be short (is only the key of the words dict in __init__.py)
     file_name = f"words_{language}/{input_len}"
 
-    if file_name not in CACHED_FILES:
-        print(file_name, CACHED_FILES)
+    if file_name not in FILE_NAMES:
+        print(file_name, FILE_NAMES)
         # no words with the length
         return Hangman(
             input=input_str,
