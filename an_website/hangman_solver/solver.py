@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-import pickle
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
@@ -17,7 +16,6 @@ from ..utils.utils import (
     BaseRequestHandler,
     ModuleInfo,
     length_of_match,
-    mkdir,
     n_from_set,
     strtobool,
 )
@@ -28,7 +26,8 @@ NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 LANGUAGES: set[str] = set()
 
-CACHE_DIR = f"{DIR}/cache"
+# CACHE_DIR = f"{DIR}/cache"
+BASE_WORD_DIR = f"{DIR}/words"
 
 
 def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
@@ -36,29 +35,43 @@ def cache_words_and_letters_in_pickles() -> tuple[str, ...]:
     Load all words and letters, pickle them and return a list of their names.
 
     This is done, because pickle is faster than json.
+    The returned list is used to easily check if a language has words with
+    the given length.
     """
-    mkdir(CACHE_DIR)
+    # mkdir(CACHE_DIR)
     file_names: set[str] = set()
-    base_words_dir = f"{DIR}/words"
-    for folder in os.listdir(base_words_dir):
+    # iterate over the folders in the words dir
+    for folder in os.listdir(BASE_WORD_DIR):
+        # check if the folder is a words folder
         if folder.startswith("words_"):
-            mkdir(os.path.join(CACHE_DIR, folder))
+            # create the cache dir for the folder
+            # mkdir(os.path.join(CACHE_DIR, folder))
+            # add the language found in the word dir to LANGUAGES
             LANGUAGES.add(folder[6:])  # without: "words_"
-            words_dir = f"{base_words_dir}/{folder}"
+            # the dir with the words in the current lang
+            words_dir = f"{BASE_WORD_DIR}/{folder}"
             for file_name in os.listdir(words_dir):
-                rel_file_name = f"{folder}/{file_name}"
-                pickle_file_name = str(os.path.join(CACHE_DIR, rel_file_name))
-                if file_name.endswith(".txt"):
-                    with open(f"{words_dir}/{file_name}", "r") as file:
-                        words: set[str] = set(file.read().splitlines())
-                        with open(pickle_file_name, "wb") as pickle_file:
-                            pickle.dump(words, pickle_file)
-                elif file_name.endswith(".json"):
-                    with open(f"{words_dir}/{file_name}") as file:
-                        letters: dict[str, int] = orjson.loads(file.read())
-                        with open(pickle_file_name, "wb") as pickle_file:
-                            pickle.dump(letters, pickle_file)
-                file_names.add(rel_file_name.split(".", 1)[0])
+                # ignore python files
+                if not file_name.endswith(".py"):
+                    # read the file to parse the content:
+                    # with open(f"{words_dir}/{file_name}", "r") as file:
+                    #     if file_name.endswith(".txt"):
+                    #         to_dump: set[str] = set(file.read().splitlines())
+                    #     elif file_name.endswith(".json"):
+                    #         to_dump: dict[str, int] = orjson.loads(
+                    #         file.read())
+
+                    # the relativ file name
+                    rel_file_name = f"{folder}/{file_name}"
+                    # with open(
+                    #     os.path.join(CACHE_DIR, rel_file_name), "wb"
+                    # ) as pickle_file:
+                    #     #pickle_file.write(pickle.dumps(to_dump))
+                    #     pickle.dump(to_dump, pickle_file)
+
+                    # add the file name without the extension to file_names
+                    file_names.add(rel_file_name.split(".", 1)[0])
+
     return tuple(file_names)
 
 
@@ -94,16 +107,16 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
 @lru_cache(maxsize=10)
 def get_words(file_name: str) -> set[str]:
-    """Get the pickled word set and return it."""
-    with open(f"{CACHE_DIR}/{file_name}.txt", "rb") as file:
-        return pickle.load(file)
+    """Get the words with the file_name and return them."""
+    with open(f"{BASE_WORD_DIR}/{file_name}.txt", "r") as file:
+        return set(file.read().splitlines())
 
 
 @lru_cache(maxsize=10)
 def get_letters(file_name: str) -> dict[str, int]:
-    """Get the pickled letters dict and return it."""
-    with open(f"{CACHE_DIR}/{file_name}.json", "rb") as file:
-        return pickle.load(file)
+    """Get the letters dict with the file_name and return it."""
+    with open(f"{BASE_WORD_DIR}/{file_name}.json", "r") as file:
+        return orjson.loads(file.read())
 
 
 def fix_input_str(_input: str) -> str:
@@ -345,3 +358,20 @@ class HangmanSolverAPI(APIRequestHandler):
         # convert set to list, because the set can't be converted to json.
         hangman_dict["words"] = list(hangman_dict["words"])
         await self.finish(hangman_dict)
+
+
+# def profile():
+#     import cProfile
+#     import pstats
+#
+#     with cProfile.Profile() as pr:
+#         cache_words_and_letters_in_pickles()
+#         # filter_words(
+#         #     words="words_de/20",
+#         #     regex=re.compile("[^en]{19}en"),
+#         #     input_letters="en"
+#         # )
+#     stats = pstats.Stats(pr)
+#     stats.sort_stats(pstats.SortKey.TIME)
+#     stats.print_stats()
+#     stats.dump_stats(filename="profiling.prof")
