@@ -1,7 +1,6 @@
 """The uptime page that shows the time the website is running."""
 from __future__ import annotations
 
-import datetime
 import time
 from typing import Optional
 
@@ -52,7 +51,6 @@ class UptimeHandler(BaseRequestHandler):
 
     async def get(self):
         """Handle the get request and render the page."""
-
         await self.render(
             "pages/uptime.html",
             uptime=uptime_to_str(),
@@ -64,12 +62,11 @@ class UptimeApiHandler(APIRequestHandler):
 
     async def get(self):
         """Handle the get request to the api."""
-
         uptime = calculate_uptime()
         await self.finish(
             {
                 "uptime": uptime,
                 "uptime_str": uptime_to_str(uptime),
-                "start_time": START_TIME
+                "start_time": START_TIME,
             }
         )
