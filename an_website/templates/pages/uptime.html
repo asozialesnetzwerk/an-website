@@ -21,18 +21,17 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        text-align: center;
+        font-size: xx-large;
     }
-
-    #body {
-        font-size: x-large;
-    }
-
+        {% if no_3rd_party %}
     .clock-font {
-        display: inline;
-
-    {% if not no_3rd_party %}
-        font-family: 'Orbitron', sans-serif;
-    {% end %}
+        font-weight: bold;
     }
+        {% else %}
+    .clock-font {
+        font-family: 'Orbitron', sans-serif;
+    }
+        {% end %}
 </style>
 {% end %}

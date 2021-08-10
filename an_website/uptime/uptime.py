@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import datetime
-import re
 import time
+from typing import Optional
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
 
 START_TIME = time.time()
 
@@ -13,10 +13,37 @@ START_TIME = time.time()
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/uptime/?", UptimeHandler),),
+        handlers=(
+            (r"/uptime/?", UptimeHandler),
+            (r"/uptime/api/?", UptimeApiHandler),
+        ),
         name="Betriebszeit",
         description="Die Dauer die die Webseite am Stück in Betrieb ist.",
         path="/uptime",
+    )
+
+
+def calculate_uptime() -> float:
+    """Calculate the uptime in seconds and return it."""
+    return time.time() - START_TIME
+
+
+def uptime_to_str(uptime: Optional[float] = None) -> str:
+    """Convert the uptime into a string with second precision."""
+    if uptime is None:
+        uptime = calculate_uptime()
+
+    # to second precision
+    uptime = int(uptime)
+    # divide by 60
+    div_60 = int(uptime / 60)
+    div_60_60 = int(div_60 / 60)
+
+    return (
+        f"{int(div_60_60 / 24)}d "
+        f"{div_60_60 % 24}h "
+        f"{div_60 % 60}min "
+        f"{uptime % 60}s"
     )
 
 
@@ -25,12 +52,24 @@ class UptimeHandler(BaseRequestHandler):
 
     async def get(self):
         """Handle the get request and render the page."""
-        uptime = datetime.timedelta(seconds=round(time.time() - START_TIME, 3))
-
-        uptime_str = str(uptime)
-        uptime_str = re.sub("0{3}$", "", uptime_str, count=1)
 
         await self.render(
             "pages/uptime.html",
-            uptime=uptime_str,
+            uptime=uptime_to_str(),
+        )
+
+
+class UptimeApiHandler(APIRequestHandler):
+    """The request handler for the uptime api."""
+
+    async def get(self):
+        """Handle the get request to the api."""
+
+        uptime = calculate_uptime()
+        await self.finish(
+            {
+                "uptime": uptime,
+                "uptime_str": uptime_to_str(uptime),
+                "start_time": START_TIME
+            }
         )
