@@ -8,6 +8,7 @@ import logging
 import os
 import ssl
 import sys
+import time
 from typing import Optional
 
 import aioredis  # type: ignore
@@ -52,6 +53,7 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
                     and module_name not in IGNORED_MODULES
                     and not potential_file.startswith("_")
                 ):
+                    import_start_time = time.time()
                     module = importlib.import_module(
                         f".{module_name}",
                         package="an_website",
@@ -73,6 +75,14 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
                         ):
                             module_infos.append(module_info)
                             loaded_modules.append(module_name)
+                            import_duration = time.time() - import_start_time
+                            if import_duration > 0.1:
+                                logger.warning(
+                                    "Import of %s took %ss that's affecting "
+                                    "the startup time.",
+                                    module_name,
+                                    import_duration,
+                                )
                         else:
                             errors.append(
                                 f"'get_module_info' in {DIR}"
