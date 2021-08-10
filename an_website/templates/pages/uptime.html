@@ -8,15 +8,23 @@
               rel="stylesheet"
               type="text/css">
     {% end %}
-
-    Diese Webseite läuft bereits <div class="clock-font">{{uptime}}</div>
+    <div class="center">
+        Diese Webseite läuft bereits <div class="clock-font">{{uptime}}</div>
+    </div>
 {% end %}
 
 
 {% block head %}
 <style>
+    .center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
     #body {
-        font-size: 20px;
+        font-size: x-large;
     }
 
     .clock-font {
