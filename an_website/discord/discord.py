@@ -25,14 +25,22 @@ class Discord(BaseRequestHandler):
     async def get(self):
         """Get the discord invite and redirect to it."""
         http_client = AsyncHTTPClient()
+
+        referrer = self.fix_url(
+            self.request.headers.get("Referer", default="/")
+        )
         try:
             response = await http_client.fetch(WIDGET_URL)
         except HTTPError:
+            print()
             self.redirect(
                 self.fix_url(
-                    "https://disboard.org/server/join/367648314184826880", "/"
+                    "https://disboard.org/server/join/367648314184826880",
+                    referrer,
                 )
             )
         else:
             response_json = orjson.loads(response.body.decode("utf-8"))
-            self.redirect(self.fix_url(response_json["instant_invite"], "/"))
+            self.redirect(
+                self.fix_url(response_json["instant_invite"], referrer)
+            )
