@@ -225,6 +225,7 @@ class BaseRequestHandler(RequestHandler):
         Otherwise just return the url with no_3rd_party appended.
         """
         if this_url is None:
+            # used for discord page
             this_url = self.request.full_url()
 
         if url.startswith("http") and f"//{self.request.host_name}" not in url:
