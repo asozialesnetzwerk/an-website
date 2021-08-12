@@ -27,12 +27,16 @@ class RedirectPage(BaseRequestHandler):
         redirect_url = self.get_query_argument("to", default="")
 
         if redirect_url in ("", "/"):
+            # empty arg so redirect to main page
+            # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url("/"))
 
         if not redirect_url.startswith("http"):
-            # it is a local url on
+            # it is a local url, so just redirect
+            # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url(redirect_url))
 
+        # get the url the redirect comes from
         from_url = self.get_query_argument("from", default="/")
 
         await self.render(
