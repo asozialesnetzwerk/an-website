@@ -8,6 +8,8 @@ else
     python3 -m pip install --disable-pip-version-check -U -r check-requirements.txt --quiet --user
 fi
 
+# install pre-commits
+pre-commit install
 
 # test hashing files (important to see if umlaute are used)
 git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
