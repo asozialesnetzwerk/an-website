@@ -15,3 +15,28 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: requirements-txt-fixer
+
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.10
+    hooks:
+      - id: forbid-tabs
+      - id: remove-tabs
+      - id: insert-license
+        files: ^.+\.py$
+        args:
+          - --license-filepath
+          - license_header.txt          # defaults to: LICENSE.txt
+      #- id: insert-license
+      #  files: \*\.css$
+      #  args:
+      #    - --license-filepath
+      #    - license_header.txt          # defaults to: LICENSE.txt
+      #    - --comment-style
+      #    - /*| *| */                   # defaults to: #
+      #- id: insert-license
+      #  files: \*\.html$
+      #  args:
+      #    - --license-filepath
+      #    - license_header.txt          # defaults to: LICENSE.txt
+      #    - --comment-style
+      #    - '{#||#}'                    # defaults to: #

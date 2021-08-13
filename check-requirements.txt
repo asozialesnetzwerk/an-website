@@ -4,5 +4,7 @@ flake8-docstrings~=1.6
 flake8-quotes~=3.2
 isort~=5.0
 mypy>=0.910,<2
+pre-commit
 pylint~=2.8
 types-orjson==0.1.1
+

@@ -1,14 +1,26 @@
-# pylint: disable=preferred-module, protected-access, invalid-name
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 """Patches that break everything."""
 from __future__ import annotations
 
 import asyncio
 import configparser
-import json as stdlib_json
+import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
-from json import dumps as stdlib_json_dumps
-from json import loads as stdlib_json_loads
+from json import dumps as stdlib_json_dumps  # pylint: disable=preferred-module
+from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
 
 import defusedxml  # type: ignore
 import ecs_logging._utils
@@ -24,6 +36,8 @@ import uvloop
 from . import json  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
+
+# pylint: disable=protected-access, invalid-name
 
 
 def apply():
