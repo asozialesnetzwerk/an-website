@@ -16,9 +16,6 @@ from __future__ import annotations
 
 import json
 
-# pylint: disable=invalid-name
-
-
 file = "full_wordlist.txt"
 
 text = open(file).read().lower()
