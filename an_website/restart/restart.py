@@ -55,4 +55,3 @@ class Restart(APIRequestHandler):
 
         if code != 0:
             raise HTTPError(500)
-
