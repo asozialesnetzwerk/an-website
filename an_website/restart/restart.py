@@ -52,7 +52,7 @@ class Restart(APIRequestHandler):
         command_dir = os.path.dirname(AN_WEBSITE_DIR)
 
         # the command to execute
-        command = f"sh -c \"cd {command_dir} ; ./restart.sh {commit}\"".strip()
+        command = f'sh -c "cd {command_dir} ; ./restart.sh {commit}"'.strip()
 
         code = os.system(command)
 
