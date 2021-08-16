@@ -13,6 +13,14 @@ then
     python3 -m venv venv
 fi
 
+# if there's an argument use that commit hash
+if [ -n "$1" ]
+then
+    echo "$1"
+    git checkout "$1"
+fi
+
+
 venv/bin/pip install --disable-pip-version-check -U -r requirements.txt
 
 if [ ! -f "$SERVICE_FILE_LOCATION" ]

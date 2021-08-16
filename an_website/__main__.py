@@ -201,6 +201,14 @@ def make_app() -> Application:
 def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
+
+    app.settings["API_SECRETS"] = tuple(
+        secret.strip()
+        for secret in config.get(
+            "GENERAL", "API_SECRETS", fallback="an-website"
+        ).split(",")
+    )
+
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
         "SERVER_URL": config.get(
