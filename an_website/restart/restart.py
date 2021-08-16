@@ -51,4 +51,8 @@ class Restart(APIRequestHandler):
         # get the parent dir of the an_website module dir
         command_dir = os.path.dirname(AN_WEBSITE_DIR)
 
-        os.system(f"cd {command_dir} ; sh -c 'restart.sh {commit}'")
+        code = os.system(f"cd {command_dir} ; sh -c 'restart.sh {commit}'")
+
+        if code != 0:
+            raise HTTPError(500)
+
