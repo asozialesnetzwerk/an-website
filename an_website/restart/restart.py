@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import os
+import re
 
 from tornado.web import HTTPError
 
@@ -47,6 +48,13 @@ class Restart(APIRequestHandler):
             raise HTTPError(401)
 
         commit = self.get_query_argument("commit", default="", strip=True)
+
+        # check if commit only contains letters and numbers
+        # used to protect against code execution
+        if re.search("[^a-zA-Z0-9]", commit) is not None:
+            raise HTTPError(
+                400, reason="commit can only contain letters and numbers."
+            )
 
         # get the parent dir of the an_website module dir
         command_dir = os.path.dirname(AN_WEBSITE_DIR)
