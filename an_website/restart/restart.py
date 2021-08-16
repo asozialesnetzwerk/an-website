@@ -52,6 +52,3 @@ class Restart(APIRequestHandler):
         command_dir = os.path.dirname(AN_WEBSITE_DIR)
 
         os.system(f".{command_dir}/restart.sh {commit}")
-
-
-
