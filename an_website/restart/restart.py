@@ -65,4 +65,4 @@ class Restart(APIRequestHandler):
 
         await self.finish("Restarting.")
         # execute the restarting script
-        os.system(f"sh -c \"cd {command_dir} ; ./restart.sh {commit}\"".strip())
+        os.system(f'sh -c "cd {command_dir} ; ./restart.sh {commit}"'.strip())
