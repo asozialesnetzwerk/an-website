@@ -3,6 +3,13 @@
 SERVICE_FILE_NAME="an_website.ini"
 SERVICE_FILE_LOCATION="/etc/supervisor.d/$SERVICE_FILE_NAME"
 
+# if it is in detached head state:
+if [ -z "$(git branch --show-current)" ]
+then
+    # go to main branch:
+    git checkout main
+fi
+
 # get latest files from git:
 git pull --rebase --autostash
 
