@@ -58,5 +58,5 @@ jobs:
     steps:
       - name: Publish Changes
         run: |
-          curl -H "Authorization: ${{ secrets.API_RESTART_SECRET }}" \
+          POST -f -H "Authorization: ${{ secrets.API_RESTART_SECRET }}" \
             https://joshix.asozial.org/restart?commit=${{ github.event.head_commit.id }}

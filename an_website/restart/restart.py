@@ -38,6 +38,10 @@ class Restart(APIRequestHandler):
 
     async def get(self):
         """Handle the get request to the restart api."""
+        return self.post()
+
+    async def post(self):
+        """Handle the post request to the restart api."""
         secret = self.request.headers.get("Authorization")
 
         api_secrets = self.settings.get("API_SECRETS")
@@ -57,12 +61,12 @@ class Restart(APIRequestHandler):
             )
 
         # get the parent dir of the an_website module dir
-        command_dir = os.path.dirname(AN_WEBSITE_DIR)
+        repo_path = os.path.dirname(AN_WEBSITE_DIR)
 
         # check if restart script exists:
-        if not os.path.isfile(os.path.join(command_dir, "restart.sh")):
+        if not os.path.isfile(os.path.join(repo_path, "restart.sh")):
             raise HTTPError(501)
 
         await self.finish("Restarting.")
         # execute the restarting script
-        os.system(f'sh -c "cd {command_dir} ; ./restart.sh {commit}"'.strip())
+        os.system(f'sh -c "cd {repo_path} ; ./restart.sh {commit}"'.strip())
