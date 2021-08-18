@@ -36,10 +36,6 @@ def get_module_info() -> ModuleInfo:
 class Restart(APIRequestHandler):
     """The tornado request handler for the restart api."""
 
-    async def get(self):
-        """Handle the get request to the restart api."""
-        return self.post()
-
     async def post(self):
         """Handle the post request to the restart api."""
         secret = self.request.headers.get("Authorization")
