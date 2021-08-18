@@ -155,7 +155,10 @@ async def run(
 class BaseRequestHandler(RequestHandler):
     """The base tornado request handler used by every page."""
 
-    RATELIMIT_TOKENS = 1  # can be overridden in subclasses
+    RATELIMIT_TOKENS: int = 1  # can be overridden in subclasses
+    REQUIRES_AUTHORIZATION: bool = False  # can be overridden in subclasses
+
+    # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
 
@@ -173,8 +176,19 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
-        """Check rate limits with redis."""
-        if not sys.flags.dev_mode and not self.request.method == "OPTIONS":
+        """Check authorization and rate limits with redis."""
+        if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
+            # TODO: self.set_header("WWW-Authenticate")
+            raise HTTPError(401)
+
+        if (
+            # ignore ratelimits in dev_mode
+            not sys.flags.dev_mode
+            # ignore ratelimits for authorized requests
+            and not self.is_authorized()
+            # ignore ratelimits for requests with method OPTIONS
+            and not self.request.method == "OPTIONS"
+        ):
             now = datetime.utcnow()
             redis = self.settings.get("REDIS")
             prefix = self.settings.get("REDIS_PREFIX")
@@ -305,6 +319,17 @@ class BaseRequestHandler(RequestHandler):
             return strtobool(str(self.get_query_argument(name)))
         except ValueError:
             return default
+
+    def is_authorized(self) -> bool:
+        """Check whether the request is authorized."""
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
+
+        if api_secrets is None or len(api_secrets) == 0:
+            return False
+
+        secret = self.request.headers.get("Authorization")
+
+        return bool(secret in api_secrets)
 
 
 class APIRequestHandler(BaseRequestHandler):

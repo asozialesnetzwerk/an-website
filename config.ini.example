@@ -1,6 +1,6 @@
 [GENERAL]
 #ignored_modules = spam, eggs
-#api_secrets = hunter2, correct_horse_battery_staple
+#trusted_api_secrets = hunter2, correct_horse_battery_staple
 
 [SSL]
 enabled = nope

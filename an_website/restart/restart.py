@@ -35,16 +35,15 @@ def get_module_info() -> ModuleInfo:
 
 class Restart(APIRequestHandler):
     """The tornado request handler for the restart api."""
+    REQUIRES_AUTHORIZATION: bool = True
 
     async def post(self):
         """Handle the post request to the restart api."""
-        secret = self.request.headers.get("Authorization")
-
-        api_secrets = self.settings.get("API_SECRETS")
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
         if api_secrets is None or len(api_secrets) == 0:
             raise HTTPError(501)
 
-        if secret not in api_secrets:
+        if not self.is_authorized():
             raise HTTPError(401)
 
         commit = self.get_query_argument("commit", default="", strip=True)
