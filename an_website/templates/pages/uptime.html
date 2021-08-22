@@ -9,29 +9,25 @@
               type="text/css">
     {% end %}
     <div class="center">
-        Diese Webseite läuft bereits <div id="uptime">{{uptime}}</div>
+        Diese Webseite läuft bereits <div id="uptime">{{uptime_str}}</div>
     </div>
 
 <script>
-    const startTime = {{start_time}};
     const uptimeDiv = document.getElementById("uptime");
+    // the time the website got loaded
+    const startTime = Date.now()/1000;
 
     function displayUptime() {
-        const currentTime = Math.floor(Date.now()/1000);
-        const uptime = currentTime - startTime;
-        console.log(startTime, currentTime, uptime)
-        // divide by 60
+        // the uptime: (currentTime - startTime) + uptime at start
+        //              time on website          + uptime at start
+        const uptime = Math.floor(Date.now()/1000 - startTime + {{uptime}});
+        // display uptime:
         const div_60 = Math.floor(uptime / 60);
         const div_60_60 = Math.floor(div_60 / 60);
         uptimeDiv.innerText = `${Math.floor(div_60_60 / 24)}d ${div_60_60 % 24}h ${div_60 % 60}min ${uptime % 60}s`;
     }
-    setTimeout(
-        () => {
-            displayUptime();
-            setInterval(displayUptime, 1000);
-        },
-        1000 - new Date().getMilliseconds()
-    )
+    displayUptime();
+    setInterval(displayUptime, 1000);
 </script>
 {% end %}
 

@@ -64,10 +64,12 @@ class UptimeHandler(BaseRequestHandler):
 
     async def get(self):
         """Handle the get request and render the page."""
+        uptime = calculate_uptime()
+
         await self.render(
             "pages/uptime.html",
-            uptime=uptime_to_str(),
-            start_time=int(START_TIME),
+            uptime=uptime,
+            uptime_str=uptime_to_str(uptime),
         )
 
 
