@@ -67,6 +67,7 @@ class UptimeHandler(BaseRequestHandler):
         await self.render(
             "pages/uptime.html",
             uptime=uptime_to_str(),
+            start_time=int(START_TIME),
         )
 
 

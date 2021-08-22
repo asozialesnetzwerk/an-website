@@ -9,8 +9,24 @@
               type="text/css">
     {% end %}
     <div class="center">
-        Diese Webseite läuft bereits <div class="clock-font">{{uptime}}</div>
+        Diese Webseite läuft bereits <div id="uptime">{{uptime}}</div>
     </div>
+
+<script>
+    const startTime = {{start_time}};
+    const uptimeDiv = document.getElementById("uptime");
+
+    function displayUptime() {
+        const currentTime = Math.floor(Date.now()/1000);
+        const uptime = currentTime - startTime;
+        console.log(startTime, currentTime, uptime)
+        // divide by 60
+        const div_60 = Math.floor(uptime / 60);
+        const div_60_60 = Math.floor(div_60 / 60);
+        uptimeDiv.innerText = `${Math.floor(div_60_60 / 24)}d ${div_60_60 % 24}h ${div_60 % 60}min ${uptime % 60}s`;
+    }
+    setInterval(displayUptime, 1000)
+</script>
 {% end %}
 
 
@@ -25,11 +41,11 @@
         font-size: xx-large;
     }
         {% if no_3rd_party %}
-    .clock-font {
+    #uptime {
         font-weight: bold;
     }
         {% else %}
-    .clock-font {
+    #uptime {
         font-family: 'Orbitron', sans-serif;
     }
         {% end %}
