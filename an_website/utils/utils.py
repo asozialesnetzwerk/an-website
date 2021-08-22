@@ -129,7 +129,7 @@ async def run(
 
     # debugging stuff:
     if "ps -p" not in cmd:
-        with open(f"/proc/{proc.pid}/stat") as file:
+        with open(f"/proc/{proc.pid}/stat", encoding="utf-8") as file:
             print(file.read())
         await (run(f"ps -p {proc.pid} all | grep -E 'PID|{proc.pid}'"))
 

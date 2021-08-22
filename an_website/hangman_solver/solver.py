@@ -102,14 +102,18 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 @lru_cache(maxsize=10)
 def get_words(file_name: str) -> set[str]:
     """Get the words with the file_name and return them."""
-    with open(f"{BASE_WORD_DIR}/{file_name}.txt", "r") as file:
+    with open(
+        f"{BASE_WORD_DIR}/{file_name}.txt", "r", encoding="utf-8"
+    ) as file:
         return set(file.read().splitlines())
 
 
 @lru_cache(maxsize=10)
 def get_letters(file_name: str) -> dict[str, int]:
     """Get the letters dict with the file_name and return it."""
-    with open(f"{BASE_WORD_DIR}/{file_name}.json", "r") as file:
+    with open(
+        f"{BASE_WORD_DIR}/{file_name}.json", "r", encoding="utf-8"
+    ) as file:
         return orjson.loads(file.read())
 
 

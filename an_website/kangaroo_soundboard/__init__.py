@@ -25,7 +25,7 @@ import orjson
 
 DIR = os.path.dirname(__file__)
 
-with open(f"{DIR}/info.json", "r") as my_file:
+with open(f"{DIR}/info.json", "r", encoding="utf-8") as my_file:
     info = orjson.loads(my_file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}

@@ -55,7 +55,7 @@ def create_paths_dict() -> dict[str, WikiPage]:
             if file.endswith(".md"):
                 path = root + "/" + file
 
-                with open(path) as md_file:
+                with open(path, encoding="utf-8") as md_file:
                     file_content = md_file.read()
                     yaml_header: Optional[str]
                     if file_content.startswith("---"):
