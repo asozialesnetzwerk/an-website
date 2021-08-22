@@ -25,7 +25,13 @@
         const div_60_60 = Math.floor(div_60 / 60);
         uptimeDiv.innerText = `${Math.floor(div_60_60 / 24)}d ${div_60_60 % 24}h ${div_60 % 60}min ${uptime % 60}s`;
     }
-    setInterval(displayUptime, 1000)
+    setTimeout(
+        () => {
+            displayUptime();
+            setInterval(displayUptime, 1000);
+        },
+        1000 - new Date().getMilliseconds()
+    )
 </script>
 {% end %}
 
