@@ -33,7 +33,13 @@ from tornado.web import Application
 
 from . import DIR, patches
 from .utils import utils
-from .utils.utils import Handler, HandlerTuple, ModuleInfo, Timer
+from .utils.utils import (
+    Handler,
+    HandlerTuple,
+    ModuleInfo,
+    Timer,
+    time_function,
+)
 from .version import version
 
 # list of blocked modules
@@ -185,7 +191,12 @@ def get_all_handlers(
 
 def make_app() -> Application:
     """Create the tornado application and return it."""
-    module_infos: tuple[ModuleInfo, ...] = get_module_infos()
+    module_infos, duration = time_function(get_module_infos)
+    if duration > 1:
+        logger.warning(
+            "Getting the module infos took %ss. That's probably too long.",
+            duration,
+        )
     return Application(
         get_all_handlers(module_infos),  # type: ignore
         MODULE_INFOS=module_infos,
