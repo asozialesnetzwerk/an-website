@@ -53,7 +53,7 @@ def create_paths_dict() -> dict[str, WikiPage]:
     for root, files in test:
         for file in files:
             if file.endswith(".md"):
-                path = root + "/" + file
+                path = f"{root}/{file}"
 
                 with open(path, encoding="utf-8") as md_file:
                     file_content = md_file.read()
