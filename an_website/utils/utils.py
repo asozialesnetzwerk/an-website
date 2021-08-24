@@ -23,7 +23,7 @@ import time
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, TypeVar, Union
 from urllib.parse import quote_plus
 
 from ansi2html import Ansi2HTMLConverter  # type: ignore
@@ -96,7 +96,7 @@ class Timer:
 
     def stop(self) -> float:
         """
-        Stop the timer and return the execution time.
+        Stop the timer and return the execution time in seconds.
 
         If the timer was stopped already a ValueError gets raised.
         """
@@ -110,13 +110,22 @@ class Timer:
     @property
     def execution_time(self) -> float:
         """
-        Get the execution time and return it.
+        Get the execution time in seconds and return it.
 
         If the timer wasn't stopped yet a ValueError gets raised.
         """
         if self._execution_time is None:
             raise ValueError("Timer wasn't stopped yet.")
         return self._execution_time
+
+
+T = TypeVar("T")  # pylint: disable=invalid-name
+
+
+def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
+    """Run the function and return the result and the time it took in s."""
+    timer = Timer()
+    return function(*args), timer.stop()
 
 
 def length_of_match(_m: re.Match):
