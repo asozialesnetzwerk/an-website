@@ -19,6 +19,7 @@ import asyncio.subprocess
 import logging
 import re
 import sys
+import time
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -83,6 +84,39 @@ def get_module_info() -> ModuleInfo:
 #         return True
 #     except FileExistsError:
 #         return False
+
+
+class Timer:
+    """Timer class used for timing stuff."""
+
+    def __init__(self):
+        """Start the timer."""
+        self._execution_time: Optional[float] = None
+        self._start_time: float = time.time()
+
+    def stop(self) -> float:
+        """
+        Stop the timer and return the execution time.
+
+        If the timer was stopped already a ValueError gets raised.
+        """
+        if self._execution_time is not None:
+            raise ValueError("Timer has been stopped before.")
+        self._execution_time = time.time() - self._start_time
+
+        del self._start_time
+        return self._execution_time
+
+    @property
+    def execution_time(self) -> float:
+        """
+        Get the execution time and return it.
+
+        If the timer wasn't stopped yet a ValueError gets raised.
+        """
+        if self._execution_time is None:
+            raise ValueError("Timer wasn't stopped yet.")
+        return self._execution_time
 
 
 def length_of_match(_m: re.Match):

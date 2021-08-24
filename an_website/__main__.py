@@ -21,7 +21,6 @@ import logging
 import os
 import ssl
 import sys
-import time
 from typing import Optional
 
 import aioredis  # type: ignore
@@ -34,7 +33,7 @@ from tornado.web import Application
 
 from . import DIR, patches
 from .utils import utils
-from .utils.utils import Handler, HandlerTuple, ModuleInfo
+from .utils.utils import Handler, HandlerTuple, ModuleInfo, Timer
 from .version import version
 
 # list of blocked modules
@@ -51,66 +50,71 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
     module_infos: list[ModuleInfo] = []
     loaded_modules: list[str] = []
     errors: list[str] = []
-    for (  # pylint: disable=too-many-nested-blocks
-        potential_module
-    ) in os.listdir(DIR):
+
+    for potential_module in os.listdir(DIR):
         if (
-            not potential_module.startswith("_")
-            and f"{potential_module}.*" not in IGNORED_MODULES
-            and os.path.isdir(f"{DIR}/{potential_module}")
+            potential_module.startswith("_")
+            or f"{potential_module}.*" in IGNORED_MODULES
+            or not os.path.isdir(f"{DIR}/{potential_module}")
         ):
-            for potential_file in os.listdir(f"{DIR}/{potential_module}"):
-                module_name = f"{potential_module}.{potential_file[:-3]}"
-                if (
-                    potential_file.endswith(".py")
-                    and module_name not in IGNORED_MODULES
-                    and not potential_file.startswith("_")
-                ):
-                    import_start_time = time.time()
-                    module = importlib.import_module(
-                        f".{module_name}",
-                        package="an_website",
+            continue
+
+        for potential_file in os.listdir(f"{DIR}/{potential_module}"):
+            module_name = f"{potential_module}.{potential_file[:-3]}"
+            if (
+                not potential_file.endswith(".py")
+                or module_name in IGNORED_MODULES
+                or potential_file.startswith("_")
+            ):
+                continue
+
+            import_timer = Timer()
+            module = importlib.import_module(
+                f".{module_name}",
+                package="an_website",
+            )
+            if "get_module_info" not in dir(module):
+                errors.append(
+                    f"{DIR}/{potential_module}/{potential_file} has no "
+                    f"'get_module_info' method. Please add the method or add "
+                    f"'{potential_module}.*' or '{module_name}' to "
+                    f"IGNORED_MODULES."
+                )
+                continue
+
+            if (
+                (  # check if the annotations specify the return
+                    # type as Module info
+                    module.get_module_info.__annotations__.get(  # type: ignore
+                        "return", ""
                     )
-                    if "get_module_info" in dir(module):
-                        if (
-                            (  # check if the annotations specify the return
-                                # type as Module info
-                                module.get_module_info.__annotations__.get(  # type: ignore
-                                    "return", ""
-                                )
-                                == "ModuleInfo"
-                            )
-                            # check if returned module_info is type ModuleInfo
-                            and isinstance(
-                                module_info := module.get_module_info(),  # type: ignore
-                                ModuleInfo,
-                            )
-                        ):
-                            module_infos.append(module_info)
-                            loaded_modules.append(module_name)
-                            import_duration = time.time() - import_start_time
-                            if import_duration > 0.1:
-                                logger.warning(
-                                    "Import of %s took %ss that's affecting "
-                                    "the startup time.",
-                                    module_name,
-                                    import_duration,
-                                )
-                        else:
-                            errors.append(
-                                f"'get_module_info' in {DIR}"
-                                f"/{potential_module}/{potential_file} does "
-                                f"not return ModuleInfo. Please add/fix the "
-                                f"return type or add '{potential_module}.*' "
-                                f"or '{module_name}' to IGNORED_MODULES."
-                            )
-                    else:
-                        errors.append(
-                            f"{DIR}/{potential_module}/{potential_file} has "
-                            f"no 'get_module_info' method. Please add the "
-                            f"method or add '{potential_module}.*' or "
-                            f"'{module_name}' to IGNORED_MODULES."
-                        )
+                    == "ModuleInfo"
+                )
+                # check if returned module_info is type ModuleInfo
+                and isinstance(
+                    module_info := module.get_module_info(),  # type: ignore
+                    ModuleInfo,
+                )
+            ):
+                module_infos.append(module_info)
+                loaded_modules.append(module_name)
+
+                if import_timer.stop() > 0.1:
+                    logger.warning(
+                        "Import of %s took %ss that's affecting the startup "
+                        "time.",
+                        module_name,
+                        import_timer.execution_time,
+                    )
+                continue
+
+            errors.append(
+                f"'get_module_info' in {DIR}/{potential_module}"
+                f"/{potential_file} does not return ModuleInfo. "
+                f"Please add/fix the return type or add "
+                f"'{potential_module}.*' or '{module_name}' to "
+                f"IGNORED_MODULES."
+            )
 
     if len(errors) > 0:
         if sys.flags.dev_mode:
@@ -207,6 +211,10 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         for secret in config.get(
             "GENERAL", "TRUSTED_API_SECRETS", fallback="an-website"
         ).split(",")
+    )
+
+    app.settings["CONTACT_EMAIL"] = config.get(
+        "GENERAL", "CONTACT_EMAIL", fallback=None
     )
 
     app.settings["ELASTIC_APM"] = {
