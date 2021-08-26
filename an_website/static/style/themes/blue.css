@@ -1,0 +1,15 @@
+:root {
+    /* colors: */
+    --main: hsl(195, 100%, 50%);
+    --dark-main: hsl(240, 100%, 50%);
+
+    --text-color: hsl(0, 0%, 90%);
+    --secondary-text-color: hsl(0, 0%, 60%);
+
+    --bg: hsl(0, 0%, 0%);
+    --secondary-bg: hsl(0, 0%, 10%);
+    --tooltip-bg: hsl(0, 0%, 20%);
+
+    --light-contrast: hsl(0, 100%, 50%);
+    --contrast: hsl(0, 100%, 30%);
+}
