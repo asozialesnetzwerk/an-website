@@ -3,8 +3,8 @@
     --header-height: 69px;
 }
 * {
-    color: var(--white);
-    background: var(--black);
+    color: var(--text-color);
+    background: var(--bg);
 }
 body {
     padding: var(--header-height) 0 0;
@@ -13,7 +13,7 @@ body {
     padding: 10px;
 }
 a {
-    color: var(--red)
+    color: var(--dark-main)
 }
 
 /* Tooltip container */
@@ -26,8 +26,8 @@ a {
 .tooltip .tooltip-text {
     visibility: hidden;
     width: 140px;
-    background-color: var(--grey);
-    color: var(--white);
+    background-color: var(--tool-tip-bg);
+    color: var(--text-color);
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
@@ -52,7 +52,7 @@ a {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: var(--light-grey) transparent transparent transparent;
+    border-color: var(--secondary-text-color) transparent transparent transparent;
 }
 
 #github-footer {
@@ -61,6 +61,6 @@ a {
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    color: var(--white);
+    color: var(--text-color);
     background-color: transparent;
 }

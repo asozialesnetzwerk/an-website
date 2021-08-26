@@ -1,12 +1,12 @@
 :root {
     /* colors: */
-    --red: hsl(0, 100%, 30%);
-    --white: hsl(0, 0%, 90%);
-    --light-grey: hsl(0, 0%, 60%);
-    --grey: hsl(0, 0%, 20%);
-    --black: hsl(0, 0%, 0%);
-    --dark-grey: hsl(0, 0%, 10%);
-    --light-red: hsl(0, 100%, 50%);
-    --light-blue: hsl(195, 100%, 50%);
-    --blue: hsl(240, 100%, 50%);
+    --dark-main: hsl(0, 100%, 30%);
+    --text-color: hsl(0, 0%, 90%);
+    --secondary-text-color: hsl(0, 0%, 60%);
+    --tool-tip-bg: hsl(0, 0%, 20%);
+    --bg: hsl(0, 0%, 0%);
+    --secondary-bg: hsl(0, 0%, 10%);
+    --main: hsl(0, 100%, 50%);
+    --light-contrast: hsl(195, 100%, 50%);
+    --contrast: hsl(240, 100%, 50%);
 }

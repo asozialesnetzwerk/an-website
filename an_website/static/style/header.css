@@ -4,14 +4,14 @@
     left: 0;
     top: 0;
     width: 100%;
-    background-color: var(--red);
+    background-color: var(--dark-main);
     padding: 5px;
     color: #fff;
     height: var(--header-height);
 }
 
 .header * {
-    background-color:  var(--red);
+    background-color:  var(--dark-main);
 }
 
 .open-pane {
@@ -31,7 +31,7 @@
     top: 0;
     z-index: 11;
     position: fixed;
-    background-color: var(--dark-grey);
+    background-color: var(--secondary-bg);
     color: #fff;
     max-width: 70%;
     height: 100%;
@@ -48,7 +48,7 @@
 }
 
 .site-pane * {
-    background-color: var(--dark-grey);
+    background-color: var(--secondary-bg);
 }
 
 .site-pane h1 {
@@ -63,7 +63,7 @@
 .menu-list li {
     display: inherit;
     margin-bottom: 5px;
-    color: var(--white)
+    color: var(--text-color)
 }
 
 .menu-sub-list {
@@ -74,7 +74,7 @@
 .menu-sub-list li {
     display: inherit;
     margin-top: 3px;
-    color: var(--white)
+    color: var(--text-color)
 }
 
 .no-3rd-party-button {
@@ -85,10 +85,10 @@
 }
 
 .no-3rd-party-button.no-third-party-sure {
-    background-color: var(--light-red);
+    background-color: var(--main);
 }
 
 .no-3rd-party-button.no-third-party-nope {
-    background-color: var(--blue);
+    background-color: var(--contrast);
 }
 

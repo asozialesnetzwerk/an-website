@@ -1,5 +1,5 @@
 .quote-a {
-    color: var(--light-grey) !important;
+    color: var(--secondary-text-color) !important;
 }
 
 input {
@@ -8,5 +8,5 @@ input {
 
 .marked {
     display: inline !important;
-    color: var(--light-blue);
+    color: var(--light-contrast);
 }

@@ -4,9 +4,9 @@ input {
     margin: 8px 0;
     box-sizing: border-box;
     font-size: 20px;
-    border: 2px solid var(--light-red);
+    border: 2px solid var(--main);
     border-radius: 10px;
-    background-color: var(--dark-grey);
+    background-color: var(--secondary-bg);
 }
 input:focus {
     outline: none;
@@ -20,9 +20,9 @@ label {
     padding: 12px;
     box-sizing: border-box;
     font-size: 20px;
-    border: 2px solid var(--light-blue);
+    border: 2px solid var(--light-contrast);
     border-radius: 10px;
-    background-color: var(--dark-grey);
+    background-color: var(--secondary-bg);
     color: #fdfdfd;
     float: right;
 }
@@ -32,7 +32,7 @@ label {
 }
 .output-text {
     float: left;
-    border: 2px solid var(--blue);
+    border: 2px solid var(--contrast);
     overflow-x: scroll;
     width: available;
     margin-left: 6px;

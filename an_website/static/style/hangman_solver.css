@@ -4,24 +4,24 @@
     margin: 8px 0;
     box-sizing: border-box;
     font-size: 20px;
-    border: 2px solid var(--light-red);
+    border: 2px solid var(--main);
     border-radius: 10px;
-    background-color: var(--dark-grey);
+    background-color: var(--secondary-bg);
 }
 
 .text-input:focus {
     outline: none;
-    border: 2px solid var(--white);
+    border: 2px solid var(--text-color);
 }
 
 .small-input {
     border-radius: 8px;
-    border: 2px solid var(--light-red);
-    background-color: var(--dark-grey);
+    border: 2px solid var(--main);
+    background-color: var(--secondary-bg);
 }
 .small-input:focus {
     outline: none;
-    border: 2px solid var(--white);
+    border: 2px solid var(--text-color);
 }
 
 .text-input-label {
@@ -30,11 +30,11 @@
 
 label {
     font-style: initial;
-    color: var(--white);
+    color: var(--text-color);
 }
 
 body {
-    background-color: var(--black);
+    background-color: var(--bg);
 }
 
 .button {
@@ -44,8 +44,8 @@ body {
     border-width: 2px;
     border-style: solid;
     border-radius: 10px;
-    background-color: var(--dark-grey);
-    color: var(--white);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
 }
 
 .button-container {
@@ -53,7 +53,7 @@ body {
 }
 
 .button-blue {
-    border-color: var(--light-blue);
+    border-color: var(--light-contrast);
 }
 
 .button-blue:hover {
@@ -62,7 +62,7 @@ body {
 
 .button:active {
     border-width: 1px;
-    border-color: var(--light-grey);
+    border-color: var(--secondary-text-color);
 }
 
 .no-select {
@@ -76,7 +76,7 @@ body {
 
 .output-text {
     float: left;
-    border: 2px solid var(--blue);
+    border: 2px solid var(--contrast);
     overflow-x: scroll;
     width: unset;
     margin-left: 6px;
@@ -125,17 +125,17 @@ input[type="checkbox"] {
     width: 21px;
     border-radius: 3px;
     border-color: darkred;
-    background-color: var(--white);
+    background-color: var(--text-color);
 }
 
 /* On mouse-over, add a grey background color */
 .cbl:hover input ~ .checkmark {
-    background-color: var(--light-grey);
+    background-color: var(--secondary-text-color);
 }
 
 /* When the checkbox is checked, add a darkred background */
 .cbl input:checked ~ .checkmark {
-    background-color: var(--red);
+    background-color: var(--dark-main);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */
@@ -156,7 +156,7 @@ input[type="checkbox"] {
     top: 3px;
     width: 5px;
     height: 10px;
-    border: solid var(--white);
+    border: solid var(--text-color);
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
