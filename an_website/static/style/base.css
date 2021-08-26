@@ -1,15 +1,5 @@
+/* other useful stuff: */
 :root {
-    /* colors: */
-    --red: hsl(0, 100%, 30%);
-    --white: hsl(0, 0%, 90%);
-    --light-grey: hsl(0, 0%, 60%);
-    --grey: hsl(0, 0%, 20%);
-    --black: hsl(0, 0%, 0%);
-    --dark-grey: hsl(0, 0%, 10%);
-    --light-red: hsl(0, 100%, 50%);
-    --light-blue: hsl(195, 100%, 50%);
-    --blue: hsl(240, 100%, 50%);
-    /* other useful stuff: */
     --header-height: 69px;
 }
 * {

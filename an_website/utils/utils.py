@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import asyncio.subprocess
 import logging
+import os
 import re
 import sys
 import time
@@ -29,6 +30,8 @@ from urllib.parse import quote_plus
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from tornado import httputil
 from tornado.web import HTTPError, RequestHandler
+
+from an_website import DIR as site_base_dir
 
 GIT_URL: str = "https://github.com/asozialesnetzwerk"
 REPO_URL: str = f"{GIT_URL}/an-website"
@@ -195,6 +198,16 @@ async def run(
     return proc.returncode, stdout, stderr
 
 
+def get_themes() -> tuple[str, ...]:
+    """Get a list of available themes."""
+    files = os.listdir(os.path.join(site_base_dir, "static/style/themes"))
+
+    return tuple(file[:-4] for file in files if file.endswith(".css"))
+
+
+THEMES: tuple[str, ...] = get_themes()
+
+
 class BaseRequestHandler(RequestHandler):
     """The base tornado request handler used by every page."""
 
@@ -316,6 +329,13 @@ class BaseRequestHandler(RequestHandler):
 
         return url
 
+    def get_theme(self):
+        """Get the theme currently used."""
+        theme = self.get_query_argument("theme", default="default")
+        if theme in THEMES:
+            return theme
+        return "default"
+
     def get_template_namespace(self):
         """
         Add useful things to the template namespace and return it.
@@ -341,6 +361,7 @@ class BaseRequestHandler(RequestHandler):
                 "form_appendix": form_appendix,
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
+                "theme": self.get_theme(),
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
