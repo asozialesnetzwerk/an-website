@@ -26,7 +26,7 @@ a {
 .tooltip .tooltip-text {
     visibility: hidden;
     width: 140px;
-    background-color: var(--tool-tip-bg);
+    background-color: var(--tooltip-bg);
     color: var(--text-color);
     text-align: center;
     padding: 5px 0;
