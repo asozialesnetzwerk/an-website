@@ -1,19 +1,30 @@
-/* other useful stuff: */
 :root {
+    /* other useful stuff: */
     --header-height: 69px;
 }
+
 * {
     color: var(--text-color);
     background: var(--bg);
 }
+
 body {
     padding: var(--header-height) 0 0;
 }
+
 #body {
     padding: 10px;
 }
+
 a {
     color: var(--dark-main)
+}
+
+.hidden-input {
+    display: none;
+    width: 0;
+    height: 0;
+    opacity: 0;
 }
 
 /* Tooltip container */

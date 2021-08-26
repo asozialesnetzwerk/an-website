@@ -151,6 +151,8 @@ class CurrencyConverter(BaseRequestHandler):
             redirect_url = f"{url}?{key}={value_dict.get(key + '_str')}"
             if self.get_no_3rd_party():
                 redirect_url += "&no_3rd_party=sure"
+            if (theme := self.get_theme()) != "default":
+                redirect_url += "&theme=" + theme
             self.redirect(redirect_url)
             return
 

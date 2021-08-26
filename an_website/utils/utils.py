@@ -320,12 +320,10 @@ class BaseRequestHandler(RequestHandler):
 
         if self.get_no_3rd_party() and "no_3rd_party" not in url:
             # if "?" already is in the url then use &
-            if "?" in url:
-                url += "&"
-            else:
-                url += "?"
+            url += ("&" if "?" in url else "?") + "no_3rd_party=sure"
 
-            return url + "no_3rd_party=sure"
+        if (theme := self.get_theme()) != "default":
+            url += ("&" if "?" in url else "?") + "theme=" + theme
 
         return url
 
@@ -346,11 +344,15 @@ class BaseRequestHandler(RequestHandler):
         namespace = super().get_template_namespace()
         no_3rd_party: bool = self.get_no_3rd_party()
         form_appendix: str = (
-            "<input name='no_3rd_party' style='display: none;"
-            + "width: 0; height: 0; opacity: 0' value='sure'>"
+            "<input name='no_3rd_party' class='hidden-input' value='sure'>"
             if no_3rd_party
             else ""
         )
+        if (theme := self.get_theme()) != "default":
+            form_appendix += (
+                f"<input name='theme' class='hidden-input' value='{theme}'>"
+            )
+
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
