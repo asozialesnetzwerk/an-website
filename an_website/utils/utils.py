@@ -364,9 +364,7 @@ class BaseRequestHandler(RequestHandler):
                 "form_appendix": form_appendix,
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
-                "theme": random.choice(THEMES)
-                if theme == "random"
-                else theme,
+                "theme": random.choice(THEMES) if theme == "random" else theme,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
