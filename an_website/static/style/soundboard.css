@@ -8,5 +8,5 @@ input {
 
 .marked {
     display: inline !important;
-    color: var(--light-contrast);
+    color: var(--contrast-2);
 }

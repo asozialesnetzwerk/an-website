@@ -4,7 +4,7 @@
     margin: 8px 0;
     box-sizing: border-box;
     font-size: 20px;
-    border: 2px solid var(--main);
+    border: 2px solid var(--main-2);
     border-radius: 10px;
     background-color: var(--secondary-bg);
 }
@@ -16,7 +16,7 @@
 
 .small-input {
     border-radius: 8px;
-    border: 2px solid var(--main);
+    border: 2px solid var(--main-2);
     background-color: var(--secondary-bg);
 }
 .small-input:focus {
@@ -53,7 +53,7 @@ body {
 }
 
 .button-blue {
-    border-color: var(--light-contrast);
+    border-color: var(--contrast-2);
 }
 
 .button-blue:hover {
@@ -135,7 +135,7 @@ input[type="checkbox"] {
 
 /* When the checkbox is checked, add a darkred background */
 .cbl input:checked ~ .checkmark {
-    background-color: var(--dark-main);
+    background-color: var(--main);
 }
 
 /* Create the checkmark/indicator (hidden when not checked) */

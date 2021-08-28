@@ -4,14 +4,14 @@
     left: 0;
     top: 0;
     width: 100%;
-    background-color: var(--dark-main);
+    background-color: var(--main);
     padding: 5px;
     color: #fff;
     height: var(--header-height);
 }
 
 .header * {
-    background-color:  var(--dark-main);
+    background-color:  var(--main);
 }
 
 .open-pane {
@@ -85,7 +85,7 @@
 }
 
 .no-3rd-party-button.no-third-party-sure {
-    background-color: var(--main);
+    background-color: var(--main-2);
 }
 
 .no-3rd-party-button.no-third-party-nope {
