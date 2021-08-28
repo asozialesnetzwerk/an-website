@@ -18,6 +18,7 @@ import asyncio
 import asyncio.subprocess
 import logging
 import os
+import random
 import re
 import sys
 import time
@@ -329,8 +330,8 @@ class BaseRequestHandler(RequestHandler):
 
     def get_theme(self):
         """Get the theme currently used."""
-        theme = self.get_query_argument("theme", default="default")
-        if theme in THEMES:
+        theme = self.get_query_argument("theme", default=None)
+        if theme in THEMES or theme == "random":
             return theme
         return "default"
 
@@ -363,7 +364,9 @@ class BaseRequestHandler(RequestHandler):
                 "form_appendix": form_appendix,
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
-                "theme": self.get_theme(),
+                "theme": random.choice(THEMES)
+                if theme == "random"
+                else theme,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
