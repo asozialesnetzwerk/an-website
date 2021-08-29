@@ -25,6 +25,7 @@ import time
 import traceback
 from dataclasses import dataclass, field
 from datetime import datetime
+from functools import cache
 from typing import Any, Callable, Optional, Tuple, TypeVar, Union
 from urllib.parse import quote_plus
 
@@ -201,6 +202,7 @@ async def run(
     return proc.returncode, stdout, stderr
 
 
+@cache
 def add_arg_to_url(url: str, arg: str, value: Union[str, int, bool]) -> str:
     """Add a query argument to a url."""
     arg_eq_val: str = f"{arg}={value}"
@@ -313,6 +315,7 @@ class BaseRequestHandler(RequestHandler):
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
 
+    @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
         return self.get_query_argument_as_bool("no_3rd_party", False)
@@ -343,6 +346,7 @@ class BaseRequestHandler(RequestHandler):
 
         return url
 
+    @cache
     def get_theme(self):
         """Get the theme currently used."""
         theme = self.get_query_argument("theme", default=None)
