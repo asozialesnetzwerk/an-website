@@ -199,6 +199,20 @@ async def run(
     return proc.returncode, stdout, stderr
 
 
+def add_arg_to_url(url: str, arg: str, value: Union[str, int, bool]) -> str:
+    """Add a query argument to a url."""
+    arg_eq_val: str = f"{arg}={value}"
+
+    if arg_eq_val in url:
+        return url
+
+    if f"{arg}=" in url:
+        url = re.sub(f"{arg}=[^&]+&?", "", url)
+
+    # if "?" already is in the url then use &
+    return url + ("&" if "?" in url else "?") + arg_eq_val
+
+
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
     files = os.listdir(os.path.join(site_base_dir, "static/style/themes"))
@@ -303,7 +317,7 @@ class BaseRequestHandler(RequestHandler):
 
     def fix_url(self, url: str, this_url: str = None) -> str:
         """
-        Fix an url and return it.
+        Fix a url and return it.
 
         If the url is from another website, link to it with the redirect page.
         Otherwise just return the url with no_3rd_party appended.
@@ -320,11 +334,10 @@ class BaseRequestHandler(RequestHandler):
             )
 
         if self.get_no_3rd_party() and "no_3rd_party" not in url:
-            # if "?" already is in the url then use &
-            url += ("&" if "?" in url else "?") + "no_3rd_party=sure"
+            url = add_arg_to_url(url, "no_3rd_party", "sure")
 
         if (theme := self.get_theme()) != "default":
-            url += ("&" if "?" in url else "?") + "theme=" + theme
+            url = add_arg_to_url(url, "theme", theme)
 
         return url
 
