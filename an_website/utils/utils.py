@@ -158,6 +158,8 @@ def strtobool(val):
         return True
     if val in ("nope", "n", "no", "f", "false", "off", "0"):
         return False
+    if val in ("maybe", "idc"):
+        return random.choice((True, False))
     raise ValueError("invalid truth value %r" % (val,))
 
 
