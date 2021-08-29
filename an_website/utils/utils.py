@@ -151,7 +151,7 @@ def n_from_set(_set: set, _n: int) -> set:
     return new_set
 
 
-def strtobool(val):
+def strtobool(val: str) -> bool:
     """Convert a string representation of truth to True or False."""
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):
