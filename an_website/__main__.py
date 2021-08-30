@@ -224,6 +224,11 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         ).split(",")
     )
 
+    app.settings["LINK_TO_HTTPS"] = config.getboolean(
+        "GENERAL", "LINK_TO_HTTPS", fallback=False
+    )
+
+    # TODO: Use contact_email
     app.settings["CONTACT_EMAIL"] = config.get(
         "GENERAL", "CONTACT_EMAIL", fallback=None
     )

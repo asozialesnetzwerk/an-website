@@ -320,7 +320,8 @@ class BaseRequestHandler(RequestHandler):
         """Return the no_3rd_party query argument as boolean."""
         return self.get_query_argument_as_bool("no_3rd_party", False)
 
-    def fix_url(self, url: str, this_url: str = None) -> str:
+    @cache
+    def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
         """
         Fix a url and return it.
 
@@ -331,7 +332,7 @@ class BaseRequestHandler(RequestHandler):
             # used for discord page
             this_url = self.request.full_url()
 
-        if url.startswith("http") and f"//{self.request.host_name}" not in url:
+        if url.startswith("http") and f"//{self.request.host}" not in url:
             # url is to other website:
             url = (
                 f"/redirect?to={quote_plus(url)}&from"
@@ -343,6 +344,15 @@ class BaseRequestHandler(RequestHandler):
 
         if (theme := self.get_theme()) != "default":
             url = add_arg_to_url(url, "theme", theme)
+
+        if url.startswith("/"):
+            # don't use relative urls
+            protocol = (  # make all links https if the config is set
+                "https"
+                if self.settings.get("LINK_TO_HTTPS")
+                else self.request.protocol
+            )
+            return f"{protocol}://{self.request.host}{url}"
 
         return url
 
