@@ -203,6 +203,15 @@ async def run(
 
 
 @cache
+def add_args_to_url(url: str, **kwargs) -> str:
+    """Add a query arguments to a url."""
+    for key, value in kwargs.items():
+        if value is not None:
+            url = add_arg_to_url(url, key, value)
+    return url
+
+
+@cache
 def add_arg_to_url(url: str, arg: str, value: Union[str, int, bool]) -> str:
     """Add a query argument to a url."""
     arg_eq_val: str = f"{arg}={value}"
@@ -339,11 +348,13 @@ class BaseRequestHandler(RequestHandler):
                 f"={quote_plus(this_url)}"
             )
 
-        if self.get_no_3rd_party() and "no_3rd_party" not in url:
-            url = add_arg_to_url(url, "no_3rd_party", "sure")
-
-        if (theme := self.get_theme()) != "default":
-            url = add_arg_to_url(url, "theme", theme)
+        url = add_args_to_url(
+            url,
+            # the no_2rd_party param:
+            no_3rd_party="sure" if self.get_no_3rd_party() else None,
+            # the theme param:
+            theme=self.get_theme() if self.get_theme() != "default" else None,
+        )
 
         if url.startswith("/"):
             # don't use relative urls
