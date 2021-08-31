@@ -21,7 +21,8 @@ from tornado.web import HTTPError
 
 from an_website import DIR as AN_WEBSITE_DIR
 
-from ..utils.utils import APIRequestHandler, ModuleInfo
+from ..utils.request_handler import APIRequestHandler
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:

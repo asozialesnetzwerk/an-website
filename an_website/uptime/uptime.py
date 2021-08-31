@@ -17,7 +17,8 @@ from __future__ import annotations
 import time
 from typing import Optional
 
-from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.utils import ModuleInfo
 
 START_TIME = time.time()
 

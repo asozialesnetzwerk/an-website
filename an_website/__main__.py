@@ -32,7 +32,7 @@ from tornado.log import LogFormatter
 from tornado.web import Application
 
 from . import DIR, patches
-from .utils import utils
+from .utils.request_handler import NotFound
 from .utils.utils import (
     Handler,
     HandlerTuple,
@@ -43,7 +43,12 @@ from .utils.utils import (
 from .version import version
 
 # list of blocked modules
-IGNORED_MODULES = ["patches.*", "static.*", "templates.*"]
+IGNORED_MODULES = [
+    "patches.*",
+    "static.*",
+    "templates.*",
+    "utils.utils",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -204,7 +209,7 @@ def make_app() -> Application:
         autoreload=False,
         compress_response=True,
         debug=bool(sys.flags.dev_mode),
-        default_handler_class=utils.NotFound,
+        default_handler_class=NotFound,
         websocket_ping_interval=10,
         # Template settings
         template_path=f"{DIR}/templates",

@@ -19,7 +19,8 @@ The page will ask users if they want to leave this website.
 """
 from __future__ import annotations
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:

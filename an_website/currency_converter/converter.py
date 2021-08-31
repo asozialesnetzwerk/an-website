@@ -19,7 +19,8 @@ from typing import Optional, Union
 
 from tornado.web import RequestHandler
 
-from ..utils.utils import APIRequestHandler, BaseRequestHandler, ModuleInfo
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.utils import ModuleInfo
 
 keys = ["euro", "mark", "ost", "schwarz"]
 multipliers = [1, 2, 4, 20]

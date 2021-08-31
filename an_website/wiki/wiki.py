@@ -22,7 +22,8 @@ import markdown
 import yaml
 from tornado.httpclient import HTTPError
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo, PageInfo
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo, PageInfo
 from . import DIR
 
 

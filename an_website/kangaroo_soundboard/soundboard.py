@@ -18,7 +18,8 @@ from typing import Callable, Iterable, Optional
 
 from tornado.web import HTTPError, StaticFileHandler
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo, PageInfo
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo, PageInfo
 from . import (
     ALL_SOUNDS,
     DIR,

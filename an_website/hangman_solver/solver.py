@@ -24,14 +24,8 @@ from typing import Union
 import orjson
 from tornado.web import HTTPError, RequestHandler
 
-from ..utils.utils import (
-    APIRequestHandler,
-    BaseRequestHandler,
-    ModuleInfo,
-    length_of_match,
-    n_from_set,
-    strtobool,
-)
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.utils import ModuleInfo, length_of_match, n_from_set, strtobool
 from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")

@@ -18,7 +18,8 @@ import hashlib
 import subprocess
 
 from .. import DIR
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo
 
 
 def run_cmd(cmd):

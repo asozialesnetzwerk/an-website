@@ -21,7 +21,8 @@ from __future__ import annotations
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
-from ..utils.utils import BaseRequestHandler, ModuleInfo, run
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo, run
 
 
 def get_module_info() -> ModuleInfo:

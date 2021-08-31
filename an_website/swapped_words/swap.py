@@ -19,13 +19,8 @@ from re import Match, Pattern
 
 from tornado.web import HTTPError
 
-from ..utils.utils import (
-    GIT_URL,
-    APIRequestHandler,
-    BaseRequestHandler,
-    ModuleInfo,
-    PageInfo,
-)
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
 
 
 def get_module_info() -> ModuleInfo:

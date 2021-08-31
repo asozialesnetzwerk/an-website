@@ -17,7 +17,8 @@ from __future__ import annotations
 import orjson
 from tornado.httpclient import AsyncHTTPClient, HTTPError
 
-from ..utils.utils import BaseRequestHandler, ModuleInfo
+from ..utils.request_handler import BaseRequestHandler
+from ..utils.utils import ModuleInfo
 
 WIDGET_URL = "https://discord.com/api/guilds/367648314184826880/widget.json"
 
