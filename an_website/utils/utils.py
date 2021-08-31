@@ -152,7 +152,10 @@ def n_from_set(_set: set, _n: int) -> set:
     return new_set
 
 
-def strtobool(val: str) -> bool:
+STR_TO_BOOL_NONE = TypeVar("STR_TO_BOOL_NONE")
+
+
+def strtobool(val: str, default: Optional[bool] = None) -> bool:
     """Convert a string representation of truth to True or False."""
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):
@@ -161,7 +164,9 @@ def strtobool(val: str) -> bool:
         return False
     if val in ("maybe", "idc"):
         return random.choice((True, False))
-    raise ValueError("invalid truth value %r" % (val,))
+    if default is None:
+        raise ValueError("invalid truth value %r" % (val,))
+    return default
 
 
 async def run(
@@ -325,11 +330,6 @@ class BaseRequestHandler(RequestHandler):
         return self._reason
 
     @cache
-    def get_no_3rd_party(self) -> bool:
-        """Return the no_3rd_party query argument as boolean."""
-        return self.get_query_argument_as_bool("no_3rd_party", False)
-
-    @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
         """
         Fix a url and return it.
@@ -368,9 +368,17 @@ class BaseRequestHandler(RequestHandler):
         return url
 
     @cache
+    def get_no_3rd_party(self) -> bool:
+        """Return the no_3rd_party query argument as boolean."""
+        return strtobool(
+            self.get_request_var("no_3rd_party", default="false"), False
+        )
+
+    @cache
     def get_theme(self):
         """Get the theme currently used."""
-        theme = self.get_query_argument("theme", default=None)
+        theme = self.get_request_var("theme", default=None)
+
         if theme in THEMES or theme == "random":
             return theme
         return "default"
@@ -413,19 +421,19 @@ class BaseRequestHandler(RequestHandler):
         )
         return namespace
 
-    def get_query_argument_as_bool(self, name: str, default: bool = False):
+    def get_request_var(
+        self, name: str, default: Optional[str] = None
+    ) -> Optional[str]:
         """
-        Get a query argument by name as boolean with out throwing an error.
+        Get the a value by name for the request.
 
-        If the argument isn't found or not a boolean value specified by the
-        strtobool function return the default (by default False)
+        First try to get it as query argument, if that isn't present try to
+        get the cookie with the name.
         """
         if name not in self.request.query_arguments:
-            return default
-        try:
-            return strtobool(str(self.get_query_argument(name)))
-        except ValueError:
-            return default
+            return self.get_cookie(name, default=default)
+
+        return self.get_query_argument("name", default=default)
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
