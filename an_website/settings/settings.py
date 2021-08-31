@@ -32,6 +32,10 @@ class SettingsPage(BaseRequestHandler):
 
     def get(self):
         """Handle get requests to the settings page."""
+        # TODO:
+        # - add html page
+        # - config for theme/no_3rd_party
+        # - save in cookie button
         self.redirect(
             f"{self.request.protocol}://{self.request.host}/501.html"
         )
