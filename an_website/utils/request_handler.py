@@ -240,13 +240,18 @@ class BaseRequestHandler(RequestHandler):
         First try to get it as query argument, if that isn't present try to
         get the cookie with the name.
         """
-        if name not in self.request.query_arguments:
-            cookie = self.get_cookie(name, default=None)
-            if cookie is None:
-                return default
-            return cookie
+        value = self.get_query_argument(name, default=None)
 
-        return self.get_query_argument("name", default=default)
+        if value is not None:
+            return value
+
+        value = self.get_cookie(name, default=None)
+        if value is None:
+            return default
+
+        return value
+
+
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
