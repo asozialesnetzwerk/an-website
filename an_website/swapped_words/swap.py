@@ -115,9 +115,8 @@ def get_text_too_long_error_message(len_of_text: int) -> str:
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def get(self):
-        """Handle get requests to the swapped words page."""
-        text = self.get_query_argument("text", default="").strip()
+    def handle_text(self, text: str):
+        """Use the text to display the html page."""
         len_text = len(text)
 
         if len_text > MAX_CHAR_COUNT:
@@ -131,6 +130,14 @@ class SwappedWords(BaseRequestHandler):
             output=swap_words(text),
             MAX_CHAR_COUNT=MAX_CHAR_COUNT,
         )
+
+    def get(self):
+        """Handle get requests to the swapped words page."""
+        self.handle_text(self.get_query_argument("text", default=""))
+
+    def post(self):
+        """Handle post requests to the swapped words page."""
+        self.handle_text(self.get_argument("text", default=""))
 
 
 class SwappedWordsApi(APIRequestHandler):

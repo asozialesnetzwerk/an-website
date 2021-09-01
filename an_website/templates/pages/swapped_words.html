@@ -1,25 +1,22 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<form>
-  <label for="text-input">
+<form method="post">
+  <label class="form-element">
     Der Text dessen Wörter vertauscht werden sollen:
-  </label>
-  <br>
-  <textarea
+    <textarea
           name="text"
-          id="text-input"
           placeholder="Gebe witzigen Text ein."
           rows="10"
           maxlength="{{MAX_CHAR_COUNT}}"
           spellcheck="true"
-  >{{text}}</textarea>
+    >{{text}}</textarea>
+  </label>
 
-  <br><br>
 
   {% raw form_appendix %}
 
-  <div class="tooltip no-select button-container">
+  <div class="tooltip no-select button-container form-element">
     <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
     <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
   </div>
@@ -46,4 +43,5 @@
     width: 100%
   }
 </style>
+<link rel="stylesheet" type="text/css" href="/static/style/form.css">
 {% end %}
