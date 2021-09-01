@@ -251,8 +251,6 @@ class BaseRequestHandler(RequestHandler):
 
         return value
 
-
-
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
