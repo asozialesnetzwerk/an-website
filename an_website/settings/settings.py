@@ -15,15 +15,16 @@
 from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, THEMES
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/config/?", SettingsPage),),
+        handlers=((r"/settings/?", SettingsPage),),
         name="Einstellungs-Seite",
         description="Stelle wichtige Sachen ein.",
+        path="/settings",
     )
 
 
@@ -36,6 +37,18 @@ class SettingsPage(BaseRequestHandler):
         # - add html page
         # - config for theme/no_3rd_party
         # - save in cookie button
-        self.redirect(
-            f"{self.request.protocol}://{self.request.host}/501.html"
+        save_in_cookie = self.get_request_var_as_bool(
+            "save_in_cookie", default=False
+        )
+
+        if save_in_cookie:
+            self.set_cookie("theme", self.get_theme())
+            self.set_cookie(
+                "no_3rd_party", "sure" if self.get_no_3rd_party() else "nope"
+            )
+
+        self.render(
+            "pages/settings.html",
+            themes=THEMES,
+            save_in_cookie=save_in_cookie,
         )

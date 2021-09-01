@@ -180,9 +180,7 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
-        return strtobool(
-            str(self.get_request_var("no_3rd_party", default="false")), False
-        )
+        return self.get_request_var_as_bool("no_3rd_party", default=False)
 
     @cache
     def get_theme(self):
@@ -250,6 +248,15 @@ class BaseRequestHandler(RequestHandler):
             return default
 
         return value
+
+    def get_request_var_as_bool(
+        self, name: str, default: Optional[bool] = None
+    ) -> Optional[bool]:
+        """Get the a value by name as bool for the request."""
+        value_str = self.get_request_var(name, default=None)
+        if value_str is None:
+            return default
+        return strtobool(value_str, default=default)
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
