@@ -26,23 +26,6 @@
       {% end %}
     {% end %}
     </ul>
-
-    <form>
-      {% if not no_3rd_party %}
-      <input name="no_3rd_party" class="hidden-input" value="sure">
-      {% end %}
-      {% if theme != "default" %}
-      <input name="theme" class="hidden-input" value="{{theme}}">
-      {% end %}
-      <button  type="submit"
-               formaction="{{url}}"
-               class="no-3rd-party-button {% if no_3rd_party %}no-third-party-nope{% else %}no-third-party-sure{% end %}"
-      >{% if no_3rd_party %}
-Erlaube Inhalte von Drittanbietern.
-{% else %}
-Deaktiviere Inhalte von Drittanbietern.
-{% end %}</button>
-    </form>
   </div>
   {% end %}
 </div>

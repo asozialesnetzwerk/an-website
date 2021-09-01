@@ -8,12 +8,15 @@
     background: var(--bg);
 }
 
+
 body {
-    padding: var(--header-height) 0 0;
+    padding: var(--header-height) 0 0 0;
 }
 
+
 #body {
-    padding: 10px;
+    max-width: 100%;
+    padding: 5px;
 }
 
 a {

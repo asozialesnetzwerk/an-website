@@ -4,14 +4,18 @@
     left: 0;
     top: 0;
     width: 100%;
+    max-width: 100%;
     background-color: var(--main);
-    padding: 5px;
     color: #fff;
     height: var(--header-height);
 }
 
 .header * {
     background-color:  var(--main);
+}
+
+.header h1 {
+    margin: 10px;
 }
 
 .open-pane {
@@ -75,20 +79,5 @@
     display: inherit;
     margin-top: 3px;
     color: var(--text-color)
-}
-
-.no-3rd-party-button {
-    margin-top: 20px;
-    margin-left: 4px;
-    margin-right: 4px;
-    padding: 7px;
-}
-
-.no-3rd-party-button.no-third-party-sure {
-    background-color: var(--main-2);
-}
-
-.no-3rd-party-button.no-third-party-nope {
-    background-color: var(--contrast);
 }
 
