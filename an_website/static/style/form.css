@@ -1,10 +1,10 @@
-input[type=text], select {
+input[type=text], select, input[type=number] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid var(--main-2);
-  border-radius: 4px;
+  border: 2px solid var(--main-2);
+  border-radius: 10px;
   box-sizing: border-box;
 }
 
@@ -23,7 +23,7 @@ input[type=submit]:hover {
   background-color: var(--main);
 }
 
-label {
+.form-element {
   display: block;
   width: 100%;
   margin-bottom: 10px;

@@ -3,7 +3,7 @@
 {% block body %}
 
 <form>
-    <label>
+    <label class="form-element">
         Deaktiviere Inhalte von Drittanbietern
         <input type="checkbox"
            name="no_3rd_party"
@@ -14,7 +14,7 @@
     </label>
 
 
-    <label>
+    <label class="form-element">
         Theme
         <select name="theme">
 {% for _t in themes %}
@@ -26,7 +26,7 @@
     </label>
 
 
-    <label>
+    <label class="form-element">
        Speicher in Cookie
         <input type="checkbox"
            name="save_in_cookie"

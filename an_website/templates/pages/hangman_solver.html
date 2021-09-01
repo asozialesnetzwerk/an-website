@@ -2,53 +2,59 @@
 
 {% block body %}
 <form>
-    <label class="text-input-label no-select" for="input">Eingabe (Nutze "_" für nicht bekannte Buchstaben):</label>
-    <br>
-    <input class="text-input" id="input" name="input" value="{{ input }}">
 
-    <br>
+    <label class="form-element">
+        Eingabe (Nutze "_" für nicht bekannte Buchstaben):
 
-    <label class="text-input-label no-select" for="invalid">Falsche Buchstaben:</label>
-    <br>
-    <input class="text-input" id="invalid" name="invalid"  value="{{ invalid }}">
+        <input type="text" class="text-input" name="input" value="{{ input }}">
+    </label>
 
-    <br><br>
 
-    <div class="tooltip no-select">
-        <label class="cbl float-left no-select" for="crossword-mode">
-            Kreuzworträtselmodus:
-        </label>
-        <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
+    <label class="form-element">
+        Falsche Buchstaben:
+
+        <input type="text" class="text-input" name="invalid"  value="{{ invalid }}">
+    </label>
+
+
+
+    <div class="form-element">
+        <div class="tooltip no-select">
+            <label class="cbl float-left no-select" for="crossword-mode">
+                Kreuzworträtselmodus:
+            </label>
+            <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
+        </div>
+        <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
+        <span class="checkmark no-select"></span>
     </div>
-    <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
-    <span class="checkmark no-select"></span>
 
-    <br>
-    <div class="tooltip no-select">
-        <label class="cbl float-left no-select" for="max_words">
-            Maximale Wortanzahl:
-        </label>
-        <span class="tooltip-text no-select">Wie viele Wörter maximal angezeigt werden dürfen.</span>
+    <div class="form-element">
+        <div class="tooltip no-select">
+            <label class="cbl float-left no-select" for="max_words">
+                Maximale Wortanzahl:
+            </label>
+            <span class="tooltip-text no-select">Wie viele Wörter maximal angezeigt werden dürfen.</span>
+        </div>
+        <input class="small-input no-select" type="number" id="max_words" name="max_words" min="0" max="100" step="1" value="{{max_words}}">
     </div>
-    <input class="small-input no-select" type="number" id="max_words" name="max_words" min="0" max="100" step="1" value="{{max_words}}">
 
-    <br>
-    <label for="lang">Sprache der Wörter:</label>
-    <select class="small-input" name="lang" id="lang"">
-        <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
-        <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
-        <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
-    </select>
+    <label class="form-element">
+        Sprache der Wörter:
+        <select class="small-input" name="lang">
+            <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
+            <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
+            <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
+        </select>
+    </label>
 
 {% raw form_appendix %}
 
-    <div class="tooltip no-select button-container">
+    <div class="tooltip no-select button-container form-element">
         <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
         <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
     </div>
 </form>
-
-<br><br><br><br>
 
 <div class="output">
     {% if letters %}
@@ -60,7 +66,6 @@
         Nichts gefunden.
     {% end %}
 </div>
-<br><br>
 
 {% if word_count > 0 %}
 {{min(word_count, max_words)}}/{{word_count}} passenden Wörter:
@@ -75,5 +80,5 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="/static/style/hangman_solver.css">
+    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
 {% end %}
