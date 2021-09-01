@@ -196,7 +196,7 @@ class BaseRequestHandler(RequestHandler):
         """Get the theme currently used."""
         theme = self.get_request_var("theme", default=None)
 
-        if theme in THEMES or theme == "random":
+        if theme in THEMES:
             return theme
         return "default"
 

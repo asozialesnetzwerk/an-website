@@ -214,7 +214,10 @@ def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
     files = os.listdir(os.path.join(SITE_BASE_DIR, "static/style/themes"))
 
-    return tuple(file[:-4] for file in files if file.endswith(".css"))
+    return (
+        *(file[:-4] for file in files if file.endswith(".css")),
+        "random",  # add random to the list of themes
+    )
 
 
 THEMES: tuple[str, ...] = get_themes()
