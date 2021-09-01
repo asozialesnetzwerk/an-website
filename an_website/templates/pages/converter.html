@@ -4,21 +4,31 @@
 <body>
 
 <form action="{{url}}" method="get">
-    <label class="money-label" for="euro">Euro:</label><br>
-    <input id="euro" name="euro" placeholder="{{ euro_str }}">
-    <br>
-    <label class="money-label" for="mark">D-Mark:</label><br>
-    <input id="mark" name="mark" placeholder="{{ mark_str }}">
-    <br>
-    <label class="money-label" for="ost">Ostmark:</label><br>
-    <input id="ost" name="ost" placeholder="{{ ost_str }}">
-    <br>
-    <label class="money-label" for="schwarz">Ostmark auf dem Schwarzmarkt:</label><br>
-    <input id="schwarz" name="schwarz" placeholder="{{ schwarz_str }}">
+    <label class="form-element">
+        Euro:
+        <input type="text" id="euro" name="euro" placeholder="{{ euro_str }}">
+    </label>
+
+
+    <label class="form-element">
+        D-Mark:
+        <input type="text" id="mark" name="mark" placeholder="{{ mark_str }}">
+    </label>
+
+    <label class="form-element">
+        Ostmark:
+        <input type="text" id="ost" name="ost" placeholder="{{ ost_str }}">
+    </label>
+
+    <label class="form-element">
+        Ostmark auf dem Schwarzmarkt:
+        <input type="text" name="schwarz" placeholder="{{ schwarz_str }}">
+    </label>
+
 
 {% raw form_appendix %}
 
-    <input class="button" type="submit" value="Eingabe!">
+    <input type="submit" value="Eingabe!">
 </form>
 <br>
 
@@ -29,5 +39,5 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="/static/style/converter.css">
+    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
 {% end %}
