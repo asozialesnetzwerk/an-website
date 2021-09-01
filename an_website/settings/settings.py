@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import ModuleInfo, THEMES
+from ..utils.utils import THEMES, ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
