@@ -180,7 +180,10 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
-        return self.get_request_var_as_bool("no_3rd_party", default=False)
+        no_3rd_party = self.get_request_var_as_bool(
+            "no_3rd_party", default=False
+        )
+        return False if no_3rd_party is None else no_3rd_party
 
     @cache
     def get_theme(self):
