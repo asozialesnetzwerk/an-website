@@ -161,9 +161,15 @@ class BaseRequestHandler(RequestHandler):
         url = add_args_to_url(
             url,
             # the no_2rd_party param:
-            no_3rd_party="sure" if self.get_no_3rd_party() else None,
+            no_3rd_party="sure"
+            if "no_3rd_party" in self.request.query_arguments
+            and self.get_no_3rd_party()
+            else None,
             # the theme param:
-            theme=self.get_theme() if self.get_theme() != "default" else None,
+            theme=self.get_theme()
+            if "theme" in self.request.query_arguments
+            and self.get_theme() != "default"
+            else None,
         )
 
         if url.startswith("/"):
