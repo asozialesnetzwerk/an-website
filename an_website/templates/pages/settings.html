@@ -18,7 +18,7 @@
         Theme
         <select name="theme">
 {% for _t in themes %}
-            <option value="{{_t}}" {% if _t == theme %} selected {% end %}>
+            <option value="{{_t}}" {% if _t == theme_name %} selected {% end %}>
                 {{_t}}
             </option>
 {% end %}

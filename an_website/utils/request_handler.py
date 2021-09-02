@@ -193,12 +193,29 @@ class BaseRequestHandler(RequestHandler):
 
     @cache
     def get_theme(self):
-        """Get the theme currently used."""
+        """Get the theme currently selected."""
         theme = self.get_request_var("theme", default=None)
 
         if theme in THEMES:
             return theme
         return "default"
+
+    def get_display_theme(self):
+        """Get the theme currently displayed."""
+        theme = self.get_theme()
+
+        if "random" not in theme:
+            return theme
+
+        # theme names to ignore:
+        ignore_themes = ["random", "random-dark"]
+
+        if theme == "random-dark":
+            ignore_themes.append("light")
+
+        return random.choice(
+            tuple(_t for _t in THEMES if _t not in ignore_themes)
+        )
 
     def get_template_namespace(self):
         """
@@ -229,7 +246,7 @@ class BaseRequestHandler(RequestHandler):
                 "form_appendix": form_appendix,
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
-                "theme": random.choice(THEMES) if theme == "random" else theme,
+                "theme": self.get_display_theme(),
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),

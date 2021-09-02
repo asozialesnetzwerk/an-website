@@ -45,6 +45,7 @@ class SettingsPage(BaseRequestHandler):
 
         self.render(
             "pages/settings.html",
+            theme_name=self.get_theme(),
             themes=THEMES,
             save_in_cookie=save_in_cookie,
         )
