@@ -37,15 +37,27 @@ class SettingsPage(BaseRequestHandler):
             "save_in_cookie", default=False
         )
 
+        replace_url_with = None
+
         if save_in_cookie:
             self.set_cookie("theme", self.get_theme())
             self.set_cookie(
                 "no_3rd_party", bool_to_str(self.get_no_3rd_party())
             )
+            if (
+                "theme" in self.request.query_arguments
+                or "no_3rd_party" in self.request.query_arguments
+            ):
+                # remove all the information saved in the cookies from the url
+                replace_url_with = (
+                    f"{self.request.protocol}://{self.request.host}"
+                    f"{self.request.path}?save_in_cookie=sure"
+                )
 
         self.render(
             "pages/settings.html",
             theme_name=self.get_theme(),
             themes=THEMES,
             save_in_cookie=save_in_cookie,
+            replace_url_with=replace_url_with,
         )

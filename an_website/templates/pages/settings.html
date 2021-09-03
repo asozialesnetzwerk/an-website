@@ -7,6 +7,7 @@
         Deaktiviere Inhalte von Drittanbietern
         <input type="checkbox"
            name="no_3rd_party"
+           value="sure"
 {% if no_3rd_party %}
            checked
 {% end %}
@@ -29,7 +30,8 @@
     <label class="form-element">
        Speicher in Cookie
         <input type="checkbox"
-           name="save_in_cookie"
+            name="save_in_cookie"
+            value="sure"
 {% if save_in_cookie %}
            checked
 {% end %}
@@ -39,6 +41,8 @@
 
     <input type="submit" value="Speichern">
 </form>
+
+{% include "../util/replace_url_with.html" %}
 
 {% end %}
 

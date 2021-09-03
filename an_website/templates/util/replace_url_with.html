@@ -1,0 +1,6 @@
+    {% if replace_url_with is not None %}
+<script>
+    // replace the url, without loading the website again
+    window.history.pushState("", "", "{{replace_url_with}}");
+</script>
+    {% end %}
