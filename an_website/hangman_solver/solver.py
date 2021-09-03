@@ -25,7 +25,7 @@ import orjson
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
-from ..utils.utils import ModuleInfo, length_of_match, n_from_set, strtobool
+from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
 from . import DIR
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
@@ -308,7 +308,7 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
     crossword_mode_str = str(
         request_handler.get_query_argument("crossword_mode", default="False")
     )
-    crossword_mode = strtobool(crossword_mode_str)  # if crossword mode
+    crossword_mode = str_to_bool(crossword_mode_str)  # if crossword mode
 
     language = str(
         request_handler.get_query_argument("lang", default="de_only_a-z")

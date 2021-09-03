@@ -134,7 +134,12 @@ def n_from_set(_set: set, _n: int) -> set:
     return new_set
 
 
-def strtobool(val: str, default: Optional[bool] = None) -> bool:
+def bool_to_str(val: bool) -> str:
+    """Convert a boolean to sure/nope."""
+    return "sure" if val else "nope"
+
+
+def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
     """Convert a string representation of truth to True or False."""
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):

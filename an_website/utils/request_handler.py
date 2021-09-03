@@ -35,7 +35,7 @@ from an_website.utils.utils import (
     THEMES,
     ModuleInfo,
     add_args_to_url,
-    strtobool,
+    str_to_bool,
 )
 
 
@@ -282,7 +282,7 @@ class BaseRequestHandler(RequestHandler):
         value_str = self.get_request_var(name, default=None)
         if value_str is None:
             return default
-        return strtobool(value_str, default=default)
+        return str_to_bool(value_str, default=default)
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""

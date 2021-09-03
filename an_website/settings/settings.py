@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import THEMES, ModuleInfo
+from ..utils.utils import THEMES, ModuleInfo, bool_to_str
 
 
 def get_module_info() -> ModuleInfo:
@@ -40,7 +40,7 @@ class SettingsPage(BaseRequestHandler):
         if save_in_cookie:
             self.set_cookie("theme", self.get_theme())
             self.set_cookie(
-                "no_3rd_party", "sure" if self.get_no_3rd_party() else "nope"
+                "no_3rd_party", bool_to_str(self.get_no_3rd_party())
             )
 
         self.render(
