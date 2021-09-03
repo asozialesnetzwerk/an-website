@@ -161,7 +161,7 @@ class BaseRequestHandler(RequestHandler):
         url = add_args_to_url(
             url,
             # the no_2rd_party param:
-            no_3rd_party="sure"
+            no_3rd_party=True
             if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party()
             else None,
@@ -228,10 +228,13 @@ class BaseRequestHandler(RequestHandler):
         no_3rd_party: bool = self.get_no_3rd_party()
         form_appendix: str = (
             "<input name='no_3rd_party' class='hidden-input' value='sure'>"
-            if no_3rd_party
+            if "no_3rd_party" in self.request.query_arguments and no_3rd_party
             else ""
         )
-        if (theme := self.get_theme()) != "default":
+        if (
+            "theme" in self.request.query_arguments
+            and (theme := self.get_theme()) != "default"
+        ):
             form_appendix += (
                 f"<input name='theme' class='hidden-input' value='{theme}'>"
             )
