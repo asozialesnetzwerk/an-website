@@ -203,6 +203,10 @@ def add_args_to_url(url: str, **kwargs) -> str:
 @cache
 def add_arg_to_url(url: str, arg: str, value: Union[str, int, bool]) -> str:
     """Add a query argument to a url."""
+    if isinstance(value, bool):
+        # use sure/nope instead of True/False
+        value = bool_to_str(value)
+
     arg_eq_val: str = f"{arg}={value}"
 
     if arg_eq_val in url:
