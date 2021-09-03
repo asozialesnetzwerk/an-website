@@ -217,20 +217,20 @@ class BaseRequestHandler(RequestHandler):
             tuple(_t for _t in THEMES if _t not in ignore_themes)
         )
 
-    def get_template_namespace(self):
-        """
-        Add useful things to the template namespace and return it.
+    def get_form_appendix(self):
+        """Get html to add to forms to keep important query args."""
+        form_appendix: str
 
-        They are mostly needed by most of the pages (like title,
-        description and no_3rd_party).
-        """
-        namespace = super().get_template_namespace()
-        no_3rd_party: bool = self.get_no_3rd_party()
-        form_appendix: str = (
-            "<input name='no_3rd_party' class='hidden-input' value='sure'>"
-            if "no_3rd_party" in self.request.query_arguments and no_3rd_party
-            else ""
-        )
+        if (
+            "no_3rd_party" in self.request.query_arguments
+            and self.get_no_3rd_party()
+        ):
+            form_appendix = (
+                "<input name='no_3rd_party' class='hidden-input' value='sure'>"
+            )
+        else:
+            form_appendix = ""
+
         if (
             "theme" in self.request.query_arguments
             and (theme := self.get_theme()) != "default"
@@ -239,14 +239,25 @@ class BaseRequestHandler(RequestHandler):
                 f"<input name='theme' class='hidden-input' value='{theme}'>"
             )
 
+        return form_appendix
+
+    def get_template_namespace(self):
+        """
+        Add useful things to the template namespace and return it.
+
+        They are mostly needed by most of the pages (like title,
+        description and no_3rd_party).
+        """
+        namespace = super().get_template_namespace()
+
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "title": self.title,
                 "description": self.description,
-                "no_3rd_party": no_3rd_party,
+                "no_3rd_party": self.get_no_3rd_party(),
                 "lang": "de",  # can change in future
-                "form_appendix": form_appendix,
+                "form_appendix": self.get_form_appendix(),
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
                 "theme": self.get_display_theme(),
