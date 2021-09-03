@@ -36,6 +36,9 @@
     <label for="output" class="output float-left">Als Text:</label>
     <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
 </div>
+
+{% include "../util/replace_url_with.html" %}
+
 {% end %}
 
 {% block head %}

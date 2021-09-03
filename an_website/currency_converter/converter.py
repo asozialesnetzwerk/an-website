@@ -146,19 +146,19 @@ class CurrencyConverter(BaseRequestHandler):
         else:
             description = value_dict["text"]
 
+        replace_url_with = None
+
         if value_dict.get("too_many_params", False):
-            url = self.request.full_url().split("?")[0]
             key = value_dict.get("key_used")
-            redirect_url = f"{url}?{key}={value_dict.get(key + '_str')}"
-            if self.get_no_3rd_party():
-                redirect_url += "&no_3rd_party=sure"
-            if (theme := self.get_theme()) != "default":
-                redirect_url += "&theme=" + theme
-            self.redirect(redirect_url)
-            return
+            replace_url_with = self.fix_url(
+                f"{self.request.path}?{key}={value_dict.get(key + '_str')}"
+            )
 
         await self.render(
-            "pages/converter.html", **value_dict, description=description
+            "pages/converter.html",
+            **value_dict,
+            description=description,
+            replace_url_with=replace_url_with,
         )
 
 
