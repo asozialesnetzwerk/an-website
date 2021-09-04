@@ -77,9 +77,7 @@ class Discord(BaseRequestHandler):
         referrer = self.fix_url(
             self.request.headers.get("Referer", default="/")
         )
-        self.redirect(
-            self.fix_url((await get_invite(guild_id))[0], referrer)
-        )
+        self.redirect(self.fix_url((await get_invite(guild_id))[0], referrer))
 
 
 class DiscordApi(APIRequestHandler):
@@ -88,9 +86,4 @@ class DiscordApi(APIRequestHandler):
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and render it as json."""
         invite, source_url = await get_invite(guild_id)
-        await self.finish(
-            {
-                "invite": invite,
-                "source": source_url
-            }
-        )
+        await self.finish({"invite": invite, "source": source_url})
