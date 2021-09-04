@@ -95,6 +95,8 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 class Discord(BaseRequestHandler):
     """The request handler that gets the discord invite and redirects to it."""
 
+    RATELIMIT_TOKENS = 10
+
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and redirect to it."""
         referrer = self.fix_url(
@@ -105,6 +107,8 @@ class Discord(BaseRequestHandler):
 
 class DiscordApi(APIRequestHandler):
     """The api request handler that gets the discord invite and returns it."""
+
+    RATELIMIT_TOKENS = 10
 
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and render it as json."""
