@@ -307,6 +307,11 @@ class BaseRequestHandler(RequestHandler):
 
         secret = self.request.headers.get("Authorization")
 
+        if secret in api_secrets:
+            return True
+        # TODO: add some sort of UI to put the auth_key in the cookie
+        secret = self.get_cookie("auth_key", default=None)
+
         return bool(secret in api_secrets)
 
 
