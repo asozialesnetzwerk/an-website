@@ -41,6 +41,17 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+async def url_returns_200(url: str) -> bool:
+    """Check whether a url returns a status code of 200."""
+    try:
+        http_client = AsyncHTTPClient()
+        response = await http_client.fetch(url)
+        print(response.code)
+        return response.code == 200
+    except HTTPError:
+        return False
+
+
 async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     """
     Get the invite to a discord guild and return it with the source.
@@ -64,7 +75,19 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
             response = await http_client.fetch(url)
             return orjson.loads(response.body.decode("utf-8")), url
         except HTTPError:
-            logging.error(HTTPError)
+            # check if top.gg lists the server
+            url = f"https://top.gg/servers/{guild_id}/join"
+            if await url_returns_200(url):
+                return url, f"https://top.gg/servers/{guild_id}/"
+            # check if discords.com lists the server
+            if await url_returns_200(
+                # api end-point that returns only 200 if the server exists
+                f"https://discords.com/api-v2/server/{guild_id}/relevant"
+            ):
+                return (
+                    f"https://discords.com/servers/{guild_id}/join",
+                    f"https://discords.com/servers/{guild_id}/",
+                )
 
     raise tornado.web.HTTPError(404, reason="Invite not found.")
 
