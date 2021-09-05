@@ -81,3 +81,16 @@
     color: var(--text-color)
 }
 
+.contact-anchor {
+    display: block;
+    margin: 20px;
+    padding: 10px;
+    text-align: center;
+    background-color: var(--contrast);
+    color: var(--text-color)
+}
+
+.contact-anchor:hover {
+    transform: scale(1.05, 1.05);
+}
+

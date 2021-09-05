@@ -233,7 +233,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "GENERAL", "LINK_TO_HTTPS", fallback=False
     )
 
-    # TODO: Use contact_email
+    # used in the header template
     app.settings["CONTACT_EMAIL"] = config.get(
         "GENERAL", "CONTACT_EMAIL", fallback=None
     )
