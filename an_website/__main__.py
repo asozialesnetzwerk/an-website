@@ -189,6 +189,10 @@ def get_all_handlers(
                         "description": module_info.description,
                     },
                 )
+            if len(handler) >= 3:
+                # mypy doesn't like this
+                _args_dict = handler[2]  # type: ignore
+                _args_dict["module_info"] = module_info
             handlers.append(handler)
 
     return tuple(handlers)

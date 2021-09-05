@@ -10,6 +10,7 @@
     <meta name=description"
           property="og:description"
           content="{% block description %}{{ description }}{% end %}" />
+    <meta name="keywords" content="{{keywords}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if not no_3rd_party and not settings is None %}
         <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>

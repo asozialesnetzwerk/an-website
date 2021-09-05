@@ -60,6 +60,7 @@ class BaseRequestHandler(RequestHandler):
     # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
+    module_info: ModuleInfo
 
     def initialize(self, **kwargs):
         """
@@ -68,6 +69,7 @@ class BaseRequestHandler(RequestHandler):
         If title and description are present in the kwargs they
         override self.title and self.description.
         """
+        self.module_info: ModuleInfo = kwargs.get("module_info")
         self.title = kwargs.get("title", self.title)
         self.description = kwargs.get("description", self.description)
 
@@ -255,6 +257,8 @@ class BaseRequestHandler(RequestHandler):
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "title": self.title,
                 "description": self.description,
+                "keywords": f"Asoziales Netzwerk, Känguru-Chroniken, "
+                f"{self.module_info.get_keywords_as_str()}",
                 "no_3rd_party": self.get_no_3rd_party(),
                 "lang": "de",  # can change in future
                 "form_appendix": self.get_form_appendix(),
