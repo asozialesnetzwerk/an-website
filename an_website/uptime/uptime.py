@@ -33,6 +33,7 @@ def get_module_info() -> ModuleInfo:
         name="Betriebszeit",
         description="Die Dauer die die Webseite am Stück in Betrieb ist.",
         path="/uptime",
+        keywords=("uptime", "Betriebszeit", "Zeit"),
     )
 
 

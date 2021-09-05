@@ -35,11 +35,12 @@ def get_module_info() -> ModuleInfo:
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",
         path="/vertauschte-woerter",
+        keywords=("vertauschte", "Wörter", "witzig", "Känguru"),
         sub_pages=(
             PageInfo(
-                "Plugin",
-                "Ein Browser-Plugin, welches Wörter vertauscht.",
-                f"{GIT_URL}/VertauschteWoerterPlugin/",
+                name="Plugin",
+                description="Ein Browser-Plugin, welches Wörter vertauscht.",
+                path=f"{GIT_URL}/VertauschteWoerterPlugin/",
             ),
         ),
     )

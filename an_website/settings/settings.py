@@ -22,9 +22,14 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/settings/?", SettingsPage),),
-        name="Einstellungs-Seite",
-        description="Stelle wichtige Sachen ein.",
+        name="Einstellungen",
+        description="Stelle wichtige Sachen ein",
         path="/settings",
+        keywords=(
+            "Einstellungen",
+            "Config",
+            "Settings",
+        ),
     )
 
 

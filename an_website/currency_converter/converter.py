@@ -37,6 +37,14 @@ def get_module_info() -> ModuleInfo:
         description="Ein Währungsrechner für teilweise veraltete deutsche "
         "Währungen",
         path="/waehrungs-rechner",
+        keywords=(
+            "Währungsrechner",
+            "converter",
+            "Euro",
+            "D-Mark",
+            "Ost-Mark",
+            "Känguru",
+        ),
     )
 
 

@@ -36,11 +36,12 @@ from . import (
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        "Känguru-Soundboard",
-        "Ein Soundboard mit coolen Sprüchen und Sounds aus den "
+        name="Känguru-Soundboard",
+        description="Ein Soundboard mit coolen Sprüchen und Sounds aus den "
         "Känguru-Chroniken",
-        "/kaenguru-soundboard",
-        (
+        path="/kaenguru-soundboard",
+        keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
+        handlers=(
             (
                 r"/kaenguru-soundboard/files/(.*mp3)",
                 StaticFileHandler,
@@ -63,16 +64,19 @@ def get_module_info() -> ModuleInfo:
                 SoundboardHtmlHandler,
             ),
         ),
-        (
+        sub_pages=(
             PageInfo(
-                "Suche",
-                "Durchsuche das Känguru-Soundboard",
-                "/kaenguru-soundboard/suche",
+                name="Suche",
+                description="Durchsuche das Känguru-Soundboard",
+                path="/kaenguru-soundboard/suche",
+                keywords=("Suche",),
             ),
             PageInfo(
+                name="Personen",
+                description="Das Känguru-Soundboard mit Sortierung nach "
                 "Personen",
-                "Das Känguru-Soundboard mit Sortierung nach Personen",
-                "/kaenguru-soundboard/personen",
+                path="/kaenguru-soundboard/personen",
+                keywords=("Personen",),
             ),
         ),
     )

@@ -38,6 +38,13 @@ def get_module_info() -> ModuleInfo:
         name="Discord-Einladung",
         description="Eine permanente Einladung zu unserem Discord-Server",
         path="/discord",
+        keywords=(
+            "Discord",
+            "Server",
+            "Gilde",
+            "Invite",
+            "Einladung",
+        ),
     )
 
 

@@ -35,6 +35,7 @@ def get_module_info() -> ModuleInfo:
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Website",
         path="/host-info",
+        keywords=("Host", "Informationen", "Screenfetch"),
     )
 
 
