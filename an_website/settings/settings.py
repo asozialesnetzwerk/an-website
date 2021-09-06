@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Union, Optional, Tuple, Any
+from typing import Any, Optional, Tuple, Union
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str
