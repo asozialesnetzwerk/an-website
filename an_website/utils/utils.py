@@ -55,6 +55,8 @@ class PageInfo:
 
     def get_keywords_as_str(self):
         """Get the keywords as comma seperated string."""
+        if self.keywords is None:
+            return ""
         return ", ".join(self.keywords)
 
 
