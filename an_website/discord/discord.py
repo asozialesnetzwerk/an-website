@@ -80,7 +80,10 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
         try:  # try getting the invite from disboard
             url = f"https://disboard.org/site/get-invite/{guild_id}"
             response = await http_client.fetch(url)
-            return orjson.loads(response.body.decode("utf-8")), url
+            return (
+                orjson.loads(response.body.decode("utf-8")),
+                f"https://disboard.org/server/{guild_id}",
+            )
         except HTTPError:
             # check if top.gg lists the server
             url = f"https://top.gg/servers/{guild_id}/join"
