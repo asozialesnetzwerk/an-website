@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import logging
+import time
 
 import orjson
 import tornado.web
@@ -102,25 +103,44 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     raise tornado.web.HTTPError(404, reason="Invite not found.")
 
 
+invite_cache: dict[int, tuple[float, str, str]] = {}
+
+
+async def get_invite_with_cache(guild_id: int = GUILD_ID) -> tuple[str, str]:
+    """Get an invite from cache or from get_invite()."""
+    if guild_id in invite_cache:
+        _t = invite_cache[guild_id]
+        if _t[0] > time.time() - 30 * 60:
+            return _t[1:]  # if in last 30 min
+
+    invite, source = await get_invite(guild_id)
+
+    invite_cache.__setitem__(guild_id, (time.time(), invite, source))
+
+    return invite, source
+
+
 class Discord(BaseRequestHandler):
     """The request handler that gets the discord invite and redirects to it."""
 
-    RATELIMIT_TOKENS = 10
+    RATELIMIT_TOKENS = 8
 
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and redirect to it."""
         referrer = self.fix_url(
             self.request.headers.get("Referer", default="/")
         )
-        self.redirect(self.fix_url((await get_invite(guild_id))[0], referrer))
+        self.redirect(
+            self.fix_url((await get_invite_with_cache(guild_id))[0], referrer)
+        )
 
 
 class DiscordApi(APIRequestHandler):
     """The api request handler that gets the discord invite and returns it."""
 
-    RATELIMIT_TOKENS = 10
+    RATELIMIT_TOKENS = 6
 
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and render it as json."""
-        invite, source_url = await get_invite(guild_id)
+        invite, source_url = await get_invite_with_cache(guild_id)
         await self.finish({"invite": invite, "source": source_url})
