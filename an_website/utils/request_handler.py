@@ -257,8 +257,14 @@ class BaseRequestHandler(RequestHandler):
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "title": self.title,
                 "description": self.description,
-                "keywords": f"Asoziales Netzwerk, Känguru-Chroniken, "
-                f"{self.module_info.get_keywords_as_str()}",
+                "keywords": (
+                    "Asoziales Netzwerk, Känguru-Chroniken"
+                    + (
+                        ""
+                        if self.module_info is None
+                        else ", " + self.module_info.get_keywords_as_str()
+                    )
+                ),
                 "no_3rd_party": self.get_no_3rd_party(),
                 "lang": "de",  # can change in future
                 "form_appendix": self.get_form_appendix(),

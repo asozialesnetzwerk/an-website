@@ -53,7 +53,6 @@ class PageInfo:
     # keywords, that can be used for searching
     keywords: Optional[tuple[str, ...]] = None
 
-    @cache
     def get_keywords_as_str(self):
         """Get the keywords as comma seperated string."""
         return ", ".join(self.keywords)
