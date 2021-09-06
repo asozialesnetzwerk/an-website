@@ -39,7 +39,7 @@ def get_module_info() -> ModuleInfo:
 class SettingsPage(BaseRequestHandler):
     """The request handler for the settings page."""
 
-    def set_cookie(
+    def set_cookie(  # pylint: disable=too-many-arguments
         self,
         name: str,
         value: Union[str, bytes],
