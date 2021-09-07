@@ -14,13 +14,12 @@
 """A permanent redirect to an invite of the discord guild."""
 from __future__ import annotations
 
-import logging
 import time
 from typing import Union
 
 import orjson
-import tornado.web
-from tornado.httpclient import AsyncHTTPClient, HTTPError
+from tornado.httpclient import AsyncHTTPClient
+from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
@@ -54,13 +53,9 @@ def get_module_info() -> ModuleInfo:
 
 async def url_returns_200(url: str) -> bool:
     """Check whether a url returns a status code of 200."""
-    try:
-        http_client = AsyncHTTPClient()
-        response = await http_client.fetch(url)
-        print(response.code)
-        return response.code == 200
-    except HTTPError:
-        return False
+    http_client = AsyncHTTPClient()
+    response = await http_client.fetch(url, raise_error=False)
+    return response.code == 200
 
 
 async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
@@ -74,63 +69,66 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     """
     http_client = AsyncHTTPClient()
 
-    try:  # try getting the invite from the widget
-        url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
-        response = await http_client.fetch(url)
+    # try getting the invite from the widget
+    url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
+    response = await http_client.fetch(url, raise_error=False)
+    if response.code == 200:
         response_json = orjson.loads(response.body.decode("utf-8"))
         return response_json["instant_invite"], url
-    except HTTPError:
-        logging.error(HTTPError)
-        try:  # try getting the invite from disboard
-            url = f"https://disboard.org/site/get-invite/{guild_id}"
-            response = await http_client.fetch(url)
-            return (
-                orjson.loads(response.body.decode("utf-8")),
-                f"https://disboard.org/server/{guild_id}",
-            )
-        except HTTPError:
-            # check if top.gg lists the server
-            url = f"https://top.gg/servers/{guild_id}/join"
-            if await url_returns_200(url):
-                return url, f"https://top.gg/servers/{guild_id}/"
-            # check if discords.com lists the server
-            if await url_returns_200(
-                # api end-point that returns only 200 if the server exists
-                f"https://discords.com/api-v2/server/{guild_id}/relevant"
-            ):
-                return (
-                    f"https://discords.com/servers/{guild_id}/join",
-                    f"https://discords.com/servers/{guild_id}/",
-                )
 
-    raise tornado.web.HTTPError(404, reason="Invite not found.")
+    # try getting the invite from disboard
+    url = f"https://disboard.org/site/get-invite/{guild_id}"
+    response = await http_client.fetch(url, raise_error=False)
+    if response.code == 200:
+        return (
+            orjson.loads(response.body.decode("utf-8")),
+            f"https://disboard.org/server/{guild_id}",
+        )
+
+    # check if top.gg lists the server
+    url = f"https://top.gg/servers/{guild_id}/join"
+    if await url_returns_200(url):
+        return url, f"https://top.gg/servers/{guild_id}/"
+
+    # check if discords.com lists the server
+    if await url_returns_200(
+        # api end-point that returns only 200 if the server exists
+        f"https://discords.com/api-v2/server/{guild_id}/relevant"
+    ):
+        return (
+            f"https://discords.com/servers/{guild_id}/join",
+            f"https://discords.com/servers/{guild_id}/",
+        )
+
+    raise HTTPError(404, reason="Invite not found.")
 
 
 invite_cache: dict[
     int,
     Union[
         tuple[float, str, str],
-        tuple[float, tornado.web.HTTPError],
+        tuple[float, HTTPError],
     ],
 ] = {}
 
 
 async def get_invite_with_cache(
-    guild_id: int = GUILD_ID, duration: float = 30 * 60
+    guild_id: int = GUILD_ID,
 ) -> tuple[str, str]:
     """Get an invite from cache or from get_invite()."""
     if guild_id in invite_cache:
         _t = invite_cache[guild_id]
-        if _t[0] > time.time() - duration:
-            if isinstance(_t[1], tornado.web.HTTPError):
+        if _t[0] > time.time() - 30 * 60:  # if in last 30 min
+            if isinstance(_t[1], HTTPError):
                 raise _t[1]
             if len(_t) == 3:
-                return _t[1], _t[2]  # if in last 30 min
+                return _t[1], _t[2]
 
     try:
         invite, source = await get_invite(guild_id)
-    except tornado.web.HTTPError as _e:
+    except HTTPError as _e:
         invite_cache.__setitem__(guild_id, (time.time(), _e))
+        raise _e
 
     invite_cache.__setitem__(guild_id, (time.time(), invite, source))
 
@@ -148,7 +146,10 @@ class Discord(BaseRequestHandler):
             self.request.headers.get("Referer", default="/")
         )
         self.redirect(
-            self.fix_url((await get_invite_with_cache(guild_id))[0], referrer)
+            self.fix_url(
+                (await get_invite_with_cache(guild_id))[0],
+                referrer,
+            )
         )
 
 
