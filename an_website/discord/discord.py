@@ -69,15 +69,17 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     """
     http_client = AsyncHTTPClient()
 
+    reason = "Invite not found."
+
     # try getting the invite from the widget
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
     response = await http_client.fetch(url, raise_error=False)
     if response.code == 200:
         response_json = orjson.loads(response.body.decode("utf-8"))
         invite = response_json["instant_invite"]
-        print(invite)
         if invite is not None:
             return invite, url
+        reason = f"No instant invite in widget ({url}) found."
 
     # try getting the invite from disboard
     url = f"https://disboard.org/site/get-invite/{guild_id}"
@@ -103,7 +105,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
             f"https://discords.com/servers/{guild_id}/",
         )
 
-    raise HTTPError(404, reason="Invite not found.")
+    raise HTTPError(404, reason=reason)
 
 
 invite_cache: dict[
