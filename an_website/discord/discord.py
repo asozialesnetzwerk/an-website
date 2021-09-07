@@ -31,9 +31,11 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/discord/?", Discord),
+            (r"/discord/?", ANDiscord),
+            (f"/discord/({GUILD_ID})/?", ANDiscord),
             (r"/discord/(\d+)/?", Discord),
-            (r"/discord/api/?", DiscordApi),
+            (r"/discord/api/?", ANDiscordApi),
+            (f"/discord/api/({GUILD_ID})/?", ANDiscordApi),
             (r"/discord/api/(\d+)/?", DiscordApi),
         ),
         name="Discord-Einladung",
@@ -106,11 +108,13 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 invite_cache: dict[int, tuple[float, str, str]] = {}
 
 
-async def get_invite_with_cache(guild_id: int = GUILD_ID) -> tuple[str, str]:
+async def get_invite_with_cache(
+    guild_id: int = GUILD_ID, duration: float = 30 * 60
+) -> tuple[str, str]:
     """Get an invite from cache or from get_invite()."""
     if guild_id in invite_cache:
         _t = invite_cache[guild_id]
-        if _t[0] > time.time() - 30 * 60:
+        if _t[0] > time.time() - duration:
             return _t[1:]  # if in last 30 min
 
     invite, source = await get_invite(guild_id)
@@ -123,7 +127,7 @@ async def get_invite_with_cache(guild_id: int = GUILD_ID) -> tuple[str, str]:
 class Discord(BaseRequestHandler):
     """The request handler that gets the discord invite and redirects to it."""
 
-    RATELIMIT_TOKENS = 8
+    RATELIMIT_TOKENS = 10
 
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and redirect to it."""
@@ -135,12 +139,24 @@ class Discord(BaseRequestHandler):
         )
 
 
+class ANDiscord(Discord):
+    """The request handler only for the an discord guild."""
+
+    RATELIMIT_TOKENS = 4
+
+
 class DiscordApi(APIRequestHandler):
     """The api request handler that gets the discord invite and returns it."""
 
-    RATELIMIT_TOKENS = 6
+    RATELIMIT_TOKENS = 9
 
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and render it as json."""
         invite, source_url = await get_invite_with_cache(guild_id)
         await self.finish({"invite": invite, "source": source_url})
+
+
+class ANDiscordApi(DiscordApi):
+    """The api request handler only for the an discord guild."""
+
+    RATELIMIT_TOKENS = 4
