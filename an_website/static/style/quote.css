@@ -105,7 +105,7 @@ footer a {
 
 
 div.quote-container:before {
-    content:url("/static/ZitateBackground.svg");
+    content:url("/static/img/ZitateBackground.svg");
 }
 
 .quote-container {
@@ -124,7 +124,7 @@ div.quote-container:before {
     }
 
     .quote-container {
-        background: #000000 url("/static/ZitateBackground.svg") no-repeat right top 5px;
+        background: #000000 url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
 
         /*background-position: right 10px top 5px;*/
         width: 50rem;
