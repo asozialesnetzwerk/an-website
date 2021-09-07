@@ -74,7 +74,10 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     response = await http_client.fetch(url, raise_error=False)
     if response.code == 200:
         response_json = orjson.loads(response.body.decode("utf-8"))
-        return response_json["instant_invite"], url
+        invite = response_json["instant_invite"]
+        print(invite)
+        if invite is not None:
+            return invite, url
 
     # try getting the invite from disboard
     url = f"https://disboard.org/site/get-invite/{guild_id}"
