@@ -1,0 +1,39 @@
+{% extends "../base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/style/kangaroo_comics.css">
+{% end %}
+
+{% block body %}
+<noscript>
+Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(
+</noscript>
+<main>
+  <h1><a id="current-comic-header" class="comic-header">Aktueller Comic:</a></h1>
+  <div id="current-img-container">
+    <img id="current-img" class="normal-img" alt="Aktueller Comic" src="" onmouseover="removeAllPopups()">
+  </div>
+  <h1>Alte Comics:</h1>
+  <ul id="old-comics-list">
+  </ul>
+  <input id="load-button" type="button" value="Lade mehr Comics!" onclick="loadMoreComics()">
+</main>
+
+<script src="/static/js/kangaroo_comics.js"></script>
+   {% if no_3rd_party %}
+<script>
+  const main = document.getElementsByTagName("main")[0];
+  main.style.display = "none";
+  function removeButtonAndLoad() {
+    document.getElementById("start-button-no_3rd_party").remove();
+    main.style.display = "inherit";
+    onLoad();
+  }
+</script>
+<button onclick="removeButtonAndLoad()" id="start-button-no_3rd_party">
+  Lade Inhalte von zeit.de
+</button>
+   {% else %}
+<script>onLoad();</script>
+   {% end %}
+{% end %}
