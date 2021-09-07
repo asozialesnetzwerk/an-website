@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import Union
 
 import orjson
 import tornado.web
@@ -105,7 +106,13 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     raise tornado.web.HTTPError(404, reason="Invite not found.")
 
 
-invite_cache: dict[int, tuple[float, str, str]] = {}
+invite_cache: dict[
+    int,
+    Union[
+        tuple[float, str, str],
+        tuple[float, tornado.web.HTTPError],
+    ],
+] = {}
 
 
 async def get_invite_with_cache(
@@ -115,9 +122,15 @@ async def get_invite_with_cache(
     if guild_id in invite_cache:
         _t = invite_cache[guild_id]
         if _t[0] > time.time() - duration:
-            return _t[1:]  # if in last 30 min
+            if isinstance(_t[1], tornado.web.HTTPError):
+                raise _t[1]
+            if len(_t) == 3:
+                return _t[1], _t[2]  # if in last 30 min
 
-    invite, source = await get_invite(guild_id)
+    try:
+        invite, source = await get_invite(guild_id)
+    except tornado.web.HTTPError as _e:
+        invite_cache.__setitem__(guild_id, (time.time(), _e))
 
     invite_cache.__setitem__(guild_id, (time.time(), invite, source))
 
