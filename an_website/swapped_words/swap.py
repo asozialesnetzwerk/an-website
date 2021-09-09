@@ -92,13 +92,13 @@ def get_replaced_word_with_same_case(match: Match[str]) -> str:
     # other words
     new_word: list[str] = []  # use list for speed
     for i, letter in enumerate(replaced_word):
-        # overflow original word for mixed case
-        if word[i % len(word)].isupper():
-            # letter in original word is upper case
-            new_word.append(letter.upper())
-        else:
-            # letter in original word is lower case
-            new_word.append(letter)
+        new_word.append(
+            letter.upper()  # letter in original word is upper case
+            if word[
+                i % len(word)  # overflow original word for mixed case
+            ].isupper()
+            else letter  # letter in original word is lower case
+        )
 
     # create new word and return it
     return "".join(new_word)
