@@ -85,19 +85,11 @@ def get_replaced_word_with_same_case(match: Match[str]) -> str:
     word = match.group()
     replaced_word = TO_SWAP.get(word.lower(), word)
 
-    # lower case or unchanged word
-    if word == replaced_word or word.islower():
-        return replaced_word
-
-    # upper case word
-    if word.isupper():
-        return replaced_word.upper()
-
     # word with only one upper case letter in beginning
     if word[0].isupper() and word[1:].islower():
         return replaced_word[0].upper() + replaced_word[1:]
 
-    # weird mixed case words
+    # other words
     new_word: list[str] = []  # use list for speed
     for i, letter in enumerate(replaced_word):
         # overflow original word for mixed case
@@ -114,8 +106,7 @@ def get_replaced_word_with_same_case(match: Match[str]) -> str:
 
 def swap_words(text: str) -> str:
     """Swap the words in the text."""
-    test = WORDS_REGEX.sub(get_replaced_word_with_same_case, text)
-    return test
+    return WORDS_REGEX.sub(get_replaced_word_with_same_case, text)
 
 
 def check_text_too_long(text: str):
