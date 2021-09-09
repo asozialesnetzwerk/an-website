@@ -118,13 +118,19 @@ def swap_words(text: str) -> str:
     return test
 
 
-def get_text_too_long_error_message(len_of_text: int) -> str:
-    """Get the error message for a text that is too long."""
-    return (
-        f"The text has {len_of_text} characters, but it is only allowed "
-        f"to have {MAX_CHAR_COUNT} characters. That's "
-        f"{len_of_text-MAX_CHAR_COUNT} characters too much."
-    )
+def check_text_too_long(text: str):
+    """Raise an http error if the text is too long."""
+    len_text = len(text)
+
+    if len_text > MAX_CHAR_COUNT:
+        raise HTTPError(
+            413,
+            reason=(
+                f"The text has {len_text} characters, but it is only allowed "
+                f"to have {MAX_CHAR_COUNT} characters. That's "
+                f"{len_text - MAX_CHAR_COUNT} characters too much."
+            ),
+        )
 
 
 class SwappedWords(BaseRequestHandler):
@@ -132,12 +138,7 @@ class SwappedWords(BaseRequestHandler):
 
     def handle_text(self, text: str):
         """Use the text to display the html page."""
-        len_text = len(text)
-
-        if len_text > MAX_CHAR_COUNT:
-            raise HTTPError(
-                413, reason=get_text_too_long_error_message(len_text)
-            )
+        check_text_too_long(text)
 
         self.render(
             "pages/swapped_words.html",
@@ -162,13 +163,6 @@ class SwappedWordsApi(APIRequestHandler):
         """Handle get requests to the swapped words api."""
         text = self.get_argument("text", default="")
 
-        len_text = len(text)
+        check_text_too_long(text)
 
-        if len_text > MAX_CHAR_COUNT:
-            raise HTTPError(
-                413, reason=get_text_too_long_error_message(len_text)
-            )
-
-        replaced_text = swap_words(text)
-
-        self.finish({"replaced_text": replaced_text})
+        self.finish({"replaced_text": swap_words(text)})
