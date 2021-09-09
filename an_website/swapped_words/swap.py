@@ -67,23 +67,35 @@ TO_SWAP: dict[str, str] = {
     "arbeitsnehmer": "arbeitsgeber",
 }
 
-words: list[str] = []
-
+# add the elements to TO_SWAP in reverse as well
 for _w1, _w2 in tuple(TO_SWAP.items()):
     TO_SWAP[_w2] = _w1
-    words.append(_w1)
-    words.append(_w2)
 
+del _w1, _w2
+
+# create the WORDS_REGEX that matches every word in TO_SWAP
 WORDS_REGEX: Pattern[str] = re.compile(
-    "(" + "|".join(words) + ")", re.IGNORECASE
+    "(" + "|".join(TO_SWAP.keys()) + ")", re.IGNORECASE
 )
-del words
+
+
+def copy_case(char_to_steal_case_from: str, char_to_change: str) -> str:
+    """Copy the case of one char to another."""
+    return (
+        char_to_change.upper()  # char_to_steal_case_from is upper case
+        if char_to_steal_case_from.isupper()
+        else char_to_change  # char_to_steal_case_from is lower case
+    )
 
 
 def get_replaced_word_with_same_case(match: Match[str]) -> str:
     """Get the replaced word with the same case as the match."""
     word = match.group()
     replaced_word = TO_SWAP.get(word.lower(), word)
+
+    if len(replaced_word) == 1:
+        # shouldn't happen, just to avoid future error with index of [1:]
+        return copy_case(word[0], replaced_word)
 
     # word with only one upper case letter in beginning
     if word[0].isupper() and word[1:].islower():
@@ -93,11 +105,10 @@ def get_replaced_word_with_same_case(match: Match[str]) -> str:
     new_word: list[str] = []  # use list for speed
     for i, letter in enumerate(replaced_word):
         new_word.append(
-            letter.upper()  # letter in original word is upper case
-            if word[
-                i % len(word)  # overflow original word for mixed case
-            ].isupper()
-            else letter  # letter in original word is lower case
+            copy_case(
+                word[i % len(word)],  # overflow original word for mixed case
+                letter,
+            )
         )
 
     # create new word and return it
