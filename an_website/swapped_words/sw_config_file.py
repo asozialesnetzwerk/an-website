@@ -162,11 +162,16 @@ LINE_REGEX: Pattern[str] = re.compile(
 # pylint: disable=too-many-return-statements
 def config_line_to_word_pair(line: str) -> Optional[ConfigLine]:
     """Parse one config line to one word pair instance."""
-    if _m := re.fullmatch(COMMENT_LINE_REGEX, line):
-        return Comment(_m.group(1))
+    # remove white spaces to fix stuff, behaves weird otherwise
+    line = line.strip()
 
     if len(line) == 0:
         return Comment("")  # empty comment → empty line
+
+    # print(len(line.strip()), f"'{line.strip()}'")
+
+    if _m := re.fullmatch(COMMENT_LINE_REGEX, line):
+        return Comment(_m.group(1))
 
     _m = re.fullmatch(LINE_REGEX, line)
     if _m is None:
@@ -189,14 +194,27 @@ def config_line_to_word_pair(line: str) -> Optional[ConfigLine]:
     return None
 
 
-def parse_config(config: str) -> WORDS_TUPLE:
+@dataclass
+class InvalidConfigException(Exception):
+    """Exception thrown if the config is invalid."""
+
+    line_num: int
+    line: str
+
+    def __str__(self):
+        """Exception to str."""
+        return f"Error in line {self.line_num}: {self.line}"
+
+
+def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
     """Create a WORDS_TUPLE from a config str."""
     words_list: list[ConfigLine] = []
     for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
         word_pair = config_line_to_word_pair(line)
-        if word_pair is None:
-            raise Exception(f"Line {i} ('{line}') is invalid.")
-        words_list.append(word_pair)
+        if word_pair is not None:
+            words_list.append(word_pair)
+        elif throw_exception:
+            raise InvalidConfigException(i, line)
 
     return tuple(words_list)
 

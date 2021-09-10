@@ -13,6 +13,16 @@
     >{{text}}</textarea>
   </label>
 
+  <label class="form-element">
+    Die Regeln nach denen vertauscht werden sollen:
+    <textarea
+          name="config"
+          placeholder="{{DEFAULT_CONFIG}}"
+          rows="10"
+          maxlength="{{MAX_CHAR_COUNT}}"
+          spellcheck="true"
+    >{{config}}</textarea>
+  </label>
 
   {% raw form_appendix %}
 
@@ -21,6 +31,12 @@
     <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
   </div>
 </form>
+
+{% if error_msg is not None %}
+<script>
+  alert("{{error_msg}}")
+</script>
+{% end %}
 
 <br>
 
