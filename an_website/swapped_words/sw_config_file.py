@@ -20,7 +20,7 @@ from re import Pattern
 from typing import Optional, Tuple
 
 
-class WordPair:
+class ConfigLine:
     """Class used to represent a word pair."""
 
     def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
@@ -43,7 +43,7 @@ class WordPair:
 
 
 @dataclass
-class Comment(WordPair):
+class Comment(ConfigLine):
     """Class used to represent a comment."""
 
     comment: str
@@ -51,6 +51,17 @@ class Comment(WordPair):
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
         return f"# {self.comment}" if len(self.comment) > 0 else ""
+
+
+class WordPair(ConfigLine):
+    """Class representing a word pair."""
+
+    def get_filling_spaces(self, len_of_left: Optional[int] = None):
+        """Get the filling spaces used for beautifying the config."""
+        if len_of_left is None:
+            return ""
+        # the space as default space between text an arrow
+        return " " + (" " * (len_of_left - self.len_of_left()))
 
 
 @dataclass
@@ -72,14 +83,10 @@ class OneWayPair(WordPair):
 
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        if len_of_left is None:
-            filling_spaces = ""
-        else:
-            # the two spaces as default space between text an arrow
-            filling_spaces = "  " + (" " * (len_of_left - self.len_of_left()))
+        space = "" if len_of_left is None else " "
         return (
-            f"{self.word_regex}{filling_spaces}=>"
-            f"{'' if len_of_left is None else ' '}{self.replacement}"
+            f"{self.word_regex}{self.get_filling_spaces(len_of_left)}"
+            f"{space}=>{space}{self.replacement}"
         )
 
     def len_of_left(self) -> int:
@@ -108,13 +115,8 @@ class TwoWayPair(WordPair):
 
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        if len_of_left is None:
-            filling_spaces = ""
-        else:
-            # the one space as default space between text an arrow
-            filling_spaces = " " + (" " * (len_of_left - self.len_of_left()))
         return (
-            f"{self.word1}{filling_spaces}<=>"
+            f"{self.word1}{self.get_filling_spaces(len_of_left)}<=>"
             f"{'' if len_of_left is None else ' '}{self.word2}"
         )
 
@@ -124,7 +126,7 @@ class TwoWayPair(WordPair):
 
 
 # mypy doesn't allow this with lowercase tuple
-WORDS_TUPLE = Tuple[WordPair, ...]  # pylint: disable=invalid-name
+WORDS_TUPLE = Tuple[ConfigLine, ...]  # pylint: disable=invalid-name
 
 LINE_END_REGEX: Pattern[str] = re.compile(
     r"[\n;]",  # ";" or new line
@@ -158,7 +160,7 @@ LINE_REGEX: Pattern[str] = re.compile(
 
 
 # pylint: disable=too-many-return-statements
-def config_line_to_word_pair(line: str) -> Optional[WordPair]:
+def config_line_to_word_pair(line: str) -> Optional[ConfigLine]:
     """Parse one config line to one word pair instance."""
     if _m := re.fullmatch(COMMENT_LINE_REGEX, line):
         return Comment(_m.group(1))
@@ -189,7 +191,7 @@ def config_line_to_word_pair(line: str) -> Optional[WordPair]:
 
 def parse_config(config: str) -> WORDS_TUPLE:
     """Create a WORDS_TUPLE from a config str."""
-    words_list: list[WordPair] = []
+    words_list: list[ConfigLine] = []
     for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
         word_pair = config_line_to_word_pair(line)
         if word_pair is None:
@@ -215,7 +217,7 @@ def words_tuple_to_config(words: WORDS_TUPLE, minified: bool = False) -> str:
         return ";".join(
             word_pair.to_conf_line()
             for word_pair in words
-            if isinstance(word_pair, (OneWayPair, TwoWayPair))
+            if isinstance(word_pair, WordPair)
         )
     max_len = max(word_pair.len_of_left() for word_pair in words)
     return "\n".join(word_pair.to_conf_line(max_len) for word_pair in words)
