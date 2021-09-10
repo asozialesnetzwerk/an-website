@@ -14,15 +14,20 @@
 """Page that swaps words."""
 from __future__ import annotations
 
-from re import Match, Pattern
-from typing import Optional
+from re import Match
 
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
 from . import DIR
-from .sw_config_file import WORDS_TUPLE, parse_config, words_to_regex
+from .sw_config_file import (
+    WORDS_TUPLE,
+    InvalidConfigException,
+    beautify,
+    parse_config,
+    words_to_regex,
+)
 
 
 def get_module_info() -> ModuleInfo:
@@ -55,9 +60,6 @@ with open(f"{DIR}/config.sw", encoding="utf-8") as file:
     DEFAULT_CONFIG: str = file.read()
 
 WORDS: WORDS_TUPLE = parse_config(DEFAULT_CONFIG)
-
-# create the WORDS_REGEX that matches every word in TO_SWAP
-WORDS_REGEX: Pattern[str] = words_to_regex(WORDS)
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -102,22 +104,9 @@ def copy_case(word_to_steal_case_from: str, word_to_change: str) -> str:
     return "".join(new_word)
 
 
-def swap_words(
-    text: str,
-    regex: Optional[Pattern[str]] = None,
-    words: Optional[WORDS_TUPLE] = None,
-) -> str:
-    """Swap words with default options and with custom options."""
-    swapped_once = swap_words_once(text, WORDS_REGEX, WORDS)
-    if regex is None or words is None:
-        # if one of them is None them, it can't be used
-        return swapped_once
-
-    return swap_words_once(swapped_once, regex, words)
-
-
-def swap_words_once(text: str, regex: Pattern[str], words: WORDS_TUPLE) -> str:
+def swap_words(text: str, config: str) -> str:
     """Swap the words in the text."""
+    words = WORDS if config == "" else parse_config(config)
 
     def get_replaced_word_with_same_case(match: Match[str]) -> str:
         """Get the replaced word with the same case as the match."""
@@ -130,7 +119,7 @@ def swap_words_once(text: str, regex: Pattern[str], words: WORDS_TUPLE) -> str:
         # if an unknown error happens return the match to change nothing:
         return match.group()
 
-    return regex.sub(get_replaced_word_with_same_case, text)
+    return words_to_regex(words).sub(get_replaced_word_with_same_case, text)
 
 
 def check_text_too_long(text: str):
@@ -151,24 +140,45 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str):
+    def handle_text(self, text: str, config: str):
         """Use the text to display the html page."""
         check_text_too_long(text)
 
-        self.render(
-            "pages/swapped_words.html",
-            text=text,
-            output=swap_words(text),
-            MAX_CHAR_COUNT=MAX_CHAR_COUNT,
-        )
+        try:
+            self.render(
+                "pages/swapped_words.html",
+                text=text,
+                output=swap_words(text, config),
+                config=DEFAULT_CONFIG if config == "" else beautify(config),
+                DEFAULT_CONFIG=DEFAULT_CONFIG,
+                MAX_CHAR_COUNT=MAX_CHAR_COUNT,
+                error_msg=None,
+            )
+        except InvalidConfigException as _e:
+            print(_e)
+            self.render(
+                "pages/swapped_words.html",
+                text=text,
+                output="",
+                config=config,
+                DEFAULT_CONFIG=DEFAULT_CONFIG,
+                MAX_CHAR_COUNT=MAX_CHAR_COUNT,
+                error_msg=str(_e),
+            )
 
     def get(self):
         """Handle get requests to the swapped words page."""
-        self.handle_text(self.get_query_argument("text", default=""))
+        self.handle_text(
+            self.get_query_argument("text", default=""),
+            self.get_query_argument("config", default=""),
+        )
 
     def post(self):
         """Handle post requests to the swapped words page."""
-        self.handle_text(self.get_argument("text", default=""))
+        self.handle_text(
+            self.get_argument("text", default=""),
+            self.get_argument("config", default=""),
+        )
 
 
 class SwappedWordsApi(APIRequestHandler):
@@ -177,7 +187,13 @@ class SwappedWordsApi(APIRequestHandler):
     def get(self):
         """Handle get requests to the swapped words api."""
         text = self.get_argument("text", default="")
+        config = self.get_argument("config", default="")
 
         check_text_too_long(text)
 
-        self.finish({"replaced_text": swap_words(text)})
+        self.finish(
+            {
+                "replaced_text": swap_words(text, config),
+                "config": DEFAULT_CONFIG if config == "" else config,
+            }
+        )
