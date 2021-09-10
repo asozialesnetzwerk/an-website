@@ -22,7 +22,7 @@ from tornado.web import HTTPError
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
 from . import DIR
-from .sw_config_file import WORDS_TUPLE, create_words_tuple, words_to_regex
+from .sw_config_file import WORDS_TUPLE, parse_config, words_to_regex
 
 
 def get_module_info() -> ModuleInfo:
@@ -54,9 +54,7 @@ MAX_CHAR_COUNT: int = 32768
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:
     DEFAULT_CONFIG: str = file.read()
 
-print(DEFAULT_CONFIG)
-WORDS: WORDS_TUPLE = create_words_tuple(DEFAULT_CONFIG)
-print(WORDS)
+WORDS: WORDS_TUPLE = parse_config(DEFAULT_CONFIG)
 
 # create the WORDS_REGEX that matches every word in TO_SWAP
 WORDS_REGEX: Pattern[str] = words_to_regex(WORDS)
