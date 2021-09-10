@@ -48,6 +48,7 @@ IGNORED_MODULES = [
     "static.*",
     "templates.*",
     "utils.utils",
+    "swapped_words.sw_config_file",
 ]
 
 logger = logging.getLogger(__name__)

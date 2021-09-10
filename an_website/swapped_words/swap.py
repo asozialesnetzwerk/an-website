@@ -14,13 +14,15 @@
 """Page that swaps words."""
 from __future__ import annotations
 
-import re
 from re import Match, Pattern
+from typing import Optional
 
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
+from . import DIR
+from .sw_config_file import WORDS_TUPLE, create_words_tuple, words_to_regex
 
 
 def get_module_info() -> ModuleInfo:
@@ -49,38 +51,24 @@ def get_module_info() -> ModuleInfo:
 # the max char code of the text to process.
 MAX_CHAR_COUNT: int = 32768
 
-TO_SWAP: dict[str, str] = {
-    "amüsant": "relevant",
-    "amüsanz": "relevanz",
-    "ministerium": "mysterium",
-    "ministerien": "mysterien",
-    "bundestag": "schützenverein",
-    "ironisch": "erotisch",
-    "ironien": "erotiken",
-    "ironie": "erotik",
-    "ironiker": "erotiker",
-    "problem": "ekzem",
-    "kritisch": "kryptisch",
-    "kritik": "kryptik",
-    "provozier": "produzier",
-    "arbeitnehmer": "arbeitgeber",
-    "arbeitsnehmer": "arbeitsgeber",
-}
+with open(f"{DIR}/config.sw", encoding="utf-8") as file:
+    DEFAULT_CONFIG: str = file.read()
 
-# add the elements to TO_SWAP in reverse as well
-for _w1, _w2 in tuple(TO_SWAP.items()):
-    TO_SWAP[_w2] = _w1
-
-del _w1, _w2
+print(DEFAULT_CONFIG)
+WORDS: WORDS_TUPLE = create_words_tuple(DEFAULT_CONFIG)
+print(WORDS)
 
 # create the WORDS_REGEX that matches every word in TO_SWAP
-WORDS_REGEX: Pattern[str] = re.compile(
-    "(" + "|".join(TO_SWAP.keys()) + ")", re.IGNORECASE
-)
+WORDS_REGEX: Pattern[str] = words_to_regex(WORDS)
 
 
-def copy_case(char_to_steal_case_from: str, char_to_change: str) -> str:
-    """Copy the case of one char to another."""
+def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
+    """
+    Copy the case of one string to another.
+
+    This method assumes that the whole string has the same case, like it is
+    the case for a letter.
+    """
     return (
         char_to_change.upper()  # char_to_steal_case_from is upper case
         if char_to_steal_case_from.isupper()
@@ -88,25 +76,26 @@ def copy_case(char_to_steal_case_from: str, char_to_change: str) -> str:
     )
 
 
-def get_replaced_word_with_same_case(match: Match[str]) -> str:
-    """Get the replaced word with the same case as the match."""
-    word = match.group()
-    replaced_word = TO_SWAP.get(word.lower(), word)
-
-    if len(replaced_word) == 1:
+def copy_case(word_to_steal_case_from: str, word_to_change: str) -> str:
+    """Copy the case of one string to another."""
+    if len(word_to_change) == 1:
         # shouldn't happen, just to avoid future error with index of [1:]
-        return copy_case(word[0], replaced_word)
+        return copy_case_letter(word_to_steal_case_from[0], word_to_change)
 
     # word with only one upper case letter in beginning
-    if word[0].isupper() and word[1:].islower():
-        return replaced_word[0].upper() + replaced_word[1:]
+    if (
+        word_to_steal_case_from[0].isupper()
+        and word_to_steal_case_from[1:].islower()
+    ):
+        return word_to_change[0].upper() + word_to_change[1:]
 
     # other words
     new_word: list[str] = []  # use list for speed
-    for i, letter in enumerate(replaced_word):
+    for i, letter in enumerate(word_to_change):
         new_word.append(
-            copy_case(
-                word[i % len(word)],  # overflow original word for mixed case
+            copy_case_letter(
+                # overflow original word for mixed case
+                word_to_steal_case_from[i % len(word_to_steal_case_from)],
                 letter,
             )
         )
@@ -115,9 +104,35 @@ def get_replaced_word_with_same_case(match: Match[str]) -> str:
     return "".join(new_word)
 
 
-def swap_words(text: str) -> str:
+def swap_words(
+    text: str,
+    regex: Optional[Pattern[str]] = None,
+    words: Optional[WORDS_TUPLE] = None,
+) -> str:
+    """Swap words with default options and with custom options."""
+    swapped_once = swap_words_once(text, WORDS_REGEX, WORDS)
+    if regex is None or words is None:
+        # if one of them is None them, it can't be used
+        return swapped_once
+
+    return swap_words_once(swapped_once, regex, words)
+
+
+def swap_words_once(text: str, regex: Pattern[str], words: WORDS_TUPLE) -> str:
     """Swap the words in the text."""
-    return WORDS_REGEX.sub(get_replaced_word_with_same_case, text)
+
+    def get_replaced_word_with_same_case(match: Match[str]) -> str:
+        """Get the replaced word with the same case as the match."""
+        for i, word in enumerate(match.groups()):
+            if isinstance(word, str):  # word is not None
+                # get the replacement from words
+                replaced_word = words[i].get_replacement(word)
+                return copy_case(word, replaced_word)  # copy the case
+
+        # if an unknown error happens return the match to change nothing:
+        return match.group()
+
+    return regex.sub(get_replaced_word_with_same_case, text)
 
 
 def check_text_too_long(text: str):
