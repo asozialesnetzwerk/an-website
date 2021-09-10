@@ -13,3 +13,6 @@ kritik        <=> kryptik
 provozier     <=> produzier
 arbeitnehmer  <=> arbeitgeber
 arbeitsnehmer <=> arbeitsgeber
+
+# der Typ heißt Bernd!
+# Björn Höcke => Bernd Höcke

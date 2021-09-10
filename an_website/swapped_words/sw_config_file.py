@@ -31,9 +31,15 @@ class WordPair:
         """Get the pattern that matches the replaceable words."""
         return "a^"  # cannot match anything "a" followed by start of str
 
-    def to_conf_line(self):  # pylint: disable=no-self-use
+    def to_conf_line(
+        self, len_of_left: Optional[int] = None
+    ):  # pylint: disable=no-self-use, unused-argument
         """Get how this would look like in a config."""
         return ""
+
+    def len_of_left(self) -> int:  # pylint: disable=no-self-use
+        """Get the length to the left of the separator."""
+        return 0
 
 
 @dataclass
@@ -42,9 +48,9 @@ class Comment(WordPair):
 
     comment: str
 
-    def to_conf_line(self):
+    def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        return f"# {self.comment}"
+        return f"# {self.comment}" if len(self.comment) > 0 else ""
 
 
 @dataclass
@@ -64,9 +70,21 @@ class OneWayPair(WordPair):
         """Get the pattern that matches the replaceable words."""
         return self.word_regex
 
-    def to_conf_line(self):
+    def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        return f"{self.word_regex} => {self.replacement}"
+        if len_of_left is None:
+            filling_spaces = ""
+        else:
+            # the two spaces as default space between text an arrow
+            filling_spaces = "  " + (" " * (len_of_left - self.len_of_left()))
+        return (
+            f"{self.word_regex}{filling_spaces}=>"
+            f"{'' if len_of_left is None else ' '}{self.replacement}"
+        )
+
+    def len_of_left(self) -> int:
+        """Get the length to the left of the separator."""
+        return len(self.word_regex)
 
 
 @dataclass
@@ -88,9 +106,21 @@ class TwoWayPair(WordPair):
         """Get the pattern that matches the replaceable words."""
         return f"{self.word1}|{self.word2}"
 
-    def to_conf_line(self):
+    def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        return f"{self.word1} <=> {self.word2}"
+        if len_of_left is None:
+            filling_spaces = ""
+        else:
+            # the one space as default space between text an arrow
+            filling_spaces = " " + (" " * (len_of_left - self.len_of_left()))
+        return (
+            f"{self.word1}{filling_spaces}<=>"
+            f"{'' if len_of_left is None else ' '}{self.word2}"
+        )
+
+    def len_of_left(self) -> int:
+        """Get the length to the left of the separator."""
+        return len(self.word1)
 
 
 # mypy doesn't allow this with lowercase tuple
@@ -127,14 +157,19 @@ LINE_REGEX: Pattern[str] = re.compile(
 )
 
 
+# pylint: disable=too-many-return-statements
 def config_line_to_word_pair(line: str) -> Optional[WordPair]:
     """Parse one config line to one word pair instance."""
     if _m := re.fullmatch(COMMENT_LINE_REGEX, line):
         return Comment(_m.group(1))
 
+    if len(line) == 0:
+        return Comment("")  # empty comment → empty line
+
     _m = re.fullmatch(LINE_REGEX, line)
     if _m is None:
         return None
+
     left, right = _m.group(1), _m.group(3)
     if None in (left, right):
         return None
@@ -152,14 +187,13 @@ def config_line_to_word_pair(line: str) -> Optional[WordPair]:
     return None
 
 
-def create_words_tuple(config: str) -> WORDS_TUPLE:
+def parse_config(config: str) -> WORDS_TUPLE:
     """Create a WORDS_TUPLE from a config str."""
     words_list: list[WordPair] = []
     for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
         word_pair = config_line_to_word_pair(line)
         if word_pair is None:
             raise Exception(f"Line {i} ('{line}') is invalid.")
-
         words_list.append(word_pair)
 
     return tuple(words_list)
@@ -171,10 +205,27 @@ def words_to_regex(words: WORDS_TUPLE) -> Pattern[str]:
         "|".join(
             tuple(f"({word_pair.to_pattern_str()})" for word_pair in words)
         ),
-        re.IGNORECASE,
+        re.IGNORECASE | re.UNICODE,
     )
 
 
-def words_tuple_to_config(words: WORDS_TUPLE) -> str:
+def words_tuple_to_config(words: WORDS_TUPLE, minified: bool = False) -> str:
     """Create a readable config_str from a words tuple."""
-    return "\n".join(word_pair.to_conf_line() for word_pair in words)
+    if minified:
+        return ";".join(
+            word_pair.to_conf_line()
+            for word_pair in words
+            if isinstance(word_pair, (OneWayPair, TwoWayPair))
+        )
+    max_len = max(word_pair.len_of_left() for word_pair in words)
+    return "\n".join(word_pair.to_conf_line(max_len) for word_pair in words)
+
+
+def minify(config: str) -> str:
+    """Minify a config string."""
+    return words_tuple_to_config(parse_config(config), True)
+
+
+def beautify(config: str) -> str:
+    """Beautify a config string."""
+    return words_tuple_to_config(parse_config(config))
