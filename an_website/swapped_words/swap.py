@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from re import Match
+from typing import Optional
 
 from tornado.web import HTTPError
 
@@ -26,7 +27,7 @@ from .sw_config_file import (
     InvalidConfigException,
     beautify,
     parse_config,
-    words_to_regex,
+    words_to_regex, words_tuple_to_config,
 )
 
 
@@ -59,7 +60,12 @@ MAX_CHAR_COUNT: int = 32768
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:
     DEFAULT_CONFIG: str = file.read()
 
-WORDS: WORDS_TUPLE = parse_config(DEFAULT_CONFIG)
+DEFAULT_WORDS: WORDS_TUPLE = parse_config(DEFAULT_CONFIG)
+
+# make the config pretty:
+DEFAULT_CONFIG: str = words_tuple_to_config(DEFAULT_WORDS)
+
+print(DEFAULT_CONFIG)
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -106,18 +112,23 @@ def copy_case(word_to_steal_case_from: str, word_to_change: str) -> str:
 
 def swap_words(text: str, config: str) -> str:
     """Swap the words in the text."""
-    words = WORDS if config == "" else parse_config(config)
+    words = DEFAULT_WORDS if config == DEFAULT_CONFIG else parse_config(config)
 
     def get_replaced_word_with_same_case(match: Match[str]) -> str:
         """Get the replaced word with the same case as the match."""
-        for i, word in enumerate(match.groups()):
-            if isinstance(word, str):  # word is not None
+        print(match)
+        for key, word in match.groupdict().items():
+            print(key, word)
+            if isinstance(word, str) and key.startswith("n"):
+                _i = int(key[1:])
                 # get the replacement from words
-                replaced_word = words[i].get_replacement(word)
+                replaced_word = words[_i].get_replacement(word)
                 return copy_case(word, replaced_word)  # copy the case
 
         # if an unknown error happens return the match to change nothing:
         return match.group()
+
+    print(words_to_regex(words).pattern)
 
     return words_to_regex(words).sub(get_replaced_word_with_same_case, text)
 
@@ -140,22 +151,24 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config: str):
+    def handle_text(self, text: str, config: Optional[str]):
         """Use the text to display the html page."""
         check_text_too_long(text)
+
+        if config is None:
+            config = DEFAULT_CONFIG
 
         try:
             self.render(
                 "pages/swapped_words.html",
                 text=text,
                 output=swap_words(text, config),
-                config=DEFAULT_CONFIG if config == "" else beautify(config),
+                config=beautify(config),
                 DEFAULT_CONFIG=DEFAULT_CONFIG,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
         except InvalidConfigException as _e:
-            print(_e)
             self.render(
                 "pages/swapped_words.html",
                 text=text,
@@ -170,14 +183,14 @@ class SwappedWords(BaseRequestHandler):
         """Handle get requests to the swapped words page."""
         self.handle_text(
             self.get_query_argument("text", default=""),
-            self.get_query_argument("config", default=""),
+            self.get_query_argument("config", default=None),
         )
 
     def post(self):
         """Handle post requests to the swapped words page."""
         self.handle_text(
             self.get_argument("text", default=""),
-            self.get_argument("config", default=""),
+            self.get_argument("config", default=None),
         )
 
 
