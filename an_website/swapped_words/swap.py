@@ -27,7 +27,8 @@ from .sw_config_file import (
     InvalidConfigException,
     beautify,
     parse_config,
-    words_to_regex, words_tuple_to_config,
+    words_to_regex,
+    words_tuple_to_config,
 )
 
 

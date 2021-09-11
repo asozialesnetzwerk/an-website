@@ -52,8 +52,7 @@ class Comment(ConfigLine):
         """Get how this would look like in a config."""
         return (
             ""
-            if self.comment is None
-            or len(self.comment) == 0
+            if self.comment is None or len(self.comment) == 0
             else f"# {self.comment}"
         )
 
