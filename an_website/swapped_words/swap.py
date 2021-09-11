@@ -59,14 +59,14 @@ def get_module_info() -> ModuleInfo:
 MAX_CHAR_COUNT: int = 32768
 
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:
-    DEFAULT_CONFIG: str = file.read()
+    _conf: str = file.read()
 
-DEFAULT_WORDS: WORDS_TUPLE = parse_config(DEFAULT_CONFIG)
+DEFAULT_WORDS: WORDS_TUPLE = parse_config(_conf)
+
+del _conf
 
 # make the config pretty:
 DEFAULT_CONFIG: str = words_tuple_to_config(DEFAULT_WORDS)
-
-print(DEFAULT_CONFIG)
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -201,13 +201,23 @@ class SwappedWordsApi(APIRequestHandler):
     def get(self):
         """Handle get requests to the swapped words api."""
         text = self.get_argument("text", default="")
-        config = self.get_argument("config", default="")
+        config = self.get_argument("config", default=DEFAULT_CONFIG)
 
         check_text_too_long(text)
 
-        self.finish(
-            {
-                "replaced_text": swap_words(text, config),
-                "config": DEFAULT_CONFIG if config == "" else config,
-            }
-        )
+        try:
+            self.finish(
+                {
+                    "config": config,
+                    "replaced_text": swap_words(text, config),
+                }
+            )
+        except InvalidConfigException as _e:
+            self.finish(
+                {
+                    "error": _e.reason,
+                    "line": _e.line,
+                    "line_num": _e.line_num,
+                    "config": config,
+                }
+            )
