@@ -17,7 +17,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from re import Pattern
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 
 class ConfigLine:
@@ -50,7 +50,12 @@ class Comment(ConfigLine):
 
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        return f"# {self.comment}" if len(self.comment) > 0 else ""
+        return (
+            ""
+            if self.comment is None
+            or len(self.comment) == 0
+            else f"# {self.comment}"
+        )
 
 
 class WordPair(ConfigLine):
@@ -143,24 +148,24 @@ COMMENT_LINE_REGEX: Pattern[str] = re.compile(
 LINE_REGEX: Pattern[str] = re.compile(
     r"\s*"  # white spaces to strip the word
     r"("  # start group one for the first word
-    r"[^=\s()]"  # the start of the word, that can't contain white space
-    r"[^=()]*"  # the middle of the word, that can't contain "="
-    r"[^=\s<()]"  # the end of the word, that can't contain white space and "<"
-    r")"  # end group one for the first word
+    r"[^\s<=>]"  # the start of the word; can't contain: \s, "<", "=", ">"
+    r"[^<=>]*"  # the middle of the word; can't contain: "<", "=", ">"="
+    r"[^\s<=>]"  # the end of the word; can't contain: \s, "<", "=", ">"
+    r")?"  # end group one for the first word
     r"\s*"  # white spaces to strip the word
-    r"(<?=>)"  # the seperator in the middle either "=>" or "<=>"
+    r"(<?=>)?"  # the seperator in the middle either "=>" or "<=>"
     r"\s*"  # white spaces to strip the word
     r"("  # start group two for the second word
-    r"[^=\s>()]"  # the start of the word, that can't contain white space and >
-    r"[^=()]*"  # the middle of the word, that can't contain "="
-    r"[^=\s()]"  # the end of the word, that can't contain white space
-    r")"  # end group two for the second word
+    r"[^\s<=>]"  # the start of the word; can't contain: \s, "<", "=", ">"
+    r"[^<=>]*"  # the middle of the word; can't contain: "<", "=", ">"
+    r"[^\s<=>]"  # the end of the word; can't contain: \s, "<", "=", ">"
+    r")?"  # end group two for the second word
     r"\s*"  # white spaces to strip the word
 )
 
 
 # pylint: disable=too-many-return-statements
-def config_line_to_word_pair(line: str) -> Optional[ConfigLine]:
+def config_line_to_word_pair(line: str) -> Union[str, ConfigLine]:
     """Parse one config line to one word pair instance."""
     # remove white spaces to fix stuff, behaves weird otherwise
     line = line.strip()
@@ -175,23 +180,33 @@ def config_line_to_word_pair(line: str) -> Optional[ConfigLine]:
 
     _m = re.fullmatch(LINE_REGEX, line)
     if _m is None:
-        return None
+        return "Line is invalid."
 
-    left, right = _m.group(1), _m.group(3)
-    if None in (left, right):
-        return None
+    left, separator, right = _m.group(1), _m.group(2), _m.group(3)
+    if left is None:
+        return "Left of separator is empty."
+    if separator not in ("<=>", "=>"):
+        return "No separator ('<=>' or '=>') present."
+    if right is None:
+        return "Right of separator is empty."
 
-    left_re = re.compile(left)  # compile to make sure it doesn't break later
-
-    separator = _m.group(2)
-    if separator == "<=>":
+    try:
         # compile to make sure it doesn't break later
-        right_re = re.compile(right)
+        left_re = re.compile(left)
+    except re.error as _e:
+        return f"Left is invalid: {_e}"
+
+    if separator == "<=>":
+        try:
+            # compile to make sure it doesn't break later
+            right_re = re.compile(right)
+        except re.error as _e:
+            return f"Right is invalid: {_e}"
         return TwoWayPair(left_re.pattern, right_re.pattern)
     if separator == "=>":
         return OneWayPair(left_re.pattern, right)
 
-    return None
+    return "Something went wrong."
 
 
 @dataclass
@@ -200,10 +215,14 @@ class InvalidConfigException(Exception):
 
     line_num: int
     line: str
+    reason: str
 
     def __str__(self):
         """Exception to str."""
-        return f"Error in line {self.line_num}: {self.line}"
+        return (
+            f"Error in line {self.line_num}: '{self.line.strip()}' "
+            f"with reason: {self.reason}"
+        )
 
 
 def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
@@ -211,10 +230,10 @@ def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
     words_list: list[ConfigLine] = []
     for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
         word_pair = config_line_to_word_pair(line)
-        if word_pair is not None:
+        if isinstance(word_pair, ConfigLine):
             words_list.append(word_pair)
         elif throw_exception:
-            raise InvalidConfigException(i, line)
+            raise InvalidConfigException(i, line, reason=word_pair)
 
     return tuple(words_list)
 
@@ -223,7 +242,11 @@ def words_to_regex(words: WORDS_TUPLE) -> Pattern[str]:
     """Get the words pattern that matches all words in words."""
     return re.compile(
         "|".join(
-            tuple(f"({word_pair.to_pattern_str()})" for word_pair in words)
+            tuple(
+                f"(?P<n{i}>{word_pair.to_pattern_str()})"
+                for i, word_pair in enumerate(words)
+                if isinstance(word_pair, WordPair)
+            )
         ),
         re.IGNORECASE | re.UNICODE,
     )

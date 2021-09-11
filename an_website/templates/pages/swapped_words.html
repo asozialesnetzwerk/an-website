@@ -3,7 +3,7 @@
 {% block body %}
 <form method="post">
   <label class="form-element">
-    Der Text dessen Wörter vertauscht werden sollen:
+    Der Text dessen Wörter vertauscht werden sollen
     <textarea
           name="text"
           placeholder="Gebe witzigen Text ein."
@@ -14,10 +14,19 @@
   </label>
 
   <label class="form-element">
-    Die Regeln nach denen vertauscht werden sollen:
+    Die Regeln nach denen vertauscht werden sollen
+    <button
+      onclick="resetConfig()"
+    >
+      Reset
+    </button>
     <textarea
           name="config"
-          placeholder="{{DEFAULT_CONFIG}}"
+          id="config-textarea"
+          placeholder="# Vertauschungen eingeben, zum Beispiel:
+          amüsant <=> relevant
+          Björn Höcke => Bernd Höcke
+          "
           rows="10"
           maxlength="{{MAX_CHAR_COUNT}}"
           spellcheck="true"
@@ -34,9 +43,18 @@
 
 {% if error_msg is not None %}
 <script>
-  alert("{{error_msg}}")
+  alert("{% raw error_msg %}");
 </script>
 {% end %}
+
+<script>
+  function resetConfig() {
+    // Replace "\n" with ";" to remove
+    document.getElementById('config-textarea').innerText=`
+      {% raw DEFAULT_CONFIG.replace("\n", ";") %}
+    `
+  }
+</script>
 
 <br>
 
