@@ -164,7 +164,9 @@ LINE_REGEX: Pattern[str] = re.compile(
 
 
 # pylint: disable=too-many-return-statements
-def config_line_to_word_pair(line: str) -> Union[str, ConfigLine]:
+def config_line_to_word_pair(  # noqa: C901
+    line: str,
+) -> Union[str, ConfigLine]:
     """Parse one config line to one word pair instance."""
     # remove white spaces to fix stuff, behaves weird otherwise
     line = line.strip()
