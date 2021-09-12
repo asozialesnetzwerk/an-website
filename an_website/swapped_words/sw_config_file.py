@@ -232,14 +232,14 @@ class InvalidConfigException(Exception):
 def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
     """Create a WORDS_TUPLE from a config str."""
     words_list: list[ConfigLine] = []
-    for i, line in enumerate(set(re.split(LINE_END_REGEX, config.strip()))):
+    for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
         word_pair = config_line_to_word_pair(line)
         if isinstance(word_pair, ConfigLine):
             words_list.append(word_pair)
         elif throw_exception:
             raise InvalidConfigException(i, line, reason=word_pair)
 
-    return tuple(set(words_list))
+    return tuple(words_list)
 
 
 @functools.lru_cache(maxsize=20)
