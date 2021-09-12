@@ -118,9 +118,7 @@ def swap_words(text: str, config: str) -> str:
 
     def get_replaced_word_with_same_case(match: Match[str]) -> str:
         """Get the replaced word with the same case as the match."""
-        print(match)
         for key, word in match.groupdict().items():
-            print(key, word)
             if isinstance(word, str) and key.startswith("n"):
                 _i = int(key[1:])
                 # get the replacement from words
@@ -129,8 +127,6 @@ def swap_words(text: str, config: str) -> str:
 
         # if an unknown error happens return the match to change nothing:
         return match.group()
-
-    print(words_to_regex(words).pattern)
 
     return words_to_regex(words).sub(get_replaced_word_with_same_case, text)
 
