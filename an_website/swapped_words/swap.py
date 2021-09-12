@@ -64,7 +64,7 @@ with open(f"{DIR}/config.sw", encoding="utf-8") as file:
 
 DEFAULT_WORDS: WORDS_TUPLE = parse_config(_conf)
 
-del _conf
+del _conf  # not used anymore
 
 # make the config pretty:
 DEFAULT_CONFIG: str = words_tuple_to_config(DEFAULT_WORDS)
@@ -84,17 +84,23 @@ def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
     )
 
 
-def copy_case(word_to_steal_case_from: str, word_to_change: str) -> str:
+def copy_case(reference_word: str, word_to_change: str) -> str:
     """Copy the case of one string to another."""
     if len(word_to_change) == 1:
         # shouldn't happen, just to avoid future error with index of [1:]
-        return copy_case_letter(word_to_steal_case_from[0], word_to_change)
+        return copy_case_letter(reference_word[0], word_to_change)
+
+    split_ref = reference_word.split(" ")
+    split_word = word_to_change.split(" ")
+    # if both equal length and not len == 1
+    if len(split_ref) == len(split_word) != 1:
+        return " ".join(
+            copy_case(split_ref[i], split_word[i])
+            for i in range(len(split_ref))
+        )
 
     # word with only one upper case letter in beginning
-    if (
-        word_to_steal_case_from[0].isupper()
-        and word_to_steal_case_from[1:].islower()
-    ):
+    if reference_word[0].isupper() and reference_word[1:].islower():
         return word_to_change[0].upper() + word_to_change[1:]
 
     # other words
@@ -103,7 +109,7 @@ def copy_case(word_to_steal_case_from: str, word_to_change: str) -> str:
         new_word.append(
             copy_case_letter(
                 # overflow original word for mixed case
-                word_to_steal_case_from[i % len(word_to_steal_case_from)],
+                reference_word[i % len(reference_word)],
                 letter,
             )
         )
