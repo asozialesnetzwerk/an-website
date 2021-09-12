@@ -14,6 +14,7 @@
 """Config file for the page that swaps words."""
 from __future__ import annotations
 
+import functools
 import re
 from dataclasses import dataclass
 from re import Pattern
@@ -42,7 +43,7 @@ class ConfigLine:
         return 0
 
 
-@dataclass
+@dataclass(frozen=True)
 class Comment(ConfigLine):
     """Class used to represent a comment."""
 
@@ -68,7 +69,7 @@ class WordPair(ConfigLine):
         return " " + (" " * (len_of_left - self.len_of_left()))
 
 
-@dataclass
+@dataclass(frozen=True)
 class OneWayPair(WordPair):
     """Class used to represent a word that gets replaced with another."""
 
@@ -98,7 +99,7 @@ class OneWayPair(WordPair):
         return len(self.word_regex)
 
 
-@dataclass
+@dataclass(frozen=True)
 class TwoWayPair(WordPair):
     """Class used to represent two words that get replaced with each other."""
 
@@ -164,6 +165,7 @@ LINE_REGEX: Pattern[str] = re.compile(
 
 
 # pylint: disable=too-many-return-statements
+@functools.lru_cache(maxsize=20)
 def config_line_to_word_pair(  # noqa: C901
     line: str,
 ) -> Union[str, ConfigLine]:
@@ -210,7 +212,7 @@ def config_line_to_word_pair(  # noqa: C901
     return "Something went wrong."
 
 
-@dataclass
+@dataclass(frozen=True)
 class InvalidConfigException(Exception):
     """Exception thrown if the config is invalid."""
 
@@ -226,19 +228,21 @@ class InvalidConfigException(Exception):
         )
 
 
+@functools.lru_cache(maxsize=20)
 def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
     """Create a WORDS_TUPLE from a config str."""
     words_list: list[ConfigLine] = []
-    for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
+    for i, line in enumerate(set(re.split(LINE_END_REGEX, config.strip()))):
         word_pair = config_line_to_word_pair(line)
         if isinstance(word_pair, ConfigLine):
             words_list.append(word_pair)
         elif throw_exception:
             raise InvalidConfigException(i, line, reason=word_pair)
 
-    return tuple(words_list)
+    return tuple(set(words_list))
 
 
+@functools.lru_cache(maxsize=20)
 def words_to_regex(words: WORDS_TUPLE) -> Pattern[str]:
     """Get the words pattern that matches all words in words."""
     return re.compile(
@@ -253,6 +257,7 @@ def words_to_regex(words: WORDS_TUPLE) -> Pattern[str]:
     )
 
 
+@functools.lru_cache(maxsize=20)
 def words_tuple_to_config(words: WORDS_TUPLE, minified: bool = False) -> str:
     """Create a readable config_str from a words tuple."""
     if minified:
