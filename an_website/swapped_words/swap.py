@@ -14,6 +14,7 @@
 """Page that swaps words."""
 from __future__ import annotations
 
+import base64
 from re import Match
 from typing import Optional
 
@@ -156,10 +157,37 @@ class SwappedWords(BaseRequestHandler):
         """Use the text to display the html page."""
         check_text_too_long(text)
 
-        if config is None:
-            config = DEFAULT_CONFIG
-
         try:
+            if config is None:
+                _c = self.get_cookie(
+                    name="swapped-words-config",
+                    default=None,
+                )
+                if _c is None:
+                    config = DEFAULT_CONFIG
+                else:
+                    # decode the base64 text
+                    config = str(base64.b64decode(_c.encode("utf-8")), "utf-8")
+            else:
+                if config == DEFAULT_CONFIG:
+                    # no need to have the default config in a cookie
+                    self.clear_cookie(
+                        name="swapped-words-config",
+                        path=self.request.path,
+                    )
+                else:
+                    # save the config in a cookie
+                    self.set_cookie(
+                        name="swapped-words-config",
+                        value=str(
+                            # encode the config as base64
+                            base64.b64encode(config.encode("utf-8")),
+                            "utf-8",
+                        ),
+                        expires_days=1000,
+                        path=self.request.path,
+                    )
+
             self.render(
                 "pages/swapped_words.html",
                 text=text,
