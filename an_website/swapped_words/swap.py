@@ -188,6 +188,7 @@ class SwappedWords(BaseRequestHandler):
                         ),
                         expires_days=1000,
                         path=self.request.path,
+                        SameSite="Strict",
                     )
 
             self.render(
