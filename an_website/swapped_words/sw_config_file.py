@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import functools
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from re import Pattern
 from typing import Optional, Tuple, Union
 
@@ -39,7 +39,11 @@ class ConfigLine:
         return ""
 
     def len_of_left(self) -> int:  # pylint: disable=no-self-use
-        """Get the length to the left of the separator."""
+        """
+        Get the length to the left of the separator.
+
+        Only used for word pairs.
+        """
         return 0
 
 
@@ -58,53 +62,57 @@ class Comment(ConfigLine):
         )
 
 
+@dataclass(frozen=True, init=False)
 class WordPair(ConfigLine):
-    """Class representing a word pair."""
+    """Parent class representing a word pair."""
 
-    def get_filling_spaces(self, len_of_left: Optional[int] = None):
-        """Get the filling spaces used for beautifying the config."""
+    word1: str
+    word2: str
+    # separator between the two words, that shouldn't be changed:
+    separator: str = field(default="", init=False)
+
+    def len_of_left(self) -> int:
+        """Get the length to the left of the separator."""
+        return len(self.word1)
+
+    def to_conf_line(self, len_of_left: Optional[int] = None):
+        """Get how this would look like in a config."""
+        left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:
-            return ""
-        # the space as default space between text an arrow
-        return " " + (" " * (len_of_left - self.len_of_left()))
+            return "".join((left, separator.strip(), right))
+        return (
+            left
+            + (" " * (1 + len_of_left - self.len_of_left()))
+            + separator
+            + " "
+            + right
+        )
 
 
 @dataclass(frozen=True)
 class OneWayPair(WordPair):
     """Class used to represent a word that gets replaced with another."""
 
-    word_regex: str
-    replacement: str
+    # separator between the two words, that shouldn't be changed:
+    separator: str = field(default=" =>", init=False)
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word."""
-        if re.fullmatch(self.word_regex, word) is not None:
-            return self.replacement
+        if re.fullmatch(self.word1, word) is not None:
+            return self.word2
         return word
 
     def to_pattern_str(self) -> str:
         """Get the pattern that matches the replaceable words."""
-        return self.word_regex
-
-    def to_conf_line(self, len_of_left: Optional[int] = None):
-        """Get how this would look like in a config."""
-        space = "" if len_of_left is None else " "
-        return (
-            f"{self.word_regex}{self.get_filling_spaces(len_of_left)}"
-            f"{space}=>{space}{self.replacement}"
-        )
-
-    def len_of_left(self) -> int:
-        """Get the length to the left of the separator."""
-        return len(self.word_regex)
+        return self.word1
 
 
 @dataclass(frozen=True)
 class TwoWayPair(WordPair):
     """Class used to represent two words that get replaced with each other."""
 
-    word1: str
-    word2: str
+    # separator between the two words, that shouldn't be changed:
+    separator: str = field(default="<=>", init=False)
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word."""
@@ -117,17 +125,6 @@ class TwoWayPair(WordPair):
     def to_pattern_str(self) -> str:
         """Get the pattern that matches the replaceable words."""
         return f"{self.word1}|{self.word2}"
-
-    def to_conf_line(self, len_of_left: Optional[int] = None):
-        """Get how this would look like in a config."""
-        return (
-            f"{self.word1}{self.get_filling_spaces(len_of_left)}<=>"
-            f"{'' if len_of_left is None else ' '}{self.word2}"
-        )
-
-    def len_of_left(self) -> int:
-        """Get the length to the left of the separator."""
-        return len(self.word1)
 
 
 # mypy doesn't allow this with lowercase tuple
