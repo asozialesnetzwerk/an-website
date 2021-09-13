@@ -30,7 +30,8 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/restart/?", Restart),),
         name="Restart-Api",
-        description="Restart-Api, die genutzt wird um die Seite neuzustarten.",
+        description="Restart-Api, die genutzt wird um die Seite neu "
+        "zu starten.",
     )
 
 
@@ -50,12 +51,16 @@ class Restart(APIRequestHandler):
 
         commit = self.get_query_argument("commit", default="", strip=True)
 
-        # check if commit only contains letters and numbers
+        # check if commit only contains valid letters and numbers
         # used to protect against code execution
-        if re.search("[^a-zA-Z0-9]", commit) is not None:
+        if re.search("[^0-9a-f]", commit) is not None:
             raise HTTPError(
-                400, reason="commit can only contain letters and numbers."
+                400, reason="Commit can only contain letters and numbers."
             )
+
+        # git commits are always 40 chars long
+        if len(commit) != 40:
+            raise HTTPError(400, reason="Commit has to be 40 chars long.")
 
         # get the parent dir of the an_website module dir
         repo_path = os.path.dirname(AN_WEBSITE_DIR)
