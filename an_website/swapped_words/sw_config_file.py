@@ -98,7 +98,8 @@ class OneWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word."""
-        if re.fullmatch(self.word1, word) is not None:
+        _re_word1 = re.compile(self.word1, re.IGNORECASE)
+        if re.fullmatch(_re_word1, word) is not None:
             return self.word2
         return word
 
@@ -116,9 +117,10 @@ class TwoWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word."""
-        if self.word1 == word:
+        word_lower = word.lower()
+        if self.word1.lower() == word_lower:
             return self.word2
-        if self.word2 == word:
+        if self.word2.lower() == word_lower:
             return self.word1
         return word
 
