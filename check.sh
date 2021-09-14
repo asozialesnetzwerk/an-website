@@ -35,3 +35,7 @@ echo Flake8:
 python3 -m flake8 --extend-ignore=D100,D101,D102,D103,D104,E501 an_website
 echo Pylint:
 python3 -m pylint --output-format=colorized an_website
+
+# run tests
+echo Tests:
+python -m py.test tests/
