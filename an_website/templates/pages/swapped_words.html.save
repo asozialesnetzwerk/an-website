@@ -1,0 +1,82 @@
+{% extends "../base.html" %}
+
+{% block body %}
+<form method="post">
+  <label class="form-element">
+    Der Text dessen Wörter vertauscht werden sollen
+    <textarea
+          name="text"
+          placeholder="Gebe witzigen Text ein."
+          rows="10"
+          maxlength="{{MAX_CHAR_COUNT}}"
+          spellcheck="true"
+    >{{text}}</textarea>
+  </label>
+
+  <label class="form-element">
+    Die Regeln nach denen vertauscht werden sollen
+    <button
+      onclick="resetConfig()"
+    >
+      Reset
+    </button>
+    <textarea
+          name="config"
+          id="config-textarea"
+          placeholder="# Vertauschungen eingeben, zum Beispiel:
+          amüsant <=> relevant
+          Björn Höcke => Bernd Höcke
+          "
+          rows="10"
+          maxlength="{{MAX_CHAR_COUNT}}"
+          spellcheck="true"
+    >{{config}}</textarea>
+  </label>
+
+  {% raw form_appendix %}
+
+  <div class="tooltip no-select button-container form-element">
+    <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
+    <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
+  </div>
+</form>
+
+{% if error_msg is not None %}
+<script>
+  alert("{% raw error_msg %}");
+</script>
+{% end %}
+
+<script>
+  function resetConfig() {
+    // Replace "\n" with ";" to remove
+    document.getElementById('config-textarea').innerText=`
+      {% raw DEFAULT_CONFIG.replace("\n", ";") %}
+    `
+  }
+</script>
+
+<br>
+
+{% if len(output) > 0 %}
+
+<label for="output">Ausgabe:</label>
+<br>
+<textarea
+        rows=10
+        id="output"
+        readonly
+>{{output}}</textarea>
+{% end %}
+
+{% end %}
+
+{% block head %}
+<style>
+  textarea {
+    width: 100%;
+    font-family: monospace, monospace;
+  }
+</style>
+<link rel="stylesheet" type="text/css" href="/static/style/form.css">
+{% end %}

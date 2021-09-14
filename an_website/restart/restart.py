@@ -59,7 +59,7 @@ class Restart(APIRequestHandler):
             )
 
         # git commits are always 40 chars long
-        if len(commit) != 40:
+        if len(commit) not in (40, 0):
             raise HTTPError(400, reason="Commit has to be 40 chars long.")
 
         # get the parent dir of the an_website module dir
