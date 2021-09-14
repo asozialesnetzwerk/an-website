@@ -11,6 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""The tests module, with all the tests for the an_website module."""
+
 from __future__ import annotations
 
 import os

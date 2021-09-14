@@ -11,12 +11,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""The module with all the tests for the currency_converter module."""
+
 from __future__ import annotations
 
 from an_website.currency_converter import converter
 
 
 def test_num_string_conversion():
+    """Test the num_to_string and string_to_num conversion."""
     for num in (0.5, 0.75, 1, 5.5, 10, 100):
         assert converter.string_to_num(converter.num_to_string(num)) == num
         assert (
@@ -34,9 +37,5 @@ def test_num_string_conversion():
     assert converter.num_to_string(100) == "100"
 
 
-def do_tests():
-    test_num_string_conversion()
-
-
 if __name__ == "__main__":
-    do_tests()
+    test_num_string_conversion()
