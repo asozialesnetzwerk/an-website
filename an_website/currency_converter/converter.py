@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
+def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
     """Convert a string to a number and divide it by divide_by."""
     if string is None or len(string) == 0:
         return None
@@ -63,7 +63,7 @@ async def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
             return None
 
 
-async def num_to_string(num: float) -> str:
+def num_to_string(num: float) -> str:
     """
     Convert a float to the german representation of a number.
 
@@ -101,7 +101,7 @@ async def get_value_dict(euro: float) -> ValueDict:
     for _i, key in enumerate(keys):
         val = multipliers[_i] * euro
         value_dict[key] = val
-        value_dict[key + "_str"] = await num_to_string(val)
+        value_dict[key + "_str"] = num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
 
@@ -128,7 +128,7 @@ async def arguments_to_value_dict(
     too_many_params: bool = len(arg_list) > 1
 
     for _i, key, num_str in arg_list:
-        euro = await string_to_num(num_str, multipliers[_i])
+        euro = string_to_num(num_str, multipliers[_i])
 
         if euro is not None:
             value_dict: ValueDict = await get_value_dict(euro)
