@@ -26,5 +26,15 @@ def test_n_from_set():
         assert len(utils.n_from_set(_set, i)) == min(len(_set), i)
 
 
+def test_bool_str_conversion():
+    """Test the conversion from bool to str and from str to bool."""
+    for _b in (False, True):
+        assert _b == utils.str_to_bool(utils.bool_to_str(_b))
+        assert _b == utils.str_to_bool(str(_b))
+
+    for _b in ("sure", "nope"):
+        assert _b == utils.bool_to_str(utils.str_to_bool(_b))
+
+
 if __name__ == "__main__":
     test_n_from_set()
