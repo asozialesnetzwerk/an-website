@@ -1,5 +1,6 @@
 # Webseite des AN
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)
 
 ## How to run:
 ### Linux (tested with arch):
@@ -22,10 +23,10 @@ How:
 Why?
 
 ### FreeBSD:
-should work similar to linux  
-`/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`  
-`/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`  
-`/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`  
+should work similar to linux
+`/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`
+`/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`
+`/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`
 restart.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
 
 ### MacOS:
