@@ -44,10 +44,15 @@ jobs:
       - name: Run pytest
         run: |
           coverage run --source=an_website -m py.test tests/
-      - name: Update Coverage
+      - name: Create coverage files
         run: |
-          coverage html -d public/coverage
-          coverage json -o coverage.json
+          - coverage html -d "public/coverage"
+          - coverage json -o "coverage.json"
+      - name: Upload coverage as Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: public/
+          name: coverage
 
   hash_files:
     name: Hash files
@@ -70,6 +75,27 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: public/
+          name: version
+  deploy_github_page:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    needs:
+      - check
+      - test
+      - hash_files
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Download coverage
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+      - name: Download version
+        uses: actions/download-artifact@v2
+        with:
+          name: version
+      - name: test
+        run: find *
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
