@@ -48,7 +48,7 @@ jobs:
       - name: Create coverage files
         run: |
           coverage html -d "public/coverage"
-          coverage json -o "coverage.json"
+          coverage json -o "public/coverage.json"
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:
