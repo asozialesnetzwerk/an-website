@@ -29,8 +29,10 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
       - name: Install requirements
         run: |
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
