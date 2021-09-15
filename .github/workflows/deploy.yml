@@ -46,8 +46,8 @@ jobs:
           coverage run --source=an_website -m py.test tests/
       - name: Create coverage files
         run: |
-          - coverage html -d "public/coverage"
-          - coverage json -o "coverage.json"
+          coverage html -d "public/coverage"
+          coverage json -o "coverage.json"
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:
