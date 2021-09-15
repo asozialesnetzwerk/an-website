@@ -45,14 +45,10 @@ jobs:
       - name: Run pytest
         run: |
           coverage run --source=an_website -m py.test tests/
-      - name: Create coverage files
-        run: |
-          coverage html -d "public/coverage"
-          coverage json -o "public/coverage.json"
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:
-          path: public/
+          path: .coverage
           name: coverage
 
   hash_files:
@@ -99,9 +95,12 @@ jobs:
       - name: Move files
         run: |
           mkdir -p public
-          mv coverage public/coverage/
-          mv coverage.json public/
           mv version.txt public/
+      - name: Create coverage files
+        run: |
+          pip install coverage~=5.5
+          coverage html -d "public/coverage"
+          coverage json -o "public/coverage.json"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
