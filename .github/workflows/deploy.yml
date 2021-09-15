@@ -3,11 +3,12 @@ on:
   push:
     branches: [main]
     paths:
+      - "tests/**"
       - "an_website/**"
       - ".github/workflows/deploy.yml"
-      #- "requirements.txt"
-      #- "an_website.ini"
-      #- "restart.sh"
+      - "requirements.txt"
+      - "an_website.ini"
+      - "restart.sh"
 concurrency:
   group: deploy
   cancel-in-progress: true
@@ -24,6 +25,46 @@ jobs:
       - name: Run Pyflakes
         run: |
           pyflakes an_website
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10.0-alpha - 3.10.0"
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Cache type information
+        uses: pat-s/always-upload-cache@v2
+        with:
+          path: .pytest_cache
+          key: pytest-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: pytest-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
+      - name: Install build requirements for orjson (temporary fix)
+        if: matrix.python-version == '3.10.0-alpha - 3.10.0'
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly-2021-05-25 --profile minimal -y
+          pip install maturin
+      - name: Install requirements
+        run: |
+          grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
+      - name: Install pytest and coverage
+        run: |
+          pip install pytest~=6.2.5 coverage~=5.5
+      - name: Run pytest
+        run: |
+          coverage run --source=an_website -m py.test tests/
+      - name: Update Coverage
+        run: |
+          coverage html -d public/coverage
+          coverage json -o coverage.json
+
   hash_files:
     name: Hash files
     runs-on: ubuntu-latest
@@ -35,7 +76,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Hash files
         run: |
-          mkdir public
+          mkdir -p public
           echo "Hash der Datei-Hashes:" > public/version.txt
           sh -c "cd an_website && git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1" >> public/version.txt
           echo >> public/version.txt

@@ -1,4 +1,5 @@
 black>=21.6b0
+coverage~=5.5
 flake8>=3.9.2,<4
 flake8-docstrings~=1.6
 flake8-quotes~=3.2

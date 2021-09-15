@@ -38,4 +38,4 @@ python3 -m pylint --output-format=colorized an_website tests
 
 # run tests
 echo Tests:
-python -m py.test tests/
+py.test tests/

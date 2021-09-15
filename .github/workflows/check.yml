@@ -2,6 +2,7 @@ name: Check
 on:
   push:
     paths:
+      - "tests/**"
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
@@ -10,6 +11,7 @@ on:
       - ".pylintrc"
   pull_request:
     paths:
+      - "tests/**"
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
