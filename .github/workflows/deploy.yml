@@ -25,6 +25,7 @@ jobs:
       - name: Run Pyflakes
         run: |
           pyflakes an_website
+
   test:
     name: Run tests
     runs-on: ubuntu-latest
@@ -76,6 +77,7 @@ jobs:
         with:
           path: public/
           name: version
+
   deploy_github_page:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
@@ -94,14 +96,19 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: version
-      - name: test
-        run: find *
+      - name: Move files
+        run: |
+          mkdir -p public
+          mv coverage public/coverage/
+          mv coverage.json public/
+          mv version.txt public/
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           force_orphan: true
           commit_message: ${{ github.event.head_commit.message }}
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
