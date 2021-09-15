@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Pyflakes
         run: |
-          pip install "pyflakes<3"
+          grep -E "^pyflakes" check-requirements.txt | xargs pip install
       - name: Run Pyflakes
         run: |
           pyflakes an_website
@@ -41,7 +41,7 @@ jobs:
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
       - name: Install pytest and coverage
         run: |
-          pip install pytest~=6.2.5 coverage~=5.5
+          grep -E "^(pytest|coverage)" check-requirements.txt | xargs pip install
       - name: Run pytest
         run: |
           coverage run --source=an_website -m py.test tests/
@@ -98,7 +98,7 @@ jobs:
           mv version.txt public/
       - name: Create coverage files
         run: |
-          pip install coverage~=5.5
+          grep -E "^coverage" check-requirements.txt | xargs pip install
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
       - name: Deploy to GitHub Pages
