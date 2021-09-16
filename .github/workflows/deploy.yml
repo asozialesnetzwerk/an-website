@@ -42,6 +42,11 @@ jobs:
       - name: Install pytest and coverage
         run: |
           grep -E "^(pytest|coverage)" check-requirements.txt | xargs pip install
+      - name: Debug
+        run: |
+          ls -A
+          echo "-------------------"
+          git branch
       - name: Run pytest
         run: |
           coverage run --source=an_website -m py.test tests/
