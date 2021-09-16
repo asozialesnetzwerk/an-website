@@ -47,6 +47,10 @@ jobs:
           ls -A
           echo "-------------------"
           git branch
+          echo "-------------------"
+          git rev-parse main
+          echo "-------------------"
+          git rev-parse HEAD
       - name: Run pytest
         run: |
           coverage run --source=an_website -m py.test tests/
