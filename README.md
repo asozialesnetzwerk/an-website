@@ -1,9 +1,6 @@
 # Webseite des AN
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)
-
-## Code coverage:
-Details can be found under: https://asozialesnetzwerk.github.io/an-website/coverage
+[![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)
 
 ## How to run:
 ### Linux (tested with arch):
