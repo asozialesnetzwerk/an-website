@@ -45,7 +45,7 @@ def test_bool_str_conversion():
 
 
 def test_adding_stuff_to_url():
-    """Test the utils.add_args_to_url function"""
+    """Test the utils.add_args_to_url function."""
     for url in (
         "https://example.com/",
         "https://example.com/?a=b&b=c",
