@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from an_website.utils import utils
 
 
@@ -34,6 +36,11 @@ def test_bool_str_conversion():
 
     for _b in ("sure", "nope"):
         assert _b == utils.bool_to_str(utils.str_to_bool(_b))
+
+    with pytest.raises(ValueError):
+        utils.str_to_bool("Invalid bool value")
+
+    assert utils.str_to_bool("Invalid bool value", default=True)
 
 
 if __name__ == "__main__":
