@@ -26,6 +26,7 @@ def test_num_string_conversion():
             converter.string_to_num(converter.num_to_string(num), divide_by=20)
             == num / 20
         )
+        assert converter.string_to_num(str(num)) == num
 
     for num in ("0,50", "0,75", "1", "5,50", "10", "100"):
         assert converter.num_to_string(converter.string_to_num(num)) == num
