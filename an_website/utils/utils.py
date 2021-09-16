@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 from functools import cache
 from typing import Any, Callable, Optional, Tuple, Type, TypeVar, Union
 
+import tornado.httputil
 from tornado.web import RequestHandler
 
 from an_website import DIR as SITE_BASE_DIR
@@ -157,7 +158,7 @@ def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
     if val in ("maybe", "idc"):
         return random.choice((True, False))
     if default is None:
-        raise ValueError("invalid truth value %r" % (val,))
+        raise ValueError(f"invalid truth value '{val}'")
     return default
 
 
@@ -202,29 +203,19 @@ async def run(
 @cache
 def add_args_to_url(url: str, **kwargs) -> str:
     """Add a query arguments to a url."""
-    for key, value in kwargs.items():
-        if value is not None:
-            url = add_arg_to_url(url, key, value)
-    return url
-
-
-@cache
-def add_arg_to_url(url: str, arg: str, value: Union[str, int, bool]) -> str:
-    """Add a query argument to a url."""
-    if isinstance(value, bool):
-        # use sure/nope instead of True/False
-        value = bool_to_str(value)
-
-    arg_eq_val: str = f"{arg}={value}"
-
-    if arg_eq_val in url:
+    if len(kwargs) == 0:
         return url
 
-    if f"{arg}=" in url:
-        url = re.sub(f"{arg}=[^&]+&?", "", url)
+    url_args: dict[str, str] = {}
 
-    # if "?" already is in the url then use &
-    return url + ("&" if "?" in url else "?") + arg_eq_val
+    for key, value in kwargs.items():
+        if value is not None:
+            if isinstance(value, bool):
+                url_args[key] = bool_to_str(value)
+            else:
+                url_args[key] = str(value)
+
+    return tornado.httputil.url_concat(url, url_args)
 
 
 def get_themes() -> tuple[str, ...]:
