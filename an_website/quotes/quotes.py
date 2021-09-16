@@ -148,7 +148,7 @@ class QuoteBaseHandler(BaseRequestHandler):
             next_href=f"/zitate/{await self.get_next_id()}",
         )
 
-    async def get_next_id(self):
+    async def get_next_id(self):  # pylint: disable=R0201
         """Get the id of the next quote."""
         return "0-0"
 
