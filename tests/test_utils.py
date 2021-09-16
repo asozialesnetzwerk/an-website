@@ -55,10 +55,10 @@ def test_adding_stuff_to_url():
         assert "x=y" in urlparse(utils.add_args_to_url(url, x="y")).query
 
     assert (
-        "a=b&c=d&e=f"
-        == urlparse(
+        urlparse(
             utils.add_args_to_url("https://example.com/", a="b", c="d", e="f")
         ).query
+        == "a=b&c=d&e=f"
     )
 
     assert (
