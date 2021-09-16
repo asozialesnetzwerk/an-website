@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import pytest
+from tornado.httputil import urlparse
 
 from an_website.utils import utils
 
@@ -43,5 +44,32 @@ def test_bool_str_conversion():
     assert utils.str_to_bool("Invalid bool value", default=True)
 
 
+def test_adding_stuff_to_url():
+    """Test the utils.add_args_to_url function"""
+    for url in (
+        "https://example.com/",
+        "https://example.com/?a=b&b=c",
+        "https://example.com/?x=z",
+    ):
+        assert url == utils.add_args_to_url(url)
+        assert "x=y" in urlparse(utils.add_args_to_url(url, x="y")).query
+
+    assert (
+        "a=b&c=d&e=f"
+        == urlparse(
+            utils.add_args_to_url("https://example.com/", a="b", c="d", e="f")
+        ).query
+    )
+
+    assert (
+        f"a={utils.bool_to_str(True)}"
+        == urlparse(
+            utils.add_args_to_url("https://example.com/", a=True)
+        ).query
+    )
+
+
 if __name__ == "__main__":
     test_n_from_set()
+    test_bool_str_conversion()
+    test_adding_stuff_to_url()
