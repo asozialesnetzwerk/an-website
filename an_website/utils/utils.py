@@ -130,7 +130,7 @@ def length_of_match(_m: re.Match):
     return span[1] - span[0]
 
 
-def n_from_set(_set: set, _n: int) -> set:
+def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
     """Get and return _n elements of the set as a new set."""
     i = 0
     new_set = set()

@@ -86,7 +86,7 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
     input: str = ""
     invalid: str = ""
-    words: set[str] = field(default_factory=set)
+    words: frozenset[str] = field(default_factory=frozenset)
     word_count: int = 0
     letters: dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
@@ -95,12 +95,12 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
 
 @lru_cache(maxsize=10)
-def get_words(file_name: str) -> set[str]:
+def get_words(file_name: str) -> frozenset[str]:
     """Get the words with the file_name and return them."""
     with open(
         f"{BASE_WORD_DIR}/{file_name}.txt", "r", encoding="utf-8"
     ) as file:
-        return set(file.read().splitlines())
+        return frozenset(file.read().splitlines())
 
 
 @lru_cache(maxsize=10)
@@ -170,12 +170,12 @@ def fix_letter_counter_crossword_mode(
 
 @lru_cache(5)
 def filter_words(
-    words: Union[set[str], str],
+    words: Union[frozenset[str], str],
     regex: re.Pattern,
     input_letters: str,
     crossword_mode: bool = False,
     matches_always: bool = False,
-) -> tuple[set[str], dict[str, int]]:
+) -> tuple[frozenset[str], dict[str, int]]:
     """Filter a set of words to get only those that match the regex."""
     # if "words" is string it is a file_name
     if isinstance(words, str):
@@ -216,7 +216,7 @@ def filter_words(
             if letter in sorted_letters:
                 del sorted_letters[letter]
 
-    return matched_words, sorted_letters
+    return frozenset(matched_words), sorted_letters
 
 
 async def get_words_and_letters(
@@ -224,7 +224,7 @@ async def get_words_and_letters(
     input_str: str,
     invalid: str,
     crossword_mode: bool,
-) -> tuple[set[str], dict[str, int]]:
+) -> tuple[frozenset[str], dict[str, int]]:
     """Generate a word set and a letters dict and return them in a tuple."""
     input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = len(invalid) == 0 and len(input_letters) == 0
@@ -281,7 +281,7 @@ async def solve_hangman(
     return Hangman(
         input_str,
         invalid,
-        n_from_set(matched_words, max_words),
+        frozenset(n_from_set(matched_words, max_words)),
         len(matched_words),
         letters,
         crossword_mode,
