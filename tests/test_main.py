@@ -15,7 +15,10 @@
 
 from __future__ import annotations
 
+import configparser
+
 import an_website.__main__ as main
+from an_website import patches
 
 
 def test_parsing_module_infos():
@@ -35,6 +38,22 @@ def test_parsing_module_infos():
         min(len(handler) for handler in main.get_all_handlers(module_infos))
         == 3
     )
+
+
+def test_making_app():
+    """Run the making app functions, to make sure they don't fail."""
+    patches.apply()
+
+    app = main.make_app()
+
+    # read the example config, cuz it is always the same and should always work
+    config = configparser.ConfigParser(interpolation=None)
+    config.read("config.ini.example")
+
+    main.apply_config_to_app(app, config)
+
+    # idk why; just to assert something lol
+    assert app.settings["CONFIG"] == config
 
 
 if __name__ == "__main__":
