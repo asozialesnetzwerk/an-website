@@ -36,7 +36,7 @@ def test_filter_words():
             # r"[ab]{2}"
             "ab",
             "ba",
-            # match nothing
+            # match none
             "a0",
             "b1",
         }
@@ -118,7 +118,7 @@ def test_solving_hangman():
             invalid="e",
             language="de_only_a-z",
             max_words=10,
-            crossword_mode=True,
+            crossword_mode=False,
         )
     )
 
@@ -128,6 +128,20 @@ def test_solving_hangman():
     assert "ä" not in hangman.letters
     assert "ö" not in hangman.letters
     assert "ü" not in hangman.letters
+
+    hangman: solver.Hangman = asyncio.run(
+        solver.solve_hangman(
+            input_str="______",
+            invalid="",
+            language="de",
+            max_words=10,
+            crossword_mode=False,
+        )
+    )
+
+    assert len(hangman.words) <= 10
+    assert hangman.word_count > 10
+    assert "ä" in hangman.letters
 
 
 if __name__ == "__main__":
