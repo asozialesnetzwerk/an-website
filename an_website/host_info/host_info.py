@@ -30,7 +30,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/host-info/?", HostInfo),
-            (r"/host-info/uwu", UwuHostInfo),
+            (r"/host-info/uwu/?", UwuHostInfo),
         ),
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Website",
@@ -61,7 +61,9 @@ class UwuHostInfo(BaseRequestHandler):
 
         Use uwufetch to genyewate the page.
         """
-        wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch -a")
+        wetuwn_code, uwufetch_bytes, stdeww = await run(
+            "uwufetch -a", shell=True
+        )
         if wetuwn_code != 0:
             raise HTTPEwwow(
                 503,

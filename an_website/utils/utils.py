@@ -163,15 +163,24 @@ def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
 
 
 async def run(
-    cmd, stdin=asyncio.subprocess.PIPE
+    cmd, stdin=asyncio.subprocess.PIPE, shell: bool = False
 ) -> tuple[Optional[int], bytes, bytes]:
     """Run the cmd and return the return code, stdout and stderr in a tuple."""
-    proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
+    if shell is True:
+        proc = await asyncio.create_subprocess_shell(
+            cmd,
+            shell=True,
+            stdin=stdin,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+    else:
+        proc = await asyncio.create_subprocess_shell(
+            cmd,
+            stdin=stdin,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
 
     com = proc.communicate()
 
