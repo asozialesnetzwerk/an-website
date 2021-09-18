@@ -344,6 +344,12 @@ class SwappedWordsConfig:
         """Swap the words in the text."""
         return self.get_regex().sub(self.get_replaced_word, text)
 
+    def __eq__(self, other: object):
+        """Check equality based on the lines."""
+        if not isinstance(other, SwappedWordsConfig):
+            return NotImplemented
+        return self.lines == other.lines
+
 
 def minify(config: str) -> str:
     """Minify a config string."""
