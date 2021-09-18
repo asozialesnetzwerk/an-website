@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from an_website.currency_converter import converter
 
 
@@ -37,6 +39,24 @@ def test_num_string_conversion():
     assert converter.num_to_string(1.5) == "1,50"
     assert converter.num_to_string(100) == "100"
 
+    for not_a_num in ("", None, ".", "..", "text"):
+        assert converter.string_to_num(not_a_num) is None
+
+
+def test_currency_conversion():
+    """Test the currency conversion."""
+    for _f in (0.5, 1, 2, 4, 8, 16, 32, 64, 128):
+        val_dict = asyncio.run(converter.get_value_dict(_f))
+        for currency in ("euro", "mark", "ost", "schwarz"):
+            assert val_dict[currency] == converter.string_to_num(
+                val_dict[f"{currency}_str"]
+            )
+            assert val_dict[f"{currency}_str"] == converter.num_to_string(
+                val_dict[currency]
+            )
+            assert val_dict[f"{currency}_str"] in val_dict["text"]
+
 
 if __name__ == "__main__":
     test_num_string_conversion()
+    test_currency_conversion()
