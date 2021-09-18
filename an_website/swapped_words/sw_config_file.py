@@ -31,28 +31,31 @@ def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
     return (
         char_to_change.upper()  # char_to_steal_case_from is upper case
         if char_to_steal_case_from.isupper()
-        else char_to_change  # char_to_steal_case_from is lower case
+        else char_to_change.lower()  # char_to_steal_case_from is lower case
     )
 
 
 def copy_case(reference_word: str, word_to_change: str) -> str:
     """Copy the case of one string to another."""
-    if len(word_to_change) == 1:
-        # shouldn't happen, just to avoid future error with index of [1:]
-        return copy_case_letter(reference_word[0], word_to_change)
+    # lower case: "every letter is lower case"
+    if reference_word.islower():
+        return word_to_change.lower()
+    # upper case: "EVERY LETTER IS UPPER CASE"
+    if reference_word.isupper():
+        return word_to_change.upper()
+    # title case: "Every Word Begins With Upper Case Letter"
+    if reference_word.istitle():
+        return word_to_change.title()
 
     split_ref = reference_word.split(" ")
     split_word = word_to_change.split(" ")
     # if both equal length and not len == 1
     if len(split_ref) == len(split_word) != 1:
+        # go over every word, if there are spaces
         return " ".join(
             copy_case(split_ref[i], split_word[i])
             for i in range(len(split_ref))
         )
-
-    # word with only one upper case letter in beginning
-    if reference_word[0].isupper() and reference_word[1:].islower():
-        return word_to_change[0].upper() + word_to_change[1:]
 
     # other words
     new_word: list[str] = []  # use list for speed
@@ -64,7 +67,6 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
                 letter,
             )
         )
-
     # create new word and return it
     return "".join(new_word)
 
@@ -198,15 +200,17 @@ LINE_REGEX: Pattern[str] = re.compile(
     r"[^\s<=>]"  # the start of the word; can't contain: \s, "<", "=", ">"
     r"[^<=>]*"  # the middle of the word; can't contain: "<", "=", ">"="
     r"[^\s<=>]"  # the end of the word; can't contain: \s, "<", "=", ">"
-    r")?"  # end group one for the first word
+    r"|[^\s<=>]?"  # one single letter word; optional -> better error message
+    r")"  # end group one for the first word
     r"\s*"  # white spaces to strip the word
-    r"(<?=>)?"  # the seperator in the middle either "=>" or "<=>"
+    r"(<?=>)"  # the seperator in the middle either "=>" or "<=>"
     r"\s*"  # white spaces to strip the word
     r"("  # start group two for the second word
     r"[^\s<=>]"  # the start of the word; can't contain: \s, "<", "=", ">"
     r"[^<=>]*"  # the middle of the word; can't contain: "<", "=", ">"
     r"[^\s<=>]"  # the end of the word; can't contain: \s, "<", "=", ">"
-    r")?"  # end group two for the second word
+    r"|[^\s<=>]?"  # one single letter word; optional -> better error message
+    r")"  # end group two for the second word
     r"\s*"  # white spaces to strip the word
 )
 
@@ -233,11 +237,11 @@ def config_line_to_word_pair(  # noqa: C901
         return "Line is invalid."
 
     left, separator, right = _m.group(1), _m.group(2), _m.group(3)
-    if left is None:
+    if left is None or len(left) == 0:
         return "Left of separator is empty."
     if separator not in ("<=>", "=>"):
         return "No separator ('<=>' or '=>') present."
-    if right is None:
+    if right is None or len(right) == 0:
         return "Right of separator is empty."
 
     try:
