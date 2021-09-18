@@ -16,6 +16,8 @@ from __future__ import annotations
 
 import re
 
+import pytest
+
 from an_website.swapped_words import sw_config_file as sw_config
 
 
@@ -61,7 +63,7 @@ def test_parsing_config():
     """Test parsing the sw-config."""
     str_to_replace = "A a B b  XX  Cc cc cC CC  XX  Dd dd dD DD"
 
-    test_conf_str = "a=>b;Cc<=>Dd"
+    test_conf_str = "(a)=>b;Cc<=>Dd"
     parsed_conf = sw_config.SwappedWordsConfig(test_conf_str)
 
     beautified = parsed_conf.to_config_str()
@@ -75,6 +77,8 @@ def test_parsing_config():
     )
     assert re.fullmatch(parsed_conf.get_regex(), "a")
     assert re.fullmatch(parsed_conf.get_regex(), "cc")
+    assert sw_config.beautify(minified) == beautified
+    assert sw_config.minify(beautified) == minified
 
     test_conf_str = "a  <=> b\nCc  => Dd"
     parsed_conf = sw_config.SwappedWordsConfig(test_conf_str)
@@ -90,6 +94,32 @@ def test_parsing_config():
     )
     assert re.fullmatch(parsed_conf.get_regex(), "a")
     assert re.fullmatch(parsed_conf.get_regex(), "cc")
+    assert sw_config.beautify(minified) == beautified
+    assert sw_config.minify(beautified) == minified
+
+    # test invalid configs:
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig(" <=> b")
+
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig("a <=> ")
+
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig("a <> b")
+
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig("a <= b")
+
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig("a( => b")
+
+    with pytest.raises(sw_config.InvalidConfigException):
+        sw_config.SwappedWordsConfig("a <=> (b")
+
+    try:
+        sw_config.SwappedWordsConfig("a <=> (b")
+    except sw_config.InvalidConfigException as _e:
+        assert _e.reason in str(_e)
 
 
 if __name__ == "__main__":
