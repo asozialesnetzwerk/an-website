@@ -70,54 +70,6 @@ del _conf  # not used anymore
 DEFAULT_CONFIG: str = words_tuple_to_config(DEFAULT_WORDS)
 
 
-def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
-    """
-    Copy the case of one string to another.
-
-    This method assumes that the whole string has the same case, like it is
-    the case for a letter.
-    """
-    return (
-        char_to_change.upper()  # char_to_steal_case_from is upper case
-        if char_to_steal_case_from.isupper()
-        else char_to_change  # char_to_steal_case_from is lower case
-    )
-
-
-def copy_case(reference_word: str, word_to_change: str) -> str:
-    """Copy the case of one string to another."""
-    if len(word_to_change) == 1:
-        # shouldn't happen, just to avoid future error with index of [1:]
-        return copy_case_letter(reference_word[0], word_to_change)
-
-    split_ref = reference_word.split(" ")
-    split_word = word_to_change.split(" ")
-    # if both equal length and not len == 1
-    if len(split_ref) == len(split_word) != 1:
-        return " ".join(
-            copy_case(split_ref[i], split_word[i])
-            for i in range(len(split_ref))
-        )
-
-    # word with only one upper case letter in beginning
-    if reference_word[0].isupper() and reference_word[1:].islower():
-        return word_to_change[0].upper() + word_to_change[1:]
-
-    # other words
-    new_word: list[str] = []  # use list for speed
-    for i, letter in enumerate(word_to_change):
-        new_word.append(
-            copy_case_letter(
-                # overflow original word for mixed case
-                reference_word[i % len(reference_word)],
-                letter,
-            )
-        )
-
-    # create new word and return it
-    return "".join(new_word)
-
-
 def swap_words(text: str, config: str) -> str:
     """Swap the words in the text."""
     words = DEFAULT_WORDS if config == DEFAULT_CONFIG else parse_config(config)
@@ -128,8 +80,7 @@ def swap_words(text: str, config: str) -> str:
             if isinstance(word, str) and key.startswith("n"):
                 _i = int(key[1:])
                 # get the replacement from words
-                replaced_word = words[_i].get_replacement(word)
-                return copy_case(word, replaced_word)  # copy the case
+                return words[_i].get_replacement(word)
 
         # if an unknown error happens return the match to change nothing:
         return match.group()
