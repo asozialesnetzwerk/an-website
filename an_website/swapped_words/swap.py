@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import base64
-from re import Match
 from typing import Optional
 
 from tornado.web import HTTPError
@@ -23,14 +22,7 @@ from tornado.web import HTTPError
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
 from . import DIR
-from .sw_config_file import (
-    WORDS_TUPLE,
-    InvalidConfigException,
-    beautify,
-    parse_config,
-    words_to_regex,
-    words_tuple_to_config,
-)
+from .sw_config_file import InvalidConfigException, SwappedWordsConfig
 
 
 def get_module_info() -> ModuleInfo:
@@ -60,32 +52,9 @@ def get_module_info() -> ModuleInfo:
 MAX_CHAR_COUNT: int = 32768
 
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:
-    _conf: str = file.read()
+    DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
 
-DEFAULT_WORDS: WORDS_TUPLE = parse_config(_conf)
-
-del _conf  # not used anymore
-
-# make the config pretty:
-DEFAULT_CONFIG: str = words_tuple_to_config(DEFAULT_WORDS)
-
-
-def swap_words(text: str, config: str) -> str:
-    """Swap the words in the text."""
-    words = DEFAULT_WORDS if config == DEFAULT_CONFIG else parse_config(config)
-
-    def get_replaced_word_with_same_case(match: Match[str]) -> str:
-        """Get the replaced word with the same case as the match."""
-        for key, word in match.groupdict().items():
-            if isinstance(word, str) and key.startswith("n"):
-                _i = int(key[1:])
-                # get the replacement from words
-                return words[_i].get_replacement(word)
-
-        # if an unknown error happens return the match to change nothing:
-        return match.group()
-
-    return words_to_regex(words).sub(get_replaced_word_with_same_case, text)
+DEFAULT_CONFIG_STR: str = DEFAULT_CONFIG.to_config_str()
 
 
 def check_text_too_long(text: str):
@@ -106,48 +75,46 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config: Optional[str]):
+    def handle_text(self, text: str, config_str: Optional[str]):
         """Use the text to display the html page."""
         check_text_too_long(text)
 
         try:
-            if config is None:
+            if config_str is None:
                 _c = self.get_cookie(
                     name="swapped-words-config",
                     default=None,
                 )
-                if _c is None:
-                    config = DEFAULT_CONFIG
-                else:
+                if _c is not None:
                     # decode the base64 text
-                    config = str(base64.b64decode(_c.encode("utf-8")), "utf-8")
+                    config_str = str(
+                        base64.b64decode(_c.encode("utf-8")), "utf-8"
+                    )
             else:
-                if config == DEFAULT_CONFIG:
-                    # no need to have the default config in a cookie
-                    self.clear_cookie(
-                        name="swapped-words-config",
-                        path=self.request.path,
-                    )
-                else:
-                    # save the config in a cookie
-                    self.set_cookie(
-                        name="swapped-words-config",
-                        value=str(
-                            # encode the config as base64
-                            base64.b64encode(config.encode("utf-8")),
-                            "utf-8",
-                        ),
-                        expires_days=1000,
-                        path=self.request.path,
-                        SameSite="Strict",
-                    )
+                # save the config in a cookie
+                self.set_cookie(
+                    name="swapped-words-config",
+                    value=str(
+                        # encode the config as base64
+                        base64.b64encode(config_str.encode("utf-8")),
+                        "utf-8",
+                    ),
+                    expires_days=1000,
+                    path=self.request.path,
+                    SameSite="Strict",
+                )
+
+            if config_str is None:
+                sw_config = DEFAULT_CONFIG
+            else:
+                sw_config = SwappedWordsConfig(config_str)
 
             self.render(
                 "pages/swapped_words.html",
                 text=text,
-                output=swap_words(text, config),
-                config=beautify(config),
-                DEFAULT_CONFIG=DEFAULT_CONFIG,
+                output=sw_config.swap_words(text),
+                config=sw_config.to_config_str(),
+                DEFAULT_CONFIG=DEFAULT_CONFIG_STR,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
@@ -156,8 +123,8 @@ class SwappedWords(BaseRequestHandler):
                 "pages/swapped_words.html",
                 text=text,
                 output="",
-                config=config,
-                DEFAULT_CONFIG=DEFAULT_CONFIG,
+                config=config_str,
+                DEFAULT_CONFIG=DEFAULT_CONFIG_STR,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(_e),
             )
@@ -183,15 +150,20 @@ class SwappedWordsApi(APIRequestHandler):
     def get(self):
         """Handle get requests to the swapped words api."""
         text = self.get_argument("text", default="")
-        config = self.get_argument("config", default=DEFAULT_CONFIG)
+        config_str = self.get_argument("config", default=None)
 
         check_text_too_long(text)
+
+        if config_str is None:
+            sw_config = DEFAULT_CONFIG
+        else:
+            sw_config = SwappedWordsConfig(config_str)
 
         try:
             self.finish(
                 {
-                    "config": config,
-                    "replaced_text": swap_words(text, config),
+                    "config": sw_config.to_config_str(minified=True),
+                    "replaced_text": sw_config.swap_words(text),
                 }
             )
         except InvalidConfigException as _e:
@@ -200,6 +172,6 @@ class SwappedWordsApi(APIRequestHandler):
                     "error": _e.reason,
                     "line": _e.line,
                     "line_num": _e.line_num,
-                    "config": config,
+                    "config": config_str,
                 }
             )

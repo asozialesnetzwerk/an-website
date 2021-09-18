@@ -17,8 +17,8 @@ from __future__ import annotations
 import functools
 import re
 from dataclasses import dataclass, field
-from re import Pattern
-from typing import Optional, Tuple, Union
+from re import Match, Pattern
+from typing import Optional, Tuple
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -71,30 +71,14 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
     return "".join(new_word)
 
 
-class ConfigLine:
+class ConfigLine:  # pylint: disable=R0903
     """Class used to represent a word pair."""
-
-    def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
-        """Get the replacement for a given word with the same case."""
-        return word
-
-    def to_pattern_str(self) -> str:  # pylint: disable=no-self-use
-        """Get the pattern that matches the replaceable words."""
-        return "a^"  # cannot match anything "a" followed by start of str
 
     def to_conf_line(
         self, len_of_left: Optional[int] = None
     ):  # pylint: disable=no-self-use, unused-argument
         """Get how this would look like in a config."""
         return ""
-
-    def len_of_left(self) -> int:  # pylint: disable=no-self-use
-        """
-        Get the length to the left of the separator.
-
-        Only used for word pairs.
-        """
-        return 0
 
 
 @dataclass(frozen=True)
@@ -120,6 +104,14 @@ class WordPair(ConfigLine):
     word2: str
     # separator between the two words, that shouldn't be changed:
     separator: str = field(default="", init=False)
+
+    def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
+        """Get the replacement for a given word with the same case."""
+        return word
+
+    def to_pattern_str(self) -> str:  # pylint: disable=no-self-use
+        """Get the pattern that matches the replaceable words."""
+        return "a^"  # cannot match anything "a" followed by start of str
 
     def len_of_left(self) -> int:
         """Get the length to the left of the separator."""
@@ -217,10 +209,10 @@ LINE_REGEX: Pattern[str] = re.compile(
 
 # pylint: disable=too-many-return-statements
 @functools.lru_cache(maxsize=20)
-def config_line_to_word_pair(  # noqa: C901
-    line: str,
-) -> Union[str, ConfigLine]:
-    """Parse one config line to one word pair instance."""
+def parse_config_line(  # noqa: C901
+    line: str, line_num: int = -1
+) -> ConfigLine:
+    """Parse one config line to one ConfigLine instance."""
     # remove white spaces to fix stuff, behaves weird otherwise
     line = line.strip()
 
@@ -234,33 +226,43 @@ def config_line_to_word_pair(  # noqa: C901
 
     _m = re.fullmatch(LINE_REGEX, line)
     if _m is None:
-        return "Line is invalid."
+        raise InvalidConfigException(line_num, line, "Line is invalid.")
 
     left, separator, right = _m.group(1), _m.group(2), _m.group(3)
     if left is None or len(left) == 0:
-        return "Left of separator is empty."
+        raise InvalidConfigException(
+            line_num, line, "Left of separator is empty."
+        )
     if separator not in ("<=>", "=>"):
-        return "No separator ('<=>' or '=>') present."
+        raise InvalidConfigException(
+            line_num, line, "No separator ('<=>' or '=>') present."
+        )
     if right is None or len(right) == 0:
-        return "Right of separator is empty."
+        raise InvalidConfigException(
+            line_num, line, "Right of separator is empty."
+        )
 
     try:
         # compile to make sure it doesn't break later
         left_re = re.compile(left)
     except re.error as _e:
-        return f"Left is invalid: {_e}"
+        raise InvalidConfigException(
+            line_num, line, f"Left is invalid regex: {_e}"
+        ) from _e
 
     if separator == "<=>":
         try:
             # compile to make sure it doesn't break later
             right_re = re.compile(right)
         except re.error as _e:
-            return f"Right is invalid: {_e}"
+            raise InvalidConfigException(
+                line_num, line, f"Right is invalid regex: {_e}"
+            ) from _e
         return TwoWayPair(left_re.pattern, right_re.pattern)
     if separator == "=>":
         return OneWayPair(left_re.pattern, right)
 
-    return "Something went wrong."
+    raise InvalidConfigException(line_num, line, "Something went wrong.")
 
 
 @dataclass(frozen=True)
@@ -279,53 +281,75 @@ class InvalidConfigException(Exception):
         )
 
 
-@functools.lru_cache(maxsize=20)
-def parse_config(config: str, throw_exception: bool = True) -> WORDS_TUPLE:
-    """Create a WORDS_TUPLE from a config str."""
-    words_list: list[ConfigLine] = []
-    for i, line in enumerate(re.split(LINE_END_REGEX, config.strip())):
-        word_pair = config_line_to_word_pair(line)
-        if isinstance(word_pair, ConfigLine):
-            words_list.append(word_pair)
-        elif throw_exception:
-            raise InvalidConfigException(i, line, reason=word_pair)
+class SwappedWordsConfig:
+    """SwappedWordsConfig class used to swap words in strings."""
 
-    return tuple(words_list)
+    def __init__(self, config: str):
+        """Parse a config string to a instance of this class."""
+        self.lines: WORDS_TUPLE = tuple(
+            parse_config_line(line, i)
+            for i, line in enumerate(re.split(LINE_END_REGEX, config.strip()))
+        )
 
+    def get_regex(self):
+        """Get the regex that matches every word in this."""
+        return re.compile(
+            "|".join(
+                tuple(
+                    f"(?P<n{i}>{word_pair.to_pattern_str()})"
+                    for i, word_pair in enumerate(self.lines)
+                    if isinstance(word_pair, WordPair)
+                )
+            ),
+            re.IGNORECASE | re.UNICODE,
+        )
 
-@functools.lru_cache(maxsize=20)
-def words_to_regex(words: WORDS_TUPLE) -> Pattern[str]:
-    """Get the words pattern that matches all words in words."""
-    return re.compile(
-        "|".join(
-            tuple(
-                f"(?P<n{i}>{word_pair.to_pattern_str()})"
-                for i, word_pair in enumerate(words)
+    def to_config_str(self, minified: bool = False) -> str:
+        """Create a readable config str from this."""
+        if minified:
+            return ";".join(
+                word_pair.to_conf_line()
+                for word_pair in self.lines
                 if isinstance(word_pair, WordPair)
             )
-        ),
-        re.IGNORECASE | re.UNICODE,
-    )
-
-
-@functools.lru_cache(maxsize=20)
-def words_tuple_to_config(words: WORDS_TUPLE, minified: bool = False) -> str:
-    """Create a readable config_str from a words tuple."""
-    if minified:
-        return ";".join(
-            word_pair.to_conf_line()
-            for word_pair in words
+        max_len = max(
+            word_pair.len_of_left()
+            for word_pair in self.lines
             if isinstance(word_pair, WordPair)
         )
-    max_len = max(word_pair.len_of_left() for word_pair in words)
-    return "\n".join(word_pair.to_conf_line(max_len) for word_pair in words)
+        return "\n".join(
+            word_pair.to_conf_line(max_len) for word_pair in self.lines
+        )
+
+    def get_replacement_by_group_name(self, group_name: str, word: str) -> str:
+        """Get the replacement of a word by the group name it matched."""
+        if not group_name.startswith("n") or group_name == "n":
+            return word
+        index = int(group_name[1:])
+        config_line = self.lines[index]
+        if isinstance(config_line, WordPair):
+            return config_line.get_replacement(word)
+
+        return word
+
+    def get_replaced_word(self, match: Match[str]) -> str:
+        """Get the replaced word with the same case as the match."""
+        for key, word in match.groupdict().items():
+            if isinstance(word, str) and key.startswith("n"):
+                return self.get_replacement_by_group_name(key, word)
+        # if an unknown error happens return the match to change nothing:
+        return match.group()
+
+    def swap_words(self, text):
+        """Swap the words in the text."""
+        return self.get_regex().sub(self.get_replaced_word, text)
 
 
 def minify(config: str) -> str:
     """Minify a config string."""
-    return words_tuple_to_config(parse_config(config), True)
+    return SwappedWordsConfig(config).to_config_str(True)
 
 
 def beautify(config: str) -> str:
     """Beautify a config string."""
-    return words_tuple_to_config(parse_config(config))
+    return SwappedWordsConfig(config).to_config_str()
