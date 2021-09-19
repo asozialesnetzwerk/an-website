@@ -18,11 +18,13 @@ Only to inform, not to brag.
 """
 from __future__ import annotations
 
-from tornado.web import HTTPError as HTTPEwwow
+import os
 
 from .. import DIR
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo, run
+
+# from tornado.web import HTTPError as HTTPEwwow
 
 
 def get_module_info() -> ModuleInfo:
@@ -61,17 +63,20 @@ class UwuHostInfo(BaseRequestHandler):
 
         Use uwufetch to genyewate the page.
         """
-        wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
-        if wetuwn_code != 0:
-            raise HTTPEwwow(
-                503,
-                reason=(
-                    str(wetuwn_code)
-                    + " "
-                    + uwufetch_bytes.decode("utf-8").replace("\n", " ").strip()
-                    + " "
-                    + stdeww.decode("utf-8").replace("\n", " ").strip()
-                ),
-            )
-        uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
+        # wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
+        #
+        # if wetuwn_code != 0:
+        #     raise HTTPEwwow(
+        #         503,
+        #         reason=(
+        #             str(wetuwn_code)
+        #             + " "
+        #           + uwufetch_bytes.decode("utf-8").replace("\n", " ").strip()
+        #             + " "
+        #             + stdeww.decode("utf-8").replace("\n", " ").strip()
+        #         ),
+        #     )
+        # uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
+        with os.popen("uwufetch") as uwu:
+            uwufetch = uwu.read().split("\n\n")
         await self.render("pages/ansi2html.html", ansi=uwufetch)
