@@ -61,9 +61,7 @@ class UwuHostInfo(BaseRequestHandler):
 
         Use uwufetch to genyewate the page.
         """
-        wetuwn_code, uwufetch_bytes, stdeww = await run(
-            "uwufetch -a", shell=True
-        )
+        wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
         if wetuwn_code != 0:
             raise HTTPEwwow(
                 503,
