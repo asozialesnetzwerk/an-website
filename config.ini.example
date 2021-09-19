@@ -1,8 +1,9 @@
 [GENERAL]
 #ignored_modules = spam, eggs
 #trusted_api_secrets = hunter2, correct_horse_battery_staple
-#link_to_https = sure
 #contact_email = asozial@example.com
+link_to_https = sure
+ratelimits = sure
 
 [SSL]
 enabled = nope

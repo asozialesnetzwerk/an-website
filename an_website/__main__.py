@@ -242,6 +242,10 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     app.settings["CONTACT_EMAIL"] = config.get(
         "GENERAL", "CONTACT_EMAIL", fallback=None
     )
+    # whether ratelimits are enabled
+    app.settings["ratelimits"] = config.getboolean(
+        "GENERAL", "RATELIMITS", fallback=True
+    )
 
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),

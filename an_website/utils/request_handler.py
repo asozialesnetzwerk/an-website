@@ -83,8 +83,10 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(401)
 
         if (
+            # whether ratelimits are enabled
+            self.settings.get("RATELIMITS")
             # ignore ratelimits in dev_mode
-            not sys.flags.dev_mode
+            and not sys.flags.dev_mode
             # ignore ratelimits for authorized requests
             and not self.is_authorized()
             # ignore Delimits for requests with method OPTIONS
