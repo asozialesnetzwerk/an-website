@@ -53,7 +53,6 @@ IGNORED_MODULES = [
 
 logger = logging.getLogger(__name__)
 
-logger.warn("--set--" + os.popen("set").read())
 
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file

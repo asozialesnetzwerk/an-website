@@ -18,11 +18,15 @@ Only to inform, not to brag.
 """
 from __future__ import annotations
 
+import logging
+
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo, run
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -63,6 +67,7 @@ class UwuHostInfo(BaseRequestHandler):
         """
         wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
         if wetuwn_code != 0:
+            logger.error((await run("env"))[1])
             raise HTTPEwwow(
                 503,
                 reason=(
