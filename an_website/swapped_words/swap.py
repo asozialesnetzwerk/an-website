@@ -54,8 +54,6 @@ MAX_CHAR_COUNT: int = 32768
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:
     DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
 
-DEFAULT_CONFIG_STR: str = DEFAULT_CONFIG.to_config_str()
-
 
 def check_text_too_long(text: str):
     """Raise an http error if the text is too long."""
@@ -114,7 +112,6 @@ class SwappedWords(BaseRequestHandler):
                 text=text,
                 output=sw_config.swap_words(text),
                 config=sw_config.to_config_str(),
-                DEFAULT_CONFIG=DEFAULT_CONFIG_STR,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
@@ -124,7 +121,6 @@ class SwappedWords(BaseRequestHandler):
                 text=text,
                 output="",
                 config=config_str,
-                DEFAULT_CONFIG=DEFAULT_CONFIG_STR,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(_e),
             )

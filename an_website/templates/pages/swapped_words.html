@@ -50,9 +50,7 @@
 <script>
   function resetConfig() {
     // Replace "\n" with ";" to remove
-    document.getElementById('config-textarea').innerText=`
-      {% raw DEFAULT_CONFIG.replace("\n", ";") %}
-    `
+    document.getElementById('config-textarea').remove()
   }
 </script>
 
