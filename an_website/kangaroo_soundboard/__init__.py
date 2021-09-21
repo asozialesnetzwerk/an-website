@@ -19,6 +19,7 @@ import os
 import re
 from dataclasses import dataclass
 from enum import Enum
+from functools import cache, lru_cache
 from typing import Callable, Optional, Type, Union
 
 import orjson
@@ -50,6 +51,7 @@ Chapter = Enum("Chapter", [*chapters], module=__name__)  # type: ignore
 del books, chapters, person_dict
 
 
+@lru_cache(100)
 def mark_query(text: str, query: Optional[str]) -> str:
     """Replace the instances of the query with itself in a div."""
     if query is None or query == "":
@@ -71,12 +73,13 @@ def mark_query(text: str, query: Optional[str]) -> str:
     return text
 
 
-@dataclass
+@dataclass(frozen=True)
 class Info:
     """Info class that is used as a base for HeaderInfo and SoundInfo."""
 
     text: str
 
+    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[  # pylint: disable=unused-argument
@@ -88,13 +91,14 @@ class Info:
         return mark_query(self.text, query)
 
 
-@dataclass
+@dataclass(frozen=True)
 class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
     type: Type[Union[Book, Chapter, Person]] = Book
 
+    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[  # pylint: disable=unused-argument
@@ -122,7 +126,7 @@ class HeaderInfo(Info):
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class SoundInfo(Info):
     """The information about a sound."""
 
@@ -156,6 +160,7 @@ class SoundInfo(Info):
 
         return True
 
+    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
@@ -174,6 +179,7 @@ class SoundInfo(Info):
             f"type='audio/mpeg'></source></audio></li>"
         )
 
+    @cache
     def to_rss(self, url: Optional[str]) -> str:
         """Parse the info to a rss item."""
         file_name = self.get_file_name()
