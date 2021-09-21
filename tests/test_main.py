@@ -35,7 +35,11 @@ def test_parsing_module_infos():
 
     # handlers should all be at least 3 long
     assert (
-        min(len(handler) for handler in main.get_all_handlers(module_infos))
+        min(
+            len(handler)
+            for handler in main.get_all_handlers(module_infos)
+            # if issubclass(handler[1], BaseRequestHandler)
+        )
         == 3
     )
 

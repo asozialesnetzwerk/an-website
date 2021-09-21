@@ -32,7 +32,7 @@ from tornado.log import LogFormatter
 from tornado.web import Application
 
 from . import DIR, patches
-from .utils.request_handler import NotFound
+from .utils.request_handler import BaseRequestHandler, NotFound
 from .utils.utils import (
     Handler,
     HandlerTuple,
@@ -178,22 +178,25 @@ def get_all_handlers(
 
     for module_info in module_infos:
         for handler in module_info.handlers:
-            if len(handler) == 2:
-                # if dict as third arg is needed
-                # "title" and "description" have to be specified
-                # otherwise the info is taken from the module info
-                handler = (
-                    handler[0],
-                    handler[1],
-                    {
-                        "title": module_info.name,
-                        "description": module_info.description,
-                    },
-                )
-            if len(handler) >= 3:
-                # mypy doesn't like this
-                _args_dict = handler[2]  # type: ignore
-                _args_dict["module_info"] = module_info
+            # if the handler is a request handler from us
+            # and not a built-in like StaticFileHandler
+            if issubclass(handler[1], BaseRequestHandler):
+                if len(handler) == 2:
+                    # if dict as third arg is needed
+                    # "title" and "description" have to be specified
+                    # otherwise the info is taken from the module info
+                    handler = (
+                        handler[0],
+                        handler[1],
+                        {
+                            "title": module_info.name,
+                            "description": module_info.description,
+                        },
+                    )
+                if len(handler) >= 3:
+                    # mypy doesn't like this
+                    _args_dict = handler[2]  # type: ignore
+                    _args_dict["module_info"] = module_info
             handlers.append(handler)
 
     return tuple(handlers)
