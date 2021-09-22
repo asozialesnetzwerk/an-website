@@ -27,7 +27,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/settings/", SettingsPage),),
         name="Einstellungen",
         description="Stelle wichtige Sachen ein",
-        path="/settings",
+        path="/settings/",
         keywords=(
             "Einstellungen",
             "Config",

@@ -46,7 +46,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/version/", Version),),
         name="Versions-Informationen",
         description="Die aktuelle Version der Webseite",
-        path="/version",
+        path="/version/",
         keywords=(
             "Version",
             "aktuell",

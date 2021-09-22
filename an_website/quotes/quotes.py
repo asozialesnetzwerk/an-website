@@ -34,7 +34,7 @@ def get_module_info() -> ModuleInfo:
         ),
         name="Falsch zugeordnete Zitate",
         description="Eine Website mit falsch zugeordneten Zitaten",
-        path="/zitate",
+        path="/zitate/",
         keywords=(
             "falsch",
             "zugeordnet",

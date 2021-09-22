@@ -36,7 +36,7 @@ def get_module_info() -> ModuleInfo:
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "
         "Währungen",
-        path="/waehrungs-rechner",
+        path="/waehrungs-rechner/",
         keywords=(
             "Währungsrechner",
             "converter",

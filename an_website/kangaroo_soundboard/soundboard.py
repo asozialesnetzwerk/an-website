@@ -39,7 +39,7 @@ def get_module_info() -> ModuleInfo:
         name="Känguru-Soundboard",
         description="Ein Soundboard mit coolen Sprüchen und Sounds aus den "
         "Känguru-Chroniken",
-        path="/kaenguru-soundboard",
+        path="/kaenguru-soundboard/",
         keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
         handlers=(
             (
@@ -68,14 +68,14 @@ def get_module_info() -> ModuleInfo:
             PageInfo(
                 name="Suche",
                 description="Durchsuche das Känguru-Soundboard",
-                path="/kaenguru-soundboard/suche",
+                path="/kaenguru-soundboard/suche/",
                 keywords=("Suche",),
             ),
             PageInfo(
                 name="Personen",
                 description="Das Känguru-Soundboard mit Sortierung nach "
                 "Personen",
-                path="/kaenguru-soundboard/personen",
+                path="/kaenguru-soundboard/personen/",
                 keywords=("Personen",),
             ),
         ),

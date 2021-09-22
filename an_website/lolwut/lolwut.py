@@ -26,7 +26,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/lolwut/", LOLWUT), (r"/lolwut/([0-9/]+)", LOLWUT)),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",
-        path="/lolwut",
+        path="/lolwut/",
         keywords=(
             "lolwut",
             "Redis",
