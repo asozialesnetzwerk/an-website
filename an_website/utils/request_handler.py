@@ -365,20 +365,40 @@ class NotFound(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 0
 
+    def get_protocol_and_host(self) -> str:
+        """Get the beginning of the url."""
+        return f"{self.request.protocol}://{self.request.host}"
+
+    def get_query(self) -> str:
+        """Get the query how you would add it to the end of the url."""
+        if self.request.query == "":
+            return ""  # if empty without question mark
+        return f"?{self.request.query}"  # only add "?" if there is a query
+
     async def prepare(self):
         """Throw a 404 http error or redirect to another page."""
-        # check if it already ends with a slash
-        if self.request.path.endswith("/"):
-            raise HTTPError(404)
-        # check if it is a file, with an extension
-        if "." in self.request.path.split("/")[-1]:
-            raise HTTPError(404)
+        if (
+            # path already ends with a slash
+            self.request.path.endswith("/")
+            # path is a file (has a . in the last part like "favicon.ico")
+            or "." in self.request.path.split("/")[-1]
+        ):
+            if self.request.path.islower():
+                # nothing to check anymore (TODO: add search or something)
+                raise HTTPError(404)
+            # path isn't lower case (probably an error)
+            return self.redirect(
+                self.get_protocol_and_host()
+                + self.request.path.lower()  # make path lower case
+                + self.get_query(),
+                True,
+            )
 
-        req = self.request
-        # only add "?" if there is a query
-        query = f"?{req.query}" if len(req.query) > 0 else ""
-        self.redirect(
-            f"{req.protocol}://{req.host}{req.path}/{query}",
+        return self.redirect(
+            self.get_protocol_and_host()
+            + self.request.path
+            + "/"  # add slash to the end of the path
+            + self.get_query(),
             True,
         )
 
