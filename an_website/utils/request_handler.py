@@ -158,7 +158,7 @@ class BaseRequestHandler(RequestHandler):
         if url.startswith("http") and f"//{self.request.host}" not in url:
             # url is to other website:
             url = (
-                f"/redirect?to={quote_plus(url)}&from"
+                f"/redirect/?to={quote_plus(url)}&from"
                 f"={quote_plus(this_url)}"
             )
 
