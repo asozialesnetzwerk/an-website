@@ -9,21 +9,21 @@
 am(ü|ue)sant         => relevant
 relevant             => amüsant
 am(ü|ue)sanz         => relevanz
-relevanz             => amüsanz
-ministerium         <=> mysterium
-ministerien         <=> mysterien
-sch(ü|ue)tzenverein  => bundestag
-bundestag            => schützenverein
+Relevanz             => Amüsanz
+Ministerium         <=> Mysterium
+Ministerien         <=> Mysterien
+Sch(ü|ue)tzenverein  => Bundestag
+Bundestag            => Schützenverein
 ironisch            <=> erotisch
-ironien             <=> erotiken
-ironie              <=> erotik
-ironiker            <=> erotiker
-problem             <=> ekzem
+Ironien             <=> Erotiken
+Ironie              <=> Erotik
+Ironiker            <=> Erotiker
+Problem             <=> Ekzem
 kritisch            <=> kryptisch
-kritik              <=> kryptik
+Kritik              <=> Kryptik
 provozier           <=> produzier
-arbeitnehmer        <=> arbeitgeber
-arbeitsnehmer       <=> arbeitsgeber
+Arbeitnehmer        <=> Arbeitgeber
+Arbeitsnehmer       <=> Arbeitsgeber
 
 # der Typ heißt Bernd!
-# bj(ö|oe)rn h(ö|oe)cke => bernd höcke
+# Bj(ö|oe)rn H(ö|oe)cke => Bernd Höcke

@@ -140,6 +140,8 @@ class OneWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
+        if re.fullmatch(self.word1, word) is not None:
+            return self.word2
         _re_word1 = re.compile(self.word1, re.IGNORECASE)
         if re.fullmatch(_re_word1, word) is not None:
             return copy_case(word, self.word2)
@@ -159,6 +161,11 @@ class TwoWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
+        if self.word1 == word:
+            return self.word2
+        if self.word2 == word:
+            return self.word1
+        # Doesn't match case sensitive
         word_lower = word.lower()
         if self.word1.lower() == word_lower:
             return copy_case(word, self.word2)
