@@ -33,6 +33,7 @@ def get_module_info() -> ModuleInfo:
             "Config",
             "Settings",
         ),
+        aliases=("/config/", "/einstellungen/"),
     )
 
 

@@ -30,8 +30,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/", CurrencyConverter),
-            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
+            (r"/waehrungs-rechner/", CurrencyConverter),
+            (r"/waehrungs-rechner/api/?", CurrencyConverterAPI),
         ),
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "
@@ -45,6 +45,7 @@ def get_module_info() -> ModuleInfo:
             "Ost-Mark",
             "Känguru",
         ),
+        aliases=(r"/(w(%C3%A4|ä)hrungs-)?rechner/", "/currency-converter/"),
     )
 
 
@@ -145,7 +146,7 @@ async def arguments_to_value_dict(
 class CurrencyConverter(BaseRequestHandler):
     """Request handler for the currency converter page."""
 
-    async def get(self, *args):  # pylint: disable=unused-argument
+    async def get(self):  # pylint: disable=unused-argument
         """Handle the get request and display the page."""
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
@@ -173,7 +174,7 @@ class CurrencyConverter(BaseRequestHandler):
 class CurrencyConverterAPI(APIRequestHandler):
     """Request handler for the currency converter json api."""
 
-    async def get(self, *args):  # pylint: disable=unused-argument
+    async def get(self):
         """
         Handle the get request and return the value dict as json.
 

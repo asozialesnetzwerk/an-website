@@ -70,13 +70,14 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/hangman-l(ö|oe|%C3%B6)ser/", HangmanSolver),
-            (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
+            (r"/hangman-loeser/", HangmanSolver),
+            (r"/hangman-loeser/api/?", HangmanSolverAPI),
         ),
         name="Hangman-Löser",
         description="Ein Website, die Lösungen für Galgenmännchen findet",
         path="/hangman-loeser/",
         keywords=("Galgenmännchen", "Hangman", "Löser", "Solver", "Worte"),
+        aliases=(r"/hangman-l(ö|%C3%B6)ser/", "hangman-solver"),
     )
 
 
@@ -333,7 +334,7 @@ class HangmanSolver(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 3
 
-    async def get(self, *args):  # pylint: disable=unused-argument
+    async def get(self):
         """Handle the get request and render the page."""
         hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
@@ -344,7 +345,7 @@ class HangmanSolverAPI(APIRequestHandler):
 
     RATELIMIT_TOKENS = 3
 
-    async def get(self, *args):  # pylint: disable=unused-argument
+    async def get(self):
         """Handle the get request and write the Hangman object as json."""
         hangman = await handle_request(self)
         hangman_dict = asdict(hangman)

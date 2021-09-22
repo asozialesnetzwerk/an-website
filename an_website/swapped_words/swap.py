@@ -30,9 +30,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/vertauschte-woerter/", SwappedWords),
-            (r"/swapped-words/", SwappedWords),
             (r"/vertauschte-woerter/api/?", SwappedWordsApi),
-            (r"/swapped-words/api/?", SwappedWordsApi),
         ),
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",
@@ -45,6 +43,7 @@ def get_module_info() -> ModuleInfo:
                 path=f"{GIT_URL}/VertauschteWoerterPlugin/",
             ),
         ),
+        aliases=("/swapped-words/", r"/vertauschte-w(ö|%C3%B6)rter/"),
     )
 
 
