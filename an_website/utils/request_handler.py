@@ -183,6 +183,8 @@ class BaseRequestHandler(RequestHandler):
                 if self.settings.get("LINK_TO_HTTPS")
                 else self.request.protocol
             )
+            if not url.endswith("/"):
+                url += "/"
             return f"{protocol}://{self.request.host}{url}"
 
         return url
@@ -364,8 +366,21 @@ class NotFound(BaseRequestHandler):
     RATELIMIT_TOKENS = 0
 
     async def prepare(self):
-        """Throw a 404 http error."""
-        raise HTTPError(404)
+        """Throw a 404 http error or redirect to another page."""
+        # check if it already ends with a slash
+        if self.request.path.endswith("/"):
+            raise HTTPError(404)
+        # check if it is a file, with an extension
+        if "." in self.request.path.split("/")[-1]:
+            raise HTTPError(404)
+
+        req = self.request
+        # only add "?" if there is a query
+        query = f"?{req.query}" if len(req.query) > 0 else ""
+        self.redirect(
+            f"{req.protocol}://{req.host}{req.path}/{query}",
+            True,
+        )
 
 
 class ErrorPage(BaseRequestHandler):
