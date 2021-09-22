@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import configparser
+import re
 
 import an_website.__main__ as main
 from an_website import patches
@@ -32,6 +33,20 @@ def test_parsing_module_infos():
     module_infos_list = list(module_infos)
     main.sort_module_infos(module_infos_list)
     assert module_infos == tuple(module_infos_list)
+
+    # tests about module infos
+    for module_info in module_infos:
+        if module_info.path is not None:
+            assert module_info.path.lower() == module_info.path
+            assert module_info.path.endswith("/")
+
+            # check if at least one handler matches the path
+            handler_matches_path = False
+            for handler in module_info.handlers:
+                if re.fullmatch(handler[0], module_info.path):
+                    handler_matches_path = True
+                    break
+            assert handler_matches_path
 
     # handlers should all be at least 3 long
     assert (
