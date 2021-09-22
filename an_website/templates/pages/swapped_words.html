@@ -16,7 +16,8 @@
   <label class="form-element">
     Die Regeln nach denen vertauscht werden sollen
     <button
-      onclick="resetConfig()"
+      name="reset"
+      value="sure"
     >
       Reset
     </button>
@@ -46,12 +47,6 @@
   alert("{% raw error_msg %}");
 </script>
 {% end %}
-
-<script>
-  function resetConfig() {
-    document.getElementById('config-textarea').innerText = "DEFAULT";
-  }
-</script>
 
 <br>
 

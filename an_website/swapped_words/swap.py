@@ -20,7 +20,7 @@ from typing import Optional
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
-from ..utils.utils import GIT_URL, ModuleInfo, PageInfo
+from ..utils.utils import GIT_URL, ModuleInfo, PageInfo, str_to_bool
 from . import DIR
 from .sw_config_file import InvalidConfigException, SwappedWordsConfig
 
@@ -73,7 +73,7 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config_str: Optional[str]):
+    def handle_text(self, text: str, config_str: Optional[str], reset: str):
         """Use the text to display the html page."""
         check_text_too_long(text)
 
@@ -102,7 +102,7 @@ class SwappedWords(BaseRequestHandler):
                     SameSite="Strict",
                 )
 
-            if config_str in (None, "DEFAULT"):
+            if config_str is None or str_to_bool(reset):
                 sw_config = DEFAULT_CONFIG
             else:
                 sw_config = SwappedWordsConfig(config_str)
@@ -130,6 +130,7 @@ class SwappedWords(BaseRequestHandler):
         self.handle_text(
             self.get_query_argument("text", default=""),
             self.get_query_argument("config", default=None),
+            self.get_query_argument("reset", default="nope"),
         )
 
     def post(self):
@@ -137,6 +138,7 @@ class SwappedWords(BaseRequestHandler):
         self.handle_text(
             self.get_argument("text", default=""),
             self.get_argument("config", default=None),
+            self.get_argument("reset", default="nope"),
         )
 
 
