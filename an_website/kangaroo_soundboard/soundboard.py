@@ -48,11 +48,11 @@ def get_module_info() -> ModuleInfo:
                 {"path": f"{DIR}/files/"},
             ),
             (
-                r"/kaenguru-soundboard/(.+)(\.rss|\.xss|/feed|/feed\.rss)",
+                r"/kaenguru-soundboard/(.+)(\.rss|/feed/?|/feed\.rss)",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard(/)(feed|feed\.rss|feed\.xml|feed/)",
+                r"/kaenguru-soundboard(/)(feed\.rss|feed/?)",
                 SoundboardRssHandler,
             ),
             (
