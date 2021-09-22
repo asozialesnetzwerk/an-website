@@ -177,11 +177,6 @@ def get_all_handlers(
     handlers: list[Handler] = []
 
     for module_info in module_infos:
-        if module_info.aliases is not None:
-            for alias in module_info.aliases:
-                handlers.append(
-                    (alias, RedirectHandler, {"url": module_info.path})
-                )
         for handler in module_info.handlers:
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler
@@ -203,6 +198,21 @@ def get_all_handlers(
                     _args_dict = handler[2]  # type: ignore
                     _args_dict["module_info"] = module_info
             handlers.append(handler)
+        if module_info.path is not None:
+            # add aliases to handlers afterwards
+            aliases = (
+                () if module_info.aliases is None else module_info.aliases
+            )
+            # add module_info.path to ignore case
+            for alias in (module_info.path, *aliases):
+                handlers.append(
+                    (
+                        # (?i) -> ignore case
+                        "(?i)" + alias,
+                        RedirectHandler,
+                        {"url": module_info.path},
+                    )
+                )
 
     return tuple(handlers)
 
