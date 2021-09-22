@@ -38,6 +38,7 @@ def get_module_info() -> ModuleInfo:
 class Restart(APIRequestHandler):
     """The tornado request handler for the restart api."""
 
+    ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
 
     async def post(self):

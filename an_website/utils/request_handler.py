@@ -334,6 +334,20 @@ class APIRequestHandler(BaseRequestHandler):
     It overrides the write error method to return errors as json.
     """
 
+    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
+
+    def set_default_headers(self):
+        # dev.mozilla.org/docs/Web/HTTP/Headers/Content-Type
+        self.set_header("Content-Type", "application/json")
+        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+        self.set_header("Access-Control-Allow-Origin", "*")
+        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
+        self.set_header("Access-Control-Allow-Headers", "*")
+        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
+        self.set_header(
+            "Access-Control-Allow-Methods", ", ".join(self.ALLOWED_METHODS)
+        )
+
     def write_error(self, status_code, **kwargs):
         """Finish with the status code and the reason as dict."""
         self.finish(

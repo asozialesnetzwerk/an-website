@@ -143,6 +143,8 @@ class SwappedWords(BaseRequestHandler):
 class SwappedWordsApi(APIRequestHandler):
     """The request handler for the swapped words api."""
 
+    ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
+
     def get(self):
         """Handle get requests to the swapped words api."""
         text = self.get_argument("text", default="")
@@ -150,7 +152,7 @@ class SwappedWordsApi(APIRequestHandler):
 
         check_text_too_long(text)
 
-        if config_str is None:
+        if config_str in (None, "DEFAULT"):
             sw_config = DEFAULT_CONFIG
         else:
             sw_config = SwappedWordsConfig(config_str)
@@ -171,3 +173,7 @@ class SwappedWordsApi(APIRequestHandler):
                     "config": config_str,
                 }
             )
+
+    def post(self):
+        """Handle post requests to the swapped words api."""
+        self.get()
