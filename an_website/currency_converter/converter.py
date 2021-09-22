@@ -30,7 +30,7 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/?", CurrencyConverter),
+            (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/", CurrencyConverter),
             (r"/(w(ae|%C3%A4|ä)hrungs-)?rechner/api/?", CurrencyConverterAPI),
         ),
         name="Währungsrechner",

@@ -28,7 +28,7 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/restart/?", Restart),),
+        handlers=((r"/restart/", Restart),),
         name="Restart-Api",
         description="Restart-Api, die genutzt wird um die Seite neu "
         "zu starten.",

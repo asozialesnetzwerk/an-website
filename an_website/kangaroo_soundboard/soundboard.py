@@ -60,7 +60,7 @@ def get_module_info() -> ModuleInfo:
                 SoundboardHtmlHandler,
             ),
             (
-                r"/kaenguru-soundboard(/?)",
+                r"/kaenguru-soundboard(/)",
                 SoundboardHtmlHandler,
             ),
         ),

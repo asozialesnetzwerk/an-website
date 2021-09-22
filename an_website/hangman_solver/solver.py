@@ -70,7 +70,7 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/hangman-l(ö|oe|%C3%B6)ser/?", HangmanSolver),
+            (r"/hangman-l(ö|oe|%C3%B6)ser/", HangmanSolver),
             (r"/hangman-l(ö|oe|%C3%B6)ser/api/?", HangmanSolverAPI),
         ),
         name="Hangman-Löser",

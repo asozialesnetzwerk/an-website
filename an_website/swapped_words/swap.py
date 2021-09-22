@@ -29,10 +29,10 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/vertauschte-woerter/?", SwappedWords),
-            (r"/swapped-words/?", SwappedWords),
-            (r"/vertauschte-woerter/api", SwappedWordsApi),
-            (r"/swapped-words/api", SwappedWordsApi),
+            (r"/vertauschte-woerter/", SwappedWords),
+            (r"/swapped-words/", SwappedWords),
+            (r"/vertauschte-woerter/api/?", SwappedWordsApi),
+            (r"/swapped-words/api/?", SwappedWordsApi),
         ),
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",

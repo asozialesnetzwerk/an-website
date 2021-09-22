@@ -26,7 +26,7 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/redirect/?", RedirectPage),),
+        handlers=((r"/redirect/", RedirectPage),),
         name="Weiterleitungsseite",
         description="Seite, die User davon abhält versehentlich eine fremde "
         "Website zu besuchen.",

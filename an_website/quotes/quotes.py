@@ -28,9 +28,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/?", QuoteMainPage),
+            (r"/zitate/", QuoteMainPage),
             # {1,10} is too much, but better too much than not enough
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/?", QuoteById),
+            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
         ),
         name="Falsch zugeordnete Zitate",
         description="Eine Website mit falsch zugeordneten Zitaten",

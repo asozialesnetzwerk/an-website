@@ -45,7 +45,7 @@ def get_module_info() -> ModuleInfo:
         "Utilitys",
         "Nütliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
-            (r"/error/?", ZeroDivision, {}),
+            (r"/error/", ZeroDivision, {}),
             (r"/([1-5][0-9]{2}).html", ErrorPage, {}),
         ),
     )

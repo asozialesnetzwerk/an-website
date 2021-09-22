@@ -22,9 +22,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/kangaroo-comics/?", KangarooComics),
-            (r"/kaenguru-comics/?", KangarooComics),
-            (r"/comics/?", KangarooComics),
+            (r"/kangaroo-comics/", KangarooComics),
+            (r"/kaenguru-comics/", KangarooComics),
+            (r"/comics/", KangarooComics),
         ),
         name="Känguru-Comics",
         description="Känguru-Comics von Zeit Online, Marc-Uwe Kling und "

@@ -27,8 +27,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/uptime/?", UptimeHandler),
-            (r"/uptime/api/?", UptimeApiHandler),
+            (r"/uptime/", UptimeHandler),
+            (r"/uptime/api/", UptimeApiHandler),
         ),
         name="Betriebszeit",
         description="Die Dauer die die Webseite am Stück in Betrieb ist.",

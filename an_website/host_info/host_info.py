@@ -33,8 +33,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/host-info/?", HostInfo),
-            (r"/host-info/uwu/?", UwuHostInfo),
+            (r"/host-info/", HostInfo),
+            (r"/host-info/uwu/", UwuHostInfo),
         ),
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Website",
@@ -67,7 +67,8 @@ class UwuHostInfo(BaseRequestHandler):
         """
         wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
         if wetuwn_code != 0:
-            logger.error((await run("env"))[1])
+            env = (await run("env"))[1].decode("utf-8")
+            logger.error(env)
             raise HTTPEwwow(
                 503,
                 reason=(

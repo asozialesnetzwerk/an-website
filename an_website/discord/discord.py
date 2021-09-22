@@ -31,9 +31,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/discord/?", ANDiscord),
-            (f"/discord/({GUILD_ID})/?", ANDiscord),
-            (r"/discord/(\d+)/?", Discord),
+            (r"/discord/", ANDiscord),
+            (f"/discord/({GUILD_ID})/", ANDiscord),
+            (r"/discord/(\d+)/", Discord),
             (r"/discord/api/?", ANDiscordApi),
             (f"/discord/api/({GUILD_ID})/?", ANDiscordApi),
             (r"/discord/api/(\d+)/?", DiscordApi),

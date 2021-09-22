@@ -43,7 +43,7 @@ GH_PAGES_COMMIT_HASH = run_cmd("git rev-parse origin/gh-pages")
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/version/?", Version),),
+        handlers=((r"/version/", Version),),
         name="Versions-Informationen",
         description="Die aktuelle Version der Webseite",
         path="/version",
