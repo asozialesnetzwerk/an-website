@@ -29,7 +29,7 @@ from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
-from tornado.web import Application
+from tornado.web import Application, RedirectHandler
 
 from . import DIR, patches
 from .utils.request_handler import BaseRequestHandler, NotFound
@@ -177,6 +177,11 @@ def get_all_handlers(
     handlers: list[Handler] = []
 
     for module_info in module_infos:
+        if module_info.aliases is not None:
+            for alias in module_info.aliases:
+                handlers.append(
+                    (alias, RedirectHandler, {"url": module_info.path})
+                )
         for handler in module_info.handlers:
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler

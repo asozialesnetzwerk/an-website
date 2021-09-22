@@ -71,6 +71,7 @@ class ModuleInfo(PageInfo):
 
     handlers: HandlerTuple = field(default_factory=HandlerTuple)
     sub_pages: Optional[tuple[PageInfo, ...]] = None
+    aliases: Optional[tuple[str, ...]] = None
 
 
 # def mkdir(path: str) -> bool:
