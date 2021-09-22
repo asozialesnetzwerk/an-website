@@ -34,6 +34,10 @@
     >{{config}}</textarea>
   </label>
 
+  {% if error_msg is not None %}
+    {% raw error_msg %}
+  {% end %}
+
   {% raw form_appendix %}
 
   <div class="tooltip no-select button-container form-element">
