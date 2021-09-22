@@ -102,7 +102,7 @@ class SwappedWords(BaseRequestHandler):
                     SameSite="Strict",
                 )
 
-            if config_str is None:
+            if config_str in (None, "DEFAULT"):
                 sw_config = DEFAULT_CONFIG
             else:
                 sw_config = SwappedWordsConfig(config_str)
