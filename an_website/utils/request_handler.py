@@ -23,11 +23,12 @@ import sys
 import traceback
 from datetime import datetime
 from functools import cache
-from typing import Optional
+from typing import Optional, Union
 from urllib.parse import quote_plus
 
+import orjson as json
 from ansi2html import Ansi2HTMLConverter  # type: ignore
-from tornado import httputil
+from tornado import httputil, web
 from tornado.web import HTTPError, RequestHandler
 
 from an_website.utils.utils import (
@@ -312,6 +313,36 @@ class BaseRequestHandler(RequestHandler):
             return default
         return str_to_bool(value_str, default=default)
 
+    def get_argument(  # type: ignore[override]
+        self,
+        name: str,
+        default: Union[
+            None,
+            str,
+            web._ArgDefaultMarker,  # pylint: disable=protected-access
+        ] = web._ARG_DEFAULT,  # pylint: disable=protected-access
+        strip: bool = True,
+    ) -> Optional[str]:
+        """Get an argument based on body or query."""
+        arg = super().get_argument(name, default=None, strip=strip)
+        if arg is not None:
+            return arg
+
+        try:
+            body = json.loads(self.request.body)
+            if name in body:
+                if strip:
+                    return body[name].strip()
+                return body[name]
+        except json.JSONDecodeError:
+            pass
+
+        # pylint: disable=protected-access
+        if isinstance(default, web._ArgDefaultMarker):
+            raise web.MissingArgumentError(name)
+
+        return default
+
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
@@ -363,7 +394,7 @@ class APIRequestHandler(BaseRequestHandler):
             }
         )
 
-    def options(self, *args):
+    def options(self, *args):  # pylint: disable=unused-argument
         """Handle OPTIONS requests."""
         # no body; only the default headers get used
         # `*args` is for route with `path arguments` supports

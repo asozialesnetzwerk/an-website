@@ -148,23 +148,35 @@ class SwappedWordsApi(APIRequestHandler):
 
     def get(self):
         """Handle get requests to the swapped words api."""
-        text = self.get_argument("text", default="")
-        config_str = self.get_argument("config", default=None)
+        text = self.get_argument("text", default="", strip=True)
 
         check_text_too_long(text)
 
-        if config_str in (None, "DEFAULT"):
+        config_str = self.get_argument("config", default="DEFAULT", strip=True)
+        return_config = self.get_argument(
+            "return_config", default="nope", strip=True
+        )
+
+        if config_str == "DEFAULT":
             sw_config = DEFAULT_CONFIG
         else:
             sw_config = SwappedWordsConfig(config_str)
 
         try:
-            self.finish(
-                {
-                    "config": sw_config.to_config_str(minified=True),
-                    "replaced_text": sw_config.swap_words(text),
-                }
-            )
+            if str_to_bool(return_config, False):
+                self.finish(
+                    {
+                        "config": sw_config.to_config_str(minified=True),
+                        "replaced_text": sw_config.swap_words(text),
+                    }
+                )
+            else:
+                self.finish(
+                    {
+                        "return_config": False,
+                        "replaced_text": sw_config.swap_words(text),
+                    }
+                )
         except InvalidConfigException as _e:
             self.finish(
                 {
