@@ -339,6 +339,9 @@ class APIRequestHandler(BaseRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
     def set_default_headers(self):
+        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Max-Age
+        # 7200 = 2h (the chromium max)
+        self.set_header("Access-Control-Max-Age", "7200")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Content-Type
         self.set_header("Content-Type", "application/json")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
@@ -347,7 +350,8 @@ class APIRequestHandler(BaseRequestHandler):
         self.set_header("Access-Control-Allow-Headers", "*")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
         self.set_header(
-            "Access-Control-Allow-Methods", ", ".join(self.ALLOWED_METHODS)
+            "Access-Control-Allow-Methods",
+            ", ".join((*self.ALLOWED_METHODS, "OPTIONS")),
         )
 
     def write_error(self, status_code, **kwargs):
@@ -358,6 +362,13 @@ class APIRequestHandler(BaseRequestHandler):
                 "reason": self.get_error_message(**kwargs),
             }
         )
+
+    def options(self, *args):
+        """Handle OPTIONS requests."""
+        # no body; only the default headers get used
+        # `*args` is for route with `path arguments` supports
+        self.set_status(204)
+        self.finish()
 
 
 class NotFound(BaseRequestHandler):
