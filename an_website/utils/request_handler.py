@@ -38,6 +38,7 @@ from an_website.utils.utils import (
     ModuleInfo,
     add_args_to_url,
     str_to_bool,
+    PageInfo,
 )
 
 
@@ -268,7 +269,10 @@ class BaseRequestHandler(RequestHandler):
                     + (
                         ""
                         if self.module_info is None
-                        else ", " + self.module_info.get_keywords_as_str()
+                        else ", "
+                        + self.module_info.get_keywords_as_str(
+                            self.request.path
+                        )
                     )
                 ),
                 "no_3rd_party": self.get_no_3rd_party(),
