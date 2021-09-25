@@ -52,13 +52,7 @@ class PageInfo:
     description: str
     path: Optional[str] = None
     # keywords, that can be used for searching
-    keywords: Optional[tuple[str, ...]] = None
-
-    def get_keywords_as_str(self):
-        """Get the keywords as comma seperated string."""
-        if self.keywords is None:
-            return ""
-        return ", ".join(self.keywords)
+    keywords: tuple[str, ...] = field(default_factory=tuple)
 
 
 @dataclass(order=True, frozen=True)
@@ -70,8 +64,27 @@ class ModuleInfo(PageInfo):
     """
 
     handlers: HandlerTuple = field(default_factory=HandlerTuple)
-    sub_pages: Optional[tuple[PageInfo, ...]] = None
-    aliases: Optional[tuple[str, ...]] = None
+    sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
+    aliases: tuple[str, ...] = field(default_factory=tuple)
+
+    def get_page_info(self, path: str) -> PageInfo:
+        """Get the page_info of that specified path"""
+        if self.path == path:
+            return self
+
+        for page_info in self.sub_pages:
+            if page_info.path == path:
+                return page_info
+
+        return self
+
+    def get_keywords_as_str(self, path: str) -> str:
+        """Get the keywords as comma seperated string."""
+        page_info = self.get_page_info(path)
+        if self != page_info:
+            return ", ".join((*self.keywords, *page_info.keywords))
+
+        return ", ".join(self.keywords)
 
 
 # def mkdir(path: str) -> bool:
