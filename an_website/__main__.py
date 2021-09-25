@@ -198,7 +198,7 @@ def get_all_handlers(
                     _args_dict = handler[2]  # type: ignore
                     _args_dict["module_info"] = module_info
             handlers.append(handler)
-        if module_info.path is not None and module_info.aliases is not None:
+        if module_info.path is not None:
             for alias in module_info.aliases:
                 handlers.append(
                     (

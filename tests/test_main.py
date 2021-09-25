@@ -40,10 +40,9 @@ def test_parsing_module_infos():
             assert module_info.path.lower() == module_info.path
             assert module_info.path.endswith("/")
 
-            if module_info.aliases is not None:
-                for alias in module_info.aliases:
-                    assert alias.startswith("/")
-                    assert alias.endswith("/")
+            for alias in module_info.aliases:
+                assert alias.startswith("/")
+                assert alias.endswith("/")
 
             # check if at least one handler matches the path
             handler_matches_path = False
