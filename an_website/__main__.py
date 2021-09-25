@@ -179,21 +179,21 @@ def get_all_handlers(
     for module_info in module_infos:
         for handler in module_info.handlers:
             # if the handler is a request handler from us
-            # and not a built-in like StaticFileHandler
+            # and not a built-in like StaticFileHandler & RedirectHandler
             if issubclass(handler[1], BaseRequestHandler):
                 if len(handler) == 2:
-                    # if dict as third arg is needed
-                    # "title" and "description" have to be specified
-                    # otherwise the info is taken from the module info
+                    # set "default_title" or "default_description" to False so
+                    # that module_info.name & module_info.description get used
                     handler = (
                         handler[0],
                         handler[1],
                         {
-                            "title": module_info.name,
-                            "description": module_info.description,
+                            "default_title": False,
+                            "default_description": False,
+                            "module_info": module_info,
                         },
                     )
-                if len(handler) >= 3:
+                elif len(handler) >= 3:
                     # mypy doesn't like this
                     _args_dict = handler[2]  # type: ignore
                     _args_dict["module_info"] = module_info

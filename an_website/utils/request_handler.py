@@ -38,7 +38,6 @@ from an_website.utils.utils import (
     ModuleInfo,
     add_args_to_url,
     str_to_bool,
-    PageInfo,
 )
 
 
@@ -65,16 +64,28 @@ class BaseRequestHandler(RequestHandler):
     description = "Die tolle Webseite des Asozialen Netzwerkes"
     module_info: ModuleInfo
 
-    def initialize(self, **kwargs):
+    def initialize(
+        self,
+        module_info: ModuleInfo,
+        # default is true, because then empty args dicts are
+        # enough to specify that the defaults should be used
+        default_title: bool = True,
+        default_description: bool = True,
+    ):
         """
         Get title and description from the kwargs.
 
         If title and description are present in the kwargs they
         override self.title and self.description.
         """
-        self.module_info: ModuleInfo = kwargs.get("module_info")
-        self.title = kwargs.get("title", self.title)
-        self.description = kwargs.get("description", self.description)
+        self.module_info: ModuleInfo = module_info
+        if not default_title:
+            self.title = self.module_info.get_page_info(self.request.path).name
+
+        if not default_description:
+            self.description = self.module_info.get_page_info(
+                self.request.path
+            ).description
 
     def data_received(self, chunk):
         """Do nothing."""
@@ -411,6 +422,15 @@ class NotFound(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
     RATELIMIT_TOKENS = 0
+
+    def initialize(
+        self,
+        # set default of module_info to none to not throw error
+        module_info: ModuleInfo = None,
+        default_title: bool = True,
+        default_description: bool = True,
+    ):
+        """Do nothing to have default title and desc."""
 
     def get_protocol_and_host(self) -> str:
         """Get the beginning of the url."""
