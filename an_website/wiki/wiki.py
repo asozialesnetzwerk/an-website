@@ -111,7 +111,8 @@ def get_module_info() -> ModuleInfo:
         PageInfo(
             name=str(wiki_page.title),
             description=str(wiki_page.description),
-            path=f"/wiki{path}",
+            path=f"/wiki{path}/",
+            keywords=wiki_page.keywords
         )
         if wiki_page.title is not None
         else None
@@ -123,7 +124,11 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (
-                r"/wiki(/.*)(.html?|/index.html)?",
+                r"/wiki/",
+                WikiHandler,
+            ),
+            (
+                r"/wiki(/.+)/",
                 WikiHandler,
             ),
         ),
@@ -143,26 +148,15 @@ class WikiHandler(BaseRequestHandler):
 
     async def get(
         self,
-        path: str,
-        file_suffix: str = "",  # pylint: disable=unused-argument
+        path: str = "/",
     ):
         """Handle the get requests to the wiki page."""
-        info: Optional[WikiPage] = None
-
         if path in PATHS:
-            info = PATHS.get(path)
-
-        if info is None:
+            info: WikiPage = PATHS.get(path)
+        else:
             raise HTTPError(404)
 
-        if info.title is None:
-            return self.render(
-                "pages/wiki.html",
-                content=info.html,
-            )
         return self.render(
             "pages/wiki.html",
             content=info.html,
-            title=info.title,
-            description=info.description,
         )
