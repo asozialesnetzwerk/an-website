@@ -68,7 +68,7 @@ class ModuleInfo(PageInfo):
     aliases: tuple[str, ...] = field(default_factory=tuple)
 
     def get_page_info(self, path: str) -> PageInfo:
-        """Get the page_info of that specified path"""
+        """Get the page_info of that specified path."""
         if self.path == path:
             return self
 

@@ -112,7 +112,7 @@ def get_module_info() -> ModuleInfo:
             name=str(wiki_page.title),
             description=str(wiki_page.description),
             path=f"/wiki{path}/",
-            keywords=wiki_page.keywords
+            keywords=wiki_page.keywords,
         )
         if wiki_page.title is not None
         else None
@@ -151,9 +151,11 @@ class WikiHandler(BaseRequestHandler):
         path: str = "/",
     ):
         """Handle the get requests to the wiki page."""
+        info: Optional[WikiPage] = None
         if path in PATHS:
-            info: WikiPage = PATHS.get(path)
-        else:
+            info = PATHS.get(path)
+
+        if info is None:
             raise HTTPError(404)
 
         return self.render(
