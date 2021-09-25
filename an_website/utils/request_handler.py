@@ -19,6 +19,7 @@ This should only contain request handlers and the get_module_info function.
 from __future__ import annotations
 
 import random
+import re
 import sys
 import traceback
 from datetime import datetime
@@ -419,30 +420,42 @@ class NotFound(BaseRequestHandler):
 
     async def prepare(self):
         """Throw a 404 http error or redirect to another page."""
-        if (
+        new_path = self.request.path.lower()
+        if new_path.endswith("/index.html"):
+            # len("index.html") = 10
+            new_path = new_path[:-10]
+        elif new_path.endswith("/index.htm"):
+            # len("index.htm") = 9
+            new_path = new_path[:-9]
+        elif new_path.endswith(".html"):
+            # len(".html") = 5
+            new_path = new_path[:-5] + "/"
+        elif new_path.endswith(".htm"):
+            # len(".htm") = 4
+            new_path = new_path[:-4] + "/"
+        elif (
             # path already ends with a slash
-            self.request.path.endswith("/")
+            not new_path.endswith("/")
             # path is a file (has a . in the last part like "favicon.ico")
-            or "." in self.request.path.split("/")[-1]
+            and "." not in new_path.split("/")[-1]
         ):
-            if self.request.path.islower():
-                # nothing to check anymore (TODO: add search or something)
-                raise HTTPError(404)
-            # path isn't lower case (probably an error)
+            new_path += "/"
+
+        if "//" in new_path:
+            # replace multiple / with only one
+            new_path = re.sub(r"/+", "/", new_path)
+        if "_" in new_path:
+            # replace underscore with minus
+            new_path = new_path.replace("_", "-")
+
+        if new_path != self.request.path:
             return self.redirect(
-                self.get_protocol_and_host()
-                + self.request.path.lower()  # make path lower case
-                + self.get_query(),
+                self.get_protocol_and_host() + new_path + self.get_query(),
                 True,
             )
 
-        return self.redirect(
-            self.get_protocol_and_host()
-            + self.request.path
-            + "/"  # add slash to the end of the path
-            + self.get_query(),
-            True,
-        )
+        # TODO: maybe add search or "Did you mean ...?"
+        raise HTTPError(404)
 
 
 class ErrorPage(BaseRequestHandler):
