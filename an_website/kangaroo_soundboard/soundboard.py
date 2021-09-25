@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from typing import Callable, Iterable, Optional
 
-from tornado.web import HTTPError, StaticFileHandler
+from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
@@ -48,19 +48,29 @@ def get_module_info() -> ModuleInfo:
                 {"path": f"{DIR}/files/"},
             ),
             (
-                r"/kaenguru-soundboard/(.+)(\.rss|/feed/?|/feed\.rss)",
+                r"/kaenguru-soundboard/feed/",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard(/)(feed\.rss|feed/?)",
+                r"/kaenguru-soundboard/feed\.(rss|xml)",
+                RedirectHandler,
+                {"url": "/kaenguru-soundboard/feed/"},
+            ),
+            (
+                r"/kaenguru-soundboard/([^./]+)/feed/",
                 SoundboardRssHandler,
             ),
             (
-                r"/kaenguru-soundboard/([^./]+)(\.html?|/|/index.html?)?",
+                r"/kaenguru-soundboard/([^/]+)(\.(rss|xml)|/feed\.(rss|xml))",
+                RedirectHandler,
+                {"url": "/kaenguru-soundboard/{0}/feed/"},
+            ),
+            (
+                r"/kaenguru-soundboard/",
                 SoundboardHtmlHandler,
             ),
             (
-                r"/kaenguru-soundboard(/)",
+                r"/kaenguru-soundboard/([^./]*)/",
                 SoundboardHtmlHandler,
             ),
         ),
@@ -86,7 +96,7 @@ def get_module_info() -> ModuleInfo:
 class SoundboardRssHandler(BaseRequestHandler):
     """The tornado handler that handles requests to the rss feeds."""
 
-    async def get(self, path, _end=None):  # pylint: disable=unused-argument
+    async def get(self, path="/"):
         """Handle the get request and generate the feed content."""
         self.set_header("Content-Type", "application/xml")
         if path is not None:
@@ -141,7 +151,7 @@ async def search_main_page_info(
 class SoundboardHtmlHandler(BaseRequestHandler):
     """The tornado handler that handles requests to the html pages."""
 
-    async def get(self, path, _end=None):  # pylint: disable=unused-argument
+    async def get(self, path="/"):
         """Handle the get request and generate the page content."""
         if path is not None:
             path = path.lower()
