@@ -76,13 +76,13 @@ def get_module_info() -> ModuleInfo:
         ),
         sub_pages=(
             PageInfo(
-                name="Suche",
+                name="Soundboard-Suche",
                 description="Durchsuche das Känguru-Soundboard",
                 path="/kaenguru-soundboard/suche/",
                 keywords=("Suche",),
             ),
             PageInfo(
-                name="Personen",
+                name="Soundboard-Personen",
                 description="Das Känguru-Soundboard mit Sortierung nach "
                 "Personen",
                 path="/kaenguru-soundboard/personen/",
