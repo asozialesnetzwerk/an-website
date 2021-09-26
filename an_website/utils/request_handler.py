@@ -25,10 +25,13 @@ import traceback
 from datetime import datetime
 from functools import cache
 from typing import Optional, Union
-from urllib.parse import quote_plus
+from urllib.parse import quote, unquote
 
 import orjson as json
 from ansi2html import Ansi2HTMLConverter  # type: ignore
+
+# pylint: disable=no-name-in-module
+from Levenshtein import distance  # type: ignore
 from tornado import httputil, web
 from tornado.web import HTTPError, RequestHandler
 
@@ -135,6 +138,7 @@ class BaseRequestHandler(RequestHandler):
                     self.set_status(429)
                     self.write_error(429)
 
+    # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
         """Get the description for the error page."""
         # see: https://developer.mozilla.org/docs/Web/HTTP/Status
@@ -194,10 +198,7 @@ class BaseRequestHandler(RequestHandler):
 
         if url.startswith("http") and f"//{self.request.host}" not in url:
             # url is to other website:
-            url = (
-                f"/redirect/?to={quote_plus(url)}&from"
-                f"={quote_plus(this_url)}"
-            )
+            url = f"/redirect/?to={quote(url)}&from" f"={quote(this_url)}"
 
         url = add_args_to_url(
             url,
@@ -446,14 +447,15 @@ class NotFound(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 0
 
-    def initialize(
+    def initialize(  # type: ignore # pylint: disable=arguments-differ
         self,
         # set default of module_info to none to not throw error
         module_info: ModuleInfo = None,
-        default_title: bool = True,
-        default_description: bool = True,
+        **kwargs,
     ):
         """Do nothing to have default title and desc."""
+        kwargs["module_info"] = module_info
+        super().initialize(**kwargs)
 
     def get_protocol_and_host(self) -> str:
         """Get the beginning of the url."""
@@ -465,7 +467,9 @@ class NotFound(BaseRequestHandler):
             return ""  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query
 
-    async def prepare(self):
+    async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
+        self,
+    ):
         """Throw a 404 http error or redirect to another page."""
         new_path = self.request.path.lower()
         if new_path.endswith("/index.html"):
@@ -500,8 +504,37 @@ class NotFound(BaseRequestHandler):
                 self.get_protocol_and_host() + new_path + self.get_query(),
                 True,
             )
+        # "%20" → " "
+        this_path = unquote(self.request.path)
 
-        # TODO: maybe add search or "Did you mean ...?"
+        distances: list[tuple[int, str]] = []
+
+        for _mi in self.application.settings.get("MODULE_INFOS"):
+            if _mi.path is not None:
+                # get the smallest distance possible with the aliases
+                dist = min(
+                    distance(this_path, path)
+                    for path in (*_mi.aliases, _mi.path)
+                )
+                distances.append((dist, _mi.path))
+            if len(_mi.sub_pages) > 0:
+                distances.extend(
+                    (distance(this_path, _sp.path), _sp.path)
+                    for _sp in _mi.sub_pages
+                    if _sp.path is not None
+                )
+
+        if len(distances) > 0:
+            # sort to get the one with the smallest distance in index 0
+            distances.sort()
+            dist, path = distances[0]
+            # only if the distance is less then 4
+            if dist < 4:
+                return self.redirect(
+                    self.get_protocol_and_host() + path + self.get_query(),
+                    False,
+                )
+
         raise HTTPError(404)
 
 
