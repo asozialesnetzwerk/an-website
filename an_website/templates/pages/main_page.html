@@ -1,9 +1,9 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<h1>
+<h2>
     Liste von Unterseiten:
-</h1>
+</h2>
 <ul>
 {% for info in handler.settings.get("MODULE_INFOS") %}
     {% if not info.path is None and not info.path == "/" %}
@@ -11,7 +11,7 @@
     <a href="{{ fix_url(info.path) }}">{{info.name}}</a>:
     {{info.description}}
 </li>
-        {% if info.sub_pages is not None %}
+        {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
 <ul class="menu-sub-list">
             {% for page_info in info.sub_pages %}
     <li class="tooltip">
