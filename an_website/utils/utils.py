@@ -62,24 +62,32 @@ class PageInfo:
         > 0 → parts of the string are contained, the higher the better
         """
         if isinstance(query, str):
-            words = re.split(r"\s+", query.lower())
+            words = re.split(r"\s+", query)
         else:
             words = query
 
+        # remove empty strings from words and make the rest lower case
+        words = [_w.lower() for _w in words if len(_w) > 0]
+
         if len(words) == 0:
             # query empty, so find in everything
-            return 1
+            return 1.0
 
         score: float = 0
 
         for word in words:
-            if len(self.name) > 0:
-                if word in self.name.lower():
-                    score += 3 * (len(word) / len(self.name))
-            if len(self.description) > 0:
-                if word in self.description.lower():
-                    score += 2 * (len(word) / len(self.description))
-            if len(self.keywords) > 0:
+            if len(self.name) > 0 and word in self.name.lower():
+                # multiply by 3, so the title it the most important
+                score += 3 * (len(word) / len(self.name))
+            if len(self.description) > 0 and word in self.description.lower():
+                # multiply by 2, so the description it the second important
+                score += 2 * (len(word) / len(self.description))
+
+            if word in self.keywords:
+                # word is directly in the keywords (really good)
+                score += 1
+            elif len(self.keywords) > 0:
+                # check if word is partly in the key words
                 kw_score = 0
                 for kw in self.keywords:
                     if word in kw.lower():

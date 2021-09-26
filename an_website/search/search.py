@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, PageInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -26,6 +26,7 @@ def get_module_info() -> ModuleInfo:
         description="Seite zum Durchsuchen der Webseite.",
         aliases=("/search/",),
         keywords=("Suche",),
+        path="/suche/",
     )
 
 
@@ -36,13 +37,21 @@ class Search(BaseRequestHandler):
         """Handle get requests to the search page."""
         query = self.get_query_argument("q", default="", strip=True)
 
-        module_infos: list[tuple[float, ModuleInfo]] = []
+        module_infos: list[
+            tuple[float, ModuleInfo, list[tuple[float, PageInfo]]]
+        ] = []
+
         for module_info in self.settings.get("MODULE_INFOS"):
             score = module_info.search(query)
             if score > 0:
-                module_infos.append((score, module_info))
+                sub_pages = [
+                    (score, sub_page) for sub_page in module_info.sub_pages
+                    if (score := sub_page.search(query)) > 0
+                ]
+                sub_pages.sort(reverse=True)
+                module_infos.append((score, module_info, sub_pages))
 
-        module_infos.sort()
+        module_infos.sort(reverse=True)
 
         await self.render(
             "pages/search.html",
