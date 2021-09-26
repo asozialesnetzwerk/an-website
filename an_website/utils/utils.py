@@ -55,7 +55,7 @@ class PageInfo:
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
 
-    def search(self, query: Union[str, list[str]]) -> float:
+    def search(self, query: Union[str, list[str]]) -> float:  # noqa: C901
         """
         Check whether this should be shown on the search page.
 
@@ -92,10 +92,10 @@ class PageInfo:
                 score += 1
             elif len(self.keywords) > 0:
                 # check if word is partly in the key words
-                kw_score = 0
-                for kw in self.keywords:
-                    if word in kw.lower():
-                        kw_score += len(word) / len(kw)
+                kw_score = 0.0
+                for _kw in self.keywords:
+                    if word in _kw.lower():
+                        kw_score += len(word) / len(_kw)
                 score += kw_score / len(self.keywords)
 
         return score / len(words)
@@ -136,10 +136,10 @@ class ModuleInfo(PageInfo):
         score = super().search(query)
 
         if len(self.sub_pages) > 0:
-            sp_score = 0
+            sp_score = 0.0
             for page in self.sub_pages:
                 sp_score += page.search(query)
-            score += (sp_score / len(self.sub_pages))
+            score += sp_score / len(self.sub_pages)
 
         return score
 

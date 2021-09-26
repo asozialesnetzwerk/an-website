@@ -45,7 +45,8 @@ class Search(BaseRequestHandler):
             score = module_info.search(query)
             if score > 0:
                 sub_pages = [
-                    (score, sub_page) for sub_page in module_info.sub_pages
+                    (score, sub_page)
+                    for sub_page in module_info.sub_pages
                     if (score := sub_page.search(query)) > 0
                 ]
                 sub_pages.sort(reverse=True)
@@ -54,7 +55,5 @@ class Search(BaseRequestHandler):
         module_infos.sort(reverse=True)
 
         await self.render(
-            "pages/search.html",
-            query=query,
-            module_infos=module_infos
+            "pages/search.html", query=query, module_infos=module_infos
         )
