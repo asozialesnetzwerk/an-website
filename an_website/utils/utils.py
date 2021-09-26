@@ -54,6 +54,40 @@ class PageInfo:
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
 
+    def search(self, query: Union[str, list[str]]) -> float:
+        """
+        Check whether this should be shown on the search page.
+
+        0   → doesn't contain any part of the string
+        > 0 → parts of the string are contained, the higher the better
+        """
+        if isinstance(query, str):
+            words = re.split(r"\s+", query.lower())
+        else:
+            words = query
+
+        if len(words) == 0:
+            # query empty, so find in everything
+            return 1
+
+        score: float = 0
+
+        for word in words:
+            if len(self.name) > 0:
+                if word in self.name.lower():
+                    score += 3 * (len(word) / len(self.name))
+            if len(self.description) > 0:
+                if word in self.description.lower():
+                    score += 2 * (len(word) / len(self.description))
+            if len(self.keywords) > 0:
+                kw_score = 0
+                for kw in self.keywords:
+                    if word in kw.lower():
+                        kw_score += len(word) / len(kw)
+                score += kw_score / len(self.keywords)
+
+        return score / len(words)
+
 
 @dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
@@ -85,6 +119,17 @@ class ModuleInfo(PageInfo):
             return ", ".join((*self.keywords, *page_info.keywords))
 
         return ", ".join(self.keywords)
+
+    def search(self, query: Union[str, list[str]]) -> float:
+        score = super().search(query)
+
+        if len(self.sub_pages) > 0:
+            sp_score = 0
+            for page in self.sub_pages:
+                sp_score += page.search(query)
+            score += (sp_score / len(self.sub_pages))
+
+        return score
 
 
 # def mkdir(path: str) -> bool:
