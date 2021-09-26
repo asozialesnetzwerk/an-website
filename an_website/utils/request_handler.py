@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
             (r"/error/", ZeroDivision, {}),
-            (r"/([1-5][0-9]{2}).html", ErrorPage, {}),
+            (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
         ),
         hidden=True,
     )
@@ -135,12 +135,34 @@ class BaseRequestHandler(RequestHandler):
                     self.set_status(429)
                     self.write_error(429)
 
-    def write_error(self, status_code, **kwargs):
+    def get_error_page_description(self, status_code: int) -> str:
+        """Get the description for the error page."""
+        # see: https://developer.mozilla.org/docs/Web/HTTP/Status
+        if 100 <= status_code < 199:
+            return "Hier gibt es eine total wichtige Information."
+        if 200 <= status_code < 299:
+            return "Hier ist alles super! 🎶🎶"
+        if 300 <= status_code <= 399:
+            return "Eine Umleitung ist eingerichtet."
+        if 400 <= status_code <= 499:
+            if status_code == 404:
+                return f"{self.request.path} wurde nicht gefunden."
+            if status_code == 451:
+                return "Hier wäre bestimmt geiler Scheiß."
+            return "Ein Client-Fehler ist aufgetreten."
+        if 500 <= status_code <= 599:
+            return "Ein Server-Fehler ist aufgetreten."
+        raise ValueError(
+            f"{status_code} is not a valid HTTP response status code."
+        )
+
+    def write_error(self, status_code: int, **kwargs):
         """Render the error page with the status_code as a html page."""
         self.render(
             "error.html",
             status=status_code,
             reason=self.get_error_message(**kwargs),
+            description=self.get_error_page_description(status_code),
         )
 
     def get_error_message(self, **kwargs):
@@ -504,6 +526,7 @@ class ErrorPage(BaseRequestHandler):
             "error.html",
             status=status_code,
             reason=reason,
+            description=self.get_error_page_description(status_code),
         )
 
 
