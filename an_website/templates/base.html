@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{lang}}">
 <head>
+    <title>{{title}}</title>
+
     <meta charset="UTF-8">
     <meta name="theme-color" content="#8B0000">
-    <meta property="og:url" content="{{url}}" />
-    <meta property="og:type" content="website" />
-    <title>{{title}}</title>
-    <meta property="og:title" content="{{title}}" />
-    <meta name=description"
-          property="og:description"
+    <meta property="og:locale" content="de_DE"/>
+    <meta property="og:url" content="{{url}}"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:title" content="{{title}}"/>
+    <meta property="og:site_name" content="Asoziale Webseite" />
+    <meta property="og:description"
+          name=description"
           content="{% block description %}{{ description }}{% end %}" />
     <meta name="keywords" content="{{keywords}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
