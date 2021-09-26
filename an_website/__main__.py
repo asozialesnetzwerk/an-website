@@ -202,8 +202,9 @@ def get_all_handlers(
             for alias in module_info.aliases:
                 handlers.append(
                     (
+                        # (?i) -> ignore case
                         # (.*) -> add group that matches anything
-                        alias + "(.*)",
+                        "(?i)" + alias + "(.*)",
                         RedirectHandler,
                         # {0} -> the part after the alias (.*)
                         {"url": module_info.path + "{0}"},
