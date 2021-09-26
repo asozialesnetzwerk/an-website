@@ -89,7 +89,11 @@ def get_module_info() -> ModuleInfo:
                 keywords=("Personen",),
             ),
         ),
-        aliases=("/soundboard/",),
+        aliases=(
+            "/soundboard/",
+            "/känguru-soundboard/",
+            "/k%C3%A4nguru-soundboard/",
+        ),
     )
 
 

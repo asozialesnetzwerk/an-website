@@ -45,7 +45,12 @@ def get_module_info() -> ModuleInfo:
             "Ost-Mark",
             "Känguru",
         ),
-        aliases=(r"/(w(%C3%A4|ä)hrungs-)?rechner/", "/currency-converter/"),
+        aliases=(
+            "/rechner/",
+            "/w%C3%A4hrungs-rechner/",
+            "/währungs-rechner/",
+            "/currency-converter/",
+        ),
     )
 
 

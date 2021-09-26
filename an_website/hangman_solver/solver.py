@@ -77,7 +77,11 @@ def get_module_info() -> ModuleInfo:
         description="Ein Website, die Lösungen für Galgenmännchen findet",
         path="/hangman-loeser/",
         keywords=("Galgenmännchen", "Hangman", "Löser", "Solver", "Worte"),
-        aliases=(r"/hangman-l(ö|%C3%B6)ser/", "/hangman-solver/"),
+        aliases=(
+            "/hangman-l%C3%B6ser/",
+            "/hangman-löser/",
+            "/hangman-solver/",
+        ),
     )
 
 

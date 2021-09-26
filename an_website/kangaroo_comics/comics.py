@@ -30,7 +30,8 @@ def get_module_info() -> ModuleInfo:
         aliases=(
             "/kangaroo-comics/",
             "/comics/",
-            r"/k(ä|%C3%A4)nguru-comics/",
+            "/känguru-comics/",
+            "/k%C3%A4nguru-comics/",
         ),
     )
 

@@ -43,7 +43,11 @@ def get_module_info() -> ModuleInfo:
                 path=f"{GIT_URL}/VertauschteWoerterPlugin/",
             ),
         ),
-        aliases=("/swapped-words/", r"/vertauschte-w(ö|%C3%B6)rter/"),
+        aliases=(
+            "/swapped-words/",
+            "/vertauschte-wörter/",
+            "/vertauschte-w%C3%B6rter/",
+        ),
     )
 
 
