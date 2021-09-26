@@ -6,7 +6,7 @@
 </h2>
 <ul>
 {% for info in handler.settings.get("MODULE_INFOS") %}
-    {% if not info.path is None and not info.path == "/" %}
+    {% if not info.hidden and not info.path is None and not info.path == "/" %}
 <li class="menu-list">
     <a href="{{ fix_url(info.path) }}">{{info.name}}</a>:
     {{info.description}}
@@ -14,10 +14,12 @@
         {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
 <ul class="menu-sub-list">
             {% for page_info in info.sub_pages %}
+                {% if not page_info.hidden and page_info.path is not None %}
     <li class="tooltip">
         <a href="{{ fix_url(page_info.path) }}">{{page_info.name}}</a>:
         {{page_info.description}}
     </li>
+                {% end %}
             {% end %}
 </ul>
         {% end %}

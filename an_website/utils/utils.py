@@ -53,6 +53,7 @@ class PageInfo:
     path: Optional[str] = None
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
+    hidden: bool = False  # whether to hide this page info on the page
 
     def search(self, query: Union[str, list[str]]) -> float:
         """
@@ -61,6 +62,9 @@ class PageInfo:
         0   → doesn't contain any part of the string
         > 0 → parts of the string are contained, the higher the better
         """
+        if self.hidden or self.path is None:
+            return 0
+
         if isinstance(query, str):
             words = re.split(r"\s+", query)
         else:

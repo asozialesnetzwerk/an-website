@@ -26,7 +26,7 @@ def get_module_info() -> ModuleInfo:
         name="Hauptseite",
         description="Die Hauptseite der Webseite",
         path="/",
-        keywords=("asozial", "Asoziales Netzwerk"),
+        keywords=("asozial", "asoziales", "netzwerk"),
     )
 
 

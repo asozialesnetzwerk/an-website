@@ -32,6 +32,8 @@ def get_module_info() -> ModuleInfo:
         name="Restart-Api",
         description="Restart-Api, die genutzt wird um die Seite neu "
         "zu starten.",
+        path="/restart/",
+        hidden=True,
     )
 
 

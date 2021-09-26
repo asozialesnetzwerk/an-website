@@ -24,7 +24,7 @@ from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import ModuleInfo, run
+from ..utils.utils import ModuleInfo, run, PageInfo
 
 logger = logging.getLogger(__name__)
 
@@ -37,8 +37,18 @@ def get_module_info() -> ModuleInfo:
             (r"/host-info/uwu/", UwuHostInfo),
         ),
         name="Host-Informationen",
-        description="Informationen über den Host-Server dieser Website",
+        description="Informationen über den Host-Server dieser Webseite",
         path="/host-info/",
+        sub_pages=(
+          PageInfo(
+              name="Howost-Infowmationyen",
+              description="Infowmationyen übew den Howost-Sewvew "
+                          "diesew W-Webseite",
+              path="/host-info/uwu/",
+              keywords=("UWU",),
+              hidden=True,
+          ),
+        ),
         keywords=("Host", "Informationen", "Screenfetch"),
     )
 

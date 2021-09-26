@@ -30,6 +30,8 @@ def get_module_info() -> ModuleInfo:
         name="Weiterleitungsseite",
         description="Seite, die User davon abhält versehentlich eine fremde "
         "Website zu besuchen.",
+        path="/redirect/",
+        hidden=True,
     )
 
 

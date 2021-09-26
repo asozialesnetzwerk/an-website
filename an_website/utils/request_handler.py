@@ -44,12 +44,13 @@ from an_website.utils.utils import (
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        "Utilitys",
-        "Nütliche Werkzeuge für alle möglichen Sachen.",
+        name="Utilitys",
+        description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
             (r"/error/", ZeroDivision, {}),
             (r"/([1-5][0-9]{2}).html", ErrorPage, {}),
         ),
+        hidden=True,
     )
 
 
