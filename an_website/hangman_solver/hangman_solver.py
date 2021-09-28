@@ -24,7 +24,7 @@ from tornado.web import HTTPError, RequestHandler
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
-from . import FILE_NAMES, get_letters, get_words, LANGUAGES
+from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")

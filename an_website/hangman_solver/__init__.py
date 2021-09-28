@@ -17,7 +17,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 
-from orjson import orjson as json
+import orjson as json
 
 DIR = os.path.dirname(__file__)
 
