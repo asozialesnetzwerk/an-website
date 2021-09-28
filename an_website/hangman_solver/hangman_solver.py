@@ -234,7 +234,6 @@ async def solve_hangman(
     file_name = f"words_{language}/{input_len}"
 
     if file_name not in FILE_NAMES:
-        print(file_name, FILE_NAMES)
         # no words with the length
         return Hangman(
             input=input_str,

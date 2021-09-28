@@ -19,24 +19,23 @@ import os
 DIR = os.path.dirname(__file__)
 
 
-LANGUAGES: set[str] = set()
-
 BASE_WORD_DIR = f"{DIR}/words"
 
 
-def get_file_names_words_and_letters() -> tuple[str, ...]:
+def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
     """
-    Find all the words and return a tuple of their file_names.
+    Find all the words and return a tuple of their file names and languages.
 
-    Additionally add all the languages to LANGUAGES.
+    The file names are each in a frozenset to guarantee immutability.
     """
+    languages: set[str] = set()
     file_names: set[str] = set()
     # iterate over the folders in the words dir
     for folder in os.listdir(BASE_WORD_DIR):
         # check if the folder is a words folder
         if folder.startswith("words_"):
             # add the language found in the word dir to LANGUAGES
-            LANGUAGES.add(folder[6:])  # without: "words_"
+            languages.add(folder[6:])  # without: "words_"
             # the dir with the words in the current lang
             words_dir = f"{BASE_WORD_DIR}/{folder}"
             for file_name in os.listdir(words_dir):
@@ -48,7 +47,7 @@ def get_file_names_words_and_letters() -> tuple[str, ...]:
                     # add the file name without the extension to file_names
                     file_names.add(rel_file_name.split(".", 1)[0])
 
-    return tuple(file_names)
+    return frozenset(file_names), frozenset(languages)
 
 
-FILE_NAMES: tuple[str, ...] = get_file_names_words_and_letters()
+FILE_NAMES, LANGUAGES = get_file_names_and_languages()
