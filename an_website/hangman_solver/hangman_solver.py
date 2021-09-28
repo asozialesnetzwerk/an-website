@@ -26,44 +26,10 @@ from tornado.web import HTTPError, RequestHandler
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
-from . import DIR
+from . import BASE_WORD_DIR, FILE_NAMES, LANGUAGES
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
-
-LANGUAGES: set[str] = set()
-
-BASE_WORD_DIR = f"{DIR}/words"
-
-
-def get_file_names_words_and_letters() -> tuple[str, ...]:
-    """
-    Find all the words and return a tuple of their file_names.
-
-    Additionally add all the languages to LANGUAGES.
-    """
-    file_names: set[str] = set()
-    # iterate over the folders in the words dir
-    for folder in os.listdir(BASE_WORD_DIR):
-        # check if the folder is a words folder
-        if folder.startswith("words_"):
-            # add the language found in the word dir to LANGUAGES
-            LANGUAGES.add(folder[6:])  # without: "words_"
-            # the dir with the words in the current lang
-            words_dir = f"{BASE_WORD_DIR}/{folder}"
-            for file_name in os.listdir(words_dir):
-                # ignore python files
-                if not file_name.endswith(".py"):
-                    # the relativ file name
-                    rel_file_name = f"{folder}/{file_name}"
-
-                    # add the file name without the extension to file_names
-                    file_names.add(rel_file_name.split(".", 1)[0])
-
-    return tuple(file_names)
-
-
-FILE_NAMES: tuple[str, ...] = get_file_names_words_and_letters()
 
 
 def get_module_info() -> ModuleInfo:
