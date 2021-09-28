@@ -15,6 +15,9 @@
 from __future__ import annotations
 
 import os
+from functools import lru_cache
+
+from orjson import orjson as json
 
 DIR = os.path.dirname(__file__)
 
@@ -51,3 +54,21 @@ def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
 
 
 FILE_NAMES, LANGUAGES = get_file_names_and_languages()
+
+
+@lru_cache(maxsize=10)
+def get_words(file_name: str) -> frozenset[str]:
+    """Get the words with the file_name and return them."""
+    with open(
+        f"{BASE_WORD_DIR}/{file_name}.txt", "r", encoding="utf-8"
+    ) as file:
+        return frozenset(file.read().splitlines())
+
+
+@lru_cache(maxsize=10)
+def get_letters(file_name: str) -> dict[str, int]:
+    """Get the letters dict with the file_name and return it."""
+    with open(
+        f"{BASE_WORD_DIR}/{file_name}.json", "r", encoding="utf-8"
+    ) as file:
+        return json.loads(file.read())

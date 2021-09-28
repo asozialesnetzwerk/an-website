@@ -14,19 +14,17 @@
 """The pages that helps solving hangman puzzles."""
 from __future__ import annotations
 
-import os
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
 from typing import Union
 
-import orjson
 from tornado.web import HTTPError, RequestHandler
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
-from . import BASE_WORD_DIR, FILE_NAMES, LANGUAGES
+from . import FILE_NAMES, get_letters, get_words, LANGUAGES
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
 NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
@@ -63,24 +61,6 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
     crossword_mode: bool = False
     max_words: int = 20
     lang: str = "de_only_a-z"
-
-
-@lru_cache(maxsize=10)
-def get_words(file_name: str) -> frozenset[str]:
-    """Get the words with the file_name and return them."""
-    with open(
-        f"{BASE_WORD_DIR}/{file_name}.txt", "r", encoding="utf-8"
-    ) as file:
-        return frozenset(file.read().splitlines())
-
-
-@lru_cache(maxsize=10)
-def get_letters(file_name: str) -> dict[str, int]:
-    """Get the letters dict with the file_name and return it."""
-    with open(
-        f"{BASE_WORD_DIR}/{file_name}.json", "r", encoding="utf-8"
-    ) as file:
-        return orjson.loads(file.read())
 
 
 def fix_input_str(_input: str) -> str:
