@@ -48,6 +48,10 @@ async def find_solutions(
     solutions: set[str] = set()
 
     word_len = len(word)
+
+    if word_len == 0:
+        return solutions
+
     for sol_len in (word_len - 1, word_len, word_len + 1):
         file_name = f"words_de/{sol_len}"
 
@@ -75,7 +79,7 @@ class WordGameHelper(BaseRequestHandler):
 
     async def get(self):
         """Handle get requests to the word game helper page."""
-        word = self.get_query_argument("word", default="")
+        word = self.get_query_argument("word", default="").lower()
         max_words = min(
             100, int(self.get_query_argument("max_words", default="20"))
         )
@@ -95,7 +99,7 @@ class WordGameHelperApi(APIRequestHandler):
 
     async def get(self):
         """Handle get requests to the word game helper api."""
-        word = self.get_query_argument("word", default="")
+        word = self.get_query_argument("word", default="").lower()
         max_words = min(
             100, int(self.get_query_argument("max_words", default="20"))
         )
