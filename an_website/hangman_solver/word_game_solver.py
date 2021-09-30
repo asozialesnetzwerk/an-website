@@ -14,13 +14,13 @@
 """Module for the word game helper."""
 from __future__ import annotations
 
-from typing import Optional
+from typing import Iterable
 
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
-from ..utils.utils import ModuleInfo, n_from_set
+from ..utils.utils import ModuleInfo
 from . import FILE_NAMES, get_words
 
 
@@ -41,9 +41,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def find_solutions(
-    word: str, max_words: Optional[int] = None
-) -> set[str]:
+async def find_solutions(word: str) -> set[str]:
     """Find words that have only one different letter."""
     solutions: set[str] = set()
 
@@ -53,7 +51,7 @@ async def find_solutions(
         return solutions
 
     for sol_len in (word_len - 1, word_len, word_len + 1):
-        file_name = f"words_de/{sol_len}"
+        file_name = f"words_de_basic/{sol_len}"
 
         if file_name not in FILE_NAMES:
             # don't test with this length
@@ -66,10 +64,30 @@ async def find_solutions(
             if distance(word, test_word) == 1
         )
 
-    if max_words is None:
-        return solutions
+    return solutions
 
-    return n_from_set(solutions, max_words)
+
+async def get_ranked_solutions(
+    word: str, before: Iterable[str] = tuple()
+) -> list[tuple[int, str]]:
+    """Find solutions for the word and rank them."""
+    sols = await find_solutions(word)
+
+    ranked_sols: list[tuple[int, str]] = [
+        (
+            len(
+                tuple(
+                    _s for _s in await find_solutions(sol) if _s not in before
+                )
+            ),
+            sol,
+        )
+        for sol in sols
+        if sol not in before
+    ]
+
+    ranked_sols.sort(reverse=True)
+    return ranked_sols
 
 
 class WordGameHelper(BaseRequestHandler):
@@ -80,14 +98,25 @@ class WordGameHelper(BaseRequestHandler):
     async def get(self):
         """Handle get requests to the word game helper page."""
         word = self.get_query_argument("word", default="").lower()
-        max_words = min(
-            100, int(self.get_query_argument("max_words", default="20"))
+
+        before_str = self.get_query_argument("before", default="")
+
+        before = set(
+            _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         )
+
+        if len(word) == 0:
+            new_before = before
+        else:
+            # get the new_before as set with only unique words
+            new_before = {*before, word}
+
         await self.render(
             "pages/word_game_helper.html",
             word=word,
-            words=await find_solutions(word, max_words),
-            max_words=max_words,
+            words=await get_ranked_solutions(word, before),
+            before=", ".join(before),
+            new_before=", ".join(new_before),
         )
 
 
@@ -100,13 +129,17 @@ class WordGameHelperApi(APIRequestHandler):
     async def get(self):
         """Handle get requests to the word game helper api."""
         word = self.get_query_argument("word", default="").lower()
-        max_words = min(
-            100, int(self.get_query_argument("max_words", default="20"))
+
+        before_str = self.get_query_argument("before", default="")
+
+        before = tuple(
+            _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         )
+
         await self.finish(
             {
+                "before": before,
                 "word": word,
-                "max_words": max_words,
-                "solutions": list(await find_solutions(word, max_words)),
+                "solutions": await get_ranked_solutions(word, before),
             }
         )

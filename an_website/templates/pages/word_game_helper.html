@@ -8,15 +8,10 @@
         <input type="text" class="text-input" name="word" value="{{word}}">
     </label>
 
-    <div class="form-element">
-        <div class="tooltip no-select">
-            <label class="cbl float-left no-select" for="max_words">
-                Maximale Wortanzahl:
-            </label>
-            <span class="tooltip-text no-select">Wie viele Wörter maximal angezeigt werden dürfen.</span>
-        </div>
-        <input class="small-input no-select" type="number" id="max_words" name="max_words" min="1" max="100" step="1" value="{{max_words}}">
-    </div>
+    <label class="form-element">
+        Wörter, die vor diesem Wort kamen (Mit Komma getrennt)
+        <input type="text" class="text-input" name="before" value="{{before}}">
+    </label>
 
 {% raw form_appendix %}
 
@@ -27,8 +22,8 @@
 </form>
 
 <ul class="output">
-    {% for _w in words %}
-    <li>{{ _w }}</li>
+    {% for count, _w in words %}
+    <li><a href="?word={{ _w }}">{{ _w }}</a> ({{count}})</li>
     {% end %}
 </ul>
 
