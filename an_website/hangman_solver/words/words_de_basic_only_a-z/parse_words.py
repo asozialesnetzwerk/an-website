@@ -28,7 +28,7 @@ pre = "{http://www.mediawiki.org/xml/export-0.10/}"
 
 titles = set()
 
-for el in xml.iter(): # noqa: C901
+for el in xml.iter():  # noqa: C901
     if el.tag != f"{pre}text":
         continue
     # == ōrdo ({{Sprache|Latein}}) ==
