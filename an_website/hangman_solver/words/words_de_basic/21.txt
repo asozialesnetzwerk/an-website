@@ -1,3 +1,5 @@
+2,6,8-trihydroxypurin
+24-stunden-tankstelle
 abfahrtsweltmeisterin
 abkürzungsverzeichnis
 abnutzungserscheinung
@@ -5,36 +7,69 @@ abnützungserscheinung
 abstammungsgeschichte
 abstimmungsniederlage
 abstraktionsfähigkeit
+achtzigjähriger krieg
+adverbiale bestimmung
+adverbiales satzglied
 agrarwissenschaftlich
+algebraische notation
+aller ehren wert sein
+allererste sahne sein
+allgemeine linguistik
 allgemeinwissenschaft
+alliierte militärpost
 alphabetisierungsrate
+alte zopf abschneiden
 altersdiskriminierung
 altertumswissenschaft
+altstoffsammelzentrum
+an der scholle hängen
+an der scholle kleben
+angewandte linguistik
 anglizismenwörterbuch
+ans bett fesseln sein
 anthropomorphisierung
 antiquitätenhändlerin
 antiquitätensammlerin
 anweisungsüberdeckung
 anwesenheitskontrolle
+appenzell außerrhoden
+appenzell innerrhoden
 arbeitnehmervertreter
 arbeitslosenstatistik
 arbeitsmarktpolitisch
+arbeitszeitverkürzung
+archimedischer körper
 archipterygiumtheorie
 architekturgeschichte
 architekturhistoriker
 arzneimittelzulassung
+astronomische einheit
+attestierter winzerwy
+auf den busch klopfen
+auf den swutsch gehen
+auf der dacken liegen
+auf der tacken liegen
+auf nimmerwiedersehen
+auf teufel rauskommen
 aufführungsgeschichte
 aufmerksamkeitsspanne
 aufsichtsratsmitglied
 aufwandsentschädigung
+aus dem rahmen fallen
+aus dem voll schöpfen
+aus den fugen geraten
 auseinanderdividieren
 auseinanderklabüstern
+ausgestorbene sprache
 ausrüstungsgegenstand
 ausschussvorsitzender
 ausstellungseröffnung
 autoritätsgläubigkeit
+avicularia avicularia
+bad deutsch-altenburg
 baden-württembergerin
 baden-württembergisch
+bauabzugsbesteuerungg
 baumwollpneumokoniose
 baustellenbesprechung
 bedeutungserweiterung
@@ -43,14 +78,18 @@ bedingungsüberdeckung
 begriffsgeschichtlich
 behindertenwerkstätte
 bekleidungsvorschrift
+beleidigte leberwurst
 bequemlichkeitshalber
 bereitschaftspolizist
+bernstadt a. d. eigen
 beschäftigungspolitik
 besprechungsprotokoll
+besser stumm als dumm
 bestimmungskompositum
 betriebskostensenkung
 betriebsratsverseucht
 betriebsstundenzähler
+betriebswirtschaftler
 bevölkerungsaustausch
 bevölkerungsexplosion
 bevölkerungsstatistik
@@ -59,6 +98,9 @@ bewerbungsanschreiben
 bezeichnungsexotismus
 bildwiederholfrequenz
 bindestrichschreibung
+bis auf weit#adjektiv
+bis zum gehtnichtmehr
+bottnischer meerbusen
 boulevardjournalismus
 brandfallsteuermatrix
 brandschadensanierung
@@ -76,15 +118,39 @@ bundespressekonferenz
 bundespräsidentenwahl
 bundestagsabgeordnete
 bundeswehrkrankenhaus
+butter bei die fische
 börsenkapitalisierung
+campingplatzbetreiber
 chefwissenschaftlerin
 chlorwasserstoffsäure
+commonwealth dominica
 compact-disc-recorder
+conditio sine qua non
+constructio ad sensum
+danke für die blumen!
+das auge des gesetzes
+das gesicht verlieren
 datenschutzrichtlinie
+dem manne kann helfen
 demonstrationsversuch
+den arsch offen haben
+den ball flach halten
+den bogen überspannen
+den laufpass bekommen
+den schwanz einziehen
+deskriptive grammatik
+diakritisches zeichen
+die arschkarte zeigen
+die arschkarte ziehen
+die faxen dicke haben
+die kuh vom eis holen
+die oberhand gewinnen
+die schulbank drücken
+die welt ist ein dorf
 dienstleistungssektor
 dienststellenleiterin
 differentialgleichung
+diplom-betriebswirtin
 diplom-bibliothekarin
 diplomatenkennzeichen
 diskussionsgegenstand
@@ -92,9 +158,12 @@ diskussionsteilnehmer
 donnerstagnachmittags
 doppelbesäumkreissäge
 doppelspaltexperiment
+doppelt halten besser
+dreißigjähriger krieg
 dringlichkeitsanfrage
 dringlichkeitssitzung
 durcheinanderschreien
+durchlaufender posten
 durchschnittsbegabung
 durchschnittsleistung
 durchsetzungsvermögen
@@ -102,13 +171,19 @@ dyszephalosyndaktylie
 dämmerungsspaziergang
 eigenschaftsdualismus
 eigentümerversammlung
+ein paar zerquetschte
+ein#artikel fingerhut
 einantwortungsurkunde
 einbahnstraßenfußball
+eine anleihe zeichnen
+einen reif ausstecken
 einkommensentwicklung
 eintausendzweihundert
+electronic body music
 elektronenpaarbindung
 emissionsrechtehandel
 energieerhaltungssatz
+entführungsgeschichte
 enthüllungsjournalist
 entlehnungsgeschichte
 entscheidungsschlacht
@@ -119,15 +194,36 @@ erbauseinandersetzung
 erklärungsadäquatheit
 ermessensentscheidung
 ersatzfreiheitsstrafe
+erscheinung des herrn
 ersterwähnungsurkunde
+erstunken und erlogen
 erwachsenenstrafrecht
+erweiterter infinitiv
+es ist hoch eisenbahn
+es jemandem gleichtun
+etwas auf pump kaufen
+etwas ausbaden müssen
+etwas in brand setzen
+etwas in gang bringen
+etwas ins auge fassen
+etwas ins leben rufen
+etwas wörtlich nehmen
+etwas zur seite legen
+eugrus/mitverschulden
+europäisches nordmeer
 expeditionsteilnehmer
 experimentiermaterial
 fachhochschullehrerin
 fachwissenschaftlerin
 fahrbahnverschwenkung
+falsch wie galgenholz
+familienangelegenheit
+fest im sattel sitzen
+feuer und flamme sein
 fiktionsbescheinigung
+fit wie ein turnschuh
 flachdachentwässerung
+flausen im kopf haben
 florida-waldkaninchen
 fluchtgeschwindigkeit
 flüchtlingsbetreuerin
@@ -146,7 +242,10 @@ fraktionsentscheidung
 fraktionsgemeinschaft
 fraktionsvorsitzender
 fraktionsübergreifend
+frankfurt an der oder
 französisch-indochina
+französische republik
+französisches fenster
 französischunterricht
 frauenberatungsstelle
 freisprecheinrichtung
@@ -157,8 +256,11 @@ fremdsprachenkenntnis
 frequenzversteigerung
 friedensdemonstration
 friedenspräsenzstärke
+frische luft schöpfen
 frühlingsblumenstrauß
 frühmittelhochdeutsch
+funktionale belastung
+fusionierende sprache
 führerscheinkontrolle
 fünfhunderteuroschein
 fünfhundertmarkschein
@@ -168,11 +270,19 @@ galaxienkannibalismus
 gallensteinerkrankung
 gebrauchtwagenhändler
 gebührenverschwendung
+gedrungener wulstling
+geduldig wie ein lamm
 gefahrgutbeauftragter
 gefolgschaftsmitglied
+gegen eine wand reden
+geheime staatspolizei
 geheimhaltungsvertrag
+geld regiert die welt
+gemeiner anisegerling
+gemischte deklination
 genehmigungspflichtig
 genehmigungsverfahren
+genitivus subiectivus
 geruchneutralisierung
 geruchscharakteristik
 geruchsidentifikation
@@ -185,18 +295,29 @@ geschichtsphilosophie
 geschichtsprofessorin
 geschichtsschreiberin
 geschlechtsbestimmung
+geschlechtsspezifisch
 geschlechtsumwandlung
 gesellschaftsstruktur
+gesellschaftsutopisch
 gesprächsbereitschaft
 gesprächsteilnehmerin
+gesundheitsmanagement
 gesundheitsministerin
 gesundheitsschädigend
 gewerkschaftsmitglied
 gewässerverschmutzung
+gift und galle speien
+glatzer schneegebirge
 globalisierungsgegner
+goldgelber hallimasch
 goldmedaillengewinner
+grammatische funktion
+grammatisches morphem
 gravitationskonstante
 griechisch-katholisch
+griechisches alphabet
+grimmsches wörterbuch
+grobianische dichtung
 grundsteuermessbetrag
 gruppenvergewaltigung
 halbtagsbeschäftigung
@@ -206,16 +327,26 @@ hauptbelastungszeugin
 hauptbetonungszeichen
 hauptkriegsverbrecher
 haushaltsversicherung
+hebräische steigerung
 herauskristallisieren
 herrschaftsgrenzstein
 herstellungsverfahren
 herzfrequenzmessgerät
+hin- und wiederrennen
+hinter dem mond leben
+hinter gittern sitzen
 hinterhertelefonieren
 hochtemperaturreaktor
+hochwasserkatastrophe
 hochzeitsgesellschaft
 hohlraumkonservierung
+holländisch im anzuge
 holocaustüberlebender
+holzauge, sei wachsam
+homo neanderthalensis
 homosexuellenparagraf
+hospitalisierungsrate
+hundertjähriger krieg
 hydroxybernsteinsäure
 hysterosalpingografie
 häufigkeitsverteilung
@@ -223,8 +354,18 @@ häufigkeitswörterbuch
 höchstgeschwindigkeit
 identifikationsnummer
 ikosidodekaederstumpf
+im falschen film sein
 immobilienverkäuferin
+in den arsch kriechen
+in den sternen stehen
+in der klemme stecken
+in der patsche sitzen
+in der scheiße sitzen
+in die puschen kommen
+in lohn und brot sein
+in sicheren hand sein
 inauguraldissertation
+indoiranische sprache
 industriegesellschaft
 infinitesimalrechnung
 informationsbroschüre
@@ -234,6 +375,7 @@ ingenieurwissenschaft
 inhalationsanästhesie
 innenbehördensprecher
 innenraumluftqualität
+innere rekonstruktion
 instandsetzungsarbeit
 instrumentalableitung
 interessensvertretung
@@ -241,8 +383,14 @@ interkostalmuskulatur
 internationalisierung
 interpunktionszeichen
 ionisationsbipolröhre
+ironie des schicksals
 islamwissenschaftlich
+italienische republik
+ja#partikel [[ist#ist
 jahrhunderthochwasser
+jemandem dampf machen
+jemanden koram nehmen
+jemanden mores lehren
 johannisbeermarmelade
 jugend-redewettbewerb
 jugoslawienflüchtling
@@ -254,6 +402,7 @@ kapazitätserweiterung
 karatschai-balkarisch
 katechismusunterricht
 kathedralentscheidung
+keinen schimmer haben
 kennzeichnungspflicht
 kindergartenpädagogik
 kindersprachstatistik
@@ -265,6 +414,7 @@ kolonialismuskritiker
 kolonialwarengeschäft
 kolonisierungspolitik
 kommorientenvermutung
+kommt zeit, kommt rat
 kommunikationsknochen
 kommunikationspartner
 kommunikationsproblem
@@ -299,6 +449,7 @@ kunststofftechnikerin
 kunststoffverarbeiter
 kunststoffverkleidung
 kurznachrichtendienst
+königreich kambodscha
 kündigungsschutzklage
 ladungserhaltungssatz
 landtagsvizepräsident
@@ -307,74 +458,110 @@ lebensmittelhändlerin
 lebensmittelindustrie
 lebensmittelknappheit
 lebensmittelkontrolle
+leeres stroh dreschen
 leichtathletikstadion
 leichtfigurenendspiel
 leistungsbeschreibung
 leistungsfeststellung
 leistungsgesellschaft
+letzte gruß aus davos
+lexikalisches morphem
+libanesische republik
+lingua tertii imperii
 literaturhistorikerin
 literaturwissenschaft
+ludwigshafen am rhein
 luftverteidigungszone
 länderfinanzausgleich
+man auslernen nie aus
 mannschaftsdienstgrad
 mannschaftsverfolgung
 mannschaftswettbewerb
 mannschaftszeitfahren
 marokkanisch-arabisch
+marokkanischer dirham
+marschgeschwindigkeit
 maschinenbauingenieur
 mecklenburg-vorpommer
 medienwissenschaftler
 mehrheitsentscheidung
 mehrheitsgesellschaft
+mehrwertsteuersenkung
 menschenrechtsverstoß
 menschheitsgeschichte
 menschheitsverbrechen
+menzerathsches gesetz
 migrationshintergrund
 migrationsvordergrund
 mikroliteratursprache
+mikronesische sprache
 milliardeninvestition
+ministerialdirigentin
+mit dem feuer spielen
+mit hängen und würgen
 mitgliederversammlung
 mitgliederverzeichnis
 mittelalterhistoriker
+mittelländisches meer
+modernes hocharabisch
 monopolkapitalistisch
+morgenluft schnuppern
 mund-zu-mund-beatmung
 mutter-kind-parkplatz
+männlein und weiblein
 n,n’-malonylharnstoff
 n-acetylneuraminsäure
+nach strich und faden
 nachkriegsarchitektur
 nachkriegsdeutschland
 nachkriegsweihnachten
 nachrichtenorientiert
 nachrichtensprecherin
+nagel mit kopf machen
+nass bis auf die haut
 nationalratspräsident
 nationalsozialistisch
 naturwissenschaftlich
+natürliche phonologie
 natürlichkeitstheorie
 nebenbetonungszeichen
 nebenklagevertreterin
 nebenkriegsschauplatz
 neologismenwörterbuch
 netzwerkadministrator
+neue besen kehren gut
 nichtpaktgebundenheit
 niederländisch-indien
 niederschlagsereignis
 nierensteinerkrankung
 nierentransplantation
 nordaserbaidschanisch
+nordische kombination
 nordrhein-westfälisch
 null-toleranz-politik
+nun schlägts dreizehn
+nur bahnhof verstehen
+nur über meine leiche
 oberbürgermeisterwahl
 oberflächenbehandlung
 oberflächenionisation
 oberflächentemperatur
 oberschenkelhalsbruch
+oberstudiendirektorin
+ohne fleiß kein preis
 oophorosalpingektomie
 orangefleckwaldsänger
 organisationsstruktur
+orthographisches wort
+osterode am fallstein
 ottonormalverbraucher
 ozeanienmeisterschaft
+palaeopython fischeri
+paranthropus robustus
 parlamentspräsidentin
+pazifischer feuerring
 pentagonhexakontaeder
+periaquäduktales grau
 perkussionsinstrument
 personalangelegenheit
 personalkostensenkung
@@ -385,13 +572,16 @@ peter-und-paul-kirche
 pfeiffer-drüsenfieber
 pharmakoepidemiologie
 philosophiegeschichte
+phonetische umschrift
 plutoniumverarbeitung
 politikverdrossenheit
 produktionswirtschaft
 propagandaministerium
 prosaschriftstellerin
 protektoratsregierung
+protestantische union
 pumpspeicherkraftwerk
+quadratur des kreises
 qualitätsaufzeichnung
 qualitätsjournalismus
 qualitätsverbesserung
@@ -401,9 +591,11 @@ quecksilberdampflampe
 quecksilberverbindung
 quecksilbervergiftung
 quelleninterpretation
+realitätsverweigerung
 rechtsmittelbelehrung
 rechtswissenschaftler
 redekonstellationstyp
+regierungsvertreterin
 registrierungszentrum
 reichspostministerium
 reichswehrministerium
@@ -411,21 +603,34 @@ reisekostenabrechnung
 reiseschriftstellerin
 reiz-reaktions-modell
 reißverschlussfüßchen
+rekombinantes protein
 rekordgeschwindigkeit
 relativbeschleunigung
 religionsgemeinschaft
 religionsgesellschaft
 religionswissenschaft
 renommiersuspensorium
+republik sierra leone
+republik turkmenistan
+republik weißrussland
+retten sich, wer kann
+rheumatoide arthritis
 ringkerntransformator
 risikoschwangerschaft
 romanschriftstellerin
+rosinen im kopf haben
+rote zahlen schreiben
+russisch verteidigung
+salvatorische klausel
 samstagsveranstaltung
+sanglos- und klanglos
 sankt-nimmerleins-tag
 sapir-whorf-hypothese
+satzwertiges partizip
 schallgeschwindigkeit
 schallplattensammlung
 schaufensterkrankheit
+scheiß der hund drauf
 schicksalsergebenheit
 schieder-schwalenberg
 schiedsrichtergespann
@@ -440,29 +645,50 @@ schmetterlingsflechte
 schmetterlingsporling
 schmuckblatttelegramm
 schreibtischschublade
+schreien wie am spieß
 schriftstellerverband
 schwangerschaftsmonat
 schwangerschaftswoche
 schwarzarbeitergesetz
+schwarzes bilsenkraut
 schwarzmarkthändlerin
 schwarzwaldhochstraße
 schwarzweißfotografie
+schwarzäugige susanne
 schwerfigurenendspiel
 schwerlasttransporter
 schönwetterdemokratie
 sechs-uhr-vorstellung
 seeschifffahrtsstraße
+seinen geist aufgeben
+seinen schnitt machen
+seinen senf dazugeben
 selbstauflösungsrecht
 selbstbedienungsladen
 selbsterhaltungstrieb
 selektionsrestriktion
+semantische umwertung
 sexualkundeunterricht
+siamesischer zwilling
+sich am riemen reißen
+sich das leben nehmen
+sich einen ast lachen
+sich einen ruck geben
+sich im kreis bewegen
+sich in luft auflösen
+sich in schale werfen
+sich ins faust lachen
+sich keinen abbrechen
+sich vom acker machen
+sich zum affen machen
 sicherheitsforscherin
 sicherheitsvorkehrung
 silvestergottesdienst
+simuliertes ertrinken
 simultandolmetscherin
 software-entwicklerin
 software-lebenszyklus
+solidaritätsbekundung
 solidaritätserklärung
 somatisierungsstörung
 sommerausternseitling
@@ -472,6 +698,8 @@ sonderpostwertzeichen
 sonntagsschullehrerin
 sonntagsveranstaltung
 sowjetzonenflüchtling
+soziale distanzierung
+soziale gerechtigkeit
 soziologieprofessorin
 spielgeschicklichkeit
 sportberichterstatter
@@ -481,6 +709,7 @@ sprachrevitalisierung
 sprachwissenschaftler
 sprechgeschwindigkeit
 spätmittelhochdeutsch
+stabat mater dolorosa
 stehkragenproletarier
 stellungswiederholung
 strahlenschutzbereich
@@ -488,48 +717,66 @@ strahlenschutzexperte
 stuhlschiedsrichterin
 subarachnoidalblutung
 subsidiaritätsprinzip
+syntaktische funktion
+syntaktische relation
 systemprogrammiererin
+são tomé und príncipe
 tag-und-nacht-gleiche
 tageshöchsttemperatur
+technische informatik
+technisches hilfswerk
 teilchenbeschleuniger
 teilungsversteigerung
 teilzeitbeschäftigung
 terrorismusbekämpfung
+therapeutischer clown
 tierstimmenimitatorin
+toskanischer archipel
 tourismuswissenschaft
 traditionsunternehmen
 trainingswissenschaft
 traubenmostkonzentrat
+trauen, schauen, wem!
 trinkwasserverordnung
 trivialschriftsteller
+trunkenheit am steuer
 trächtigkeitskalender
+tschechische republik
 tschechischunterricht
 type-token-verhältnis
 tünnes-und-schäl-witz
 ultraviolettstrahlung
+um die goldene ananas
 umweltverträglichkeit
 universalienforschung
 universalwissenschaft
 universitätsabschluss
 universitätsprofessor
+unter der erde liegen
 unterbodenbeleuchtung
 unterbrechungsroutine
 unterdurchschnittlich
+untergeordnete klasse
 unterhaltungsprogramm
 unterlassungshandlung
+unterleutnant zur see
 unternehmensgründerin
 unternehmenssteuerung
 unterrichtsgegenstand
 unterrichtsministerin
 unterschiedslosigkeit
+unterspannener träger
+unterstaatssekretärin
 untersuchungsergebnis
 untersuchungshäftling
 unterwasserarchäologe
+unverhältnismäßigkeit
 variationskoeffizient
 verallgemeinerbarkeit
 verantwortungsbewusst
 verantwortungsethiker
 verantwortungsethisch
+verbraucherzentrale{{
 verbrechensbekämpfung
 verfassungsbeschwerde
 verfassungsgesetzlich
@@ -551,6 +798,7 @@ verteidigungsstellung
 verwaltungsvorschrift
 videoschiedsrichterin
 vielseitigkeitsreiten
+volksrepublik lugansk
 volkswirtschaftslehre
 vollstreckungsbeamter
 vollstreckungsbeamtin
@@ -560,6 +808,7 @@ vorlesungsverzeichnis
 vormittagsspaziergang
 vormittagsvorstellung
 vorstandsvorsitzender
+vorstellungsfähigkeit
 völkerschlachtdenkmal
 wahlpflichtgegenstand
 warteschlangentheorie
@@ -569,12 +818,20 @@ wehrmachtsangehöriger
 weichteilrheumatismus
 weihnachtsspaziergang
 weinvollerntemaschine
+weißer anischampignon
 weltwirtschaftsgipfel
 werklieferungsvertrag
 werkstoffwissenschaft
 werkzeugunterstützung
+westfälischer frieden
+westslawische sprache
 wettbewerbsverzerrend
 wettbewerbsverzerrung
+wie angegossen passen
+wie aus eimern gießen
+wie ein geölter blitz
+wie espenlaub zittern
+wie mit eimern gießen
 wiederholungszahlwort
 winkelgeschwindigkeit
 wirkungsgeschichtlich
@@ -595,6 +852,7 @@ wohltätigkeitskonzert
 wohltätigkeitsprojekt
 wohnzimmereinrichtung
 wünschelrutengängerin
+xeroderma pigmentosum
 zahlungsbilanzdefizit
 zahlungsbilanzproblem
 zahlungserleichterung
@@ -602,12 +860,21 @@ zahlungsverpflichtung
 zahnfleischentzündung
 zahnmedizingeschichte
 zirkumskriptionsbulle
+zum anbeißen aussehen
+zum vorschein bringen
 zusammenhanglosigkeit
+zusammenhängende rede
 zuständigkeitsbereich
+zwangsexmatrikulieren
 zwangsverstaatlichung
+zwei links hand haben
 zweihunderteuroschein
 zweihundertmarkschein
+zweisporiger egerling
 zweitschlagskapazität
+à-la-carte-restaurant
+ägyptische finsternis
+über die wupper gehen
 überdeckungskriterium
 überflussgesellschaft
 überraschungskandidat

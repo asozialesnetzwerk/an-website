@@ -1,3 +1,14 @@
+1,2-propandiol
+1-raum-wohnung
+1. petrusbrief
+10-euro-schein
+10-mark-schein
+2. petrusbrief
+20-euro-schein
+20-mark-schein
+5-minuten-takt
+50-euro-schein
+50-mark-schein
 aalbeerstrauch
 abadie-zeichen
 abbruchblutung
@@ -44,6 +55,7 @@ abschnittsburg
 abschussbefehl
 abschussbereit
 abschussprämie
+absolute musik
 absolutistisch
 absolutquadrat
 abstandsprache
@@ -57,10 +69,12 @@ abwassergeruch
 abwassersystem
 abwehrmaßnahme
 abwehrstellung
+abwurfbehälter
 abyssopelagial
 abälardisieren
 abänderbarkeit
 accountmanager
+acer campestre
 acerolakirsche
 acetessigsäure
 acheiropoieton
@@ -75,14 +89,17 @@ achtstundentag
 achtundachtzig
 achtunddreißig
 achtundsechzig
+achtundzwanzig
 achtungserfolg
 achtzehnjährig
 achtzigerjahre
 achtzigminütig
 ackergauchheil
 acrotomophilie
+acta sanctorum
 actionpainting
 actionthriller
+ad spectatores
 ad-hoc-bildung
 addiermaschine
 adjektivadverb
@@ -104,17 +121,20 @@ affektiertheit
 affirmativität
 afrikaforscher
 afroamerikaner
+after-, after-
 afterhourparty
 afterworkparty
 agenturbericht
 agglutinierend
 agilolfingerin
 agranulozytose
+agrar-, agrar-
 agrarerzeugnis
 agrarindustrie
 agrarökosystem
 agrobiologisch
 aguascalientes
+agulhas negras
 airconditioner
 akademikerkind
 akademisierung
@@ -127,9 +147,13 @@ akustikkoppler
 akzeptabilität
 akzidenzsetzer
 alarmsteuerung
+alarmstufe rot
 alaska-schrift
 aldol-addition
+alexanderroman
 alexandrinerin
+alexandrinisch
+alexipharmakon
 alkoholflasche
 alkoholisieren
 alkoholkranker
@@ -145,6 +169,7 @@ allgegenwärtig
 allgemeinplatz
 allgemeinwille
 alliiertenpost
+allium ursinum
 allmorgendlich
 allodialbesitz
 allradfahrzeug
@@ -152,11 +177,13 @@ alltagssprache
 alltäglichkeit
 allwöchentlich
 alpenhauptkamm
+alpha centauri
 alphanumerisch
 alphastrahlung
 altarbildstock
 altarsakrament
 altdeutschland
+alte schachtel
 alteingesessen
 altenpflegerin
 altersgenossin
@@ -196,7 +223,11 @@ ammoniumsulfat
 ampelkoalition
 ampelografisch
 ampelotherapie
+amphi-, amphi-
 amphiprostylos
+amtsdirektorin
+amtseinführung
+amtseinsetzung
 amtsnachfolger
 analogiegesetz
 analogieverbot
@@ -204,16 +235,22 @@ analphabetisch
 anasazi-kultur
 anastomosieren
 andersgläubige
+andhra pradesh
 andreaskapelle
+andro-, andro-
 andromedanebel
 androzentrisch
+anemo-, anemo-
 anfahrtsstraße
 anfangskapital
 anfangsstadium
 anfängerfehler
+angebrachtheit
 angelegentlich
 angelfischerei
 angelsächsisch
+angemessenheit
+anglo-, anglo-
 angriffsbefehl
 angriffsfläche
 angriffslustig
@@ -222,7 +259,9 @@ animiermädchen
 anischampignon
 anklageschrift
 anklagevorwurf
+ankleidezimmer
 anlagebetrüger
+anna selbdritt
 annahmevermerk
 annehmlichkeit
 anpassungswert
@@ -278,16 +317,19 @@ apfelsinenbaum
 apfelsinenkern
 apfelsinensaft
 aphoristikerin
+apis mellifera
 apnoetaucherin
 apollo-mission
 apolloprogramm
 apoplektikerin
 aposteriorisch
 apotemnophilie
+apothekenwesen
 appellfunktion
 appendikuliert
 applikabilität
 aprikosensorte
+arabische liga
 arachidonsäure
 arbeiterbezirk
 arbeiterführer
@@ -324,25 +366,31 @@ arbeitsvorlage
 arbeitszeugnis
 archaebacteria
 archaebakterie
+archi-, archi-
 archipterygium
 archivdirektor
 archivmaterial
 arealtypologie
 aristokratisch
 aristotelismus
+arkadienutopie
 arkandisziplin
 armaturenbrett
 armillarsphäre
 armutsschwelle
 arrondissement
+arsch der welt
+arsch-, arsch-
 arschlosigkeit
 arsenbelastung
 artenexplosion
 aschermittwoch
 asienmeisterin
+asowsches meer
 asparaginsäure
 asphyxiophilie
 assoziativität
+astro-, astro-
 asylberechtigt
 asylbewerberin
 asylmissbrauch
@@ -358,10 +406,21 @@ atomwaffenfrei
 atomwaffentest
 audio-designer
 audiostreaming
+auf achse sein
+auf dem papier
+auf der stelle
+auf draht sein
+auf dünnem eis
+auf ex trinken
+auf hochtouren
+auf jeden fall
+auf pump leben
+auf und nieder
 aufbauprogramm
 aufenthaltsort
 aufgabengebiet
 aufgabestempel
+aufmarschieren
 aufmerksamkeit
 aufnahmeantrag
 aufnahmeleiter
@@ -385,7 +444,11 @@ augenheilkunde
 augenkrankheit
 augenwischerei
 aupair-mädchen
+aus dem effeff
+aus dem lameng
+aus den federn
 ausbruchsicher
+ausdiskutieren
 ausdrucksebene
 ausdrucksreich
 ausdrucksseite
@@ -403,11 +466,13 @@ ausgeschlossen
 aushängeschild
 auslandsbesuch
 ausländerquote
+ausmarschieren
 ausnahmeathlet
 ausnahmefehler
 ausreiseantrag
 ausreiseverbot
 ausreisewillig
+ausreißversuch
 ausrufezeichen
 aussagekräftig
 ausschaltknopf
@@ -470,11 +535,13 @@ autozulieferer
 auxiliarsoldat
 auxiliartruppe
 außenbordmotor
+außendienstler
 außenmikrophon
 außenpolitiker
 außenpolitisch
 außenseitertum
 außenstehender
+außenstürmerin
 außerberuflich
 außerirdischer
 außerplanmäßig
@@ -489,6 +556,28 @@ babyeierleicht
 bachelorarbeit
 backsteingotik
 backsteinmauer
+bad bayersoien
+bad dürkheimer
+bad dürrenberg
+bad dürrheimer
+bad harzburger
+bad karlshafen
+bad köstritzer
+bad lauchstädt
+bad lauterberg
+bad leonfelden
+bad liebenzell
+bad lobenstein
+bad nenndorfer
+bad oeynhausen
+bad rappenauer
+bad sauerbrunn
+bad schandauer
+bad sobernheim
+bad traunstein
+bad wörishofen
+bad wünnenberg
+badebekleidung
 baderschneider
 badewannenrand
 baggerschaufel
@@ -501,6 +590,7 @@ bahnverbindung
 bakterienbrand
 bakterienflora
 bakterienstamm
+balalaikaspiel
 baldrianwurzel
 balkanbewohner
 balkanisierung
@@ -510,6 +600,7 @@ ballettmädchen
 bambusgeflecht
 bananenstecker
 bandenmitglied
+banderolierung
 bandgeschichte
 bandpassfilter
 bandwurmbefall
@@ -518,8 +609,10 @@ bannerträgerin
 barackenkirche
 barmherzigkeit
 barocktrompete
+baschkortostan
 basiskompetenz
 basketballerin
+basketballteam
 basketballwelt
 bassenatratsch
 baubesprechung
@@ -534,14 +627,18 @@ bauernweisheit
 baufluchtlinie
 baugenehmigung
 bauingenieurin
+baumgartlinger
+baumkronenpfad
 baummarderfell
 baumschulenweg
+baumwipfelpfad
 baumwollfieber
 baumwollgewebe
 baumwollhandel
 bausparvertrag
 bauunternehmer
 bauüberwachung
+bayerisch wald
 bayern-spieler
 beamtenforelle
 beamtenfußball
@@ -563,6 +660,7 @@ befehlsempfang
 befehlshaberin
 befehlssequenz
 beflissentlich
+begleitartikel
 begrüßungsgeld
 begrüßungskuss
 begrüßungswort
@@ -570,13 +668,16 @@ beharrlichkeit
 behördenbesuch
 behördenleiter
 beifahrerseite
+beim teutates!
 beinmuskulatur
 beinverletzung
 beisammenhaben
 beiseitelassen
+beiseitenehmen
 beiseitetreten
 beispielsweise
 beitragszahler
+beitreinzvergv
 bekanntenkreis
 bekanntermaßen
 bekannterweise
@@ -590,6 +691,7 @@ benutzergruppe
 benzinbehälter
 benzinkanister
 bequemlichkeit
+berbersprachl.
 bereiterklären
 bereitstellung
 bergarbeiterin
@@ -597,6 +699,8 @@ bergbaukonzern
 bergbesteigung
 berglandschaft
 bergungsarbeit
+berliner mauer
+berliner weiße
 bermudadreieck
 bernsteinsäure
 berufsakademie
@@ -610,12 +714,14 @@ berufssportler
 besatzungszeit
 besatzungszone
 beschaffenheit
+bescheid sagen
 bescheidenheit
 beschlagenheit
 beschlagnahmen
 beschleunigung
 beschlussfähig
 beschreibstoff
+beschränktheit
 beschwerdefrei
 beschwichtigen
 beschälstation
@@ -641,6 +747,7 @@ betriebsleiter
 betriebsmittel
 betriebssystem
 betriebsunfall
+betriebswirtin
 betrugsprozess
 betrugsversuch
 betrugsvorwurf
@@ -663,6 +770,8 @@ bierproduktion
 bierverlegerin
 bierwirtschaft
 bilateralismus
+bildausschnitt
+bildende kunst
 bildersammlung
 bildhauerkunst
 bildschirmfoto
@@ -689,6 +798,7 @@ binnenschiffer
 binsenkörbchen
 binsenwahrheit
 binsenweisheit
+bio-produktion
 biogeografisch
 biokatalysator
 biologielehrer
@@ -705,11 +815,13 @@ bismarckhering
 bissverletzung
 bitcoinadresse
 bittprozession
+blanc de noirs
 blasenkatheter
 blasenpflaster
 blasenschwäche
 blasinstrument
 blasphemikerin
+blasse koralle
 blattaluminium
 blattfarbstoff
 blattfederchen
@@ -726,10 +838,13 @@ bleivergiftung
 blindbewerbung
 blinddarmnarbe
 blindenschrift
+blindensendung
 blindschleiche
 blitzeinschlag
 blockbuchstabe
+blue mountains
 blumentopferde
+blut und boden
 blutbeschmiert
 blutkörperchen
 blutstammzelle
@@ -741,6 +856,8 @@ bodenabsaugung
 bodengeschmack
 bodenlebewesen
 bodenoffensive
+bodschvereinhg
+bodschätzoffvo
 bohnermaschine
 bombenanschlag
 bombenattentat
@@ -763,6 +880,7 @@ boxweltmeister
 boyfriendjeans
 brachialgewalt
 brachysyllabus
+brady-, brady-
 brailleschrift
 bramarbasieren
 branchenführer
@@ -773,6 +891,8 @@ brandschatzung
 brandschutztor
 brandschutztür
 brandstifterin
+braun gebrannt
+braunau am inn
 braunschweiger
 brechdurchfall
 brechungsindex
@@ -832,6 +952,7 @@ buckeltäubling
 bulk-container
 bummelantentum
 bundesankläger
+bundesanzeiger
 bundesautobahn
 bundesbürgerin
 bundesdistrikt
@@ -865,8 +986,10 @@ bußgeldbewehrt
 bußgeldkatalog
 byzantinologie
 bäckerhandwerk
+bären-, bären-
 bärenfellmütze
 börsenmaklerin
+böschungsbrand
 büchersammlung
 bücherskorpion
 büchsenfleisch
@@ -876,6 +999,15 @@ bündnispolitik
 bürgerlichkeit
 bürgerrechtler
 büttenrednerin
+cabernet blanc
+cabernet cubin
+cabernet dorio
+cabernet dorsa
+cabernet franc
+cabernet mitos
+cabriofahrerin
+calciumchlorid
+camera obscura
 cancerogenität
 cannabiskonsum
 caprivi-zipfel
@@ -883,23 +1015,32 @@ carlistenkrieg
 cartesianismus
 castorbehälter
 castrop-rauxel
+casus obliquus
 cayennepfeffer
 cellospielerin
+ceterum censeo
 champagnerglas
 champs-élysées
+chapeau claque
 chaptalisieren
 charakteristik
 charterkolonie
 chauvinistisch
 check-in-halle
+chef de partie
 chefsekretärin
 chemielaborant
 chemielehrerin
+chemo-, chemo-
 cheopspyramide
 chiantiflasche
 chile-salpeter
+chiphersteller
+chiro-, chiro-
 chiropraktiker
 chiropterygium
+chlor-, chlor-
+chomez batteln
 chondroblastom
 chorisminsäure
 chorturmkirche
@@ -908,8 +1049,11 @@ christenmensch
 christianismus
 christologisch
 christuskirche
+chron-, chron-
 chronifizieren
 chronobiologie
+cia-direktorin
+cia-stützpunkt
 cipollinosäule
 ciragenmalerei
 circumposition
@@ -920,50 +1064,79 @@ cocktailstunde
 code-switching
 computerkäufer
 computerlesbar
+concha nasalis
 conférencieuse
 conjunctivitis
 containerboden
 containerhafen
 containerweise
 corona-impfung
+corona-leugner
+corona-wildtyp
+coronamaßnahme
 coronapandemie
+coronasünderin
+corps de logis
+corpus christi
+corpus delicti
+così fan tutte
+coup de foudre
 cromagnontypus
 cruise-missile
 cruisergewicht
+crêpe de chine
 cumberlandsoße
+cura posterior
+cyano-, cyano-
 cyanobakterium
+cyber-, cyber-
 cyberkriminell
+cyclo-, cyclo-
 cytodiagnostik
 d-zug-zuschlag
 dachstuhlbrand
 dachventilator
+dafür-, dafür-
 dagegenstimmen
 daguerreotypie
+daher-, daher-
+dahin-, dahin-
 dahinschleppen
 dahinschwinden
 dahinterkommen
 dahinterstehen
+damenbadekappe
 damenschneider
+dampf ablassen
 dampfeisenbahn
 dampferzeugung
 dampfplauderer
 danaergeschenk
 danaidenarbeit
 daniederliegen
+darauf folgend
 darmerkrankung
 darmspiegelung
 darmverschluss
+darüber hinaus
+das bett hüten
 datenaustausch
 datendiebstahl
 datensicherung
 datentransport
+dauerstudentin
 daumenlutscher
 daumenregister
+davon-, davon-
 davonschwimmen
+davor-, davor-
+ddr-historiker
+ddr-wortschatz
 deadjektivisch
 deckungsgleich
 defenestration
 defenestrieren
+defensive back
 defibrillation
 defibrillieren
 deflektorhaube
@@ -980,23 +1153,37 @@ dekolonisieren
 dekonstruktion
 dekrementieren
 delegitimieren
+deliktsstadium
+delta-variante
 demissionieren
 demobilisieren
 demonstrativum
 demoralisieren
+den hut nehmen
+den rest geben
+den tod finden
+den wurm baden
+dendr-, dendr-
 deonymisierung
 depositenkasse
+der arsch sein
+der länge nach
 dermatologisch
+dermo-, dermo-
 desachalandage
 desinformation
 desintegration
+desodorisieren
 despektierlich
 dessertbesteck
 destruktivität
 desubstantivum
 detailbesessen
 detailverliebt
+deuteranomalie
 deutschaufsatz
+deutsche thaya
+deutscher bund
 deutschschweiz
 deutschstudium
 deutschtümelei
@@ -1011,10 +1198,13 @@ dialysepatient
 dialysestation
 diamantohrring
 dibbelmaschine
+dicht an dicht
 dichtegradient
 dichtersprache
 dichteänderung
+dick auftragen
 dickfelligkeit
+die wurm baden
 dienstagabends
 dienstagmittag
 dienstagmorgen
@@ -1036,6 +1226,7 @@ diplom-biologe
 diplomatenpass
 diplomatenpost
 dippoldiswalde
+dirigentenstab
 disambiguieren
 diskontinuität
 diskreditieren
@@ -1061,6 +1252,7 @@ donaukraftwerk
 donaumonarchie
 donnerlittchen
 donnerstagfrüh
+dopingverdacht
 doppel-t-eisen
 doppelbürgerin
 doppelfunktion
@@ -1081,6 +1273,8 @@ drachenviereck
 dragsterrennen
 drahthindernis
 drahtziehstein
+drauf und dran
+draufgängertum
 drauflosfahren
 dreckschleuder
 drehrestaurant
@@ -1118,6 +1312,7 @@ drogenhochburg
 drogenkurierin
 drogenspürhund
 drohnenangriff
+drohnenpilotin
 drop-down-menü
 dropdown-liste
 druckausgleich
@@ -1134,11 +1329,17 @@ druckwerkstatt
 dryopithecinae
 drückebergerin
 drüsenfunktion
+dschingis khan
 dumdumgeschoss
+dumm fickt gut
 dunkelreaktion
+dunkle energie
+dunkle materie
+durch-, durch-
 durchflutschen
 durchgangsarzt
 durchlaufprobe
+durchleuchtung
 durchlöcherung
 durchpassieren
 durchprobieren
@@ -1162,6 +1363,7 @@ durchstecherei
 durchstreichen
 durchtrainiert
 duty-free-shop
+dvb-t-receiver
 dynamomaschine
 dyophysitismus
 dyskortizismus
@@ -1176,6 +1378,7 @@ düsseldorferin
 e-mail-adresse
 ebenbürtigkeit
 ebenholzfarben
+echter reizker
 echtzeitmedium
 ecuadorianerin
 ecuadorianisch
@@ -1189,11 +1392,13 @@ ehrabschneider
 ehrenamtlicher
 ehrendoktorhut
 ehrfurchtsvoll
+ehrlich gesagt
 ehrlicherweise
 eibischzuckerl
 eichenrotkappe
 eichenwäldchen
 eidechsenleder
+eidesstattlich
 eierschwammerl
 eigenbrötlerin
 eigengeschmack
@@ -1201,6 +1406,7 @@ eigenimpfstoff
 eigeninitiativ
 eigentlichkeit
 eigentumsklage
+eigenverbrauch
 eilzustellerin
 ein-cent-münze
 ein-cent-stück
@@ -1210,7 +1416,10 @@ einbalsamieren
 einbruchschutz
 einbruchsicher
 eindimensional
+einen abbeißen
+einen abseilen
 einfachdeutsch
+einfacher satz
 einfacherweise
 einfachwohnung
 einfallswinkel
@@ -1225,6 +1434,7 @@ einheitsvektor
 einhunderteins
 einhundertzwei
 einigungskrieg
+einkalkulieren
 einkaufsbummel
 einkaufsstraße
 einkaufstasche
@@ -1266,13 +1476,18 @@ einzelgängerin
 einzelmaßnahme
 einzelnachweis
 einzelsportler
+einzementieren
 einzugsschacht
+eisenarmierung
 eisenbahncoupé
 eisenbahnfahrt
 eisenbahnlinie
 eisenbahnwagen
 eisenbahnwesen
+eisengewinnung
 eisenindustrie
+eisern vorhang
+eisernes kreuz
 eiskunstläufer
 eisschnelllauf
 eisverkäuferin
@@ -1311,10 +1526,12 @@ emilia-romagna
 emissionsnebel
 emissionspreis
 emissionsrecht
+emissionsreich
 empfangszimmer
 empfehlenswert
 empfindsamkeit
 empfängniszeit
+empor-, empor-
 empörungswelle
 encanaillieren
 endachtzigerin
@@ -1336,9 +1553,11 @@ energiepolitik
 enghalsflasche
 englischlehrer
 englischstunde
+ennea-, ennea-
 enregistrement
 entdeckerreise
 entdeckerspiel
+enter-, enter-
 enterorrhaphie
 entgegenkommen
 entgegennehmen
@@ -1350,10 +1569,14 @@ enthaltsamkeit
 enthusiastisch
 entlangblicken
 entlangfliegen
+entlanghumpeln
+entlangtuckern
 entmythisieren
 entschleunigen
 entschuldigung
 entschwefelung
+entsorgungsbox
+entstaatlichen
 enttabuisieren
 entwurfsmuster
 entziehungskur
@@ -1362,15 +1585,19 @@ entzweibrechen
 enzyklopädisch
 epaulettenmatt
 epigrammatisch
+erbinformation
 erbsenzählerei
 erbsenzählerin
+erbärmlichkeit
 erdbebengebiet
 erdbebensicher
 erdbeerkompott
+erdbeerpudding
 erdbevölkerung
 erdkundelehrer
 erdmittelalter
 erdölförderung
+erdölverbrauch
 erdölvorkommen
 erfahrungswert
 erfindungsgabe
@@ -1382,15 +1609,18 @@ erholungslager
 erholungspause
 erholungsreise
 erkundungsgang
+ermüdungsbruch
 ernstzunehmend
 erntefestmeter
 ernährungslage
 erpresserbrief
+erprobungsflug
 erreichbarkeit
 errungenschaft
 ersatztorhüter
 erstaufführung
 erstbesteigung
+ersticken matt
 erstinskribent
 erstklasslerin
 erstklässlerin
@@ -1406,6 +1636,7 @@ erziehungsziel
 erzkonservativ
 eröffnungsrede
 eröffnungsvers
+es kurz machen
 eschatologisch
 eschenbäumchen
 eskimosiedlung
@@ -1418,9 +1649,16 @@ estridentismus
 etappenkrieger
 etappenschwein
 ethnographikum
+eu-abgeordnete
+eu-binnenmarkt
+eu-kommissarin
+eu-ministerrat
 eukalyptuswald
 eulenspiegelei
+eulersche zahl
 europäisierung
+eurozentrismus
+eustachi-röhre
 evangelienbuch
 eventualantrag
 evidenzbasiert
@@ -1434,6 +1672,7 @@ expansionsplan
 experimentator
 exportschlager
 exspiratorisch
+extra-, extra-
 extra-temporal
 extremleistung
 extremsportart
@@ -1463,6 +1702,8 @@ fahndungsliste
 fahnenflüchtig
 fahnenträgerin
 fahrbahnbreite
+fahrende leute
+fahrendes volk
 fahrgastschiff
 fahrlässigkeit
 fahrradhändler
@@ -1495,9 +1736,12 @@ familienschach
 familienstreit
 familienticket
 familienurlaub
+fantasiebegabt
+farbe bekennen
 farbfotografie
 farbtemperatur
 faschingsumzug
+fashion victim
 favoritenliste
 favoritenrolle
 fazialisparese
@@ -1538,9 +1782,11 @@ festtagsbraten
 festungsgürtel
 fetalchirurgie
 fettabscheider
+fettarme milch
 fettfanggitter
 fettleibigkeit
 feuchtblattern
+feuchter traum
 feuchtfröhlich
 feuerbestatten
 feuerbeständig
@@ -1552,21 +1798,27 @@ feuerverzinken
 feuerwehrleute
 fianchettieren
 fibonaccifolge
+fibro-, fibro-
 fichtelgebirge
 fichtenbestand
 fickenderweise
 fieberbläschen
+fieberfantasie
 figurentheater
 filialleiterin
 filmfestspiele
 filmgeschichte
 filmhistoriker
 filmhistorisch
+filmkünstlerin
 filmproduktion
+filmschaffende
 filmvorführung
 filtrierpapier
 finalteilnahme
 finanzexpertin
+finanzgeschäft
+finanzinstitut
 finanzminister
 finanzvorstand
 findlingsmauer
@@ -1582,6 +1834,7 @@ fischotterfell
 fischverkäufer
 fischzüchterin
 fitness-studio
+fix und fertig
 flachbandkabel
 flachbaugruppe
 flamencotänzer
@@ -1652,10 +1905,12 @@ flüchtlingsrat
 flüchtlingszug
 flügeladjutant
 flügelschnecke
+flüssiges brot
 flüssiggastank
 flüsterasphalt
 flüstergewölbe
 folgendermaßen
+foreigner talk
 formalisierung
 formationstanz
 formelsammlung
@@ -1674,6 +1929,7 @@ fraktalisieren
 fraktionszwang
 frakturschrift
 francokanadier
+frank und frei
 frankfurt/main
 frankokanadier
 frankreichweit
@@ -1685,7 +1941,10 @@ frauenbewegung
 frauenhaarfarn
 frauenmörderin
 frauenrechtler
+frauenverstand
 freiberuflerin
+freie variante
+freies morphem
 freiheitsdrang
 freiheitsdurst
 freiheitskampf
@@ -1693,6 +1952,7 @@ freiheitsliebe
 freiheitsrecht
 freiheitstrieb
 freiheitswille
+freilandstraße
 freilichtbühne
 freischärlerin
 freistilringen
@@ -1710,6 +1970,7 @@ friedenskaiser
 friedenskirche
 friedenspfeife
 friedenstifter
+friedensutopie
 friedhofsmauer
 friedrichsdorf
 friedrichstadt
@@ -1717,12 +1978,15 @@ friedrichsthal
 frischgebacken
 frischvermählt
 frittatensuppe
+frommer wunsch
 frontabschnitt
 frontalangriff
 frontkilometer
 frontkämpferin
 froschschenkel
 fruchtschranne
+frutti di mare
+fränkische alb
 fräuleinwunder
 frühdynastisch
 frühestmöglich
@@ -1739,6 +2003,7 @@ frühlingssonne
 frühlingswoche
 frühstücksraum
 frühstückszeit
+frühwarnsignal
 frühwarnsystem
 fuchsgeschmack
 fuchsschwänzen
@@ -1762,6 +2027,7 @@ futtergetreide
 futterschwinge
 futterschüssel
 fußball-lehrer
+fußballamateur
 fußballlegende
 fußballspieler
 fußballstadion
@@ -1783,7 +2049,9 @@ fünfeuroschein
 fünfhundertste
 fünfjahresplan
 fünfmarkschein
+fünfunddreißig
 fünfundfünfzig
+fünfundzwanzig
 fünfzehnjährig
 fünfzigerjahre
 fünfzigminütig
@@ -1816,12 +2084,14 @@ gasentwicklung
 gastarbeiterin
 gastfreundlich
 gastmannschaft
+gastr-, gastr-
 gastwirtschaft
 gebhardkapelle
 gebietsverlust
 gebirgsbildung
 gebirgsjägerin
 gebirgspionier
+geboren werden
 gebrauchtwagen
 geburtenziffer
 geburtsurkunde
@@ -1830,8 +2100,10 @@ gebäudebestand
 gebäudekomplex
 gebäudelüftung
 gebührenzahler
+gedanken lesen
 gedankenflucht
 gedankenstrich
+gedankensystem
 gedenkmedaille
 gefahrengebiet
 gefahrenquelle
@@ -1851,7 +2123,9 @@ gefängniszelle
 gefäßverengung
 gefühlsblinder
 gefühlsduselei
+gefühlszustand
 gegebenenfalls
+gegen-, gegen-
 gegendämmerung
 gegeneinladung
 gegenforderung
@@ -1878,7 +2152,10 @@ geiselnehmerin
 geisterbahnhof
 geisterseherin
 geisteshaltung
+geisteskranker
 geisteszustand
+geistreichelei
+gelber orleans
 gelbringfalter
 geldaristokrat
 geldentwertung
@@ -1886,11 +2163,13 @@ geldfälscherin
 geldmarktfonds
 gemeindearchiv
 gemeindediener
+gemeindesteuer
 gemeinfasslich
 gemeinfreiheit
 gemeinslawisch
 gemüsegeschäft
 gemüseplantage
+gender pay gap
 generaladmiral
 generalisieren
 generalklausel
@@ -1909,11 +2188,14 @@ gerechterweise
 gerechtfertigt
 gerichtsdiener
 gerichtskosten
+gerichtssiegel
 gerichtstermin
 gerichtsurteil
 geringschätzen
 geringschätzig
 germanisierung
+gern geschehen
+gerollter laut
 geruchsanalyse
 geruchsbegriff
 geruchsbereich
@@ -1944,12 +2226,14 @@ gesamtkeimzahl
 gesangsschüler
 geschenkpapier
 geschichtsbuch
+geschichtswerk
 geschirrspüler
 geschlechtsakt
 geschlechtslos
 geschmacksnerv
 geschmackssinn
 geschnetzeltes
+geschoßwohnung
 geschraubtheit
 geschäftigkeit
 geschäftsleben
@@ -1958,6 +2242,7 @@ geschäftslokal
 geschäftsreise
 geschäftswagen
 geschäftswesen
+geschäftszweig
 geschützdonner
 geschützpforte
 gesellenschaft
@@ -1977,6 +2262,7 @@ gesteinsplanet
 gesteinsspalte
 gesundheitlich
 gesundheitsamt
+getreidebedarf
 getreideexport
 getreideflocke
 getreidehandel
@@ -2020,6 +2306,7 @@ glasfalzbreite
 glasfläschchen
 glasproduktion
 glasverpackung
+glatzer kessel
 glaubensbruder
 gleichgesinnte
 gleichmacherei
@@ -2027,26 +2314,35 @@ gleichstellung
 gleitkommazahl
 gletscherbrand
 gletscherfluss
+gletschermühle
 gletscherzunge
 gliedermaßstab
 gliederschmerz
 globalisierung
 globetrotterin
+glockengeläute
 glorifizierung
+gluco-, gluco-
 gluconeogenese
+gluko-, gluko-
+glyco-, glyco-
+glyko-, glyko-
 glückseligkeit
 glücksritterin
 glühbirnenwitz
 gnadenbefugnis
 gnadenhochzeit
+gold wert sein
 goldbeschlagen
 goldgeschmückt
 goldproduktion
 goldschlägerei
 goldwaldsänger
+golf von akaba
 golgi-zisterne
 gonocöltheorie
 gonozöltheorie
+gottesfürchtig
 gottesteilchen
 gotthardtunnel
 graaf-follikel
@@ -2054,11 +2350,14 @@ grabgrubenwand
 grabschänderin
 grabungsleiter
 grabungsstätte
+grafo-, grafo-
 grammatikregel
 granatsplitter
 granattrichter
+graph-, graph-
 graphentheorie
 graupelschauer
+grenzabschnitt
 grenzerfahrung
 grenzkontrolle
 grenzsprengung
@@ -2071,12 +2370,14 @@ grippebazillus
 grobschlächtig
 groteskschrift
 grottenkapelle
+groß koalition
 großaktionärin
 großalmosenier
 großbritannien
 großbritannier
 großbürgerlich
 großelternteil
+großer bahnhof
 großfürstentum
 großinquisitor
 großjährigkeit
@@ -2085,6 +2386,7 @@ großraumgärung
 großschreibung
 großspurigkeit
 großwetterlage
+grund-, grund-
 grundbedeutung
 grundbedürfnis
 grundeinkommen
@@ -2093,6 +2395,7 @@ grundoperation
 grundrechenart
 grundreinigung
 grundsanierung
+grundschulfach
 grundschülerin
 grundsicherung
 gruppendynamik
@@ -2102,14 +2405,17 @@ gruppentheorie
 gründergestalt
 gründonnerstag
 gründungsvater
+grüne hochzeit
 grünwaldsänger
 gudscharatisch
 guerillagruppe
 guerillataktik
 guillotinieren
+gummibadekappe
 gummielastikum
 gummihandschuh
 gummiparagraph
+gute besserung
 gutgläubigkeit
 gutsbesitzerin
 gutsherrschaft
@@ -2124,6 +2430,7 @@ gütertransport
 haarnadelkurve
 haarspraylunge
 habanerfayence
+hackl im kreuz
 hafenrundfahrt
 haftentlassung
 haifischflosse
@@ -2132,7 +2439,9 @@ halbtagsschule
 halbverklungen
 halle-neustadt
 halloweenparty
+hals über kopf
 halsausschnitt
+halsbandsegler
 halsschlagader
 hammerwerferin
 handballverein
@@ -2160,11 +2469,14 @@ handtuchhalter
 handwerksberuf
 handwörterbuch
 hannoveranerin
+hans was heiri
 hapaxlegomenon
 hardcore-porno
 harmonisierung
 harnwegsinfekt
+hartherzigkeit
 hartnäckigkeit
+harzer rotvieh
 hasspredigerin
 hauptaugenmerk
 hauptbedeutung
@@ -2202,22 +2514,32 @@ heeresbücherei
 heeresoffizier
 heidelbergerin
 heiligenschein
+heiliger abend
+heiliger geist
+heiliger stuhl
+heiliger vater
 heiligsprechen
 heimarbeiterin
 heimatdichtung
 heimbewohnerin
 heimlichtuerei
 heimniederlage
+heiratsabsicht
 heiratsanzeige
 heiratspolitik
 heiratsurkunde
 heizungsanlage
 heizungskeller
 heißluftballon
+hekto-, hekto-
+helio-, helio-
 heliozentrisch
 helminthologie
 hephthemimeres
+hepta-, hepta-
+herab-, herab-
 herabwürdigung
+heran-, heran-
 heranschwimmen
 heraufarbeiten
 heraufklettern
@@ -2228,9 +2550,11 @@ herausforderer
 herausforderin
 herausklettern
 herausklingeln
+herauskrabbeln
 herauskriechen
 herausschicken
 herausschreien
+herausstellung
 herbarmaterial
 herbeischaffen
 herbrechtingen
@@ -2244,9 +2568,11 @@ heringsschmaus
 heringsschwarm
 heringsähnlich
 herkulesarbeit
+hermarschieren
 hermelinkragen
 herren-t-shirt
 herrenboutique
+herrengespräch
 herrenkleidung
 herrenpullover
 herrenreiterin
@@ -2254,10 +2580,12 @@ herrgottskäfer
 herrschertitel
 herrschsüchtig
 herstellkosten
+herum-, herum-
 herumfaulenzen
 herumflanieren
 herumkrakeelen
 herumprozessen
+herumschleppen
 herumschließen
 herumschlingen
 herumschmeißen
@@ -2284,19 +2612,26 @@ herzogenaurach
 herzschädigung
 herzstillstand
 herzzerreißend
+heter-, heter-
 heteroklitisch
 heterosexuelle
 heumarktbrücke
 hexacosansäure
 hexadecansäure
 hexaederstumpf
+hier und jetzt
+hierhergehören
 hieroglyphisch
+hilberts hotel
 hildburghausen
 hilfsbedürftig
 hilfslieferung
 himbeerstrauch
 himmelskönigin
 himmelsäquator
+hin und wieder
+hinab-, hinab-
+hinan-, hinan-
 hinaufarbeiten
 hinaufklettern
 hinaufschaffen
@@ -2309,31 +2644,39 @@ hineinklettern
 hineinkriechen
 hineinlavieren
 hineinschneien
+hineintheatern
 hingebungsvoll
+hinmarschieren
 hinterbliebene
 hintereinander
 hinterhergehen
+hinterschenkel
 hinunterbeugen
 hinunterbücken
 hinunterfallen
 hinunterfinden
 hinuntergießen
 hinunterkippen
+hinunterkommen
 hinunterspülen
 hinunterstoßen
 hinunterwerfen
 hinunterwürgen
+hinzu-, hinzu-
 hinzuschreiben
 hiobsbotschaft
 hiobsnachricht
+hippo-, hippo-
 hirschhornsalz
 historiografie
 historiografin
 hitzebeständig
 hobbygärtnerin
+hochansteckend
 hochchinesisch
 hochdramatisch
 hochgefährlich
+hochherzigkeit
 hochkonjunktur
 hochregallager
 hochschleichen
@@ -2346,6 +2689,7 @@ hochsprachlich
 hochspringerin
 hochtalentiert
 hochwasserhose
+hochwertigkeit
 hochzeitsanzug
 hochzeitsfeier
 hochzeitskleid
@@ -2361,15 +2705,20 @@ hohlblockstein
 holterdipolter
 holzfällerhemd
 holzkohlegrill
+holzvollernter
 holzwirtschaft
+homme à femmes
 homoikonizität
 homoiohydrisch
 homomorphismus
 homosexualität
+homöo-, homöo-
+hopfenpflanzer
 horrorkabinett
 horrorszenario
 horrorthriller
 hosenbandorden
+hospitalisiert
 hospitalschiff
 hoteldirektion
 hubertusmantel
@@ -2379,6 +2728,7 @@ humangenetiker
 humanitarismus
 humorforschung
 humorlosigkeit
+hunde-, hunde-
 hundeexkrement
 hundeliebhaber
 hundertpfündig
@@ -2389,11 +2739,14 @@ hundezüchterin
 hungerleiderin
 hungerzwetsche
 hurrikansaison
+hydro-, hydro-
 hydroxylgruppe
 hygienekonzept
 hygieneprodukt
+hygro-, hygro-
 hylemorphismus
 hylomorphismus
+hyper-, hyper-
 hyperaktivität
 hyperinflation
 hyperkalziurie
@@ -2402,11 +2755,14 @@ hyperlipidämie
 hypertonikerin
 hypochondrisch
 hypokoristikum
+hypostasierung
 hypothekenbank
 hypothyreoidie
 hypotrachelion
 hypovitaminose
 hähnchenflügel
+hämat-, hämat-
+händeklatschen
 händeschütteln
 händlersprache
 häresieprozess
@@ -2416,6 +2772,7 @@ höhenkrankheit
 höhlenbewohner
 höhlenforscher
 höhlengewässer
+hörfunksendung
 hühnerschlegel
 hürdenläuferin
 ich-erzählerin
@@ -2429,22 +2786,33 @@ identifizieren
 ikonographisch
 ikonoklastisch
 ilang-ilang-öl
+im zuge dessen
 immaterialität
 immissionswert
 immobilisation
 immobilisieren
 immunaktivität
 imperativlogik
+impfdurchbruch
 impfmanagement
+impfschleicher
 implementation
 implementieren
 imponderabilie
 impossibilität
+improvisatorin
+in asche legen
+in einem stück
+in ermangelung
+in kauf nehmen
+in see stechen
 inbetriebnahme
 inbusschlüssel
 indeterminabel
 indeterminiert
 indianersommer
+indirekte rede
+indischer wolf
 individualität
 individualstil
 indizienbeweis
@@ -2456,9 +2824,11 @@ indoktrinieren
 industriereich
 industriestaat
 industriestadt
+industriezweig
 inertialsystem
 infallibilität
 infektionsherd
+infektionslage
 infektionsrate
 infektionstest
 infektionszahl
@@ -2472,6 +2842,7 @@ influenzavirus
 informatikerin
 informationell
 informatorisch
+infra-, infra-
 infrarotquelle
 ingolstädterin
 inhabergeführt
@@ -2489,13 +2860,20 @@ innenpolitiker
 innenpolitisch
 innensenatorin
 innenstadtmaut
+innerasiatisch
+innere führung
+innere sprache
 innerschweizer
 innerstädtisch
 inopportunität
+ins auge gehen
+ins lot kommen
 insektenbefall
 insektenphobie
 inselbahnsteig
 insensibilität
+instand halten
+instand setzen
 instandgesetzt
 instandhaltung
 instandsetzung
@@ -2506,6 +2884,7 @@ intangibilität
 integriergerät
 intellektuelle
 intensivierung
+inter-, inter-
 interaktivität
 interdependent
 interdependenz
@@ -2553,20 +2932,25 @@ intervertebral
 intervokalisch
 inthronisation
 inthronisieren
+intra-, intra-
 intraabdominal
 intrakulturell
 intramolekular
+intro-, intro-
 invalidenrente
+invasionsarmee
 inventarnummer
 involviertheit
 ionengenerator
 ionentriebwerk
+ionisches meer
 irisch-gälisch
 irrationalität
 islamfeindlich
 isoamylalkohol
 isodiametrisch
 isolationshaft
+italo-, italo-
 jaborandiblatt
 jacquardgewebe
 jaffaapfelsine
@@ -2582,10 +2966,12 @@ jahreskongress
 jahreszeitlich
 jahrgangsbeste
 jahrzehntelang
+jammergeschrei
 jerusalemkreuz
 jesuitenkirche
 jesuitenkolleg
 jesuitenschule
+jesus christus
 jodwasserstoff
 johanneskirche
 johannisberger
@@ -2599,18 +2985,22 @@ jugendherberge
 jugendlichkeit
 jugendoffizier
 jugendschöffin
+jugendsprachl.
 julirevolution
 jungakademiker
 jungfernbraten
+jungferninseln
 junghegelianer
 jusprofessorin
 justizminister
 justizthriller
+juxta-, juxta-
 jägerbataillon
 jägerschnitzel
 jämmerlichkeit
 jüdischdeutsch
 jüdischteutsch
+jünglingsalter
 kabinettskrieg
 kabinettstisch
 kaffeemaschine
@@ -2649,6 +3039,7 @@ kaninchenzucht
 kannibalenwitz
 kantonspolizei
 kanzleisprache
+kap finisterre
 kapellenabriss
 kapellengarten
 kapellenneubau
@@ -2667,6 +3058,7 @@ karamellfarben
 karamellgeruch
 karawanenroute
 karbolmäuschen
+kardi-, kardi-
 kardinallösung
 kardinaltugend
 kardiovaskulär
@@ -2679,6 +3071,7 @@ karriereleiter
 kartesianismus
 kartoffelacker
 kartoffelanbau
+kartoffeldruck
 kartoffelernte
 kartoffelfeuer
 kartoffelfäule
@@ -2698,6 +3091,7 @@ kartografieren
 kartographisch
 kartwelsprache
 kartäusermönch
+karyo-, karyo-
 kasinobesucher
 kasperltheater
 kassenhäuschen
@@ -2710,6 +3104,7 @@ kastanienbraun
 kastanienzweig
 kastellanismus
 kastilien-león
+kastratenrolle
 kasusgrammatik
 katalogisieren
 katastrophisch
@@ -2748,6 +3143,7 @@ kettenfahrzeug
 kettenreaktion
 keulen-bärlapp
 keynesianismus
+ki-algorithmus
 kiefernbestand
 kiefernspanner
 kiefernspinner
@@ -2759,6 +3155,7 @@ kilometrierung
 kilowattstunde
 kindbettfieber
 kinderaufzucht
+kinderbettchen
 kinderfräulein
 kinderfürsorge
 kindergeschrei
@@ -2768,6 +3165,7 @@ kindermörderin
 kinderparadies
 kinderschänder
 kindersoldatin
+kindersprachl.
 kinderwärterin
 kinderzuschlag
 kindheitstraum
@@ -2804,6 +3202,7 @@ klatschsüchtig
 klaustrophobie
 klausurprüfung
 klavierkonzert
+klavierspielen
 klavierspieler
 klavierstimmer
 klecksographie
@@ -2811,9 +3210,14 @@ kleiderordnung
 kleiderschrank
 kleiderständer
 kleidungsstück
+klein beigeben
+klein lieschen
 kleinasiatisch
 kleinbuchstabe
 kleinbürgertum
+kleine rochade
+kleiner finger
+kleines finale
 kleinkindalter
 kleinschreiben
 kleinschrittig
@@ -2829,8 +3233,11 @@ klimaschädlich
 klimaskeptiker
 klimatologisch
 klingelstreich
+klingelzeichen
 klinikpersonal
+klinken putzen
 klinkenstecker
+klipp und klar
 kloakentheorie
 klopapierrolle
 klostergewölbe
@@ -2869,10 +3276,13 @@ kolonialmuseum
 kolonialpresse
 kolonialregime
 kolonialtruppe
+kombi-, kombi-
 kombinatorisch
 kometenschweif
 komfortlüftung
 komischerweise
+kommandostelle
+kommentiererin
 kommunalarchiv
 kommunionfeier
 kommuniongebet
@@ -2889,6 +3299,8 @@ komplexbildner
 komplexbrigade
 kompositorisch
 konchyliologie
+konchyliologin
+konditional ii
 kondolenzkarte
 konfektioneuse
 konfektionärin
@@ -2925,6 +3337,7 @@ kontrastmittel
 kontrazeptivum
 kontroll-liste
 kontrollgruppe
+kontrollierung
 kontrollposten
 kontrollstelle
 kontrollziffer
@@ -2941,19 +3354,25 @@ kopftuchverbot
 kopfverletzung
 kopfzerbrechen
 kopiermaschine
+kopro-, kopro-
 korallengarten
 korintherbrief
 kornblumenblau
 korrekturfahne
 korrekturleser
+korrekturstift
 korrepetitorin
 korrosionstest
 korschenbroich
+kosmo-, kosmo-
 kosmopolitisch
 kosovo-albaner
 kossätenstelle
+kost und logis
+kosten deckend
 kostenrechnung
 kostenträchtig
+kottbusser tor
 krabbenfischer
 kraftdreikampf
 kraftlosigkeit
@@ -2968,12 +3387,17 @@ krankheitsfall
 krankschreiben
 krawattennadel
 krawattenzwang
+krebs erregend
 krebsoperation
 krebspatientin
+kreditinstitut
+kreditnehmerin
 kreditunwürdig
+kreide fressen
 kreisabschnitt
 kreisschreiben
 kreml-kritiker
+kreuz und quer
 kreuzfuchsfell
 kreuzschlüssel
 kriegerdenkmal
@@ -2997,16 +3421,19 @@ kriegstagebuch
 kriegsversehrt
 kriegszerstört
 kriegszitterer
+kriminaltechn.
 kripokommissar
 krisengewinner
 kristallgitter
 kristallluster
 kristalllüster
 kristallwasser
+krokodilklemme
 krokodilsträne
 kronprinzessin
 kronprätendent
 kronwaldsänger
+krypt-, krypt-
 krähenindianer
 kräutersammler
 kräuterschnaps
@@ -3032,6 +3459,7 @@ kulturminister
 kulturmuslimin
 kulturreferent
 kulturtransfer
+kulturträgerin
 kultusminister
 kundenberatung
 kundentoilette
@@ -3053,6 +3481,8 @@ kunststoffrohr
 kunststoffteil
 kunststofftüte
 kunststudentin
+kunststückchen
+kunsttransport
 kupferbergwerk
 kupfergeschirr
 kuppelbasilika
@@ -3060,10 +3490,12 @@ kurfürstendamm
 kurienkardinal
 kurierfahrerin
 kuriermaschine
+kurisches haff
 kurrentschrift
 kursabweichung
 kursteilnehmer
 kurvenintegral
+kurz rochieren
 kurzarbeiterin
 kurzausbildung
 kurzgeschichte
@@ -3078,6 +3510,7 @@ kängurufleisch
 käseproduktion
 kölnischwasser
 königsspringer
+königstransfer
 körnerfressend
 körperfunktion
 körperlichkeit
@@ -3105,6 +3538,7 @@ lamarckistisch
 lamellenfilter
 lamellenförmig
 landarbeiterin
+landbesitzerin
 landbewohnerin
 landesbewohner
 landeshaushalt
@@ -3120,9 +3554,11 @@ langenzersdorf
 langhaardackel
 langschläferin
 langzeitstudie
+lapsus linguae
 lastkraftwagen
 lateinlehrerin
 lateralisieren
+laterna magica
 laternenparker
 laternenschein
 latexhandschuh
@@ -3164,12 +3600,15 @@ lehnwortschatz
 lehrbuchverlag
 lehrbuchwissen
 lehrerschwemme
+leib und leben
+leib und seele
 leichengestank
 leichenkapelle
 leichenschmaus
 leichenwäscher
 leichtathletik
 leichtathletin
+leichtes lesen
 leichtkraftrad
 leidensgenosse
 leiharbeiterin
@@ -3182,11 +3621,14 @@ leistungsstark
 leitartiklerin
 leitungswasser
 lemmatisierung
+lepto-, lepto-
 leserzuschrift
 leseunterricht
 letalitätsrate
+letzt-, letzt-
 leumundszeugin
 leverkusenerin
+levée en masse
 lexemrekurrenz
 lexemvariation
 lexikalisieren
@@ -3225,6 +3667,7 @@ lieblingszeile
 lieblingszitat
 liederlichkeit
 liedermacherin
+liegen bleiben
 liniendiagramm
 linienflugzeug
 liniermaschine
@@ -3243,6 +3686,7 @@ liturgiereform
 live-reportage
 logarithmieren
 logbucheintrag
+logenschließer
 logischerweise
 lohnabrechnung
 lohnsteigerung
@@ -3288,7 +3732,6 @@ lüftungsbedarf
 lüftungsblende
 lüftungseffekt
 lüftungserfolg
-lüftungsfehler
 lüftungsfilter
 lüftungsfläche
 lüftungsflügel
@@ -3311,10 +3754,13 @@ lüftungstrasse
 lüftungstunnel
 lüftungsventil
 lüftungszyklus
+m. d. b. u. ü.
 machtlosigkeit
 machtpolitiker
 machtübernahme
+madhya pradesh
 madjarisierung
+mag. rer. nat.
 magellanstraße
 magisterarbeit
 magnesiamörtel
@@ -3323,6 +3769,8 @@ magnetrührstab
 magnetstreifen
 magyarisierung
 maisproduktion
+makellosigkeit
+makro-, makro-
 makronährstoff
 malariaerreger
 maledictologie
@@ -3336,6 +3784,7 @@ mandarinenbaum
 mandarinenkern
 mandarinensaft
 manieriertheit
+mannhaftigkeit
 mannschaftlich
 mannschaftsbus
 marathonläufer
@@ -3344,6 +3793,8 @@ mariendichtung
 marillenknödel
 marineoffizier
 marinesoldatin
+marke bahndamm
+marke eigenbau
 markneukirchen
 markscheiderin
 marktforschung
@@ -3352,6 +3803,8 @@ marmeladenbrot
 marmeladenglas
 marmeladesorte
 marmorskulptur
+marschbewohner
+marschrichtung
 marshallesisch
 marshallinseln
 marsoberfläche
@@ -3366,6 +3819,7 @@ massenmörderin
 massenphänomen
 massenquartier
 massentauglich
+mater dolorosa
 materialbedarf
 mathematikbuch
 mathematikerin
@@ -3377,10 +3831,11 @@ mauervorsprung
 maulwurfshügel
 maunderminimum
 mauritiusfalke
-maximumlüftung
+max mustermann
 maya-herrscher
 maßschneiderei
 maßstabsgetreu
+mechanisierung
 medaillenregen
 mediatisierung
 mediendidaktik
@@ -3404,8 +3859,11 @@ mehrwertsteuer
 meinesgleichen
 meinungswandel
 meisterbetrieb
+melan-, melan-
 meldepflichtig
+membranprotein
 memelniederung
+menage à trois
 mendesantilope
 mengendiagramm
 menschenfreund
@@ -3417,6 +3875,7 @@ menschenhasser
 menschenkenner
 menschenräuber
 menschenschlag
+menschenstimme
 menschentraube
 menschenwürdig
 menschlichkeit
@@ -3428,6 +3887,7 @@ merkwürdigkeit
 mesopotamierin
 messabweichung
 messerbänkchen
+messerschneide
 messerwerferin
 messinggehäuse
 messinstrument
@@ -3451,7 +3911,9 @@ metzgersprache
 michaelskirche
 michel-katalog
 midlife-crisis
+mietenwahnsinn
 mietsteigerung
+mikro-, mikro-
 mikronährstoff
 mikroprozessor
 mikroskopieren
@@ -3476,6 +3938,7 @@ militärpolizei
 militärpräsenz
 militärsprache
 militärstreife
+milli-, milli-
 milliardengrab
 milliardenhöhe
 milliardenwert
@@ -3494,6 +3957,7 @@ minimalistisch
 minimumlüftung
 mischfrankatur
 mischlingshund
+missa solemnis
 missbräuchlich
 missionsarbeit
 missionsgebiet
@@ -3501,6 +3965,7 @@ missionsschule
 missliebigkeit
 missmanagement
 misswirtschaft
+mit einem avec
 mitangeklagter
 mitbegründerin
 mitentscheiden
@@ -3522,6 +3987,7 @@ mittelmeerwelt
 mittelprächtig
 mittelrheintal
 mittelscheitel
+mittlere reife
 mittsommerfest
 mittwochabends
 mittwochmittag
@@ -3537,6 +4003,7 @@ modellflugzeug
 modellierstuhl
 modellprogramm
 modernisierung
+modus operandi
 mogulherrscher
 mohammedanerin
 molkereibutter
@@ -3562,10 +4029,13 @@ montagszeitung
 monumentalität
 mopsfledermaus
 moraltheologie
+morbus basedow
 mordinstrument
 mordkommission
+mords-, mords-
 morgenrötetier
 morgentoilette
+morph-, morph-
 morphemanalyse
 morphophonemik
 mosambikanerin
@@ -3576,12 +4046,15 @@ motivpostkarte
 motorbetrieben
 motorbootsport
 motorenpalette
+motorfliegerin
 motorradfahren
 motorradfahrer
 motorradreifen
 motorradrennen
 motorradunfall
 mountainbiking
+mrna-impfstoff
+multi-, multi-
 multikulturell
 multimillionär
 multiplikation
@@ -3594,9 +4067,11 @@ munitionslager
 munitionswagen
 munster-irisch
 murmeltierfell
+murphys gesetz
 muschelfischer
 muschelfleisch
 museumswächter
+musikerporträt
 musikgeschmack
 musikindustrie
 musikprofessor
@@ -3606,6 +4081,7 @@ muskelgeflecht
 musketenschuss
 musterbeispiel
 musterexemplar
+mutter courage
 muttersöhnchen
 myelencephalon
 mylonitisieren
@@ -3618,16 +4094,19 @@ mädchenbildung
 mädchengestalt
 mädchenschwarm
 mängelexemplar
+männerkleidung
 männerpullover
 männertoilette
 märchengestalt
 märzgefallener
 märzrevolution
+ménage à trois
 ménage-à-trois
 möbelhändlerin
 möbelindustrie
 möbeltransport
 möglicherweise
+mögliches wort
 mühlradstempel
 müller-thurgau
 müllerstochter
@@ -3640,6 +4119,7 @@ müllverwertung
 münstermaifeld
 münzverbrechen
 nabenschaltung
+nach adam ries
 nachalarmieren
 nachbarsprache
 nachbarviertel
@@ -3660,12 +4140,14 @@ nachmittäglich
 nachschlagwerk
 nachschleichen
 nachschnüffeln
+nachschublager
 nachspionieren
 nachsprechtest
 nachtschilling
 nachtschwester
 nachtschwärmer
 nachtwanderung
+nachtwandlerin
 nachtwächterin
 nachverfolgung
 nachverhandeln
@@ -3684,6 +4166,7 @@ nahrungszufuhr
 nahverkehrszug
 namenforschung
 namensforscher
+namenstagskind
 namensträgerin
 namensänderung
 namentradition
@@ -3692,6 +4175,7 @@ narrenfreiheit
 nasalkonsonant
 nasenbeinbruch
 nasenkrankheit
+nass schwitzen
 nassgeschwitzt
 nationalarchiv
 nationalflagge
@@ -3699,6 +4183,7 @@ nationalheldin
 nationalkeeper
 nationalmuseum
 nationalstraße
+native speaker
 natriumchlorid
 natriumchlorit
 naturalisieren
@@ -3706,17 +4191,21 @@ naturalistisch
 naturfarbstoff
 naturkonstante
 naturphilosoph
+naumburger dom
 nazi-raubkunst
 nazifreundlich
 neapolitanerin
 neapolitanisch
+nebeltröpfchen
 nebelverhangen
+neben-, neben-
 nebenbedeutung
 nebenbemerkung
 nebenberuflich
 nebentätigkeit
 nebenverdienst
 neckarsteinach
+nekro-, nekro-
 neodarwinismus
 neonatologisch
 nettoeinkommen
@@ -3728,13 +4217,17 @@ neuanschaffung
 neubabylonisch
 neubearbeitung
 neubrandenburg
+neuendettelsau
 neuerscheinung
 neuhochdeutsch
 neujahrsbesuch
 neujahrsmorgen
 neujahrswunsch
+neumarkter weg
+neununddreißig
 neunundneunzig
 neunundsechzig
+neunundzwanzig
 neunzehnjährig
 neunzigerjahre
 neunzigminütig
@@ -3742,10 +4235,12 @@ neuplatonismus
 neuraltherapie
 neurastheniker
 neurasthenisch
+neuro-, neuro-
 neurochirurgin
 neuschneemenge
 neuseeländerin
 neuseeländisch
+neusiedler see
 neutralisation
 neutralisieren
 neutronenbombe
@@ -3754,6 +4249,7 @@ neutronenstern
 nibelungenlied
 nicaraguanerin
 nicaraguanisch
+nicht-, nicht-
 nicht-muslimin
 nichtbeachtung
 nichterfüllung
@@ -3762,15 +4258,21 @@ nichtschwimmer
 nichtsozialist
 nichttrinkerin
 nickelallergie
+nie und nimmer
 niederbayrisch
+niederfrequenz
 niederheimbach
 niederklettern
+niederknüppeln
 niederländerin
 niederländisch
+niederprasseln
+niederrauschen
 niederschießen
 niederschlagen
 niederschreien
 niedersorbisch
+niederspannung
 niederstrecken
 niedertrampeln
 niederträchtig
@@ -3784,8 +4286,11 @@ nikolausbrauch
 nikolauskirche
 nikolauskostüm
 nikotinsüchtig
+nille knabbern
 nillenlutscher
 nivelliergerät
+nomen actionis
+nomen proprium
 nominalflexion
 nominalisieren
 nominalistisch
@@ -3795,10 +4300,13 @@ nonnenfürzchen
 nordburgenland
 nordeuropäerin
 nordeuropäisch
+nordfrankreich
 nordgermanisch
+nordic walking
 nordkoreanerin
 nordkoreanisch
 nordmazedonien
+nordmazedonier
 nordostpassage
 nordwestafrika
 normabweichung
@@ -3807,6 +4315,7 @@ normalenvektor
 normalisierung
 normalspurbahn
 normannenkönig
+north carolina
 nostrifikation
 nostrifizieren
 notbeleuchtung
@@ -3817,12 +4326,15 @@ notschlachtung
 novemberhälfte
 novembermorgen
 novitätseffekt
+np-vollständig
 nukleosynthese
 null-allomorph
 nullkommajosef
+numismatikerin
 nummernstempel
 nussschokolade
 nutznießerisch
+nykto-, nykto-
 nymphensittich
 näherungsweise
 nährstoffreich
@@ -3844,18 +4356,27 @@ oberstleutnant
 oberstudienrat
 oberwiesenthal
 oberösterreich
+obliquer kasus
 obstproduktion
 obstschaumwein
 octadecansäure
+oderhochwasser
+odont-, odont-
 offensichtlich
+offensivtaktik
 offizialdelikt
 offiziercasino
 offizierkasino
+offiziersdegen
 offiziersmesse
+ohne [[mit#mit
+ohne unterlass
 ohrenbetäubend
 oktaederstumpf
 oktoberausgabe
+oktoberdrittel
 oldtimermuseum
+oligo-, oligo-
 olympiastadion
 olympiazweiter
 one-hit-wonder
@@ -3868,14 +4389,17 @@ operationsraum
 operationssaal
 operationsziel
 opernkomponist
+ophio-, ophio-
 ophthalmiatrie
 ophthalmiatrik
 ophthalmologie
 ophthalmologin
 opiumraucherin
+optik schieben
 optionsanleihe
 orangeköpfchen
 orbitalknochen
+orchestermusik
 orchesterstück
 orchestrierung
 ordenspriester
@@ -3886,10 +4410,12 @@ organspenderin
 orgelspielerin
 originalrezept
 ornithologisch
+ortho-, ortho-
 orthogonalität
 orthographisch
 ortsbestimmung
 ortsordinarius
+os scaphoideum
 oscarnominiert
 ostafrikanisch
 ostbrandenburg
@@ -3908,6 +4434,7 @@ paketzusteller
 palermitanisch
 palmprozession
 palustrinsäure
+paläo-, paläo-
 pangermanismus
 panhellenismus
 pannenhelferin
@@ -3926,6 +4453,7 @@ papierstreifen
 pappbilderbuch
 pappelwäldchen
 pappnschlosser
+par excellence
 parabolantenne
 parabolspiegel
 paradebeispiel
@@ -3978,12 +4506,16 @@ passiergewicht
 passionsfrucht
 pasteurisation
 pasteurisieren
+patentanspruch
+patentfreigabe
 pathogenetisch
 patronenfilter
+patronentasche
 patrouillieren
 pausenaufsicht
 peloponnesisch
 pensionsgrenze
+penta-, penta-
 perchtoldsdorf
 pergamon-altar
 pergamonmuseum
@@ -4005,6 +4537,7 @@ pertinenzdativ
 perückenmacher
 perückenträger
 pestilenzartig
+peter-i.-insel
 petroleumlampe
 petroleumlicht
 pfadfinderpost
@@ -4042,6 +4575,7 @@ phantomschmerz
 pharmakognosie
 pharmazeutisch
 phasenspektrum
+phatischer akt
 phenylmethanol
 philharmoniker
 philipperbrief
@@ -4051,21 +4585,27 @@ philosophieren
 phlegmatikerin
 phoneminventar
 phonemspaltung
+phono-, phono-
 phosphatgehalt
 phosphathaltig
+photo-, photo-
 photo-shooting
 photooxidation
 phrasenschwein
+phren-, phren-
 phylogenetisch
 physiklehrerin
 physiognomiker
 physiognomisch
 physiotherapie
+phyto-, phyto-
 phänomenologie
+phänomenologin
 pianospielerin
 pidgin-sprache
 pilzvergiftung
 pinkifizierung
+pinot liébault
 piperidinsäure
 piratenkapitän
 pistolenschuss
@@ -4114,6 +4654,7 @@ polyisobutylen
 polymorphismus
 polyphyletisch
 polytheistisch
+pommes macaire
 ponderabilität
 pornographisch
 port-au-prince
@@ -4138,6 +4679,7 @@ postverbindung
 postverwaltung
 potenzexponent
 prachtexemplar
+prager schmock
 pragmatisieren
 praxissemester
 predigerkirche
@@ -4146,6 +4688,7 @@ preisabsprache
 preispolitisch
 preistreiberei
 preisvergleich
+premier league
 premierenfeier
 pressefotograf
 pressefreiheit
@@ -4154,13 +4697,17 @@ pressesprecher
 prestigeerfolg
 pridnestrowien
 priesterschaft
+primaballerina
 pritschenwagen
 privatdozentin
+private equity
 privateigentum
+privatfahrzeug
 privatflugzeug
 privatgespräch
 privathaushalt
 privatisierung
+privatlehrerin
 privatquartier
 privatsammlung
 privatvermögen
@@ -4180,6 +4727,7 @@ programmierbar
 programmierung
 progressivität
 projektdossier
+projektmanager
 projektpartner
 prokrustesbett
 promenadologie
@@ -4199,7 +4747,9 @@ prostituierter
 prosyllogismus
 protestantisch
 protestiererin
+proto-, proto-
 protoalbanisch
+protokollantin
 protokollieren
 protonenstrahl
 proviantbeutel
@@ -4225,19 +4775,26 @@ präsupposition
 präteritumform
 präventivkrieg
 prüfungstermin
+pseud-, pseud-
 pseudogetreide
 pseudopartizip
+psych-, psych-
 psychologismus
 psychopathisch
 psychotherapie
 psychothriller
+public affairs
+public viewing
 publikumsjoker
 pulitzer-preis
+punkteausbeute
 punktionisator
 punktrichterin
+puppenkleidung
 purpurschnecke
 purpurschwalbe
 putenschnitzel
+pyramidisieren
 pythonschlange
 pädolinguistik
 pänultimaregel
@@ -4245,17 +4802,23 @@ quadratklafter
 quadratschädel
 quadratsekunde
 quadrillionste
+quaestio facti
+quaestio iuris
+quaestio juris
 qualitätsopfer
 qualitätsstufe
 quantentheorie
 quantifizieren
+quark mit soße
 quartalssäufer
+quasi-, quasi-
 quasistationär
 quasselstrippe
 quastenflosser
 quattrocentist
 quecksilberkur
 quellensprache
+quercus cerris
 quereinsteiger
 quetschkommode
 quiché-sprache
@@ -4265,6 +4828,7 @@ rachenabstrich
 radarkontrolle
 radetzkymarsch
 radikalisieren
+radio-, radio-
 radioaktivität
 radioansprache
 radiointerview
@@ -4276,12 +4840,15 @@ raketenangriff
 raketenantrieb
 raketenwarnung
 rallyefahrerin
+rang und namen
 rangierbahnhof
+rasenhängebank
 rassenkonflikt
 rassenkundlich
 rassentrennung
 rasterfahndung
 rating-agentur
+rationale zahl
 rauchabschnitt
 raucherbereich
 rauchfangtaube
@@ -4309,6 +4876,7 @@ rechnungswesen
 rechtfertigung
 rechthaberisch
 rechtmäßigkeit
+rechts stehend
 rechtsabbieger
 rechtsanspruch
 rechtsanwältin
@@ -4316,9 +4884,11 @@ rechtsausleger
 rechtschreiben
 rechtsexpertin
 rechtsgeschäft
+rechtsgespräch
 rechtshandlung
 rechtshänderin
 rechtsnational
+rechtspflegerg
 rechtspopulist
 rechtsprechung
 rechtsradikale
@@ -4336,6 +4906,7 @@ reformgegnerin
 reformulierung
 refraktärphase
 regelauslegung
+regelbetreuung
 regelmäßigkeit
 regenbogenbaby
 regenbogenhaut
@@ -4399,11 +4970,28 @@ repetiertreppe
 repristinieren
 repräsentieren
 reptilienfonds
+republik benin
+republik chile
+republik china
+republik ghana
+republik haiti
+republik jemen
+republik kenia
+republik kongo
+republik korea
+republik malta
+republik nauru
+republik niger
+republik palau
+republik polen
+republik sudan
 republikanisch
 republikflucht
 reservewährung
 respektsperson
 respiratorisch
+retro-, retro-
+rettungsaktion
 rettungsdienst
 rettungsschirm
 reversibilität
@@ -4421,6 +5009,7 @@ rheinfränkisch
 rheinkilometer
 rheinpromenade
 rheinschwimmen
+rhetischer akt
 rhetorenschule
 rhinogradentia
 rhythmusgruppe
@@ -4429,6 +5018,7 @@ richtigstellen
 riesenschlange
 rinderbouillon
 rinderwahnsinn
+rio de janeiro
 risikosportler
 ritterlichkeit
 ritwan-sprache
@@ -4448,11 +5038,15 @@ rollerfahrerin
 rollstuhlfahrt
 rollstuhlrampe
 roro-verfahren
+rosch haschana
 rosenzüchterin
 rosettenförmig
 rosstäuscherei
 rostzerfressen
+rot an der rot
 rotationsachse
+rote mordwanze
+roter riesling
 rotfußröhrling
 rothalstaucher
 rotlichtmilieu
@@ -4510,20 +5104,26 @@ sachsenspiegel
 sachunterricht
 sachverständig
 sachwörterbuch
+saint george’s
 saisonarbeiter
 sakramentshaus
 salatschleuder
 salpeterhaltig
+salt lake city
 salzburgerisch
 salzproduktion
 sammlerausweis
 samstagmittags
 samstagmorgens
 samtfußrübling
+san bernardino
 sanierungsplan
 sanitärartikel
 sanitärtechnik
 sanitätsdienst
+sankt augustin
+sankt gallener
+sankt gallerin
 sankt-gallener
 sankt-gallerin
 santoku-messer
@@ -4599,6 +5199,7 @@ schelesnogorsk
 schematisieren
 scherbenhaufen
 scherenschnitt
+scheußlichkeit
 schichtbetrieb
 schichtlüftung
 schichtwechsel
@@ -4624,6 +5225,7 @@ schinkenbeutel
 schintoistisch
 schismatikerin
 schispringerin
+schiz-, schiz-
 schlachtabfall
 schlachtflotte
 schlachtmesser
@@ -4644,6 +5246,7 @@ schlauchfilter
 schlauchförmig
 schlechtigkeit
 schlechtmachen
+schlechtrassig
 schlechtwetter
 schleichhandel
 schleifenfeder
@@ -4660,6 +5263,7 @@ schlosskapelle
 schluckimpfung
 schlummertrunk
 schlupfstiefel
+schluss machen
 schluss-strich
 schlussapplaus
 schlussbericht
@@ -4678,6 +5282,9 @@ schlüsselrolle
 schlüsselroman
 schlüsselzeuge
 schmalspurbahn
+schmeichelrede
+schmelzprozess
+schmelzvorgang
 schmerzensgeld
 schmerzensmann
 schmerzgebrüll
@@ -4693,14 +5300,18 @@ schmuttermayer
 schmächtigkeit
 schnabelförmig
 schnaittenbach
+schnallenschuh
 schnapsbrenner
 schnapsdrossel
 schnapsflasche
 schnapspraline
 schnapstrinker
 schneckenartig
+schneckengabel
 schneckenplage
 schneckentempo
+schneckenzange
+schneebehangen
 schneeerzeuger
 schneefahrzeug
 schneegestöber
@@ -4758,6 +5369,7 @@ schrumpffutter
 schuhschachtel
 schuhverkäufer
 schulabbrecher
+schulabmeldung
 schulabschluss
 schulbegleiter
 schulbuchmäßig
@@ -4786,13 +5398,18 @@ schutzkleidung
 schutzmaßnahme
 schutzpatronin
 schutzstreifen
+schwaches verb
 schwachmatiker
 schwadronieren
+schwadronschef
+schwamm drüber
 schwanengesang
 schwartenmagen
 schwarzblitzer
 schwarzbrenner
 schwarzbärfell
+schwarzes loch
+schwarzes meer
 schwarzfeldrig
 schwarzhumorig
 schwarzhändler
@@ -4825,8 +5442,10 @@ schweißgebadet
 schweißtropfen
 schwentinental
 schwerstarbeit
+schwertgeklirr
 schwertkämpfer
 schwertmeister
+schwertscheide
 schwertschmied
 schwiegervater
 schwimmbeutler
@@ -4854,6 +5473,7 @@ schützenverein
 schützerknoten
 sciencefiction
 sechserpackung
+sechsertragerl
 sechsmonatlich
 sechsprozentig
 sechssemestrig
@@ -4866,17 +5486,21 @@ sechzigerjahre
 sechzigminütig
 sechzigpfündig
 secondhandshop
+secret service
 sedimentierung
 sedimentologie
 seegerichtshof
 seehundbestand
 seelenklempner
 segelfliegerin
+segen bringend
 segmentstempel
 sehbehinderter
+sehenden auges
 seidenkrawatte
 seifensiederin
 seilbahnstütze
+seine majestät
 seinesgleichen
 seismografisch
 seitenscheitel
@@ -4889,6 +5513,8 @@ sekundenschlaf
 sekundärnutzen
 sekundärtugend
 sekundärumlaut
+selbst ernannt
+selbst gemacht
 selbstauslöser
 selbstbestimmt
 selbstgefällig
@@ -5004,6 +5630,7 @@ sklaventreiber
 slalomläuferin
 slumbewohnerin
 snookerspieler
+so um den dreh
 softwarefehler
 softwaresystem
 softwaretesten
@@ -5028,6 +5655,7 @@ sondergleichen
 sonderpädagoge
 sonderregelung
 sonderstandort
+sondervermögen
 sonettenzyklus
 sonnabendabend
 sonnabendnacht
@@ -5040,22 +5668,28 @@ sonntagsbraten
 sonntagsfahrer
 sonntagsschule
 sorgeerklärung
+sos-kinderdorf
 soteriologisch
 soundgenerator
+south carolina
 sowjetbürgerin
 sowjetisierung
 sowjetrepublik
 sowjetsoldatin
 sozialarbeiter
 sozialdemokrat
+soziale arbeit
 sozialkritiker
 sozialpädagoge
 sozialreformer
 sozialstruktur
+sozialutopisch
 soziokulturell
 spagettiträger
+spaghettizange
 spaltschlüpfer
 spanienfeldzug
+spanische wand
 spanischlehrer
 spargelstecher
 speichellecker
@@ -5093,8 +5727,10 @@ spielfilmdebüt
 spielforschung
 spielfähigkeit
 spielförderung
+spielgefährtin
 spielgeschehen
 spielinteresse
+spielkameradin
 spielkategorie
 spielklassiker
 spielkompetenz
@@ -5104,6 +5740,7 @@ spielpartnerin
 spielpotential
 spielpotenzial
 spielpädagogik
+spielpädagogin
 spielschöpfung
 spielsituation
 spielstrategie
@@ -5119,12 +5756,15 @@ spielvorschlag
 spießrutenlauf
 spindelstrauch
 spionagedrohne
+spiritus asper
+spiritus lenis
 spitzenmanager
 spitzenverband
 splitterbunker
 splittergruppe
 splitterschutz
 spontansprache
+sporo-, sporo-
 sporterziehung
 sportkameradin
 sportprofessor
@@ -5182,10 +5822,12 @@ spritverbrauch
 spritzgussteil
 spruchweisheit
 sprungrevision
+spät gebärende
 spätaussiedler
 spätlateinisch
 spätnachmittag
 spökenkiekerei
+ss-tätowierung
 staatenbildend
 staatenverbund
 staatsanwältin
@@ -5194,6 +5836,7 @@ staatsbürgerin
 staatsdienerin
 staatseigentum
 staatsfeiertag
+staatsgeschäft
 staatsgründung
 staatshaushalt
 staatsrechtler
@@ -5237,13 +5880,17 @@ stardirigentin
 startbedingung
 starterlaubnis
 startschwimmer
+station machen
 stationsärztin
 staubexplosion
 steckenbleiben
 stecknadelkopf
 steckverbinder
 steganographie
+stehen bleiben
+stehendes heer
 stehplatzkarte
+steif und fest
 steindruckerei
 steinfischerei
 steinpilzsuppe
@@ -5255,12 +5902,14 @@ stellenangebot
 stellenanzeige
 stellungskampf
 stellvertreter
+steno-, steno-
 stenobleistift
 stenographisch
 stenokontorist
 stephanskirche
 sternhagelvoll
 sternhyazinthe
+stettiner haff
 steuerabkommen
 steuerbescheid
 steuereinnahme
@@ -5277,12 +5926,17 @@ stichwortartig
 stichwortgeber
 stichwortliste
 stickstoffatom
+stief-, stief-
 stiefelabdruck
 stiefschwester
 stierkämpferin
 stigmatisation
+stigmatisieren
+stille reserve
+stilles wasser
 stillschweigen
 stilwörterbuch
+stimmungskrise
 stinkwacholder
 stoffserviette
 stoßionisation
@@ -5333,6 +5987,7 @@ stromsparmodus
 stromverbrauch
 stromversorger
 strukturformel
+strukturierung
 strukturwandel
 strumpfsockert
 strömungslehre
@@ -5355,6 +6010,8 @@ suburbikarisch
 suchtabteilung
 sudetendeutsch
 suggestivfrage
+summa summarum
+super-, super-
 superbowl-ring
 supererogation
 superspreading
@@ -5363,6 +6020,7 @@ suppenschüssel
 suppletiv-form
 suppletivismus
 supplierstunde
+supra-, supra-
 suprafluidität
 surfunterricht
 surrealistisch
@@ -5382,6 +6040,7 @@ säbelschnäbler
 säbelzahntiger
 säkularisation
 säkularisieren
+säuferwahnsinn
 säuglingsalter
 säulenbasilika
 säulendiagramm
@@ -5404,11 +6063,20 @@ tabellenerster
 tabellenförmig
 tabellenführer
 tabellenkeller
+tabellenspalte
 tabellenspitze
 tabletcomputer
 tabuverletzung
+tacheles reden
+tacho-, tacho-
+tachy-, tachy-
 taferlklassler
+tag der arbeit
+tag des herren
+tagaus, tagein
 tagebuchauszug
+tagein, tagaus
+tagesgeschehen
 tageskilometer
 tagestouristin
 tagesverbrauch
@@ -5425,8 +6093,10 @@ tarifautonomie
 taschenbillard
 taschenrechner
 taschenspiegel
+taschenspieler
 tatverdächtige
 tauchbootbrief
+tauchschülerin
 tausendpfündig
 tausendundeins
 taxistandplatz
@@ -5451,6 +6121,7 @@ temporalangabe
 temporaldeixis
 temporallappen
 tendenzbetrieb
+tendo achillis
 tendovaginitis
 tennislehrerin
 tennisschläger
@@ -5464,6 +6135,7 @@ terrassenpunkt
 terroranschlag
 tetanusimpfung
 tetanusspritze
+tetra-, tetra-
 tetraethylblei
 teufelsanbeter
 teufelsfenster
@@ -5481,10 +6153,13 @@ theoriefindung
 theorieprüfung
 therapiekosten
 therapiestunde
+therm-, therm-
 thermenfenster
 thermosflasche
+thermoskanne{{
 thessalonicher
 thyreotoxikose
+thüringer wald
 thüringerkönig
 ticketschalter
 tiefenstruktur
@@ -5501,6 +6176,7 @@ tischmülleimer
 tischnachbarin
 tischschublade
 titularbischof
+tnt-äquivalent
 tochtersprache
 todesnachricht
 todessehnsucht
@@ -5516,6 +6192,8 @@ torwarttrainer
 totenraststein
 totenverehrung
 totenwäscherin
+tour de france
+tour d’horizon
 touristenfalle
 touristenmasse
 touristenstrom
@@ -5528,6 +6206,7 @@ trainingsanzug
 trainingsfahrt
 trainingsgerät
 trainingslager
+trans-, trans-
 transbaikalien
 transferwissen
 transfettsäure
@@ -5537,6 +6216,7 @@ transfundieren
 transitbereich
 transitstrecke
 transkaukasien
+transkludieren
 transkribieren
 transmembranös
 transnistrisch
@@ -5568,6 +6248,7 @@ trickdiebstahl
 trickskilaufen
 trinitrotoluol
 trippelschritt
+trivialisieren
 trochtelfingen
 trockenklosett
 trockenperiode
@@ -5580,6 +6261,7 @@ trägerflugzeug
 trägermaterial
 tränengasbombe
 tröpfchenweise
+trübsal blasen
 trüffelpastete
 trüffelschwein
 trümmerfraktur
@@ -5593,7 +6275,9 @@ turingmaschine
 turmspringerin
 turnierspieler
 turnierverlauf
+turracher höhe
 turteltäubchen
+tv-spendengala
 typischerweise
 tätigkeitsfeld
 tätigkeitsform
@@ -5601,14 +6285,21 @@ tätigkeitswort
 törggelekeller
 törggelepartie
 tötungsversuch
+türein, türaus
+tüv-plakette{{
 u-bahn-station
 uhrenindustrie
 uhrmacherladen
 ulanenregiment
+ultra-, ultra-
+um euertwillen
+um euretwillen
+um ihretwillen
 umetikettieren
 umgangssprache
 umgänglichkeit
 umherflanieren
+umherschleppen
 umherschweifen
 umherspazieren
 umherstreichen
@@ -5616,6 +6307,7 @@ umherstrolchen
 umkehrfunktion
 umkleidekabine
 umlagebescheid
+umm al-qaiwain
 umorganisieren
 umsatzrückgang
 umschlageplatz
@@ -5635,15 +6327,19 @@ unaufgefordert
 unausgeglichen
 unausweichlich
 unbeabsichtigt
+unbefangenheit
 unbefriedigend
 unbeholfenheit
 unbürokratisch
 undeklinierbar
 understatement
 undurchsichtig
+unentschlossen
 unentschuldbar
+unerfahrenheit
 unerschöpflich
 unersprießlich
+unfallfahrerin
 unfallfahrzeug
 unfallflüchtig
 ungebildetheit
@@ -5670,6 +6366,7 @@ unsichtbarkeit
 unsittlichkeit
 unsternbedroht
 unsystematisch
+unter-, unter-
 unterbelichten
 untereichsfeld
 untererfassung
@@ -5708,6 +6405,7 @@ unveräußerlich
 unvorhersehbar
 unwiderruflich
 unwiederholbar
+unwirklichkeit
 unwirtlichkeit
 unzerbrechlich
 unzertrennlich
@@ -5719,9 +6417,13 @@ urknalltheorie
 urlaubsflieger
 urteilsvollzug
 urväterhausrat
+urwalddickicht
+us-bundesstaat
+us-marinebasis
 vaginalverkehr
 valenzelektron
 valgusstellung
+van der bellen
 vanillekipferl
 vanillenzucker
 vanillepudding
@@ -5736,6 +6438,7 @@ veilchenstrauß
 velozipedistin
 verabschiedung
 verachtenswert
+verachtfachung
 verandafenster
 veranstalterin
 verantwortlich
@@ -5748,6 +6451,7 @@ verbandsleiter
 verbandsligist
 verbandsstelle
 verberuflichen
+verbildlichung
 verbindungstür
 verblendziegel
 verbrecherjagd
@@ -5764,6 +6468,7 @@ vereinstrainer
 verfrühstücken
 vergaloppieren
 vergeblichkeit
+vergelten gott
 vergewaltigung
 vergleichssatz
 vergleichstest
@@ -5801,6 +6506,7 @@ verleumderisch
 verlobungsring
 vermisstenfall
 vermögensteuer
+vernageln sein
 vernakularname
 vernehmlassung
 vernunftbegabt
@@ -5817,9 +6523,11 @@ versechsfachen
 versetzungsart
 verspekulieren
 verstaatlichen
+verstandeswelt
 verständnislos
 versuchsballon
 versuchsgruppe
+versuchshalber
 versuchsleiter
 versuchsperson
 versuchsschule
@@ -5859,12 +6567,16 @@ vierständerbau
 vierteldrehung
 viertelmillion
 viertelstündig
+vierunddreißig
 vierundfünfzig
 vierundvierzig
 vierundzwanzig
 vierzehnjährig
 vierzigerjahre
 vierzigminütig
+viola da gamba
+viole da gamba
+viraler vektor
 virenverseucht
 virtualisieren
 virushepatitis
@@ -5875,11 +6587,13 @@ viruspneumonie
 viscerocranium
 visegrád-staat
 visualisierung
+vitis vinifera
 vizegrafschaft
 vogelknöterich
 volksbefragung
 volksbrockhaus
 volksdeutscher
+volksempfinden
 volksempfänger
 volksentscheid
 volkserzählung
@@ -5895,6 +6609,12 @@ vollkommenheit
 vollumfänglich
 vollversorgung
 vollzeitstelle
+vom tisch sein
+von amts wegen
+von oben herab
+von vornherein
+vor-ort-termin
+voran-, voran-
 vorankündigung
 voranschreiten
 vorarlbergerin
@@ -5921,14 +6641,18 @@ vormarschieren
 vormittagsruhe
 vormittagszeit
 vornüberbeugen
+vorpostenkette
 vorreiterrolle
+vorrundenspiel
 vorschullehrer
 vorschulsystem
+vorstadtkneipe
 vorstandschaft
 vorstandsetage
 vorstandskreis
 vorsteherdrüse
 vorverurteilen
+vorzeigeobjekt
 vorzuzeigendes
 votationsgrund
 votationsmotiv
@@ -5970,6 +6694,7 @@ wahrheitsserum
 wahrheitssuche
 wahrheitstafel
 wahrscheinlich
+waldarbeiterin
 waldbesitzerin
 waldbrandstufe
 waldbrettspiel
@@ -5992,6 +6717,7 @@ wartungsfehler
 wartungskosten
 waschhandschuh
 washingtonerin
+wasser marsch!
 wasserballerin
 wasserbehälter
 wassereinbruch
@@ -6016,10 +6742,12 @@ wechselschritt
 wechselwirkung
 wegdiskutieren
 weggaloppieren
+wegmarschieren
 wegwerfflasche
 wegwerfpackung
 wehrflüchtling
 wehrhaftigkeit
+weicher gaumen
 weidenkätzchen
 weihnachtsbaum
 weihnachtsdeko
@@ -6042,6 +6770,7 @@ weinsteinsäure
 weinverkostung
 weinwirtschaft
 weisungsbefugt
+weit hergeholt
 weiterarbeiten
 weiterbelasten
 weiterbestehen
@@ -6064,6 +6793,9 @@ weiterwursteln
 weitspringerin
 weitverbreitet
 weizenbrötchen
+weiß der geier
+weißer sonntag
+weißer trüffel
 weißhandgibbon
 weißruthenisch
 weißwandreifen
@@ -6085,8 +6817,10 @@ weltpostverein
 weltraumfahrer
 weltrevolution
 weltumsegelung
+weltverachtung
 weltwirtschaft
 werbebotschaft
+werbefernsehen
 werbepostkarte
 werbeschreiben
 werksfeuerwehr
@@ -6101,10 +6835,12 @@ wertstoffbörse
 west-nil-virus
 westaustralien
 westberlinerin
+westentaschen-
 westernkomödie
 westerwälderin
 westeuropäerin
 westeuropäisch
+westfrankreich
 westgermanisch
 westgotenkönig
 westjordanland
@@ -6122,9 +6858,12 @@ whiskeyflasche
 whistleblowing
 wickelfalzrohr
 wickramasinghe
+wider erwarten
+wider-, wider-
 widernatürlich
 widerrechtlich
 widerstandslos
+wie auch schon
 wiederaufbauen
 wiederaufnahme
 wiederbelebung
@@ -6133,8 +6872,11 @@ wiedererkennen
 wiedererlangen
 wiedererzählen
 wiedereröffnen
+wiedergewinnen
 wienaufenthalt
+wiener neudorf
 wieseltäubling
+wigners freund
 wikingerschiff
 wikipedianerin
 wikiwörterbuch
@@ -6168,6 +6910,7 @@ wirkungsstätte
 wirkwiderstand
 wirtinnen-vers
 wirtschaftlich
+wirtshaustisch
 wissenschafter
 witterungsfest
 witterungsverb
@@ -6175,6 +6918,7 @@ witze-erzähler
 wochenendfahrt
 wochenfürsorge
 wochenhoroskop
+wohl bekommen!
 wohlfühlfaktor
 wohlstandsmüll
 wohngesundheit
@@ -6187,6 +6931,7 @@ wohnzimmerwand
 wolfratshausen
 wolgadeutscher
 worcestersauce
+world wide web
 wortartwechsel
 wortdefinition
 wortgeographie
@@ -6212,10 +6957,12 @@ wärmeleitpaste
 wärmetransport
 wäschesprenger
 wäschetrockner
+wörtliche rede
 würdelosigkeit
 würdenträgerin
 würstchenstand
 wüstenbewohner
+xanth-, xanth-
 xanthinoxidase
 xanthinoxydase
 xanthogensäure
@@ -6249,6 +6996,7 @@ zeichensetzung
 zeichensprache
 zeichentheorie
 zeichenutensil
+zeigerstellung
 zeilenbauweise
 zeitarbeiterin
 zeitdilatation
@@ -6261,6 +7009,7 @@ zeitumstellung
 zeitungskäufer
 zeitungspapier
 zeitungsspalte
+zeitungsstapel
 zeitvergeudung
 zellophanhülle
 zellulosefaser
@@ -6294,12 +7043,17 @@ zimmerkollegin
 zimmerrechnung
 zinkproduktion
 zinkvergiftung
+zinssenkeintrg
 zirkelleiterin
 zirkelmitglied
 zirkumposition
 zirkusartistin
 zirkusdirektor
+zirkusprogramm
+zirkusreiterin
 zitronenfalter
+zitronenfarben
+zitronenfarbig
 zitronenkuchen
 zitronenpresse
 zitronenschale
@@ -6309,6 +7063,13 @@ zollverwaltung
 zoogeografisch
 zootechnikerin
 zornesausbruch
+zu abend essen
+zu guter letzt
+zu kurz kommen
+zu neige gehen
+zu sich kommen
+zu tode kommen
+zu wort kommen
 zuallerunterst
 zuchtlosigkeit
 zuckerbäckerin
@@ -6318,24 +7079,54 @@ zufallsversuch
 zufluchtshafen
 zufriedengeben
 zugbegleiterin
+zugrunde legen
 zukunftsvision
 zukunftweisend
+zulänglichkeit
+zum saufüttern
 zungenstellung
 zunichtemachen
 zupfinstrument
+zurechtbasteln
+zurechtbringen
+zurechtdichten
+zurechtstutzen
+zurechtzimmern
 zurückbegehren
 zurückbehalten
 zurückbekommen
 zurückbeordern
+zurückbesinnen
+zurückbezahlen
+zurückbeziehen
 zurückblättern
+zurückdatieren
+zurückerbitten
 zurückerhalten
 zurückerinnern
+zurückerlangen
+zurückerwarten
 zurückflüchten
 zurückgelangen
 zurückgeleiten
 zurückgewinnen
+zurückrutschen
+zurückschaffen
+zurückschallen
+zurückschalten
 zurückschicken
+zurückschieben
 zurückschießen
+zurückschlagen
+zurückschreien
+zurückspiegeln
+zurückspringen
+zurückstrahlen
+zurückstreifen
+zurücktauschen
+zurückverlegen
+zurückwechseln
+zurückwünschen
 zusammenarbeit
 zusammenbacken
 zusammenballen
@@ -6402,6 +7193,8 @@ zuschauerstark
 zuschlagsmarke
 zuschussantrag
 zustandspassiv
+zutage fördern
+zuteilungsreif
 zutrittsverbot
 zuversichtlich
 zuwandererkind
@@ -6415,6 +7208,7 @@ zwangsumtausch
 zwanzigerjahre
 zwanzigminütig
 zwanzigstündig
+zweckmäßigkeit
 zweckpessimist
 zweibettzimmer
 zweideutigkeit
@@ -6427,6 +7221,7 @@ zweikampfquote
 zweimarkschein
 zweisilbigkeit
 zweiständerbau
+zweiter klasse
 zweitinfektion
 zweitklässerin
 zweitkorrektor
@@ -6450,6 +7245,9 @@ zwischenparken
 zwischensaison
 zwölfprozentig
 zyankalikapsel
+zyano-, zyano-
+zyklenbatterie
+zyklo-, zyklo-
 zylinderförmig
 zylinderschach
 zytodiagnostik
@@ -6457,15 +7255,23 @@ zähflüssigkeit
 zählerregister
 zügellosigkeit
 zündtemperatur
+à la dieppoise
+à la diplomate
+à la française
+à l’alsacienne
+ägäisches meer
 ärztepräsident
+äußerstenfalls
 öffentlichkeit
 ökotrophologie
 österreicherin
 österreichisch
 österreichweit
+östliche länge
 überanstrengen
 überdispersion
 übereinstimmen
+überfallsartig
 überfrankieren
 übergangsfrist
 übergangsweise
