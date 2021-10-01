@@ -41,7 +41,9 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def find_solutions(word: str) -> set[str]:
+async def find_solutions(
+    word: str, ignore: Iterable[str] = tuple()
+) -> set[str]:
     """Find words that have only one different letter."""
     solutions: set[str] = set()
 
@@ -49,6 +51,8 @@ async def find_solutions(word: str) -> set[str]:
 
     if word_len == 0:
         return solutions
+
+    ignore = (*ignore, word)
 
     for sol_len in (word_len - 1, word_len, word_len + 1):
         file_name = f"words_de_basic/{sol_len}"
@@ -61,7 +65,7 @@ async def find_solutions(word: str) -> set[str]:
         solutions.update(
             test_word
             for test_word in get_words(file_name)
-            if distance(word, test_word) == 1
+            if test_word not in ignore and distance(word, test_word) == 1
         )
 
     return solutions
@@ -76,14 +80,12 @@ async def get_ranked_solutions(
     ranked_sols: list[tuple[int, str]] = [
         (
             len(
-                tuple(
-                    _s for _s in await find_solutions(sol) if _s not in before
-                )
+                tuple(_s for _s in await find_solutions(sol, (*before, word)))
             ),
             sol,
         )
         for sol in sols
-        if sol not in before
+        if sol != word and sol not in before
     ]
 
     ranked_sols.sort(reverse=True)
@@ -101,15 +103,15 @@ class WordGameHelper(BaseRequestHandler):
 
         before_str = self.get_query_argument("before", default="")
 
-        before = set(
+        before = [
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
-        )
+        ]
 
-        if len(word) == 0:
+        if len(word) == 0 and word not in before:
             new_before = before
         else:
             # get the new_before as set with only unique words
-            new_before = {*before, word}
+            new_before = [*before, word]
 
         await self.render(
             "pages/word_game_helper.html",
