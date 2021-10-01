@@ -44,6 +44,8 @@
         <select class="small-input" name="lang">
             <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
             <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
+            <option value="de_basic_only_a-z" {% if lang == "de_basic_only_a-z" %} selected {% end %}>Deutsch (Grundformen) ohne Umlaute</option>
+            <option value="de_basic" {% if lang == "de_basic" %} selected {% end %}>Deutsch (Grundformen)</option>
             <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
         </select>
     </label>
