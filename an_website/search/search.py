@@ -27,6 +27,7 @@ def get_module_info() -> ModuleInfo:
         aliases=("/search/",),
         keywords=("Suche",),
         path="/suche/",
+        hidden=True,
     )
 
 
