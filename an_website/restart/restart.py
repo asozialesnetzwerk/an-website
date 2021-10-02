@@ -22,7 +22,7 @@ from tornado.web import HTTPError
 from an_website import DIR as AN_WEBSITE_DIR
 
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, run
 
 
 def get_module_info() -> ModuleInfo:
@@ -72,6 +72,18 @@ class Restart(APIRequestHandler):
         if not os.path.isfile(os.path.join(repo_path, "restart.sh")):
             raise HTTPError(501)
 
-        await self.finish("Restarting.")
         # execute the restarting script
-        os.system(f'sh -c "cd {repo_path} ; ./restart.sh {commit}"'.strip())
+        code, stdout, stderr = await run(
+            "sh",
+            "-c",
+            f"cd {repo_path} ; ./restart.sh '{commit}' 'no_restart'".
+        )
+
+        if code == 0:
+            await self.finish("Restarting.")
+            exit(1)  # exit so supervisord will restart
+
+        raise HTTPError(
+            401,
+            reason=f"restart.sh exited with code={code} and stderr='{stderr}'",
+        )

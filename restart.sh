@@ -45,7 +45,14 @@ sed "s/<user>/$USER/g" "$SERVICE_FILE_NAME" \
 
 echo "Reread config"
 sudo supervisorctl reread
+
+# if the second argument is "no_restart"
+if [ -n "$2" ] && [ "$2" = "no_restart" ]
+then
+    exit 1
+fi
+
 echo "Restart an_website"
 sudo supervisorctl restart an_website
-
 echo "Finished restarting"
+
