@@ -39,7 +39,10 @@ then
 fi
 
 echo "Update the supervisord config in $SERVICE_FILE_LOCATION"
-sed "s/user-placeholder/$USER/g" "$SERVICE_FILE_NAME" > "$SERVICE_FILE_LOCATION"
+sed "s/<user>/$USER/g" "$SERVICE_FILE_NAME" \
+  | sed "s/<home>/$HOME/g" \
+  | sed "s/<lang>/$LANG/g" \
+  | sed "s/<lc_all>/$LC_ALL/g" > "$SERVICE_FILE_LOCATION"
 
 echo "Reread config"
 sudo supervisorctl reread
