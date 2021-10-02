@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 
 from tornado.web import HTTPError
 
@@ -76,14 +77,15 @@ class Restart(APIRequestHandler):
         code, stdout, stderr = await run(
             "sh",
             "-c",
-            f"cd {repo_path} ; ./restart.sh '{commit}' 'no_restart'".
+            f"cd {repo_path} ; ./restart.sh '{commit}' 'no_restart'",
         )
 
         if code == 0:
             await self.finish("Restarting.")
-            exit(1)  # exit so supervisord will restart
+            sys.exit(1)  # exit so supervisord will restart
 
         raise HTTPError(
             401,
-            reason=f"restart.sh exited with code={code} and stderr='{stderr}'",
+            reason=f"restart.sh exited with code={code}, "
+            f"stdout='{stdout}' and stderr='{stderr}'",
         )
