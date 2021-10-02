@@ -49,7 +49,7 @@ sudo supervisorctl reread
 # if the second argument is "no_restart"
 if [ -n "$2" ] && [ "$2" = "no_restart" ]
 then
-    exit 1
+    exit 0
 fi
 
 echo "Restart an_website"
