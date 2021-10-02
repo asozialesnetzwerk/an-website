@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import asyncio.subprocess
-import logging
 import os
 import random
 import re
@@ -248,44 +247,6 @@ async def run(
     com = proc.communicate()
     # important:
     stdout, stderr = await com
-
-    return proc.returncode, stdout, stderr
-
-
-async def run_shell(
-    cmd, stdin=asyncio.subprocess.PIPE
-) -> tuple[Optional[int], bytes, bytes]:
-    """Run the cmd and return the return code, stdout and stderr in a tuple."""
-    proc = await asyncio.create_subprocess_shell(
-        cmd,
-        stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-
-    com = proc.communicate()
-
-    # debugging stuff:
-    if "ps -p" not in cmd:
-        with open(f"/proc/{proc.pid}/stat", encoding="utf-8") as file:
-            print(file.read())
-        await (run(f"ps -p {proc.pid} all | grep -E 'PID|{proc.pid}'"))
-
-    # important:
-    stdout, stderr = await com
-
-    # debugging stuff:
-    if "ps -p" in cmd:
-        logger = logging.getLogger(__name__)
-        logger.error(
-            str(
-                {
-                    "code": proc.returncode,
-                    "stdout": stdout.decode("utf-8"),
-                    "stderr": stderr.decode("utf-8"),
-                }
-            )
-        )
 
     return proc.returncode, stdout, stderr
 

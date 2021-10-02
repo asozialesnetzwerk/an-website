@@ -19,6 +19,7 @@ Only to inform, not to brag.
 from __future__ import annotations
 
 import logging
+import sys
 
 from tornado.web import HTTPError as HTTPEwwow
 
@@ -75,19 +76,15 @@ class UwuHostInfo(BaseRequestHandler):
 
         Use uwufetch to genyewate the page.
         """
-        wetuwn_code, uwufetch_bytes, stdeww = await run("uwufetch")
+        wetuwn_code, uwufetch_bytes, _ = await run(
+            "sh",
+            "-c",
+            f"SHELL='python{sys.version.split(' ', maxsplit=1)[0]}' uwufetch",
+        )
         if wetuwn_code != 0:
-            env = (await run("env"))[1].decode("utf-8")
-            logger.error(env)
             raise HTTPEwwow(
-                503,
-                reason=(
-                    str(wetuwn_code)
-                    + " "
-                    + uwufetch_bytes.decode("utf-8").replace("\n", " ").strip()
-                    + " "
-                    + stdeww.decode("utf-8").replace("\n", " ").strip()
-                ),
+                501,
+                reason="Sowwy. This sewvew h-hasn't instawwed uwufetch.",
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         await self.render("pages/ansi2html.html", ansi=uwufetch)
