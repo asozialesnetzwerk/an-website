@@ -64,7 +64,12 @@ class HostInfo(BaseRequestHandler):
         Use screenfetch to generate the page.
         """
         screenfetch = (await run(f"{DIR}/screenfetch"))[1].decode("utf-8")
-        await self.render("pages/ansi2html.html", ansi=screenfetch)
+        await self.render(
+            "pages/ansi2html.html",
+            ansi=screenfetch,
+            powered_by="https://github.com/KittyKatt/screenFetch",
+            powered_by_name="screenFetch",
+        )
 
 
 class UwuHostInfo(BaseRequestHandler):
@@ -87,4 +92,9 @@ class UwuHostInfo(BaseRequestHandler):
                 reason="Sowwy. This sewvew h-hasn't instawwed uwufetch.",
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
-        await self.render("pages/ansi2html.html", ansi=uwufetch)
+        await self.render(
+            "pages/ansi2html.html",
+            ansi=uwufetch,
+            powered_by="https://github.com/TheDarkBug/uwufetch",
+            powered_by_name="UwUFetch",
+        )
