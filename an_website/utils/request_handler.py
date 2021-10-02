@@ -198,7 +198,7 @@ class BaseRequestHandler(RequestHandler):
 
         if url.startswith("http") and f"//{self.request.host}" not in url:
             # url is to other website:
-            url = f"/redirect/?to={quote(url)}&from" f"={quote(this_url)}"
+            url = f"/redirect/?to={quote(url)}&from={quote(this_url)}"
 
         url = add_args_to_url(
             url,
@@ -221,7 +221,7 @@ class BaseRequestHandler(RequestHandler):
                 if self.settings.get("LINK_TO_HTTPS")
                 else self.request.protocol
             )
-            if not url.endswith("/"):
+            if "?" not in url and not url.endswith("/"):
                 url += "/"
             return f"{protocol}://{self.request.host}{url}"
 
