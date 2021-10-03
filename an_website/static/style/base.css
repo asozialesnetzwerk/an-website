@@ -68,13 +68,3 @@ a {
     border-style: solid;
     border-color: var(--secondary-text-color) transparent transparent transparent;
 }
-
-#github-footer {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    color: var(--text-color);
-    background-color: transparent;
-}
