@@ -1,6 +1,7 @@
 :root {
     /* other useful stuff: */
     --header-height: 69px;
+    --footer-height: 50px;
 }
 
 * {
@@ -10,7 +11,8 @@
 
 
 body {
-    padding: var(--header-height) 0 0 0;
+    /* top, right, bottom, left */
+    padding: var(--header-height) 0 var(--footer-height) 0;
 }
 
 
