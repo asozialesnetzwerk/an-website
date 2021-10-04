@@ -163,6 +163,13 @@ const newLinkRegex = /https?:\/\/img\.zeit\.de\/administratives\/kaenguru-comics
 
 const relativeLinkRegex = /img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;
 
+// date with special link format:
+const wrongLinks = [
+    [getDateBy(2021, 5, 25), "https://img.zeit.de/administratives/kaenguru-comics/25/original/"],
+    [getDateBy(2021, 9, 6), "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/"],
+    [getDateBy(2021, 10, 4), "https://img.zeit.de/administratives/kaenguru-comics/2021-10/4/original"]
+]
+
 function getDateFromLink(link) {
     let arr = link.toLowerCase().match(newLinkRegex);
     if (arr && arr.length > 3) {
@@ -183,8 +190,8 @@ function getDateFromLink(link) {
             ? dateIncreaseByDays(date, 1)
             : date;
     }
-
-    switch(link.toLowerCase().trim()) {
+    link = link.toLowerCase().trim()
+    switch(link) {
         case "https://img.zeit.de/administratives/kaenguru-comics/pilot-kaenguru/original":
             return getDateBy(2020, 11, 29);
         case "https://img.zeit.de/administratives/kaenguru-comics/pow-kaenguru/original":
@@ -197,29 +204,23 @@ function getDateFromLink(link) {
             return getDateBy(2020, 12, 2);
         case "https://img.zeit.de/administratives/2020-12/kaenguru-comics-kaenguru-019/original":
             return getDateBy(2020, 12, 19);
-        case comic_25_5_2021:
-            return date_25_5_2021;
-        case comic_06_09_2021:
-            return date_06_09_2021;
+    }
+    for (const arr of wrongLinks) {
+        if (link === arr[1]) {
+            return  arr[0];
+        }
     }
 }
 
-// date with special link format:
-const comic_25_5_2021 = "https://img.zeit.de/administratives/kaenguru-comics/25/original/";
-const date_25_5_2021 = getDateBy(2021, 5, 25);
-const comic_06_09_2021 = "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/";
-const date_06_09_2021 = getDateBy(2021, 9, 6);
-
 const linkFormat = "https://img.zeit.de/administratives/kaenguru-comics/%y-%m/%d/original"
 function generateComicLink(date) {
-    if (datesEqual(date, date_25_5_2021)) {
-        return comic_25_5_2021;
-    }
-    if (datesEqual(date, date_06_09_2021)) {
-        console.log(date)
-        return comic_06_09_2021;
-    }
+    for (const arr of wrongLinks) {
+        if (datesEqual(date, arr[0])) {
+            console.log(date, arr)
 
+            return  arr[1];
+        }
+    }
     let month = (date.getMonth() + 1).toString();
     let day = date.getDate().toString();
     return linkFormat.replace("%y", date.getFullYear().toString())
@@ -256,7 +257,6 @@ function copyDate(date) {
 
 function getDateBy(year, month, dayOfMonth) {
     return new Date(year, month - 1, dayOfMonth, 6, 0, 0, 0);
-
 }
 
 function getToday() {
