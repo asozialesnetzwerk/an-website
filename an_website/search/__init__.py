@@ -12,4 +12,3 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The search page used to search the website."""
-
