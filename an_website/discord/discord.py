@@ -12,10 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """A permanent redirect to an invite of the discord guild."""
-from __future__ import annotations
-
 import time
-from typing import Union
 
 import orjson
 from tornado.httpclient import AsyncHTTPClient
@@ -110,10 +107,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 
 invite_cache: dict[
     int,
-    Union[
-        tuple[float, str, str],
-        tuple[float, HTTPError],
-    ],
+    tuple[float, str, str] | tuple[float, HTTPError],
 ] = {}
 
 

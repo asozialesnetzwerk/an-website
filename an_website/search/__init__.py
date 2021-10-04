@@ -13,4 +13,3 @@
 
 """The search page used to search the website."""
 
-from __future__ import annotations

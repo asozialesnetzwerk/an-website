@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The utilities module with many helpful things used by other modules."""
-from __future__ import annotations
 
 import asyncio
 import asyncio.subprocess
@@ -22,7 +21,7 @@ import re
 import time
 from dataclasses import dataclass, field
 from functools import cache
-from typing import Any, Callable, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Tuple, Type, TypeVar
 
 import tornado.httputil
 from tornado.web import RequestHandler
@@ -32,11 +31,11 @@ from an_website import DIR as SITE_BASE_DIR
 GIT_URL: str = "https://github.com/asozialesnetzwerk"
 REPO_URL: str = f"{GIT_URL}/an-website"
 
-Handler = Union[
-    tuple[str, Type[RequestHandler]],
-    tuple[str, Type[RequestHandler], dict[str, Any]],
-    tuple[str, Type[RequestHandler], dict[str, Any], str],
-]
+Handler = (
+    tuple[str, Type[RequestHandler]]
+    | tuple[str, Type[RequestHandler], dict[str, Any]]
+    | tuple[str, Type[RequestHandler], dict[str, Any], str]
+)
 # following should be tuple[Handler, ...] but mypy then complains
 HandlerTuple = Tuple[Handler, ...]
 
@@ -49,12 +48,12 @@ class PageInfo:
 
     name: str
     description: str
-    path: Optional[str] = None
+    path: None | str = None
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
 
-    def search(self, query: Union[str, list[str]]) -> float:  # noqa: C901
+    def search(self, query: str | list[str]) -> float:  # noqa: C901
         """
         Check whether this should be shown on the search page.
 
@@ -131,7 +130,7 @@ class ModuleInfo(PageInfo):
 
         return ", ".join(self.keywords)
 
-    def search(self, query: Union[str, list[str]]) -> float:
+    def search(self, query: str | list[str]) -> float:
         score = super().search(query)
 
         if len(self.sub_pages) > 0:
@@ -157,7 +156,7 @@ class Timer:
 
     def __init__(self):
         """Start the timer."""
-        self._execution_time: Optional[float] = None
+        self._execution_time: None | float = None
         self._start_time: float = time.time()
 
     def stop(self) -> float:
@@ -200,7 +199,7 @@ def length_of_match(_m: re.Match):
     return span[1] - span[0]
 
 
-def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
+def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
     """Get and return _n elements of the set as a new set."""
     i = 0
     new_set = set()
@@ -218,7 +217,7 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
-def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
+def str_to_bool(val: str, default: None | bool = None) -> bool:
     """Convert a string representation of truth to True or False."""
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):
@@ -234,7 +233,7 @@ def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
 
 async def run(
     programm, *args, stdin=asyncio.subprocess.PIPE
-) -> tuple[Optional[int], bytes, bytes]:
+) -> tuple[None | int, bytes, bytes]:
     """Run a programm & return the return code, stdout and stderr as tuple."""
     proc = await asyncio.create_subprocess_exec(
         programm,

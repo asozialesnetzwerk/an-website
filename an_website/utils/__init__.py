@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The utilities module with many helpful things used by other modules."""
-from __future__ import annotations
 
 import os
 

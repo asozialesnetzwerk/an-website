@@ -16,7 +16,6 @@ The quotes page of the website.
 
 It displays funny, but wrong, quotes.
 """
-from __future__ import annotations
 
 from dataclasses import dataclass
 

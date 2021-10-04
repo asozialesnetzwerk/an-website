@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The page with the kangaroo comics by Zeit Online.."""
-from __future__ import annotations
 
 from an_website.utils.request_handler import BaseRequestHandler
 from an_website.utils.utils import ModuleInfo

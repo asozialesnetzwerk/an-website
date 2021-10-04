@@ -12,13 +12,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The pages that helps solving hangman puzzles."""
-from __future__ import annotations
-
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
-from typing import Union
 
 from tornado.web import HTTPError, RequestHandler
 
@@ -121,7 +118,7 @@ def fix_letter_counter_crossword_mode(
 
 @lru_cache(5)
 def filter_words(
-    words: Union[frozenset[str], str],
+    words: frozenset[str] | str,
     regex: re.Pattern,
     input_letters: str,
     crossword_mode: bool = False,

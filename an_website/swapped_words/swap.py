@@ -12,10 +12,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Page that swaps words."""
-from __future__ import annotations
 
 import base64
-from typing import Optional
 
 from tornado.web import HTTPError
 
@@ -76,7 +74,7 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config_str: Optional[str], reset: str):
+    def handle_text(self, text: str, config_str: None | str, reset: str):
         """Use the text to display the html page."""
         check_text_too_long(text)
 

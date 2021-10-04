@@ -13,7 +13,6 @@
 
 """The module with all the tests for the currency_converter module."""
 
-from __future__ import annotations
 
 import asyncio
 

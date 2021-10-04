@@ -13,7 +13,6 @@
 
 """The tests module, with all the tests for the an_website module."""
 
-from __future__ import annotations
 
 import os
 import sys

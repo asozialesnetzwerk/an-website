@@ -12,11 +12,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The wiki with stuff about the AN."""
-from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import markdown
 import yaml
@@ -31,8 +29,8 @@ from . import DIR
 class WikiPage:
     """Class with information about a wiki page."""
 
-    title: Optional[str]
-    description: Optional[str]
+    title: None | str
+    description: None | str
     html: str
     keywords: tuple[str, ...]
 
@@ -58,7 +56,7 @@ def create_paths_dict() -> dict[str, WikiPage]:
 
                 with open(path, encoding="utf-8") as md_file:
                     file_content = md_file.read()
-                    yaml_header: Optional[str]
+                    yaml_header: None | str
                     if file_content.startswith("---"):
                         empty, yaml_header, md_body = file_content.split(
                             "---", 2
@@ -151,7 +149,7 @@ class WikiHandler(BaseRequestHandler):
         path: str = "/",
     ):
         """Handle the get requests to the wiki page."""
-        info: Optional[WikiPage] = None
+        info: None | WikiPage = None
         if path in PATHS:
             info = PATHS.get(path)
 

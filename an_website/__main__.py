@@ -12,8 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Website of the AN. Loads config and modules and starts tornado."""
-from __future__ import annotations
-
 import asyncio
 import configparser
 import importlib
@@ -21,7 +19,6 @@ import logging
 import os
 import ssl
 import sys
-from typing import Optional
 
 import aioredis  # type: ignore
 import ecs_logging
@@ -348,7 +345,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
 
 def get_ssl_context(
     config: configparser.ConfigParser,
-) -> Optional[ssl.SSLContext]:
+) -> None | ssl.SSLContext:
     """Create SSL config and configure using the config."""
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)

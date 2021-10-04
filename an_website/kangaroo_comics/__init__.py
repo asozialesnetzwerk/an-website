@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The page with the kangaroo comics by Zeit Online.."""
-from __future__ import annotations
 
 import os
 

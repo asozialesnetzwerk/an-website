@@ -12,8 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Module for the word game helper."""
-from __future__ import annotations
-
 from typing import Iterable
 
 # pylint: disable=no-name-in-module

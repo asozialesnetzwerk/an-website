@@ -16,15 +16,12 @@ The base request handlers used for other modules.
 
 This should only contain request handlers and the get_module_info function.
 """
-from __future__ import annotations
-
 import random
 import re
 import sys
 import traceback
 from datetime import datetime
 from functools import cache
-from typing import Optional, Union
 from urllib.parse import quote, unquote
 
 import orjson as json
@@ -185,7 +182,7 @@ class BaseRequestHandler(RequestHandler):
         return self._reason
 
     @cache
-    def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
+    def fix_url(self, url: str, this_url: None | str = None) -> str:
         """
         Fix a url and return it.
 
@@ -325,8 +322,8 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_request_var(
-        self, name: str, default: Optional[str] = None
-    ) -> Optional[str]:
+        self, name: str, default: None | str = None
+    ) -> None | str:
         """
         Get the a value by name for the request.
 
@@ -345,8 +342,8 @@ class BaseRequestHandler(RequestHandler):
         return value
 
     def get_request_var_as_bool(
-        self, name: str, default: Optional[bool] = None
-    ) -> Optional[bool]:
+        self, name: str, default: None | bool = None
+    ) -> None | bool:
         """Get the a value by name as bool for the request."""
         value_str = self.get_request_var(name, default=None)
         if value_str is None:
@@ -356,13 +353,13 @@ class BaseRequestHandler(RequestHandler):
     def get_argument(  # type: ignore[override]
         self,
         name: str,
-        default: Union[
-            None,
-            str,
-            web._ArgDefaultMarker,  # pylint: disable=protected-access
-        ] = web._ARG_DEFAULT,  # pylint: disable=protected-access
+        default: (
+            None
+            | str
+            | web._ArgDefaultMarker  # pylint: disable=protected-access
+        ) = web._ARG_DEFAULT,  # pylint: disable=protected-access
         strip: bool = True,
-    ) -> Optional[str]:
+    ) -> None | str:
         """Get an argument based on body or query."""
         arg = super().get_argument(name, default=None, strip=strip)
         if arg is not None:

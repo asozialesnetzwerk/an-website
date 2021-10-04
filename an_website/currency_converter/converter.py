@@ -12,10 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The currency converter page that converts german currencies."""
-from __future__ import annotations
-
 import re
-from typing import Optional, Union
 
 from tornado.web import RequestHandler
 
@@ -54,7 +51,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
+def string_to_num(string: str, divide_by: int = 1) -> None | float:
     """Convert a string to a number and divide it by divide_by."""
     if string is None or len(string) == 0:
         return None
@@ -98,12 +95,12 @@ async def conversion_string(value_dict: dict) -> str:
 #     ost_str: str
 #     schwarz_str: str
 #     text: str
-ValueDict = dict[str, Union[str, float, bool]]
+ValueDict = dict[str, str | float | bool]
 
 
 async def get_value_dict(euro: float) -> ValueDict:
     """Create the value dict base on the euro."""
-    value_dict: dict[str, Union[str, float]] = {}
+    value_dict: dict[str, str | float] = {}
     for _i, key in enumerate(keys):
         val = multipliers[_i] * euro
         value_dict[key] = val
@@ -116,7 +113,7 @@ async def get_value_dict(euro: float) -> ValueDict:
 
 async def arguments_to_value_dict(
     request_handler: RequestHandler,
-) -> Optional[ValueDict]:
+) -> None | ValueDict:
     """
     Parse the arguments to get the value dict and return it.
 

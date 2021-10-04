@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Create the required stuff for the soundboard from the info in info.json."""
-from __future__ import annotations
 
 import email.utils
 import os
@@ -20,7 +19,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache, lru_cache
-from typing import Callable, Optional, Type, Union
+from typing import Callable, Type
 
 import orjson
 
@@ -52,7 +51,7 @@ del books, chapters, person_dict
 
 
 @lru_cache(100)
-def mark_query(text: str, query: Optional[str]) -> str:
+def mark_query(text: str, query: None | str) -> str:
     """Replace the instances of the query with itself in a div."""
     if query is None or query == "":
         return text
@@ -85,7 +84,7 @@ class Info:
         fix_url_func: Callable[  # pylint: disable=unused-argument
             [str], str
         ] = lambda url: url,
-        query: Optional[str] = None,
+        query: None | str = None,
     ) -> str:
         """Return the text of the info and mark the query."""
         return mark_query(self.text, query)
@@ -96,7 +95,7 @@ class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
-    type: Type[Union[Book, Chapter, Person]] = Book
+    type: Type[Book | Chapter | Person] = Book
 
     @lru_cache(100)
     def to_html(
@@ -104,7 +103,7 @@ class HeaderInfo(Info):
         fix_url_func: Callable[  # pylint: disable=unused-argument
             [str], str
         ] = lambda url: url,
-        query: Optional[str] = None,
+        query: None | str = None,
     ) -> str:
         """
         Return a html element with the tag and the content of the HeaderInfo.
@@ -146,7 +145,7 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
-    def contains(self, _str: Optional[str]) -> bool:
+    def contains(self, _str: None | str) -> bool:
         """Check whether this sound info contains a given string."""
         if _str is None:
             return False
@@ -164,7 +163,7 @@ class SoundInfo(Info):
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
-        query: Optional[str] = None,
+        query: None | str = None,
     ) -> str:  # pylint: disable=unused-argument
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
@@ -180,7 +179,7 @@ class SoundInfo(Info):
         )
 
     @cache
-    def to_rss(self, url: Optional[str]) -> str:
+    def to_rss(self, url: None | str) -> str:
         """Parse the info to a rss item."""
         file_name = self.get_file_name()
         path = f"/files/{file_name}.mp3"

@@ -16,8 +16,6 @@ The host info page of the website.
 
 Only to inform, not to brag.
 """
-from __future__ import annotations
-
 import logging
 import sys
 

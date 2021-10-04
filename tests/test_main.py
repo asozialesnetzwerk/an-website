@@ -13,7 +13,6 @@
 
 """Tests for __main__.py in the an_website module."""
 
-from __future__ import annotations
 
 import configparser
 import re

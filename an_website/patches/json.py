@@ -13,7 +13,6 @@
 
 """Patches for json stuff that break everything."""
 
-from __future__ import annotations
 
 from json.decoder import JSONDecodeError, JSONDecoder
 from json.encoder import JSONEncoder

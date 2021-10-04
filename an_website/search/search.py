@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The search page used to search the website."""
-from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo

@@ -12,13 +12,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Config file for the page that swaps words."""
-from __future__ import annotations
 
 import functools
 import re
 from dataclasses import dataclass, field
 from re import Match, Pattern
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -75,7 +74,7 @@ class ConfigLine:  # pylint: disable=R0903
     """Class used to represent a word pair."""
 
     def to_conf_line(
-        self, len_of_left: Optional[int] = None
+        self, len_of_left: None | int = None
     ):  # pylint: disable=no-self-use, unused-argument
         """Get how this would look like in a config."""
         return ""
@@ -87,7 +86,7 @@ class Comment(ConfigLine):
 
     comment: str
 
-    def to_conf_line(self, len_of_left: Optional[int] = None):
+    def to_conf_line(self, len_of_left: None | int = None):
         """Get how this would look like in a config."""
         return (
             ""
@@ -117,7 +116,7 @@ class WordPair(ConfigLine):
         """Get the length to the left of the separator."""
         return len(self.word1)
 
-    def to_conf_line(self, len_of_left: Optional[int] = None):
+    def to_conf_line(self, len_of_left: None | int = None):
         """Get how this would look like in a config."""
         left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:

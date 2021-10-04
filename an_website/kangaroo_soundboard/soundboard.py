@@ -12,9 +12,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Handle the requests for the kangaroo soundboard."""
-from __future__ import annotations
 
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterable
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 
@@ -172,7 +171,7 @@ class SoundboardHtmlHandler(BaseRequestHandler):
 
     async def parse_path(
         self, path
-    ) -> Optional[tuple[Iterable[Info], Optional[str]]]:
+    ) -> None | tuple[Iterable[Info], None | str]:
         """Get a info list based on the path and return it with the query."""
         if path in (None, "", "index", "/"):
             return MAIN_PAGE_INFO, None

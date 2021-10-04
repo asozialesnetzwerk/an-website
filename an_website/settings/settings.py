@@ -12,10 +12,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The settings page used to change settings."""
-from __future__ import annotations
 
 import datetime
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Tuple
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str
@@ -43,11 +42,11 @@ class SettingsPage(BaseRequestHandler):
     def set_cookie(  # pylint: disable=too-many-arguments
         self,
         name: str,
-        value: Union[str, bytes],
-        domain: Optional[str] = None,
-        expires: Optional[Union[float, Tuple, datetime.datetime]] = None,
+        value: str | bytes,
+        domain: None | str = None,
+        expires: None | float | Tuple | datetime.datetime = None,
         path: str = "/",
-        expires_days: Optional[float] = 365,  # changed
+        expires_days: None | float = 365,  # changed
         **kwargs: Any,
     ):
         """Override the set_cookie method to set expires days."""

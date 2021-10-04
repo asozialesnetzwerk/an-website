@@ -12,8 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The currency converter page that converts german currencies."""
-from __future__ import annotations
-
 import os
 
 DIR = os.path.dirname(__file__)

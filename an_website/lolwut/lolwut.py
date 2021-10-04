@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The page that displays the redis version."""
-from __future__ import annotations
 
 from tornado.web import HTTPError
 

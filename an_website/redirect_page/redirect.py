@@ -17,7 +17,6 @@ The redirect page of the website.
 This page is used to redirect user to third party websites.
 The page will ask users if they want to leave this website.
 """
-from __future__ import annotations
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo

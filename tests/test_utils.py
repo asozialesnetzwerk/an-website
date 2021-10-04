@@ -13,7 +13,6 @@
 
 """The module with all the tests for the utils module."""
 
-from __future__ import annotations
 
 import pytest
 from tornado.httputil import urlparse
