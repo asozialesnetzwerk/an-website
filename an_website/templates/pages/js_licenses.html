@@ -2,6 +2,10 @@
 
 {% block body %}
 <table id="jslicense-labels1">
+    <tr>
+        <th>Skript</th>
+        <th>Lizenz</th>
+    </tr>
     {% for file_name in js_files %}
     <tr>
         <td><a href="/static/js/{{ file_name }}">{{ file_name }}</a></td>
@@ -9,4 +13,13 @@
     </tr>
     {% end %}
 </table>
+{% end %}
+
+{% block head %}
+<style>
+    #jslicense-labels1 {
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
 {% end %}
