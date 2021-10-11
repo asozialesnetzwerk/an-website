@@ -1,3 +1,4 @@
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 /*
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -342,3 +343,5 @@ function createImgPopup(image) {
 // add links to comics array
 comics.push.apply(comics, links.split("\n")); //first 50 comics 29.11.2020 - 17.01.21
 addLinksToComics();
+
+// @license-end

@@ -34,6 +34,8 @@ from tornado.web import Application, RedirectHandler
 from . import DIR, patches
 from .utils.request_handler import BaseRequestHandler, NotFound
 from .utils.utils import (
+    STATIC_DIR,
+    TEMPLATES_DIR,
     Handler,
     HandlerTuple,
     ModuleInfo,
@@ -239,9 +241,9 @@ def make_app() -> Application:
         default_handler_class=NotFound,
         websocket_ping_interval=10,
         # Template settings
-        template_path=f"{DIR}/templates",
+        template_path=TEMPLATES_DIR,
         # Static file settings
-        static_path=f"{DIR}/static",
+        static_path=STATIC_DIR,
     )
 
 
