@@ -32,6 +32,9 @@ from an_website import DIR as SITE_BASE_DIR
 GIT_URL: str = "https://github.com/asozialesnetzwerk"
 REPO_URL: str = f"{GIT_URL}/an-website"
 
+TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
+STATIC_DIR: str = os.path.join(SITE_BASE_DIR, "static")
+
 Handler = Union[
     tuple[str, Type[RequestHandler]],
     tuple[str, Type[RequestHandler], dict[str, Any]],
@@ -271,7 +274,7 @@ def add_args_to_url(url: str, **kwargs) -> str:
 
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
-    files = os.listdir(os.path.join(SITE_BASE_DIR, "static/style/themes"))
+    files = os.listdir(os.path.join(STATIC_DIR, "style/themes"))
 
     return (
         *(file[:-4] for file in files if file.endswith(".css")),
