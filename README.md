@@ -31,6 +31,3 @@ restart.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor
 
 ### MacOS:
 Why? (same as FreeBSD, probably)
-
-# By the way:
-Jimi isn't the sexiest person on earth
