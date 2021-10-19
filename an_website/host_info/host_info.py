@@ -85,7 +85,8 @@ class UwuHostInfo(BaseRequestHandler):
         cache_enabwed = 0 if str_to_bool(cache_disabwed, default=False) else 1
 
         wetuwn_code, uwufetch_bytes, _ = await run(
-            "env" f"SHELL=python{sys.version.split(' ', maxsplit=1)[0]}",
+            "env",
+            f"SHELL=python{sys.version.split(' ', maxsplit=1)[0]}",
             f"UWUFETCH_CACHE_ENABLED={cache_enabwed}",
             "uwufetch",
             "-w",
