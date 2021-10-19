@@ -67,8 +67,13 @@ class PageInfo:
         if self.hidden or self.path is None:
             return 0
 
+        score: float = 0
+
         if isinstance(query, str):
             words = re.split(r"\s+", query)
+            query = query.lower()
+            if query in self.description.lower() or query in self.name.lower():
+                score = len(query) / 2
         else:
             words = query
 
@@ -78,8 +83,6 @@ class PageInfo:
         if len(words) == 0:
             # query empty, so find in everything
             return 1.0
-
-        score: float = 0
 
         for word in words:
             if len(self.name) > 0 and word in self.name.lower():
