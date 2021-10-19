@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file
-# files/dirs starting with '_' gets ignored
+# files and dirs starting with '_' get ignored
 def get_module_infos() -> tuple[ModuleInfo, ...]:
     """Import the modules and return the loaded module infos in a tuple."""
     module_infos: list[ModuleInfo] = []
