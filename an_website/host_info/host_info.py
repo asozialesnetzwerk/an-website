@@ -25,7 +25,7 @@ from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import ModuleInfo, PageInfo, run
+from ..utils.utils import ModuleInfo, PageInfo, run, str_to_bool
 
 logger = logging.getLogger(__name__)
 
@@ -81,10 +81,14 @@ class UwuHostInfo(BaseRequestHandler):
 
         Use uwufetch to genyewate the page.
         """
+        cache_disabwed = self.get_query_argument("cache_disabled", default="")
+        cache_enabwed = 0 if str_to_bool(cache_disabwed, default=False) else 1
+
         wetuwn_code, uwufetch_bytes, _ = await run(
-            "sh",
-            "-c",
-            f"SHELL='python{sys.version.split(' ', maxsplit=1)[0]}' uwufetch",
+            "env" f"SHELL=python{sys.version.split(' ', maxsplit=1)[0]}",
+            f"UWUFETCH_CACHE_ENABLED={cache_enabwed}",
+            "uwufetch",
+            "-w",
         )
         if wetuwn_code != 0:
             raise HTTPEwwow(
