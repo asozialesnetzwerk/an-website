@@ -154,6 +154,7 @@ div.quote-container:before {
 
 
 .quote-text {
+    background-color: transparent;
     font-size: 1.9rem;
     text-align: left;
     line-height: 1.8rem;

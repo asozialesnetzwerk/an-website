@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 
@@ -24,3 +25,5 @@ PARENT_DIR = os.path.dirname(DIR)
 # add parent dir to sys.path
 # this makes importing an_website possible
 sys.path.append(f"{PARENT_DIR}")
+
+asyncio.get_event_loop().run_forever()

@@ -18,9 +18,12 @@ It displays funny, but wrong, quotes.
 """
 from __future__ import annotations
 
-import orjson as json
+import asyncio
+import random
 from dataclasses import dataclass
+from functools import cache
 
+import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 
 from ..utils.request_handler import BaseRequestHandler
@@ -76,7 +79,7 @@ class Author(QuotesObjBase):
 
     def __str__(self):
         """Return the name of the author."""
-        return self.name
+        return self.name.strip()
 
 
 @dataclass
@@ -101,7 +104,7 @@ class Quote(QuotesObjBase):
 
     def __str__(self):
         """Return the the content of the quote."""
-        return self.quote
+        return self.quote.strip()
 
 
 @dataclass
@@ -121,7 +124,7 @@ class WrongQuote(QuotesObjBase):
         return f"{self.quote.id}-{self.author.id}"
 
     def __str__(self):
-        """
+        r"""
         Return the wrong quote.
 
         like: '»quote«\n - author'.
@@ -139,12 +142,26 @@ WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
 async def make_api_request(end_point: str, args: str = "") -> dict:
     """Make api request and return the result as dict."""
     http_client = AsyncHTTPClient()
-    print(f"{API_URL}{end_point}?{args}")
     response = await http_client.fetch(
         f"{API_URL}{end_point}?{args}", raise_error=True
     )
-    print(response.body)
     return json.loads(response.body)
+
+
+# TODO: run this more than once
+async def update_cache():
+    """Fill the cache with all data from the api."""
+    json_data = await make_api_request("wrongquotes")
+    for wrong_quote in json_data:
+        parse_wrong_quote(wrong_quote)
+
+    json_data = await make_api_request("quotes")
+    for quote in json_data:
+        parse_quote(quote)
+
+    json_data = await make_api_request("authors")
+    for author in json_data:
+        parse_author(author)
 
 
 async def get_author_by_id(author_id: int) -> Author:
@@ -195,32 +212,45 @@ def parse_quote(json_data: dict) -> Quote:
     return quote
 
 
-async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
+async def get_wrong_quote(
+    quote_id: int, author_id: int, use_cache=True
+) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote_id = (quote_id, author_id)
+    print(wrong_quote_id)
     wrong_quote = WRONG_QUOTES_CACHE.get(wrong_quote_id, None)
-    if wrong_quote is not None:
+    if use_cache and wrong_quote is not None:
         return wrong_quote
-    wrong_quote = parse_wrong_quote(
-        (
-            await make_api_request(
-                "wrongquotes",
-                f"quote_id={quote_id}&autor_id={author_id}&simulate=true",
-            )
-        )[0]
+
+    if wrong_quote is not None and wrong_quote.id != -1:
+        return parse_wrong_quote(
+            await make_api_request(f"wrongquotes/{wrong_quote.id}")
+        )
+
+    result = await make_api_request(
+        "wrongquotes",
+        f"quote={quote_id}&autor={author_id}&simulate=true",
     )
-    WRONG_QUOTES_CACHE[wrong_quote_id] = wrong_quote
-    return wrong_quote
+    if len(result) > 0:
+        return parse_wrong_quote(result[0])
+
+    return WrongQuote(
+        -1,
+        await get_quote_by_id(quote_id),
+        await get_author_by_id(author_id),
+        rating=0,
+    )
 
 
 def parse_wrong_quote(json_data: dict) -> WrongQuote:
-    """Parse a quote"""
+    """Parse a quote."""
     id_tuple = (json_data["quote"]["id"], json_data["author"]["id"])
     rating = json_data["rating"]
+    wrong_quote_id = json_data.get("id", -1)
     wrong_quote = WRONG_QUOTES_CACHE.setdefault(
         id_tuple,
         WrongQuote(
-            id=json_data["id"],
+            id=wrong_quote_id,
             quote=parse_quote(json_data["quote"]),
             author=parse_author(json_data["author"]),
             rating=rating,
@@ -228,6 +258,8 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
     )
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
+    if wrong_quote.id != wrong_quote_id:
+        wrong_quote.id = wrong_quote_id
     return wrong_quote
 
 
@@ -236,20 +268,45 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
     return (await get_wrong_quote(quote_id, author_id)).rating
 
 
+def get_random_id() -> tuple[int, int]:
+    """Get random wrong quote id."""
+    return (
+        random.randint(0, max((*QUOTES_CACHE.keys(), 100))),
+        random.randint(0, max((*AUTHORS_CACHE.keys(), 100))),
+    )
+
+
 class QuoteBaseHandler(BaseRequestHandler):
     """The base request handler for the quotes package."""
 
     async def render_quote(self, quote_id: int, author_id: int):
         """Get and render a wrong quote based on author id and author id."""
+        next_q, next_a = self.get_next_id()
+        wrong_quote = await get_wrong_quote(quote_id, author_id)
+        print(wrong_quote)
         return await self.render(
             "pages/quotes.html",
-            wrong_quote=await get_wrong_quote(quote_id, author_id),
-            next_href=f"/zitate/{await self.get_next_id()}",
+            wrong_quote=wrong_quote,
+            next_href=f"/zitate/{next_q}-{next_a}",
         )
 
-    async def get_next_id(self):  # pylint: disable=R0201
+    @cache
+    def get_next_id(self):  # pylint: disable=R0201
         """Get the id of the next quote."""
-        return "0-0"
+        # TODO: use params so this isn't always random
+        return get_random_id()
+
+    def on_finish(self):
+        """
+        Request the data for the next quote, to improve performance.
+
+        This is done to ensure that the data is always up to date.
+        """
+        quote_id, author_id = self.get_next_id()
+        asyncio.run_coroutine_threadsafe(
+            get_wrong_quote(quote_id, author_id, use_cache=False),
+            asyncio.get_event_loop(),
+        )
 
 
 class QuoteMainPage(QuoteBaseHandler):
@@ -257,7 +314,8 @@ class QuoteMainPage(QuoteBaseHandler):
 
     async def get(self):
         """Handle the get request to the main quote page and render a quote."""
-        await self.render_quote(-1, -1)
+        quote_id, author_id = get_random_id()
+        self.redirect(f"/quote/{quote_id}-{author_id}")
 
 
 class QuoteById(QuoteBaseHandler):
@@ -266,3 +324,6 @@ class QuoteById(QuoteBaseHandler):
     async def get(self, quote_id: str, author_id: str):
         """Handle the get request to this page and render the quote."""
         await self.render_quote(int(quote_id), int(author_id))
+
+
+asyncio.run_coroutine_threadsafe(update_cache(), asyncio.get_event_loop())
