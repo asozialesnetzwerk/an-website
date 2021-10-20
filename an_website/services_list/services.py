@@ -38,6 +38,7 @@ def get_module_info() -> ModuleInfo:
 @dataclasses.dataclass(frozen=True)
 class Service:
     """A class representing a service."""
+
     title: str
     text: str
     infos: Optional[dict[str, str]] = None
