@@ -272,6 +272,9 @@ def add_args_to_url(url: str, **kwargs) -> str:
             else:
                 url_args[key] = str(value)
 
+    if len(url_args) == 0:
+        return url
+
     return tornado.httputil.url_concat(url, url_args)
 
 

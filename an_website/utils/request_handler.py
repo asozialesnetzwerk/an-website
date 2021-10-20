@@ -214,6 +214,9 @@ class BaseRequestHandler(RequestHandler):
             else None,
         )
 
+        if url.endswith("?"):
+            url = url[:-1]
+
         if url.startswith("/"):
             # don't use relative urls
             protocol = (  # make all links https if the config is set
