@@ -129,7 +129,7 @@ class WrongQuote(QuotesObjBase):
 
         like: '»quote«\n - author'.
         """
-        return f"»{self.quote}«\n - {self.author}"
+        return f"»{self.quote}« - {self.author}"
 
 
 API_URL: str = "https://zitate.prapsschnalinen.de/api/"
@@ -288,6 +288,7 @@ class QuoteBaseHandler(BaseRequestHandler):
             "pages/quotes.html",
             wrong_quote=wrong_quote,
             next_href=f"/zitate/{next_q}-{next_a}",
+            description=str(wrong_quote),
         )
 
     @cache
