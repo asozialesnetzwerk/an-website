@@ -326,4 +326,7 @@ class QuoteById(QuoteBaseHandler):
         await self.render_quote(int(quote_id), int(author_id))
 
 
-asyncio.run_coroutine_threadsafe(update_cache(), asyncio.get_event_loop())
+try:
+    asyncio.run_coroutine_threadsafe(update_cache(), asyncio.get_event_loop())
+except RuntimeError:
+    pass
