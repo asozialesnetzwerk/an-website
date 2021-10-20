@@ -84,7 +84,7 @@ class Quote(QuotesObjBase):
 
 
 @dataclass
-class WrongQuote(QuotesObjBase):
+class WrongQuote:
     """The wrong quote object with a quote, an author and a rating."""
 
     quote: Quote
@@ -100,7 +100,7 @@ class WrongQuote(QuotesObjBase):
         return f"{self.quote.id}-{self.author.id}"
 
     def __str__(self):
-        r"""
+        """
         Return the wrong quote.
 
         like: '»quote«\n - author'.
@@ -108,33 +108,50 @@ class WrongQuote(QuotesObjBase):
         return f"»{self.quote}«\n - {self.author}"
 
 
-API_URL: str = "https://zitate.prapsschnalinen.de/api"
+API_URL: str = "https://zitate.prapsschnalinen.de/api/"
+
+QUOTES_CACHE: dict[int, Quote] = {}
+AUTHORS_CACHE: dict[int, Author] = {}
+WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
 
 
 async def get_quote_by_id(quote_id: int) -> Quote:
     """Get a quote by its id."""
-    # do db query here
+    if quote_id in QUOTES_CACHE:
+        return QUOTES_CACHE[quote_id]
+    # TODO: do db query here
     return Quote(quote_id, f"Hallo {quote_id}", Author(1, "Autor"))
 
 
 async def get_author_by_id(author_id: int) -> Author:
     """Get an author by its id."""
-    # do db query here
+    if author_id in AUTHORS_CACHE:
+        return AUTHORS_CACHE[author_id]
+    # TODO: do db query here
     return Author(author_id, f"Frau {author_id}")
+
+
+async def get_rating_by_id(quote_id: int, author_id: int) -> int:
+    """Get the rating of a wrong quote."""
+    wrong_quote_id = (quote_id, author_id)
+    if wrong_quote_id in WRONG_QUOTES_CACHE:
+        return WRONG_QUOTES_CACHE[wrong_quote_id].rating
+    # TODO: do db query here
+    return 0
 
 
 async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
-    return WrongQuote(
-        id=quote_id * 10_000 + author_id,
-        quote=Quote(
-            id=quote_id,
-            quote=f"Quote({quote_id})",
-            author=Author(id=quote_id + 13, name=f"Author({quote_id + 13})"),
-        ),
-        author=Author(id=author_id, name=f"Author({author_id})"),
-        rating=quote_id - author_id,
+    wrong_quote_id = (quote_id, author_id)
+    if wrong_quote_id in WRONG_QUOTES_CACHE:
+        return WRONG_QUOTES_CACHE[wrong_quote_id]
+    wrong_quote = WrongQuote(
+        quote=await get_quote_by_id(quote_id),
+        author=await get_author_by_id(author_id),
+        rating=await get_rating_by_id(quote_id, author_id),
     )
+    WRONG_QUOTES_CACHE[wrong_quote_id] = wrong_quote
+    return wrong_quote
 
 
 class QuoteBaseHandler(BaseRequestHandler):
