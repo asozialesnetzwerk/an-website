@@ -148,14 +148,25 @@ class Discord(BaseRequestHandler):
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite and redirect to it."""
         referrer = self.fix_url(
-            self.request.headers.get("Referer", default="/")
-        )
-        self.redirect(
-            self.fix_url(
-                (await get_invite_with_cache(guild_id))[0],
-                referrer,
+            self.request.headers.get(
+                "Referer",  # [sic!] (Siehe RFC 2068)
+                default="/",
             )
         )
+        discord_invite = (await get_invite_with_cache(guild_id))[0]
+        if (
+            referrer.startswith("/")  # relative link
+            or f"://{self.request.host_name}" in referrer  # same host name
+        ):
+            # if referrer is from this page redirect to the redirect page
+            return self.redirect(
+                self.fix_url(
+                    discord_invite,
+                    referrer,
+                )
+            )
+        # referrer is from another page -> just redirect to the discord invite
+        return self.redirect(discord_invite)
 
 
 class ANDiscord(Discord):
