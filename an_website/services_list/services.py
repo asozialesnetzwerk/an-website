@@ -31,7 +31,6 @@ def get_module_info() -> ModuleInfo:
         path="/services-list/",
         keywords=("Service", "Liste"),
         aliases=("/services/",),
-        hidden=True,
     )
 
 
