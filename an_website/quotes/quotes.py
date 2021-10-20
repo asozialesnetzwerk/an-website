@@ -86,12 +86,7 @@ class Quote(QuotesObjBase):
     quote: str
     author: Author
 
-    def update_quote(
-            self,
-            quote: str,
-            author_id: int,
-            author_name: str
-    ):
+    def update_quote(self, quote: str, author_id: int, author_name: str):
         """Update quote data with new data."""
         self.quote = quote
         if self.author.id == author_id:
@@ -99,10 +94,7 @@ class Quote(QuotesObjBase):
             return
         author = AUTHORS_CACHE.setdefault(
             author_id,
-            Author(
-                author_id,
-                author_name
-            ),
+            Author(author_id, author_name),
         )
         author.update_name(author_name)
         self.author = author
@@ -147,21 +139,21 @@ WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
 async def make_api_request(end_point: str, args: str = "") -> dict:
     """Make api request and return the result as dict."""
     http_client = AsyncHTTPClient()
+    print(f"{API_URL}{end_point}?{args}")
     response = await http_client.fetch(
-        f"{API_URL}{end_point}/?{args}", raise_error=False
+        f"{API_URL}{end_point}?{args}", raise_error=True
     )
+    print(response.body)
     return json.loads(response.body)
 
 
 async def get_author_by_id(author_id: int) -> Author:
     """Get an author by its id."""
-    author = AUTHORS_CACHE.get(author_id, default=None)
+    author = AUTHORS_CACHE.get(author_id, None)
     if author is not None:
         return author
 
-    return parse_author(
-        await make_api_request("quote", f"id={author_id}")
-    )
+    return parse_author(await make_api_request(f"authors/{author_id}"))
 
 
 def parse_author(json_data: dict) -> Author:
@@ -169,11 +161,7 @@ def parse_author(json_data: dict) -> Author:
     author_id = json_data["id"]
     name = json_data["author"]
     author = AUTHORS_CACHE.setdefault(
-        author_id,
-        Author(
-            author_id,
-            json_data["author"]
-        )
+        author_id, Author(author_id, json_data["author"])
     )
     author.update_name(name)
     return author
@@ -181,12 +169,10 @@ def parse_author(json_data: dict) -> Author:
 
 async def get_quote_by_id(quote_id: int) -> Quote:
     """Get a quote by its id."""
-    quote = QUOTES_CACHE.get(quote_id, default=None)
+    quote = QUOTES_CACHE.get(quote_id, None)
     if quote is not None:
         return quote
-    return parse_quote(
-        await make_api_request("quote", f"id={quote_id}")
-    )
+    return parse_quote(await make_api_request(f"quotes/{quote_id}"))
 
 
 def parse_quote(json_data: dict) -> Quote:
@@ -199,7 +185,7 @@ def parse_quote(json_data: dict) -> Quote:
             quote_id,
             json_data["quote"],
             author,
-        )
+        ),
     )
     quote.update_quote(
         json_data["quote"],
@@ -209,29 +195,45 @@ def parse_quote(json_data: dict) -> Quote:
     return quote
 
 
-async def get_rating_by_id(quote_id: int, author_id: int) -> int:
-    """Get the rating of a wrong quote."""
-    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), default=None)
-    if wrong_quote is not None:
-        return wrong_quote.rating
-    # TODO: do db query here
-    return 0
-
-
 async def get_wrong_quote(quote_id: int, author_id: int) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote_id = (quote_id, author_id)
-    wrong_quote = WRONG_QUOTES_CACHE.get(wrong_quote_id, default=None)
+    wrong_quote = WRONG_QUOTES_CACHE.get(wrong_quote_id, None)
     if wrong_quote is not None:
         return wrong_quote
-    wrong_quote = WrongQuote(
-        id=0,
-        quote=await get_quote_by_id(quote_id),
-        author=await get_author_by_id(author_id),
-        rating=await get_rating_by_id(quote_id, author_id),
+    wrong_quote = parse_wrong_quote(
+        (
+            await make_api_request(
+                "wrongquotes",
+                f"quote_id={quote_id}&autor_id={author_id}&simulate=true",
+            )
+        )[0]
     )
     WRONG_QUOTES_CACHE[wrong_quote_id] = wrong_quote
     return wrong_quote
+
+
+def parse_wrong_quote(json_data: dict) -> WrongQuote:
+    """Parse a quote"""
+    id_tuple = (json_data["quote"]["id"], json_data["author"]["id"])
+    rating = json_data["rating"]
+    wrong_quote = WRONG_QUOTES_CACHE.setdefault(
+        id_tuple,
+        WrongQuote(
+            id=json_data["id"],
+            quote=parse_quote(json_data["quote"]),
+            author=parse_author(json_data["author"]),
+            rating=rating,
+        ),
+    )
+    if wrong_quote.rating != rating:
+        wrong_quote.rating = rating
+    return wrong_quote
+
+
+async def get_rating_by_id(quote_id: int, author_id: int) -> int:
+    """Get the rating of a wrong quote."""
+    return (await get_wrong_quote(quote_id, author_id)).rating
 
 
 class QuoteBaseHandler(BaseRequestHandler):
