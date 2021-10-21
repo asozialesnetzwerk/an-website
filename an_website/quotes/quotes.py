@@ -323,7 +323,7 @@ class QuoteMainPage(QuoteBaseHandler):
     async def get(self):
         """Handle the get request to the main quote page and render a quote."""
         quote_id, author_id = get_random_id()
-        self.redirect(f"/quote/{quote_id}-{author_id}")
+        self.redirect(f"/zitate/{quote_id}-{author_id}")
 
 
 class QuoteById(QuoteBaseHandler):
