@@ -277,7 +277,7 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
 
 def get_random_id() -> tuple[int, int]:
     """Get random wrong quote id."""
-    return (
+    return (  # TODO: split this into two methods
         random.randint(0, max((*QUOTES_CACHE.keys(), 100))),
         random.randint(0, max((*AUTHORS_CACHE.keys(), 100))),
     )
