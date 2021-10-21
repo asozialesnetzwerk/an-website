@@ -374,17 +374,14 @@ class QuoteBaseHandler(BaseRequestHandler):
             # should work in a few seconds, the quotes just haven't loaded yet
             self.set_header("Retry-After", "3")
             raise HTTPError(503, reason="Service available in a few seconds")
-        next_q, next_a = self.get_next_id()
-        next_href = f"/zitate/{next_q}-{next_a}/"
-        if (rating_filter := self.rating_filter()) != "smart":
-            next_href += f"?r={rating_filter}"
+
+        wrong_quote = None
+        vote = 0
 
         wq_str_id = f"{quote_id}-{author_id}"
 
         vote_dict = self.get_saved_vote_dict()
         old_vote = vote_to_int(vote_dict.get(wq_str_id, "0"))
-
-        wrong_quote = None
 
         new_vote_str = self.get_query_argument("vote", default=None)
         if new_vote_str in (None, ""):
@@ -417,9 +414,9 @@ class QuoteBaseHandler(BaseRequestHandler):
         return await self.render(
             "pages/quotes.html",
             wrong_quote=wrong_quote,
-            next_href=next_href,
+            next_href=self.get_next_url(),
             description=str(wrong_quote),
-            rating_filter=rating_filter,
+            rating_filter=self.rating_filter(),
             vote=vote,
         )
 
@@ -437,6 +434,14 @@ class QuoteBaseHandler(BaseRequestHandler):
         if rating_filter not in ("w", "n", "unrated", "rated", "all"):
             return "smart"
         return rating_filter
+
+    def get_next_url(self) -> str:
+        """Get the url of the next quote."""
+        next_q, next_a = self.get_next_id()
+        url = f"/zitate/{next_q}-{next_a}/"
+        if (rating_filter := self.rating_filter()) != "smart":
+            return url + f"?r={rating_filter}"
+        return url
 
     @cache
     def get_next_id(self) -> tuple[int, int]:  # noqa: C901
@@ -501,7 +506,7 @@ class QuoteMainPage(QuoteBaseHandler):
 
     async def get(self):
         """Handle the get request to the main quote page and render a quote."""
-        quote_id, author_id = get_random_id()
+        quote_id, author_id = self.get_next_id()
         self.redirect(f"/zitate/{quote_id}-{author_id}")
 
 
