@@ -22,12 +22,16 @@ import asyncio
 import random
 from dataclasses import dataclass
 from functools import cache
+from typing import Literal
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
+from tornado.web import HTTPError
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
+
+API_URL: str = "https://zitate.prapsschnalinen.de/api"
 
 
 def get_module_info() -> ModuleInfo:
@@ -140,8 +144,6 @@ class WrongQuote(QuotesObjBase):
         return f"»{self.quote}« - {self.author}"
 
 
-API_URL: str = "https://zitate.prapsschnalinen.de/api/"
-
 QUOTES_CACHE: dict[int, Quote] = {}
 AUTHORS_CACHE: dict[int, Author] = {}
 WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
@@ -151,7 +153,7 @@ async def make_api_request(end_point: str, args: str = "") -> dict:
     """Make api request and return the result as dict."""
     http_client = AsyncHTTPClient()
     response = await http_client.fetch(
-        f"{API_URL}{end_point}?{args}", raise_error=True
+        f"{API_URL}/{end_point}?{args}", raise_error=True
     )
     return json.loads(response.body)
 
@@ -305,23 +307,128 @@ def get_random_id() -> tuple[int, int]:
     )
 
 
+async def vote_wrong_quote(
+    vote: Literal[-1, 1], wrong_quote: WrongQuote
+) -> WrongQuote:
+    """Vote for the wrong_quote with the given id."""
+    http_client = AsyncHTTPClient()
+    response = await http_client.fetch(
+        f"{API_URL}/wrongquotes/{wrong_quote.id}",
+        method="POST",
+        body=f"vote={vote}",
+    )
+    return parse_wrong_quote(json.loads(response.body))
+
+
+async def create_wq_and_vote(
+    vote: Literal[-1, 1],
+    quote_id: int,
+    author_id: int,
+    identifier: str,
+) -> WrongQuote:
+    """
+    Vote for the wrong_quote with the api.
+
+    If the wrong_quote doesn't exist yet, create it.
+    """
+    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
+    if wrong_quote is not None and wrong_quote.id != -1:
+        return await vote_wrong_quote(vote, wrong_quote)
+    # we don't know the wrong_quote_id, so we have to create the wrong_quote
+    http_client = AsyncHTTPClient()
+    response = await http_client.fetch(
+        f"{API_URL}/wrongquotes",
+        method="POST",
+        body=f"quote={quote_id}&"
+        f"author={author_id}&"
+        f"contributed_by=an-website_{identifier}",
+    )
+    wrong_quote = parse_wrong_quote(json.loads(response.body))
+    return await vote_wrong_quote(vote, wrong_quote)
+
+
+def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
+    """Parse a vote str to the corresponding int."""
+    if vote == "-1":
+        return -1
+    if vote in ("0", "", None):
+        return 0
+    if vote == "1":
+        return 1
+
+    int_vote = int(vote)
+    if int_vote < 0:
+        return -1
+    if int_vote > 0:
+        return 1
+
+    return 0
+
+
 class QuoteBaseHandler(BaseRequestHandler):
     """The base request handler for the quotes package."""
 
     async def render_quote(self, quote_id: int, author_id: int):
         """Get and render a wrong quote based on author id and author id."""
+        if len(WRONG_QUOTES_CACHE) == 0:
+            # should work in a few seconds, the quotes just haven't loaded yet
+            self.set_header("Retry-After", "3")
+            raise HTTPError(503, reason="Service available in a few seconds")
         next_q, next_a = self.get_next_id()
         next_href = f"/zitate/{next_q}-{next_a}/"
         if (rating_filter := self.rating_filter()) != "smart":
             next_href += f"?r={rating_filter}"
-        wrong_quote = await get_wrong_quote(quote_id, author_id)
+
+        wq_str_id = f"{quote_id}-{author_id}"
+
+        vote_dict = self.get_saved_vote_dict()
+        old_vote = vote_to_int(vote_dict.get(wq_str_id, "0"))
+
+        wrong_quote = None
+
+        new_vote_str = self.get_query_argument("vote", default=None)
+        if new_vote_str in (None, ""):
+            vote = old_vote
+        elif new_vote_str is not None:
+            vote = vote_to_int(new_vote_str)
+            if vote != old_vote:
+                if vote == 0:
+                    del vote_dict[wq_str_id]
+                else:
+                    vote_dict[wq_str_id] = str(vote)
+                #  save the votes in a cookie
+                self.set_cookie(
+                    "votes",
+                    json.dumps(vote_dict),
+                    expires_days=365,
+                )
+            if vote > old_vote:
+                wrong_quote = await create_wq_and_vote(
+                    1, author_id, quote_id, self.get_hashed_remote_ip()
+                )
+            elif vote < old_vote:
+                wrong_quote = await create_wq_and_vote(
+                    -1, author_id, quote_id, self.get_hashed_remote_ip()
+                )
+
+        if wrong_quote is None:
+            wrong_quote = await get_wrong_quote(quote_id, author_id)
+
         return await self.render(
             "pages/quotes.html",
             wrong_quote=wrong_quote,
             next_href=next_href,
             description=str(wrong_quote),
             rating_filter=rating_filter,
+            vote=vote,
         )
+
+    def get_saved_vote_dict(self) -> dict:
+        """Get the vote saved in the cookie."""
+        votes = self.get_cookie("votes", default=None)
+        if votes is None:
+            return {}
+        return json.loads(votes)
 
     @cache
     def rating_filter(self):
@@ -348,7 +455,7 @@ class QuoteBaseHandler(BaseRequestHandler):
 
         if rating_filter == "w":
             return random.choice(
-                tuple(
+                tuple(  # raises an error if called shortly after start
                     filter(
                         lambda _wq: _wq.rating > 0, WRONG_QUOTES_CACHE.values()
                     )
@@ -356,13 +463,13 @@ class QuoteBaseHandler(BaseRequestHandler):
             ).get_id()
         if rating_filter == "n":
             return random.choice(
-                tuple(
+                tuple(  # raises an error if called shortly after start
                     filter(
                         lambda _wq: _wq.rating < 0, WRONG_QUOTES_CACHE.values()
                     )
                 )
             ).get_id()
-        elif rating_filter == "unrated":
+        if rating_filter == "unrated":
             # get a random quote, but filter out already rated quotes
             while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
                 if WRONG_QUOTES_CACHE[ids].id == -1:
@@ -370,10 +477,10 @@ class QuoteBaseHandler(BaseRequestHandler):
                     # the cache. They don't have a real wrong_quotes_id
                     return ids
             return ids
-        elif rating_filter == "rated":
+        if rating_filter == "rated":
             return random.choice(tuple(WRONG_QUOTES_CACHE.values())).get_id()
-        elif rating_filter == "all":
-            pass
+        # if rating_filter == "all":
+        #     pass
         return get_random_id()
 
     def on_finish(self):

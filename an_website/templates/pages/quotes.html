@@ -52,8 +52,26 @@
 
     <!--TODO: Make this prettier:-->
     <div class="vote-container">
-        <input id="upvote" class="vote" type="image" src="/static/img/StempelWitzig.svg" alt="WITZIG!">
-        <input id="downvote" class="vote" type="image" src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+        <form>
+            {% raw form_appendix %}
+            <input name="r" class="hidden-input" value="{{rating_filter}}">
+            <button type="submit"
+                    id="upvote"
+                    class="vote {% if vote == 1 %} voted {% end %}"
+                    name="vote"
+                    value={% if vote == 1 %}"0"{% else %}"1"{% end %}
+            >
+                <img src="/static/img/StempelWitzig.svg" alt="WITZIG!">
+            </button>
+            <button type="submit"
+                    id="downvote"
+                    class="vote {% if vote == -1 %} voted {% end %}"
+                    name="vote"
+                    value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
+            >
+                <img src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+            </button>
+        </form>
 
         <a class="tooltip" href="https://asozial.org/zitate/create/">
             <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
@@ -67,6 +85,7 @@
     </div>
 
     <form method="get" class="voting-container">
+        {% raw form_appendix %}
         <select name="r" class="rating-form-el" onchange="this.form.submit()">
             <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
             <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>

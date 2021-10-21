@@ -231,48 +231,26 @@ div.quote-container:before {
     margin: 0 auto 40px;
 }
 
-.voting-container {
-    background-color: var(--bg);
-}
-
 .vote {
-    box-sizing: border-box;
-    padding: 12px;
-    font-size: 20px;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 10px;
-    background-color: #0e0e0e;
-    color: #fdfdfd;
-    width: 42%;
+    width: 42% !important;
+    padding: 10px !important;
     height: 60px;
 }
 
-.already-voted {
+.vote:hover:not(.voted) {
+    background-color: var(--tooltip-bg) !important;
+}
+
+.voted {
+    /*background-color: var(--tooltip-bg) !important;*/
     filter: grayscale(69%);
 }
-
-/*.vote:active {
-    border-width: 1px;
-    border-color: whitesmoke;
+/*.voted:hover {
+    background-color: var(--secondary-bg) !important;
 }*/
 
-#upvote {
-    border-color: rgb(0, 200, 0);
-    margin-left: auto;
-}
-
-#upvote:hover {
-    border-color: rgb(20, 255, 20);
-    transform: scale(1.005);
-}
-
-#downvote {
-    border-color: rgb(200, 0, 0);
-    margin-right: auto;
-}
-
-#downvote:hover {
-    border-color: rgb(255, 20, 20);
-    transform: scale(1.005);
+.vote img {
+    max-height: 40px;
+    width: auto;
+    background-color: transparent !important;
 }
