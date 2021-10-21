@@ -28,6 +28,9 @@
 
                 <div class="rating-container">
                     <div class="quote-rating">
+                        {% if wrong_quote.id == -1 %}
+                        <div class="rating-text">----</div>
+                        {% else %}
                         <table>
                             <tr>
                                 <th><div class="rating-text">{{wrong_quote.rating}}</div></th>
@@ -42,6 +45,7 @@
                                 {% end %}
                             </tr>
                         </table>
+                        {% end %}
                     </div>
                 </div>
             </div>

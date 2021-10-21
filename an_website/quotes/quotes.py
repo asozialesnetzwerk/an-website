@@ -222,11 +222,17 @@ async def get_wrong_quote(
     if use_cache and wrong_quote is not None:
         return wrong_quote
 
-    if wrong_quote is not None and wrong_quote.id != -1:
+    if not use_cache and wrong_quote is not None and wrong_quote.id != -1:
         return parse_wrong_quote(
             await make_api_request(f"wrongquotes/{wrong_quote.id}")
         )
-
+    if use_cache and quote_id in QUOTES_CACHE and author_id in AUTHORS_CACHE:
+        return WrongQuote(
+            -1,
+            QUOTES_CACHE[quote_id],
+            AUTHORS_CACHE[author_id],
+            0,
+        )
     result = await make_api_request(
         "wrongquotes",
         f"quote={quote_id}&author={author_id}&simulate=true",
@@ -256,6 +262,7 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
             rating=rating,
         ),
     )
+    assert (wrong_quote.quote.id, wrong_quote.author.id) == id_tuple
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
     if wrong_quote.id != wrong_quote_id:
