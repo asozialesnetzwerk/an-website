@@ -18,6 +18,7 @@ This should only contain request handlers and the get_module_info function.
 """
 from __future__ import annotations
 
+import hashlib
 import random
 import re
 import sys
@@ -183,6 +184,14 @@ class BaseRequestHandler(RequestHandler):
                 return "".join(traceback.format_exception(*kwargs["exc_info"]))
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
+
+    def get_hashed_remote_ip(self) -> str:
+        """Hash the remote ip and return it."""
+        return hashlib.sha3_512(
+            (self.request.remote_ip + "Dummes und unnoetiges Salz").encode(
+                "utf-8"
+            )
+        ).hexdigest()[:32]
 
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
