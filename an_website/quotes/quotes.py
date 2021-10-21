@@ -225,7 +225,6 @@ async def get_wrong_quote(
 ) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote_id = (quote_id, author_id)
-    print(wrong_quote_id)
     wrong_quote = WRONG_QUOTES_CACHE.get(wrong_quote_id, None)
     if use_cache and wrong_quote is not None:
         return wrong_quote
@@ -316,7 +315,6 @@ class QuoteBaseHandler(BaseRequestHandler):
         if (rating_filter := self.rating_filter()) != "smart":
             next_href += f"?r={rating_filter}"
         wrong_quote = await get_wrong_quote(quote_id, author_id)
-        print(repr(wrong_quote))
         return await self.render(
             "pages/quotes.html",
             wrong_quote=wrong_quote,
@@ -347,7 +345,6 @@ class QuoteBaseHandler(BaseRequestHandler):
                 rating_filter = "all"
             else:  # 15 - 27 → 13 → 46.43%
                 rating_filter = "w"
-            # print(rating_filter)
 
         if rating_filter == "w":
             return random.choice(
