@@ -281,7 +281,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         ),
         "API_KEY": config.get("ELASTIC_APM", "API_KEY", fallback=None),
         "SERVICE_NAME": "an-website",
-        "SERVICE_VERSION": version.VERSION.strip(),
+        "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
         if not sys.flags.dev_mode
         else "development",

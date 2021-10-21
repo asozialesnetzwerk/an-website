@@ -34,7 +34,7 @@ def run_cmd(cmd):
     ).stdout
 
 
-VERSION = run_cmd("git rev-parse HEAD")
+VERSION = run_cmd("git rev-parse HEAD").strip()
 FILE_HASHES = run_cmd("git ls-files | xargs sha1sum")
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
 GH_PAGES_COMMIT_HASH = run_cmd("git rev-parse origin/gh-pages")
