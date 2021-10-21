@@ -56,18 +56,18 @@
         <input id="downvote" class="vote" type="image" src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
 
         <a class="tooltip" href="https://asozial.org/zitate/create/">
-            <img class="button-img plus-img" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
+            <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
             <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
         </a>
 
         <a class="report tooltip" href="mailto:contact@asozial.org">
-            <img class="get-quote-img button-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
-            <div class="tooltip-top-text  tooltip-text">Melde das Zitat.</div>
+            <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
+            <div class="tooltip-top-text tooltip-text">Melde das Zitat.</div>
         </a>
     </div>
 
-    <form method="get">
-        <select name="r" class="rating-param" onchange="this.form.submit()">
+    <form method="get" class="voting-container">
+        <select name="r" class="rating-form-el" onchange="this.form.submit()">
             <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
             <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
             <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
@@ -76,13 +76,13 @@
             <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
         </select>
         <noscript>
-            <button type="submit">Submit</button>
+            <button type="submit" class="rating-form-el">Submit</button>
         </noscript>
     </form>
 </div>
 {% end %}
 
-
 {% block head %}
+    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <link rel="stylesheet" type="text/css" href="/static/style/quote.css">
 {% end %}

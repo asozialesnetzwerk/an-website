@@ -36,6 +36,10 @@ footer a {
     -webkit-filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
+.report-img:hover {
+    -webkit-filter: drop-shadow(3px 3px 2px rgba(217, 229, 78, 0.5));
+}
+
 .tooltip .tooltip-text {
     letter-spacing: normal;
     visibility: hidden;
@@ -81,28 +85,21 @@ footer a {
     opacity: 0.9;
 }
 
+.button-img {
+    width: 69px;
+    height: 69px;
+    border-radius: 50%;
+}
+
 .tweet-img {
     transform: rotate(270deg);
-    rotation: 270deg;
+    border-radius: 50%;
 }
 
 .tweet-img:hover {
     transform: scale(1.08) rotate(270deg);
     -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
 }
-
-.button-img {
-    width: 69px;
-    height: 69px;
-}
-
-.plus-img:hover {
-    transform: scale(1.08);
-    -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
-}
-
-
-
 
 div.quote-container:before {
     content:url("/static/img/ZitateBackground.svg");
@@ -183,6 +180,10 @@ div.quote-container:before {
     height: 2.2rem;
 }
 
+.rating-form-el {
+    width: auto !important;
+}
+
 .nicht-witzig {
     bottom: 0.008rem;
 }
@@ -228,6 +229,10 @@ div.quote-container:before {
 
 .vote-container {
     margin: 0 auto 40px;
+}
+
+.voting-container {
+    background-color: var(--bg);
 }
 
 .vote {

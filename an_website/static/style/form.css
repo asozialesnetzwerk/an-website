@@ -8,7 +8,7 @@ input[type=text], select, input[type=number] {
   box-sizing: border-box;
 }
 
-input[type=submit] {
+input[type=submit], button[type=submit] {
   width: 100%;
   background-color: var(--secondary-bg);
   color: var(--text-color);
@@ -19,7 +19,7 @@ input[type=submit] {
   cursor: pointer;
 }
 
-input[type=submit]:hover {
+input[type=submit]:hover, button[type=submit]:hover {
   background-color: var(--main);
 }
 
