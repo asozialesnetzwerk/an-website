@@ -229,7 +229,7 @@ async def get_wrong_quote(
 
     result = await make_api_request(
         "wrongquotes",
-        f"quote={quote_id}&autor={author_id}&simulate=true",
+        f"quote={quote_id}&author={author_id}&simulate=true",
     )
     if len(result) > 0:
         return parse_wrong_quote(result[0])
