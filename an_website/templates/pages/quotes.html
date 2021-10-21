@@ -2,70 +2,84 @@
 
 {% block body %}
 <div>
-            <div id="quote-important" class="quote-container">
-                <div id="bottom">
+    <div id="quote-important" class="quote-container">
+        <div id="bottom">
 
-                    <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
-                    <div class="buttons" data-html2canvas-ignore="true">
-                        <a class="download tooltip">
-                            <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
-                            <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
-                        </a>
-                        <a class="tweet tooltip" href="">
-                            <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
-                            <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
-                        </a>
-                        <a class="get-quote tooltip" href="{{next_href}}">
-                            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
-                            <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
-                        </a>
-                    </div>
-                </div>
-                <div id="top">
-                    <div class="quote-text">»{{wrong_quote.quote}}«</div>
-                    <div class="quote-author">- {{wrong_quote.author}}</div>
-                </div>
-
-                <div class="rating-container">
-                    <div class="quote-rating">
-                        {% if wrong_quote.id == -1 %}
-                        <div class="rating-text">----</div>
-                        {% else %}
-                        <table>
-                            <tr>
-                                <th><div class="rating-text">{{wrong_quote.rating}}</div></th>
-                                {% if int(wrong_quote.rating) < 0 %}
-                                    <th>
-                                        <img class="rating-image nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
-                                    </th>
-                                {% else %}
-                                    <th>
-                                        <img class="rating-image witzig" src="/static/img/StempelWitzig.svg" alt=">Witzig-Stempel"/>
-                                    </th>
-                                {% end %}
-                            </tr>
-                        </table>
-                        {% end %}
-                    </div>
-                </div>
-            </div>
-
-            <!--TODO: Make this prettier:-->
-            <div class="vote-container">
-                <input id="upvote" class="vote" type="image" src="/static/img/StempelWitzig.svg" alt="WITZIG!">
-                <input id="downvote" class="vote" type="image" src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
-
-                <a class="tooltip" href="https://asozial.org/zitate/create/">
-                    <img class="button-img plus-img" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
-                    <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
+            <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
+            <div class="buttons" data-html2canvas-ignore="true">
+                <a class="download tooltip">
+                    <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
+                    <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
                 </a>
-
-                <a class="report tooltip" href="mailto:contact@asozial.org">
-                    <img class="get-quote-img button-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
-                    <div class="tooltip-top-text  tooltip-text">Melde das Zitat.</div>
+                <a class="tweet tooltip" href="">
+                    <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
+                    <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
+                </a>
+                <a class="get-quote tooltip" href="{{next_href}}">
+                    <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
+                    <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
                 </a>
             </div>
         </div>
+        <div id="top">
+            <div class="quote-text">»{{wrong_quote.quote}}«</div>
+            <div class="quote-author">- {{wrong_quote.author}}</div>
+        </div>
+
+        <div class="rating-container">
+            <div class="quote-rating">
+                {% if wrong_quote.id == -1 or wrong_quote.id is None %}
+                <div class="rating-text">---</div>
+                {% else %}
+                <table>
+                    <tr>
+                        <th><div class="rating-text">{{wrong_quote.rating}}</div></th>
+                        {% if int(wrong_quote.rating) < 0 %}
+                        <th>
+                            <img class="rating-image nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
+                        </th>
+                        {% else %}
+                        <th>
+                            <img class="rating-image witzig" src="/static/img/StempelWitzig.svg" alt=">Witzig-Stempel"/>
+                        </th>
+                        {% end %}
+                    </tr>
+                </table>
+                {% end %}
+            </div>
+        </div>
+    </div>
+
+    <!--TODO: Make this prettier:-->
+    <div class="vote-container">
+        <input id="upvote" class="vote" type="image" src="/static/img/StempelWitzig.svg" alt="WITZIG!">
+        <input id="downvote" class="vote" type="image" src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+
+        <a class="tooltip" href="https://asozial.org/zitate/create/">
+            <img class="button-img plus-img" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
+            <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
+        </a>
+
+        <a class="report tooltip" href="mailto:contact@asozial.org">
+            <img class="get-quote-img button-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
+            <div class="tooltip-top-text  tooltip-text">Melde das Zitat.</div>
+        </a>
+    </div>
+
+    <form method="get">
+        <select name="r" class="rating-param" onchange="this.form.submit()">
+            <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
+            <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
+            <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
+            <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
+            <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
+            <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
+        </select>
+        <noscript>
+            <button type="submit">Submit</button>
+        </noscript>
+    </form>
+</div>
 {% end %}
 
 

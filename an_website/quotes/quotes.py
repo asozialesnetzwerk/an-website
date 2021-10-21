@@ -115,6 +115,14 @@ class WrongQuote(QuotesObjBase):
     author: Author
     rating: int
 
+    def get_id(self) -> tuple[int, int]:
+        """
+        Get the id of the quote and the author in a tuple.
+
+        :return tuple(quote_id, author_id)
+        """
+        return self.quote.id, self.author.id
+
     def get_id_as_str(self):
         """
         Get the id of the wrong quote as a string.
@@ -223,10 +231,13 @@ async def get_wrong_quote(
         return wrong_quote
 
     if not use_cache and wrong_quote is not None and wrong_quote.id != -1:
+        # use the id of the wrong quote to get the data more efficient
         return parse_wrong_quote(
             await make_api_request(f"wrongquotes/{wrong_quote.id}")
         )
     if use_cache and quote_id in QUOTES_CACHE and author_id in AUTHORS_CACHE:
+        # we don't need to request anything, as the wrong_quote probably has
+        # no ratings just use the cached quote and author
         return WrongQuote(
             -1,
             QUOTES_CACHE[quote_id],
@@ -253,6 +264,8 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
     id_tuple = (json_data["quote"]["id"], json_data["author"]["id"])
     rating = json_data["rating"]
     wrong_quote_id = json_data.get("id", -1)
+    if wrong_quote_id is None:
+        wrong_quote_id = -1
     wrong_quote = WRONG_QUOTES_CACHE.setdefault(
         id_tuple,
         WrongQuote(
@@ -275,11 +288,21 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
     return (await get_wrong_quote(quote_id, author_id)).rating
 
 
+def get_random_quote_id() -> int:
+    """Get random quote id."""
+    return random.randint(0, max((*QUOTES_CACHE.keys(), 100)))
+
+
+def get_random_author_id() -> int:
+    """Get random author id."""
+    return random.randint(0, max((*AUTHORS_CACHE.keys(), 100)))
+
+
 def get_random_id() -> tuple[int, int]:
     """Get random wrong quote id."""
-    return (  # TODO: split this into two methods
-        random.randint(0, max((*QUOTES_CACHE.keys(), 100))),
-        random.randint(0, max((*AUTHORS_CACHE.keys(), 100))),
+    return (
+        get_random_quote_id(),
+        get_random_author_id(),
     )
 
 
@@ -289,19 +312,71 @@ class QuoteBaseHandler(BaseRequestHandler):
     async def render_quote(self, quote_id: int, author_id: int):
         """Get and render a wrong quote based on author id and author id."""
         next_q, next_a = self.get_next_id()
+        next_href = f"/zitate/{next_q}-{next_a}/"
+        if (rating_filter := self.rating_filter()) != "smart":
+            next_href += f"?r={rating_filter}"
         wrong_quote = await get_wrong_quote(quote_id, author_id)
-        print(wrong_quote)
+        print(repr(wrong_quote))
         return await self.render(
             "pages/quotes.html",
             wrong_quote=wrong_quote,
-            next_href=f"/zitate/{next_q}-{next_a}",
+            next_href=next_href,
             description=str(wrong_quote),
+            rating_filter=rating_filter,
         )
 
     @cache
-    def get_next_id(self):  # pylint: disable=R0201
+    def rating_filter(self):
+        """Get a rating filter."""
+        rating_filter = self.get_query_argument("r", default="smart")
+        if rating_filter not in ("w", "n", "unrated", "rated", "all"):
+            return "smart"
+        return rating_filter
+
+    @cache
+    def get_next_id(self) -> tuple[int, int]:  # noqa: C901
         """Get the id of the next quote."""
-        # TODO: use params so this isn't always random
+        rating_filter = self.rating_filter()
+        if rating_filter == "smart":
+            rand_int = random.randint(0, 27)
+            if rand_int < 2:  # 0 - 1 → 2 → ~7.14%
+                rating_filter = "n"
+            elif rand_int < 9:  # 2 - 8 → 7 → 25%
+                rating_filter = "unrated"
+            elif rand_int < 15:  # 9 - 14 → 6 → ~21.43%
+                rating_filter = "all"
+            else:  # 15 - 27 → 13 → 46.43%
+                rating_filter = "w"
+            # print(rating_filter)
+
+        if rating_filter == "w":
+            return random.choice(
+                tuple(
+                    filter(
+                        lambda _wq: _wq.rating > 0, WRONG_QUOTES_CACHE.values()
+                    )
+                )
+            ).get_id()
+        if rating_filter == "n":
+            return random.choice(
+                tuple(
+                    filter(
+                        lambda _wq: _wq.rating < 0, WRONG_QUOTES_CACHE.values()
+                    )
+                )
+            ).get_id()
+        elif rating_filter == "unrated":
+            # get a random quote, but filter out already rated quotes
+            while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
+                if WRONG_QUOTES_CACHE[ids].id == -1:
+                    # Check for wrong quotes, that are unrated but in
+                    # the cache. They don't have a real wrong_quotes_id
+                    return ids
+            return ids
+        elif rating_filter == "rated":
+            return random.choice(tuple(WRONG_QUOTES_CACHE.values())).get_id()
+        elif rating_filter == "all":
+            pass
         return get_random_id()
 
     def on_finish(self):
