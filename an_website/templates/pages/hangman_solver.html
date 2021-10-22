@@ -4,14 +4,14 @@
 <form>
 
     <label class="form-element">
-        Eingabe (Nutze "_" für nicht bekannte Buchstaben):
+        Eingabe (Nutze "_" für nicht bekannte Buchstaben):<br>
 
         <input type="text" class="text-input" name="input" value="{{ input }}">
     </label>
 
 
     <label class="form-element">
-        Falsche Buchstaben:
+        Falsche Buchstaben:<br>
 
         <input type="text" class="text-input" name="invalid"  value="{{ invalid }}">
     </label>
@@ -32,7 +32,7 @@
     <div class="form-element">
         <div class="tooltip no-select">
             <label class="cbl float-left no-select" for="max_words">
-                Maximale Wortanzahl:
+                Maximale Wortanzahl:<br>
             </label>
             <span class="tooltip-text no-select">Wie viele Wörter maximal angezeigt werden dürfen.</span>
         </div>
@@ -40,7 +40,7 @@
     </div>
 
     <label class="form-element">
-        Sprache der Wörter:
+        Sprache der Wörter:<br>
         <select class="small-input" name="lang">
             <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
             <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
