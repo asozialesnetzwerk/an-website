@@ -3,11 +3,15 @@
     z-index: 10;
     left: 0;
     top: 0;
-    width: 100%;
-    max-width: 100%;
+    width: 97.8%;
+    max-width: 97.8%;
     background-color: var(--main);
     color: #fff;
     height: var(--header-height);
+	border-radius: 4px;
+	margin:15px;
+	    display: -webkit-box;
+		-webkit-box-align: center;
 }
 
 .header * {
@@ -22,7 +26,7 @@
     top: 10px;
     right: 10px;
     width: 32px;
-    height: 32px;
+    height: 70px;
     position: absolute;
 }
 
