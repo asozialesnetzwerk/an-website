@@ -1,14 +1,14 @@
 :root {
     /* colors: */
-    --main: hsl(0, 100%, 30%);
-    --main-2: hsl(0, 100%, 50%);
+    --main: hsl(264, 80%, 54%);
+    --main-2: hsl(264, 80%, 54%);
 
     --text-color: hsl(0, 0%, 90%);
     --secondary-text-color: hsl(0, 0%, 60%);
 
-    --bg: hsl(0, 0%, 17%);
-    --secondary-bg: hsl(0, 0%, 17%);
-    --tooltip-bg: hsl(0, 0%, 20%);
+    --bg:  	hsl(240, 7%, 6%);
+    --secondary-bg: hsl(0, 0%, 60%);
+    --tooltip-bg: hsl(264, 80%, 54%);
 
     --contrast: hsl(240, 100%, 50%);
     --contrast-2: hsl(195, 100%, 50%);
