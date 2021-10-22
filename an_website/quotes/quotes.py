@@ -19,6 +19,7 @@ It displays funny, but wrong, quotes.
 from __future__ import annotations
 
 import asyncio
+import logging
 import random
 from dataclasses import dataclass
 from functools import cache
@@ -32,6 +33,8 @@ from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
 API_URL: str = "https://zitate.prapsschnalinen.de/api"
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -158,7 +161,14 @@ async def make_api_request(end_point: str, args: str = "") -> dict:
     return json.loads(response.body)
 
 
-# TODO: run this more than once
+async def start_updating_cache_periodically():
+    """Start updating the cache every hour."""
+    while True:
+        logger.info("Update quotes cache.")
+        await update_cache()
+        await asyncio.sleep(60 * 60)
+
+
 async def update_cache():
     """Fill the cache with all data from the api."""
     json_data = await make_api_request("wrongquotes")
@@ -519,6 +529,8 @@ class QuoteById(QuoteBaseHandler):
 
 
 try:  # TODO: add better fix for tests
-    asyncio.run_coroutine_threadsafe(update_cache(), asyncio.get_event_loop())
+    asyncio.run_coroutine_threadsafe(
+        start_updating_cache_periodically(), asyncio.get_event_loop()
+    )
 except RuntimeError:
     pass
