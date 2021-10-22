@@ -18,7 +18,8 @@ body {
 
 #body {
     max-width: 100%;
-    padding: 5px;
+    padding: 15px;
+	padding-top:45px;
 }
 
 a {
@@ -70,3 +71,4 @@ a {
     border-style: solid;
     border-color: var(--secondary-text-color) transparent transparent transparent;
 }
+
