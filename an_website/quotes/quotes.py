@@ -468,49 +468,54 @@ class QuoteById(QuoteBaseHandler):
         """Handle the get request to this page and render the quote."""
         await self.render_quote(int(quote_id), int(author_id))
 
-    async def render_quote(self, quote_id: int, author_id: int):
-        """Get and render a wrong quote based on author id and author id."""
-        if len(WRONG_QUOTES_CACHE) == 0:
-            # should work in a few seconds, the quotes just haven't loaded yet
-            self.set_header("Retry-After", "3")
-            raise HTTPError(503, reason="Service available in a few seconds")
+    async def post(self, quote_id_str: str, author_id_str: str):
+        """
+        Handle the post request to this page and render the quote.
 
-        wrong_quote = None
-        vote = 0
+        This is used to vote the quote, without changing the url.
+        """
+        quote_id = int(quote_id_str)
+        author_id = int(author_id_str)
+        new_vote_str = self.get_argument("vote", default=None)
+        if new_vote_str is None or new_vote_str == "":
+            return await self.render_quote(quote_id, author_id)
+        if (vote := vote_to_int(new_vote_str)) == new_vote_str:
+            return await self.render_quote(quote_id, author_id)
 
+        old_vote = self.get_old_vote(quote_id, author_id)
+
+        self.update_saved_votes(quote_id, author_id, vote)
+
+        # do the voting:
+        if vote > old_vote:
+            wrong_quote = await create_wq_and_vote(
+                1, author_id, quote_id, self.get_hashed_remote_ip()
+            )
+        elif vote < old_vote:
+            wrong_quote = await create_wq_and_vote(
+                -1, author_id, quote_id, self.get_hashed_remote_ip()
+            )
+        else:
+            raise HTTPError(500)
+        await self.render_wrong_quote(wrong_quote, vote)
+
+    def update_saved_votes(self, quote_id: int, author_id: int, vote: int):
+        """Save the new vote in the cookies."""
         wq_str_id = f"{quote_id}-{author_id}"
-
         vote_dict = self.get_saved_vote_dict()
-        old_vote = vote_to_int(vote_dict.get(wq_str_id, "0"))
+        if vote == 0:
+            del vote_dict[wq_str_id]
+        else:
+            vote_dict[wq_str_id] = str(vote)
+        #  save the votes in a cookie
+        self.set_cookie(
+            "votes",
+            json.dumps(vote_dict),
+            expires_days=365,
+        )
 
-        new_vote_str = self.get_query_argument("vote", default=None)
-        if new_vote_str in (None, ""):
-            vote = old_vote
-        elif new_vote_str is not None:
-            vote = vote_to_int(new_vote_str)
-            if vote != old_vote:
-                if vote == 0:
-                    del vote_dict[wq_str_id]
-                else:
-                    vote_dict[wq_str_id] = str(vote)
-                #  save the votes in a cookie
-                self.set_cookie(
-                    "votes",
-                    json.dumps(vote_dict),
-                    expires_days=365,
-                )
-            if vote > old_vote:
-                wrong_quote = await create_wq_and_vote(
-                    1, author_id, quote_id, self.get_hashed_remote_ip()
-                )
-            elif vote < old_vote:
-                wrong_quote = await create_wq_and_vote(
-                    -1, author_id, quote_id, self.get_hashed_remote_ip()
-                )
-
-        if wrong_quote is None:
-            wrong_quote = await get_wrong_quote(quote_id, author_id)
-
+    async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
+        """Render the page with the wrong_quote and this vote."""
         return await self.render(
             "pages/quotes.html",
             wrong_quote=wrong_quote,
@@ -519,6 +524,34 @@ class QuoteById(QuoteBaseHandler):
             rating_filter=self.rating_filter(),
             vote=vote,
         )
+
+    async def render_quote(self, quote_id: int, author_id: int):
+        """Get and render a wrong quote based on author id and author id."""
+        if len(WRONG_QUOTES_CACHE) == 0:
+            # should work in a few seconds, the quotes just haven't loaded yet
+            self.set_header("Retry-After", "3")
+            raise HTTPError(503, reason="Service available in a few seconds")
+
+        return await self.render_wrong_quote(
+            await get_wrong_quote(quote_id, author_id),
+            self.get_old_vote(quote_id, author_id),
+        )
+
+    @cache
+    def get_old_vote(self, quote_id: int, author_id: int) -> Literal[-1, 0, 1]:
+        """Get the vote saved in the cookie."""
+        vote_dict = self.get_saved_vote_dict()
+
+        key = f"{quote_id}-{author_id}"
+        if key not in vote_dict:
+            return 0
+
+        if vote_dict[key] == "-1":
+            return -1
+        if vote_dict[key] == "1":
+            return 1
+        # zero as default if value is not correct
+        return 0
 
     def get_saved_vote_dict(self) -> dict:
         """Get the vote saved in the cookie."""
