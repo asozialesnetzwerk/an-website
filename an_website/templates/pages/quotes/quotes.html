@@ -76,10 +76,14 @@
         <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
         <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
     </a>
-    <a class="report tooltip" href="mailto:contact@asozial.org">
+    {% if settings["CONTACT_EMAIL"] is not None %}
+    <a class="report tooltip"
+       href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+    >
         <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
         <div class="tooltip-top-text tooltip-text">Melde das Zitat.</div>
     </a>
+    {% end %}
 </div>
 <form method="get" class="voting-container">
     {% raw form_appendix %}
