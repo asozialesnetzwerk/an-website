@@ -31,10 +31,11 @@ logger = logging.getLogger(__name__)
 API_URL: str = "https://zitate.prapsschnalinen.de/api"
 
 QUOTES_CACHE: dict[int, Quote] = {}
-# MAX_QUOTES_ID: int = 0
 AUTHORS_CACHE: dict[int, Author] = {}
-# MAX_AUTHORS_ID: int = 0
 WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
+
+MAX_QUOTES_ID: list[int] = [0]
+MAX_AUTHORS_ID: list[int] = [0]
 
 
 @dataclass
@@ -81,12 +82,7 @@ class Quote(QuotesObjBase):
         if self.author.id == author_id:
             self.author.update_name(author_name)
             return
-        author = AUTHORS_CACHE.setdefault(
-            author_id,
-            Author(author_id, author_name),
-        )
-        author.update_name(author_name)
-        self.author = author
+        self.author = get_author_updated_with(author_id, author_name)
 
     def __str__(self):
         """Return the the content of the quote."""
@@ -135,20 +131,25 @@ async def make_api_request(end_point: str, args: str = "") -> dict:
     return json.loads(response.body)
 
 
+def get_author_updated_with(author_id: int, author_name: str):
+    """Get the author with the given id and the name."""
+    author = AUTHORS_CACHE.setdefault(
+        author_id,
+        Author(author_id, author_name),
+    )
+    author.update_name(author_name)
+    MAX_AUTHORS_ID[0] = max(MAX_AUTHORS_ID[0], author_id)
+    return author
+
+
 def parse_author(json_data: dict) -> Author:
     """Parse a author from json data."""
-    author_id = json_data["id"]
-    name = json_data["author"]
-    author = AUTHORS_CACHE.setdefault(
-        author_id, Author(author_id, json_data["author"])
-    )
-    author.update_name(name)
-    return author
+    return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
 
 def parse_quote(json_data: dict) -> Quote:
     """Parse a quote from json data."""
-    quote_id = json_data["id"]
+    quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])
     quote = QUOTES_CACHE.setdefault(
         quote_id,
@@ -158,6 +159,9 @@ def parse_quote(json_data: dict) -> Quote:
             author,
         ),
     )
+
+    MAX_QUOTES_ID[0] = max(MAX_QUOTES_ID[0], quote.id)
+
     quote.update_quote(
         json_data["quote"],
         author.id,
@@ -168,9 +172,9 @@ def parse_quote(json_data: dict) -> Quote:
 
 def parse_wrong_quote(json_data: dict) -> WrongQuote:
     """Parse a quote."""
-    id_tuple = (json_data["quote"]["id"], json_data["author"]["id"])
+    id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
     rating = json_data["rating"]
-    wrong_quote_id = json_data.get("id", -1)
+    wrong_quote_id = int(json_data.get("id", -1))
     if wrong_quote_id is None:
         wrong_quote_id = -1
     wrong_quote = WRONG_QUOTES_CACHE.setdefault(
@@ -275,12 +279,12 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.randint(0, max((*QUOTES_CACHE.keys(), 100)))
+    return random.randint(0, MAX_QUOTES_ID[0])
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.randint(0, max((*AUTHORS_CACHE.keys(), 100)))
+    return random.randint(0, MAX_AUTHORS_ID[0])
 
 
 def get_random_id() -> tuple[int, int]:
