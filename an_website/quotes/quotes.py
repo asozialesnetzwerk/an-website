@@ -34,6 +34,7 @@ from . import (
     create_wq_and_vote,
     get_random_id,
     get_wrong_quote,
+    get_wrong_quotes,
     start_updating_cache_periodically,
 )
 
@@ -113,19 +114,11 @@ class QuoteBaseHandler(BaseRequestHandler):
 
         if rating_filter == "w":
             return random.choice(
-                tuple(  # raises an error if called shortly after start
-                    filter(
-                        lambda _wq: _wq.rating > 0, WRONG_QUOTES_CACHE.values()
-                    )
-                )
+                get_wrong_quotes(lambda _wq: _wq.rating > 0)
             ).get_id()
         if rating_filter == "n":
             return random.choice(
-                tuple(  # raises an error if called shortly after start
-                    filter(
-                        lambda _wq: _wq.rating < 0, WRONG_QUOTES_CACHE.values()
-                    )
-                )
+                get_wrong_quotes(lambda _wq: _wq.rating < 0)
             ).get_id()
         if rating_filter == "unrated":
             # get a random quote, but filter out already rated quotes
@@ -136,7 +129,7 @@ class QuoteBaseHandler(BaseRequestHandler):
                     return ids
             return ids
         if rating_filter == "rated":
-            return random.choice(tuple(WRONG_QUOTES_CACHE.values())).get_id()
+            return random.choice(get_wrong_quotes()).get_id()
         # if rating_filter == "all":
         #     pass
         return get_random_id()

@@ -19,7 +19,7 @@ import logging
 import os
 import random
 from dataclasses import dataclass
-from typing import Literal
+from typing import Callable, Iterable, Literal, Optional
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -120,6 +120,22 @@ class WrongQuote(QuotesObjBase):
         like: '»quote«\n - author'.
         """
         return f"»{self.quote}« - {self.author}"
+
+
+def get_wrong_quotes(
+    filter_fun: Optional[Callable[[WrongQuote], bool]] = None,
+    sort: bool = False,  # sorted by rating
+) -> tuple[WrongQuote, ...]:
+    """Get cached wrong quotes."""
+    wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
+    if filter is not None:
+        wqs = filter(filter_fun, wqs)
+    if not sort:
+        return tuple(wqs)
+
+    wqs_list = list(wqs)
+    wqs_list.sort(key=lambda _wq: _wq.rating, reverse=True)
+    return tuple(wqs_list)
 
 
 async def make_api_request(end_point: str, args: str = "") -> dict:
