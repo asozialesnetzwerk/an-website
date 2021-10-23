@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
         ),
         name="Falsch zugeordnete Zitate",
-        description="Eine Website mit falsch zugeordneten Zitaten",
+        description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/",
         keywords=(
             "falsch",
