@@ -81,7 +81,7 @@ div.quote-container:before {
 }
 
 .quote-container {
-    background: #000000;
+    background: transparent;
     width: 30em;
     height: auto;
     display: block;
@@ -96,7 +96,7 @@ div.quote-container:before {
     }
 
     .quote-container {
-        background: #000000 url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
+        background: transparent url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
 
         /*background-position: right 10px top 5px;*/
         width: 50rem;
@@ -124,6 +124,9 @@ div.quote-container:before {
     }
 }
 
+#top {
+    background-color: transparent;
+}
 
 .quote-text {
     background-color: transparent;
