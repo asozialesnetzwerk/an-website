@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import configparser
 import re
 
@@ -22,9 +23,17 @@ import an_website.__main__ as main
 from an_website import patches
 
 
+async def get_module_infos():
+    """Wrap main.get_module_infos in an async functions."""
+    return main.get_module_infos()
+
+
 def test_parsing_module_infos():
     """Tests about the module infos in an_website __main__."""
-    module_infos = main.get_module_infos()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    module_infos = loop.run_until_complete(get_module_infos())
+    loop.close()
 
     # should get more than one module_info
     assert len(module_infos) > 0

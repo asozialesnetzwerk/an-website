@@ -51,10 +51,12 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+HTTP_CLIENT = AsyncHTTPClient()
+
+
 async def url_returns_200(url: str) -> bool:
     """Check whether a url returns a status code of 200."""
-    http_client = AsyncHTTPClient()
-    response = await http_client.fetch(url, raise_error=False)
+    response = await HTTP_CLIENT.fetch(url, raise_error=False)
     return response.code == 200
 
 
@@ -67,13 +69,11 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
         - from disboard (the guild needs to set it up first)
     If the invite couldn't be fetched a HTTPError is thrown.
     """
-    http_client = AsyncHTTPClient()
-
     reason = "Invite not found."
 
     # try getting the invite from the widget
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
-    response = await http_client.fetch(url, raise_error=False)
+    response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
         response_json = orjson.loads(response.body.decode("utf-8"))
         invite = response_json["instant_invite"]
@@ -83,7 +83,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 
     # try getting the invite from disboard
     url = f"https://disboard.org/site/get-invite/{guild_id}"
-    response = await http_client.fetch(url, raise_error=False)
+    response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
         return (
             orjson.loads(response.body.decode("utf-8")),

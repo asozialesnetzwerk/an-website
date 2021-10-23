@@ -138,10 +138,12 @@ def get_wrong_quotes(
     return tuple(wqs_list)
 
 
+HTTP_CLIENT = AsyncHTTPClient()
+
+
 async def make_api_request(end_point: str, args: str = "") -> dict:
     """Make api request and return the result as dict."""
-    http_client = AsyncHTTPClient()
-    response = await http_client.fetch(
+    response = await HTTP_CLIENT.fetch(
         f"{API_URL}/{end_point}?{args}", raise_error=True
     )
     return json.loads(response.body)
@@ -315,8 +317,7 @@ async def vote_wrong_quote(
     vote: Literal[-1, 1], wrong_quote: WrongQuote
 ) -> WrongQuote:
     """Vote for the wrong_quote with the given id."""
-    http_client = AsyncHTTPClient()
-    response = await http_client.fetch(
+    response = await HTTP_CLIENT.fetch(
         f"{API_URL}/wrongquotes/{wrong_quote.id}",
         method="POST",
         body=f"vote={vote}",
@@ -339,8 +340,7 @@ async def create_wq_and_vote(
     if wrong_quote is not None and wrong_quote.id != -1:
         return await vote_wrong_quote(vote, wrong_quote)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote
-    http_client = AsyncHTTPClient()
-    response = await http_client.fetch(
+    response = await HTTP_CLIENT.fetch(
         f"{API_URL}/wrongquotes",
         method="POST",
         body=f"quote={quote_id}&"
