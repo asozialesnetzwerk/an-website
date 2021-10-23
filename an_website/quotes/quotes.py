@@ -212,7 +212,7 @@ class QuoteById(QuoteBaseHandler):
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
         """Render the page with the wrong_quote and this vote."""
         return await self.render(
-            "pages/quotes.html",
+            "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
             description=str(wrong_quote),

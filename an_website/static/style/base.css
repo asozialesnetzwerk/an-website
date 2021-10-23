@@ -21,8 +21,13 @@ body {
     padding: 5px;
 }
 
-a {
+a:not(.no-style-a) {
     color: var(--main)
+}
+
+.no-style-a {
+    text-decoration: none;
+    display: block;
 }
 
 .hidden-input {

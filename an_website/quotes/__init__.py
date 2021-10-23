@@ -23,6 +23,7 @@ from typing import Callable, Iterable, Literal, Optional
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
+from tornado.web import HTTPError
 
 DIR = os.path.dirname(__file__)
 
@@ -58,6 +59,8 @@ class Author(QuotesObjBase):
     """The author object with a name."""
 
     name: str
+    # tuple(url_to_info, info_str)
+    info: Optional[tuple[str, Optional[str]]] = None
 
     def update_name(self, name: str):
         """Update author data with another author."""
@@ -144,8 +147,13 @@ HTTP_CLIENT = AsyncHTTPClient()
 async def make_api_request(end_point: str, args: str = "") -> dict:
     """Make api request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/{end_point}?{args}", raise_error=True
+        f"{API_URL}/{end_point}?{args}", raise_error=False
     )
+    if response.code != 200:
+        raise HTTPError(
+            400,
+            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+        )
     return json.loads(response.body)
 
 
