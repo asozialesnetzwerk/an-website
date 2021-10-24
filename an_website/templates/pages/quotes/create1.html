@@ -1,0 +1,41 @@
+{% extends "../../base.html" %}
+
+{% block body %}
+<form method="post" action="/zitate/erstellen/">
+    <label class="text-input-label">
+        Zitat:
+         <input name="quote-1" list="quote-list" autocomplete="on" type="text">
+    </label>
+
+
+    <label class="text-input-label">
+        Richtiger Autor:
+        <input name="real-author-1" list="author-list" autocomplete="on" type="text">
+    </label>
+
+
+    <label class="text-input-label">
+        Falscher Autor:
+        <input name="fake-author-1" list="author-list" autocomplete="on" type="text">
+    </label>
+
+
+    <datalist id="quote-list">
+        {% for q in quotes %}
+        <option value="{{q.quote}}">
+        {% end %}
+    </datalist>
+    <datalist id="author-list">
+        {% for a in authors %}
+        <option value="{{a.name}}">
+        {% end %}
+    </datalist>
+
+    <input id="submit-button" class="button" type="submit" value="Ausgewählte Daten einreichen.">
+</form>
+
+{% end %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
+{% end %}
