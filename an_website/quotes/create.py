@@ -14,13 +14,15 @@
 """Create-page to create new wrong quotes."""
 from __future__ import annotations
 
-# pylint: disable=no-name-in-module
 import logging
 from typing import Optional, Union
 from urllib.parse import quote as quote_url
 
 import orjson as json
+
+# pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
+from tornado.web import HTTPError
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
@@ -63,10 +65,15 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
 
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/quotes",
-        raise_error=True,
+        raise_error=False,
         method="POST",
         body=f"author={author.id}&quote={quote_url(quote_str)}",
     )
+    if response.code != 200:
+        raise HTTPError(
+            400,
+            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+        )
 
     return parse_quote(json.loads(response.body))
 
@@ -81,10 +88,15 @@ async def create_author(author_str: str) -> Author:
 
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/authors",
-        raise_error=True,
+        raise_error=False,
         method="POST",
         body=f"author={quote_url(author_str)}",
     )
+    if response.code != 200:
+        raise HTTPError(
+            400,
+            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+        )
 
     return parse_author(json.loads(response.body))
 
