@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
         description="Erstelle witzige falsch zugeordnete Zitate",
         aliases=("/zitate/create/",),
         path="/zitate/erstellen/",
-        hidden=True
+        hidden=True,
     )
 
 

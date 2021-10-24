@@ -156,9 +156,7 @@ async def make_api_request(
         raise_error=False,
         method=method,
         body=body,
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
     )
     if response.code != 200:
         logger.error(
