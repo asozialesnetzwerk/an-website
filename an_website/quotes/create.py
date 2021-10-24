@@ -20,6 +20,7 @@ from urllib.parse import quote as quote_url
 
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
+from tornado.web import HTTPError
 
 from ..utils.utils import ModuleInfo
 from . import (
@@ -90,21 +91,26 @@ async def create_wrong_quote(
     quote_param: Union[Quote, str],
 ) -> str:
     """Create a wrong quote and return the id in the q_id-a_id format."""
-    if isinstance(real_author_param, str):
-        real_author = await create_author(real_author_param)
-    else:
-        real_author = real_author_param
     if isinstance(fake_author_param, str):
+        if len(fake_author_param) == 0:
+            raise HTTPError(400, "Fake author is needed, but empty.")
         fake_author = await create_author(fake_author_param)
     else:
         fake_author = fake_author_param
+
     if isinstance(quote_param, str):
+        if len(quote_param) == 0:
+            raise HTTPError(400, "Quote is needed, but empty.")
+
+        if isinstance(real_author_param, str):
+            if len(real_author_param) == 0:
+                raise HTTPError(400, "Real author is needed, but empty.")
+            real_author = await create_author(real_author_param)
+        else:
+            real_author = real_author_param
         quote = await create_quote(quote_param, real_author)
     else:
         quote = quote_param
-        if quote.author != real_author:
-            # pylint: disable=logging-fstring-interpolation
-            logger.warning(f"{real_author=} is not the author of {quote=}")
 
     return f"{quote.id}-{fake_author.id}"
 
