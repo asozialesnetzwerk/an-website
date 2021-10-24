@@ -345,7 +345,13 @@ async def vote_wrong_quote(
         f"{API_URL}/wrongquotes/{wrong_quote.id}",
         method="POST",
         body=f"vote={vote}",
+        raise_error=False,
     )
+    if response.code != 200:
+        raise HTTPError(
+            400,
+            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+        )
     return parse_wrong_quote(json.loads(response.body))
 
 
@@ -367,9 +373,14 @@ async def create_wq_and_vote(
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/wrongquotes",
         method="POST",
-        body=f"quote={quote_id}&"
-        f"author={author_id}&"
+        body=f"quote={quote_id}&author={author_id}&"
         f"contributed_by=an-website_{identifier}",
+        raise_errror=False,
     )
+    if response.code != 200:
+        raise HTTPError(
+            400,
+            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+        )
     wrong_quote = parse_wrong_quote(json.loads(response.body))
     return await vote_wrong_quote(vote, wrong_quote)
