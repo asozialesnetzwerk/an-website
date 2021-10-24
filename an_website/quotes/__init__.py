@@ -258,23 +258,23 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
 async def start_updating_cache_periodically():
     """Start updating the cache every hour."""
     while True:
-        logger.info("Update quotes cache.")
         await update_cache()
         await asyncio.sleep(60 * 60)
 
 
 async def update_cache():
     """Fill the cache with all data from the api."""
-    json_data = await make_api_request("wrongquotes")
-    for wrong_quote in json_data:
+    logger.info("Update quotes cache.")
+    wq_data = await make_api_request("wrongquotes")
+    for wrong_quote in wq_data:
         parse_wrong_quote(wrong_quote)
 
-    json_data = await make_api_request("quotes")
-    for quote in json_data:
+    quotes_data = await make_api_request("quotes")
+    for quote in quotes_data:
         parse_quote(quote)
 
-    json_data = await make_api_request("authors")
-    for author in json_data:
+    authors_data = await make_api_request("authors")
+    for author in authors_data:
         parse_author(author)
 
 
