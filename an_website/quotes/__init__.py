@@ -375,7 +375,7 @@ async def create_wq_and_vote(
         method="POST",
         body=f"quote={quote_id}&author={author_id}&"
         f"contributed_by=an-website_{identifier}",
-        raise_errror=False,
+        raise_error=False,
     )
     if response.code != 200:
         raise HTTPError(
