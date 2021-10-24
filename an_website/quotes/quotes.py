@@ -95,7 +95,8 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         url = f"/zitate/{next_q}-{next_a}/"
         if (rating_filter := self.rating_filter()) != "smart":
             return url + f"?r={rating_filter}"
-        return url
+
+        return self.fix_url(url)
 
     @cache
     def get_next_id(self) -> tuple[int, int]:  # noqa: C901
