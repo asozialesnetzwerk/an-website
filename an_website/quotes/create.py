@@ -116,11 +116,12 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
 
     authors: list[Union[Author, str]] = [
         *filter(
-            lambda _a: distance(_a.name, author_name) < 2,
+            lambda _a: distance(_a.name, author_name) < 3,
             AUTHORS_CACHE.values(),
         ),
         author_name,
     ]
+    # authors should be in most cases title case
     fixed_author = author_name.title()
     if fixed_author not in authors:
         authors.append(fixed_author)
@@ -153,7 +154,7 @@ async def get_quotes(quote_str: str) -> list[Union[Quote, str]]:
 
     quotes: list[Union[Quote, str]] = [
         *filter(
-            lambda _q: distance(_q.quote, quote_str) < 4,
+            lambda _q: distance(_q.quote, quote_str) < 6,
             QUOTES_CACHE.values(),
         ),
         fix_quote_str(quote_str),
