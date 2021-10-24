@@ -207,7 +207,8 @@ class QuoteById(QuoteBaseHandler):
         wq_str_id = f"{quote_id}-{author_id}"
         vote_dict = self.get_saved_vote_dict()
         if vote == 0:
-            del vote_dict[wq_str_id]
+            if wq_str_id in vote_dict:
+                del vote_dict[wq_str_id]
         else:
             vote_dict[wq_str_id] = str(vote)
         #  save the votes in a cookie
