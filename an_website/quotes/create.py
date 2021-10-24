@@ -18,22 +18,18 @@ import logging
 from typing import Optional, Union
 from urllib.parse import quote as quote_url
 
-import orjson as json
-
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
-from tornado.web import HTTPError
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
-    API_URL,
     AUTHORS_CACHE,
-    HTTP_CLIENT,
     QUOTES_CACHE,
     Author,
     Quote,
     fix_quote_str,
+    make_api_request,
     parse_author,
     parse_quote,
 )
@@ -63,19 +59,13 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
     if quote is not None:
         return quote
 
-    response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/quotes",
-        raise_error=False,
-        method="POST",
-        body=f"author={author.id}&quote={quote_url(quote_str)}",
-    )
-    if response.code != 200:
-        raise HTTPError(
-            400,
-            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+    return parse_quote(
+        await make_api_request(
+            "quotes",
+            method="POST",
+            body=f"author={author.id}&quote={quote_url(quote_str)}",
         )
-
-    return parse_quote(json.loads(response.body))
+    )
 
 
 async def create_author(author_str: str) -> Author:
@@ -86,19 +76,11 @@ async def create_author(author_str: str) -> Author:
     if author is not None:
         return author
 
-    response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/authors",
-        raise_error=False,
-        method="POST",
-        body=f"author={quote_url(author_str)}",
-    )
-    if response.code != 200:
-        raise HTTPError(
-            400,
-            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+    return parse_author(
+        await make_api_request(
+            "authors", method="POST", body=f"author={quote_url(author_str)}"
         )
-
-    return parse_author(json.loads(response.body))
+    )
 
 
 async def create_wrong_quote(

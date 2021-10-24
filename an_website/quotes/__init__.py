@@ -144,15 +144,34 @@ def get_wrong_quotes(
 HTTP_CLIENT = AsyncHTTPClient()
 
 
-async def make_api_request(end_point: str, args: str = "") -> dict:
+async def make_api_request(
+    end_point: str,
+    args: str = "",
+    method: Literal["GET", "POST"] = "GET",
+    body: str = None,
+) -> dict:
     """Make api request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/{end_point}?{args}", raise_error=False
+        f"{API_URL}/{end_point}?{args}",
+        raise_error=False,
+        method=method,
+        body=body,
     )
     if response.code != 200:
+        logger.error(
+            "%s request to '%s/%s?%s' with body='%s' "
+            "failed with code=%d and reason='%s'",
+            method,
+            API_URL,
+            end_point,
+            args,
+            body,
+            response.code,
+            response.reason,
+        )
         raise HTTPError(
             400,
-            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+            reason=f"{API_URL}/{end_point} returned: '{response.reason}'",
         )
     return json.loads(response.body)
 
@@ -341,18 +360,13 @@ async def vote_wrong_quote(
     vote: Literal[-1, 1], wrong_quote: WrongQuote
 ) -> WrongQuote:
     """Vote for the wrong_quote with the given id."""
-    response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/wrongquotes/{wrong_quote.id}",
-        method="POST",
-        body=f"vote={vote}",
-        raise_error=False,
-    )
-    if response.code != 200:
-        raise HTTPError(
-            400,
-            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+    return parse_wrong_quote(
+        await make_api_request(
+            f"wrongquotes/{wrong_quote.id}",
+            method="POST",
+            body=f"vote={vote}",
         )
-    return parse_wrong_quote(json.loads(response.body))
+    )
 
 
 async def create_wq_and_vote(
@@ -370,17 +384,12 @@ async def create_wq_and_vote(
     if wrong_quote is not None and wrong_quote.id != -1:
         return await vote_wrong_quote(vote, wrong_quote)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote
-    response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/wrongquotes",
-        method="POST",
-        body=f"quote={quote_id}&author={author_id}&"
-        f"contributed_by=an-website_{identifier}",
-        raise_error=False,
-    )
-    if response.code != 200:
-        raise HTTPError(
-            400,
-            reason=f"zitate.prapsschnalinen.de returned: {response.reason}",
+    wrong_quote = parse_wrong_quote(
+        await make_api_request(
+            "wrongquotes",
+            method="POST",
+            body=f"quote={quote_id}&author={author_id}&"
+            f"contributed_by=an-website_{identifier}",
         )
-    wrong_quote = parse_wrong_quote(json.loads(response.body))
+    )
     return await vote_wrong_quote(vote, wrong_quote)
