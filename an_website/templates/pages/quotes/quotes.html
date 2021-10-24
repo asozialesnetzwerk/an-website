@@ -15,7 +15,7 @@
                 <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
                 <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
             </a>
-            <a class="get-quote tooltip" href="{{next_href}}">
+            <a class="get-quote tooltip" id="next" href="{{next_href}}">
                 <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
                 <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
             </a>
@@ -99,6 +99,8 @@
         <button type="submit" class="rating-form-el">Submit</button>
     </noscript>
 </form>
+
+<script src="/static/js/quote.js"></script>
 {% end %}
 
 {% block head %}
