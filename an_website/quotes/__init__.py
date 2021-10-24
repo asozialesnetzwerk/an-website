@@ -25,6 +25,8 @@ import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
+from ..utils.request_handler import BaseRequestHandler
+
 DIR = os.path.dirname(__file__)
 
 logger = logging.getLogger(__name__)
@@ -394,3 +396,15 @@ async def create_wq_and_vote(
         )
     )
     return await vote_wrong_quote(vote, wrong_quote)
+
+
+class QuoteReadyCheckRequestHandler(BaseRequestHandler):
+    """Class that checks if quotes have been loaded."""
+
+    async def prepare(self):
+        """Fail if quotes aren't ready yet."""
+        if len(WRONG_QUOTES_CACHE) == 0:
+            # should work in a few seconds, the quotes just haven't loaded yet
+            self.set_header("Retry-After", "3")
+            raise HTTPError(503, reason="Service available in a few seconds.")
+        await super().prepare()

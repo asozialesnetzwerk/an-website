@@ -26,10 +26,10 @@ from typing import Literal
 import orjson as json
 from tornado.web import HTTPError
 
-from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     WRONG_QUOTES_CACHE,
+    QuoteReadyCheckRequestHandler,
     WrongQuote,
     create_wq_and_vote,
     get_random_id,
@@ -78,7 +78,7 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     return 0
 
 
-class QuoteBaseHandler(BaseRequestHandler):
+class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
 
     @cache
@@ -230,11 +230,6 @@ class QuoteById(QuoteBaseHandler):
 
     async def render_quote(self, quote_id: int, author_id: int):
         """Get and render a wrong quote based on author id and author id."""
-        if len(WRONG_QUOTES_CACHE) == 0:
-            # should work in a few seconds, the quotes just haven't loaded yet
-            self.set_header("Retry-After", "3")
-            raise HTTPError(503, reason="Service available in a few seconds")
-
         return await self.render_wrong_quote(
             await get_wrong_quote(quote_id, author_id),
             self.get_old_vote(quote_id, author_id),

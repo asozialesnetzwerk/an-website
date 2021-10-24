@@ -21,13 +21,13 @@ from urllib.parse import quote as quote_url
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
 
-from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     AUTHORS_CACHE,
     QUOTES_CACHE,
     Author,
     Quote,
+    QuoteReadyCheckRequestHandler,
     fix_quote_str,
     make_api_request,
     parse_author,
@@ -163,7 +163,7 @@ async def get_quotes(quote_str: str) -> list[Union[Quote, str]]:
     return quotes
 
 
-class CreatePage(BaseRequestHandler):
+class CreatePage(QuoteReadyCheckRequestHandler):
     """The request handler for the create page."""
 
     async def get(self):
@@ -212,7 +212,7 @@ class CreatePage(BaseRequestHandler):
         )
 
 
-class CreatePage2(BaseRequestHandler):
+class CreatePage2(QuoteReadyCheckRequestHandler):
     """The request handler for the second part of the create page."""
 
     async def post(self):
