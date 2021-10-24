@@ -173,15 +173,31 @@ def parse_author(json_data: dict) -> Author:
     return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
 
+def fix_quote_str(quote_str: str) -> str:
+    """Fix common mistakes in quotes."""
+    if (
+        len(quote_str) > 2
+        and (quote_str.startswith('"') or quote_str.startswith("„"))
+        and (quote_str.endswith('"') or quote_str.endswith("“"))
+    ):
+        # remove double quotes from quote,
+        # that are stupid and shouldn't be there
+        quote_str = quote_str[1:-1]
+
+    return quote_str.strip()
+
+
 def parse_quote(json_data: dict) -> Quote:
     """Parse a quote from json data."""
     quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])
+    quote_str = fix_quote_str(json_data["quote"])
+
     quote = QUOTES_CACHE.setdefault(
         quote_id,
         Quote(
             quote_id,
-            json_data["quote"],
+            quote_str,
             author,
         ),
     )
@@ -189,7 +205,7 @@ def parse_quote(json_data: dict) -> Quote:
     MAX_QUOTES_ID[0] = max(MAX_QUOTES_ID[0], quote.id)
 
     quote.update_quote(
-        json_data["quote"],
+        quote_str,
         author.id,
         author.name,
     )
