@@ -186,10 +186,18 @@ class QuoteById(QuoteBaseHandler):
             wrong_quote = await create_wq_and_vote(
                 1, author_id, quote_id, self.get_hashed_remote_ip()
             )
+            if vote - old_vote == 2:  # TODO: add better fix
+                wrong_quote = await create_wq_and_vote(
+                    1, author_id, quote_id, self.get_hashed_remote_ip()
+                )
         elif vote < old_vote:
             wrong_quote = await create_wq_and_vote(
                 -1, author_id, quote_id, self.get_hashed_remote_ip()
             )
+            if vote - old_vote == -2:  # TODO: add better fix
+                wrong_quote = await create_wq_and_vote(
+                    -1, author_id, quote_id, self.get_hashed_remote_ip()
+                )
         else:
             raise HTTPError(500)
         await self.render_wrong_quote(wrong_quote, vote)
