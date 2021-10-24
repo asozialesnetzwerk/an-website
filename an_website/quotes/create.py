@@ -127,6 +127,9 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
         ),
         author_name,
     ]
+    fixed_author = author_name.title()
+    if fixed_author not in authors:
+        authors.append(fixed_author)
     return authors
 
 
@@ -190,6 +193,7 @@ class CreatePage(BaseRequestHandler):
                 self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
             )
 
+        # TODO: Search for real author, to reduce work for users
         real_author_str = self.get_argument("real-author-1")
 
         quotes = await get_quotes(quote_str)
