@@ -18,9 +18,7 @@ from __future__ import annotations
 import an_website.quotes as quotes
 
 
-async def test_parsing_wrong_quotes():
-    """Test parsing wrong_quotes."""
-    wrong_quote_data = {
+WRONG_QUOTE_DATA = {
         # https://zitate.prapsschnalinen.de/api/wrongquotes/1
         "id": 1,
         "author": {
@@ -40,22 +38,26 @@ async def test_parsing_wrong_quotes():
         "showed": 216,
         "voted": 129,
     }
-    wrong_quote = quotes.parse_wrong_quote(wrong_quote_data)
+
+
+async def test_parsing_wrong_quotes():
+    """Test parsing wrong_quotes."""
+    wrong_quote = quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
     assert wrong_quote.id == 1
     # quote_id (1) - author_id (2)
     assert wrong_quote.get_id_as_str() == "1-2"
     assert wrong_quote.rating == 4
 
     # parsing the same dict twice should return the same object twice
-    assert id(wrong_quote) == id(quotes.parse_wrong_quote(wrong_quote_data))
+    assert id(wrong_quote) == id(quotes.parse_wrong_quote(WRONG_QUOTE_DATA))
 
-    author = quotes.parse_author(wrong_quote_data["author"])
+    author = quotes.parse_author(WRONG_QUOTE_DATA["author"])
     assert id(author) == id(wrong_quote.author)
     assert author == await quotes.get_author_by_id(author_id=author.id)
     assert author.name == "Kim Jong-il"
     assert author.id == 2
 
-    quote = quotes.parse_quote(wrong_quote_data["quote"])
+    quote = quotes.parse_quote(WRONG_QUOTE_DATA["quote"])
     assert id(quote) == id(wrong_quote.quote)
     assert quote == await quotes.get_quote_by_id(quote_id=quote.id)
     assert quote.id == 1
@@ -67,5 +69,12 @@ async def test_parsing_wrong_quotes():
     assert 2 == len(quotes.AUTHORS_CACHE) == quotes.MAX_AUTHORS_ID[0]
 
 
-async def test_():
-    """"""
+async def test_author_updating():
+    """Test updating the author."""
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
+    assert (author := quotes.get_author_updated_with(1, "test")).name == "test"
+
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
+    assert author.name == "Abraham Lincoln"
