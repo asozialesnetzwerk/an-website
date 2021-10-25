@@ -15,8 +15,8 @@
 
 from __future__ import annotations
 
-import an_website.quotes as quotes
 import an_website.quotes.quotes as main_page
+from an_website import quotes
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
