@@ -69,7 +69,7 @@ async def test_parsing_wrong_quotes():
     assert 2 == len(quotes.AUTHORS_CACHE) == quotes.MAX_AUTHORS_ID[0]
 
 
-async def test_author_updating():
+def test_author_updating():
     """Test updating the author."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
@@ -78,3 +78,25 @@ async def test_author_updating():
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
     assert author.name == "Abraham Lincoln"
+
+
+async def test_quote_updating():
+    """Test updating the quote."""
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
+    quote = await quotes.get_quote_by_id(1)
+
+    assert quote.quote == (
+        "Frage nicht, was dein Land für dich tun kann, "
+        "frage was du für dein Land tun kannst."
+    )
+    quote.quote = "test"
+
+    assert quote.quote == "test"
+
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
+    assert quote.quote == (
+        "Frage nicht, was dein Land für dich tun kann, "
+        "frage was du für dein Land tun kannst."
+    )
