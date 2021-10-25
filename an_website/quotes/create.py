@@ -170,6 +170,12 @@ async def get_quotes(quote_str: str) -> list[Union[Quote, str]]:
         ),
         fix_quote_str(quote_str),
     ]
+    if (
+        not quote_str.endswith("?")
+        or not quote_str.endswith(".")
+        or not quote_str.endswith("!")
+    ):
+        quotes.append(quote_str + ".")
     return quotes
 
 
