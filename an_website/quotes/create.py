@@ -132,6 +132,10 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
     fixed_author = author_name.title()
     if fixed_author not in authors:
         authors.append(fixed_author)
+    # maybe only the first letter upper case
+    fixed_author_2 = author_name[0].upper() + author_name[1:]
+    if fixed_author_2 not in authors:
+        authors.append(fixed_author_2)
     return authors
 
 
