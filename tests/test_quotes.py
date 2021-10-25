@@ -18,27 +18,26 @@ from __future__ import annotations
 import an_website.quotes as quotes
 import an_website.quotes.quotes as main_page
 
-
 WRONG_QUOTE_DATA = {
-        # https://zitate.prapsschnalinen.de/api/wrongquotes/1
+    # https://zitate.prapsschnalinen.de/api/wrongquotes/1
+    "id": 1,
+    "author": {
+        "id": 2,
+        "author": "Kim Jong-il",
+    },
+    "quote": {
         "id": 1,
         "author": {
-            "id": 2,
-            "author": "Kim Jong-il",
-        },
-        "quote": {
             "id": 1,
-            "author": {
-                "id": 1,
-                "author": "Abraham Lincoln",
-            },
-            "quote": "Frage nicht, was dein Land für dich tun kann, "
-            "frage was du für dein Land tun kannst.",
+            "author": "Abraham Lincoln",
         },
-        "rating": 4,
-        "showed": 216,
-        "voted": 129,
-    }
+        "quote": "Frage nicht, was dein Land für dich tun kann, "
+        "frage was du für dein Land tun kannst.",
+    },
+    "rating": 4,
+    "showed": 216,
+    "voted": 129,
+}
 
 
 async def test_parsing_wrong_quotes():
