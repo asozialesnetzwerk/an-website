@@ -20,10 +20,12 @@ from __future__ import annotations
 
 import asyncio
 import random
+import sys
 from functools import cache
 from typing import Literal
 
 import orjson as json
+import tornado.httputil
 from tornado.web import HTTPError
 
 from ..utils.utils import ModuleInfo
@@ -224,7 +226,10 @@ class QuoteById(QuoteBaseHandler):
         return await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
-            next_href=self.get_next_url(),
+            next_href=tornado.httputil.url_concat(
+                self.get_next_url(), {"last": wrong_quote.get_id_as_str()}
+            ),
+            last_quote=self.get_query_argument("last", default=""),
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             vote=vote,
@@ -262,8 +267,10 @@ class QuoteById(QuoteBaseHandler):
 
 
 try:  # TODO: add better fix for tests
-    asyncio.run_coroutine_threadsafe(
-        start_updating_cache_periodically(), asyncio.get_event_loop()
-    )
+    if "pytest" not in sys.modules:
+        # don't connect to the internet when running with pytest
+        asyncio.run_coroutine_threadsafe(
+            start_updating_cache_periodically(), asyncio.get_event_loop()
+        )
 except RuntimeError:
     pass
