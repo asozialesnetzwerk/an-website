@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import an_website.quotes as quotes
+import an_website.quotes.quotes as main_page
 
 
 WRONG_QUOTE_DATA = {
@@ -100,3 +101,10 @@ async def test_quote_updating():
         "Frage nicht, was dein Land für dich tun kann, "
         "frage was du für dein Land tun kannst."
     )
+
+
+def test_parsing_vote_str():
+    """Test parsing vote str."""
+    assert main_page.vote_to_int("-1") == -1
+    assert main_page.vote_to_int("0") == 0
+    assert main_page.vote_to_int("1") == 1
