@@ -45,6 +45,7 @@ a:not(.no-style-a) {
 
 /* Tooltip text */
 .tooltip .tooltip-text {
+    letter-spacing: normal;
     visibility: hidden;
     width: 140px;
     background-color: var(--tooltip-bg);
