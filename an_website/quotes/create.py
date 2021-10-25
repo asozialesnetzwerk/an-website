@@ -65,7 +65,7 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
         await make_api_request(
             "quotes",
             method="POST",
-            body=f"author={author.id}&quote={quote_url(quote_str)}",
+            body=f"author={author.id}&quote={quote_str}",
         )
     )
 
@@ -80,7 +80,7 @@ async def create_author(author_str: str) -> Author:
 
     return parse_author(
         await make_api_request(
-            "authors", method="POST", body=f"author={quote_url(author_str)}"
+            "authors", method="POST", body=f"author={author_str}"
         )
     )
 
