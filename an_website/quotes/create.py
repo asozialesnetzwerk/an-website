@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import logging
 from typing import Optional, Union
-from urllib.parse import quote as quote_url
 
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
