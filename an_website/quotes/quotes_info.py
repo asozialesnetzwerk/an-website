@@ -28,7 +28,7 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/zitate/info/([aq])/([0-9]{1,10})/", QuotesInfoPage),),
-        name="Falsch zugeordnete Zitate",
+        name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/info/a/1/",
         hidden=True,
