@@ -46,10 +46,26 @@ async def test_parsing_wrong_quotes():
     assert wrong_quote.get_id_as_str() == "1-2"
     assert wrong_quote.rating == 4
 
+    # parsing the same dict twice should return the same object twice
+    assert id(wrong_quote) == id(quotes.parse_wrong_quote(wrong_quote_data))
+
     author = quotes.parse_author(wrong_quote_data["author"])
     assert id(author) == id(wrong_quote.author)
     assert author == await quotes.get_author_by_id(author_id=author.id)
+    assert author.name == "Kim Jong-il"
+    assert author.id == 2
 
     quote = quotes.parse_quote(wrong_quote_data["quote"])
     assert id(quote) == id(wrong_quote.quote)
     assert quote == await quotes.get_quote_by_id(quote_id=quote.id)
+    assert quote.id == 1
+    assert quote.author.id == 1
+
+    assert await quotes.get_rating_by_id(1, 2) == 4
+
+    assert 1 == len(quotes.QUOTES_CACHE) == quotes.MAX_QUOTES_ID[0]
+    assert 2 == len(quotes.AUTHORS_CACHE) == quotes.MAX_AUTHORS_ID[0]
+
+
+async def test_():
+    """"""
