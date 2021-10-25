@@ -2,25 +2,6 @@
 
 {% block body %}
 <div id="quote-important" class="quote-container">
-    <div id="bottom">
-        <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
-        <div class="buttons" data-html2canvas-ignore="true">
-            <a class="download tooltip">
-                <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
-                <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
-            </a>
-            <a class="tweet tooltip"
-               href="https://twitter.com/intent/tweet?text={{url_escape(str(wrong_quote) + '\n\nGeneriert mit: ' + url) }}"
-            >
-                <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
-                <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
-            </a>
-            <a class="get-quote tooltip" id="next" href="{{next_href}}">
-                <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
-                <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
-            </a>
-        </div>
-    </div>
     <div id="top">
         <a href="{{fix_url(f'/zitate/info/q/{wrong_quote.quote.id}')}}"
            class="no-style-a quote-text">»{{wrong_quote.quote}}«</a>
@@ -47,6 +28,25 @@
                 </tr>
             </table>
             {% end %}
+        </div>
+    </div>
+        <div id="bottom">
+        <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
+        <div class="buttons" data-html2canvas-ignore="true">
+            <a class="download tooltip">
+                <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
+                <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
+            </a>
+            <a class="tweet tooltip"
+               href="https://twitter.com/intent/tweet?text={{url_escape(str(wrong_quote) + '\n\nGeneriert mit: ' + url) }}"
+            >
+                <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
+                <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
+            </a>
+            <a class="get-quote tooltip" id="next" href="{{next_href}}">
+                <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
+                <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
+            </a>
         </div>
     </div>
 </div>

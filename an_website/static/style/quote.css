@@ -27,25 +27,95 @@
     -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
-div.quote-container:before {
-    content:url("/static/img/ZitateBackground.svg");
-}
-
 .quote-container {
     background: transparent;
-    width: 30em;
     height: auto;
     display: block;
-    margin: 3rem auto;
+    /*margin: 3rem auto;*/
     text-align: center;
     padding: 4rem;
 }
 
-@media (orientation:landscape) {
-    div.quote-container:before {
-        content:url("");
-    }
+#top {
+    background-color: transparent;
+}
 
+.quote-text {
+    background-color: transparent;
+    font-size: 1.9rem;
+    text-align: left;
+    line-height: 1.8rem;
+}
+
+.quote-author {
+    font-size: 1.4rem;
+    text-align: right;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.buttons {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.rating-container {
+    font-size: 1.4rem;
+    text-align: left;
+    align-items: start;
+}
+
+.rating-image {
+    height: 2.2rem;
+}
+
+.rating-form-el {
+    width: auto !important;
+}
+
+.nicht-witzig {
+    bottom: 0.008rem;
+}
+
+.buttons a {
+    color: darkred;
+    position: relative;
+    display: inline-block;
+}
+
+.download-img {
+    transform: rotate(90deg);
+    rotation: 90deg;
+}
+
+.download-img:hover {
+    transform: scale(1.08) rotate(90deg);
+    -webkit-filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
+}
+
+.vote {
+    width: 44% !important;
+    padding: 10px !important;
+    height: 60px;
+    margin: 0;
+}
+
+.vote:hover:not(.voted) {
+    background-color: var(--tooltip-bg) !important;
+}
+
+.voted {
+    /*background-color: var(--tooltip-bg) !important;*/
+    filter: grayscale(69%);
+}
+
+.vote img {
+    max-height: 40px;
+    width: auto;
+    background-color: transparent !important;
+}
+
+@media (orientation:landscape) {
     .quote-container {
         background: transparent url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
 
@@ -73,51 +143,7 @@ div.quote-container:before {
     .quote-author {
         margin-right: 18rem;
     }
-}
 
-#top {
-    background-color: transparent;
-}
-
-.quote-text {
-    background-color: transparent;
-    font-size: 1.9rem;
-    text-align: left;
-    line-height: 1.8rem;
-}
-
-.quote-author {
-    font-size: 1.4rem;
-    text-align: right;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-}
-
-.buttons {
-    margin: auto;
-    letter-spacing: 1rem;
-    padding: 1rem;
-}
-
-.rating-container {
-    font-size: 1.4rem;
-    text-align: left;
-    align-items: start;
-}
-
-.rating-image {
-    height: 2.2rem;
-}
-
-.rating-form-el {
-    width: auto !important;
-}
-
-.nicht-witzig {
-    bottom: 0.008rem;
-}
-
-@media (orientation:landscape) {
     .buttons {
         position: absolute;
         bottom: 0;
@@ -138,48 +164,4 @@ div.quote-container:before {
         bottom: 0;
         right: 0;
     }
-}
-
-.buttons a {
-    color: darkred;
-    position: relative;
-    display: inline-block;
-}
-
-.download-img {
-    transform: rotate(90deg);
-    rotation: 90deg;
-}
-
-.download-img:hover {
-    transform: scale(1.08) rotate(90deg);
-    -webkit-filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
-}
-
-.vote-container {
-    margin: 0 auto 40px;
-}
-
-.vote {
-    width: 42% !important;
-    padding: 10px !important;
-    height: 60px;
-}
-
-.vote:hover:not(.voted) {
-    background-color: var(--tooltip-bg) !important;
-}
-
-.voted {
-    /*background-color: var(--tooltip-bg) !important;*/
-    filter: grayscale(69%);
-}
-/*.voted:hover {
-    background-color: var(--secondary-bg) !important;
-}*/
-
-.vote img {
-    max-height: 40px;
-    width: auto;
-    background-color: transparent !important;
 }
