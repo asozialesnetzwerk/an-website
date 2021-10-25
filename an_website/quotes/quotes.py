@@ -49,7 +49,7 @@ def get_module_info() -> ModuleInfo:
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
         ),
-        name="Falsch zugeordnete Zitate",
+        name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/",
         keywords=(

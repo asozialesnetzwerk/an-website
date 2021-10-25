@@ -44,7 +44,7 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/erstellen/", CreatePage),
             (r"/zitate/create-wrong-quote/", CreatePage2),
         ),
-        name="Falsch-zugeordnete-Zitate-Ersteller",
+        name="Falsche-Zitate-Ersteller",
         description="Erstelle witzige falsch zugeordnete Zitate",
         aliases=("/zitate/create/",),
         path="/zitate/erstellen/",
