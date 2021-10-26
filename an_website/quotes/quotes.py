@@ -25,7 +25,6 @@ from functools import cache
 from typing import Literal
 
 import orjson as json
-import tornado.httputil
 from tornado.web import HTTPError
 
 from ..utils.utils import ModuleInfo
@@ -226,9 +225,7 @@ class QuoteById(QuoteBaseHandler):
         return await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
-            next_href=tornado.httputil.url_concat(
-                self.get_next_url(), {"last": wrong_quote.get_id_as_str()}
-            ),
+            next_href=self.get_next_url(),
             last_quote=self.get_query_argument("last", default=""),
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
