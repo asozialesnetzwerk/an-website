@@ -78,6 +78,9 @@ jobs:
       - name: Install mypy
         run: |
           grep -E "^mypy" check-requirements.txt | xargs pip install
+      - name: Install types in check-requrements.txt
+        run: |
+          grep -E "^types-" check-requirements.txt | xargs pip install
       - name: Run mypy
         run: |
           mypy --install-types --non-interactive -p an_website
