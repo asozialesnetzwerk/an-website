@@ -10,6 +10,7 @@ elasticsearch[async]>=7.13.2,<8
 markdown>=3.3.4,<4
 #motor~=2.4
 orjson>=3.5.3,<4
+Pillow~=8.4.0
 pycurl>=7.43.0.6,<8
 python-Levenshtein~=0.12.2
 PyYAML~=5.4.1

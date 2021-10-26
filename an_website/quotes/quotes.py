@@ -38,6 +38,7 @@ from . import (
     get_wrong_quotes,
     start_updating_cache_periodically,
 )
+from .quotes_img import QuoteAsImg
 
 
 def get_module_info() -> ModuleInfo:
@@ -47,6 +48,7 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/", QuoteMainPage),
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
+            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
         ),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",

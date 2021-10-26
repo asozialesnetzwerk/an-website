@@ -33,7 +33,10 @@
         <div id="bottom">
         <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
         <div class="buttons" data-html2canvas-ignore="true">
-            <a class="download tooltip">
+            <a class="download tooltip"
+               href="/zitate/{{ wrong_quote.get_id_as_str() }}/image.png"
+               download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
+            >
                 <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
                 <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
             </a>

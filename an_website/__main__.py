@@ -51,6 +51,7 @@ IGNORED_MODULES = [
     "templates.*",
     "utils.utils",
     "swapped_words.sw_config_file",
+    "quotes.quotes_img",
 ]
 
 logger = logging.getLogger(__name__)
