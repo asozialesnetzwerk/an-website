@@ -226,7 +226,6 @@ class QuoteById(QuoteBaseHandler):
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
-            last_quote=self.get_query_argument("last", default=""),
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             vote=vote,
