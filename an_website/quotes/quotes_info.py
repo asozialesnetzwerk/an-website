@@ -44,6 +44,8 @@ async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
 
     Return a tuple with the url and the content.
     """
+    if len(query) == 0:
+        return None
     response = await HTTP_CLIENT.fetch(
         f"{WIKI_API}?action=opensearch&namespace=0&profile=normal&"
         f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
@@ -54,7 +56,7 @@ async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
     page_name = response_json[1][0]
     url = str(response_json[3][0])
 
-    return (url, await get_wikipedia_page_content(page_name))
+    return url, await get_wikipedia_page_content(page_name)
 
 
 async def get_wikipedia_page_content(page_name: str) -> Optional[str]:
