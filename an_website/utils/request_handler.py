@@ -233,7 +233,11 @@ class BaseRequestHandler(RequestHandler):
                 if self.settings.get("LINK_TO_HTTPS")
                 else self.request.protocol
             )
-            if "?" not in url and not url.endswith("/"):
+            if (
+                "?" not in url
+                and not url.endswith("/")
+                and "." not in url.split("/")[-1]
+            ):
                 url += "/"
             return f"{protocol}://{self.request.host}{url}"
 
