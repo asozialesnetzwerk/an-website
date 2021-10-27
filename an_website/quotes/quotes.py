@@ -102,9 +102,12 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         return self.fix_url(url)
 
     @cache
-    def get_next_id(self) -> tuple[int, int]:  # noqa: C901
+    def get_next_id(  # noqa: C901
+        self, rating_filter: str = None
+    ) -> tuple[int, int]:
         """Get the id of the next quote."""
-        rating_filter = self.rating_filter()
+        if rating_filter is None:
+            rating_filter = self.rating_filter()
         if rating_filter == "smart":
             rand_int = random.randint(0, 27)
             if rand_int < 2:  # 0 - 1 → 2 → ~7.14%
@@ -156,7 +159,7 @@ class QuoteMainPage(QuoteBaseHandler):
 
     async def get(self):
         """Handle the get request to the main quote page and render a quote."""
-        quote_id, author_id = self.get_next_id()
+        quote_id, author_id = self.get_next_id(rating_filter="w")
         self.redirect(f"/zitate/{quote_id}-{author_id}")
 
 
