@@ -102,7 +102,7 @@ def create_image(quote: str, author: str, rating: int):
     y_text = draw_lines(
         draw,
         quote_lines,
-        50,
+        75,
         QUOTE_MAX_WIDTH,
         max_line_height,
     )
@@ -127,11 +127,11 @@ def create_image(quote: str, author: str, rating: int):
     # draw rating
     if rating != 0:
         width, height = FONT.getsize(str(rating))
-        y_rating = IMAGE_HEIGHT - 20 - height
+        y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(
             img=draw,
             text=str(rating),
-            _x=20,
+            _x=25,
             _y=y_rating,
         )
         # draw rating img
