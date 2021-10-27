@@ -38,17 +38,17 @@
                download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
             >
                 <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
-                <div class="tooltip-top-text tooltip-text">Downloade das Zitat als Bild.</div>
+                <div class="tooltip-text">Downloade das Zitat als Bild.</div>
             </a>
             <a class="tweet tooltip"
                href="https://twitter.com/intent/tweet?text={{url_escape(str(wrong_quote) + '\n\nGeneriert mit: ' + url) }}"
             >
                 <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
-                <div class="tooltip-top-text  tooltip-text">Teile das Zitat auf Twitter.</div>
+                <div class="tooltip-text">Teile das Zitat auf Twitter.</div>
             </a>
             <a class="get-quote tooltip" id="next" href="{{next_href}}">
                 <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
-                <div class="tooltip-top-text  tooltip-text">Gehe zum nächsten Zitat.</div>
+                <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
             </a>
         </div>
     </div>
@@ -77,14 +77,14 @@
     </form>
     <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
         <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
-        <div class="tooltip-top-text tooltip-text">Füge neues Zitat hinzu.</div>
+        <div class="tooltip-text">Füge neues Zitat hinzu.</div>
     </a>
     {% if settings["CONTACT_EMAIL"] is not None %}
     <a class="report tooltip"
        href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
     >
         <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
-        <div class="tooltip-top-text tooltip-text">Melde das Zitat.</div>
+        <div class="tooltip-text">Melde das Zitat.</div>
     </a>
     {% end %}
 </div>

@@ -185,22 +185,27 @@ class QuoteById(QuoteBaseHandler):
 
         self.update_saved_votes(quote_id, author_id, vote)
 
+        contributed_by = self.get_argument("user-name", default="")
+        if contributed_by is not None:
+            contributed_by = contributed_by.strip()
+        if contributed_by is None or len(contributed_by) < 2:
+            contributed_by = f"an-website_{self.get_hashed_remote_ip()}"
         # do the voting:
         if vote > old_vote:
             wrong_quote = await create_wq_and_vote(
-                1, quote_id, author_id, self.get_hashed_remote_ip()
+                1, quote_id, author_id, contributed_by
             )
             if vote - old_vote == 2:  # TODO: add better fix
                 wrong_quote = await create_wq_and_vote(
-                    1, quote_id, author_id, self.get_hashed_remote_ip()
+                    1, quote_id, author_id, contributed_by
                 )
         elif vote < old_vote:
             wrong_quote = await create_wq_and_vote(
-                -1, quote_id, author_id, self.get_hashed_remote_ip()
+                -1, quote_id, author_id, contributed_by
             )
             if vote - old_vote == -2:  # TODO: add better fix
                 wrong_quote = await create_wq_and_vote(
-                    -1, quote_id, author_id, self.get_hashed_remote_ip()
+                    -1, quote_id, author_id, contributed_by
                 )
         else:
             raise HTTPError(500)

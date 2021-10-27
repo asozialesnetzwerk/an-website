@@ -376,7 +376,7 @@ async def create_wq_and_vote(
     vote: Literal[-1, 1],
     quote_id: int,
     author_id: int,
-    identifier: str,
+    contributed_by: str,
 ) -> WrongQuote:
     """
     Vote for the wrong_quote with the api.
@@ -392,7 +392,7 @@ async def create_wq_and_vote(
             "wrongquotes",
             method="POST",
             body=f"quote={quote_id}&author={author_id}&"
-            f"contributed_by=an-website_{identifier}",
+            f"contributed_by={contributed_by}",
         )
     )
     return await vote_wrong_quote(vote, wrong_quote)
