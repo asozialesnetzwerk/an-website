@@ -108,8 +108,7 @@
 
 {% block head %}
     <meta property="og:image"
-          content="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
-          name="image">
+          content="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}">
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <link rel="stylesheet" type="text/css" href="/static/style/quote.css">
 {% end %}
