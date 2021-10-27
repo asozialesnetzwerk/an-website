@@ -19,12 +19,7 @@ import textwrap
 
 from PIL import Image, ImageDraw, ImageFont
 
-from . import (
-    DIR,
-    QuoteReadyCheckRequestHandler,
-    get_author_by_id,
-    get_quote_by_id,
-)
+from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 
 AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
@@ -34,8 +29,12 @@ FONT = ImageFont.truetype(
     size=50,
 )
 
-BG_IMG = Image.open(f"{DIR}/files/bg.png")
+BG_IMG = Image.open(f"{DIR}/files/bg.png", formats=("PNG",))
 IMAGE_HEIGHT: int = BG_IMG.size[1]
+WITZIG_IMG = Image.open(f"{DIR}/files/StempelWitzig.png", formats=("PNG",))
+NICHT_WITZIG_IMG = Image.open(
+    f"{DIR}/files/StempelNichtWitzig.png", formats=("PNG",)
+)
 
 
 def get_lines_and_max_height(
@@ -54,6 +53,23 @@ def get_lines_and_max_height(
     return lines, max(FONT.getsize(line)[1] for line in lines)
 
 
+def draw_text(
+    img: ImageDraw.ImageDraw,
+    text: str,
+    _x: int,
+    _y: int,
+):
+    """Draw a text on an image."""
+    img.text(
+        (_x, _y),
+        text,
+        font=FONT,
+        fill=TEXT_COLOR,
+        align="right",
+        spacing=54,
+    )
+
+
 def draw_lines(
     img: ImageDraw.ImageDraw,
     lines: list[str],
@@ -64,26 +80,22 @@ def draw_lines(
     """Draw the lines on the image and return the last y position."""
     for line in lines:
         width = FONT.getsize(line)[0]
-        img.text(
-            (
-                (max_w - width) / 2,
-                y_start,
-            ),
-            line,
-            font=FONT,
-            fill=TEXT_COLOR,
-            align="right",
-            spacing=54,
+        draw_text(
+            img=img,
+            text=line,
+            _x=(max_w - width) // 2,
+            _y=y_start,
         )
         y_start += max_h
     return y_start
 
 
-def create_image(quote: str, author: str):
+def create_image(quote: str, author: str, rating: int):
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
     draw = ImageDraw.Draw(img, mode="RGBA")
 
+    # draw quote
     quote_lines, max_line_height = get_lines_and_max_height(
         f"»{quote}«", QUOTE_MAX_WIDTH
     )
@@ -95,6 +107,7 @@ def create_image(quote: str, author: str):
         max_line_height,
     )
 
+    # draw author
     author = f"- {author}"
     width, max_line_height = FONT.getsize(author)
     if width <= AUTHOR_MAX_WIDTH:
@@ -111,6 +124,26 @@ def create_image(quote: str, author: str):
         max_line_height,
     )
 
+    # draw rating
+    if rating != 0:
+        width, height = FONT.getsize(str(rating))
+        y_rating = IMAGE_HEIGHT - 20 - height
+        draw_text(
+            img=draw,
+            text=str(rating),
+            _x=20,
+            _y=y_rating,
+        )
+        # draw rating img
+        icon = NICHT_WITZIG_IMG if rating < 0 else WITZIG_IMG
+        img.paste(
+            icon,
+            box=(
+                30 + width,
+                y_rating - ((icon.height - height) // 2),
+            ),
+            mask=icon,
+        )
     io_buf = io.BytesIO()
     img.save(
         io_buf,
@@ -127,9 +160,11 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
     async def get(self, quote_id: str, author_id: str):
         """Handle the get request to this page and render the quote as img."""
         self.set_header("Content-Type", "image/png")
+        wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
         await self.finish(
             create_image(
-                (await get_quote_by_id(int(quote_id))).quote,
-                (await get_author_by_id(int(author_id))).name,
+                wrong_quote.quote.quote,
+                wrong_quote.author.name,
+                wrong_quote.rating,
             )
         )
