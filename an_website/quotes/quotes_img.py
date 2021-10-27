@@ -99,10 +99,16 @@ def create_image(quote: str, author: str, rating: int):
     quote_lines, max_line_height = get_lines_and_max_height(
         f"»{quote}«", QUOTE_MAX_WIDTH
     )
+    if len(quote_lines) < 3:
+        y_start = 175
+    elif len(quote_lines) < 4:
+        y_start = 125
+    else:
+        y_start = 75
     y_text = draw_lines(
         draw,
         quote_lines,
-        75,
+        y_start,
         QUOTE_MAX_WIDTH,
         max_line_height,
     )
