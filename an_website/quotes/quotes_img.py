@@ -152,8 +152,8 @@ def create_image(  # pylint: disable=too-many-locals
         img.paste(
             icon,
             box=(
-                30 + width,
-                y_rating - ((icon.height - height) // 2),
+                25 + 5 + width,
+                y_rating + 8,  # 8 is a magic number, that makes it look good
             ),
             mask=icon,
         )
