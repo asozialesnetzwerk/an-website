@@ -24,8 +24,9 @@ from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
 TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
+
 FONT = ImageFont.truetype(
-    font=f"{DIR}/files/libre-sans-serif-ssi.ttf",
+    font=f"{DIR}/files/oswald.regular.ttf",
     size=50,
 )
 
