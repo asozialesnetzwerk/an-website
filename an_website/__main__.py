@@ -268,7 +268,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "GENERAL", "CONTACT_EMAIL", fallback=None
     )
     # whether ratelimits are enabled
-    app.settings["ratelimits"] = config.getboolean(
+    app.settings["RATELIMITS"] = config.getboolean(
         "GENERAL", "RATELIMITS", fallback=True
     )
 
