@@ -240,11 +240,13 @@ class QuoteById(QuoteBaseHandler):
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             vote=vote,
-            twitter_share_link="https://twitter.com/intent/tweet?text="
-            + quote(
-                str(wrong_quote)
-                + "\n\nGeneriert mit: "
-                + self.fix_url(self.request.path)
+            twitter_share_url=self.fix_url(
+                "https://twitter.com/intent/tweet?text="
+                + quote(
+                    str(wrong_quote)
+                    + "\n\nGeneriert mit: "
+                    + self.fix_url(self.request.path)
+                )
             ),
         )
 
