@@ -41,7 +41,7 @@
                 <div class="tooltip-text">Downloade das Zitat als Bild.</div>
             </a>
             <a class="tweet tooltip"
-               href="https://twitter.com/intent/tweet?text={{url_escape(str(wrong_quote) + '\n\nGeneriert mit: ' + url) }}"
+               href="{{fix_url(twitter_share_link)}}"
             >
                 <img class="tweet-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
                 <div class="tooltip-text">Teile das Zitat auf Twitter.</div>

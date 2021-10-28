@@ -26,6 +26,7 @@ from typing import Literal
 
 import orjson as json
 from tornado.web import HTTPError
+from urllib.parse import quote
 
 from ..utils.utils import ModuleInfo
 from . import (
@@ -239,6 +240,12 @@ class QuoteById(QuoteBaseHandler):
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             vote=vote,
+            twitter_share_link="https://twitter.com/intent/tweet?text="
+            + quote(
+                str(wrong_quote)
+                + "\n\nGeneriert mit: "
+                + self.fix_url(self.request.path)
+            ),
         )
 
     async def render_quote(self, quote_id: int, author_id: int):
