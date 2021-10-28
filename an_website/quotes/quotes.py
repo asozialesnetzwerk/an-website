@@ -23,10 +23,10 @@ import random
 import sys
 from functools import cache
 from typing import Literal
+from urllib.parse import quote
 
 import orjson as json
 from tornado.web import HTTPError
-from urllib.parse import quote
 
 from ..utils.utils import ModuleInfo
 from . import (
