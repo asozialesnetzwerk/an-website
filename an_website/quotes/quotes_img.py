@@ -24,14 +24,17 @@ from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
 TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
-
 FONT = ImageFont.truetype(
     font=f"{DIR}/files/oswald.regular.ttf",
     size=50,
 )
+HOST_NAME_FONT = ImageFont.truetype(
+    font=f"{DIR}/files/oswald.regular.ttf",
+    size=30,
+)
 
 BG_IMG = Image.open(f"{DIR}/files/bg.png", formats=("PNG",))
-IMAGE_HEIGHT: int = BG_IMG.size[1]
+IMAGE_WIDTH, IMAGE_HEIGHT = BG_IMG.size
 WITZIG_IMG = Image.open(f"{DIR}/files/StempelWitzig.png", formats=("PNG",))
 NICHT_WITZIG_IMG = Image.open(
     f"{DIR}/files/StempelNichtWitzig.png", formats=("PNG",)
@@ -59,12 +62,13 @@ def draw_text(
     text: str,
     _x: int,
     _y: int,
+    font: ImageFont.FreeTypeFont = FONT,
 ):
     """Draw a text on an image."""
     img.text(
         (_x, _y),
         text,
-        font=FONT,
+        font=font,
         fill=TEXT_COLOR,
         align="right",
         spacing=54,
@@ -91,7 +95,9 @@ def draw_lines(
     return y_start
 
 
-def create_image(quote: str, author: str, rating: int):
+def create_image(  # pylint: disable=too-many-locals
+    quote: str, author: str, rating: int, host_name: str
+):
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
     draw = ImageDraw.Draw(img, mode="RGBA")
@@ -151,6 +157,16 @@ def create_image(quote: str, author: str, rating: int):
             ),
             mask=icon,
         )
+
+    # draw host name
+    width, height = HOST_NAME_FONT.getsize(host_name)
+    draw_text(
+        img=draw,
+        text=host_name,
+        _x=IMAGE_WIDTH - 5 - width,
+        _y=IMAGE_HEIGHT - 5 - height,
+        font=HOST_NAME_FONT,
+    )
     io_buf = io.BytesIO()
     img.save(
         io_buf,
@@ -173,5 +189,6 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
                 wrong_quote.rating,
+                self.request.host_name,
             )
         )
