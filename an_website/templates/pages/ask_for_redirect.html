@@ -4,44 +4,18 @@
 <div class="redirect_content">
     Willst du wirklich diese Seite verlassen? Für die Inhalte auf fremden
     Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
-        <form target="_blank">
-            <button  type="submit"
-                     formaction="{{redirect_url}}"
-                     class="leave redirect"
-            >Weiter nach {{redirect_url}}</button>
-        </form>
-        <form>
-            {% raw form_appendix %}
-            <button  type="submit"
-                     formaction="{{from_url}}"
-                     class="stay redirect"
-            >Wieder zurück</button>
-        </form>
+        <a class="leave form-button no-style-a" href="{{redirect_url}}">
+            Weiter nach {{redirect_url.split("?")[0]}}
+        </a>
+        <a class="stay form-button no-style-a" href="{{from_url}}">
+            Wieder zurück
+        </a>
 </div>
 {% end %}
 
 
 {% block head %}
 <meta name="robots" content="noindex">
-<style>
-    .redirect_content {
-        font-size: xx-large;
-    }
-    .redirect {
-        width: 100%;
-        float: top;
-        margin-bottom: 30px;
-        padding: 40px;
-        min-height: 200px;
-        color: black;
-        text-align: center;
-        font-size: xxx-large;
-    }
-    .leave {
-        background-color: var(--contrast-2);
-    }
-    .stay {
-        background-color: var(--main-2);
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="/static/style/form.css">
+<link rel="stylesheet" type="text/css" href="/static/style/redirect.css">
 {% end %}
