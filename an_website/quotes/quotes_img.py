@@ -16,9 +16,11 @@ from __future__ import annotations
 
 import io
 import textwrap
+from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
+from ..utils.utils import str_to_bool
 from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 
 AUTHOR_MAX_WIDTH: int = 686
@@ -103,7 +105,7 @@ def draw_lines(
 
 
 def create_image(  # pylint: disable=too-many-locals
-    quote: str, author: str, rating: int, host_name: str
+    quote: str, author: str, rating: int, source: Optional[str]
 ):
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
@@ -166,14 +168,16 @@ def create_image(  # pylint: disable=too-many-locals
         )
 
     # draw host name
-    width, height = HOST_NAME_FONT.getsize(host_name)
-    draw_text(
-        img=draw,
-        text=host_name,
-        _x=IMAGE_WIDTH - 5 - width,
-        _y=IMAGE_HEIGHT - 5 - height,
-        font=HOST_NAME_FONT,
-    )
+    if source is not None:
+        width, height = HOST_NAME_FONT.getsize(source)
+        draw_text(
+            img=draw,
+            text=source,
+            _x=IMAGE_WIDTH - 5 - width,
+            _y=IMAGE_HEIGHT - 5 - height,
+            font=HOST_NAME_FONT,
+        )
+
     io_buf = io.BytesIO()
     img.save(
         io_buf,
@@ -191,17 +195,27 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
         """Handle the get request to this page and render the quote as img."""
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
         self.request.host_name = "asozial.net"
-        _id = (
-            wrong_quote.id
-            if wrong_quote.id != -1
-            else f"{quote_id}-{author_id}"
-        )
+
+        if not (
+            str_to_bool(
+                str(self.get_query_argument("no_source", default="False")),
+                default=False,
+            )
+        ):
+            _id = (
+                wrong_quote.id
+                if wrong_quote.id != -1
+                else f"{quote_id}-{author_id}"
+            )
+            source: Optional[str] = f"{self.request.host_name}/z/{_id}"
+        else:
+            source = None
         self.set_header("Content-Type", "image/png")
         await self.finish(
             create_image(
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
                 wrong_quote.rating,
-                f"{self.request.host_name}/z/{_id}",
+                source,
             )
         )
