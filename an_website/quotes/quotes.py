@@ -40,6 +40,7 @@ from . import (
     start_updating_cache_periodically,
 )
 from .quotes_img import QuoteAsImg
+from .share_page import ShareQuote
 
 
 def get_module_info() -> ModuleInfo:
@@ -51,6 +52,7 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
+            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
         ),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",

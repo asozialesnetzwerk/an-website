@@ -52,6 +52,7 @@ IGNORED_MODULES = [
     "utils.utils",
     "swapped_words.sw_config_file",
     "quotes.quotes_img",
+    "quotes.share_page",
 ]
 
 logger = logging.getLogger(__name__)

@@ -17,12 +17,12 @@
     border-radius: 50%;
 }
 
-.tweet-img {
+.share-img {
     transform: rotate(270deg);
     border-radius: 50%;
 }
 
-.tweet-img:hover {
+.share-img:hover {
     transform: scale(1.08) rotate(270deg);
     -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
 }

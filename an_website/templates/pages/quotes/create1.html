@@ -2,25 +2,25 @@
 
 {% block body %}
 <form method="post" action="/zitate/erstellen/">
-    <label class="text-input-label">
+    <label class="text-input-label form-element">
         Zitat
          <input name="quote-1" list="quote-list" autocomplete="on" type="text">
     </label>
 
 
-    <label class="text-input-label">
+    <label class="text-input-label form-element">
         Richtiger Autor
         <input name="real-author-1" list="author-list" autocomplete="on" type="text">
     </label>
 
 
-    <label class="text-input-label">
+    <label class="text-input-label form-element">
         Falscher Autor
         <input name="fake-author-1" list="author-list" autocomplete="on" type="text">
     </label>
 
 
-    <label class="text-input-label">
+    <label class="text-input-label form-element">
         Dein Name (Optional)! Dieser Name wird an <a href="{{fix_url('https://zitate.prapsschnalinen.de')}}">Drittanbieter</a> weitergeleitet.
         <input name="user-name" type="text">
     </label>
