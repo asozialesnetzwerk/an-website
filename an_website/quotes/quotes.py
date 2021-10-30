@@ -49,11 +49,13 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/", QuoteMainPage),
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
+            (r"/zitate/([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
         ),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/",
+        aliases=("/z/",),
         keywords=(
             "falsch",
             "zugeordnet",
@@ -167,9 +169,17 @@ class QuoteMainPage(QuoteBaseHandler):
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
-    async def get(self, quote_id: str, author_id: str):
+    async def get(self, quote_id: str, author_id: str = None):
         """Handle the get request to this page and render the quote."""
-        await self.render_quote(int(quote_id), int(author_id))
+        int_quote_id = int(quote_id)
+        if author_id is None:
+            _wqs = get_wrong_quotes(lambda _wq: _wq.id == int_quote_id)
+            if len(_wqs) == 0:
+                raise HTTPError(404, f"No wrong quote with id {quote_id}")
+            return self.redirect(
+                f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/"
+            )
+        await self.render_quote(int_quote_id, int(author_id))
 
     async def post(self, quote_id_str: str, author_id_str: str):
         """

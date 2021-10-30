@@ -30,7 +30,7 @@ FONT = ImageFont.truetype(
 )
 HOST_NAME_FONT = ImageFont.truetype(
     font=f"{DIR}/files/oswald.regular.ttf",
-    size=30,
+    size=23,
 )
 
 BG_IMG = Image.open(f"{DIR}/files/bg.png", formats=("PNG",))
@@ -184,11 +184,17 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
         """Handle the get request to this page and render the quote as img."""
         self.set_header("Content-Type", "image/png")
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
+        self.request.host_name = "asozial.net"
+        _id = (
+            wrong_quote.id
+            if wrong_quote.id != -1
+            else f"{quote_id}-{author_id}"
+        )
         await self.finish(
             create_image(
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
                 wrong_quote.rating,
-                self.request.host_name,
+                f"{self.request.host_name}/z/{_id}",
             )
         )
