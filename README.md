@@ -18,7 +18,7 @@ You need:
 - `python -m black an_website tests`
 
 
-## How to run
+## How to run (production)
 ### Linux (tested with arch):
 You need:
 - python3.9
