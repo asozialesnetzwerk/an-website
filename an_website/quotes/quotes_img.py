@@ -182,7 +182,6 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
 
     async def get(self, quote_id: str, author_id: str):
         """Handle the get request to this page and render the quote as img."""
-        self.set_header("Content-Type", "image/png")
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
         self.request.host_name = "asozial.net"
         _id = (
@@ -190,6 +189,7 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
             if wrong_quote.id != -1
             else f"{quote_id}-{author_id}"
         )
+        self.set_header("Content-Type", "image/png")
         await self.finish(
             create_image(
                 wrong_quote.quote.quote,
