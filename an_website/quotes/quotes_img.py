@@ -33,12 +33,19 @@ HOST_NAME_FONT = ImageFont.truetype(
     size=23,
 )
 
-BG_IMG = Image.open(f"{DIR}/files/bg.png", formats=("PNG",))
+
+def load_png(file_name) -> Image.Image:
+    """Load a png into memory."""
+    img = Image.open(f"{DIR}/files/{file_name}.png", formats=("PNG",))
+    img_copy = img.copy()
+    img.close()
+    return img_copy
+
+
+BG_IMG = load_png("bg")
 IMAGE_WIDTH, IMAGE_HEIGHT = BG_IMG.size
-WITZIG_IMG = Image.open(f"{DIR}/files/StempelWitzig.png", formats=("PNG",))
-NICHT_WITZIG_IMG = Image.open(
-    f"{DIR}/files/StempelNichtWitzig.png", formats=("PNG",)
-)
+WITZIG_IMG = load_png("StempelWitzig")
+NICHT_WITZIG_IMG = load_png("StempelNichtWitzig")
 
 
 def get_lines_and_max_height(
