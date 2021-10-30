@@ -343,12 +343,12 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.randint(0, MAX_QUOTES_ID[0])
+    return random.randint(1, MAX_QUOTES_ID[0])
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.randint(0, MAX_AUTHORS_ID[0])
+    return random.randint(1, MAX_AUTHORS_ID[0])
 
 
 def get_random_id() -> tuple[int, int]:
