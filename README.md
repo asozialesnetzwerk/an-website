@@ -8,14 +8,14 @@ You need:
 - packages from requirements.txt
 - packages from check-requirements.txt
 
-### How to run
-- `python -m an_website -X dev` (-X dev is for debugging)
-
 ### How to check
 - `./check.sh`
 
 ### How to format
 - `python -m black an_website tests`
+
+### How to run
+- `python -m an_website -X dev` (-X dev is for debugging)
 
 
 ## How to run (production)
