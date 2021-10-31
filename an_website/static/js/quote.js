@@ -94,12 +94,14 @@ function updateVote(vote) {
 }
 
 function handleData(data) {
-    updateQuoteId(data["id"]);
-    nextQuoteId[0] = data["next"];
-    quote.innerText = `»${data["quote"]}«`;
-    author.innerText = `- ${data["author"]}`;
-    updateRating(data["rating"]);
-    updateVote(data["vote"]);
+    if (data && data["id"]) {
+        updateQuoteId(data["id"]);
+        nextQuoteId[0] = data["next"];
+        quote.innerText = `»${data["quote"]}«`;
+        author.innerText = `- ${data["author"]}`;
+        updateRating(data["rating"]);
+        updateVote(data["vote"]);
+    }
 }
 
 window.onpopstate = (event) => {
