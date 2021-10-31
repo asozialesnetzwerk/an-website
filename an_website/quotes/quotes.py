@@ -153,11 +153,11 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 
         This is done to ensure that the data is always up to date.
         """
-        quote_id, author_id = self.get_next_id()
-        asyncio.run_coroutine_threadsafe(
-            get_wrong_quote(quote_id, author_id, use_cache=False),
-            asyncio.get_event_loop(),
-        )
+        # quote_id, author_id = self.get_next_id()
+        # asyncio.run_coroutine_threadsafe(
+        #     get_wrong_quote(quote_id, author_id, use_cache=False),
+        #     asyncio.get_event_loop(),
+        # )
 
 
 class QuoteMainPage(QuoteBaseHandler):
