@@ -23,11 +23,11 @@ import random
 import sys
 from functools import cache
 from typing import Literal
-from urllib.parse import quote
 
 import orjson as json
 from tornado.web import HTTPError
 
+from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     WRONG_QUOTES_CACHE,
@@ -51,6 +51,7 @@ def get_module_info() -> ModuleInfo:
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})/", QuoteById),
+            (r"/zitate/api/([0-9]{1,10})-([0-9]{1,10})/", QuoteApiHandler),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
         ),
@@ -102,7 +103,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         next_q, next_a = self.get_next_id()
         url = f"/zitate/{next_q}-{next_a}/"
         if (rating_filter := self.rating_filter()) != "smart":
-            return url + f"?r={rating_filter}"
+            url = f"{url}?r={rating_filter}"
 
         return self.fix_url(url)
 
@@ -179,7 +180,9 @@ class QuoteById(QuoteBaseHandler):
             if len(_wqs) == 0:
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
-                self.fix_url(f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/")
+                self.fix_url(
+                    f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/"
+                )
             )
         await self.render_quote(int_quote_id, int(author_id))
 
@@ -245,10 +248,12 @@ class QuoteById(QuoteBaseHandler):
 
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
         """Render the page with the wrong_quote and this vote."""
+        next_q, next_a = self.get_next_id()
         return await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
+            next_id=f"{next_q}-{next_a}",
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             vote=vote,
@@ -283,6 +288,28 @@ class QuoteById(QuoteBaseHandler):
         if votes is None:
             return {}
         return json.loads(votes)
+
+
+class QuoteApiHandler(QuoteById, APIRequestHandler):
+    """Api request handler for the quotes page."""
+
+    ALLOWED_METHODS = ("GET", "POST")
+
+    async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
+        """Return the relevant data for the quotes page as a json."""
+        next_q, next_a = self.get_next_id()
+        return await self.finish(
+            {
+                "id": wrong_quote.get_id_as_str(),
+                "quote": wrong_quote.quote.quote,
+                "author": wrong_quote.author.name,
+                "rating": "---"
+                if wrong_quote.id in (None, -1)
+                else wrong_quote.rating,
+                "vote": vote,
+                "next": f"{next_q}-{next_a}",
+            }
+        )
 
 
 try:  # TODO: add better fix for tests
