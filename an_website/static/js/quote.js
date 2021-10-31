@@ -99,6 +99,7 @@ function handleData(data) {
         if (data["status"] === 429 || data["status"] === 420) {
             alert(data["reason"]);
         }
+        return false;
     } else if (typeof data !== "undefined" && typeof data["id"] !== "undefined") {
         updateQuoteId(data["id"]);
         nextQuoteId[0] = data["next"];
@@ -106,6 +107,7 @@ function handleData(data) {
         author.innerText = `- ${data["author"]}`;
         updateRating(data["rating"]);
         updateVote(data["vote"]);
+        return true;
     }
 }
 
@@ -120,12 +122,13 @@ nextButton.onclick = () => {
     fetch(`/zitate/api/${nextQuoteId[0]}/`)
         .then((response) => response.json())
         .then((data) => {
-            window.history.pushState(
-                data,
-                "Falsche Zitate",
-                `/zitate/${data["id"]}/${params}`
-            );
-            handleData(data);
+            if (handleData(data)) {
+                window.history.pushState(
+                    data,
+                    "Falsche Zitate",
+                    `/zitate/${data["id"]}/${params}`
+                );
+            }
         }).catch(function(error) {
             console.error(error);
         });
