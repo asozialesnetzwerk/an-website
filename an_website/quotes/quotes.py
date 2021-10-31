@@ -165,7 +165,7 @@ class QuoteMainPage(QuoteBaseHandler):
     async def get(self):
         """Handle the get request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
-        self.redirect(f"/zitate/{quote_id}-{author_id}")
+        self.redirect(self.fix_url(f"/zitate/{quote_id}-{author_id}"))
 
 
 class QuoteById(QuoteBaseHandler):
@@ -179,7 +179,7 @@ class QuoteById(QuoteBaseHandler):
             if len(_wqs) == 0:
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
-                f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/"
+                self.fix_url(f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/")
             )
         await self.render_quote(int_quote_id, int(author_id))
 
