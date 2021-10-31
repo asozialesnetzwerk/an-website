@@ -4,44 +4,50 @@
 <div id="quote-important" class="quote-container">
     <div id="top">
         <a href="{{fix_url(f'/zitate/info/q/{wrong_quote.quote.id}')}}"
-           class="no-style-a quote-text">»{{wrong_quote.quote}}«</a>
+           class="no-style-a quote-text"
+           id="quote">»{{wrong_quote.quote}}«</a>
         <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
-           class="no-style-a quote-author">- {{wrong_quote.author}}</a>
+           class="no-style-a quote-author"
+           id="author">- {{wrong_quote.author}}</a>
     </div>
     <div class="rating-container">
         <div class="quote-rating">
-            {% if wrong_quote.id == -1 or wrong_quote.id is None %}
-            <div class="rating-text">---</div>
-            {% else %}
             <table>
                 <tr>
-                    <th><div class="rating-text">{{wrong_quote.rating}}</div></th>
+                    <th>
+                        <div id="rating-text">
+                            {% if wrong_quote.id == -1 or wrong_quote.id is None %}
+                                ---
+                            {% else %}
+                                {{wrong_quote.rating}}
+                            {% end %}
+                        </div>
+                    </th>
+                    <th>
                     {% if int(wrong_quote.rating) < 0 %}
-                    <th>
-                        <img class="rating-image nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
-                    </th>
+                        <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
+                    {% elif int(wrong_quote.rating) > 0 %}
+                        <img id="rating-image" class="witzig" src="/static/img/StempelWitzig.svg" alt="Witzig-Stempel"/>
                     {% else %}
-                    <th>
-                        <img class="rating-image witzig" src="/static/img/StempelWitzig.svg" alt=">Witzig-Stempel"/>
-                    </th>
+                        <img id="rating-image" class="invisible" src="" alt=""/>
                     {% end %}
+                    </th>
                 </tr>
             </table>
-            {% end %}
         </div>
     </div>
-        <div id="bottom">
-        <div class="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
+    <div id="bottom">
+        <div class="quote-id" id="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
         <div class="buttons" data-html2canvas-ignore="true">
-            <a class="download tooltip"
-               href="/zitate/{{ wrong_quote.get_id_as_str() }}/image.png"
+            <a class="download tooltip" id="download"
+               href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
             >
                 <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
                 <div class="tooltip-text">Downloade das Zitat als Bild.</div>
             </a>
-            <a class="share tooltip"
-               href="/zitate/{{ wrong_quote.get_id_as_str() }}/share/"
+            <a class="share tooltip" id="share"
+               href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/share/')}}"
             >
                 <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
                 <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
@@ -103,6 +109,10 @@
     </noscript>
 </form>
 
+<script>
+    const nextQuoteId = [];
+    nextQuoteId[0] = "{{next_id}}";
+</script>
 <script src="/static/js/quote.js"></script>
 {% end %}
 

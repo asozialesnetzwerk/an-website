@@ -65,16 +65,23 @@
     align-items: start;
 }
 
-.rating-image {
+#rating-image {
     height: 2.2rem;
-}
-
-.rating-form-el {
-    width: auto !important;
 }
 
 .nicht-witzig {
     bottom: 0.008rem;
+}
+
+.invisible {
+    height: 0;
+    width: 0;
+    display: none;
+    opacity: 0;
+}
+
+.rating-form-el {
+    width: auto !important;
 }
 
 .buttons a {
