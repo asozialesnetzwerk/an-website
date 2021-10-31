@@ -216,7 +216,7 @@ class QuoteById(QuoteBaseHandler):
             )
             if vote - old_vote == 2:  # TODO: add better fix
                 wrong_quote = await create_wq_and_vote(
-                    1, quote_id, author_id, contributed_by
+                    1, quote_id, author_id, contributed_by, True
                 )
         elif vote < old_vote:
             wrong_quote = await create_wq_and_vote(
@@ -224,7 +224,7 @@ class QuoteById(QuoteBaseHandler):
             )
             if vote - old_vote == -2:  # TODO: add better fix
                 wrong_quote = await create_wq_and_vote(
-                    -1, quote_id, author_id, contributed_by
+                    -1, quote_id, author_id, contributed_by, True
                 )
         else:
             raise HTTPError(500)

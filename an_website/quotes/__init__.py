@@ -372,11 +372,21 @@ async def vote_wrong_quote(
     )
 
 
+def vote_wrong_quote_fast(
+    vote: Literal[-1, 1], wrong_quote: WrongQuote
+) -> WrongQuote:
+    """Vote for the wrong_quote with the given id."""
+    wrong_quote.rating += vote
+    asyncio.create_task(vote_wrong_quote(vote, wrong_quote))
+    return wrong_quote
+
+
 async def create_wq_and_vote(
     vote: Literal[-1, 1],
     quote_id: int,
     author_id: int,
     contributed_by: str,
+    fast: bool = False,
 ) -> WrongQuote:
     """
     Vote for the wrong_quote with the api.
@@ -385,7 +395,10 @@ async def create_wq_and_vote(
     """
     wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
     if wrong_quote is not None and wrong_quote.id != -1:
-        return await vote_wrong_quote(vote, wrong_quote)
+        if fast:
+            return vote_wrong_quote_fast(vote, wrong_quote)
+        else:
+            return await vote_wrong_quote(vote, wrong_quote)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote
     wrong_quote = parse_wrong_quote(
         await make_api_request(
@@ -395,7 +408,7 @@ async def create_wq_and_vote(
             f"contributed_by={contributed_by}",
         )
     )
-    return await vote_wrong_quote(vote, wrong_quote)
+    return vote_wrong_quote_fast(vote, wrong_quote)
 
 
 class QuoteReadyCheckRequestHandler(BaseRequestHandler):
