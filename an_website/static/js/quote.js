@@ -94,7 +94,12 @@ function updateVote(vote) {
 }
 
 function handleData(data) {
-    if (data && data["id"]) {
+    if (data["status"]) {
+        console.error(data)
+        if (data["status"] === 429 || data["status"] === 420) {
+            alert(data["reason"]);
+        }
+    } else if (typeof data !== "undefined" && typeof data["id"] !== "undefined") {
         updateQuoteId(data["id"]);
         nextQuoteId[0] = data["next"];
         quote.innerText = `»${data["quote"]}«`;
@@ -136,7 +141,9 @@ function vote(vote) {
         body: `vote=${vote}`
     }).then(response => response.json())
         .then(data =>  handleData(data))
-        .catch(error => console.error(error));
+        .catch(error => {
+            console.error(error)
+        });
 }
 
 for (const voteButton of [upvoteButton, downvoteButton]) {
