@@ -139,12 +139,10 @@ function vote(vote) {
         .catch(error => console.error(error));
 }
 
-upvoteButton.type = "button";
-downvoteButton.type = "button";
-upvoteButton.onclick = () => {
-    vote(upvoteButton.value);
-}
-downvoteButton.onclick = () => {
-    vote(downvoteButton.value);
+for (const voteButton of [upvoteButton, downvoteButton]) {
+    voteButton.type = "button";
+    voteButton.onclick = () => {
+        vote(voteButton.value);
+    }
 }
 // @license-end
