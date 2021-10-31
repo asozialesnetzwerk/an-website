@@ -397,8 +397,7 @@ async def create_wq_and_vote(
     if wrong_quote is not None and wrong_quote.id != -1:
         if fast:
             return vote_wrong_quote_fast(vote, wrong_quote)
-        else:
-            return await vote_wrong_quote(vote, wrong_quote)
+        return await vote_wrong_quote(vote, wrong_quote)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote
     wrong_quote = parse_wrong_quote(
         await make_api_request(
