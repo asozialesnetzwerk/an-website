@@ -66,7 +66,7 @@
         <input name="r" class="hidden-input" value="{{rating_filter}}">
         <button type="submit"
                 id="upvote"
-                class="vote {% if vote == 1 %} voted {% end %}"
+                class="form-button vote {% if vote == 1 %} voted {% end %}"
                 name="vote"
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
         >
@@ -74,7 +74,7 @@
         </button>
         <button type="submit"
                 id="downvote"
-                class="vote {% if vote == -1 %} voted {% end %}"
+                class="form-button vote {% if vote == -1 %} voted {% end %}"
                 name="vote"
                 value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
         >
@@ -110,8 +110,8 @@
 </form>
 
 <script>
-    const nextQuoteId = [];
-    nextQuoteId[0] = "{{next_id}}";
+    const thisQuoteId = ["{{wrong_quote.get_id_as_str()}}"];
+    const nextQuoteId = ["{{next_id}}"];
 </script>
 <script src="/static/js/quote.js"></script>
 {% end %}

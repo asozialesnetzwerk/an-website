@@ -13,19 +13,24 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+const nextButton = document.getElementById("next");
+
+const upvoteButton = document.getElementById("upvote");
+const downvoteButton = document.getElementById("downvote");
+
 document.addEventListener("keydown", function(event) {
     if(event.code === "ArrowUp" || event.code === "KeyW") {
-        document.getElementById("upvote").click();
+        upvoteButton.click();
     } else if(event.code === "ArrowLeft" || event.code === "KeyA") {
         window.history.back();
     } else if(event.code === "ArrowDown" || event.code === "KeyS") {
-        document.getElementById("downvote").click();
+        downvoteButton.click();
     } else if(event.code === "ArrowRight" || event.code === "KeyD") {
-        document.getElementById("next").click();
+        nextButton.click();
     }
 });
 
-const nextButton = document.getElementById("next");
 
 const shareButton = document.getElementById("share");
 const downloadButton = document.getElementById("download");
@@ -33,9 +38,6 @@ const quoteIdDisplay = document.getElementById("quote-id");
 
 const author = document.getElementById("author");
 const quote = document.getElementById("quote");
-
-const upvoteButton = document.getElementById("upvote");
-const downvoteButton = document.getElementById("downvote");
 
 const ratingText = document.getElementById("rating-text");
 const ratingImg = document.getElementById("rating-image");
@@ -53,6 +55,8 @@ function updateQuoteId(quoteId) {
     const [q_id, a_id] = quoteId.split("-", 2);
     quote.href = `/zitate/info/q/${q_id}/${params}`;
     author.href = `/zitate/info/a/${a_id}/${params}`;
+
+    thisQuoteId[0] = quoteId;
 }
 
 function updateRating(rating) {
@@ -85,7 +89,7 @@ function updateVote(vote) {
         downvoteButton.value = "0";
     } else {
         downvoteButton.classList.remove("voted");
-        downvoteButton.value = "1";
+        downvoteButton.value = "-1";
     }
 }
 
@@ -106,19 +110,39 @@ window.onpopstate = (event) => {
 }
 
 nextButton.onclick = () => {
-    fetch(`/zitate/api/${nextQuoteId[0]}/`).then(function(response) {
-        return response.json();
-    }).then(function(data) {
-        if (data) {
+    fetch(`/zitate/api/${nextQuoteId[0]}/`)
+        .then((response) => response.json())
+        .then((data) => {
             window.history.pushState(
                 data,
                 "Falsche Zitate",
                 `/zitate/${data["id"]}/${params}`
             );
             handleData(data);
-        }
-    }).catch(function(error) {
-        console.error(error);
-    });
+        }).catch(function(error) {
+            console.error(error);
+        });
+}
+
+function vote(vote) {
+    fetch(`/zitate/api/${thisQuoteId[0]}/`, {
+        method: "post",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `vote=${vote}`
+    }).then(response => response.json())
+        .then(data =>  handleData(data))
+        .catch(error => console.error(error));
+}
+
+upvoteButton.type = "button";
+downvoteButton.type = "button";
+upvoteButton.onclick = () => {
+    vote(upvoteButton.value);
+}
+downvoteButton.onclick = () => {
+    vote(downvoteButton.value);
 }
 // @license-end
