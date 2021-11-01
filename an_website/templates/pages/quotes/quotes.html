@@ -1,7 +1,7 @@
 {% extends "../../base.html" %}
 
 {% block body %}
-<div id="quote-important" class="quote-container">
+<div id="quote-container">
     <div id="top">
         <a href="{{fix_url(f'/zitate/info/q/{wrong_quote.quote.id}')}}"
            class="no-style-a quote-text"
@@ -10,52 +10,48 @@
            class="no-style-a quote-author"
            id="author">- {{wrong_quote.author}}</a>
     </div>
-    <div class="rating-container">
-        <div class="quote-rating">
-            <table>
-                <tr>
-                    <th>
-                        <div id="rating-text">
-                            {% if wrong_quote.id == -1 or wrong_quote.id is None %}
-                                ---
-                            {% else %}
-                                {{wrong_quote.rating}}
-                            {% end %}
-                        </div>
-                    </th>
-                    <th>
-                    {% if int(wrong_quote.rating) < 0 %}
-                        <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
-                    {% elif int(wrong_quote.rating) > 0 %}
-                        <img id="rating-image" class="witzig" src="/static/img/StempelWitzig.svg" alt="Witzig-Stempel"/>
-                    {% else %}
-                        <img id="rating-image" class="invisible" src="" alt=""/>
-                    {% end %}
-                    </th>
-                </tr>
-            </table>
-        </div>
+    <div id="rating-container">
+        <table>
+            <tr>
+                <th>
+                    <div id="rating-text">
+                        {% if wrong_quote.id == -1 or wrong_quote.id is None %}
+                            ---
+                        {% else %}
+                            {{wrong_quote.rating}}
+                        {% end %}
+                    </div>
+                </th>
+                <th>
+                {% if int(wrong_quote.rating) < 0 %}
+                    <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
+                {% elif int(wrong_quote.rating) > 0 %}
+                    <img id="rating-image" class="witzig" src="/static/img/StempelWitzig.svg" alt="Witzig-Stempel"/>
+                {% else %}
+                    <img id="rating-image" class="invisible" src="" alt=""/>
+                {% end %}
+                </th>
+            </tr>
+        </table>
     </div>
-    <div id="bottom">
-        <div class="buttons">
-            <a class="download tooltip" id="download"
-               href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
-               download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
-            >
-                <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
-                <div class="tooltip-text">Downloade das Zitat als Bild.</div>
-            </a>
-            <a class="share tooltip" id="share"
-               href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/share/')}}"
-            >
-                <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
-                <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
-            </a>
-            <a class="get-quote tooltip" id="next" href="{{next_href}}">
-                <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
-                <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
-            </a>
-        </div>
+    <div id="buttons">
+        <a class="download tooltip" id="download"
+           href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
+           download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
+        >
+            <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
+            <div class="tooltip-text">Downloade das Zitat als Bild.</div>
+        </a>
+        <a class="share tooltip" id="share"
+           href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/share/')}}"
+        >
+            <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
+            <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
+        </a>
+        <a class="get-quote tooltip" id="next" href="{{next_href}}">
+            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
+            <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
+        </a>
     </div>
 </div>
 <form method="post" id="vote-container">

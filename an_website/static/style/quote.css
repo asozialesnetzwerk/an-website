@@ -1,7 +1,3 @@
-.select {
-    margin-top: 15px;
-}
-
 .button-img-no-rotation:hover {
     transform: scale(1.08);
     -webkit-filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
@@ -27,7 +23,7 @@
     -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
-.quote-container {
+#quote-container {
     background: transparent;
     height: auto;
     display: block;
@@ -54,12 +50,7 @@
     margin-bottom: 1rem;
 }
 
-.buttons {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.rating-container {
+#rating-container {
     font-size: 1.4rem;
     text-align: left;
     align-items: start;
@@ -93,7 +84,7 @@
     width: auto !important;
 }
 
-.buttons a {
+#buttons a {
     color: darkred;
     position: relative;
     display: inline-block;
@@ -130,7 +121,6 @@
 }
 
 .voted {
-    /*background-color: var(--tooltip-bg) !important;*/
     filter: grayscale(69%);
 }
 
@@ -141,9 +131,8 @@
 }
 
 @media (orientation:landscape) {
-    .quote-container {
+    #quote-container {
         background: transparent url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
-
         /*background-position: right 10px top 5px;*/
         width: 50rem;
         min-height: 380px;
@@ -151,14 +140,8 @@
         margin: 1rem auto;
         text-align: center;
         padding: 0 2rem 2rem;
-    }
-
-    #quote-important {
-        position: relative; z-index: 1;
-    }
-
-    #top {
-        position: absolute; z-index: -1;
+        position: relative;
+        z-index: 1;
     }
 
     .quote-text {
@@ -169,18 +152,14 @@
         margin-right: 18rem;
     }
 
-    .buttons {
+    #buttons {
         position: absolute;
         bottom: 0;
         right: 0;
     }
 
-    .rating-container {
+    #rating-container {
         position: absolute;
         bottom: 20px;
-    }
-
-    .quote-rating{
-        right: 1px;
     }
 }
