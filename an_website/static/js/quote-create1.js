@@ -19,7 +19,7 @@ const quoteList = document.getElementById("quote-list");
 const realAuthorInput = document.getElementById("real-author-input");
 
 quoteInput.oninput = () => {
-    console.log(quoteInput);
+    // console.log(quoteInput);
     for (let child of quoteList.children) {
         if (child.value === quoteInput.value) {
             // console.log(child);
@@ -28,6 +28,7 @@ quoteInput.oninput = () => {
             return;
         }
     }
+    // Not found in data list, enable real author input again.
     realAuthorInput.disabled = false;
 }
 // @license-end
