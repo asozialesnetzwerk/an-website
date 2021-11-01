@@ -95,6 +95,15 @@ SERVICES: tuple[Service, ...] = (
             "Matrix-Client": "https://chat.asozial.net/",
         },
     ),
+    Service(
+        "Syncplay-Server",
+        "Mit dem Syncplay-Server des Asozialen Netzwerkes kann man Online "
+        "zusammen Sachen gucken.",
+        {
+            "Domain": "syncplay.asozial.org:8999",
+            "Installations-Guide": "https://syncplay.pl/guide/install/",
+        },
+    ),
 )
 
 HTML_LIST: str = "\n".join(service.to_html() for service in SERVICES)
