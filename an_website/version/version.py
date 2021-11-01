@@ -51,6 +51,7 @@ def get_module_info() -> ModuleInfo:
             "Version",
             "aktuell",
         ),
+        hidden=True,
     )
 
 
