@@ -183,10 +183,4 @@
     .quote-rating{
         right: 1px;
     }
-
-    #quote-id {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-    }
 }

@@ -34,7 +34,6 @@ document.addEventListener("keydown", function(event) {
 
 const shareButton = document.getElementById("share");
 const downloadButton = document.getElementById("download");
-const quoteIdDisplay = document.getElementById("quote-id");
 
 const author = document.getElementById("author");
 const quote = document.getElementById("quote");
@@ -51,7 +50,6 @@ nextButton.removeAttribute("href");
 function updateQuoteId(quoteId) {
     shareButton.href = `/zitate/${quoteId}/share/${params}`;
     downloadButton.href = `/zitate/${quoteId}/image.png${params}`;
-    quoteIdDisplay.innerText = quoteId;
     const [q_id, a_id] = quoteId.split("-", 2);
     quote.href = `/zitate/info/q/${q_id}/${params}`;
     author.href = `/zitate/info/a/${a_id}/${params}`;
