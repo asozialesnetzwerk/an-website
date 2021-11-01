@@ -100,11 +100,20 @@
     -webkit-filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
 }
 
+#vote-container {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    align-content: stretch;
+}
+
 .vote {
-    width: 44% !important;
+    width: auto !important;
+    flex-grow: 1;
+    display: inline-block;
     padding: 10px !important;
+    margin: 5px;
     height: 60px;
-    margin: 0;
 }
 
 .vote:hover:not(.voted) {

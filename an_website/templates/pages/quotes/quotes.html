@@ -60,40 +60,39 @@
     </div>
 </div>
 <!--TODO: Make this prettier:-->
-<div class="vote-container">
-    <form method="post">
-        {% raw form_appendix %}
-        <input name="r" class="hidden-input" value="{{rating_filter}}">
-        <button type="submit"
-                id="upvote"
-                class="form-button vote {% if vote == 1 %} voted {% end %}"
-                name="vote"
-                value={% if vote == 1 %}"0"{% else %}"1"{% end %}
-        >
-            <img src="/static/img/StempelWitzig.svg" alt="WITZIG!">
-        </button>
-        <button type="submit"
-                id="downvote"
-                class="form-button vote {% if vote == -1 %} voted {% end %}"
-                name="vote"
-                value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
-        >
-            <img src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
-        </button>
-    </form>
-    <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
-        <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
-        <div class="tooltip-text">Füge neues Zitat hinzu.</div>
-    </a>
-    {% if settings["CONTACT_EMAIL"] is not None %}
-    <a class="report tooltip"
-       href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+<form method="post" id="vote-container">
+    {% raw form_appendix %}
+    <input name="r" class="hidden-input" value="{{rating_filter}}">
+    <button type="submit"
+            id="upvote"
+            class="form-button vote {% if vote == 1 %} voted {% end %}"
+            name="vote"
+            value={% if vote == 1 %}"0"{% else %}"1"{% end %}
     >
-        <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
-        <div class="tooltip-text">Melde das Zitat.</div>
-    </a>
-    {% end %}
-</div>
+        <img src="/static/img/StempelWitzig.svg" alt="WITZIG!">
+    </button>
+    <button type="submit"
+            id="downvote"
+            class="form-button vote {% if vote == -1 %} voted {% end %}"
+            name="vote"
+            value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
+    >
+        <img src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+    </button>
+</form>
+<a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
+    <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
+    <div class="tooltip-text">Füge neues Zitat hinzu.</div>
+</a>
+{% if settings["CONTACT_EMAIL"] is not None %}
+<a class="report tooltip"
+   href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+>
+    <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
+    <div class="tooltip-text">Melde das Zitat.</div>
+</a>
+{% end %}
+
 <form method="get" class="voting-container">
     {% raw form_appendix %}
     <select name="r" class="rating-form-el" onchange="this.form.submit()">
