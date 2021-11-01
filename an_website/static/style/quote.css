@@ -80,6 +80,15 @@
     opacity: 0;
 }
 
+#bottom-buttons-container {
+    display: flex;
+    justify-content: left;
+}
+
+#bottom-buttons-container * {
+    margin: 5px;
+}
+
 .rating-form-el {
     width: auto !important;
 }
@@ -175,7 +184,7 @@
         right: 1px;
     }
 
-    .quote-id {
+    #quote-id {
         position: absolute;
         bottom: 0;
         right: 0;

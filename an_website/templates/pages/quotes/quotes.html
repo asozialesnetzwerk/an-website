@@ -37,8 +37,8 @@
         </div>
     </div>
     <div id="bottom">
-        <div class="quote-id" id="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
-        <div class="buttons" data-html2canvas-ignore="true">
+        <div id="quote-id">{{ wrong_quote.get_id_as_str() }}</div>
+        <div class="buttons">
             <a class="download tooltip" id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
@@ -59,54 +59,54 @@
         </div>
     </div>
 </div>
-<!--TODO: Make this prettier:-->
 <form method="post" id="vote-container">
     {% raw form_appendix %}
     <input name="r" class="hidden-input" value="{{rating_filter}}">
-    <button type="submit"
-            id="upvote"
+    <button type="submit" id="upvote" name="vote"
             class="form-button vote {% if vote == 1 %} voted {% end %}"
-            name="vote"
-            value={% if vote == 1 %}"0"{% else %}"1"{% end %}
-    >
+            value={% if vote == 1 %}"0"{% else %}"1"{% end %} >
         <img src="/static/img/StempelWitzig.svg" alt="WITZIG!">
     </button>
-    <button type="submit"
-            id="downvote"
+    <button type="submit" id="downvote" name="vote"
             class="form-button vote {% if vote == -1 %} voted {% end %}"
-            name="vote"
-            value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
-    >
+            value={% if vote == -1 %}"0"{% else %}"-1"{% end %} >
         <img src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
     </button>
 </form>
-<a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
-    <img class="button-img plus-img button-img-no-rotation" src="/static/img/plus.svg" alt="Zitat hinzufügen.">
-    <div class="tooltip-text">Füge neues Zitat hinzu.</div>
-</a>
-{% if settings["CONTACT_EMAIL"] is not None %}
-<a class="report tooltip"
-   href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
->
-    <img class="button-img report-img button-img-no-rotation" alt="Zitat melden." src="/static/img/report.svg">
-    <div class="tooltip-text">Melde das Zitat.</div>
-</a>
-{% end %}
 
-<form method="get" class="voting-container">
-    {% raw form_appendix %}
-    <select name="r" class="rating-form-el" onchange="this.form.submit()">
-        <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
-        <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
-        <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
-        <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
-        <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
-        <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
-    </select>
-    <noscript>
-        <button type="submit" class="rating-form-el">Submit</button>
-    </noscript>
-</form>
+<div id="bottom-buttons-container">
+    <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
+        <img class="button-img button-img-no-rotation"
+             src="/static/img/plus.svg" alt="Zitat hinzufügen.">
+        <div class="tooltip-text">Füge neues Zitat hinzu.</div>
+    </a>
+
+    {% if settings["CONTACT_EMAIL"] is not None %}
+        <a class="report tooltip"
+           href="mailto:{{settings['CONTACT_EMAIL']}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+        >
+            <img class="button-img report-img button-img-no-rotation"
+                 alt="Zitat melden."
+                 src="/static/img/report.svg">
+            <div class="tooltip-text">Melde das Zitat.</div>
+        </a>
+    {% end %}
+
+    <form method="get">
+        {% raw form_appendix %}
+        <select name="r" class="rating-form-el" onchange="this.form.submit()">
+            <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
+            <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
+            <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
+            <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
+            <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
+            <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
+        </select>
+        <noscript>
+            <button type="submit" class="rating-form-el">Submit</button>
+        </noscript>
+    </form>
+</div>
 
 <script>
     const thisQuoteId = ["{{wrong_quote.get_id_as_str()}}"];
