@@ -65,11 +65,11 @@ function updateRating(rating) {
         ratingImg.alt = "";
     } else if (Number.parseInt(rating) > 0) {
         ratingImg.className = "witzig";
-        ratingImg.src = "/static/img/StempelWitzig.svg";
+        ratingImg.src = "/static/img/StempelWitzigKlein.svg";
         ratingImg.alt = "Witzig-Stempel";
     } else if (Number.parseInt(rating)  < 0) {
         ratingImg.className = "nicht-witzig";
-        ratingImg.src = "/static/img/StempelNichtWitzig.svg";
+        ratingImg.src = "/static/img/StempelNichtWitzigKlein.svg";
         ratingImg.alt = "Nicht-Witzig-Stempel";
     }
 }

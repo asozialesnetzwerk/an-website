@@ -24,9 +24,9 @@
                 </th>
                 <th>
                 {% if int(wrong_quote.rating) < 0 %}
-                    <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzig.svg" alt="Nicht-Witzig-Stempel"/>
+                    <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzigKlein.svg" alt="Nicht-Witzig-Stempel"/>
                 {% elif int(wrong_quote.rating) > 0 %}
-                    <img id="rating-image" class="witzig" src="/static/img/StempelWitzig.svg" alt="Witzig-Stempel"/>
+                    <img id="rating-image" class="witzig" src="/static/img/StempelWitzigKlein.svg" alt="Witzig-Stempel"/>
                 {% else %}
                     <img id="rating-image" class="invisible" src="" alt=""/>
                 {% end %}
@@ -60,12 +60,12 @@
     <button type="submit" id="upvote" name="vote"
             class="form-button vote {% if vote == 1 %} voted {% end %}"
             value={% if vote == 1 %}"0"{% else %}"1"{% end %} >
-        <img src="/static/img/StempelWitzig.svg" alt="WITZIG!">
+        <img src="/static/img/StempelWitzigKlein.svg" alt="WITZIG!">
     </button>
     <button type="submit" id="downvote" name="vote"
             class="form-button vote {% if vote == -1 %} voted {% end %}"
             value={% if vote == -1 %}"0"{% else %}"-1"{% end %} >
-        <img src="/static/img/StempelNichtWitzig.svg" alt="NICHT WITZIG!">
+        <img src="/static/img/StempelNichtWitzigKlein.svg" alt="NICHT WITZIG!">
     </button>
 </form>
 
