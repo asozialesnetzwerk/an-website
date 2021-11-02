@@ -5,8 +5,8 @@
 ## How to develop
 You need:
 - python3.9
-- packages from requirements.txt
-- packages from check-requirements.txt
+- packages from requirements.txt (`pip install -r requirements.txt`)
+- packages from check-requirements.txt (`pip install -r check-requirements.txt`)
 
 ### How to check
 - `./check.sh`
@@ -15,7 +15,7 @@ You need:
 - `python -m black an_website tests`
 
 ### How to run
-- `python -m an_website -X dev` (-X dev is for debugging)
+- `python -X dev -m an_website` (-X dev is for debugging)
 
 
 ## How to run (production)
