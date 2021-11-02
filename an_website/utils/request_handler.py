@@ -102,6 +102,14 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(401)
 
         if (
+            self.settings.get("FORCE_HTTPS")
+            and self.request.protocol == "http"
+        ):
+            return self.redirect(
+                "https://" + self.request.host + self.request.uri
+            )
+
+        if (
             # whether ratelimits are enabled
             self.settings.get("RATELIMITS")
             # ignore ratelimits in dev_mode
@@ -230,7 +238,7 @@ class BaseRequestHandler(RequestHandler):
             # don't use relative urls
             protocol = (  # make all links https if the config is set
                 "https"
-                if self.settings.get("LINK_TO_HTTPS")
+                if self.settings.get("FORCE_HTTPS")
                 else self.request.protocol
             )
             if (

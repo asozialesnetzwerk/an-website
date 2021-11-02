@@ -260,8 +260,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         ).split(",")
     )
 
-    app.settings["LINK_TO_HTTPS"] = config.getboolean(
-        "GENERAL", "LINK_TO_HTTPS", fallback=False
+    app.settings["FORCE_HTTPS"] = config.getboolean(
+        "GENERAL", "FORCE_HTTPS", fallback=False
     )
 
     # used in the header template
