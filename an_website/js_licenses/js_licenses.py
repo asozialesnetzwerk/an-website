@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 import os.path
+from functools import cache
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import STATIC_DIR, ModuleInfo
@@ -45,6 +46,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+@cache
 def get_js_file_names():
     """Get the names of the js files in this project."""
     js_files_dir = os.path.join(STATIC_DIR, "js")
@@ -53,6 +55,8 @@ def get_js_file_names():
 
 class JsLicenses(BaseRequestHandler):
     """The request handler for the js-licenses page."""
+
+    RATELIMIT_TOKENS = 0
 
     async def get(self):
         """Handle the get requests to the js-licenses page."""

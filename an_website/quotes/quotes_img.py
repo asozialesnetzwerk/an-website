@@ -189,7 +189,9 @@ def create_image(  # pylint: disable=too-many-locals
 class QuoteAsImg(QuoteReadyCheckRequestHandler):
     """Quote as img request handler."""
 
-    RATELIMIT_TOKENS = 2
+    RATELIMIT_NAME = "quotes-img"
+
+    RATELIMIT_TOKENS = 4
 
     async def get(self, quote_id: str, author_id: str):
         """Handle the get request to this page and render the quote as img."""

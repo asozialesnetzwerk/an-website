@@ -61,6 +61,7 @@ def get_module_info() -> ModuleInfo:
 class BaseRequestHandler(RequestHandler):
     """The base tornado request handler used by every page."""
 
+    RATELIMIT_NAME: str = "base"  # can be overridden in subclasses
     RATELIMIT_TOKENS: int = 1  # can be overridden in subclasses
     REQUIRES_AUTHORIZATION: bool = False  # can be overridden in subclasses
 
@@ -121,7 +122,7 @@ class BaseRequestHandler(RequestHandler):
                 tokens = self.RATELIMIT_TOKENS
             result = await redis.execute_command(
                 "CL.THROTTLE",
-                prefix + "ratelimit:" + self.request.remote_ip,
+                f"{prefix}:rl-{self.RATELIMIT_NAME}:{self.request.remote_ip}",
                 15,  # max burst
                 30,  # count per period
                 60,  # period

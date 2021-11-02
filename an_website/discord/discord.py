@@ -176,12 +176,14 @@ class Discord(BaseRequestHandler):
 class ANDiscord(Discord):
     """The request handler only for the an discord guild."""
 
+    RATELIMIT_NAME = "an-discord"
     RATELIMIT_TOKENS = 4
 
 
 class DiscordApi(APIRequestHandler):
     """The api request handler that gets the discord invite and returns it."""
 
+    RATELIMIT_NAME = "discord"
     RATELIMIT_TOKENS = 9
 
     async def get(self, guild_id=GUILD_ID):
@@ -193,4 +195,5 @@ class DiscordApi(APIRequestHandler):
 class ANDiscordApi(DiscordApi):
     """The api request handler only for the an discord guild."""
 
+    RATELIMIT_NAME = "an-discord"
     RATELIMIT_TOKENS = 4

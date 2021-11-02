@@ -33,6 +33,8 @@ def get_module_info() -> ModuleInfo:
 class MainPage(BaseRequestHandler):
     """The request handler of the main page."""
 
+    RATELIMIT_TOKENS = 0
+
     async def get(self):
         """Handle the get requests and display the main page."""
         await self.render(

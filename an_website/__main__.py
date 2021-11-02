@@ -340,8 +340,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             password=config.get("REDIS", "PASSWORD", fallback=None),
         )
     )
-    app.settings["REDIS_PREFIX"] = (
-        config.get("REDIS", "PREFIX", fallback="an-website") + ":"
+    app.settings["REDIS_PREFIX"] = config.get(
+        "REDIS", "PREFIX", fallback="an-website"
     )
     # sys.exit(
     #     asyncio.get_event_loop()
