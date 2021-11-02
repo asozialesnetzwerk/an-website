@@ -525,6 +525,14 @@ class NotFound(BaseRequestHandler):
 
         distances: list[tuple[int, str]] = []
 
+        if len(this_path) < 4:
+            self.redirect(
+                self.get_protocol_and_host() + "/" + self.get_query()
+            )
+
+        # /z/ /aa/
+        max_dist = min(4, len(this_path) - 3)
+
         for _mi in self.application.settings.get("MODULE_INFOS"):
             if _mi.path is not None:
                 # get the smallest distance possible with the aliases
@@ -532,7 +540,9 @@ class NotFound(BaseRequestHandler):
                     distance(this_path, path)
                     for path in (*_mi.aliases, _mi.path)
                 )
-                distances.append((dist, _mi.path))
+                if dist <= max_dist:
+                    # only if the distance is less or equal then {max_dist}
+                    distances.append((dist, _mi.path))
             if len(_mi.sub_pages) > 0:
                 distances.extend(
                     (distance(this_path, _sp.path), _sp.path)
@@ -544,8 +554,8 @@ class NotFound(BaseRequestHandler):
             # sort to get the one with the smallest distance in index 0
             distances.sort()
             dist, path = distances[0]
-            # only if the distance is less then 4
-            if dist < 4:
+            if dist <= max_dist:
+                # only if the distance is less or equal then {max_dist}
                 return self.redirect(
                     self.get_protocol_and_host() + path + self.get_query(),
                     False,
