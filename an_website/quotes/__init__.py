@@ -181,6 +181,9 @@ async def make_api_request(
 
 def get_author_updated_with(author_id: int, author_name: str):
     """Get the author with the given id and the name."""
+    author_name = author_name.strip()
+    if len(author_name) == 0:
+        author_name = "None"
     author = AUTHORS_CACHE.setdefault(
         author_id,
         Author(author_id, author_name),
