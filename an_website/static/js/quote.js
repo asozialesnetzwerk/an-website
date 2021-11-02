@@ -117,7 +117,7 @@ window.onpopstate = (event) => {
 }
 
 nextButton.onclick = () => {
-    fetch(`/zitate/api/${nextQuoteId[0]}/`)
+    fetch(`/zitate/api/${nextQuoteId[0]}/${params}`)
         .then((response) => response.json())
         .then((data) => {
             if (handleData(data)) {
