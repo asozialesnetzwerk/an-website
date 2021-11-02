@@ -526,11 +526,12 @@ class NotFound(BaseRequestHandler):
         distances: list[tuple[int, str]] = []
 
         if len(this_path) < 4:
+            # if /a/ redirect to / instead of /z/
             self.redirect(
                 self.get_protocol_and_host() + "/" + self.get_query()
             )
 
-        # /z/ /aa/
+        # prevent redirecting from /aa/ to /z/
         max_dist = min(4, len(this_path) - 3)
 
         for _mi in self.application.settings.get("MODULE_INFOS"):
