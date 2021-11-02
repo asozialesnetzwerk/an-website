@@ -217,9 +217,9 @@ def get_all_handlers(
 
     if sys.flags.dev_mode:
         logger.debug(
-            "loaded %d handlers:\n%s",
+            "loaded %d handlers: %s",
             len(handlers),
-            ("\n".join(str(handler) for handler in handlers)),
+            ("; ".join(str(handler) for handler in handlers)),
         )
 
     return tuple(handlers)
