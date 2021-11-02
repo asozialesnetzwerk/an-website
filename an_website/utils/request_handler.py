@@ -122,7 +122,7 @@ class BaseRequestHandler(RequestHandler):
                 tokens = self.RATELIMIT_TOKENS
             result = await redis.execute_command(
                 "CL.THROTTLE",
-                f"{prefix}:rl-{self.RATELIMIT_NAME}:{self.request.remote_ip}",
+                f"{prefix}:rl:{self.request.remote_ip}:{self.RATELIMIT_NAME}",
                 15,  # max burst
                 30,  # count per period
                 60,  # period

@@ -324,8 +324,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
-    app.settings["ELASTICSEARCH_PREFIX"] = (
-        config.get("ELASTICSEARCH", "PREFIX", fallback="an-website") + "-"
+    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
+        "ELASTICSEARCH", "PREFIX", fallback="an-website"
     )
     # sys.exit(
     #     asyncio.get_event_loop().run_until_complete(
