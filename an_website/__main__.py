@@ -414,12 +414,14 @@ def main():
 
     apply_config_to_app(app, config)
 
+    behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
     app.listen(
         config.getint("TORNADO", "PORT", fallback=8080),
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
-        xheaders=config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False),
+        xheaders=behind_proxy,
         decompress_request=True,
         ssl_options=get_ssl_context(config),
+        address="127.0.0.1" if behind_proxy else "0.0.0.0",
     )
 
     try:
