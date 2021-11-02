@@ -2,7 +2,6 @@
 <html lang="{{lang}}">
 <head>
     <title>{{title}}</title>
-
     <meta charset="UTF-8">
     <meta name="theme-color" content="#8B0000">
     <meta property="og:locale" content="de_DE">
@@ -10,8 +9,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{title}}">
     <meta property="og:site_name" content="Asoziale Webseite">
-    <meta property="og:description"
-          content="{% block description %}{{ description }}{% end %}">
+    <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
     <meta name="description" content="{{ description }}">
     <meta name="keywords" content="{{keywords}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,24 +25,15 @@
             })
         </script>
     {% end %}
+    <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
     <link rel="canonical" href="{{url.split('?')[0]}}">
-    <link rel="stylesheet" type="text/css"
-          href="/static/style/themes/{{theme}}.css">
+    <link rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
     <link rel="stylesheet" type="text/css" href="/static/style/base.css">
-
     {% block head %} {% end %}
 </head>
 <body>
     {% include "header.html" %}
-
-<div id="body">
-{% block body %}
-    {{ content }}
-{% end %}
-</div>
-
-{% block footer %}
+    <div id="body">{% block body %}{{ content }}{% end %}</div>
     {% include "footer.html" %}
-{% end %}
 </body>
 </html>
