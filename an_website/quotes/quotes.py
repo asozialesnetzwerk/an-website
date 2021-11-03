@@ -19,12 +19,13 @@ It displays funny, but wrong, quotes.
 from __future__ import annotations
 
 import asyncio
+import logging
 import random
 import sys
+import uuid
 from functools import cache
 from typing import Literal
 
-import orjson as json
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler
@@ -41,6 +42,8 @@ from . import (
 )
 from .quotes_img import QuoteAsImg
 from .share_page import ShareQuote
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -200,9 +203,9 @@ class QuoteById(QuoteBaseHandler):
         if (vote := vote_to_int(new_vote_str)) == new_vote_str:
             return await self.render_quote(quote_id, author_id)
 
-        old_vote = self.get_old_vote(quote_id, author_id)
+        old_vote = await self.get_old_vote(quote_id, author_id)
 
-        self.update_saved_votes(quote_id, author_id, vote)
+        await self.update_saved_votes(quote_id, author_id, vote)
 
         contributed_by = self.get_argument("user-name", default="")
         if contributed_by is not None:
@@ -230,22 +233,6 @@ class QuoteById(QuoteBaseHandler):
             raise HTTPError(500)
         await self.render_wrong_quote(wrong_quote, vote)
 
-    def update_saved_votes(self, quote_id: int, author_id: int, vote: int):
-        """Save the new vote in the cookies."""
-        wq_str_id = f"{quote_id}-{author_id}"
-        vote_dict = self.get_saved_vote_dict()
-        if vote == 0:
-            if wq_str_id in vote_dict:
-                del vote_dict[wq_str_id]
-        else:
-            vote_dict[wq_str_id] = str(vote)
-        #  save the votes in a cookie
-        self.set_cookie(
-            "votes",
-            json.dumps(vote_dict),
-            expires_days=365,
-        )
-
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
         """Render the page with the wrong_quote and this vote."""
         next_q, next_a = self.get_next_id()
@@ -267,27 +254,50 @@ class QuoteById(QuoteBaseHandler):
         )
 
     @cache
-    def get_old_vote(self, quote_id: int, author_id: int) -> Literal[-1, 0, 1]:
-        """Get the vote saved in the cookie."""
-        vote_dict = self.get_saved_vote_dict()
+    def get_user_id(self):
+        """Get the user id saved in the cookie or create one."""
+        user_id = self.get_cookie("user_id", default=None)
+        if user_id is None:
+            user_id = str(uuid.uuid4())
+        # save it in cookie or reset expiry date
+        self.set_cookie("user_id", user_id, expires_days=365, path="/zitate")
+        return user_id
 
-        key = f"{quote_id}-{author_id}"
-        if key not in vote_dict:
-            return 0
+    def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
+        """Get the key to save the votes with redis"""
+        prefix = self.settings.get("REDIS_PREFIX")
+        user_id = self.get_user_id()
+        return f"{prefix}:quote-votes:{user_id}:{quote_id}-{author_id}"
 
-        if vote_dict[key] == "-1":
-            return -1
-        if vote_dict[key] == "1":
-            return 1
-        # zero as default if value is not correct
-        return 0
+    async def update_saved_votes(
+        self, quote_id: int, author_id: int, vote: int
+    ):
+        """Save the new vote in the cookies."""
+        redis = self.settings.get("REDIS")
+        result = await redis.execute_command(
+            "SETEX",
+            self.get_redis_votes_key(quote_id, author_id),
+            31415926,  # time to live in seconds (almost a year)
+            vote,
+        )
+        if result != "OK":
+            logger.warning(f"Could not save vote in redis: {result}")
+            raise HTTPError(500, "Could not save vote in redis")
 
-    def get_saved_vote_dict(self) -> dict:
-        """Get the vote saved in the cookie."""
-        votes = self.get_cookie("votes", default=None)
-        if votes is None:
-            return {}
-        return json.loads(votes)
+    @cache
+    async def get_old_vote(
+        self, quote_id: int, author_id: int
+    ) -> Literal[-1, 0, 1]:
+        """
+        Get the vote of the current user saved with redis.
+
+        Use the quote_id and author_id to query the vote.
+        """
+        redis = self.settings.get("REDIS")
+        return await redis.execute_command(
+            "GET",
+            self.get_redis_votes_key(quote_id, author_id),
+        )
 
 
 class QuoteApiHandler(QuoteById, APIRequestHandler):
