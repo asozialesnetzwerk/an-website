@@ -120,9 +120,10 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
     if author is not None:
         return [author]
 
+    author_name_lower = author_name.lower()
     authors: list[Union[Author, str]] = [
         *filter(
-            lambda _a: distance(_a.name, author_name) < 3,
+            lambda _a: distance(_a.name.lower(), author_name_lower) < 6,
             AUTHORS_CACHE.values(),
         ),
         author_name,
@@ -131,6 +132,9 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
     fixed_author = author_name.title()
     if fixed_author not in authors:
         authors.append(fixed_author)
+    # no other fixes for authors that are less long
+    if len(author_name) < 2:
+        return authors
     # maybe only the first letter upper case
     fixed_author_2 = author_name[0].upper() + author_name[1:]
     if fixed_author_2 not in authors:
@@ -162,17 +166,18 @@ async def get_quotes(quote_str: str) -> list[Union[Quote, str]]:
     if isinstance(quote, Quote):
         return [quote]
 
+    lower_quote_str = quote_str.lower()
     quotes: list[Union[Quote, str]] = [
         *filter(
-            lambda _q: distance(_q.quote, quote_str) < 6,
+            lambda _q: distance(_q.quote.lower(), lower_quote_str) < 10,
             QUOTES_CACHE.values(),
         ),
         fix_quote_str(quote_str),
     ]
-    if (
-        not quote_str.endswith("?")
-        or not quote_str.endswith(".")
-        or not quote_str.endswith("!")
+    if not (
+        quote_str.endswith("?")
+        or quote_str.endswith(".")
+        or quote_str.endswith("!")
     ):
         quotes.append(quote_str + ".")
     return quotes
@@ -205,7 +210,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
             )
 
         # TODO: Search for real author, to reduce work for users
-        real_author_str = self.get_argument("real-author-1")
+        real_author_str = self.get_argument("real-author-1", default="")
 
         quotes = await get_quotes(quote_str)
         real_authors = await get_authors(real_author_str)
@@ -217,7 +222,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
                 fake_authors[0],
                 quotes[0],
             )
-            return self.redirect(self.fix_url(f"/zitate/{_id}"))
+            return self.redirect(self.fix_url(f"/zitate/{_id}/"))
 
         await self.render(
             "pages/quotes/create2.html",

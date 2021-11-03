@@ -3,17 +3,21 @@ const quoteInput = document.getElementById("quote-input");
 const quoteList = document.getElementById("quote-list");
 const realAuthorInput = document.getElementById("real-author-input");
 
+const realAuthors = {};
+for (let child of quoteList.children) {
+    // put the quotes with their authors into an object
+    realAuthors[child.value.toLowerCase()] = child.attributes.getNamedItem("author").value;
+}
+
 quoteInput.oninput = () => {
     // console.log(quoteInput);
-    for (let child of quoteList.children) {
-        if (child.value === quoteInput.value) {
-            // console.log(child);
-            realAuthorInput.value = child.attributes.getNamedItem("author").value;
-            realAuthorInput.disabled = true;
-            return;
-        }
+    const author = realAuthors[quoteInput.value.toLowerCase()];
+    if (author) {
+        realAuthorInput.value = author;
+        realAuthorInput.disabled = true;
+        return;
     }
-    // Not found in data list, enable real author input again.
+    // Not found in realAuthors; enable real author input again.
     realAuthorInput.disabled = false;
 }
 // @license-end
