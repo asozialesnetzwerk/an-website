@@ -39,6 +39,10 @@ async def test_request_handlers(http_server_client):
     assert response.code == 200
     response = await http_server_client.fetch("/hangman-loeser/api/")
     assert response.code == 200
+    response = await http_server_client.fetch("/wortspiel-helfer/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/wortspiel-helfer/api/")
+    assert response.code == 200
     response = await http_server_client.fetch("/services-list/")
     assert response.code == 200
     response = await http_server_client.fetch("/vertauschte-woerter/")
