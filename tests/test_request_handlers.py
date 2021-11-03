@@ -32,7 +32,17 @@ async def test_request_handlers(http_server_client):
     """Check if the request handlers return 200 codes."""
     response = await http_server_client.fetch("/")
     assert response.code == 200
+    response = await http_server_client.fetch(
+        "/redirect/?from=/&to=https://github.com"
+    )
+    assert response.code == 200
     response = await http_server_client.fetch("/uptime/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/discord/api/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/version/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/suche/")
     assert response.code == 200
     response = await http_server_client.fetch("/kaenguru-comics/")
     assert response.code == 200
@@ -82,6 +92,14 @@ async def test_request_handlers(http_server_client):
     assert response.code == 200
     response = await http_server_client.fetch("/kaenguru-soundboard/muk/")
     assert response.code == 200
+    response = await http_server_client.fetch(
+        "/kaenguru-soundboard/qwertzuiop/feed/", raise_error=False
+    )
+    assert response.code == 404
+    response = await http_server_client.fetch(
+        "/kaenguru-soundboard/qwertzuiop/", raise_error=False
+    )
+    assert response.code == 404
     response = await http_server_client.fetch(
         "/qwertzuiop/", raise_error=False
     )
