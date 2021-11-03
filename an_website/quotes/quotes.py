@@ -24,7 +24,7 @@ import random
 import sys
 import uuid
 from functools import cache
-from typing import Literal
+from typing import Literal, Optional
 
 from tornado.web import HTTPError
 
@@ -243,7 +243,22 @@ class QuoteById(QuoteBaseHandler):
             next_id=f"{next_q}-{next_a}",
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
+            rating=await self.get_rating_str(wrong_quote),
             vote=vote,
+        )
+
+    async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
+        """Get the rating str to display on the page."""
+        if (
+            self.rating_filter() == "smart"
+            and await self.get_saved_vote(
+                wrong_quote.quote.id, wrong_quote.author.id
+            )
+            is None
+        ):
+            return "???"
+        return (
+            "---" if wrong_quote.id in (None, -1) else str(wrong_quote.rating)
         )
 
     async def render_quote(self, quote_id: int, author_id: int):
@@ -263,6 +278,7 @@ class QuoteById(QuoteBaseHandler):
         self.set_cookie("user_id", user_id, expires_days=365, path="/zitate")
         return user_id
 
+    @cache
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
         """Get the key to save the votes with redis."""
         prefix = self.settings.get("REDIS_PREFIX")
@@ -284,14 +300,23 @@ class QuoteById(QuoteBaseHandler):
             logger.warning("Could not save vote in redis: %s", result)
             raise HTTPError(500, "Could not save vote in redis")
 
-    @cache
     async def get_old_vote(
         self, quote_id: int, author_id: int
     ) -> Literal[-1, 0, 1]:
+        """Get the old vote from the saved vote."""
+        old_vote = await self.get_saved_vote(quote_id, author_id)
+        if old_vote is None:
+            return 0
+        return old_vote
+
+    async def get_saved_vote(
+        self, quote_id: int, author_id: int
+    ) -> Optional[Literal[-1, 0, 1]]:
         """
         Get the vote of the current user saved with redis.
 
         Use the quote_id and author_id to query the vote.
+        Return None if nothing is saved.
         """
         redis = self.settings["REDIS"]
         result = await redis.execute_command(
@@ -304,8 +329,7 @@ class QuoteById(QuoteBaseHandler):
             return 0
         if result in ("1", b"1"):
             return 1
-        logger.warning("Could not get vote from redis: %s", result)
-        return 0
+        return None
 
 
 class QuoteApiHandler(QuoteById, APIRequestHandler):
@@ -323,9 +347,7 @@ class QuoteApiHandler(QuoteById, APIRequestHandler):
                 "id": wrong_quote.get_id_as_str(),
                 "quote": wrong_quote.quote.quote,
                 "author": wrong_quote.author.name,
-                "rating": "---"
-                if wrong_quote.id in (None, -1)
-                else wrong_quote.rating,
+                "rating": await self.get_rating_str(wrong_quote),
                 "vote": vote,
                 "next": f"{next_q}-{next_a}",
             }

@@ -15,21 +15,15 @@
         <table>
             <tr>
                 <th>
-                    <div id="rating-text">
-                        {% if wrong_quote.id == -1 or wrong_quote.id is None %}
-                            ---
-                        {% else %}
-                            {{wrong_quote.rating}}
-                        {% end %}
-                    </div>
+                    <div id="rating-text">{{rating}}</div>
                 </th>
                 <th>
-                {% if int(wrong_quote.rating) < 0 %}
+                {% if int(wrong_quote.rating) == 0 or rating in ("???", "---") %}
+                    <img id="rating-image" class="invisible" src="" alt=""/>
+                {% elif int(wrong_quote.rating) < 0 %}
                     <img id="rating-image" class="nicht-witzig" src="/static/img/StempelNichtWitzigKlein.svg" alt="Nicht-Witzig-Stempel"/>
                 {% elif int(wrong_quote.rating) > 0 %}
                     <img id="rating-image" class="witzig" src="/static/img/StempelWitzigKlein.svg" alt="Witzig-Stempel"/>
-                {% else %}
-                    <img id="rating-image" class="invisible" src="" alt=""/>
                 {% end %}
                 </th>
             </tr>

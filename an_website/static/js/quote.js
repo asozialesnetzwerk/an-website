@@ -44,7 +44,7 @@ function updateQuoteId(quoteId) {
 
 function updateRating(rating) {
     ratingText.innerText = rating;
-    if (rating === "---" || rating === 0) {
+    if (rating === "---" || rating === "???" || rating === 0) {
         ratingImg.className = "invisible";
         ratingImg.src = "";
         ratingImg.alt = "";
