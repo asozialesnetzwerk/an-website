@@ -250,7 +250,7 @@ class QuoteById(QuoteBaseHandler):
         """Get and render a wrong quote based on author id and author id."""
         return await self.render_wrong_quote(
             await get_wrong_quote(quote_id, author_id),
-            self.get_old_vote(quote_id, author_id),
+            await self.get_old_vote(quote_id, author_id),
         )
 
     @cache
@@ -264,7 +264,7 @@ class QuoteById(QuoteBaseHandler):
         return user_id
 
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
-        """Get the key to save the votes with redis"""
+        """Get the key to save the votes with redis."""
         prefix = self.settings.get("REDIS_PREFIX")
         user_id = self.get_user_id()
         return f"{prefix}:quote-votes:{user_id}:{quote_id}-{author_id}"
@@ -273,7 +273,7 @@ class QuoteById(QuoteBaseHandler):
         self, quote_id: int, author_id: int, vote: int
     ):
         """Save the new vote in the cookies."""
-        redis = self.settings.get("REDIS")
+        redis = self.settings["REDIS"]
         result = await redis.execute_command(
             "SETEX",
             self.get_redis_votes_key(quote_id, author_id),
@@ -281,7 +281,7 @@ class QuoteById(QuoteBaseHandler):
             vote,
         )
         if result != "OK":
-            logger.warning(f"Could not save vote in redis: {result}")
+            logger.warning("Could not save vote in redis: %s", result)
             raise HTTPError(500, "Could not save vote in redis")
 
     @cache
@@ -293,11 +293,19 @@ class QuoteById(QuoteBaseHandler):
 
         Use the quote_id and author_id to query the vote.
         """
-        redis = self.settings.get("REDIS")
-        return await redis.execute_command(
+        redis = self.settings["REDIS"]
+        result = await redis.execute_command(
             "GET",
             self.get_redis_votes_key(quote_id, author_id),
         )
+        if result == "-1":
+            return -1
+        if result == "0":
+            return 0
+        if result == "1":
+            return 1
+        logger.warning("Could not get vote from redis: %s", result)
+        return 0
 
 
 class QuoteApiHandler(QuoteById, APIRequestHandler):
