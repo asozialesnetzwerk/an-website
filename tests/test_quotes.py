@@ -15,8 +15,18 @@
 
 from __future__ import annotations
 
+import pytest
+
 import an_website.quotes.quotes as main_page
+from an_website import __main__ as main
 from an_website import quotes
+
+
+@pytest.fixture
+def app():
+    """Create the application."""
+    return main.make_app()
+
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -100,6 +110,22 @@ async def test_quote_updating():
         "Frage nicht, was dein Land für dich tun kann, "
         "frage was du für dein Land tun kannst."
     )
+
+
+async def test_quote_request_handlers(http_server_client):
+    """Test the request handlers for the quotes page."""
+    response = await http_server_client.fetch("/zitate/1-1/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/api/1-2/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/info/a/1/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/info/z/1/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/1-1/image.png")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/1-1/share/")
+    assert response.code == 200
 
 
 def test_parsing_vote_str():

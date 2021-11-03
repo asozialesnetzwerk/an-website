@@ -27,7 +27,7 @@ from . import HTTP_CLIENT, get_author_by_id, get_quote_by_id, get_wrong_quotes
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/zitate/info/([aq])/([0-9]{1,10})/", QuotesInfoPage),),
+        handlers=((r"/zitate/info/([az])/([0-9]{1,10})/", QuotesInfoPage),),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/info/a/1/",
@@ -78,11 +78,11 @@ async def get_wikipedia_page_content(page_name: str) -> Optional[str]:
 class QuotesInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
-    async def get(self, a_or_q: str, _id: str):
+    async def get(self, a_or_z: str, _id: str):
         """Handle get requests to the info page."""
-        if a_or_q == "a":
+        if a_or_z == "a":
             return await self.author_info(int(_id))
-        if a_or_q == "q":
+        if a_or_z == "z":
             return await self.quote_info(int(_id))
 
     async def author_info(self, _id: int):
