@@ -280,7 +280,7 @@ class QuoteById(QuoteBaseHandler):
             31415926,  # time to live in seconds (almost a year)
             str(vote),  # value to save (the vote)
         )
-        if result != "OK":
+        if result not in (True, "OK"):
             logger.warning("Could not save vote in redis: %s", result)
             raise HTTPError(500, "Could not save vote in redis")
 
@@ -298,11 +298,11 @@ class QuoteById(QuoteBaseHandler):
             "GET",
             self.get_redis_votes_key(quote_id, author_id),
         )
-        if result == "-1":
+        if result in ("-1", b"-1"):
             return -1
-        if result == "0":
+        if result in ("0", b"0"):
             return 0
-        if result == "1":
+        if result in ("1", b"1"):
             return 1
         logger.warning("Could not get vote from redis: %s", result)
         return 0
