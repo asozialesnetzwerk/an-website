@@ -278,7 +278,7 @@ class QuoteById(QuoteBaseHandler):
             "SETEX",
             self.get_redis_votes_key(quote_id, author_id),
             31415926,  # time to live in seconds (almost a year)
-            vote,
+            str(vote),  # value to save (the vote)
         )
         if result != "OK":
             logger.warning("Could not save vote in redis: %s", result)
