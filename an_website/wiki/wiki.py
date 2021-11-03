@@ -20,7 +20,7 @@ from typing import Optional
 
 import markdown
 import yaml
-from tornado.httpclient import HTTPError
+from tornado.web import HTTPError
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo

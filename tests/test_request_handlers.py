@@ -27,6 +27,7 @@ def app():
     return main.make_app()
 
 
+# pylint: disable=too-many-statements
 async def test_request_handlers(http_server_client):
     """Check if the request handlers return 200 codes."""
     response = await http_server_client.fetch("/")
@@ -59,6 +60,14 @@ async def test_request_handlers(http_server_client):
     assert response.code == 200
     response = await http_server_client.fetch("/wiki/")
     assert response.code == 200
+    response = await http_server_client.fetch("/wiki/")
+    assert response.code == 200
+    response = await http_server_client.fetch("/wiki/atas/anti-droh-mails/")
+    assert response.code == 200
+    response = await http_server_client.fetch(
+        "/wiki/qwertzuiop/", raise_error=False
+    )
+    assert response.code == 404
     response = await http_server_client.fetch("/js-lizenzen/")
     assert response.code == 200
     response = await http_server_client.fetch("/kaenguru-soundboard/personen/")
