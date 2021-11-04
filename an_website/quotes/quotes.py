@@ -275,7 +275,13 @@ class QuoteById(QuoteBaseHandler):
         if user_id is None:
             user_id = str(uuid.uuid4())
         # save it in cookie or reset expiry date
-        self.set_cookie("user_id", user_id, expires_days=365, path="/zitate")
+        self.set_cookie(
+            "user_id",
+            user_id,
+            expires_days=365,
+            path="/zitate",
+            samesite="Strict",
+        )
         return user_id
 
     @cache
