@@ -37,7 +37,6 @@
 }
 
 .quote-text {
-    background-color: transparent;
     font-size: 1.9rem;
     text-align: left;
     line-height: 1.8rem;
@@ -56,12 +55,24 @@
     align-items: start;
 }
 
-#rating-image {
-    height: 2.2rem;
+#rating-img-container {
+    text-align: left;
+}
+
+.rating-img {
+    display: inline-block;
 }
 
 .nicht-witzig {
     bottom: 0.008rem;
+}
+
+.nicht-witzig::after {
+    content: url(/static/img/StempelNichtWitzigKlein.svg);
+}
+
+.witzig::after {
+    content: url(/static/img/StempelWitzigKlein.svg);
 }
 
 .invisible {

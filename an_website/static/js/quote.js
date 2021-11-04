@@ -24,7 +24,7 @@ const author = document.getElementById("author");
 const quote = document.getElementById("quote");
 
 const ratingText = document.getElementById("rating-text");
-const ratingImg = document.getElementById("rating-image");
+const ratingImageContainer = document.getElementById("rating-img-container");
 
 const params = nextButton.href.includes("?")
     ? "?" + nextButton.href.split("?", 2)[1]
@@ -44,18 +44,17 @@ function updateQuoteId(quoteId) {
 
 function updateRating(rating) {
     ratingText.innerText = rating;
+    const ratingImg = document.createElement("div")
     if (rating === "---" || rating === "???" || rating === 0) {
-        ratingImg.className = "invisible";
-        ratingImg.src = "";
-        ratingImg.alt = "";
-    } else if (Number.parseInt(rating) > 0) {
-        ratingImg.className = "witzig";
-        ratingImg.src = "/static/img/StempelWitzigKlein.svg";
-        ratingImg.alt = "Witzig-Stempel";
-    } else if (Number.parseInt(rating)  < 0) {
-        ratingImg.className = "nicht-witzig";
-        ratingImg.src = "/static/img/StempelNichtWitzigKlein.svg";
-        ratingImg.alt = "Nicht-Witzig-Stempel";
+        ratingImageContainer.innerHTML = "";
+    } else {
+        const ratingNum = Number.parseInt(rating);
+        if (ratingNum > 0) {
+            ratingImg.className = "rating-img witzig";
+        } else if (ratingNum  < 0) {
+            ratingImg.className = "rating-img nicht-witzig";
+        }
+        ratingImageContainer.innerHTML = (ratingImg.outerHTML + " ").repeat(Math.min(4, Math.abs(ratingNum)));
     }
 }
 
