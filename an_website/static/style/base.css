@@ -5,9 +5,14 @@
     --footer-height: 50px;
 }
 
-*:not(svg, img) {
+body {
     color: var(--text-color);
     background: var(--bg);
+}
+
+body * {
+    color: var(--text-color);
+    background: transparent;
 }
 
 body {
