@@ -6,7 +6,7 @@ const realAuthorInput = document.getElementById("real-author-input");
 const realAuthors = {};
 for (let child of quoteList.children) {
     // put the quotes with their authors into an object
-    realAuthors[child.value.toLowerCase()] = child.attributes.getNamedItem("author").value;
+    realAuthors[child.value.toLowerCase()] = child.attributes.getNamedItem("data-author").value;
 }
 
 quoteInput.oninput = () => {

@@ -36,7 +36,7 @@
 
     <datalist id="quote-list">
         {% for q in quotes %}
-        <option value="{{q.quote}}" author="{{q.author.name}}">
+        <option value="{{q.quote}}" data-author="{{q.author.name}}">
         {% end %}
     </datalist>
     <datalist id="author-list">
