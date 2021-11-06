@@ -147,6 +147,7 @@
         /*background-position: right 10px top 5px;*/
         width: 50rem;
         min-height: 380px;
+        max-width: 90%;
         display: block;
         margin: 1rem auto;
         text-align: center;
