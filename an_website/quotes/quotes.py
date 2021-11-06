@@ -249,6 +249,8 @@ class QuoteById(QuoteBaseHandler):
 
     async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
         """Get the rating str to display on the page."""
+        if wrong_quote.id in (None, -1):
+            return "---"
         if (
             self.rating_filter() == "smart"
             and await self.get_saved_vote(
@@ -257,9 +259,7 @@ class QuoteById(QuoteBaseHandler):
             is None
         ):
             return "???"
-        return (
-            "---" if wrong_quote.id in (None, -1) else str(wrong_quote.rating)
-        )
+        return str(wrong_quote.rating)
 
     async def render_quote(self, quote_id: int, author_id: int):
         """Get and render a wrong quote based on author id and author id."""
