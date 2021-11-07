@@ -3,14 +3,14 @@
 
 {% block body %}
 <div class="redirect_content">
-    Willst du wirklich diese Seite verlassen? Für die Inhalte auf fremden
-    Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
-        <a class="leave form-button no-style-a" href="{{redirect_url}}">
-            Weiter nach {{redirect_url.split("?")[0]}}
-        </a>
-        <a class="stay form-button no-style-a" href="{{from_url}}">
-            Wieder zurück
-        </a>
+    Willst du wirklich {{redirect_url.split("?")[0]}} öffnen? Für die Inhalte auf
+    fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
+    <a class="leave form-button no-style-a" href="{{redirect_url}}">
+        Ja, ich bin mir sicher
+    </a>
+    <a class="stay form-button no-style-a" href="{{from_url}}">
+        Nein, ich möchte wieder zurück
+    </a>
 </div>
 {% end %}
 
