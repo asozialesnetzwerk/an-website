@@ -146,31 +146,11 @@ class Discord(BaseRequestHandler):
     RATELIMIT_TOKENS = 10
 
     async def get(self, guild_id=GUILD_ID):
-        """Get the discord invite and redirect to it."""
-        referrer = self.fix_url(
-            self.request.headers.get(
-                "Referer",  # [sic!] (Siehe RFC 2068)
-                default="/",
-            )
+        """Get the discord invite."""
+        return await self.render(
+            "pages/discord.html",
+            invite=(await get_invite_with_cache(guild_id))[0],
         )
-        discord_invite = (await get_invite_with_cache(guild_id))[0]
-        if (
-            referrer.startswith("/")  # relative link
-            or f"://{self.request.host_name}" in referrer  # same host name
-            # if the invite is not directly from discord.com, always ask
-            or not discord_invite.startswith("https://discord.com/")
-        ):
-            # if referrer is from this page redirect to the redirect page
-            return self.redirect(
-                self.fix_url(
-                    discord_invite,
-                    referrer,
-                )
-            )
-        # just to make sure, we don't redirect to some malicious page
-        assert discord_invite.startswith("https://discord.com/")
-        # referrer is from another page -> just redirect to the discord invite
-        return self.redirect(discord_invite)
 
 
 class ANDiscord(Discord):

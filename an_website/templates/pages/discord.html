@@ -1,0 +1,18 @@
+{% whitespace oneline %}
+{% extends "../base.html" %}
+
+{% block body %}
+<div class="redirect_content">
+    Willst du wirklich {{invite}} öffnen? Für die Inhalte auf fremden Seiten
+    können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
+    <a class="leave form-button no-style-a" href="{{invite}}">
+        Dem Discord beitreten!
+    </a>
+</div>
+{% end %}
+
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="/static/style/form.css">
+<link rel="stylesheet" type="text/css" href="/static/style/redirect.css">
+{% end %}
