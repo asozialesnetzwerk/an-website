@@ -273,6 +273,7 @@ class QuoteById(QuoteBaseHandler):
         """Get the user id saved in the cookie or create one."""
         user_id = self.get_cookie("user_id", default=None)
         if user_id is None:
+            # TODO: ask for cookie consent
             user_id = str(uuid.uuid4())
         # save it in cookie or reset expiry date
         self.set_cookie(
