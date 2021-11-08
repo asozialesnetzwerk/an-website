@@ -260,6 +260,10 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         ).split(",")
     )
 
+    app.settings["cookie_secret"] = config.get(
+        "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
+    )
+
     app.settings["LINK_TO_HTTPS"] = config.getboolean(
         "GENERAL", "LINK_TO_HTTPS", fallback=False
     )
