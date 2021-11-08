@@ -54,7 +54,7 @@ class RedirectPage(BaseRequestHandler):
             # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url(redirect_url))
 
-        if redirect_url.startswith("https://chat.asozial.net/"):
+        if redirect_url.startswith("https://chat.asozial.org/"):
             return self.redirect(redirect_url)
 
         # get the url the redirect comes from

@@ -92,7 +92,7 @@ SERVICES: tuple[Service, ...] = (
         "E-Mail-Adresse oder Telefonnummer möglich.",
         {
             "Domain": "asozial.org",
-            "Matrix-Client": "https://chat.asozial.net/",
+            "Matrix-Client": "https://chat.asozial.org/",
         },
     ),
     Service(
