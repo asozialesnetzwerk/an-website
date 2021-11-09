@@ -90,6 +90,19 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     return 0
 
 
+def get_random_rating_filter() -> str:
+    """Get a random rating filter with smart probabilities."""
+    rand_int = random.randint(0, 27)
+    if rand_int < 2:  # 0 - 1 → 2 → ~7.14%
+        return "n"
+    if rand_int < 9:  # 2 - 8 → 7 → 25%
+        return "unrated"
+    if rand_int < 15:  # 9 - 14 → 6 → ~21.43%
+        return "all"
+    # 15 - 27 → 13 → 46.43%
+    return "w"
+
+
 class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
 
@@ -118,24 +131,8 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         if rating_filter is None:
             rating_filter = self.rating_filter()
         if rating_filter == "smart":
-            rand_int = random.randint(0, 27)
-            if rand_int < 2:  # 0 - 1 → 2 → ~7.14%
-                rating_filter = "n"
-            elif rand_int < 9:  # 2 - 8 → 7 → 25%
-                rating_filter = "unrated"
-            elif rand_int < 15:  # 9 - 14 → 6 → ~21.43%
-                rating_filter = "all"
-            else:  # 15 - 27 → 13 → 46.43%
-                rating_filter = "w"
+            rating_filter = get_random_rating_filter()
 
-        if rating_filter == "w":
-            return random.choice(
-                get_wrong_quotes(lambda _wq: _wq.rating > 0)
-            ).get_id()
-        if rating_filter == "n":
-            return random.choice(
-                get_wrong_quotes(lambda _wq: _wq.rating < 0)
-            ).get_id()
         if rating_filter == "unrated":
             # get a random quote, but filter out already rated quotes
             while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
@@ -144,11 +141,21 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
                     # the cache. They don't have a real wrong_quotes_id
                     return ids
             return ids
-        if rating_filter == "rated":
-            return random.choice(get_wrong_quotes()).get_id()
-        # if rating_filter == "all":
-        #     pass
-        return get_random_id()
+        if rating_filter == "all":
+            return get_random_id()
+
+        wrong_quotes = None
+        if rating_filter == "w":
+            wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating > 0)
+        elif rating_filter == "n":
+            wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating < 0)
+        elif rating_filter == "rated":
+            wrong_quotes = get_wrong_quotes()
+
+        if wrong_quotes is None or len(wrong_quotes) == 0:
+            return get_random_id()
+
+        return random.choice(wrong_quotes).get_id()
 
     def on_finish(self):
         """
