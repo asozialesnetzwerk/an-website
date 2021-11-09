@@ -66,6 +66,8 @@ async def test_request_handlers(http_server_client):
     assert response.code == 200
     response = await http_server_client.fetch("/host-info/")
     assert response.code == 200
+    response = await http_server_client.fetch("/host-info/uwu/")
+    assert response.code in (200, 501)
     response = await http_server_client.fetch("/settings/")
     assert response.code == 200
     response = await http_server_client.fetch("/wiki/")
