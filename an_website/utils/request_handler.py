@@ -302,6 +302,18 @@ class BaseRequestHandler(RequestHandler):
 
         return form_appendix
 
+    def get_contact_email(self) -> Optional[str]:
+        """Get the contact email from the settings."""
+        email = self.settings.get("CONTACT_EMAIL")
+        if email is None:
+            return None
+        if not email.startswith("@"):
+            return email
+        # if mail starts with @ it is a catch all email
+        return (
+            self.request.path.replace("/", "-").strip("-") + "_contact" + email
+        )
+
     def get_template_namespace(self):
         """
         Add useful things to the template namespace and return it.
@@ -333,6 +345,7 @@ class BaseRequestHandler(RequestHandler):
                 "fix_url": self.fix_url,
                 "REPO_URL": self.fix_url(REPO_URL),
                 "theme": self.get_display_theme(),
+                "contact_email": self.get_contact_email(),
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),

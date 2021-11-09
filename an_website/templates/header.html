@@ -34,9 +34,9 @@
     {% end %}
     </ul>
 
-    {% if settings.get("CONTACT_EMAIL") is not None %}
+    {% if contact_email is not None %}
     <a
-      href="mailto:{{settings['CONTACT_EMAIL']}}?subject=AN-Webseite: {{title}}"
+      href="mailto:{{contact_email}}?subject=AN-Webseite: {{title}}"
       class="contact-anchor"
     >
       KONTAKT
