@@ -118,8 +118,13 @@ async def test_quote_request_handlers(http_server_client):
     assert response.code == 200
     response = await http_server_client.fetch("/zitate/api/1-2/")
     assert response.code == 200
-    response = await http_server_client.fetch("/zitate/info/a/1/")
-    assert response.code == 200
+    for _i in (1, 2):
+        # twice the same because we cache the author info from wikipedia
+        response1 = await http_server_client.fetch(f"/zitate/info/a/{_i}/")
+        assert response.code == 200
+        response2 = await http_server_client.fetch(f"/zitate/info/a/{_i}/")
+        assert response.code == 200
+        assert response1.body.decode() == response2.body.decode()
     response = await http_server_client.fetch("/zitate/info/z/1/")
     assert response.code == 200
     response = await http_server_client.fetch("/zitate/1-1/image.png")
