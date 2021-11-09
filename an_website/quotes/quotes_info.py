@@ -27,7 +27,10 @@ from . import HTTP_CLIENT, get_author_by_id, get_quote_by_id, get_wrong_quotes
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/zitate/info/([az])/([0-9]{1,10})/", QuotesInfoPage),),
+        handlers=(
+            (r"/zitate/info/a/([0-9]{1,10})/", AuthorsInfoPage),
+            (r"/zitate/info/z/([0-9]{1,10})/", QuotesInfoPage),
+        ),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/info/a/1/",
@@ -78,15 +81,29 @@ async def get_wikipedia_page_content(page_name: str) -> Optional[str]:
 class QuotesInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
-    async def get(self, a_or_z: str, _id: str):
-        """Handle get requests to the info page."""
-        if a_or_z == "a":
-            return await self.author_info(int(_id))
-        if a_or_z == "z":
-            return await self.quote_info(int(_id))
+    RATELIMIT_NAME = "quote_info"
 
-    async def author_info(self, _id: int):
-        """Show author info."""
+    async def get(self, _id_str: str):
+        """Handle get requests to the quote info page."""
+        _id: int = int(_id_str)
+        quote = await get_quote_by_id(_id)
+        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
+        await self.render(
+            "pages/quotes/quote_info.html",
+            quote=quote,
+            wrong_quotes=wqs,
+        )
+
+
+class AuthorsInfoPage(BaseRequestHandler):
+    """The request handler used for the info page."""
+
+    RATELIMIT_NAME = "quote_info"
+    RATELIMIT_TOKENS = 3
+
+    async def get(self, _id_str: str):
+        """Handle get requests to the author info page."""
+        _id: int = int(_id_str)
         author = await get_author_by_id(_id)
         if author.info is None:
             author.info = await search_wikipedia(author.name)
@@ -96,15 +113,5 @@ class QuotesInfoPage(BaseRequestHandler):
         await self.render(
             "pages/quotes/author_info.html",
             author=author,
-            wrong_quotes=wqs,
-        )
-
-    async def quote_info(self, _id: int):
-        """Show quote info."""
-        quote = await get_quote_by_id(_id)
-        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
-        await self.render(
-            "pages/quotes/quote_info.html",
-            quote=quote,
             wrong_quotes=wqs,
         )
