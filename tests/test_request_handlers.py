@@ -30,79 +30,74 @@ def app():
 # pylint: disable=too-many-statements
 async def test_request_handlers(http_server_client):
     """Check if the request handlers return 200 codes."""
-    response = await http_server_client.fetch("/")
+
+    async def fetch(url):
+        """Fetch a url."""
+        return await http_server_client.fetch(url, raise_error=False)
+
+    response = await fetch("/")
     assert response.code == 200
-    response = await http_server_client.fetch(
-        "/redirect/?from=/&to=https://github.com"
-    )
+    response = await fetch("/redirect/?from=/&to=https://github.com")
     assert response.code == 200
-    response = await http_server_client.fetch("/uptime/")
+    response = await fetch("/uptime/")
     assert response.code == 200
-    response = await http_server_client.fetch("/discord/api/")
+    response = await fetch("/discord/api/")
     assert response.code == 200
-    response = await http_server_client.fetch("/version/")
+    response = await fetch("/version/")
     assert response.code == 200
-    response = await http_server_client.fetch("/suche/")
+    response = await fetch("/suche/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-comics/")
+    response = await fetch("/kaenguru-comics/")
     assert response.code == 200
-    response = await http_server_client.fetch("/hangman-loeser/")
+    response = await fetch("/hangman-loeser/")
     assert response.code == 200
-    response = await http_server_client.fetch("/hangman-loeser/api/")
+    response = await fetch("/hangman-loeser/api/")
     assert response.code == 200
-    response = await http_server_client.fetch("/wortspiel-helfer/")
+    response = await fetch("/wortspiel-helfer/")
     assert response.code == 200
-    response = await http_server_client.fetch("/wortspiel-helfer/api/")
+    response = await fetch("/wortspiel-helfer/api/")
     assert response.code == 200
-    response = await http_server_client.fetch("/services-list/")
+    response = await fetch("/services-list/")
     assert response.code == 200
-    response = await http_server_client.fetch("/vertauschte-woerter/")
+    response = await fetch("/vertauschte-woerter/")
     assert response.code == 200
-    response = await http_server_client.fetch("/vertauschte-woerter/api/")
+    response = await fetch("/vertauschte-woerter/api/")
     assert response.code == 200
-    response = await http_server_client.fetch("/waehrungs-rechner/")
+    response = await fetch("/waehrungs-rechner/")
     assert response.code == 200
-    response = await http_server_client.fetch("/waehrungs-rechner/api/")
+    response = await fetch("/waehrungs-rechner/api/")
     assert response.code == 200
-    response = await http_server_client.fetch("/host-info/")
+    response = await fetch("/host-info/")
     assert response.code == 200
-    response = await http_server_client.fetch("/host-info/uwu/")
+    response = await fetch("/host-info/uwu/")
     assert response.code in (200, 501)
-    response = await http_server_client.fetch("/settings/")
+    response = await fetch("/settings/")
     assert response.code == 200
-    response = await http_server_client.fetch("/wiki/")
+    response = await fetch("/wiki/")
     assert response.code == 200
-    response = await http_server_client.fetch("/wiki/")
+    response = await fetch("/wiki/")
     assert response.code == 200
-    response = await http_server_client.fetch("/wiki/atas/anti-droh-mails/")
+    response = await fetch("/wiki/atas/anti-droh-mails/")
     assert response.code == 200
-    response = await http_server_client.fetch(
-        "/wiki/qwertzuiop/", raise_error=False
-    )
+    response = await fetch("/wiki/qwertzuiop/")
     assert response.code == 404
-    response = await http_server_client.fetch("/js-lizenzen/")
+    response = await fetch("/js-lizenzen/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/personen/")
+    response = await fetch("/kaenguru-soundboard/personen/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/suche/")
+    response = await fetch("/kaenguru-soundboard/suche/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/feed/")
+    response = await fetch("/kaenguru-soundboard/feed/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/")
+    response = await fetch("/kaenguru-soundboard/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/muk/feed/")
+    response = await fetch("/kaenguru-soundboard/muk/feed/")
     assert response.code == 200
-    response = await http_server_client.fetch("/kaenguru-soundboard/muk/")
+    response = await fetch("/kaenguru-soundboard/muk/")
     assert response.code == 200
-    response = await http_server_client.fetch(
-        "/kaenguru-soundboard/qwertzuiop/feed/", raise_error=False
-    )
+    response = await fetch("/kaenguru-soundboard/qwertzuiop/feed/")
     assert response.code == 404
-    response = await http_server_client.fetch(
-        "/kaenguru-soundboard/qwertzuiop/", raise_error=False
-    )
+    response = await fetch("/kaenguru-soundboard/qwertzuiop/")
     assert response.code == 404
-    response = await http_server_client.fetch(
-        "/qwertzuiop/", raise_error=False
-    )
+    response = await fetch("/qwertzuiop/")
     assert response.code == 404
