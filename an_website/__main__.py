@@ -272,6 +272,12 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     app.settings["CONTACT_EMAIL"] = config.get(
         "GENERAL", "CONTACT_EMAIL", fallback=None
     )
+
+    # the onion address of this website
+    app.settings["ONION_ADDRESS"] = config.get(
+        "GENERAL", "ONION_ADDRESS", fallback=None
+    )
+
     # whether ratelimits are enabled
     app.settings["RATELIMITS"] = config.getboolean(
         "GENERAL", "RATELIMITS", fallback=True
@@ -419,6 +425,7 @@ def main():
     apply_config_to_app(app, config)
 
     behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
+
     app.listen(
         config.getint("TORNADO", "PORT", fallback=8080),
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),

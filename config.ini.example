@@ -4,6 +4,7 @@
 #contact_email = asozial@example.com
 link_to_https = sure
 ratelimits = sure
+#onion_address = ...
 
 [SSL]
 enabled = nope
