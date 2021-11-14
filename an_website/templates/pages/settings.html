@@ -4,6 +4,18 @@
 {% block body %}
 
 <form>
+    {% if no_3rd_party_default is True %}
+    <label class="form-element">
+        Erlaube Inhalte von Drittanbietern
+        <input type="checkbox"
+           name="no_3rd_party"
+           value="nope"
+{% if no_3rd_party is False %}
+           checked
+{% end %}
+        >
+    </label>
+    {% else %}
     <label class="form-element">
         Deaktiviere Inhalte von Drittanbietern
         <input type="checkbox"
@@ -14,6 +26,7 @@
 {% end %}
         >
     </label>
+    {% end %}
 
 
     <label class="form-element">

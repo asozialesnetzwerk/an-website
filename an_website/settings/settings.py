@@ -93,6 +93,7 @@ class SettingsPage(BaseRequestHandler):
             "pages/settings.html",
             theme_name=self.get_theme(),
             themes=THEMES,
+            no_3rd_party_default=self.get_no_3rd_party_default(),
             save_in_cookie=save_in_cookie,
             replace_url_with=replace_url_with,
         )

@@ -41,6 +41,7 @@ from an_website.utils.utils import (
     THEMES,
     ModuleInfo,
     add_args_to_url,
+    bool_to_str,
     str_to_bool,
 )
 
@@ -212,16 +213,12 @@ class BaseRequestHandler(RequestHandler):
 
         url = add_args_to_url(
             url,
-            # the no_2rd_party param:
-            no_3rd_party=True
-            if "no_3rd_party" in self.request.query_arguments
-            and self.get_no_3rd_party()
+            # the no_3rd_party param:
+            no_3rd_party=self.get_no_3rd_party()
+            if self.get_no_3rd_party() != self.get_no_3rd_party_default()
             else None,
             # the theme param:
-            theme=self.get_theme()
-            if "theme" in self.request.query_arguments
-            and self.get_theme() != "default"
-            else None,
+            theme=self.get_theme() if self.get_theme() != "default" else None,
         )
 
         if url.endswith("?"):
@@ -249,13 +246,18 @@ class BaseRequestHandler(RequestHandler):
 
         return url
 
+    def get_no_3rd_party_default(self) -> bool:
+        """Get the default value for the no_3rd_party param."""
+        return self.request.host_name.endswith(".onion")
+
     @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
+        default = self.get_no_3rd_party_default()
         no_3rd_party = self.get_request_var_as_bool(
-            "no_3rd_party", default=False
+            "no_3rd_party", default=default
         )
-        return False if no_3rd_party is None else no_3rd_party
+        return default if no_3rd_party is None else no_3rd_party
 
     @cache
     def get_theme(self):
@@ -289,10 +291,11 @@ class BaseRequestHandler(RequestHandler):
 
         if (
             "no_3rd_party" in self.request.query_arguments
-            and self.get_no_3rd_party()
+            and self.get_no_3rd_party() != self.get_no_3rd_party_default()
         ):
             form_appendix = (
-                "<input name='no_3rd_party' class='hidden-input' value='sure'>"
+                f"<input name='no_3rd_party' class='hidden-input' "
+                f"value='{bool_to_str(self.get_no_3rd_party())}'>"
             )
         else:
             form_appendix = ""
