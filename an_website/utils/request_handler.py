@@ -231,7 +231,12 @@ class BaseRequestHandler(RequestHandler):
             # don't use relative urls
             protocol = (  # make all links https if the config is set
                 "https"
-                if self.settings.get("LINK_TO_HTTPS")
+                if (
+                    # always use https if the config is set
+                    self.settings.get("LINK_TO_HTTPS")
+                    # use http if the website is accessed through tor
+                    and not self.request.host_name.endswith(".onion")
+                )
                 else self.request.protocol
             )
             if (
