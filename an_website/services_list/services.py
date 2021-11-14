@@ -72,6 +72,7 @@ SERVICES: tuple[Service, ...] = (
             "Domain": "minceraft"  # [sic!] Mal gucken ob wer den "typo" meldet
             ".asozial.org",
             "Version": "1.15.2 (1.7-1.16 wird unterstützt)",
+            "Karte": "http://minecraft.asozial.org:8123/",
         },
     ),
     Service(
