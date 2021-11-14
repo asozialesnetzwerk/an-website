@@ -229,16 +229,16 @@ class BaseRequestHandler(RequestHandler):
 
         if url.startswith("/"):
             # don't use relative urls
-            protocol = (  # make all links https if the config is set
-                "https"
-                if (
-                    # always use https if the config is set
-                    self.settings.get("LINK_TO_HTTPS")
-                    # use http if the website is accessed through tor
-                    and not self.request.host_name.endswith(".onion")
-                )
-                else self.request.protocol
-            )
+            if self.request.host_name.endswith(".onion"):
+                # if the host is an onion domain, use http
+                protocol = "http"
+            elif self.settings.get("LINK_TO_HTTPS"):
+                # always use https if the config is set
+                protocol = "https"
+            else:
+                # otherwise use the protocol of the request
+                protocol = self.request.protocol
+
             if (
                 "?" not in url
                 and not url.endswith("/")
