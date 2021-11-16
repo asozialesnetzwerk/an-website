@@ -94,6 +94,10 @@ def apply():
             self.remote_ip = hashlib.sha1(
                 (self.remote_ip + "Salz").encode()
             ).hexdigest()[:10]
+        if "X-Forwarded-For" in self.headers:
+            self.headers["X-Forwarded-For"] = self.remote_ip
+        if "X-Real-IP" in self.headers:
+            self.headers["X-Real-IP"] = self.remote_ip
 
     tornado.httputil.HTTPServerRequest.__init__ = init_http_server_request
 
