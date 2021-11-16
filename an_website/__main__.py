@@ -274,9 +274,14 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     )
 
     # the onion address of this website
-    app.settings["ONION_ADDRESS"] = config.get(
+    onion_address = config.get(
         "GENERAL", "ONION_ADDRESS", fallback=None
     )
+    app.settings["ONION_ADDRESS"] = onion_address
+    if onion_address is None:
+        app.settings["ONION_PROTOCOL"] = None
+    else:
+        app.settings["ONION_PROTOCOL"] = onion_address.split("://")[0]
 
     # whether ratelimits are enabled
     app.settings["RATELIMITS"] = config.getboolean(

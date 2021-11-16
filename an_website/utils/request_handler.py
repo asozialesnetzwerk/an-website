@@ -226,13 +226,14 @@ class BaseRequestHandler(RequestHandler):
 
         if url.startswith("/"):
             # don't use relative urls
+            protocol = None
             if self.request.host_name.endswith(".onion"):
                 # if the host is an onion domain, use http
-                protocol = "http"
+                protocol = self.settings["ONION_PROTOCOL"]
             elif self.settings.get("LINK_TO_HTTPS"):
                 # always use https if the config is set
                 protocol = "https"
-            else:
+            if protocol is None:
                 # otherwise use the protocol of the request
                 protocol = self.request.protocol
 
