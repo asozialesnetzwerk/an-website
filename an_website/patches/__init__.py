@@ -16,11 +16,13 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import hashlib
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
 from json import dumps as stdlib_json_dumps  # pylint: disable=preferred-module
 from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
+from typing import Optional
 
 import defusedxml  # type: ignore
 import ecs_logging._utils
@@ -29,6 +31,7 @@ import elasticapm.utils.json_encoder  # type: ignore
 import elasticsearch.connection.base
 import elasticsearch.serializer
 import tornado.escape
+import tornado.httputil
 import tornado.platform.asyncio
 import tornado.web
 import uvloop
@@ -57,6 +60,42 @@ def apply():
             "WHEN",
         )
     )
+
+    init = tornado.httputil.HTTPServerRequest.__init__  # type: ignore
+
+    def init_http_server_request(  # pylint: disable=too-many-arguments
+        self,
+        method: Optional[str] = None,
+        uri: Optional[str] = None,
+        version: str = "HTTP/1.0",
+        headers: Optional["tornado.HTTPHeaders"] = None,  # type: ignore
+        body: Optional[bytes] = None,
+        host: Optional[str] = None,
+        files: Optional[dict[str, list["tornado.HTTPFile"]]] = None,  # type: ignore
+        connection: Optional["tornado.HTTPConnection"] = None,  # type: ignore
+        start_line: Optional["tornado.RequestStartLine"] = None,  # type: ignore
+        server_connection: Optional[object] = None,
+    ) -> None:
+        """Initialize a HTTP server request."""
+        init(
+            self,
+            method,
+            uri,
+            version,
+            headers,
+            body,
+            host,
+            files,
+            connection,
+            start_line,
+            server_connection,
+        )
+        if self.remote_ip not in ("127.0.0.1", "::1", None):
+            self.remote_ip = hashlib.sha1(
+                (self.remote_ip + "Salz").encode()
+            ).hexdigest()[:10]
+
+    tornado.httputil.HTTPServerRequest.__init__ = init_http_server_request
 
 
 def patch_json():
