@@ -97,6 +97,10 @@ class BaseRequestHandler(RequestHandler):
     def data_received(self, chunk):
         """Do nothing."""
 
+    def set_default_headers(self):
+        """Opt out of all FLoC cohort calculation."""
+        self.set_header("Permissions-Policy", "interest-cohort=()")
+
     async def prepare(self):  # pylint: disable=invalid-overridden-method
         """Check authorization and rate limits with redis."""
         if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
@@ -449,6 +453,8 @@ class APIRequestHandler(BaseRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
     def set_default_headers(self):
+        """Set important default headers for the api request handlers."""
+        super().set_default_headers()
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Max-Age
         # 7200 = 2h (the chromium max)
         self.set_header("Access-Control-Max-Age", "7200")
