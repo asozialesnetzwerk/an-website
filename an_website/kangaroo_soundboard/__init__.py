@@ -114,8 +114,8 @@ class HeaderInfo(Info):
         """
         _id = name_to_id(self.text)
         return (
-            f"<{self.tag} id='{_id}'>"
-            f"<a href='#{_id}' class='{self.tag}-a'>🔗 "
+            f'<{self.tag} id="{_id}">'
+            f'<a href="#{_id}" rel="noreferrer" class="{self.tag}-a">🔗 '
             + (
                 self.text  # no need to mark query if type
                 # is  book as the book title is excluded from the search
@@ -170,13 +170,13 @@ class SoundInfo(Info):
         file = self.get_file_name()
         href = fix_url_func(f"/kaenguru-soundboard/{self.person.name}")
         return (
-            f"<li><a href='{href}' "
-            f"class='a_hover'>{mark_query(self.person.value, query)}</a>"
-            f": »<a href='/kaenguru-soundboard/files/{file}.mp3' "
-            f"class='quote-a'>{mark_query(self.get_text(), query)}</a>"
-            f"«<br><audio controls>"
-            f"<source src='/kaenguru-soundboard/files/{file}.mp3' "
-            f"type='audio/mpeg'></source></audio></li>"
+            f'<li><a href="{href}" rel="noreferrer"'
+            f'class="a_hover">{mark_query(self.person.value, query)}</a>'
+            f': »<a href="/kaenguru-soundboard/files/{file}.mp3" '
+            f'class="quote-a" rel="noreferrer">'
+            f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
+            f'<source src="/kaenguru-soundboard/files/{file}.mp3" '
+            f'type="audio/mpeg"></source></audio></li>'
         )
 
     @cache

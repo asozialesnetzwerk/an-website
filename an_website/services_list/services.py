@@ -51,8 +51,8 @@ class Service:
             for key, value in self.infos.items():
                 if value.startswith("http") and "://" in value:
                     value = (
-                        f"<a href='/redirect/?to={quote(value)}"
-                        f"&from=/services-list/'>{value}</a>"
+                        f'<a href="/redirect/?to={quote(value)}'
+                        f'&from=/services-list/" rel="noreferrer">{value}</a>'
                     )
                 html.append(f"<tr><td>{key}</td><td>{value}</td></tr>")
 

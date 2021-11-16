@@ -10,7 +10,7 @@
         {% if not info.hidden and info.path is not None %}
         <li>
           <div class="tooltip">
-            <a href="{{ fix_url(info.path) }}"
+            <a href="{{fix_url(info.path)}}" rel="noreferrer"
                 {% if info.path == "/js-lizenzen/" %}
               data-jslicense="1"
                 {% end %}
@@ -22,7 +22,7 @@
               {% for page_info in info.sub_pages %}
                 {% if not page_info.hidden and page_info.path is not None %}
                   <li class="tooltip">
-                    <a href="{{ fix_url(page_info.path) }}">{{page_info.name}}</a>
+                    <a href="{{ fix_url(page_info.path) }}" rel="noreferrer">{{page_info.name}}</a>
                     <div class="tooltip-text">{{page_info.description}}</div>
                   </li>
                 {% end %}
@@ -37,7 +37,7 @@
     {% if contact_email is not None %}
     <a
       href="mailto:{{contact_email}}?subject=AN-Webseite: {{title}}"
-      class="contact-anchor"
+      class="contact-anchor" rel="noreferrer"
     >
       KONTAKT
     </a>

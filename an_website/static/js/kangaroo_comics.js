@@ -266,7 +266,8 @@ function loadMoreComics() {
 
         const listItem = document.createElement("li");
         const header = document.createElement("a");
-        header.classList.add("comic-header")
+        header.rel = "noreferrer";
+        header.classList.add("comic-header");
         header.innerText = getDateString(date) + ":";
         header.href = link;
         header.style.fontSize = "25px";

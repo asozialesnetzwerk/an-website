@@ -6,9 +6,11 @@
     <div id="top">
         <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
            class="no-style-a quote-text"
+           rel="noreferrer"
            id="quote">»{{wrong_quote.quote}}«</a>
         <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
            class="no-style-a quote-author"
+           rel="noreferrer"
            id="author">- {{wrong_quote.author}}</a>
     </div>
     <div id="rating-container">
@@ -34,20 +36,20 @@
         </table>
     </div>
     <div id="buttons">
-        <a class="download tooltip" id="download"
+        <a class="download tooltip" id="download" rel="noreferrer"
            href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
            download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
         >
             <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
             <div class="tooltip-text">Downloade das Zitat als Bild.</div>
         </a>
-        <a class="share tooltip" id="share"
+        <a class="share tooltip" id="share" rel="noreferrer"
            href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/share/')}}"
         >
             <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
             <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
         </a>
-        <a class="get-quote tooltip" id="next" href="{{next_href}}">
+        <a class="get-quote tooltip" id="next" href="{{next_href}}" rel="noreferrer">
             <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
             <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
         </a>
@@ -69,14 +71,14 @@
 </form>
 
 <div id="bottom-buttons-container">
-    <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}">
+    <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}" rel="noreferrer">
         <img class="button-img button-img-no-rotation"
              src="/static/img/plus.svg" alt="Zitat hinzufügen.">
         <div class="tooltip-text">Füge neues Zitat hinzu.</div>
     </a>
 
     {% if contact_email is not None %}
-        <a class="report tooltip"
+        <a class="report tooltip" rel="noreferrer"
            href="mailto:{{contact_email}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
         >
             <img class="button-img report-img button-img-no-rotation"
