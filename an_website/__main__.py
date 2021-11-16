@@ -274,9 +274,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     )
 
     # the onion address of this website
-    onion_address = config.get(
-        "GENERAL", "ONION_ADDRESS", fallback=None
-    )
+    onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)
     app.settings["ONION_ADDRESS"] = onion_address
     if onion_address is None:
         app.settings["ONION_PROTOCOL"] = None
