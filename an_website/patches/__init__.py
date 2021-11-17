@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import configparser
-import functools
 import hashlib
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
@@ -79,12 +78,13 @@ def patch_ip_hashing():
         headers: Optional["tornado.HTTPHeaders"] = None,  # type: ignore
         body: Optional[bytes] = None,
         host: Optional[str] = None,
-        files: Optional[dict[str, list["tornado.HTTPFile"]]] = None,
-        # type: ignore
-        connection: Optional["tornado.HTTPConnection"] = None,
-        # type: ignore
-        start_line: Optional["tornado.RequestStartLine"] = None,
-        # type: ignore
+        files: Optional[  # type: ignore
+            dict[str, list["tornado.HTTPFile"]]
+        ] = None,
+        connection: Optional["tornado.HTTPConnection"] = None,  # type: ignore
+        start_line: Optional[  # type: ignore
+            "tornado.RequestStartLine"
+        ] = None,
         server_connection: Optional[object] = None,
     ) -> None:
         """Initialize a HTTP server request."""
@@ -106,7 +106,7 @@ def patch_ip_hashing():
                 self.remote_ip.encode() + salt[0]
             ).hexdigest()[:16]
             # if salt[1] is more than one day ago
-            if salt[1] < time.time() - 86400:
+            if salt[1] < time.time() - (24 * 60 * 60):
                 salt[0] = os.urandom(32)
                 salt[1] = time.time()
         if "X-Forwarded-For" in self.headers:
