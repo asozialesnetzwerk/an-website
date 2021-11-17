@@ -16,10 +16,12 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import functools
 import hashlib
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
+import time
 from json import dumps as stdlib_json_dumps  # pylint: disable=preferred-module
 from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
 from typing import Optional
@@ -60,6 +62,12 @@ def apply():
             "WHEN",
         )
     )
+    patch_ip_hashing()
+
+
+def patch_ip_hashing():
+    """Hash the remote_ip before it can get accessed."""
+    salt = [os.urandom(32), time.time()]
 
     init = tornado.httputil.HTTPServerRequest.__init__  # type: ignore
 
@@ -71,9 +79,12 @@ def apply():
         headers: Optional["tornado.HTTPHeaders"] = None,  # type: ignore
         body: Optional[bytes] = None,
         host: Optional[str] = None,
-        files: Optional[dict[str, list["tornado.HTTPFile"]]] = None,  # type: ignore
-        connection: Optional["tornado.HTTPConnection"] = None,  # type: ignore
-        start_line: Optional["tornado.RequestStartLine"] = None,  # type: ignore
+        files: Optional[dict[str, list["tornado.HTTPFile"]]] = None,
+        # type: ignore
+        connection: Optional["tornado.HTTPConnection"] = None,
+        # type: ignore
+        start_line: Optional["tornado.RequestStartLine"] = None,
+        # type: ignore
         server_connection: Optional[object] = None,
     ) -> None:
         """Initialize a HTTP server request."""
@@ -92,8 +103,12 @@ def apply():
         )
         if self.remote_ip not in ("127.0.0.1", "::1", None):
             self.remote_ip = hashlib.sha1(
-                (self.remote_ip + "Salz").encode()
-            ).hexdigest()[:10]
+                self.remote_ip.encode() + salt[0]
+            ).hexdigest()[:16]
+            # if salt[1] is more than one day ago
+            if salt[1] < time.time() - 86400:
+                salt[0] = os.urandom(32)
+                salt[1] = time.time()
         if "X-Forwarded-For" in self.headers:
             self.headers["X-Forwarded-For"] = self.remote_ip
         if "X-Real-IP" in self.headers:
