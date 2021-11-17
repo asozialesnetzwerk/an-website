@@ -164,7 +164,7 @@ class Timer:
     def __init__(self):
         """Start the timer."""
         self._execution_time: Optional[float] = None
-        self._start_time: float = time.time()
+        self._start_time: float = time.perf_counter()
 
     def stop(self) -> float:
         """
@@ -174,7 +174,7 @@ class Timer:
         """
         if self._execution_time is not None:
             raise ValueError("Timer has been stopped before.")
-        self._execution_time = time.time() - self._start_time
+        self._execution_time = time.perf_counter() - self._start_time
 
         del self._start_time
         return self._execution_time
