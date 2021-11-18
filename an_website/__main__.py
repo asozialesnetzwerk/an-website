@@ -334,7 +334,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         sniff_on_connection_fail=True,
         sniffer_timeout=60,
         headers={
-            "accept": "application/vnd.elasticsearch+json; compatible-with=7"
+            "Accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
     app.settings["ELASTICSEARCH_PREFIX"] = config.get(
