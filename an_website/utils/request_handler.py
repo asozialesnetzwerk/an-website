@@ -135,9 +135,9 @@ class BaseRequestHandler(RequestHandler):
             )
             self.set_header("X-RateLimit-Limit", result[1])
             self.set_header("X-RateLimit-Remaining", result[2])
-            self.set_header("Retry-After", result[3])
             self.set_header("X-RateLimit-Reset", result[4])
             if result[0]:
+                self.set_header("Retry-After", result[3])
                 now = datetime.utcnow()
                 if now.month == 4 and now.day == 20:
                     self.set_status(420, "Enhance Your Calm")
