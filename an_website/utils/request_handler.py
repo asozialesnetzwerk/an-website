@@ -124,7 +124,7 @@ class BaseRequestHandler(RequestHandler):
             )
             if tokens is None:
                 tokens = self.RATELIMIT_TOKENS
-            remote_ip = hashlib.sha1(self.request.remote_ip).hexdigest()
+            remote_ip = get_hashed_remote_ip(self.request.remote_ip)
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 f"{prefix}:ratelimit:{remote_ip}:{self.RATELIMIT_NAME}",
@@ -195,8 +195,8 @@ class BaseRequestHandler(RequestHandler):
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
         return hashlib.sha1(
-            (self.request.remote_ip).encode("utf-8")
-        ).hexdigest()[:32]
+            self.request.remote_ip.encode("utf-8")
+        ).hexdigest()
 
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
