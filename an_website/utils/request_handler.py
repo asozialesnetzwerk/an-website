@@ -45,7 +45,6 @@ from an_website.utils.utils import (
     str_to_bool,
 )
 
-
 ip_hash_salt = [os.urandom(32), time.monotonic()]
 
 
