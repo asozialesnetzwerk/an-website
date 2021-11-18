@@ -109,7 +109,7 @@ def elasticapm_get_data_from_request(  # noqa: C901
             body = None
             try:
                 body = tornado.escape.json_decode(request.body)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 body = str(request.body, errors="ignore")
             if body is not None:
                 result["body"] = (
@@ -127,7 +127,7 @@ def anonymize_logs():
         elasticapm_get_data_from_request
     )
 
-    tornado.web._request_summary = lambda self: "%s %s (%s)" % (
+    tornado.web._request_summary = lambda self: "%s %s (%s)" % (  # pylint: disable=consider-using-f-string
         self.request.method,
         self.request.uri,
         anonymize_ip(self.request.remote_ip),
