@@ -128,8 +128,8 @@ def anonymize_logs():
     )
 
     tornado.web._request_summary = (
-        lambda self: "%s %s (%s)"
-        % (  # pylint: disable=consider-using-f-string
+        lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
+        % (
             self.request.method,
             self.request.uri,
             anonymize_ip(self.request.remote_ip),
