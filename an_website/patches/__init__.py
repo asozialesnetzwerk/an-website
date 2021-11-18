@@ -69,6 +69,7 @@ def apply():
 
 def anonymize_logs():
     """Anonymize logs."""
+
     def get_data_from_request(request_handler, request, config, event_type):
         """Capture relevant data from a tornado.httputil.HTTPServerRequest"""
         result = {
@@ -80,19 +81,33 @@ def anonymize_logs():
         if config.capture_headers:
             result["headers"] = dict(request.headers)
             if "X-Real-IP" in result["headers"]:
-                result["headers"]["X-Real-IP"] = anonymize_ip(result["headers"]["X-Real-IP"])
+                result["headers"]["X-Real-IP"] = anonymize_ip(
+                    result["headers"]["X-Real-IP"]
+                )
             if "X-Forwarded-For" in result["headers"]:
                 if "," in result["headers"]["X-Forwarded-For"]:
-                    result["headers"]["X-Forwarded-For"] = anonymize_ip(result["headers"]["X-Forwarded-For"].split(","))
+                    result["headers"]["X-Forwarded-For"] = anonymize_ip(
+                        result["headers"]["X-Forwarded-For"].split(",")
+                    )
                 else:
-                    result["headers"]["X-Forwarded-For"] = anonymize_ip(result["headers"]["X-Forwarded-For"])
+                    result["headers"]["X-Forwarded-For"] = anonymize_ip(
+                        result["headers"]["X-Forwarded-For"]
+                    )
             if "CF-Connecting-IP" in result["headers"]:
-                result["headers"]["CF-Connecting-IP"] = anonymize_ip(result["headers"]["CF-Connecting-IP"])
+                result["headers"]["CF-Connecting-IP"] = anonymize_ip(
+                    result["headers"]["CF-Connecting-IP"]
+                )
             if "True-Client-IP" in result["headers"]:
-                result["headers"]["True-Client-IP"] = anonymize_ip(result["headers"]["True-Client-IP"])
+                result["headers"]["True-Client-IP"] = anonymize_ip(
+                    result["headers"]["True-Client-IP"]
+                )
         if request.method in elasticapm.conf.constants.HTTP_WITH_BODY:
             if tornado.web._has_stream_request_body(request_handler.__class__):
-                result["body"] = "[STREAMING]" if config.capture_body in ("all", event_type) else "[REDACTED]"
+                result["body"] = (
+                    "[STREAMING]"
+                    if config.capture_body in ("all", event_type)
+                    else "[REDACTED]"
+                )
             else:
                 body = None
                 try:
@@ -100,11 +115,17 @@ def anonymize_logs():
                 except Exception:
                     body = str(request.body, errors="ignore")
                 if body is not None:
-                    result["body"] = body if config.capture_body in ("all", event_type) else "[REDACTED]"
+                    result["body"] = (
+                        body
+                        if config.capture_body in ("all", event_type)
+                        else "[REDACTED]"
+                    )
         result["url"] = elasticapm.utils.get_url_dict(request.full_url())
         return result
 
-    elasticapm.contrib.tornado.utils.get_data_from_request = get_data_from_request
+    elasticapm.contrib.tornado.utils.get_data_from_request = (
+        get_data_from_request
+    )
 
     tornado.web._request_summary = lambda self: "%s %s (%s)" % (
         self.request.method,
