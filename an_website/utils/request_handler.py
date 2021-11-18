@@ -194,9 +194,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
-        return hashlib.sha1(
-            self.request.remote_ip.encode("utf-8")
-        ).hexdigest()
+        return hashlib.sha1(self.request.remote_ip.encode("utf-8")).hexdigest()
 
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
