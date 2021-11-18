@@ -200,7 +200,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
-        if ip_hash_salt[1] < time.monotonic() - (24 * 60 * 60):
+        if ip_hash_salt[1] < time.monotonic() - (24 * 60 * 60):  # type: ignore
             ip_hash_salt[0] = os.urandom(32)
             ip_hash_salt[1] = time.monotonic()
         return hashlib.sha1(
