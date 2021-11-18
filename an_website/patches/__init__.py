@@ -77,10 +77,6 @@ def elasticapm_get_data_from_request(  # noqa: C901
     }
     if config.capture_headers:
         result["headers"] = dict(request.headers)
-        if "X-Real-IP" in result["headers"]:
-            result["headers"]["X-Real-IP"] = anonymize_ip(
-                result["headers"]["X-Real-IP"]
-            )
         if "X-Forwarded-For" in result["headers"]:
             if "," in result["headers"]["X-Forwarded-For"]:
                 result["headers"]["X-Forwarded-For"] = anonymize_ip(
@@ -97,6 +93,10 @@ def elasticapm_get_data_from_request(  # noqa: C901
         if "True-Client-IP" in result["headers"]:
             result["headers"]["True-Client-IP"] = anonymize_ip(
                 result["headers"]["True-Client-IP"]
+            )
+        if "X-Real-IP" in result["headers"]:
+            result["headers"]["X-Real-IP"] = anonymize_ip(
+                result["headers"]["X-Real-IP"]
             )
     if request.method in elasticapm.conf.constants.HTTP_WITH_BODY:
         if tornado.web._has_stream_request_body(request_handler.__class__):
