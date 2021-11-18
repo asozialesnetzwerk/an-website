@@ -127,10 +127,13 @@ def anonymize_logs():
         elasticapm_get_data_from_request
     )
 
-    tornado.web._request_summary = lambda self: "%s %s (%s)" % (  # pylint: disable=consider-using-f-string
-        self.request.method,
-        self.request.uri,
-        anonymize_ip(self.request.remote_ip),
+    tornado.web._request_summary = (
+        lambda self: "%s %s (%s)"
+        % (  # pylint: disable=consider-using-f-string
+            self.request.method,
+            self.request.uri,
+            anonymize_ip(self.request.remote_ip),
+        )
     )
 
 
