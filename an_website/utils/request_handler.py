@@ -46,6 +46,9 @@ from an_website.utils.utils import (
 )
 
 
+ip_hash_salt = [os.urandom(32), time.monotonic()]
+
+
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
@@ -124,7 +127,9 @@ class BaseRequestHandler(RequestHandler):
             )
             if tokens is None:
                 tokens = self.RATELIMIT_TOKENS
-            remote_ip = get_hashed_remote_ip(self.request.remote_ip)
+            remote_ip = hashlib.sha1(
+                self.request.remote_ip.encode("utf-8")
+            ).hexdigest()
             result = await redis.execute_command(
                 "CL.THROTTLE",
                 f"{prefix}:ratelimit:{remote_ip}:{self.RATELIMIT_NAME}",
@@ -194,7 +199,12 @@ class BaseRequestHandler(RequestHandler):
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
-        return hashlib.sha1(self.request.remote_ip.encode("utf-8")).hexdigest()
+        if ip_hash_salt[1] < time.monotonic() - (24 * 60 * 60):
+            ip_hash_salt[0] = os.urandom(32)
+            ip_hash_salt[1] = time.monotonic()
+        return hashlib.sha1(
+            self.request.remote_ip.encode("utf-8") + ip_hash_salt[0]
+        ).hexdigest()
 
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
