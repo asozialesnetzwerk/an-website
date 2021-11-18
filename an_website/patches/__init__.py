@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import configparser
-import hashlib
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
@@ -27,6 +26,9 @@ from typing import Optional
 
 import defusedxml  # type: ignore
 import ecs_logging._utils
+import elasticapm.conf.constants
+import elasticapm.contrib.tornado.utils
+import elasticapm.utils
 import elasticapm.utils.cloud  # type: ignore
 import elasticapm.utils.json_encoder  # type: ignore
 import elasticsearch.connection.base
@@ -38,6 +40,7 @@ import tornado.web
 import uvloop
 
 from . import json  # pylint: disable=reimported
+from .utils.utils import anonymize_ip
 
 DIR = os.path.dirname(__file__)
 
@@ -61,60 +64,53 @@ def apply():
             "WHEN",
         )
     )
-    patch_ip_hashing()
+    anonymize_logs()
 
 
-def patch_ip_hashing():
-    """Hash the remote_ip before it can get accessed."""
-    salt = [os.urandom(32), time.time()]
+def anonymize_logs():
+    """Anonymize logs."""
+    def get_data_from_request(request_handler, request, config, event_type):
+        """Capture relevant data from a tornado.httputil.HTTPServerRequest"""
+        result = {
+            "method": request.method,
+            "socket": {"remote_address": anonymize_ip(request.remote_ip)},
+            "cookies": request.cookies,
+            "http_version": request.version,
+        }
+        if config.capture_headers:
+            result["headers"] = dict(request.headers)
+            if "X-Real-IP" in result["headers"]:
+                result["headers"]["X-Real-IP"] = anonymize_ip(result["headers"]["X-Real-IP"])
+            if "X-Forwarded-For" in result["headers"]:
+                if "," in result["headers"]["X-Forwarded-For"]:
+                    result["headers"]["X-Forwarded-For"] = anonymize_ip(result["headers"]["X-Forwarded-For"].split(","))
+                else:
+                    result["headers"]["X-Forwarded-For"] = anonymize_ip(result["headers"]["X-Forwarded-For"])
+            if "CF-Connecting-IP" in result["headers"]:
+                result["headers"]["CF-Connecting-IP"] = anonymize_ip(result["headers"]["CF-Connecting-IP"])
+            if "True-Client-IP" in result["headers"]:
+                result["headers"]["True-Client-IP"] = anonymize_ip(result["headers"]["True-Client-IP"])
+        if request.method in elasticapm.conf.constants.HTTP_WITH_BODY:
+            if tornado.web._has_stream_request_body(request_handler.__class__):
+                result["body"] = "[STREAMING]" if config.capture_body in ("all", event_type) else "[REDACTED]"
+            else:
+                body = None
+                try:
+                    body = tornado.escape.json_decode(request.body)
+                except Exception:
+                    body = str(request.body, errors="ignore")
+                if body is not None:
+                    result["body"] = body if config.capture_body in ("all", event_type) else "[REDACTED]"
+        result["url"] = elasticapm.utils.get_url_dict(request.full_url())
+        return result
 
-    init = tornado.httputil.HTTPServerRequest.__init__  # type: ignore
+    elasticapm.contrib.tornado.utils.get_data_from_request = get_data_from_request
 
-    def init_http_server_request(  # pylint: disable=too-many-arguments
-        self,
-        method: Optional[str] = None,
-        uri: Optional[str] = None,
-        version: str = "HTTP/1.0",
-        headers: Optional["tornado.HTTPHeaders"] = None,  # type: ignore
-        body: Optional[bytes] = None,
-        host: Optional[str] = None,
-        files: Optional[  # type: ignore
-            dict[str, list["tornado.HTTPFile"]]
-        ] = None,
-        connection: Optional["tornado.HTTPConnection"] = None,  # type: ignore
-        start_line: Optional[  # type: ignore
-            "tornado.RequestStartLine"
-        ] = None,
-        server_connection: Optional[object] = None,
-    ) -> None:
-        """Initialize a HTTP server request."""
-        init(
-            self,
-            method,
-            uri,
-            version,
-            headers,
-            body,
-            host,
-            files,
-            connection,
-            start_line,
-            server_connection,
-        )
-        if self.remote_ip not in ("127.0.0.1", "::1", None):
-            self.remote_ip = hashlib.sha1(
-                self.remote_ip.encode() + salt[0]
-            ).hexdigest()[:16]
-            # if salt[1] is more than one day ago
-            if salt[1] < time.monotonic() - (24 * 60 * 60):
-                salt[0] = os.urandom(32)
-                salt[1] = time.monotonic()
-        if "X-Forwarded-For" in self.headers:
-            self.headers["X-Forwarded-For"] = self.remote_ip
-        if "X-Real-IP" in self.headers:
-            self.headers["X-Real-IP"] = self.remote_ip
-
-    tornado.httputil.HTTPServerRequest.__init__ = init_http_server_request
+    tornado.web._request_summary = lambda self: "%s %s (%s)" % (
+        self.request.method,
+        self.request.uri,
+        anonymize_ip(self.request.remote_ip),
+    )
 
 
 def patch_json():
