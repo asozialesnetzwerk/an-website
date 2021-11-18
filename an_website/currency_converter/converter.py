@@ -151,7 +151,7 @@ async def arguments_to_value_dict(
 class CurrencyConverter(BaseRequestHandler):
     """Request handler for the currency converter page."""
 
-    async def get(self):  # pylint: disable=unused-argument
+    async def get(self):
         """Handle the get request and display the page."""
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:

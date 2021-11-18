@@ -207,7 +207,7 @@ def add_args_to_url(url: str, **kwargs) -> str:
     return tornado.httputil.url_concat(url, url_args)
 
 
-def anonymize_ip(ip_address):  # pylint: disable=inconsistent-return-statements
+def anonymize_ip(ip_address):
     """Anonymize an IP address."""
     version = ipaddress.ip_address(ip_address).version
     if version == 4:
@@ -222,6 +222,7 @@ def anonymize_ip(ip_address):  # pylint: disable=inconsistent-return-statements
                 ip_address + "/32", strict=False
             ).network_address
         )
+    raise ValueError(f"Version of IP address is {version}")
 
 
 def bool_to_str(val: bool) -> str:
