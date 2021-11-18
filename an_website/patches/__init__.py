@@ -24,9 +24,9 @@ from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
 
 import defusedxml  # type: ignore
 import ecs_logging._utils
-import elasticapm.conf.constants
-import elasticapm.contrib.tornado.utils
-import elasticapm.utils
+import elasticapm.conf.constants  # type: ignore
+import elasticapm.contrib.tornado.utils  # type: ignore
+import elasticapm.utils  # type: ignore
 import elasticapm.utils.cloud  # type: ignore
 import elasticapm.utils.json_encoder  # type: ignore
 import elasticsearch.connection.base
@@ -65,7 +65,7 @@ def apply():
     anonymize_logs()
 
 
-def elasticapm_get_data_from_request(
+def elasticapm_get_data_from_request(  # noqa: C901
     request_handler, request, config, event_type
 ):
     """Capture relevant data from a tornado.httputil.HTTPServerRequest."""
@@ -123,7 +123,6 @@ def elasticapm_get_data_from_request(
 
 def anonymize_logs():
     """Anonymize logs."""
-
     elasticapm.contrib.tornado.utils.get_data_from_request = (
         elasticapm_get_data_from_request
     )
