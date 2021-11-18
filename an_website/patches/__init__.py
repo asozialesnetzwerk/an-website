@@ -37,8 +37,8 @@ import tornado.platform.asyncio
 import tornado.web
 import uvloop
 
-from . import json  # pylint: disable=reimported
 from ..utils.utils import anonymize_ip
+from . import json  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 
