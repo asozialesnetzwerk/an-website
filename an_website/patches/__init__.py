@@ -65,7 +65,9 @@ def apply():
     anonymize_logs()
 
 
-def elasticapm_get_data_from_request(request_handler, request, config, event_type):
+def elasticapm_get_data_from_request(
+    request_handler, request, config, event_type
+):
     """Capture relevant data from a tornado.httputil.HTTPServerRequest."""
     result = {
         "method": request.method,
