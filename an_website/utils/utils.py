@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import asyncio.subprocess
+import ipaddress
 import os
 import random
 import re
@@ -32,8 +33,8 @@ from an_website import DIR as SITE_BASE_DIR
 GIT_URL: str = "https://github.com/asozialesnetzwerk"
 REPO_URL: str = f"{GIT_URL}/an-website"
 
-TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
 STATIC_DIR: str = os.path.join(SITE_BASE_DIR, "static")
+TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
 
 Handler = Union[
     tuple[str, Type[RequestHandler]],
@@ -149,15 +150,6 @@ class ModuleInfo(PageInfo):
         return score
 
 
-# def mkdir(path: str) -> bool:
-#     """Create a dir and return whether it got created."""
-#     try:
-#         os.mkdir(path)
-#         return True
-#     except FileExistsError:
-#         return False
-
-
 class Timer:
     """Timer class used for timing stuff."""
 
@@ -194,69 +186,6 @@ class Timer:
 T = TypeVar("T")  # pylint: disable=invalid-name
 
 
-def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
-    """Run the function and return the result and the time it took in s."""
-    timer = Timer()
-    return function(*args), timer.stop()
-
-
-def length_of_match(_m: re.Match):
-    """Calculate the length of the regex match and return it."""
-    span = _m.span()
-    return span[1] - span[0]
-
-
-def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
-    """Get and return _n elements of the set as a new set."""
-    i = 0
-    new_set = set()
-    for _el in _set:
-        if i < _n:
-            i += 1
-            new_set.add(_el)
-        else:
-            break
-    return new_set
-
-
-def bool_to_str(val: bool) -> str:
-    """Convert a boolean to sure/nope."""
-    return "sure" if val else "nope"
-
-
-def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
-    """Convert a string representation of truth to True or False."""
-    val = val.lower()
-    if val in ("sure", "y", "yes", "t", "true", "on", "1"):
-        return True
-    if val in ("nope", "n", "no", "f", "false", "off", "0"):
-        return False
-    if val in ("maybe", "idc"):
-        return random.choice((True, False))
-    if default is None:
-        raise ValueError(f"invalid truth value '{val}'")
-    return default
-
-
-async def run(
-    programm, *args, stdin=asyncio.subprocess.PIPE
-) -> tuple[Optional[int], bytes, bytes]:
-    """Run a programm & return the return code, stdout and stderr as tuple."""
-    proc = await asyncio.create_subprocess_exec(
-        programm,
-        *args,
-        stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-
-    com = proc.communicate()
-    # important:
-    stdout, stderr = await com
-
-    return proc.returncode, stdout, stderr
-
-
 @cache
 def add_args_to_url(url: str, **kwargs) -> str:
     """Add a query arguments to a url."""
@@ -278,6 +207,19 @@ def add_args_to_url(url: str, **kwargs) -> str:
     return tornado.httputil.url_concat(url, url_args)
 
 
+def anonymize_ip(ip):
+    version = ipaddress.ip_address(ip).version
+    if version == 4:
+        return str(ipaddress.ip_network(ip+"/24", strict=False).network_address)
+    if version == 6:
+        return str(ipaddress.ip_network(ip+"/32", strict=False).network_address)
+
+
+def bool_to_str(val: bool) -> str:
+    """Convert a boolean to sure/nope."""
+    return "sure" if val else "nope"
+
+
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
     files = os.listdir(os.path.join(STATIC_DIR, "style/themes"))
@@ -287,6 +229,61 @@ def get_themes() -> tuple[str, ...]:
         "random",  # add random to the list of themes
         "random-dark",
     )
+
+
+def length_of_match(_m: re.Match):
+    """Calculate the length of the regex match and return it."""
+    span = _m.span()
+    return span[1] - span[0]
+
+
+def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
+    """Get and return _n elements of the set as a new set."""
+    i = 0
+    new_set = set()
+    for _el in _set:
+        if i < _n:
+            i += 1
+            new_set.add(_el)
+        else:
+            break
+    return new_set
+
+
+async def run(
+    programm, *args, stdin=asyncio.subprocess.PIPE
+) -> tuple[Optional[int], bytes, bytes]:
+    """Run a programm & return the return code, stdout and stderr as tuple."""
+    proc = await asyncio.create_subprocess_exec(
+        programm,
+        *args,
+        stdin=stdin,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+
+    stdout, stderr = await proc.communicate()
+    return proc.returncode, stdout, stderr
+
+
+def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
+    """Convert a string representation of truth to True or False."""
+    val = val.lower()
+    if val in ("sure", "y", "yes", "t", "true", "on", "1"):
+        return True
+    if val in ("nope", "n", "no", "f", "false", "off", "0"):
+        return False
+    if val in ("maybe", "idc"):
+        return random.choice((True, False))
+    if default is None:
+        raise ValueError(f"invalid truth value '{val}'")
+    return default
+
+
+def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
+    """Run the function and return the result and the time it took in s."""
+    timer = Timer()
+    return function(*args), timer.stop()
 
 
 THEMES: tuple[str, ...] = get_themes()
