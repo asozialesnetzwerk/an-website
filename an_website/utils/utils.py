@@ -210,9 +210,13 @@ def add_args_to_url(url: str, **kwargs) -> str:
 def anonymize_ip(ip):
     version = ipaddress.ip_address(ip).version
     if version == 4:
-        return str(ipaddress.ip_network(ip+"/24", strict=False).network_address)
+        return str(
+            ipaddress.ip_network(ip + "/24", strict=False).network_address
+        )
     if version == 6:
-        return str(ipaddress.ip_network(ip+"/32", strict=False).network_address)
+        return str(
+            ipaddress.ip_network(ip + "/32", strict=False).network_address
+        )
 
 
 def bool_to_str(val: bool) -> str:
