@@ -243,7 +243,7 @@ def make_app() -> Application:
         default_handler_class=NotFound,
         websocket_ping_interval=10,
         # Authentication and security settings
-        cookie_secret = config.get(
+        cookie_secret=config.get(
             "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
         ),
         # Template settings
