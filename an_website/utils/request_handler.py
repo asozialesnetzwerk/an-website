@@ -19,9 +19,11 @@ This should only contain request handlers and the get_module_info function.
 from __future__ import annotations
 
 import hashlib
+import os
 import random
 import re
 import sys
+import time
 import traceback
 from datetime import datetime
 from functools import cache
