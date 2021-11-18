@@ -242,6 +242,10 @@ def make_app() -> Application:
         debug=bool(sys.flags.dev_mode),
         default_handler_class=NotFound,
         websocket_ping_interval=10,
+        # Authentication and security settings
+        cookie_secret = config.get(
+            "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
+        ),
         # Template settings
         template_path=TEMPLATES_DIR,
         # Static file settings
@@ -258,10 +262,6 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         for secret in config.get(
             "GENERAL", "TRUSTED_API_SECRETS", fallback="an-website"
         ).split(",")
-    )
-
-    app.settings["cookie_secret"] = config.get(
-        "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
     )
 
     app.settings["LINK_TO_HTTPS"] = config.getboolean(
