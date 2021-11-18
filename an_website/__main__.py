@@ -252,7 +252,7 @@ def make_app() -> Application:
 def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
-    
+
     app.settings["cookie_secret"] = config.get(
         "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
     )
