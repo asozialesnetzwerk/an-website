@@ -212,11 +212,15 @@ def anonymize_ip(ip_address):  # pylint: disable=inconsistent-return-statements
     version = ipaddress.ip_address(ip_address).version
     if version == 4:
         return str(
-            ipaddress.ip_network(ip_address + "/24", strict=False).network_address
+            ipaddress.ip_network(
+                ip_address + "/24", strict=False
+            ).network_address
         )
     if version == 6:
         return str(
-            ipaddress.ip_network(ip_address + "/32", strict=False).network_address
+            ipaddress.ip_network(
+                ip_address + "/32", strict=False
+            ).network_address
         )
 
 
