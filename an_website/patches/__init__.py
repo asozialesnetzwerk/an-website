@@ -106,9 +106,9 @@ def patch_ip_hashing():
                 self.remote_ip.encode() + salt[0]
             ).hexdigest()[:16]
             # if salt[1] is more than one day ago
-            if salt[1] < time.time() - (24 * 60 * 60):
+            if salt[1] < time.monotonic() - (24 * 60 * 60):
                 salt[0] = os.urandom(32)
-                salt[1] = time.time()
+                salt[1] = time.monotonic()
         if "X-Forwarded-For" in self.headers:
             self.headers["X-Forwarded-For"] = self.remote_ip
         if "X-Real-IP" in self.headers:
