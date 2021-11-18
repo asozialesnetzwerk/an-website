@@ -117,7 +117,6 @@ class BaseRequestHandler(RequestHandler):
             # ignore Delimits for requests with method OPTIONS
             and not self.request.method == "OPTIONS"
         ):
-            now = datetime.utcnow()
             redis = self.settings.get("REDIS")
             prefix = self.settings.get("REDIS_PREFIX")
             tokens = getattr(
@@ -125,9 +124,10 @@ class BaseRequestHandler(RequestHandler):
             )
             if tokens is None:
                 tokens = self.RATELIMIT_TOKENS
+            remote_ip = hashlib.sha1(self.request.remote_ip).hexdigest()
             result = await redis.execute_command(
                 "CL.THROTTLE",
-                f"{prefix}:rl:{self.request.remote_ip}:{self.RATELIMIT_NAME}",
+                f"{prefix}:ratelimit:{remote_ip}:{self.RATELIMIT_NAME}",
                 15,  # max burst
                 30,  # count per period
                 60,  # period
@@ -138,6 +138,7 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("Retry-After", result[3])
             self.set_header("X-RateLimit-Reset", result[4])
             if result[0]:
+                now = datetime.utcnow()
                 if now.month == 4 and now.day == 20:
                     self.set_status(420, "Enhance Your Calm")
                     self.write_error(420)
