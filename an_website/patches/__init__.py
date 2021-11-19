@@ -24,7 +24,6 @@ from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
 
 import defusedxml  # type: ignore
 import ecs_logging._utils
-import elasticapm.conf.constants  # type: ignore
 import elasticapm.contrib.tornado.utils  # type: ignore
 import elasticapm.utils  # type: ignore
 import elasticapm.utils.cloud  # type: ignore
