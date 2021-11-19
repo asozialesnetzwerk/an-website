@@ -225,6 +225,43 @@ def anonymize_ip(ip_address):
     raise ValueError(f"Version of IP address is {version}")
 
 
+def apm_anonymization_processor(client, event):
+    if "http" in event and "request" in event["http"]:
+        request = event["http"]["request"]:
+        if "headers" in request:
+            headers = request["headers"]
+            if "X-Forwarded-For" in headers:
+                if "," in headers["X-Forwarded-For"]:
+                    headers["X-Forwarded-For"] = anonymize_ip(
+                        headers["X-Forwarded-For"].split(",")
+                    )
+                else:
+                    headers["X-Forwarded-For"] = anonymize_ip(
+                        headers["X-Forwarded-For"]
+                    )
+            if "CF-Connecting-IP" in headers:
+                headers["CF-Connecting-IP"] = anonymize_ip(
+                    headers["CF-Connecting-IP"]
+                )
+            if "True-Client-IP" in headers:
+                headers["True-Client-IP"] = anonymize_ip(
+                    headers["True-Client-IP"]
+                )
+            if "X-Real-IP" in headers:
+                headers["X-Real-IP"] = anonymize_ip(
+                    headers["X-Real-IP"]
+                )
+        if "socket" in request and "remote_address" in request["socket"]:
+            request["socket"]["remote_address"] = anonymize_ip(
+                request["socket"]["remote_address"]
+            )
+    if "client" in event and "ip" in event["client"]:
+        event["client"]["ip"] = anonymize_ip(event["client"]["ip"])
+    if "source" in event and "ip" in event["source"]:
+        event["source"]["ip"] = anonymize_ip(event["source"]["ip"])
+    return event
+
+
 def bool_to_str(val: bool) -> str:
     """Convert a boolean to sure/nope."""
     return "sure" if val else "nope"
