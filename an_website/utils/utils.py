@@ -229,8 +229,12 @@ def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argumen
     client, event
 ):
     """Anonymize the APM events."""
-    if "http" in event and "request" in event["http"]:
-        request = event["http"]["request"]
+    if "context" in event and "request" in event["context"]:
+        request = event["context"]["request"]
+        if "socket" in request and "remote_address" in request["socket"]:
+            request["socket"]["remote_address"] = anonymize_ip(
+                request["socket"]["remote_address"]
+            )
         if "headers" in request:
             headers = request["headers"]
             if "X-Forwarded-For" in headers:
@@ -252,14 +256,6 @@ def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argumen
                 )
             if "X-Real-IP" in headers:
                 headers["X-Real-IP"] = anonymize_ip(headers["X-Real-IP"])
-        if "socket" in request and "remote_address" in request["socket"]:
-            request["socket"]["remote_address"] = anonymize_ip(
-                request["socket"]["remote_address"]
-            )
-    if "client" in event and "ip" in event["client"]:
-        event["client"]["ip"] = anonymize_ip(event["client"]["ip"])
-    if "source" in event and "ip" in event["source"]:
-        event["source"]["ip"] = anonymize_ip(event["source"]["ip"])
     return event
 
 
