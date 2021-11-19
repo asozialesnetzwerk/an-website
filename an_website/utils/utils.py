@@ -225,9 +225,9 @@ def anonymize_ip(ip_address):
     raise ValueError(f"Version of IP address is {version}")
 
 
-def apm_anonymization_processor(
+def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argument
     client, event
-):  # noqa: C901  # pylint: disable=unused-argument
+):
     """Anonymize the APM events."""
     if "http" in event and "request" in event["http"]:
         request = event["http"]["request"]
