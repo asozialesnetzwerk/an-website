@@ -227,7 +227,7 @@ def anonymize_ip(ip_address):
 
 def apm_anonymization_processor(client, event):
     if "http" in event and "request" in event["http"]:
-        request = event["http"]["request"]:
+        request = event["http"]["request"]
         if "headers" in request:
             headers = request["headers"]
             if "X-Forwarded-For" in headers:
