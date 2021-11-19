@@ -298,12 +298,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "VERIFY_SERVER_CERT": config.getboolean(
             "ELASTIC_APM", "VERIFY_SERVER_CERT", fallback=True
         ),
-        "SERVER_CERT": config.get(
-            "ELASTIC_APM", "SERVER_CERT", fallback=None
-        ),
-        "USE_CERTIFI": config.get(
-            "ELASTIC_APM", "USE_CERTIFI", fallback=True
-        ),
+        "SERVER_CERT": config.get("ELASTIC_APM", "SERVER_CERT", fallback=None),
+        "USE_CERTIFI": config.get("ELASTIC_APM", "USE_CERTIFI", fallback=True),
         "SERVICE_NAME": "an-website",
         "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
@@ -311,8 +307,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         else "development",
         "DEBUG": True,
         "CAPTURE_BODY": "errors",
-        "TRANSACTION_IGNORE_URLS": ['/api/ping', '/static/*'],
-        "TRANSACTIONS_IGNORE_PATTERNS": ['^OPTIONS '],
+        "TRANSACTION_IGNORE_URLS": ["/api/ping", "/static/*"],
+        "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
