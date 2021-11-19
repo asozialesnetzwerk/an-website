@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Website of the AN. Loads config and modules and starts tornado."""
+"""Website of the AN. Loads config and modules and starts Tornado."""
 from __future__ import annotations
 
 import asyncio
@@ -309,6 +309,14 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "CAPTURE_BODY": "errors",
         "TRANSACTION_IGNORE_URLS": ["/api/ping", "/static/*"],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
+        'PROCESSORS': [
+            'an_website.utils.utils.apm_anonymization_processor',
+            'elasticapm.processors.sanitize_stacktrace_locals',
+            'elasticapm.processors.sanitize_http_request_cookies',
+            'elasticapm.processors.sanitize_http_headers',
+            'elasticapm.processors.sanitize_http_wsgi_env',
+            'elasticapm.processors.sanitize_http_request_body',
+        ],
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
