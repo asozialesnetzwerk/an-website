@@ -37,6 +37,17 @@ async def test_request_handlers(http_server_client):
 
     response = await fetch("/")
     assert response.code == 200
+    for theme in ("default", "blue", "random", "random-dark"):
+        response = await fetch(f"/?theme={theme}")
+        assert response.code == 200
+    for b1, b2 in (("sure", "true"), ("nope", "false")):
+        response = await fetch(f"/?no_3rd_party={b1}")
+        body = response.body.decode()
+        assert response.code == 200
+        response = await fetch(f"/?no_3rd_party={b2}")
+        assert response.code == 200
+        assert response.body.decode().replace(b2, b1) == body
+
     response = await fetch("/redirect/?from=/&to=https://example.org")
     assert response.code == 200
     assert b"https://example.org" in response.body
@@ -94,5 +105,13 @@ async def test_request_handlers(http_server_client):
     assert response.code == 404
     response = await fetch("/kaenguru-soundboard/qwertzuiop/")
     assert response.code == 404
+    response = await fetch("/restart/")
+    assert response.code == 401  # Unauthorized
+    for code in range(200, 599):
+        if code not in (204, 304):
+            response = await fetch(f"/{code}.html")
+            assert response.code == code
+    response = await fetch("/error/")
+    assert response.code == 500
     response = await fetch("/qwertzuiop/")
     assert response.code == 404

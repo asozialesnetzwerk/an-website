@@ -156,9 +156,9 @@ class BaseRequestHandler(RequestHandler):
     def get_error_page_description(self, status_code: int) -> str:
         """Get the description for the error page."""
         # see: https://developer.mozilla.org/docs/Web/HTTP/Status
-        if 100 <= status_code < 199:
+        if 100 <= status_code <= 199:
             return "Hier gibt es eine total wichtige Information."
-        if 200 <= status_code < 299:
+        if 200 <= status_code <= 299:
             return "Hier ist alles super! 🎶🎶"
         if 300 <= status_code <= 399:
             return "Eine Umleitung ist eingerichtet."
