@@ -75,12 +75,6 @@ async def test_request_handlers(http_server_client):
     assert response.code == 200
     response = await fetch("/wiki/")
     assert response.code == 200
-    response = await fetch("/wiki/")
-    assert response.code == 200
-    response = await fetch("/wiki/atas/anti-droh-mails/")
-    assert response.code == 200
-    response = await fetch("/wiki/qwertzuiop/")
-    assert response.code == 404
     response = await fetch("/js-lizenzen/")
     assert response.code == 200
     response = await fetch("/kaenguru-soundboard/personen/")

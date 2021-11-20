@@ -10,7 +10,7 @@ pyflakes<3
 pylint~=2.11
 pytest>=6.2.5,<7
 pytest-tornasync>=0.6,<2
-types-Markdown==3.3.6
+#types-Markdown==3.3.6
 types-orjson==3.6.1
 types-Pillow==8.3.7
-types-PyYAML==6.0.0
+#types-PyYAML==6.0.0
