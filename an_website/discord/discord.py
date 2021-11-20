@@ -149,8 +149,9 @@ class Discord(BaseRequestHandler):
     async def get(self, guild_id=GUILD_ID):
         """Get the discord invite."""
         return await self.render(
-            "pages/discord.html",
-            invite=(await get_invite_with_cache(guild_id))[0],
+            "pages/ask_for_redirect.html",
+            redirect_url=(await get_invite_with_cache(guild_id))[0],
+            from_url=None,
         )
 
 

@@ -8,9 +8,11 @@
     <a class="leave form-button no-style-a" href="{{redirect_url}}" rel="noreferrer">
         Ja, ich bin mir sicher
     </a>
+    {% if from_url is not None %}
     <a class="stay form-button no-style-a" href="{{from_url}}" rel="noreferrer">
         Nein, ich möchte wieder zurück
     </a>
+    {% end %}
 </div>
 {% end %}
 
