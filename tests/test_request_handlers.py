@@ -37,8 +37,9 @@ async def test_request_handlers(http_server_client):
 
     response = await fetch("/")
     assert response.code == 200
-    response = await fetch("/redirect/?from=/&to=https://github.com")
+    response = await fetch("/redirect/?from=/&to=https://example.org")
     assert response.code == 200
+    assert b"https://example.org" in response.body
     response = await fetch("/uptime/")
     assert response.code == 200
     response = await fetch("/discord/api/")
