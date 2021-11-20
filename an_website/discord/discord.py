@@ -143,6 +143,7 @@ async def get_invite_with_cache(
 class Discord(BaseRequestHandler):
     """The request handler that gets the discord invite and redirects to it."""
 
+    RATELIMIT_NAME = "discord"
     RATELIMIT_TOKENS = 10
 
     async def get(self, guild_id=GUILD_ID):
