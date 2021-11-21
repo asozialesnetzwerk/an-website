@@ -6,7 +6,7 @@
 You need:
 - python3.9
 - packages from requirements.txt (`pip install -r requirements.txt`)
-- packages from check-requirements.txt (`pip install -r check-requirements.txt`)
+- packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 
 ### How to check
 - `./check.sh`

@@ -74,6 +74,22 @@ def anonymize_logs():
             anonymize_ip(self.request.remote_ip),
         )
     )
+    tornado.httputil.HTTPServerRequest.__repr__ = (
+        lambda self: "%s(%s)"  # pylint: disable=consider-using-f-string
+        % (
+            self.__class__.__name__,
+            ", ".join(
+                [
+                    "%s=%r"  # pylint: disable=consider-using-f-string
+                    % (
+                        n,
+                        getattr(self, n),
+                    )
+                    for n in ("protocol", "host", "method", "uri", "version")
+                ]
+            ),
+        )
+    )
 
 
 def patch_json():

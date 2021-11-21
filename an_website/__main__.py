@@ -307,7 +307,12 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         else "development",
         "DEBUG": True,
         "CAPTURE_BODY": "errors",
-        "TRANSACTION_IGNORE_URLS": ["/api/ping", "/static/*"],
+        "TRANSACTION_IGNORE_URLS": [
+            "/favicon.ico",
+            "/static/*",
+            "/.well-known/*",
+            "/api/ping",
+        ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [
             "an_website.utils.utils.apm_anonymization_processor",
@@ -408,6 +413,10 @@ def setup_logger():
     root_logger.addHandler(stream_handler)
 
     if not sys.flags.dev_mode:
+        try:
+            os.mkdir("logs", mode=755)
+        except FileExistsError:
+            pass
         file_handler = logging.handlers.TimedRotatingFileHandler(
             "logs/an-website.log", "midnight", backupCount=7, utc=True
         )

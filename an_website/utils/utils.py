@@ -26,7 +26,7 @@ from functools import cache
 from typing import Any, Callable, Optional, Tuple, Type, TypeVar, Union
 
 import tornado.httputil
-from tornado.web import RequestHandler
+from tornado.web import HTTPError, RequestHandler
 
 from an_website import DIR as SITE_BASE_DIR
 
@@ -222,7 +222,7 @@ def anonymize_ip(ip_address):
                 ip_address + "/32", strict=False
             ).network_address
         )
-    raise ValueError(f"Version of IP address is {version}")
+    raise HTTPError(reason="ERROR: -41")
 
 
 def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argument
@@ -231,6 +231,9 @@ def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argumen
     """Anonymize the APM events."""
     if "context" in event and "request" in event["context"]:
         request = event["context"]["request"]
+        if "url" in request and "pathname" in request["url"]:
+            if request["url"]["pathname"] == "/robots.txt":
+                return event
         if "socket" in request and "remote_address" in request["socket"]:
             request["socket"]["remote_address"] = anonymize_ip(
                 request["socket"]["remote_address"]
@@ -246,16 +249,9 @@ def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argumen
                     headers["X-Forwarded-For"] = anonymize_ip(
                         headers["X-Forwarded-For"]
                     )
-            if "CF-Connecting-IP" in headers:
-                headers["CF-Connecting-IP"] = anonymize_ip(
-                    headers["CF-Connecting-IP"]
-                )
-            if "True-Client-IP" in headers:
-                headers["True-Client-IP"] = anonymize_ip(
-                    headers["True-Client-IP"]
-                )
-            if "X-Real-IP" in headers:
-                headers["X-Real-IP"] = anonymize_ip(headers["X-Real-IP"])
+            for header in headers:
+                if "ip" in header.lower().split("-"):
+                    headers[header] = anonymize_ip(headers[header])
     return event
 
 

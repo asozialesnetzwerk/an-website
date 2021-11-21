@@ -1,14 +1,14 @@
 #!/bin/sh
 
-if [ -d venv ];
-then
-    . venv/bin/activate
-    python3 -m pip install --disable-pip-version-check -U -r check-requirements.txt --quiet
-else
-    python3 -m pip install --disable-pip-version-check -U -r check-requirements.txt --quiet --user
-fi
+#if [ -d venv ];
+#then
+#    . venv/bin/activate
+#    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet
+#else
+#    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet --user
+#fi
 
-# install pre-commits
+# install pre-commit hooks
 pre-commit install
 
 # test hashing files (important to see if umlaute are used)
