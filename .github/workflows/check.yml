@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Install Black and isort
         run: |
-          grep -E "^(black|isort)" check-requirements.txt | xargs pip install
+          grep -E "^(black|isort)" requirements-dev.txt | xargs pip install
       - name: Run Black
         run: |
           black .
@@ -40,7 +40,7 @@ jobs:
         run: |
           sudo locale-gen de_DE.UTF-8
           LC_COLLATE=de_DE.UTF-8 sort -d -o requirements.txt requirements.txt
-          LC_COLLATE=de_DE.UTF-8 sort -d -o check-requirements.txt check-requirements.txt
+          LC_COLLATE=de_DE.UTF-8 sort -d -o requirements-dev.txt requirements-dev.txt
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -71,10 +71,10 @@ jobs:
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
       - name: Install mypy
         run: |
-          grep -E "^mypy" check-requirements.txt | xargs pip install
+          grep -E "^mypy" requirements-dev.txt | xargs pip install
       - name: Install types in check-requrements.txt
         run: |
-          grep -E "^types-" check-requirements.txt | xargs pip install
+          grep -E "^types-" requirements-dev.txt | xargs pip install
       - name: Run mypy
         run: |
           mypy --install-types --non-interactive -p an_website
@@ -104,7 +104,7 @@ jobs:
           grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
       - name: Install Flake8 and Pylint
         run: |
-          grep -E "^(flake8|pylint)" check-requirements.txt | xargs pip install pip install
+          grep -E "^(flake8|pylint)" requirements-dev.txt | xargs pip install pip install
       - name: Run Flake8
         if: matrix.python-version != '3.10'
         run:
