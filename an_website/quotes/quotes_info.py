@@ -99,7 +99,7 @@ class AuthorsInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
     RATELIMIT_NAME = "quote_info"
-    RATELIMIT_TOKENS = 3
+    RATELIMIT_TOKENS = 5
 
     async def get(self, _id_str: str):
         """Handle get requests to the author info page."""
