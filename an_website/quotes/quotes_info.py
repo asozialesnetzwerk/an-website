@@ -49,6 +49,7 @@ async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
     """
     if len(query) == 0:
         return None
+    # try to get the info from wikipedia
     response = await HTTP_CLIENT.fetch(
         f"{WIKI_API}?action=opensearch&namespace=0&profile=normal&"
         f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
@@ -57,7 +58,8 @@ async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
     if len(response_json[1]) == 0:
         return None  # nothing found
     page_name = response_json[1][0]
-    url = str(response_json[3][0])
+    # get the url of the content & replace "," with "%2C"
+    url = str(response_json[3][0]).replace(",", "%2C")
 
     return url, await get_wikipedia_page_content(page_name)
 
@@ -101,12 +103,44 @@ class AuthorsInfoPage(BaseRequestHandler):
     RATELIMIT_NAME = "quote_info"
     RATELIMIT_TOKENS = 5
 
+    def get_redis_info_key(self, author_name) -> str:
+        """Get the key to save the author info with redis."""
+        prefix = self.settings.get("REDIS_PREFIX")
+        return f"{prefix}:quote_author_info:{author_name.replace(' ', '-')}"
+
     async def get(self, _id_str: str):
         """Handle get requests to the author info page."""
         _id: int = int(_id_str)
         author = await get_author_by_id(_id)
         if author.info is None:
-            author.info = await search_wikipedia(author.name)
+            result = None
+            if "REDIS" in self.settings:
+                # try to get the info from redis
+                result = await self.settings["REDIS"].execute_command(
+                    "GET",
+                    self.get_redis_info_key(author.name),
+                )
+            if result:
+                info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
+                if len(info) == 1:
+                    author.info = (info[0], None)
+                else:
+                    author.info = (info[0], info[1])
+            else:
+                author.info = await search_wikipedia(author.name)
+                if (
+                    "REDIS" in self.settings
+                    and author.info is not None
+                    and author.info[1] is not None
+                ):
+                    await self.settings["REDIS"].execute_command(
+                        "SETEX",
+                        self.get_redis_info_key(author.name),
+                        60 * 60 * 24 * 7,  # time to live in seconds (1 week)
+                        # value to save (the author info)
+                        # type is ignored, because author.info[1] is not None
+                        ",".join(author.info),  # type: ignore
+                    )
 
         wqs = get_wrong_quotes(lambda _wq: _wq.author.id == _id, True)
 
