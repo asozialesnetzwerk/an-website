@@ -105,13 +105,13 @@ def get_rss_str(path: str, protocol_and_host: str) -> Optional[str]:
         path = path.lower()
 
     if path in (None, "/", ""):
-        sound_infos = ALL_SOUNDS
+        _infos = ALL_SOUNDS
     elif path in PERSON_SOUNDS:
-        sound_infos = PERSON_SOUNDS[path]
+        _infos = PERSON_SOUNDS[path]
     else:
         return None
     return "\n".join(
-        sound_info.to_rss(protocol_and_host) for sound_info in sound_infos
+        sound_info.to_rss(protocol_and_host) for sound_info in _infos
     )
 
 
