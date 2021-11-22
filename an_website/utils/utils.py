@@ -212,7 +212,9 @@ def anonymize_ip(ip_address, *, ignore_invalid=False):
     try:
         version = ipaddress.ip_address(ip_address).version
     except ValueError:
-        if not ignore_invalid:
+        if ignore_invalid:
+            return ip_address
+        else:
             raise
     if version == 4:
         return str(
