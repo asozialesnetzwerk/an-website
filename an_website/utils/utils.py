@@ -207,9 +207,13 @@ def add_args_to_url(url: str, **kwargs) -> str:
     return tornado.httputil.url_concat(url, url_args)
 
 
-def anonymize_ip(ip_address):
+def anonymize_ip(ip_address, *, ignore_invalid=False):
     """Anonymize an IP address."""
-    version = ipaddress.ip_address(ip_address).version
+    try:
+        version = ipaddress.ip_address(ip_address).version
+    except ValueError:
+        if not ignore_invalid:
+            raise
     if version == 4:
         return str(
             ipaddress.ip_network(
@@ -225,7 +229,7 @@ def anonymize_ip(ip_address):
     raise HTTPError(reason="ERROR: -41")
 
 
-def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argument
+def apm_anonymization_processor(  # pylint: disable=unused-argument
     client, event
 ):
     """Anonymize the APM events."""
@@ -243,15 +247,18 @@ def apm_anonymization_processor(  # noqa: C901  # pylint: disable=unused-argumen
             if "X-Forwarded-For" in headers:
                 if "," in headers["X-Forwarded-For"]:
                     headers["X-Forwarded-For"] = anonymize_ip(
-                        headers["X-Forwarded-For"].split(",")
+                        headers["X-Forwarded-For"].split(","),
+                        ignore_invalid=True,
                     )
                 else:
                     headers["X-Forwarded-For"] = anonymize_ip(
-                        headers["X-Forwarded-For"]
+                        headers["X-Forwarded-For"], ignore_invalid=True
                     )
             for header in headers:
                 if "ip" in header.lower().split("-"):
-                    headers[header] = anonymize_ip(headers[header])
+                    headers[header] = anonymize_ip(
+                        headers[header], ignore_invalid=True
+                    )
     return event
 
 

@@ -19,11 +19,9 @@ This should only contain request handlers and the get_module_info function.
 from __future__ import annotations
 
 import hashlib
-import os
 import random
 import re
 import sys
-import time
 import traceback
 from datetime import datetime
 from functools import cache
@@ -46,8 +44,6 @@ from an_website.utils.utils import (
     bool_to_str,
     str_to_bool,
 )
-
-ip_hash_salt = [os.urandom(32), time.monotonic()]
 
 
 def get_module_info() -> ModuleInfo:
@@ -200,11 +196,11 @@ class BaseRequestHandler(RequestHandler):
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
-        if ip_hash_salt[1] < time.monotonic() - (24 * 60 * 60):  # type: ignore
-            ip_hash_salt[0] = os.urandom(32)
-            ip_hash_salt[1] = time.monotonic()
         return hashlib.sha1(
-            self.request.remote_ip.encode("utf-8") + ip_hash_salt[0]
+            self.request.remote_ip.encode("utf-8")
+            + hashlib.sha1(
+                datetime.utcnow().date().isoformat().encode("utf-8")
+            ).digest()
         ).hexdigest()
 
     @cache
