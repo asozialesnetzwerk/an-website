@@ -214,8 +214,8 @@ def anonymize_ip(ip_address, *, ignore_invalid=False):
     except ValueError:
         if ignore_invalid:
             return ip_address
-        else:
-            raise
+        raise
+
     if version == 4:
         return str(
             ipaddress.ip_network(
