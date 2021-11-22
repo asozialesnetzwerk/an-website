@@ -8,8 +8,6 @@
     <link>{{url}}</link>
     <atom:link href="{{url}}" rel="self" type="application/rss+xml" />
 
-{% for sound_info in sound_info_list %}
-    {% raw sound_info.to_rss(f"{request.protocol}://{request.host}") %}
-{% end %}
+  {% raw rss_str %}
   </channel>
 </rss>

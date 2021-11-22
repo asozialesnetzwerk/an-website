@@ -14,6 +14,7 @@
 """Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
+from functools import cache
 from typing import Callable, Iterable, Optional
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
@@ -97,23 +98,36 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+@cache
+def get_rss_str(path: str, protocol_and_host: str) -> Optional[str]:
+    """Return the RSS string for the given path."""
+    if path is not None:
+        path = path.lower()
+
+    if path in (None, "/", ""):
+        sound_infos = ALL_SOUNDS
+    elif path in PERSON_SOUNDS:
+        sound_infos = PERSON_SOUNDS[path]
+    else:
+        return None
+    return "\n".join(
+        sound_info.to_rss(protocol_and_host) for sound_info in sound_infos
+    )
+
+
 class SoundboardRssHandler(BaseRequestHandler):
     """The tornado handler that handles requests to the rss feeds."""
 
     async def get(self, path="/"):
         """Handle the get request and generate the feed content."""
         self.set_header("Content-Type", "application/xml")
-        if path is not None:
-            path = path.lower()
-        if path in (None, "index", "/", ""):
-            return self.render(
-                "rss/soundboard.xml", sound_info_list=ALL_SOUNDS
-            )
 
-        if path in PERSON_SOUNDS:
-            return self.render(
-                "rss/soundboard.xml", sound_info_list=PERSON_SOUNDS[path]
-            )
+        rss_str = get_rss_str(
+            path, f"{self.request.protocol}://{self.request.host}"
+        )
+
+        if rss_str is not None:
+            return self.render("rss/soundboard.xml", rss_str=rss_str)
 
         raise HTTPError(404, reason="Feed not found.")
 
