@@ -105,7 +105,7 @@ def get_rss_str(path: str, protocol_and_host: str) -> Optional[str]:
         path = path.lower()
 
     if path in (None, "/", ""):
-        _infos = ALL_SOUNDS
+        _infos: Iterable[SoundInfo] = ALL_SOUNDS
     elif path in PERSON_SOUNDS:
         _infos = PERSON_SOUNDS[path]
     else:
