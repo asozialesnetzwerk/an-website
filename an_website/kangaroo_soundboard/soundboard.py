@@ -120,13 +120,12 @@ class SoundboardRSSHandler(BaseRequestHandler):
 
     async def get(self, path="/"):
         """Handle the GET request and generate the feed content."""
-        self.set_header("Content-Type", "application/xml")
-
         rss_str = get_rss_str(
             path, f"{self.request.protocol}://{self.request.host}"
         )
 
         if rss_str is not None:
+            self.set_header("Content-Type", "application/xml")
             return self.render("rss/soundboard.xml", rss_str=rss_str)
 
         raise HTTPError(404, reason="Feed not found.")
