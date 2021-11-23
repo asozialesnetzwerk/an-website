@@ -117,7 +117,7 @@ class AuthorsInfoPage(BaseRequestHandler):
     def get_redis_info_key(self, author_name) -> str:
         """Get the key to save the author info with Redis."""
         prefix = self.settings.get("REDIS_PREFIX")
-        return f"{prefix}:quote_author_info:{author_name}"
+        return f"{prefix}:quote-author-info:{author_name}"
 
     async def get(self, _id_str: str):
         """Handle GET requests to the author info page."""
