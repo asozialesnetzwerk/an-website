@@ -333,11 +333,12 @@ class QuoteById(QuoteBaseHandler):
         Use the quote_id and author_id to query the vote.
         Return None if nothing is saved.
         """
-        redis = self.settings.get("REDIS")
-        if redis is None:
+        if "REDIS" not in self.settings:
             logger.warning("No Redis connection")
             return 0
-        result = await redis.get(self.get_redis_votes_key(quote_id, author_id))
+        result = await self.settings["REDIS"].get(
+            self.get_redis_votes_key(quote_id, author_id)
+        )
         if result in ("-1", b"-1"):
             return -1
         if result in ("0", b"0"):

@@ -114,11 +114,10 @@ class AuthorsInfoPage(BaseRequestHandler):
         author = await get_author_by_id(_id)
         if author.info is None:
             result = None
-            if "REDIS" in self.settings:
+            redis = self.settings.get("REDIS")
+            if redis is not None:
                 # try to get the info from Redis
-                result = await self.settings["REDIS"].get(
-                    self.get_redis_info_key(author.name)
-                )
+                result = await redis.get(self.get_redis_info_key(author.name))
             if result:
                 info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
                 if len(info) == 1:
@@ -128,11 +127,11 @@ class AuthorsInfoPage(BaseRequestHandler):
             else:
                 author.info = await search_wikipedia(author.name)
                 if (
-                    "REDIS" in self.settings
+                    redis is not None
                     and author.info is not None
                     and author.info[1] is not None
                 ):
-                    await self.settings["REDIS"].setex(
+                    await redis.setex(
                         self.get_redis_info_key(author.name),
                         60 * 60 * 24 * 30,  # time to live in seconds (1 month)
                         # value to save (the author info)
