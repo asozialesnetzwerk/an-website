@@ -14,6 +14,7 @@
 """Info-page to show information about authors and quotes."""
 from __future__ import annotations
 
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import quote as quote_url
 
@@ -41,7 +42,9 @@ def get_module_info() -> ModuleInfo:
 WIKI_API = "https://de.wikipedia.org/w/api.php"
 
 
-async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
+async def search_wikipedia(
+    query: str,
+) -> Optional[tuple[str, Optional[str], date]]:
     """
     Search wikipedia to get information about the query.
 
@@ -61,7 +64,11 @@ async def search_wikipedia(query: str) -> Optional[tuple[str, Optional[str]]]:
     # get the url of the content & replace "," with "%2C"
     url = str(response_json[3][0]).replace(",", "%2C")
 
-    return url, await get_wikipedia_page_content(page_name)
+    return (
+        url,
+        await get_wikipedia_page_content(page_name),
+        datetime.now(timezone.utc),
+    )
 
 
 async def get_wikipedia_page_content(page_name: str) -> Optional[str]:
@@ -97,6 +104,10 @@ class QuotesInfoPage(BaseRequestHandler):
         )
 
 
+# time to live in seconds (1 month)
+AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
+
+
 class AuthorsInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
@@ -120,10 +131,16 @@ class AuthorsInfoPage(BaseRequestHandler):
                 result = await redis.get(self.get_redis_info_key(author.name))
             if result:
                 info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
+                remaining_ttl = await redis.ttl(
+                    self.get_redis_info_key(author.name)
+                )
+                creation_date = datetime.now(tz=timezone.utc) - timedelta(
+                    seconds=AUTHOR_INFO_NEW_TTL - remaining_ttl
+                )
                 if len(info) == 1:
-                    author.info = (info[0], None)
+                    author.info = (info[0], None, creation_date)
                 else:
-                    author.info = (info[0], info[1])
+                    author.info = (info[0], info[1], creation_date)
             else:
                 author.info = await search_wikipedia(author.name)
                 if (
@@ -133,10 +150,10 @@ class AuthorsInfoPage(BaseRequestHandler):
                 ):
                     await redis.setex(
                         self.get_redis_info_key(author.name),
-                        60 * 60 * 24 * 30,  # time to live in seconds (1 month)
+                        AUTHOR_INFO_NEW_TTL,
                         # value to save (the author info)
                         # type is ignored, because author.info[1] is not None
-                        ",".join(author.info),  # type: ignore
+                        ",".join(author.info[0:2]),  # type: ignore
                     )
 
         wqs = get_wrong_quotes(lambda _wq: _wq.author.id == _id, True)

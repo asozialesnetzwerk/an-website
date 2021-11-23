@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import asyncio
+import datetime
 import logging
 import os
 import random
@@ -62,7 +63,7 @@ class Author(QuotesObjBase):
 
     name: str
     # tuple(url_to_info, info_str)
-    info: Optional[tuple[str, Optional[str]]] = None
+    info: Optional[tuple[str, Optional[str], datetime.date]] = None
 
     def update_name(self, name: str):
         """Update author data with another author."""
