@@ -41,7 +41,7 @@ class WikiHandler(BaseRequestHandler):
     """The request handler for the wiki page."""
 
     def get(self):
-        """Handle the get requests to the wiki page."""
+        """Handle the GET requests to the wiki page."""
         return self.render(
             "pages/ask_for_redirect.html",
             redirect_url="https://asoziales-wiki.de/",

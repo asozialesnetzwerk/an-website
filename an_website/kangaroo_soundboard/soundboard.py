@@ -50,7 +50,7 @@ def get_module_info() -> ModuleInfo:
             ),
             (
                 r"/kaenguru-soundboard/feed/",
-                SoundboardRssHandler,
+                SoundboardRSSHandler,
             ),
             (
                 r"/kaenguru-soundboard/feed\.(rss|xml)",
@@ -59,7 +59,7 @@ def get_module_info() -> ModuleInfo:
             ),
             (
                 r"/kaenguru-soundboard/([^./]+)/feed/",
-                SoundboardRssHandler,
+                SoundboardRSSHandler,
             ),
             (
                 r"/kaenguru-soundboard/([^/]+)(\.(rss|xml)|/feed\.(rss|xml))",
@@ -68,11 +68,11 @@ def get_module_info() -> ModuleInfo:
             ),
             (
                 r"/kaenguru-soundboard/",
-                SoundboardHtmlHandler,
+                SoundboardHTMLHandler,
             ),
             (
                 r"/kaenguru-soundboard/([^./]*)/",
-                SoundboardHtmlHandler,
+                SoundboardHTMLHandler,
             ),
         ),
         sub_pages=(
@@ -115,11 +115,11 @@ def get_rss_str(path: str, protocol_and_host: str) -> Optional[str]:
     )
 
 
-class SoundboardRssHandler(BaseRequestHandler):
-    """The tornado handler that handles requests to the rss feeds."""
+class SoundboardRSSHandler(BaseRequestHandler):
+    """The Tornado handler that handles requests to the RSS feeds."""
 
     async def get(self, path="/"):
-        """Handle the get request and generate the feed content."""
+        """Handle the GET request and generate the feed content."""
         self.set_header("Content-Type", "application/xml")
 
         rss_str = get_rss_str(
@@ -166,11 +166,11 @@ async def search_main_page_info(
     return found
 
 
-class SoundboardHtmlHandler(BaseRequestHandler):
-    """The tornado handler that handles requests to the html pages."""
+class SoundboardHTMLHandler(BaseRequestHandler):
+    """The Tornado handler that handles requests to the HTML pages."""
 
     async def get(self, path="/"):
-        """Handle the get request and generate the page content."""
+        """Handle the GET request and generate the page content."""
         if path is not None:
             path = path.lower()
 

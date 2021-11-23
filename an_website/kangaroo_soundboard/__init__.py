@@ -22,12 +22,12 @@ from enum import Enum
 from functools import cache, lru_cache
 from typing import Callable, Optional, Type, Union
 
-import orjson
+import orjson as json
 
 DIR = os.path.dirname(__file__)
 
 with open(f"{DIR}/info.json", "r", encoding="utf-8") as my_file:
-    info = orjson.loads(my_file.read())
+    info = json.loads(my_file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
 person_dict: dict[str, str] = info["personen"]
@@ -107,9 +107,9 @@ class HeaderInfo(Info):
         query: Optional[str] = None,
     ) -> str:
         """
-        Return a html element with the tag and the content of the HeaderInfo.
+        Return a HTML element with the tag and the content of the HeaderInfo.
 
-        The html element gets a id and a href with a # to
+        The HTML element gets a id and a href with a # to
         itself based on the text content.
         """
         _id = name_to_id(self.text)
@@ -181,7 +181,7 @@ class SoundInfo(Info):
 
     @cache
     def to_rss(self, url: Optional[str]) -> str:
-        """Parse the info to a rss item."""
+        """Parse the info to a RSS item."""
         file_name = self.get_file_name()
         path = f"/files/{file_name}.mp3"
         file_size = os.path.getsize(DIR + path)
@@ -221,7 +221,7 @@ def replace_umlauts(text: str) -> str:
 
 
 def name_to_id(val: str) -> str:
-    """Replace umlauts and whitespaces in a string so it is a valid html id."""
+    """Replace umlauts and whitespaces in a string so it is a valid HTML id."""
     return re.sub(
         r"-+",
         "-",

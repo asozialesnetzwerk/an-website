@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The restart api used to restart and update the page."""
+"""The restart API used to restart and update the page."""
 from __future__ import annotations
 
 import os
@@ -30,8 +30,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/restart/", Restart),),
-        name="Restart-Api",
-        description="Restart-Api, die genutzt wird um die Seite neu "
+        name="Restart-API",
+        description="Restart-API, die genutzt wird um die Seite neu "
         "zu starten.",
         path="/restart/",
         hidden=True,
@@ -39,13 +39,13 @@ def get_module_info() -> ModuleInfo:
 
 
 class Restart(APIRequestHandler):
-    """The tornado request handler for the restart api."""
+    """The Tornado request handler for the restart API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
 
     async def post(self):
-        """Handle the post request to the restart api."""
+        """Handle the POST request to the restart API."""
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
         if api_secrets is None or len(api_secrets) == 0:
             raise HTTPError(501)

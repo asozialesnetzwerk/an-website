@@ -28,7 +28,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/uptime/", UptimeHandler),
-            (r"/uptime/api/", UptimeApiHandler),
+            (r"/uptime/api/", UptimeAPIHandler),
         ),
         name="Betriebszeit",
         description="Die Dauer die die Webseite am Stück in Betrieb ist.",
@@ -65,7 +65,7 @@ class UptimeHandler(BaseRequestHandler):
     """The request handler for the uptime page."""
 
     async def get(self):
-        """Handle the get request and render the page."""
+        """Handle the GET request and render the page."""
         uptime = calculate_uptime()
 
         await self.render(
@@ -75,11 +75,11 @@ class UptimeHandler(BaseRequestHandler):
         )
 
 
-class UptimeApiHandler(APIRequestHandler):
-    """The request handler for the uptime api."""
+class UptimeAPIHandler(APIRequestHandler):
+    """The request handler for the uptime API."""
 
     async def get(self):
-        """Handle the get request to the api."""
+        """Handle the GET request to the API."""
         uptime = calculate_uptime()
         await self.finish(
             {

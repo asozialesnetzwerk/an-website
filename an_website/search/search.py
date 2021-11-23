@@ -32,10 +32,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class Search(BaseRequestHandler):
-    """The tornado request handler for the search page."""
+    """The Tornado request handler for the search page."""
 
     async def get(self):
-        """Handle get requests to the search page."""
+        """Handle GET requests to the search page."""
         query = self.get_query_argument("q", default="", strip=True)
 
         module_infos: list[

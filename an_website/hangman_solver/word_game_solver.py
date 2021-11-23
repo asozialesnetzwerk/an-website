@@ -29,7 +29,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             ("/wortspiel-helfer/", WordGameHelper),
-            ("/wortspiel-helfer/api/", WordGameHelperApi),
+            ("/wortspiel-helfer/api/", WordGameHelperAPI),
         ),
         name="Wortspiel-Helfer",
         description="Findet Worte, die nur eine Änderung "
@@ -98,7 +98,7 @@ class WordGameHelper(BaseRequestHandler):
     RATELIMIT_TOKENS = 4
 
     async def get(self):
-        """Handle get requests to the word game helper page."""
+        """Handle GET requests to the word game helper page."""
         word = self.get_query_argument("word", default="").lower()
 
         before_str = self.get_query_argument("before", default="")
@@ -122,14 +122,14 @@ class WordGameHelper(BaseRequestHandler):
         )
 
 
-class WordGameHelperApi(APIRequestHandler):
-    """The request handler for the word game helper api."""
+class WordGameHelperAPI(APIRequestHandler):
+    """The request handler for the word game helper API."""
 
     RATELIMIT_TOKENS = 3
     ALLOWED_METHODS = ("get",)
 
     async def get(self):
-        """Handle get requests to the word game helper api."""
+        """Handle GET requests to the word game helper API."""
         word = self.get_query_argument("word", default="").lower()
 
         before_str = self.get_query_argument("before", default="")

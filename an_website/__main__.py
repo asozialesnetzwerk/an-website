@@ -226,7 +226,7 @@ def get_all_handlers(
 
 
 def make_app() -> Application:
-    """Create the tornado application and return it."""
+    """Create the Tornado application and return it."""
     module_infos, duration = time_function(get_module_infos)
     if duration > 1:
         logger.warning(

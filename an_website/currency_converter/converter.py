@@ -152,7 +152,7 @@ class CurrencyConverter(BaseRequestHandler):
     """Request handler for the currency converter page."""
 
     async def get(self):
-        """Handle the get request and display the page."""
+        """Handle the GET request and display the page."""
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(0)
@@ -177,11 +177,11 @@ class CurrencyConverter(BaseRequestHandler):
 
 
 class CurrencyConverterAPI(APIRequestHandler):
-    """Request handler for the currency converter json api."""
+    """Request handler for the currency converter JSON API."""
 
     async def get(self):
         """
-        Handle the get request and return the value dict as json.
+        Handle the GET request and return the value dict as JSON.
 
         If no arguments are given the potential arguments are displayed.
         """

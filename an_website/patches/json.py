@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Patches for json stuff that break everything."""
+"""A very awesome JSON en-/decoder implementation."""
 
 from __future__ import annotations
 

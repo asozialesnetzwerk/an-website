@@ -30,7 +30,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/vertauschte-woerter/", SwappedWords),
-            (r"/vertauschte-woerter/api/", SwappedWordsApi),
+            (r"/vertauschte-woerter/api/", SwappedWordsAPI),
         ),
         name="Vertauschte Wörter",
         description="Eine Seite, die Wörter vertauscht",
@@ -59,7 +59,7 @@ with open(f"{DIR}/config.sw", encoding="utf-8") as file:
 
 
 def check_text_too_long(text: str):
-    """Raise an http error if the text is too long."""
+    """Raise an HTTP error if the text is too long."""
     len_text = len(text)
 
     if len_text > MAX_CHAR_COUNT:
@@ -77,7 +77,7 @@ class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
     def handle_text(self, text: str, config_str: Optional[str], reset: str):
-        """Use the text to display the html page."""
+        """Use the text to display the HTML page."""
         check_text_too_long(text)
 
         try:
@@ -129,7 +129,7 @@ class SwappedWords(BaseRequestHandler):
             )
 
     def get(self):
-        """Handle get requests to the swapped words page."""
+        """Handle GET requests to the swapped words page."""
         self.handle_text(
             self.get_query_argument("text", default=""),
             self.get_query_argument("config", default=None),
@@ -137,7 +137,7 @@ class SwappedWords(BaseRequestHandler):
         )
 
     def post(self):
-        """Handle post requests to the swapped words page."""
+        """Handle POST requests to the swapped words page."""
         self.handle_text(
             self.get_argument("text", default=""),
             self.get_argument("config", default=None),
@@ -145,13 +145,13 @@ class SwappedWords(BaseRequestHandler):
         )
 
 
-class SwappedWordsApi(APIRequestHandler):
-    """The request handler for the swapped words api."""
+class SwappedWordsAPI(APIRequestHandler):
+    """The request handler for the swapped words API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
     def get(self):
-        """Handle get requests to the swapped words api."""
+        """Handle GET requests to the swapped words API."""
         text = self.get_argument("text", default="", strip=True)
 
         check_text_too_long(text)
@@ -192,5 +192,5 @@ class SwappedWordsApi(APIRequestHandler):
             )
 
     def post(self):
-        """Handle post requests to the swapped words api."""
+        """Handle POST requests to the swapped words API."""
         self.get()

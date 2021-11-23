@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A permanent redirect to an invite of the discord guild."""
+"""A permanent redirect to an invite of the Discord guild."""
 from __future__ import annotations
 
 import os

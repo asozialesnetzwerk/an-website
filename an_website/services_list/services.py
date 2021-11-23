@@ -43,7 +43,7 @@ class Service:
     infos: Optional[dict[str, str]] = None
 
     def to_html(self) -> str:
-        """Create a html representation of this service and return it."""
+        """Create a HTML representation of this service and return it."""
         html = [f"<h2>{self.title}</h2>", self.text]
 
         if self.infos is not None and len(self.infos) > 0:
@@ -119,7 +119,7 @@ class ServicesHandler(BaseRequestHandler):
     RATELIMIT_TOKENS = 0
 
     def get(self):
-        """Handle get requests to the service list page."""
+        """Handle GET requests to the service list page."""
         self.render(
             "pages/services.html",
             html=HTML_LIST,

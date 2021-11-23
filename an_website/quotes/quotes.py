@@ -54,7 +54,7 @@ def get_module_info() -> ModuleInfo:
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})/", QuoteById),
-            (r"/zitate/api/([0-9]{1,10})-([0-9]{1,10})/", QuoteApiHandler),
+            (r"/zitate/api/([0-9]{1,10})-([0-9]{1,10})/", QuoteAPIHandler),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
         ),
@@ -174,7 +174,7 @@ class QuoteMainPage(QuoteBaseHandler):
     """The main quote page that should render a random quote."""
 
     async def get(self):
-        """Handle the get request to the main quote page and render a quote."""
+        """Handle the GET request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
         self.redirect(self.fix_url(f"/zitate/{quote_id}-{author_id}"))
 
@@ -183,7 +183,7 @@ class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
     async def get(self, quote_id: str, author_id: str = None):
-        """Handle the get request to this page and render the quote."""
+        """Handle the GET request to this page and render the quote."""
         int_quote_id = int(quote_id)
         if author_id is None:
             _wqs = get_wrong_quotes(lambda _wq: _wq.id == int_quote_id)
@@ -198,7 +198,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def post(self, quote_id_str: str, author_id_str: str):
         """
-        Handle the post request to this page and render the quote.
+        Handle the POST request to this page and render the quote.
 
         This is used to vote the quote, without changing the url.
         """
@@ -278,7 +278,7 @@ class QuoteById(QuoteBaseHandler):
     @cache
     def get_user_id(self):
         """Get the user id saved in the cookie or create one."""
-        user_id = self.get_secure_cookie("user_id", max_age_days=365)
+        user_id = self.get_secure_cookie("user_id", max_age_days=90)
         if user_id is None:
             # TODO: ask for cookie consent
             user_id = str(uuid.uuid4())
@@ -288,7 +288,7 @@ class QuoteById(QuoteBaseHandler):
         self.set_secure_cookie(
             "user_id",
             user_id,
-            expires_days=365,
+            expires_days=90,
             path="/zitate",
             samesite="Strict",
         )
@@ -296,7 +296,7 @@ class QuoteById(QuoteBaseHandler):
 
     @cache
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
-        """Get the key to save the votes with redis."""
+        """Get the key to save the votes with Redis."""
         prefix = self.settings.get("REDIS_PREFIX")
         user_id = self.get_user_id()
         return f"{prefix}:quote-votes:{user_id}:{quote_id}-{author_id}"
@@ -306,15 +306,14 @@ class QuoteById(QuoteBaseHandler):
     ):
         """Save the new vote in the cookies."""
         redis = self.settings["REDIS"]
-        result = await redis.execute_command(
-            "SETEX",
+        result = await redis.setex(
             self.get_redis_votes_key(quote_id, author_id),
-            31415926,  # time to live in seconds (almost a year)
+            60 * 60 * 24 * 90,  # time to live in seconds (3 months)
             str(vote),  # value to save (the vote)
         )
         if result not in (True, "OK"):
-            logger.warning("Could not save vote in redis: %s", result)
-            raise HTTPError(500, "Could not save vote in redis")
+            logger.warning("Could not save vote in Redis: %s", result)
+            raise HTTPError(500, "Could not save vote in Redis")
 
     async def get_old_vote(
         self, quote_id: int, author_id: int
@@ -329,19 +328,16 @@ class QuoteById(QuoteBaseHandler):
         self, quote_id: int, author_id: int
     ) -> Optional[Literal[-1, 0, 1]]:
         """
-        Get the vote of the current user saved with redis.
+        Get the vote of the current user saved with Redis.
 
         Use the quote_id and author_id to query the vote.
         Return None if nothing is saved.
         """
         redis = self.settings.get("REDIS")
         if redis is None:
-            logger.warning("No redis connection")
+            logger.warning("No Redis connection")
             return 0
-        result = await redis.execute_command(
-            "GET",
-            self.get_redis_votes_key(quote_id, author_id),
-        )
+        result = await redis.get(self.get_redis_votes_key(quote_id, author_id))
         if result in ("-1", b"-1"):
             return -1
         if result in ("0", b"0"):
@@ -351,15 +347,15 @@ class QuoteById(QuoteBaseHandler):
         return None
 
 
-class QuoteApiHandler(QuoteById, APIRequestHandler):
-    """Api request handler for the quotes page."""
+class QuoteAPIHandler(QuoteById, APIRequestHandler):
+    """API request handler for the quotes page."""
 
     RATELIMIT_TOKENS = 1
     RATELIMIT_NAME = "quote-api"
     ALLOWED_METHODS = ("GET", "POST")
 
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
-        """Return the relevant data for the quotes page as a json."""
+        """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
         return await self.finish(
             {

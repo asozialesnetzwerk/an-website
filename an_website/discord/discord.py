@@ -11,13 +11,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A permanent redirect to an invite of the discord guild."""
+"""A permanent redirect to an invite of the Discord guild."""
 from __future__ import annotations
 
 import time
 from typing import Union
 
-import orjson
+import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
@@ -34,12 +34,12 @@ def get_module_info() -> ModuleInfo:
             (r"/discord/", ANDiscord),
             (f"/discord/({GUILD_ID})/", ANDiscord),
             (r"/discord/(\d+)/", Discord),
-            (r"/discord/api/", ANDiscordApi),
-            (f"/discord/api/({GUILD_ID})/", ANDiscordApi),
-            (r"/discord/api/(\d+)/", DiscordApi),
+            (r"/discord/api/", ANDiscordAPI),
+            (f"/discord/api/({GUILD_ID})/", ANDiscordAPI),
+            (r"/discord/api/(\d+)/", DiscordAPI),
         ),
         name="Discord-Einladung",
-        description="Eine permanente Einladung zu unserem Discord-Server",
+        description="Eine permanente Einladung zu unserer Discord-Gilde",
         path="/discord/",
         keywords=(
             "Discord",
@@ -62,7 +62,7 @@ async def url_returns_200(url: str) -> bool:
 
 async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     """
-    Get the invite to a discord guild and return it with the source.
+    Get the invite to a Discord guild and return it with the source.
 
     How to get the invite:
         - from the widget (has to be enabled in guild settings)
@@ -75,7 +75,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
-        response_json = orjson.loads(response.body.decode("utf-8"))
+        response_json = json.loads(response.body.decode("utf-8"))
         invite = response_json["instant_invite"]
         if invite is not None:
             return invite, url
@@ -86,18 +86,18 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
         return (
-            orjson.loads(response.body.decode("utf-8")),
+            json.loads(response.body.decode("utf-8")),
             f"https://disboard.org/server/{guild_id}",
         )
 
-    # check if top.gg lists the server
+    # check if top.gg lists the guild
     url = f"https://top.gg/servers/{guild_id}/join"
     if await url_returns_200(url):
         return url, f"https://top.gg/servers/{guild_id}/"
 
-    # check if discords.com lists the server
+    # check if discords.com lists the guild
     if await url_returns_200(
-        # api end-point that returns only 200 if the server exists
+        # API endpoint that only returns 200 if the guild exists
         f"https://discords.com/api-v2/server/{guild_id}/relevant"
     ):
         return (
@@ -141,13 +141,13 @@ async def get_invite_with_cache(
 
 
 class Discord(BaseRequestHandler):
-    """The request handler that gets the discord invite and redirects to it."""
+    """The request handler that gets the Discord invite and redirects to it."""
 
     RATELIMIT_NAME = "discord"
     RATELIMIT_TOKENS = 10
 
     async def get(self, guild_id=GUILD_ID):
-        """Get the discord invite."""
+        """Get the Discord invite."""
         return await self.render(
             "pages/ask_for_redirect.html",
             redirect_url=(await get_invite_with_cache(guild_id))[0],
@@ -156,26 +156,26 @@ class Discord(BaseRequestHandler):
 
 
 class ANDiscord(Discord):
-    """The request handler only for the an discord guild."""
+    """The request handler only for the AN Discord guild."""
 
     RATELIMIT_NAME = "an-discord"
     RATELIMIT_TOKENS = 4
 
 
-class DiscordApi(APIRequestHandler):
-    """The api request handler that gets the discord invite and returns it."""
+class DiscordAPI(APIRequestHandler):
+    """The API request handler that gets the Discord invite and returns it."""
 
     RATELIMIT_NAME = "discord"
     RATELIMIT_TOKENS = 9
 
     async def get(self, guild_id=GUILD_ID):
-        """Get the discord invite and render it as json."""
+        """Get the Discord invite and render it as JSON."""
         invite, source_url = await get_invite_with_cache(guild_id)
         await self.finish({"invite": invite, "source": source_url})
 
 
-class ANDiscordApi(DiscordApi):
-    """The api request handler only for the an discord guild."""
+class ANDiscordAPI(DiscordAPI):
+    """The API request handler only for the AN Discord guild."""
 
     RATELIMIT_NAME = "an-discord"
     RATELIMIT_TOKENS = 4

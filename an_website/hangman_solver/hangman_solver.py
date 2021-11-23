@@ -284,21 +284,21 @@ class HangmanSolver(BaseRequestHandler):
     RATELIMIT_TOKENS = 3
 
     async def get(self):
-        """Handle the get request and render the page."""
+        """Handle the GET request and render the page."""
         hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler):
-    """Request handler for the hangman solver json api."""
+    """Request handler for the hangman solver JSON API."""
 
     RATELIMIT_TOKENS = 3
 
     async def get(self):
-        """Handle the get request and write the Hangman object as json."""
+        """Handle the GET request and write the Hangman object as JSON."""
         hangman = await handle_request(self)
         hangman_dict = asdict(hangman)
-        # convert set to list, because the set can't be converted to json.
+        # convert set to list, because the set can't be converted to JSON.
         hangman_dict["words"] = list(hangman_dict["words"])
         await self.finish(hangman_dict)
 

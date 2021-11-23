@@ -23,7 +23,7 @@ class ShareQuote(QuoteReadyCheckRequestHandler):
     """Request handler for the share page."""
 
     async def get(self, quote_id, author_id):
-        """Handle get requests to the share page."""
+        """Handle GET requests to the share page."""
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
         await self.render(
             "pages/quotes/share.html",

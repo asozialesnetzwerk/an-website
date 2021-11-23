@@ -42,5 +42,5 @@ class KangarooComics(BaseRequestHandler):
     RATELIMIT_TOKENS = 0
 
     def get(self):
-        """Handle get requests to the kangaroo comics page."""
+        """Handle GET requests to the kangaroo comics page."""
         self.render("pages/kangaroo_comics.html")

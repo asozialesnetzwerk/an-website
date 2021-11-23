@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The page that displays the redis version."""
+"""The page that generates art."""
 from __future__ import annotations
 
 from tornado.web import HTTPError
@@ -38,7 +38,7 @@ class LOLWUT(BaseRequestHandler):
     """The request handler for the LOLWUT page."""
 
     async def get(self, args=""):
-        """Handle get requests to the LOLWUT page."""
+        """Handle GET requests to the LOLWUT page."""
         if args:
             arguments = args.split("/")
             if not len(arguments) == 1 and not arguments[-1]:
@@ -54,6 +54,6 @@ class LOLWUT(BaseRequestHandler):
         await self.render(
             "pages/ansi2html.html",
             ansi=lolwut,
-            powered_by="https://github.com/redis/redis",
+            powered_by="https://redis.io",
             powered_by_name="Redis",
         )

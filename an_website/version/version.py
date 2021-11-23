@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The /version page of the website."""
+"""The version page of the website."""
 from __future__ import annotations
 
 import hashlib
@@ -56,10 +56,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class Version(BaseRequestHandler):
-    """The tornado request handler for the version page."""
+    """The Tornado request handler for the version page."""
 
     async def get(self):
-        """Handle the get request to the version page."""
+        """Handle the GET request to the version page."""
         await self.render(
             "pages/version.html",
             version=VERSION,

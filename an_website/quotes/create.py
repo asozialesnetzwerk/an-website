@@ -187,7 +187,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
     """The request handler for the create page."""
 
     async def get(self):
-        """Handle get requests to the create page."""
+        """Handle GET requests to the create page."""
         await self.render(
             "pages/quotes/create1.html",
             quotes=tuple(QUOTES_CACHE.values()),
@@ -195,7 +195,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
         )
 
     async def post(self):
-        """Handle post requests to the create page."""
+        """Handle POST requests to the create page."""
         quote_str = self.get_argument("quote-1")
         fake_author_str = self.get_argument("fake-author-1")
 
@@ -239,7 +239,7 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
     RATELIMIT_NAME = "quote-create"
 
     async def post(self):
-        """Handle post requests to the create page."""
+        """Handle POST requests to the create page."""
         quote_str = self.get_argument("quote-2")
         fake_author_str = self.get_argument("fake-author-2")
 

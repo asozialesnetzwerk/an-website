@@ -86,7 +86,7 @@ class QuotesInfoPage(BaseRequestHandler):
     RATELIMIT_NAME = "quote_info"
 
     async def get(self, _id_str: str):
-        """Handle get requests to the quote info page."""
+        """Handle GET requests to the quote info page."""
         _id: int = int(_id_str)
         quote = await get_quote_by_id(_id)
         wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
@@ -104,21 +104,20 @@ class AuthorsInfoPage(BaseRequestHandler):
     RATELIMIT_TOKENS = 5
 
     def get_redis_info_key(self, author_name) -> str:
-        """Get the key to save the author info with redis."""
+        """Get the key to save the author info with Redis."""
         prefix = self.settings.get("REDIS_PREFIX")
-        return f"{prefix}:quote_author_info:{author_name.replace(' ', '-')}"
+        return f"{prefix}:quote_author_info:{author_name}"
 
     async def get(self, _id_str: str):
-        """Handle get requests to the author info page."""
+        """Handle GET requests to the author info page."""
         _id: int = int(_id_str)
         author = await get_author_by_id(_id)
         if author.info is None:
             result = None
             if "REDIS" in self.settings:
-                # try to get the info from redis
-                result = await self.settings["REDIS"].execute_command(
-                    "GET",
-                    self.get_redis_info_key(author.name),
+                # try to get the info from Redis
+                result = await self.settings["REDIS"].get(
+                    self.get_redis_info_key(author.name)
                 )
             if result:
                 info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
@@ -133,10 +132,9 @@ class AuthorsInfoPage(BaseRequestHandler):
                     and author.info is not None
                     and author.info[1] is not None
                 ):
-                    await self.settings["REDIS"].execute_command(
-                        "SETEX",
+                    await self.settings["REDIS"].setex(
                         self.get_redis_info_key(author.name),
-                        60 * 60 * 24 * 7,  # time to live in seconds (1 week)
+                        60 * 60 * 24 * 30,  # time to live in seconds (1 month)
                         # value to save (the author info)
                         # type is ignored, because author.info[1] is not None
                         ",".join(author.info),  # type: ignore

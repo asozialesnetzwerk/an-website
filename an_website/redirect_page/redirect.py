@@ -41,7 +41,7 @@ class RedirectPage(BaseRequestHandler):
     RATELIMIT_TOKENS = 0
 
     async def get(self):
-        """Handle the get request to the request page and render it."""
+        """Handle the GET request to the request page and render it."""
         redirect_url = self.get_query_argument("to", default="")
 
         if redirect_url in ("", "/"):

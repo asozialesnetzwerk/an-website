@@ -60,7 +60,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class BaseRequestHandler(RequestHandler):
-    """The base tornado request handler used by every page."""
+    """The base Tornado request handler used by every page."""
 
     RATELIMIT_NAME: str = "base"  # can be overridden in subclasses
     RATELIMIT_TOKENS: int = 1  # can be overridden in subclasses
@@ -102,7 +102,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Permissions-Policy", "interest-cohort=()")
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
-        """Check authorization and rate limits with redis."""
+        """Check authorization and rate limits with Redis."""
         if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
             # TODO: self.set_header("WWW-Authenticate")
             raise HTTPError(401)
@@ -171,7 +171,7 @@ class BaseRequestHandler(RequestHandler):
         )
 
     def write_error(self, status_code: int, **kwargs):
-        """Render the error page with the status_code as a html page."""
+        """Render the error page with the status_code as a HTML page."""
         self.render(
             "error.html",
             status=status_code,
@@ -212,7 +212,7 @@ class BaseRequestHandler(RequestHandler):
         Otherwise just return the url with no_3rd_party appended.
         """
         if this_url is None:
-            # used for discord page
+            # used for Discord page
             this_url = self.request.full_url()
 
         if url.startswith("http") and f"//{self.request.host}" not in url:
@@ -236,10 +236,10 @@ class BaseRequestHandler(RequestHandler):
             # don't use relative urls
             protocol = None
             if self.request.host_name.endswith(".onion"):
-                # if the host is an onion domain, use http
+                # if the host is an onion domain, use HTTP
                 protocol = self.settings["ONION_PROTOCOL"]
             elif self.settings.get("LINK_TO_HTTPS"):
-                # always use https if the config is set
+                # always use HTTPS if the config is set
                 protocol = "https"
             if protocol is None:
                 # otherwise use the protocol of the request
@@ -295,7 +295,7 @@ class BaseRequestHandler(RequestHandler):
         )
 
     def get_form_appendix(self):
-        """Get html to add to forms to keep important query args."""
+        """Get HTML to add to forms to keep important query args."""
         form_appendix: str
 
         if (
@@ -449,15 +449,15 @@ class BaseRequestHandler(RequestHandler):
 
 class APIRequestHandler(BaseRequestHandler):
     """
-    The base api request handler.
+    The base API request handler.
 
-    It overrides the write error method to return errors as json.
+    It overrides the write error method to return errors as JSON.
     """
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
     def set_default_headers(self):
-        """Set important default headers for the api request handlers."""
+        """Set important default headers for the API request handlers."""
         super().set_default_headers()
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Max-Age
         # 7200 = 2h (the chromium max)
@@ -519,7 +519,7 @@ class NotFound(BaseRequestHandler):
     async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
         self,
     ):
-        """Throw a 404 http error or redirect to another page."""
+        """Throw a 404 HTTP error or redirect to another page."""
         new_path = self.request.path.lower()
         if new_path.endswith("/index.html"):
             # len("index.html") = 10
@@ -610,7 +610,7 @@ class ErrorPage(BaseRequestHandler):
         # get the reason
         reason: str = httputil.responses.get(status_code, "")
 
-        # set the status code if tornado doesn't throw an error if it is set
+        # set the status code if Tornado doesn't throw an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
             # set the status code
             self.set_status(status_code)

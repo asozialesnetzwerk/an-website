@@ -93,7 +93,7 @@ def anonymize_logs():
 
 
 def patch_json():
-    """Patch json."""
+    """Replace json with orjson."""
     logger = logging.getLogger(json.__name__)
 
     def dump(obj, fp, **kwargs):

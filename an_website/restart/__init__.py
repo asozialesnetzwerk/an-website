@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The restart api used to restart and update the page."""
+"""The restart API used to restart and update the page."""
 from __future__ import annotations
 
 import os

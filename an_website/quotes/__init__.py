@@ -152,7 +152,7 @@ async def make_api_request(
     method: Literal["GET", "POST"] = "GET",
     body: str = None,
 ) -> dict:
-    """Make api request and return the result as dict."""
+    """Make API request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/{end_point}?{args}",
         raise_error=False,
@@ -194,7 +194,7 @@ def get_author_updated_with(author_id: int, author_name: str):
 
 
 def parse_author(json_data: dict) -> Author:
-    """Parse a author from json data."""
+    """Parse a author from JSON data."""
     return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
 
@@ -213,7 +213,7 @@ def fix_quote_str(quote_str: str) -> str:
 
 
 def parse_quote(json_data: dict) -> Quote:
-    """Parse a quote from json data."""
+    """Parse a quote from JSON data."""
     quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])
     quote_str = fix_quote_str(json_data["quote"])
@@ -269,7 +269,7 @@ async def start_updating_cache_periodically():
 
 
 async def update_cache():
-    """Fill the cache with all data from the api."""
+    """Fill the cache with all data from the API."""
     logger.info("Update quotes cache.")
     wq_data = await make_api_request("wrongquotes")
     for wrong_quote in wq_data:
@@ -392,7 +392,7 @@ async def create_wq_and_vote(
     fast: bool = False,
 ) -> WrongQuote:
     """
-    Vote for the wrong_quote with the api.
+    Vote for the wrong_quote with the API.
 
     If the wrong_quote doesn't exist yet, create it.
     """

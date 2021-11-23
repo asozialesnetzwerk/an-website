@@ -36,7 +36,7 @@ class MainPage(BaseRequestHandler):
     RATELIMIT_TOKENS = 0
 
     async def get(self):
-        """Handle the get requests and display the main page."""
+        """Handle the GET requests and display the main page."""
         await self.render(
             "pages/main_page.html",
         )

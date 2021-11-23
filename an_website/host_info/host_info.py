@@ -59,7 +59,7 @@ class HostInfo(BaseRequestHandler):
 
     async def get(self):
         """
-        Handle the get requests to the host info page.
+        Handle the GET requests to the host info page.
 
         Use screenfetch to generate the page.
         """
@@ -77,7 +77,7 @@ class UwuHostInfo(BaseRequestHandler):
 
     async def get(self):
         """
-        Handwe the get wequests to coowew the host info page.
+        Handwe the GET wequests to coowew the host info page.
 
         Use uwufetch to genyewate the page.
         """
