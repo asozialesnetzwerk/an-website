@@ -47,10 +47,11 @@ def get_module_info() -> ModuleInfo:
 
 
 WIKI_API = "https://de.wikipedia.org/w/api.php"
+WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
 
 
 async def search_wikipedia(
-    query: str,
+    query: str, api: str = WIKI_API
 ) -> Optional[tuple[str, Optional[str], datetime]]:
     """
     Search wikipedia to get information about the query.
@@ -61,11 +62,13 @@ async def search_wikipedia(
         return None
     # try to get the info from wikipedia
     response = await HTTP_CLIENT.fetch(
-        f"{WIKI_API}?action=opensearch&namespace=0&profile=normal&"
+        f"{api}?action=opensearch&namespace=0&profile=normal&"
         f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
     )
     response_json = json.loads(response.body)
     if len(response_json[1]) == 0:
+        if api == WIKI_API:
+            return await search_wikipedia(query, WIKI_API_EN)
         return None  # nothing found
     page_name = response_json[1][0]
     # get the url of the content & replace "," with "%2C"
@@ -73,15 +76,17 @@ async def search_wikipedia(
 
     return (
         url,
-        await get_wikipedia_page_content(page_name),
+        await get_wikipedia_page_content(page_name, api),
         datetime.now(timezone.utc),
     )
 
 
-async def get_wikipedia_page_content(page_name: str) -> Optional[str]:
+async def get_wikipedia_page_content(
+    page_name: str, api: str = WIKI_API
+) -> Optional[str]:
     """Get content from a wikipedia page and return it."""
     response = await HTTP_CLIENT.fetch(
-        f"{WIKI_API}?action=query&prop=extracts&exsectionformat=plain&exintro&"
+        f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
         f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5"
     )
     response_json = json.loads(response.body)
