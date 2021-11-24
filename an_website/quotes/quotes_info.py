@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import re
 from typing import Optional
 from urllib.parse import quote as quote_url
 
@@ -110,6 +111,19 @@ class QuotesInfoPage(BaseRequestHandler):
         )
 
 
+def fix_author_for_wikipedia_search(author: str) -> str:
+    """
+    Fix author for wikipedia search.
+
+    This tries to reduce common problems with authors.
+    So that we can show more information.
+    """
+    author = re.sub(r"\s+", " ", author)
+    author = re.sub(r"\(.*\)", "", author)
+    author = re.sub(r"\s*Werbespruch$", "", author)
+    return author
+
+
 # time to live in seconds (1 month)
 AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
 
@@ -132,13 +146,16 @@ class AuthorsInfoPage(BaseRequestHandler):
         if author.info is None:
             result = None
             redis = self.settings.get("REDIS")
+            fixed_author_name = fix_author_for_wikipedia_search(author.name)
             if redis is not None:
                 # try to get the info from Redis
-                result = await redis.get(self.get_redis_info_key(author.name))
+                result = await redis.get(
+                    self.get_redis_info_key(fixed_author_name)
+                )
             if result:
                 info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
                 remaining_ttl = await redis.ttl(
-                    self.get_redis_info_key(author.name)
+                    self.get_redis_info_key(fixed_author_name)
                 )
                 creation_date = datetime.now(tz=timezone.utc) - timedelta(
                     seconds=AUTHOR_INFO_NEW_TTL - remaining_ttl
@@ -148,13 +165,13 @@ class AuthorsInfoPage(BaseRequestHandler):
                 else:
                     author.info = (info[0], info[1], creation_date)
             else:
-                author.info = await search_wikipedia(author.name)
+                author.info = await search_wikipedia(fixed_author_name)
                 if author.info is None or author.info[1] is None:
                     # nothing found
                     logger.info("No information found about %s", repr(author))
                 elif redis is not None:
                     await redis.setex(
-                        self.get_redis_info_key(author.name),
+                        self.get_redis_info_key(fixed_author_name),
                         AUTHOR_INFO_NEW_TTL,
                         # value to save (the author info)
                         # type is ignored, because author.info[1] is not None
