@@ -113,6 +113,8 @@ class QuotesInfoPage(BaseRequestHandler):
             "pages/quotes/quote_info.html",
             quote=quote,
             wrong_quotes=wqs,
+            title="Zitat-Informationen",
+            description=f"Falsche Zitate mit „{quote.quote}“ als Zitat.",
         )
 
 
@@ -189,4 +191,6 @@ class AuthorsInfoPage(BaseRequestHandler):
             "pages/quotes/author_info.html",
             author=author,
             wrong_quotes=wqs,
+            title="Autor-Informationen",
+            description=f"Falsche Zitate mit „{author.name}“ als Autor.",
         )
