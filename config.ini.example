@@ -1,45 +1,51 @@
-[GENERAL]
+#[GENERAL]
 #ignored_modules = spam, eggs
 #trusted_api_secrets = hunter2, correct_horse_battery_staple
 #contact_email = asozial@example.com
-link_to_https = sure
-ratelimits = sure
+#link_to_https = nope
+#ratelimits = nope
 #onion_address = ...
 
-[SSL]
-enabled = nope
+#[LOGGING]
+#debug = nope
+
+#[SSL]
+#enabled = nope
 #certfile = /etc/letsencrypt/live/.../fullchain.pem
 #keyfile = /etc/letsencrypt/live/.../privkey.pem
 #password = hunter2
 
-[TORNADO]
-port = 8080
-behind_proxy = nope
-cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
+#[TORNADO]
+#port = 8080
+#behind_proxy = nope
+#cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
 
-[ELASTIC_APM]
-enabled = nope
-server_url = http://localhost:8200
+#[ELASTIC_APM]
+#enabled = nope
+#server_url = http://localhost:8200
 #secret_token = ...
 #api_key = ...
+#verify_server_cert = sure
+#server_cert = ...
+#use_certifi = sure
 
-[ELASTICSEARCH]
+#[ELASTICSEARCH]
 #cloud_id = ...
-host = localhost
-port = 9200
-url_prefix = /
-use_ssl = nope
-verify_certs = sure
+#host = localhost
+#port = 9200
+#url_prefix = /
+#use_ssl = nope
+#verify_certs = sure
 #username = elastic
 #password = hunter2
 #api_key = ...
 #client_cert = ...
 #client_key = ...
-retry_on_timeout = nope
+#retry_on_timeout = nope
 #send_get_body_as = ...
 
-[REDIS]
-url = redis://localhost
-#db = 1
+#[REDIS]
+#url = redis://localhost
+#db = 0
 #username = default
 #password = hunter2

@@ -283,7 +283,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
 
     # whether ratelimits are enabled
     app.settings["RATELIMITS"] = config.getboolean(
-        "GENERAL", "RATELIMITS", fallback=True
+        "GENERAL", "RATELIMITS", fallback=False
     )
 
     app.settings["ELASTIC_APM"] = {
@@ -299,7 +299,9 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             "ELASTIC_APM", "VERIFY_SERVER_CERT", fallback=True
         ),
         "SERVER_CERT": config.get("ELASTIC_APM", "SERVER_CERT", fallback=None),
-        "USE_CERTIFI": config.get("ELASTIC_APM", "USE_CERTIFI", fallback=True),
+        "USE_CERTIFI": config.getboolean(
+            "ELASTIC_APM", "USE_CERTIFI", fallback=True
+        ),
         "SERVICE_NAME": "an-website",
         "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
@@ -399,17 +401,15 @@ def get_ssl_context(
     return None
 
 
-def setup_logger():
+def setup_logger(config):
     """Configure the root logger."""
+    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
     root_logger = logging.getLogger()
-    root_logger.setLevel(
-        logging.INFO if not sys.flags.dev_mode else logging.DEBUG
-    )
+    root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
-        LogFormatter() if not sys.flags.dev_mode else logging.Formatter()
+        logging.Formatter() if sys.flags.dev_mode else LogFormatter()
     )
-
     root_logger.addHandler(stream_handler)
 
     if not sys.flags.dev_mode:
@@ -437,7 +437,7 @@ def main():
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini")
 
-    setup_logger()
+    setup_logger(config)
 
     # read ignored modules from the config
     for module_name in config.get(

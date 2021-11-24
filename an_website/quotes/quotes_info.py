@@ -14,7 +14,7 @@
 """Info-page to show information about authors and quotes."""
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from urllib.parse import quote as quote_url
 
@@ -50,7 +50,7 @@ WIKI_API = "https://de.wikipedia.org/w/api.php"
 
 async def search_wikipedia(
     query: str,
-) -> Optional[tuple[str, Optional[str], date]]:
+) -> Optional[tuple[str, Optional[str], datetime]]:
     """
     Search wikipedia to get information about the query.
 
