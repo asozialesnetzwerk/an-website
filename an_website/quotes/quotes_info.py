@@ -22,7 +22,13 @@ import orjson as json
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
-from . import HTTP_CLIENT, get_author_by_id, get_quote_by_id, get_wrong_quotes
+from . import (
+    HTTP_CLIENT,
+    get_author_by_id,
+    get_quote_by_id,
+    get_wrong_quotes,
+    logger,
+)
 
 
 def get_module_info() -> ModuleInfo:
@@ -143,11 +149,10 @@ class AuthorsInfoPage(BaseRequestHandler):
                     author.info = (info[0], info[1], creation_date)
             else:
                 author.info = await search_wikipedia(author.name)
-                if (
-                    redis is not None
-                    and author.info is not None
-                    and author.info[1] is not None
-                ):
+                if author.info is None or author.info[1] is None:
+                    # nothing found
+                    logger.info("No information found about %s", repr(author))
+                elif redis is not None:
                     await redis.setex(
                         self.get_redis_info_key(author.name),
                         AUTHOR_INFO_NEW_TTL,
