@@ -40,13 +40,13 @@ async def test_request_handlers(http_server_client):
     for theme in ("default", "blue", "random", "random-dark"):
         response = await fetch(f"/?theme={theme}")
         assert response.code == 200
-    for b1, b2 in (("sure", "true"), ("nope", "false")):
-        response = await fetch(f"/?no_3rd_party={b1}")
+    for _b1, _b2 in (("sure", "true"), ("nope", "false")):
+        response = await fetch(f"/?no_3rd_party={_b1}")
         body = response.body.decode()
         assert response.code == 200
-        response = await fetch(f"/?no_3rd_party={b2}")
+        response = await fetch(f"/?no_3rd_party={_b2}")
         assert response.code == 200
-        assert response.body.decode().replace(b2, b1) == body
+        assert response.body.decode().replace(_b2, _b1) == body
 
     response = await fetch("/redirect/?from=/&to=https://example.org")
     assert response.code == 200
