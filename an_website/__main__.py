@@ -219,6 +219,10 @@ def get_all_handlers(
 
     # redirect handler, to make finding apis easier
     handlers.append((r"(?i)/(.+)/api/", RedirectHandler, {"url": "/api/{0}/"}))
+    # redirect from /api/ to /api/endpoints/ (not with alias, because it fails)
+    handlers.append(
+        (r"(?i)/api/", RedirectHandler, {"url": "/api/endpoints/"})
+    )
 
     if sys.flags.dev_mode:
         logger.debug(

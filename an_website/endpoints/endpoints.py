@@ -28,7 +28,6 @@ def get_module_info() -> ModuleInfo:
         description="Alle API-Endpunkte unserer Webseite.",
         path="/api/endpoints/",
         keywords=("Endpoints", "API", "Endpunkte"),
-        aliases=("/api/",),
         hidden=True,
     )
 
