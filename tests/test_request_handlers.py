@@ -107,6 +107,11 @@ async def test_request_handlers(http_server_client):
     assert response.code == 404
     response = await fetch("/api/restart/")
     assert response.code == 401  # Unauthorized
+    response = await fetch("/api/endpoints/")
+    assert response.code == 200
+    response = await fetch("/api/ping/")
+    assert response.code == 200
+    assert response.body.decode() == "🏓"
     for code in range(200, 599):
         if code not in (204, 304):
             response = await fetch(f"/{code}.html")
