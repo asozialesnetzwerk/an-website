@@ -127,7 +127,9 @@ def fix_author_for_wikipedia_search(author: str) -> str:
     """
     author = re.sub(r"\s+", " ", author)
     author = re.sub(r"\(.*\)", "", author)
-    author = re.sub(r"\s*Werbespruch$", "", author)
+    author = re.sub(r"\s*Werbespruch$", "", author, flags=re.IGNORECASE)
+    author = re.sub(r"\s*Werbung$", "", author, flags=re.IGNORECASE)
+    author = re.sub(r"^nach\s*", "", author, flags=re.IGNORECASE)
     return author
 
 
