@@ -46,6 +46,25 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+class QuotesInfoPage(BaseRequestHandler):
+    """The request handler used for the info page."""
+
+    RATELIMIT_NAME = "quote_info"
+
+    async def get(self, _id_str: str):
+        """Handle GET requests to the quote info page."""
+        _id: int = int(_id_str)
+        quote = await get_quote_by_id(_id)
+        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
+        await self.render(
+            "pages/quotes/quote_info.html",
+            quote=quote,
+            wrong_quotes=wqs,
+            title="Zitat-Informationen",
+            description=f"Falsche Zitate mit „{quote.quote}“ als Zitat.",
+        )
+
+
 WIKI_API = "https://de.wikipedia.org/w/api.php"
 WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
 
@@ -97,25 +116,6 @@ async def get_wikipedia_page_content(
     if "extract" not in page:
         return None
     return page["extract"]
-
-
-class QuotesInfoPage(BaseRequestHandler):
-    """The request handler used for the info page."""
-
-    RATELIMIT_NAME = "quote_info"
-
-    async def get(self, _id_str: str):
-        """Handle GET requests to the quote info page."""
-        _id: int = int(_id_str)
-        quote = await get_quote_by_id(_id)
-        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
-        await self.render(
-            "pages/quotes/quote_info.html",
-            quote=quote,
-            wrong_quotes=wqs,
-            title="Zitat-Informationen",
-            description=f"Falsche Zitate mit „{quote.quote}“ als Zitat.",
-        )
 
 
 def fix_author_for_wikipedia_search(author: str) -> str:
