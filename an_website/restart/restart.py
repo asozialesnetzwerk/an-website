@@ -81,7 +81,9 @@ class Restart(APIRequestHandler):
         )
 
         if code == 0:
-            await self.finish("Restarting.")
+            await self.finish(
+                {"status": 200, "reason": "Successful. Restarting now."}
+            )
             sys.exit(1)  # exit so supervisord will restart
 
         raise HTTPError(
