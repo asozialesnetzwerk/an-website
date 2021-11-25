@@ -419,7 +419,7 @@ async def create_wq_and_vote(
 class QuoteReadyCheckRequestHandler(BaseRequestHandler):
     """Class that checks if quotes have been loaded."""
 
-    RATELIMIT_NAME = "quote"
+    RATELIMIT_NAME = "quotes"
 
     async def prepare(self):
         """Fail if quotes aren't ready yet."""

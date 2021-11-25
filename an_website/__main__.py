@@ -44,6 +44,8 @@ from .utils.utils import (
 )
 from .version import version
 
+NAME = "an-website"
+
 # list of blocked modules
 IGNORED_MODULES = [
     "patches.*",
@@ -260,7 +262,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     app.settings["TRUSTED_API_SECRETS"] = tuple(
         secret.strip()
         for secret in config.get(
-            "GENERAL", "TRUSTED_API_SECRETS", fallback="an-website"
+            "GENERAL", "TRUSTED_API_SECRETS", fallback="hunter2"
         ).split(",")
     )
 
@@ -302,7 +304,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "USE_CERTIFI": config.getboolean(
             "ELASTIC_APM", "USE_CERTIFI", fallback=True
         ),
-        "SERVICE_NAME": "an-website",
+        "SERVICE_NAME": NAME,
         "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
         if not sys.flags.dev_mode
@@ -313,7 +315,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             "/favicon.ico",
             "/static/*",
             "/.well-known/*",
-            "/api/ping",
+            "/api/ping/",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [
@@ -360,7 +362,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         },
     )
     app.settings["ELASTICSEARCH_PREFIX"] = config.get(
-        "ELASTICSEARCH", "PREFIX", fallback="an-website"
+        "ELASTICSEARCH", "PREFIX", fallback=NAME
     )
     # sys.exit(
     #     asyncio.get_event_loop().run_until_complete(
@@ -375,9 +377,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             password=config.get("REDIS", "PASSWORD", fallback=None),
         )
     )
-    app.settings["REDIS_PREFIX"] = config.get(
-        "REDIS", "PREFIX", fallback="an-website"
-    )
+    app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
     # sys.exit(
     #     asyncio.get_event_loop()
     #     .run_until_complete(app.settings["REDIS"].execute_command("LOLWUT"))
@@ -418,7 +418,7 @@ def setup_logger(config):
         except FileExistsError:
             pass
         file_handler = logging.handlers.TimedRotatingFileHandler(
-            "logs/an-website.log", "midnight", backupCount=7, utc=True
+            f"logs/{NAME}.log", "midnight", backupCount=7, utc=True
         )
         file_handler.setFormatter(ecs_logging.StdlibFormatter())
         root_logger.addHandler(file_handler)
@@ -436,8 +436,8 @@ def main():
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini")
-
     setup_logger(config)
+    logger.warning(f"Starting {NAME} with version {version.VERSION}")
 
     # read ignored modules from the config
     for module_name in config.get(

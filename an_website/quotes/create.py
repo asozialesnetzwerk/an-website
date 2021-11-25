@@ -236,7 +236,7 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
     """The request handler for the second part of the create page."""
 
     RATELIMIT_TOKENS = 4
-    RATELIMIT_NAME = "quote-create"
+    RATELIMIT_NAME = "quotes-create"
 
     async def post(self):
         """Handle POST requests to the create page."""

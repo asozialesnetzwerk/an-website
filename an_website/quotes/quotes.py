@@ -352,7 +352,7 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
     """API request handler for the quotes page."""
 
     RATELIMIT_TOKENS = 1
-    RATELIMIT_NAME = "quote-api"
+    RATELIMIT_NAME = "quotes-api"
     ALLOWED_METHODS = ("GET", "POST")
 
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):

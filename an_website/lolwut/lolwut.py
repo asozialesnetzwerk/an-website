@@ -28,7 +28,7 @@ def get_module_info() -> ModuleInfo:
         description="LOLWUT; präsentiert von Redis",
         path="/lolwut/",
         keywords=(
-            "lolwut",
+            "LOLWUT",
             "Redis",
         ),
     )

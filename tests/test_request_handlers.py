@@ -105,7 +105,7 @@ async def test_request_handlers(http_server_client):
     assert response.code == 404
     response = await fetch("/kaenguru-soundboard/qwertzuiop/")
     assert response.code == 404
-    response = await fetch("/restart/")
+    response = await fetch("/api/restart/")
     assert response.code == 401  # Unauthorized
     for code in range(200, 599):
         if code not in (204, 304):

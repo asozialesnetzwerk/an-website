@@ -49,7 +49,7 @@ def get_module_info() -> ModuleInfo:
 class QuotesInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
-    RATELIMIT_NAME = "quote_info"
+    RATELIMIT_NAME = "quotes-info"
 
     async def get(self, _id_str: str):
         """Handle GET requests to the quote info page."""
@@ -65,12 +65,12 @@ class QuotesInfoPage(BaseRequestHandler):
         )
 
 
-WIKI_API = "https://de.wikipedia.org/w/api.php"
+WIKI_API_DE = "https://de.wikipedia.org/w/api.php"
 WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
 
 
 async def search_wikipedia(
-    query: str, api: str = WIKI_API
+    query: str, api: str = WIKI_API_DE
 ) -> Optional[tuple[str, Optional[str], datetime]]:
     """
     Search wikipedia to get information about the query.
@@ -86,7 +86,7 @@ async def search_wikipedia(
     )
     response_json = json.loads(response.body)
     if len(response_json[1]) == 0:
-        if api == WIKI_API:
+        if api == WIKI_API_DE:
             return await search_wikipedia(query, WIKI_API_EN)
         return None  # nothing found
     page_name = response_json[1][0]
@@ -101,7 +101,7 @@ async def search_wikipedia(
 
 
 async def get_wikipedia_page_content(
-    page_name: str, api: str = WIKI_API
+    page_name: str, api: str = WIKI_API_DE
 ) -> Optional[str]:
     """Get content from a wikipedia page and return it."""
     response = await HTTP_CLIENT.fetch(
@@ -140,7 +140,7 @@ AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
 class AuthorsInfoPage(BaseRequestHandler):
     """The request handler used for the info page."""
 
-    RATELIMIT_NAME = "quote_info"
+    RATELIMIT_NAME = "quotes-info"
     RATELIMIT_TOKENS = 5
 
     def get_redis_info_key(self, author_name) -> str:
@@ -162,7 +162,7 @@ class AuthorsInfoPage(BaseRequestHandler):
                     self.get_redis_info_key(fixed_author_name)
                 )
             if result:
-                info: list[str] = result.decode("utf-8").split(",", maxsplit=1)
+                info: list[str] = result.decode("utf-8").split("|", maxsplit=1)
                 remaining_ttl = await redis.ttl(
                     self.get_redis_info_key(fixed_author_name)
                 )
@@ -184,7 +184,7 @@ class AuthorsInfoPage(BaseRequestHandler):
                         AUTHOR_INFO_NEW_TTL,
                         # value to save (the author info)
                         # type is ignored, because author.info[1] is not None
-                        ",".join(author.info[0:2]),  # type: ignore
+                        "|".join(author.info[0:2]),  # type: ignore
                     )
 
         wqs = get_wrong_quotes(lambda _wq: _wq.author.id == _id, True)

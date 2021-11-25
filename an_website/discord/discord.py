@@ -158,7 +158,7 @@ class Discord(BaseRequestHandler):
 class ANDiscord(Discord):
     """The request handler only for the AN Discord guild."""
 
-    RATELIMIT_NAME = "an-discord"
+    RATELIMIT_NAME = "discord-an"
     RATELIMIT_TOKENS = 4
 
 
@@ -177,5 +177,5 @@ class DiscordAPI(APIRequestHandler):
 class ANDiscordAPI(DiscordAPI):
     """The API request handler only for the AN Discord guild."""
 
-    RATELIMIT_NAME = "an-discord"
+    RATELIMIT_NAME = "discord-an"
     RATELIMIT_TOKENS = 4
