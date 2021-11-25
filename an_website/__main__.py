@@ -437,7 +437,7 @@ def main():
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini")
     setup_logger(config)
-    logger.warning(f"Starting {NAME} with version {version.VERSION}")
+    logger.warning("Starting %s with version %s", NAME, version.VERSION)
 
     # read ignored modules from the config
     for module_name in config.get(
