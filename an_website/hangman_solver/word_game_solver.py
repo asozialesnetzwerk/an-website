@@ -29,7 +29,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             ("/wortspiel-helfer/", WordGameHelper),
-            ("/wortspiel-helfer/api/", WordGameHelperAPI),
+            ("/api/wortspiel-helfer/", WordGameHelperAPI),
         ),
         name="Wortspiel-Helfer",
         description="Findet Worte, die nur eine Änderung "

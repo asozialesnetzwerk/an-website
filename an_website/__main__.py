@@ -217,6 +217,9 @@ def get_all_handlers(
                     )
                 )
 
+    # redirect handler, to make finding apis easier
+    handlers.append((r"(?i)/(.+)/api/", RedirectHandler, {"url": "/api/{0}/"}))
+
     if sys.flags.dev_mode:
         logger.debug(
             "loaded %d handlers: %s",

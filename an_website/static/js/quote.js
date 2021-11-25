@@ -101,7 +101,7 @@ window.onpopstate = (event) => {
 }
 
 nextButton.onclick = () => {
-    fetch(`/zitate/api/${nextQuoteId[0]}/${params}`)
+    fetch(`/api/zitate/${nextQuoteId[0]}/${params}`)
         .then((response) => response.json())
         .then((data) => {
             if (handleData(data)) {
@@ -117,7 +117,7 @@ nextButton.onclick = () => {
 }
 
 function vote(vote) {
-    fetch(`/zitate/api/${thisQuoteId[0]}/`, {
+    fetch(`/api/zitate/${thisQuoteId[0]}/`, {
         method: "post",
         headers: {
           'Accept': 'application/json',

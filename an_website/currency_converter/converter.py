@@ -31,7 +31,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/waehrungs-rechner/", CurrencyConverter),
-            (r"/waehrungs-rechner/api/", CurrencyConverterAPI),
+            (r"/api/waehrungs-rechner/", CurrencyConverterAPI),
         ),
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "

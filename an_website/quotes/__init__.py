@@ -133,11 +133,14 @@ class WrongQuote(QuotesObjBase):
 def get_wrong_quotes(
     filter_fun: Optional[Callable[[WrongQuote], bool]] = None,
     sort: bool = False,  # sorted by rating
+    filter_real_quotes: bool = True,
 ) -> tuple[WrongQuote, ...]:
     """Get cached wrong quotes."""
     wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
     if filter is not None:
         wqs = filter(filter_fun, wqs)
+    if filter_real_quotes:
+        wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
     if not sort:
         return tuple(wqs)
 

@@ -116,7 +116,7 @@ async def test_quote_request_handlers(http_server_client):
     """Test the request handlers for the quotes page."""
     response = await http_server_client.fetch("/zitate/1-1/")
     assert response.code == 200
-    response = await http_server_client.fetch("/zitate/api/1-2/")
+    response = await http_server_client.fetch("/api/zitate/1-2/")
     assert response.code == 200
     for _i in (1, 2):
         # twice the same because we cache the author info from wikipedia

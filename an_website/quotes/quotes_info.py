@@ -55,7 +55,7 @@ class QuotesInfoPage(BaseRequestHandler):
         """Handle GET requests to the quote info page."""
         _id: int = int(_id_str)
         quote = await get_quote_by_id(_id)
-        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, True)
+        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, sort=True)
         await self.render(
             "pages/quotes/quote_info.html",
             quote=quote,
@@ -187,7 +187,10 @@ class AuthorsInfoPage(BaseRequestHandler):
                         "|".join(author.info[0:2]),  # type: ignore
                     )
 
-        wqs = get_wrong_quotes(lambda _wq: _wq.author.id == _id, True)
+        wqs = get_wrong_quotes(
+            lambda _wq: _wq.author.id == _id,
+            sort=True,
+        )
 
         await self.render(
             "pages/quotes/author_info.html",
