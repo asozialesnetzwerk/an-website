@@ -34,5 +34,5 @@ class Ping(APIRequestHandler):
 
     async def get(self):
         """Handle the GET request to the ping pong API."""
-        self.set_header("Content-Type", "text/plain")
+        self.set_header("Content-Type", "text/plain; charset=utf-8")
         await self.finish("🏓")
