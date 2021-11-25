@@ -68,6 +68,8 @@ class Author(QuotesObjBase):
     def update_name(self, name: str):
         """Update author data with another author."""
         if self.name != name:
+            # name changed -> info should change too
+            self.info = None
             self.name = name
 
     def __str__(self):
