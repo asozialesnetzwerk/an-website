@@ -466,7 +466,7 @@ class APIRequestHandler(BaseRequestHandler):
         # 7200 = 2h (the chromium max)
         self.set_header("Access-Control-Max-Age", "7200")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Content-Type
-        self.set_header("Content-Type", "application/json")
+        self.set_header("Content-Type", "application/json; charset=UTF-8")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
         self.set_header("Access-Control-Allow-Origin", "*")
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
