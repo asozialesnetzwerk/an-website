@@ -183,11 +183,11 @@ class CurrencyConverterAPI(APIRequestHandler):
         """
         Handle the GET request and return the value dict as JSON.
 
-        If no arguments are given the potential arguments are displayed.
+        If no arguments are given the potential arguments are shown.
         """
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
-            await self.finish("Arguments: " + str(keys))
+            await self.finish(dict(zip(keys, [None] * len(keys))))
             return
 
         await self.finish(value_dict)
