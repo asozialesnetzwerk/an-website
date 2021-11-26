@@ -38,7 +38,7 @@ from . import (
     get_random_id,
     get_wrong_quote,
     get_wrong_quotes,
-    start_updating_cache_periodically
+    start_updating_cache_periodically,
 )
 from .quotes_img import QuoteAsImg
 from .share_page import ShareQuote
