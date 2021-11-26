@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Show a list of all api endpoints."""
+"""Show a list of all API endpoints."""
 from __future__ import annotations
 
 import orjson as json
@@ -27,16 +27,16 @@ def get_module_info() -> ModuleInfo:
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite.",
         path="/api/endpoints/",
-        keywords=("Endpoints", "API", "Endpunkte"),
+        keywords=("API", "Endpoints", "Endpunkte"),
         hidden=True,
     )
 
 
 class EndpointsHandler(APIRequestHandler):
-    """Show a list of all api endpoints."""
+    """Show a list of all API endpoints."""
 
     def get(self):
-        """Handle a get request."""
+        """Handle a GET request."""
         endpoints: list[dict] = []
         for _mi in self.settings["MODULE_INFOS"]:
             for _h in _mi.handlers:

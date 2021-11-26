@@ -11,5 +11,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Show a list of all api endpoints."""
+"""Show a list of all API endpoints."""
 from __future__ import annotations
+
+import os
+
+DIR = os.path.dirname(__file__)

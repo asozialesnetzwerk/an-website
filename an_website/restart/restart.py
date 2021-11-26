@@ -43,6 +43,7 @@ class Restart(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
+    RATELIMIT_TOKENS: int = 0
 
     async def post(self):
         """Handle the POST request to the restart API."""

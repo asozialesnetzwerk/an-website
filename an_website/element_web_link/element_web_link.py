@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A redirect to the matrix client."""
+"""A redirect to the Matrix client."""
 from __future__ import annotations
 
 from tornado.web import RedirectHandler
@@ -28,6 +28,6 @@ def get_module_info() -> ModuleInfo:
         name="Asozialer Chat",
         description="Matrix-Web-Client basierend auf Element-Web",
         path="/chat/",
-        keywords=("Matrix", "Element", "Web", "Chat"),
-        aliases=("/element-web/",),
+        keywords=("Chat", "Matrix", "Element"),
+        aliases=("/element/",),
     )

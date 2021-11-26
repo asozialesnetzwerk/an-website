@@ -13,3 +13,7 @@
 
 """The uptime page that shows the time the website is running."""
 from __future__ import annotations
+
+import os
+
+DIR = os.path.dirname(__file__)

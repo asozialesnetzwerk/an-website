@@ -32,6 +32,8 @@ def get_module_info() -> ModuleInfo:
 class Ping(APIRequestHandler):
     """The Tornado request handler for the ping pong API."""
 
+    RATELIMIT_TOKENS: int = 0
+
     async def get(self):
         """Handle the GET request to the ping pong API."""
         self.set_header("Content-Type", "text/plain; charset=utf-8")

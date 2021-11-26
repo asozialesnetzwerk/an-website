@@ -14,3 +14,7 @@
 """A page with a list of services that are cool and hosted by us."""
 
 from __future__ import annotations
+
+import os
+
+DIR = os.path.dirname(__file__)

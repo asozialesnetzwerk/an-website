@@ -63,16 +63,15 @@ class Service:
 
 SERVICES: tuple[Service, ...] = (
     Service(
-        "Minecraft-Server",
-        "Der Survival-Minecraft-Server des Asozialen Netzwerkes funktioniert "
-        "auch ohne einen Minecraft-Account und hat dafür eine Integration mit "
-        "ely.by, damit auch Spieler, die ihren Minecraft-Account nicht "
+        "Minceraft-Server",
+        "Der Survival-Minceraft-Server des Asozialen Netzwerkes funktioniert "
+        "auch ohne einen Minceraft-Account und hat dafür eine Integration mit "
+        "ely.by, damit auch Spieler, die ihren Minceraft-Account nicht "
         "verraten möchten, einen eigenen Skin nutzen können.",
         {
-            "Domain": "minceraft"  # [sic!] Mal gucken ob wer den "typo" meldet
-            ".asozial.org",
-            "Version": "1.15.2 (1.7-1.16 wird unterstützt)",
-            "Karte": "http://minecraft.asozial.org:8123/",
+            "Domain": "minceraft.asozial.org",
+            "Version": "1.15.2 (1.7-1.17 wird unterstützt)",
+            "Karte": "http://minceraft.asozial.org:8123/",
         },
     ),
     Service(

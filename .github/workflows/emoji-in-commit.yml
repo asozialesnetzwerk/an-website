@@ -8,8 +8,10 @@ on:
       - "*"
 jobs:
   check_emoji:
-    name: Look for emoji in commit message
+    name: Look for Emoji in commit message
     runs-on: ubuntu-latest
     steps:
+      - name: Install newest version of required library
+        run: python3 -m pip install --prefer-binary emoji
       - name: Run the check
-        run: exit $(python3 -c  "import unicodedata;print(0 if 'S' in tuple(unicodedata.category(ch)[0] for ch in '${{ github.event.commits[0].message }}') else 1)")
+        run: python3 -c "import emoji; exit(None if True in [emoji.is_emoji(chr) for ch in '${{ github.event.commits[0].message }}'] else 'No Emoji found. 👎')"
