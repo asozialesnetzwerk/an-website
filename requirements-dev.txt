@@ -14,3 +14,4 @@ pytest-tornasync>=0.6,<2
 types-orjson==3.6.1
 types-Pillow==8.3.7
 #types-PyYAML==6.0.0
+types-requests==2.26.1
