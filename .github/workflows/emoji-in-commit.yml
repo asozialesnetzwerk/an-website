@@ -1,17 +1,11 @@
 name: Check emoji
-on:
-  push:
-    branches:
-      - "*"
-  pull_request:
-    branches:
-      - "*"
+on: [push, pull_request]
 jobs:
   check_emoji:
     name: Look for Emoji in commit message
     runs-on: ubuntu-latest
     steps:
       - name: Install newest version of required library
-        run: python3 -m pip install --prefer-binary emoji>=1.6.1
+        run: python3 -m pip install --prefer-binary "emoji>=1.6.1"
       - name: Run the check
         run: python3 -c "import emoji; exit(None if True in [emoji.is_emoji(chr) for ch in '${{ github.event.commits[0].message }}'] else 'No Emoji found. 👎')"
