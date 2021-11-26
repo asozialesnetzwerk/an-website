@@ -18,7 +18,7 @@ import hashlib
 import subprocess
 
 from .. import DIR
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -43,7 +43,10 @@ GH_PAGES_COMMIT_HASH = run_cmd("git rev-parse origin/gh-pages")
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/version/", Version),),
+        handlers=(
+            (r"/version/", Version),
+            (r"/api/version/", VersionAPI),
+        ),
         name="Versions-Informationen",
         description="Die aktuelle Version der Webseite",
         path="/version/",
@@ -53,6 +56,19 @@ def get_module_info() -> ModuleInfo:
         ),
         hidden=True,
     )
+
+
+class VersionAPI(APIRequestHandler):
+    """The Tornado request handler for the version api."""
+
+    def get(self):
+        """Handle the GET request to the version API."""
+        self.finish(
+            {
+                "version": VERSION,
+                "hash_of_file_hashes": HASH_OF_FILE_HASHES,
+            }
+        )
 
 
 class Version(BaseRequestHandler):
