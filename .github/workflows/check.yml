@@ -44,7 +44,7 @@ jobs:
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: fix formatting 臘
+          commit_message: "fix formatting 🤦"
   check_types:
     name: Check types
     runs-on: ubuntu-latest
