@@ -1,0 +1,19 @@
+name: Check
+on:
+  push:
+    paths:
+      - "*"
+  pull_request:
+    paths:
+      - "*"
+jobs:
+  check_emoji:
+    name: Look for emoji in commit message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Run the check
+        run: exit $(python3 -c  "import unicodedata;print(0 if 'S' in tuple(unicodedata.category(ch)[0] for ch in '${{ github.event.commits[0].message }}') else 1)")
