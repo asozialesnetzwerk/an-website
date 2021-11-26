@@ -18,23 +18,57 @@ from __future__ import annotations
 
 import pytest
 
-from an_website import __main__ as main
-
 
 @pytest.fixture
 def app():
     """Create the application."""
+    import an_website.__main__ as main
+
     return main.make_app()
 
 
-# pylint: disable=too-many-statements
-async def test_request_handlers(http_server_client):
-    """Check if the request handlers return 200 codes."""
+@pytest.fixture
+def fetch(http_server_client):
+    """Fetch a url."""
 
-    async def fetch(url):
+    async def fetch_url(url):
         """Fetch a url."""
         return await http_server_client.fetch(url, raise_error=False)
 
+    return fetch_url
+
+
+async def test_json_apis(fetch):
+    """Check whether the APIs return valid json."""
+    import orjson as json
+
+    json_apis = (
+        "/api/endpoints/",
+        "/api/uptime/",
+        "/api/discord/",
+        # "/api/discord/367648314184826880/",  # needs network access
+        # "/api/discord/",  # needs network access
+        # "/api/zitate/1-1/",  # gets tested with quotes
+        "/api/hangman-loeser/",
+        # "/api/ping/",  # (not json)
+        # "/api/restart/",  # (not 200)
+        "/api/vertauschte-woerter/",
+        "/api/wortspiel-helfer/",
+        "/api/waehrungs-rechner/",
+    )
+    for api in json_apis:
+        response = await fetch(api)
+        assert response.code == 200
+        assert response.headers["Content-Type"] == (
+            "application/json; charset=UTF-8"
+        )
+        print(api)
+        assert json.loads(response.body.decode("utf-8"))
+
+
+# pylint: disable=too-many-statements
+async def test_request_handlers(fetch):
+    """Check if the request handlers return 200 codes."""
     response = await fetch("/")
     assert response.code == 200
     for theme in ("default", "blue", "random", "random-dark"):
@@ -56,6 +90,8 @@ async def test_request_handlers(http_server_client):
     response = await fetch("/api/discord/")
     assert response.code == 200
     response = await fetch("/version/")
+    assert response.code == 200
+    response = await fetch("/api/version/")
     assert response.code == 200
     response = await fetch("/suche/")
     assert response.code == 200
