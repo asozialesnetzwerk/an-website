@@ -1,0 +1,24 @@
+{% whitespace oneline %}
+{% extends "../base.html" %}
+
+{% block body %}
+    {% for ep in endpoints %}
+<h2>{{ep["name"]}}</h2>
+<p>{{ep["description"]}}</p>
+<table>
+  <tr>
+    <th>Pfad</th>
+    <th>Methoden</th>
+    <th>Ratelimit-Tokens</th>
+  </tr>
+{% for path in ep["endpoints"] %}
+  <tr>
+      <td>{{path["path"]}}</td>
+      <td>{{", ".join(path["methods"])}}</td>
+      <td>{{path["ratelimit-tokens"]}}</td>
+  </tr>
+{% end %}
+</table>
+    {% end %}
+<style>th{text-align: left}</style>
+{% end %}

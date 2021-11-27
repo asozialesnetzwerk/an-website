@@ -14,35 +14,51 @@
 """Show a list of all API endpoints."""
 from __future__ import annotations
 
+from typing import Union
+
 import orjson as json
 
-from ..utils.request_handler import APIRequestHandler
+from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=(("/api/endpoints/", EndpointsHandler),),
+        handlers=(
+            ("/endpoints/", Endpoints),
+            ("/api/endpoints/", EndpointsAPI),
+        ),
         name="API-Endpunkte",
-        description="Alle API-Endpunkte unserer Webseite.",
-        path="/api/endpoints/",
+        description="Alle API-Endpunkte unserer Webseite",
+        path="/endpoints/",
         keywords=("API", "Endpoints", "Endpunkte"),
-        hidden=True,
     )
 
 
-class EndpointsHandler(APIRequestHandler):
-    """Show a list of all API endpoints."""
+def get_endpoints() -> list[dict]:
+    """Get a list of all API endpoints."""
+
+
+class Endpoints(BaseRequestHandler):
+    """Endpoint page request handler."""
 
     def get(self):
         """Handle a GET request."""
+        self.render(
+            "pages/endpoints.html",
+            endpoints=self.get_endpoints(),
+        )
+
+    def get_endpoints(self) -> list[dict]:
+        """Get a list of all API endpoints and return it."""
         endpoints: list[dict] = []
         for _mi in self.settings["MODULE_INFOS"]:
-            api_paths: list[dict[str, str]] = [
+            api_paths: list[dict[str, Union[str, int, list]]] = [
                 {
                     "path": _h[0],
                     "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],
+                    "ratelimit-tokens": _h[1].RATELIMIT_TOKENS,
                 }
                 for _h in _mi.handlers
                 if _h[0].startswith("/api/")
@@ -55,5 +71,12 @@ class EndpointsHandler(APIRequestHandler):
                         "endpoints": api_paths,
                     }
                 )
+        return endpoints
 
-        self.finish(json.dumps(endpoints))
+
+class EndpointsAPI(Endpoints, APIRequestHandler):
+    """Show a list of all API endpoints."""
+
+    def get(self):
+        """Handle a GET request."""
+        self.finish(json.dumps(self.get_endpoints()))
