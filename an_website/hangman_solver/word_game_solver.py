@@ -126,7 +126,7 @@ class WordGameHelperAPI(APIRequestHandler):
     """The request handler for the word game helper API."""
 
     RATELIMIT_TOKENS = 3
-    ALLOWED_METHODS = ("get",)
+    ALLOWED_METHODS = ("GET",)
 
     async def get(self):
         """Handle GET requests to the word game helper API."""
