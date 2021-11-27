@@ -39,16 +39,21 @@ class EndpointsHandler(APIRequestHandler):
         """Handle a GET request."""
         endpoints: list[dict] = []
         for _mi in self.settings["MODULE_INFOS"]:
-            for _h in _mi.handlers:
-                if _h[0].startswith("/api/"):
-                    endpoints.append(
-                        {
-                            "name": _mi.name,
-                            "description": _mi.description,
-                            "methods": ",".join(
-                                ("OPTIONS", *_h[1].ALLOWED_METHODS)
-                            ).upper(),
-                            "path": _h[0],
-                        }
-                    )
+            api_paths: list[dict[str, str]] = [
+                {
+                    "path": _h[0],
+                    "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],
+                }
+                for _h in _mi.handlers
+                if _h[0].startswith("/api/")
+            ]
+            if len(api_paths) > 0:
+                endpoints.append(
+                    {
+                        "name": _mi.name,
+                        "description": _mi.description,
+                        "endpoints": api_paths,
+                    }
+                )
+
         self.finish(json.dumps(endpoints))
