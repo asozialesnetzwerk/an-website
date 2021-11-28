@@ -60,6 +60,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+# pylint: disable=too-many-public-methods
 class BaseRequestHandler(RequestHandler):
     """The base Tornado request handler used by every page."""
 
