@@ -2,10 +2,11 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<form method="post">
+<form method="post" id="form">
   <label class="form-element">
     Der Text dessen Wörter vertauscht werden sollen
     <textarea
+          id = "text"
           name="text"
           placeholder="Gebe witzigen Text ein."
           rows="10"
@@ -19,6 +20,7 @@
     <button
       name="reset"
       value="sure"
+      id="reset"
     >
       Reset
     </button>
@@ -35,9 +37,11 @@
     >{{config}}</textarea>
   </label>
 
+  <div id="error_msg">
   {% if error_msg is not None %}
     {% raw error_msg %}
   {% end %}
+  </div>
 
   {% raw form_appendix %}
 
@@ -55,8 +59,6 @@
 
 <br>
 
-{% if len(output) > 0 %}
-
 <label for="output">Ausgabe:</label>
 <br>
 <textarea
@@ -64,12 +66,16 @@
         id="output"
         readonly
 >{{output}}</textarea>
-{% end %}
 
+<script src="/static/js/request_utils.js"></script>
+<script src="/static/js/swapped_words.js"></script>
 {% end %}
 
 {% block head %}
 <style>
+  #error_msg {
+    color: var(--contrast);
+  }
   textarea {
     width: 100%;
     font-family: monospace, monospace;

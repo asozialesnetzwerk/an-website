@@ -442,7 +442,7 @@ class BaseRequestHandler(RequestHandler):
         try:
             body = json.loads(self.request.body)
             if name in body:
-                if strip:
+                if strip and isinstance(body[name], str):
                     return body[name].strip()
                 return body[name]
         except json.JSONDecodeError:

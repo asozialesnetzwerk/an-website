@@ -156,38 +156,47 @@ class SwappedWordsAPI(APIRequestHandler):
 
         check_text_too_long(text)
 
-        config_str = self.get_argument("config", default="DEFAULT", strip=True)
+        config_str = self.get_argument("config", default=None, strip=True)
         return_config = self.get_argument(
             "return_config", default="nope", strip=True
         )
 
-        if config_str == "DEFAULT":
-            sw_config = DEFAULT_CONFIG
-        else:
-            sw_config = SwappedWordsConfig(config_str)
-
         try:
+            if config_str is None:
+                sw_config = DEFAULT_CONFIG
+            else:
+                sw_config = SwappedWordsConfig(config_str)
+
             if str_to_bool(return_config, False):
+
+                minify_config = self.get_argument(
+                    "minify_config", default="sure", strip=True
+                )
                 self.finish(
                     {
-                        "config": sw_config.to_config_str(minified=True),
+                        "text": text,
+                        "return_config": True,
+                        "config": sw_config.to_config_str(
+                            minified=str_to_bool(minify_config, True)
+                        ),
                         "replaced_text": sw_config.swap_words(text),
                     }
                 )
             else:
                 self.finish(
                     {
+                        "text": text,
                         "return_config": False,
                         "replaced_text": sw_config.swap_words(text),
                     }
                 )
         except InvalidConfigException as _e:
+            self.set_status(400)
             self.finish(
                 {
                     "error": _e.reason,
                     "line": _e.line,
                     "line_num": _e.line_num,
-                    "config": config_str,
                 }
             )
 

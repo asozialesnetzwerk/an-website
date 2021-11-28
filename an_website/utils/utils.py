@@ -317,6 +317,8 @@ async def run(
 
 def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
     """Convert a string representation of truth to True or False."""
+    if isinstance(val, bool):
+        return val
     val = val.lower()
     if val in ("sure", "y", "yes", "t", "true", "on", "1"):
         return True
