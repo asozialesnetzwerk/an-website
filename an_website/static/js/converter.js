@@ -83,7 +83,11 @@ document.getElementById("form").action = "javascript:void(0)";
 // fix the values in the inputs to look better
 submitButton.onclick = () => {
     for (const feld of felder) {
-        feld.value = bekommeAnzeigeWert(Number.parseInt(feld.value));
+        feld.value = bekommeAnzeigeWert(
+            Number.parseFloat(
+                feld.value.replace(",", ".")
+            )
+        );
     }
     updateOutput();
 }
