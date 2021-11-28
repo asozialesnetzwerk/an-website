@@ -101,9 +101,10 @@ window.onpopstate = (event) => {
 }
 
 nextButton.onclick = () => {
-    fetch(`/api/zitate/${nextQuoteId[0]}/${params}`)
-        .then((response) => response.json())
-        .then((data) => {
+    get(
+        `/api/zitate/${nextQuoteId[0]}/${params}`,
+        {},
+        (data) => {
             if (handleData(data)) {
                 window.history.pushState(
                     data,
@@ -111,24 +112,20 @@ nextButton.onclick = () => {
                     `/zitate/${data["id"]}/${params}`
                 );
             }
-        }).catch(function(error) {
-            console.error(error);
-        });
+        }
+    )
 }
 
 function vote(vote) {
-    fetch(`/api/zitate/${thisQuoteId[0]}/`, {
-        method: "post",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/x-www-form-urlencoded'
+    post(
+        `/api/zitate/${thisQuoteId[0]}/`,
+        {
+            "vote": vote
         },
-        body: `vote=${vote}`
-    }).then(response => response.json())
-        .then(data =>  handleData(data))
-        .catch(error => {
-            console.error(error)
-        });
+        (data) => {
+            handleData(data)
+        }
+    );
 }
 
 for (const voteButton of [upvoteButton, downvoteButton]) {
