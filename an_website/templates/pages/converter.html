@@ -4,32 +4,47 @@
 {% block body %}
 <body>
 
-<form action="{{url}}" method="get">
+<form action="{{url}}" method="get" id="form">
     <label class="form-element">
         Euro:
-        <input type="text" id="euro" name="euro" placeholder="{{ euro_str }}">
+        <input pattern="^\d*([.,]\d*)?$"
+               type="text"
+               id="euro"
+               name="euro"
+               placeholder="{{ euro_str }}">
     </label>
-
 
     <label class="form-element">
         D-Mark:
-        <input type="text" id="mark" name="mark" placeholder="{{ mark_str }}">
+        <input pattern="^\d*([.,]\d*)?$"
+               type="text"
+               id="mark"
+               name="mark"
+               placeholder="{{ mark_str }}">
     </label>
 
     <label class="form-element">
         Ostmark:
-        <input type="text" id="ost" name="ost" placeholder="{{ ost_str }}">
+        <input pattern="^\d*([.,]\d*)?$"
+               type="text"
+               id="ost"
+               name="ost"
+               placeholder="{{ ost_str }}">
     </label>
 
     <label class="form-element">
         Ostmark auf dem Schwarzmarkt:
-        <input type="text" name="schwarz" placeholder="{{ schwarz_str }}">
+        <input pattern="^\d*([.,]\d*)?$"
+               type="text"
+               id="schwarz"
+               name="schwarz"
+               placeholder="{{ schwarz_str }}">
     </label>
 
 
 {% raw form_appendix %}
 
-    <input type="submit" value="Eingabe!">
+    <input type="submit" id="submit" value="Eingabe!">
 </form>
 <br>
 
@@ -40,6 +55,7 @@
 
 {% include "../util/replace_url_with.html" %}
 
+<script src="/static/js/converter.js"></script>
 {% end %}
 
 {% block head %}
