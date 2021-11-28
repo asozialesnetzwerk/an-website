@@ -2,14 +2,14 @@
 const output = document.getElementById("output");
 const submitButton = document.getElementById("submit");
 
-const felder = [
+const fields = [
     document.getElementById("euro"),
     document.getElementById("mark"),
     document.getElementById("ost"),
     document.getElementById("schwarz")
 ];
 
-const multiplikator = [
+const factors = [
     1, //Euro
     2, //Deutsche Mark
     4, //Ostmark
@@ -18,7 +18,7 @@ const multiplikator = [
 
 const regex = /^([1-9]\d*|0)([.,]\d{2})?$/;
 
-function bekommeAnzeigeWert(wert) {
+function getDisplayValue(wert) {
     let str = wert.toString().replace(".", ",");
     if (regex.test(str)) {
         return str;
@@ -37,58 +37,58 @@ function bekommeAnzeigeWert(wert) {
     return str;
 }
 
-function setEuroParam(euroWert) {
+function setEuroParam(euroVal) {
     let url = window.location.href;
     const end = url.lastIndexOf("?");
-    url = url.slice(0, end === -1 ? url.length : end) + "?euro=" + euroWert;
+    url = url.slice(0, end === -1 ? url.length : end) + "?euro=" + euroVal;
     history.replaceState("", url, url);
 }
 
-function setzeAlleFelder (euroWert, ignoriert) {
-    setEuroParam(euroWert.toString().replace(".", ","));
+function updateOutput() {
+    output.value = (
+        fields[0].value + " Euro, das sind ja "
+        + fields[1].value + " Mark; "
+        + fields[2].value + " Ostmark und "
+        + fields[3].value + " Ostmark auf dem Schwarzmarkt!"
+    );
+}
+
+function setAllFields(euroValue, ignored) {
+    setEuroParam(euroValue.toString().replace(".", ","));
     for (let i = 0; i < 4; i++) {
-        const wert = bekommeAnzeigeWert(euroWert * multiplikator[i]);
-        felder[i].placeholder = wert;
-        if (i !== ignoriert) {
-            felder[i].classList.remove("fehler");
-            felder[i].value = wert;
+        const value = getDisplayValue(euroValue * factors[i]);
+        fields[i].placeholder = value;
+        if (i !== ignored) {
+            fields[i].value = value;
         }
     }
     updateOutput();
 }
 
-function updateOutput() {
-    output.value = (
-        felder[0].value + " Euro, das sind ja "
-        + felder[1].value + " Mark; "
-        + felder[2].value + " Ostmark und "
-        + felder[3].value + " Ostmark auf dem Schwarzmarkt!"
-    );
-}
-
-for (let i = 0; i < 4; i++) {
-    felder[i].oninput = function () {
-        let val = felder[i].value.replace(",", ".");
-        if (!isNaN(val)) { //if it is not Not a Number
-            setzeAlleFelder(val / multiplikator[i], i);
-        }
-    }
-}
-// set the value of the fiels to
-for (let i = 0; i < 4; i++) {
-    felder[i].value = felder[i].placeholder;
-}
-// disable submit button
-document.getElementById("form").action = "javascript:void(0)";
-// fix the values in the inputs to look better
-submitButton.onclick = () => {
-    for (const feld of felder) {
-        feld.value = bekommeAnzeigeWert(
+function onSubmit() {
+    for (const feld of fields) {
+        feld.value = getDisplayValue(
             Number.parseFloat(
                 feld.value.replace(",", ".")
             )
         );
     }
+    setEuroParam(fields[0].value);
     updateOutput();
 }
+
+for (let i = 0; i < 4; i++) {
+    fields[i].oninput = function () {
+        let val = fields[i].value.replace(",", ".");
+        if (!isNaN(val)) { //if it is not Not a Number
+            setAllFields(val / factors[i], i);
+        }
+    }
+}
+// set the value of the fields to
+for (let i = 0; i < 4; i++) {
+    fields[i].value = fields[i].placeholder;
+}
+// disable submit button
+document.getElementById("form").action = "javascript:onSubmit()";
 // @license-end
