@@ -23,6 +23,7 @@ import random
 import re
 import sys
 import traceback
+import uuid
 from datetime import datetime
 from functools import cache
 from typing import Optional, Union
@@ -205,6 +206,25 @@ class BaseRequestHandler(RequestHandler):
                 datetime.utcnow().date().isoformat().encode("utf-8")
             ).digest()
         ).hexdigest()
+
+    @cache
+    def get_user_id(self):
+        """Get the user id saved in the cookie or create one."""
+        user_id = self.get_secure_cookie("user_id", max_age_days=90)
+        if user_id is None:
+            # TODO: ask for cookie consent
+            user_id = str(uuid.uuid4())
+        else:
+            user_id = user_id.decode("utf-8")
+        # save it in cookie or reset expiry date
+        self.set_secure_cookie(
+            "user_id",
+            user_id,
+            expires_days=90,
+            path="/",
+            samesite="Strict",
+        )
+        return user_id
 
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:

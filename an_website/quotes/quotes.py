@@ -22,7 +22,6 @@ import asyncio
 import logging
 import random
 import sys
-import uuid
 from functools import cache
 from typing import Literal, Optional
 
@@ -274,25 +273,6 @@ class QuoteById(QuoteBaseHandler):
             await get_wrong_quote(quote_id, author_id),
             await self.get_old_vote(quote_id, author_id),
         )
-
-    @cache
-    def get_user_id(self):
-        """Get the user id saved in the cookie or create one."""
-        user_id = self.get_secure_cookie("user_id", max_age_days=90)
-        if user_id is None:
-            # TODO: ask for cookie consent
-            user_id = str(uuid.uuid4())
-        else:
-            user_id = user_id.decode("utf-8")
-        # save it in cookie or reset expiry date
-        self.set_secure_cookie(
-            "user_id",
-            user_id,
-            expires_days=90,
-            path="/",
-            samesite="Strict",
-        )
-        return user_id
 
     @cache
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
