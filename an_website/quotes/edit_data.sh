@@ -6,16 +6,17 @@
 
 # To get an api key go to https://zitate.prapsschnalinen.de/
 API_KEY="$1"
+API_BASE_URL="https://zitate.prapsschnalinen.de/api"
 
 echo "Enter the type [a|q]"
 read -r TYPE
 
 if [ "$TYPE" = "a" ]; then
-  URL="https://zitate.prapsschnalinen.de/api/authors"
+  URL="$API_BASE_URL/authors"
   KEY_NAME="author"
   TYPE_TEXT="author name"
 elif [ "$TYPE" = "q" ]; then
-  URL="https://zitate.prapsschnalinen.de/api/quotes"
+  URL="$API_BASE_URL/quotes"
   KEY_NAME="quote"
   TYPE_TEXT="quote text"
 else
@@ -29,7 +30,12 @@ read -r ID
 REMOTE_DATA=$(curl -s "$URL/$ID")
 CURR_VALUE=$(echo "$REMOTE_DATA" | jq ".$KEY_NAME")
 
+echo "https://asozial.org/zitate/info/$TYPE/$ID/"
 echo "$REMOTE_DATA"
+# get and out put the real quotes with the author:
+if [ "$TYPE" = "a" ]; then
+  curl -s "$API_BASE_URL/quotes?author=$ID"
+fi
 
 echo "Please enter the new $TYPE_TEXT"
 read -r NEW_VALUE
