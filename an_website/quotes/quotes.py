@@ -289,7 +289,7 @@ class QuoteById(QuoteBaseHandler):
             "user_id",
             user_id,
             expires_days=90,
-            path="/zitate",
+            path="/",
             samesite="Strict",
         )
         return user_id
