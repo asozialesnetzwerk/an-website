@@ -105,21 +105,21 @@ class Backdoor(APIRequestHandler):
             except:  # noqa: E722  # pylint: disable=bare-except
                 response = {"success": False, "result": sys.exc_info()}
         response["output"] = output.getvalue() if not output.closed else None
-        response["result"] = (
+        exception = (
             None
             if response["success"]
-            else traceback.print_exception(*response["result"]),
-            response["result"],
+            else traceback.print_exception(*response["result"])
         )
         try:
             response["result"] = (
-                response["result"][0] or repr(response["result"][1]),
-                pickle.dumps(response["result"][1], 5),
+                exception or repr(response["result"]),
+                pickle.dumps(response["result"], 5),
             )
-        except (pickle.PicklingError, RecursionError):
+        except (pickle.PicklingError, RecursionError, TypeError):
             response["result"] = (
-                response["result"][0] or repr(response["result"][1]),
+                exception or repr(response["result"]),
                 None,
             )
+
         self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(pickle.dumps(response, 5))
