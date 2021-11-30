@@ -33,7 +33,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/api/backdoor/", Backdoor),),
         name="Backdoor",
-        description="🏓",
+        description="🚪",
         path="/api/backdoor/",
         hidden=True,
     )
@@ -62,12 +62,6 @@ class Backdoor(APIRequestHandler):
 
     async def post(self):  # noqa: C901
         """Handle the POST request to the backdoor API."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
-        if api_secrets is None or len(api_secrets) == 0:
-            raise HTTPError(501)
-        if not self.is_authorized():
-            raise HTTPError(401)
-
         output = io.StringIO()
         node = pickle.loads(self.request.body)
         try:
