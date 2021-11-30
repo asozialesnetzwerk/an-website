@@ -459,8 +459,6 @@ class BaseRequestHandler(RequestHandler):
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
 
         if api_secrets is None or len(api_secrets) == 0:
-            if self.REQUIRES_AUTHORIZATION:
-                raise HTTPError(501, "No API secrets configured")
             return False
 
         secret = self.request.headers.get("Authorization")
