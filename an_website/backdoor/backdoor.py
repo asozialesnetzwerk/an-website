@@ -20,7 +20,7 @@ import io
 import pickle
 import sys
 import traceback
-from typing import Dict
+from typing import Awaitable, Dict
 
 from tornado.web import HTTPError
 
@@ -71,6 +71,7 @@ class Backdoor(APIRequestHandler):
                     str(),
                     "eval",
                     __future__.barry_as_FLUFL.compiler_flag
+                    | __future__.annotations.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
                 )
@@ -80,6 +81,7 @@ class Backdoor(APIRequestHandler):
                     str(),
                     "exec",
                     __future__.barry_as_FLUFL.compiler_flag
+                    | __future__.annotations.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
                 )
@@ -98,12 +100,15 @@ class Backdoor(APIRequestHandler):
             try:
                 response = {
                     "success": True,
-                    "result": await eval(  # pylint: disable=eval-used
+                    "result": eval(  # pylint: disable=eval-used
                         code, globals_dict
                     ),
                 }
+                if isinstance(response["result"], Awaitable):
+                    response["result"] = await response["result"]
             except:  # noqa: E722  # pylint: disable=bare-except
                 response = {"success": False, "result": sys.exc_info()}
+
         response["output"] = output.getvalue() if not output.closed else None
         response["result"] = (
             None
