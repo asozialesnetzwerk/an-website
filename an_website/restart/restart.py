@@ -47,12 +47,6 @@ class Restart(APIRequestHandler):
 
     async def post(self):
         """Handle the POST request to the restart API."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
-        if api_secrets is None or len(api_secrets) == 0:
-            raise HTTPError(501)
-        if not self.is_authorized():
-            raise HTTPError(401)
-
         commit = self.get_query_argument("commit", default="", strip=True)
 
         # check if commit only contains valid letters and numbers
