@@ -19,6 +19,7 @@ import pickle
 import sys
 import traceback
 import uuid
+from typing import Any
 
 from tornado.httpclient import HTTPClient
 
@@ -27,7 +28,7 @@ API_URL = "http://localhost:8080/api/backdoor/"
 HTTP_CLIENT = HTTPClient()
 
 
-def run(code: str, session: str):
+def run(code: str, session: str) -> tuple[Any, int]:
     """Make a request to the backdoor API."""
     try:
         _c = ast.parse(code, str(), "eval")
@@ -44,13 +45,13 @@ def run(code: str, session: str):
         body=pickle.dumps(_c, 5),
         validate_cert=False,
     )
-    return pickle.loads(response.body)
+    return pickle.loads(response.body), response.code
 
 
 def run_and_print(code: str, session: str = str(uuid.uuid4())):
     """Run the code and print the output."""
     try:
-        response = run(code, session)
+        response, status_code = run(code, session)
     except SyntaxError:
         print(
             str().join(traceback.format_exception_only(*sys.exc_info()[0:2]))
@@ -65,7 +66,10 @@ def run_and_print(code: str, session: str = str(uuid.uuid4())):
             print(response["result"][0])
             print()
     else:
-        print("\033[91m" + response["result"][0] + "\033[0m")
+        error = response["result"][0]
+        if status_code != 200:
+            error = f"HTTP-Request failed with {status_code}: {error}"
+        print("\033[91m" + error + "\033[0m")
 
 
 if __name__ == "__main__":

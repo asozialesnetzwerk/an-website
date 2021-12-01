@@ -140,10 +140,16 @@ class Backdoor(APIRequestHandler):
                 response["result"][0] or repr(response["result"][1]),
                 None,
             )
-        except Exception as _e:  # pylint: disable=broad-except
-            response["result"] = (
-                str(_e),
-                None,
-            )
         self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(pickle.dumps(response, 5))
+
+    def write_error(self, status_code, **kwargs):
+        """Finish with the status code and the reason as dict."""
+        self.finish(
+            pickle.dumps(
+                {
+                    "success": False,
+                    "result": (self.get_error_message(**kwargs), None),
+                }
+            )
+        )
