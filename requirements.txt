@@ -6,6 +6,7 @@ defusedxml>=0.7.1,<2
 ecs-logging~=1.1
 elastic-apm~=6.6
 elasticsearch[async]>=7.15.1,<8
+git+https://github.com/pypy/pyrepl
 #markdown>=3.3.4,<4
 #motor~=2.5
 orjson>=3.5.3,<4

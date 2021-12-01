@@ -27,7 +27,7 @@ API_URL = "http://localhost:8080/api/backdoor/"
 HTTP_CLIENT = HTTPClient()
 
 
-def run(code: str, session: str = str(uuid.uuid4())):
+def run(code: str, session: str):
     """Make a request to the backdoor API."""
     try:
         _c = ast.parse(code, str(), "eval")
@@ -47,41 +47,31 @@ def run(code: str, session: str = str(uuid.uuid4())):
     return pickle.loads(response.body)
 
 
-def main():  # noqa: C901  # pylint: disable=too-many-branches
-    """Run the client."""
-    while True:
-        try:
-            code = input(">>> ").strip()
-        except EOFError:
-            break
-        if code.endswith(":"):
-            while _c := input("... ").rstrip():
-                code += "\n" + _c
-        if not code:
-            continue
-        try:
-            response = run(code)
-        except SyntaxError:
-            print(
-                str().join(
-                    traceback.format_exception_only(*sys.exc_info()[0:2])
-                )
-            )
-            continue
-        if response["success"]:
-            if response["output"]:
-                print("Output:")
-                print(response["output"])
-            if not response["result"][0] == "None":
-                print("Result:")
-                print(response["result"][0])
-                print()
-        else:
-            print("\033[91m" + response["result"][0] + "\033[0m")
+def run_and_print(code: str, session: str = str(uuid.uuid4())):
+    """Run the code and print the output."""
+    try:
+        response = run(code, session)
+    except SyntaxError:
+        print(
+            str().join(traceback.format_exception_only(*sys.exc_info()[0:2]))
+        )
+        return
+    if response["success"]:
+        if response["output"]:
+            print("Output:")
+            print(response["output"])
+        if not response["result"][0] == "None":
+            print("Result:")
+            print(response["result"][0])
+            print()
+    else:
+        print("\033[91m" + response["result"][0] + "\033[0m")
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print()
+    from pyrepl.python_reader import ReaderConsole, main  # type: ignore
+
+    # patch the reader console to use our run function
+    ReaderConsole.execute = lambda self, code: run_and_print(code)
+    # run the reader
+    main()

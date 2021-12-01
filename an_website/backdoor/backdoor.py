@@ -63,7 +63,7 @@ class Backdoor(APIRequestHandler):
 
     sessions: Dict[str, dict] = {}
 
-    async def post(self, mode=None):  # noqa: C901
+    async def post(self, mode=None):  # noqa: C901  # pylint: disable=R0912
         """Handle the POST request to the backdoor API."""
         output = io.StringIO()
         if mode:
@@ -131,9 +131,18 @@ class Backdoor(APIRequestHandler):
                 response["result"][0] or repr(response["result"][1]),
                 pickle.dumps(response["result"][1], 5),
             )
-        except (pickle.PicklingError, RecursionError):
+        except (
+            pickle.PicklingError,
+            RecursionError,
+            TypeError,  # shouldn't happen, but does happen
+        ):
             response["result"] = (
                 response["result"][0] or repr(response["result"][1]),
+                None,
+            )
+        except Exception as _e:  # pylint: disable=broad-except
+            response["result"] = (
+                str(_e),
                 None,
             )
         self.set_header("Content-Type", "application/vnd.python.pickle")
