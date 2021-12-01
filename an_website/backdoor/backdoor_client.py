@@ -46,9 +46,14 @@ def main():  # noqa: C901
     """Run the client."""
     while True:
         try:
-            code = input(">>> ")
+            code = input(">>> ").strip()
         except EOFError:
             break
+        if code.endswith(":"):
+            while _c := input(">>> ").rstrip():
+                code += "\n" + _c
+        if not code:
+            continue
         try:
             if "\n" not in code and not code.startswith("print"):
                 code = f"print({code})"
