@@ -16,11 +16,12 @@ from __future__ import annotations
 
 import __future__
 import ast
+import inspect
 import io
 import pickle
 import sys
 import traceback
-from typing import Awaitable, Dict
+from typing import Dict
 
 from tornado.web import HTTPError
 
@@ -71,7 +72,6 @@ class Backdoor(APIRequestHandler):
                     str(),
                     "eval",
                     __future__.barry_as_FLUFL.compiler_flag
-                    | __future__.annotations.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
                 )
@@ -81,7 +81,6 @@ class Backdoor(APIRequestHandler):
                     str(),
                     "exec",
                     __future__.barry_as_FLUFL.compiler_flag
-                    | __future__.annotations.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
                 )
@@ -104,27 +103,28 @@ class Backdoor(APIRequestHandler):
                         code, globals_dict
                     ),
                 }
-                if isinstance(response["result"], Awaitable):
+                if inspect.iscoroutine(response["result"]):
                     response["result"] = await response["result"]
             except:  # noqa: E722  # pylint: disable=bare-except
                 response = {"success": False, "result": sys.exc_info()}
-
         response["output"] = output.getvalue() if not output.closed else None
-        exception = (
+        response["result"] = (
             None
             if response["success"]
-            else traceback.format_exception(*response["result"])
+            else traceback.format_exception(*response["result"]),
+            response["result"]
+            if response["success"]
+            else response["result"][:2],
         )
         try:
             response["result"] = (
-                exception or repr(response["result"]),
-                pickle.dumps(response["result"], 5),
+                response["result"][0] or repr(response["result"][1]),
+                pickle.dumps(response["result"][1], 5),
             )
-        except (pickle.PicklingError, RecursionError, TypeError):
+        except (pickle.PicklingError, RecursionError):
             response["result"] = (
-                exception or repr(response["result"]),
+                response["result"][0] or repr(response["result"][1]),
                 None,
             )
-
         self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(pickle.dumps(response, 5))
