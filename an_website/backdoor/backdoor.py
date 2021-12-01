@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import __future__
 import ast
-import inspect
 import io
 import pickle
 import sys
@@ -67,23 +66,45 @@ class Backdoor(APIRequestHandler):
         node = pickle.loads(self.request.body)
         try:
             if isinstance(node, ast.Expression):
-                code = compile(
-                    node,
-                    str(),
-                    "eval",
-                    __future__.barry_as_FLUFL.compiler_flag
-                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                    0x5F3759DF,
-                )
+                try:
+                    code = compile(
+                        node,
+                        str(),
+                        "eval",
+                        __future__.barry_as_FLUFL.compiler_flag,
+                        0x5F3759DF,
+                    )
+                    top_level_await = False
+                except SyntaxError:
+                    code = compile(
+                        node,
+                        str(),
+                        "eval",
+                        __future__.barry_as_FLUFL.compiler_flag
+                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                        0x5F3759DF,
+                    )
+                    top_level_await = True
             elif isinstance(node, ast.Module):
-                code = compile(
-                    node,
-                    str(),
-                    "exec",
-                    __future__.barry_as_FLUFL.compiler_flag
-                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                    0x5F3759DF,
-                )
+                try:
+                    code = compile(
+                        node,
+                        str(),
+                        "exec",
+                        __future__.barry_as_FLUFL.compiler_flag,
+                        0x5F3759DF,
+                    )
+                    top_level_await = False
+                except SyntaxError:
+                    code = compile(
+                        node,
+                        str(),
+                        "exec",
+                        __future__.barry_as_FLUFL.compiler_flag
+                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                        0x5F3759DF,
+                    )
+                    top_level_await = True
             else:
                 raise HTTPError(400)
         except SyntaxError:
@@ -103,17 +124,15 @@ class Backdoor(APIRequestHandler):
                         code, globals_dict
                     ),
                 }
-                if inspect.iscoroutine(response["result"]):
+                if top_level_await:
                     response["result"] = await response["result"]
             except:  # noqa: E722  # pylint: disable=bare-except
                 response = {"success": False, "result": sys.exc_info()}
         response["output"] = output.getvalue() if not output.closed else None
         response["result"] = (
-            # exception
             None
             if response["success"]
-            else traceback.format_exception(*response["result"]),
-            # result
+            else str().join(traceback.format_exception(*response["result"])),
             response["result"]
             if response["success"]
             else response["result"][:2],

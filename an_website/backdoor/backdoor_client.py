@@ -11,13 +11,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The client for the backdoor api of the website."""
+"""The client for the backdoor API of the website."""
 from __future__ import annotations
 
 import ast
 import os
 import pickle
 import re
+import sys
+import traceback
+import uuid
 
 from tornado.httpclient import HTTPClient
 
@@ -26,20 +29,24 @@ API_URL = "http://localhost:8080/api/backdoor/"
 HTTP_CLIENT = HTTPClient()
 
 
-def run(code: str, session: str = os.urandom(32).hex()):
-    """Make a request to the backdoor api."""
-    _c = ast.parse(code, "input.py", "exec")
-    result = HTTP_CLIENT.fetch(
+def run(code: str, session: str = str(uuid.uuid4())):
+    """Make a request to the backdoor API."""
+    try:
+        _c = ast.parse(code, str(), "eval")
+    except SyntaxError:
+        _c = ast.parse(code, str(), "exec")
+    response = HTTP_CLIENT.fetch(
         API_URL,
+        raise_error=False,
         method="POST",
-        body=pickle.dumps(_c, 5),
         headers={
             "Authorization": AUTH_KEY,
             "X-REPL-Session": session,
         },
-        raise_error=False,
+        body=pickle.dumps(_c, 5),
+        validate_cert=False,
     )
-    return pickle.loads(result.body)
+    return pickle.loads(response.body)
 
 
 def main():  # noqa: C901  # pylint: disable=too-many-branches
@@ -50,36 +57,29 @@ def main():  # noqa: C901  # pylint: disable=too-many-branches
         except EOFError:
             break
         if code.endswith(":"):
-            while _c := input(">>> ").rstrip():
+            while _c := input("... ").rstrip():
                 code += "\n" + _c
         if not code:
             continue
         try:
-            if "\n" not in code and not code.startswith("print"):
-                code = f"print({code})"
-                # replace assignment with walrus
-                code = re.sub(
-                    r"([^=])=([^=])", lambda _m: f"{_m[1]}:={_m[2]}", code
-                )
-            result = run(code)
-        except Exception as _e:  # pylint: disable=broad-except
-            print(_e)
+            response = run(code)
+        except SyntaxError:
+            print(str().join(traceback.format_exception_only(*sys.exc_info()[0:2])))
             continue
-        if result["success"]:
-            if isinstance(result["result"][1], bytes):
-                _r = pickle.loads(result["result"][1])
-                if _r is not None:
-                    print(_r)
-            else:
-                print(result["result"][1])
-            if result["output"]:
-                print(result["output"])
+        if response["success"]:
+            if response["output"]:
+                print("Output:")
+                print(response["output"])
+            if not response["result"][0] == "None":
+                print("Result:")
+                print(response["result"][0])
+                print()
         else:
-            if isinstance(result["result"][0], list):
-                print("\033[91m" + ("".join(result["result"][0])) + "\033[0m")
-            else:
-                print("\033[91m" + result["result"][0] + "\033[0m")
+            print("\033[91m" + response["result"][0] + "\033[0m")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
