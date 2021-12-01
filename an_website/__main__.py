@@ -55,6 +55,7 @@ IGNORED_MODULES = [
     "swapped_words.sw_config_file",
     "quotes.quotes_img",
     "quotes.share_page",
+    "backdoor.backdoor_client",
 ]
 
 logger = logging.getLogger(__name__)

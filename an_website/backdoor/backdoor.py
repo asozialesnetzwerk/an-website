@@ -109,9 +109,11 @@ class Backdoor(APIRequestHandler):
                 response = {"success": False, "result": sys.exc_info()}
         response["output"] = output.getvalue() if not output.closed else None
         response["result"] = (
+            # exception
             None
             if response["success"]
             else traceback.format_exception(*response["result"]),
+            # result
             response["result"]
             if response["success"]
             else response["result"][:2],
