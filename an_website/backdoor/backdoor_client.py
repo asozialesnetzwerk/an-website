@@ -45,8 +45,9 @@ def run(code: str, session: str = os.urandom(32).hex()):
 def main():  # noqa: C901
     """Run the client."""
     while True:
-        code = input(">>> ")
-        if code == "exit":
+        try:
+            code = input(">>> ")
+        except EOFError:
             break
         try:
             if "\n" not in code and not code.startswith("print"):
