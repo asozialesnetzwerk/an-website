@@ -28,7 +28,7 @@ def get_module_info() -> ModuleInfo:
             ),
         ),
         name="Asoziales Wiki",
-        description="Ein Wiki mit Sachen des Asozialen Netzwerkes.",
+        description="Ein Wiki mit Sachen des Asozialen Netzwerkes",
         path="/wiki/",
         keywords=(
             "Wiki",

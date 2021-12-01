@@ -8,4 +8,4 @@ jobs:
       - name: Install newest version of required library
         run: python3 -m pip install --prefer-binary "emoji>=1.6.1"
       - name: Run the check
-        run: python3 -c "import emoji; exit(None if emoji.emoji_count('${{ github.event.commits[0].message }}') > 0 else 'No Emoji found. 👎')"
+        run: python3 -c "import emoji; exit(None if emoji.emoji_count('${{ github.event.commits[0].message }}') else 'No Emoji found. 👎')"

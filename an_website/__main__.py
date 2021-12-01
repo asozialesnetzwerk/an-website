@@ -439,6 +439,7 @@ def main():
 
     This is the main function that is called when running this file.
     """
+    sys.setrecursionlimit(1_000_000)
     patches.apply()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)

@@ -59,7 +59,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class VersionAPI(APIRequestHandler):
-    """The Tornado request handler for the version api."""
+    """The Tornado request handler for the version API."""
 
     def get(self):
         """Handle the GET request to the version API."""

@@ -16,32 +16,31 @@
 
 from __future__ import annotations
 
+import importlib
+
+import orjson as json
 import pytest
 
 
 @pytest.fixture
 def app():
     """Create the application."""
-    import an_website.__main__ as main
-
-    return main.make_app()
+    return importlib.import_module("an_website.__main__").make_app()
 
 
 @pytest.fixture
 def fetch(http_server_client):
-    """Fetch a url."""
+    """Fetch a URL."""
 
     async def fetch_url(url):
-        """Fetch a url."""
+        """Fetch a URL."""
         return await http_server_client.fetch(url, raise_error=False)
 
     return fetch_url
 
 
 async def test_json_apis(fetch):
-    """Check whether the APIs return valid json."""
-    import orjson as json
-
+    """Check whether the APIs return valid JSON."""
     json_apis = (
         "/api/endpoints/",
         "/api/uptime/",
@@ -50,7 +49,7 @@ async def test_json_apis(fetch):
         # "/api/discord/",  # needs network access
         # "/api/zitate/1-1/",  # gets tested with quotes
         "/api/hangman-loeser/",
-        # "/api/ping/",  # (not json)
+        # "/api/ping/",  # (not JSON)
         # "/api/restart/",  # (not 200)
         "/api/vertauschte-woerter/",
         "/api/wortspiel-helfer/",
@@ -142,6 +141,8 @@ async def test_request_handlers(fetch):
     response = await fetch("/kaenguru-soundboard/qwertzuiop/")
     assert response.code == 404
     response = await fetch("/api/restart/")
+    assert response.code == 401  # Unauthorized
+    response = await fetch("/api/backdoor/")
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/endpoints/")
     assert response.code == 200

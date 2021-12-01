@@ -24,7 +24,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/kaenguru-comics/", KangarooComics),),
         name="Känguru-Comics",
         description="Känguru-Comics von Zeit Online, Marc-Uwe Kling und "
-        "Bernd Kissel.",
+        "Bernd Kissel",
         path="/kaenguru-comics/",
         keywords=("Känguru", "Comics", "Zeit", "Marc-Uwe Kling"),
         aliases=(

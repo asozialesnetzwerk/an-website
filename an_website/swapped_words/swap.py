@@ -39,7 +39,7 @@ def get_module_info() -> ModuleInfo:
         sub_pages=(
             PageInfo(
                 name="Plugin",
-                description="Ein Browser-Plugin, welches Wörter vertauscht.",
+                description="Ein Browser-Plugin, welches Wörter vertauscht",
                 path=f"{GIT_URL}/VertauschteWoerterPlugin/",
             ),
         ),
@@ -51,7 +51,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-# the max char code of the text to process.
+# the max char count of the text to process
 MAX_CHAR_COUNT: int = 32768
 
 with open(f"{DIR}/config.sw", encoding="utf-8") as file:

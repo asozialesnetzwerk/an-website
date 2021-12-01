@@ -31,7 +31,7 @@ def get_module_info() -> ModuleInfo:
             (r"/api/uptime/", UptimeAPIHandler),
         ),
         name="Betriebszeit",
-        description="Die Dauer die die Webseite am Stück in Betrieb ist.",
+        description="Die Dauer die die Webseite am Stück in Betrieb ist",
         path="/uptime/",
         keywords=("uptime", "Betriebszeit", "Zeit"),
     )

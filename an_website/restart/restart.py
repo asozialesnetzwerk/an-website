@@ -32,7 +32,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/api/restart/", Restart),),
         name="Restart-API",
         description="Restart-API, die genutzt wird um die Seite neu "
-        "zu starten.",
+        "zu starten",
         path="/api/restart/",
         hidden=True,
     )
@@ -50,7 +50,6 @@ class Restart(APIRequestHandler):
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
         if api_secrets is None or len(api_secrets) == 0:
             raise HTTPError(501)
-
         if not self.is_authorized():
             raise HTTPError(401)
 

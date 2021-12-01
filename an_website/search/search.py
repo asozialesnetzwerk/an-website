@@ -23,7 +23,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/suche/", Search),),
         name="Suche",
-        description="Seite zum Durchsuchen der Webseite.",
+        description="Seite zum Durchsuchen der Webseite",
         aliases=("/search/",),
         keywords=("Suche",),
         path="/suche/",
