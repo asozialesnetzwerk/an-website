@@ -42,7 +42,7 @@ def run(code: str, session: str = os.urandom(32).hex()):
     return pickle.loads(result.body)
 
 
-def main():  # noqa: C901
+def main():  # noqa: C901  # pylint: disable=too-many-branches
     """Run the client."""
     while True:
         try:
