@@ -62,7 +62,11 @@ def main():  # noqa: C901  # pylint: disable=too-many-branches
         try:
             response = run(code)
         except SyntaxError:
-            print(str().join(traceback.format_exception_only(*sys.exc_info()[0:2])))
+            print(
+                str().join(
+                    traceback.format_exception_only(*sys.exc_info()[0:2])
+                )
+            )
             continue
         if response["success"]:
             if response["output"]:
