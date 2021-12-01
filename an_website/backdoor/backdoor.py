@@ -31,7 +31,10 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/api/backdoor/", Backdoor),),
+        handlers=(
+            (r"/api/backdoor/", Backdoor),
+            (r"/api/backdoor/(eval|exec)/", Backdoor),
+        ),
         name="Backdoor",
         description="🚪",
         path="/api/backdoor/",
@@ -60,53 +63,39 @@ class Backdoor(APIRequestHandler):
 
     sessions: Dict[str, dict] = {}
 
-    async def post(self):  # noqa: C901
+    async def post(self, mode=None):  # noqa: C901
         """Handle the POST request to the backdoor API."""
         output = io.StringIO()
-        node = pickle.loads(self.request.body)
-        try:
-            if isinstance(node, ast.Expression):
-                try:
-                    code = compile(
-                        node,
-                        str(),
-                        "eval",
-                        __future__.barry_as_FLUFL.compiler_flag,
-                        0x5F3759DF,
-                    )
-                    top_level_await = False
-                except SyntaxError:
-                    code = compile(
-                        node,
-                        str(),
-                        "eval",
-                        __future__.barry_as_FLUFL.compiler_flag
-                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                        0x5F3759DF,
-                    )
-                    top_level_await = True
-            elif isinstance(node, ast.Module):
-                try:
-                    code = compile(
-                        node,
-                        str(),
-                        "exec",
-                        __future__.barry_as_FLUFL.compiler_flag,
-                        0x5F3759DF,
-                    )
-                    top_level_await = False
-                except SyntaxError:
-                    code = compile(
-                        node,
-                        str(),
-                        "exec",
-                        __future__.barry_as_FLUFL.compiler_flag
-                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                        0x5F3759DF,
-                    )
-                    top_level_await = True
+        if mode:
+            source = self.request.body
+        else:
+            source = pickle.loads(self.request.body)
+            if isinstance(source, ast.Expression):
+                mode = "eval"
+            elif isinstance(source, ast.Module):
+                mode = "exec"
             else:
                 raise HTTPError(400)
+        try:
+            try:
+                code = compile(
+                    source,
+                    str(),
+                    mode,
+                    __future__.barry_as_FLUFL.compiler_flag,
+                    0x5F3759DF,
+                )
+                top_level_await = False
+            except SyntaxError:
+                code = compile(
+                    source,
+                    str(),
+                    mode,
+                    __future__.barry_as_FLUFL.compiler_flag
+                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                    0x5F3759DF,
+                )
+                top_level_await = True
         except SyntaxError:
             response = {"success": False, "result": sys.exc_info()}
         else:
