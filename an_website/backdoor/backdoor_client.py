@@ -19,63 +19,81 @@ import pickle
 import sys
 import traceback
 import uuid
-from typing import Any
+from typing import Optional
 
-from tornado.httpclient import HTTPClient
+from tornado.httpclient import HTTPClient, HTTPClientError
 
 AUTH_KEY = "hunter2"
 API_URL = "http://localhost:8080/api/backdoor/"
 HTTP_CLIENT = HTTPClient()
 
 
-def run(code: str, session: str) -> tuple[Any, int]:
+def run(code: str, session: Optional[str] = None):
     """Make a request to the backdoor API."""
     try:
         _c = ast.parse(code, str(), "eval")
     except SyntaxError:
         _c = ast.parse(code, str(), "exec")
-    response = HTTP_CLIENT.fetch(
-        API_URL,
-        raise_error=False,
-        method="POST",
-        headers={
-            "Authorization": AUTH_KEY,
-            "X-REPL-Session": session,
-        },
-        body=pickle.dumps(_c, 5),
-        validate_cert=False,
-    )
-    return pickle.loads(response.body), response.code
+    headers = {"Authorization": AUTH_KEY}
+    if session:
+        headers["X-REPL-Session"] = session
+    try:
+        response = HTTP_CLIENT.fetch(
+            API_URL,
+            method="POST",
+            headers=headers,
+            body=pickle.dumps(_c, 5),
+            validate_cert=False,
+        )
+    except HTTPClientError as exc:
+        if exc.response and exc.response.body:
+            exc.response._body = (  # pylint: disable=protected-access
+                pickle.loads(exc.response.body)
+            )
+        raise
+    return pickle.loads(response.body)
 
 
-def run_and_print(code: str, session: str = str(uuid.uuid4())):
+def run_and_print(code: str, session: Optional[str] = None):
     """Run the code and print the output."""
     try:
-        response, status_code = run(code, session)
+        response = run(code, session)
     except SyntaxError:
         print(
-            str().join(traceback.format_exception_only(*sys.exc_info()[0:2]))
+            str()
+            .join(traceback.format_exception_only(*sys.exc_info()[0:2]))
+            .strip()
         )
         return
+    except HTTPClientError as exc:
+        print("\033[91m" + str(exc) + "\033[0m")
+        if exc.response and exc.response.body:
+            response = exc.response.body
+        else:
+            return
+    if isinstance(response, str):
+        print("\033[91m" + response + "\033[0m")
+        return
+    if isinstance(response, SystemExit):
+        raise response
     if response["success"]:
         if response["output"]:
             print("Output:")
-            print(response["output"])
+            print(response["output"].strip())
         if not response["result"][0] == "None":
             print("Result:")
             print(response["result"][0])
-            print()
     else:
-        error = response["result"][0]
-        if status_code != 200:
-            error = f"HTTP-Request failed with {status_code}: {error}"
-        print("\033[91m" + error + "\033[0m")
+        print(response["result"][0])
 
 
 if __name__ == "__main__":
     from pyrepl.python_reader import ReaderConsole, main  # type: ignore
 
     # patch the reader console to use our run function
-    ReaderConsole.execute = lambda self, code: run_and_print(code)
+    ReaderConsole.session = str(uuid.uuid4())
+    ReaderConsole.execute = lambda self, code: run_and_print(
+        code, self.session
+    )
     # run the reader
     main()

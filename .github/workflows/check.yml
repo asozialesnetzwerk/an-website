@@ -96,7 +96,7 @@ jobs:
       - name: Cache collected data
         uses: pat-s/always-upload-cache@v2
         with:
-          path: ~/.pylint.d
+          path: ~/.cache/pylint
           key: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
       - name: Install requirements

@@ -63,94 +63,118 @@ class Backdoor(APIRequestHandler):
 
     sessions: Dict[str, dict] = {}
 
-    async def post(self, mode=None):  # noqa: C901  # pylint: disable=R0912
+    async def post(self, mode=None):  # noqa: C901
+        # pylint: disable=too-many-branches, too-many-statements
         """Handle the POST request to the backdoor API."""
-        output = io.StringIO()
-        if mode:
-            source = self.request.body
-        else:
-            source = pickle.loads(self.request.body)
-            if isinstance(source, ast.Expression):
-                mode = "eval"
-            elif isinstance(source, ast.Module):
-                mode = "exec"
+        try:
+            output = io.StringIO()
+            if mode:
+                source = self.request.body
             else:
-                raise HTTPError(400)
-        try:
+                try:
+                    source = pickle.loads(self.request.body)
+                except Exception:  # pylint: disable=broad-except
+                    raise HTTPError(400)  # pylint: disable=raise-missing-from
+                if isinstance(source, ast.Expression):
+                    mode = "eval"
+                elif isinstance(source, ast.Module):
+                    mode = "exec"
+                else:
+                    raise HTTPError(400)
             try:
-                code = compile(
-                    source,
-                    str(),
-                    mode,
-                    __future__.barry_as_FLUFL.compiler_flag,
-                    0x5F3759DF,
-                )
-                top_level_await = False
+                try:
+                    code = compile(
+                        source,
+                        str(),
+                        mode,
+                        __future__.barry_as_FLUFL.compiler_flag,
+                        0x5F3759DF,
+                    )
+                    top_level_await = False
+                except SyntaxError:
+                    code = compile(
+                        source,
+                        str(),
+                        mode,
+                        __future__.barry_as_FLUFL.compiler_flag
+                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                        0x5F3759DF,
+                    )
+                    top_level_await = True
             except SyntaxError:
-                code = compile(
-                    source,
-                    str(),
-                    mode,
-                    __future__.barry_as_FLUFL.compiler_flag
-                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                    0x5F3759DF,
-                )
-                top_level_await = True
-        except SyntaxError:
-            response = {"success": False, "result": sys.exc_info()}
-        else:
-            session = self.request.headers.get("X-REPL-Session")
-            globals_dict = self.sessions.get(session) or {
-                "app": self.application
-            }
-            if session and session not in self.sessions:
-                self.sessions[session] = globals_dict
-            globals_dict["print"] = PrintWrapper(output)
-            try:
-                response = {
-                    "success": True,
-                    "result": eval(  # pylint: disable=eval-used
-                        code, globals_dict
-                    ),
-                }
-                if top_level_await:
-                    response["result"] = await response["result"]
-            except:  # noqa: E722  # pylint: disable=bare-except
                 response = {"success": False, "result": sys.exc_info()}
-        response["output"] = output.getvalue() if not output.closed else None
-        response["result"] = (
-            None
-            if response["success"]
-            else str().join(traceback.format_exception(*response["result"])),
-            response["result"]
-            if response["success"]
-            else response["result"][:2],
-        )
-        try:
+            else:
+                session = self.request.headers.get("X-REPL-Session")
+                globals_dict = self.sessions.get(session) or {
+                    "app": self.application
+                }
+                if session and session not in self.sessions:
+                    self.sessions[session] = globals_dict
+                globals_dict["print"] = PrintWrapper(output)
+                try:
+                    response = {
+                        "success": True,
+                        "result": eval(  # pylint: disable=eval-used
+                            code, globals_dict
+                        ),
+                    }
+                    if top_level_await:
+                        response["result"] = await response["result"]
+                except Exception:  # pylint: disable=broad-except
+                    response = {"success": False, "result": sys.exc_info()}
             response["result"] = (
-                response["result"][0] or repr(response["result"][1]),
-                pickle.dumps(response["result"][1], 5),
+                None
+                if response["success"]
+                else str()
+                .join(traceback.format_exception(*response["result"]))
+                .strip(),
+                response["result"]
+                if response["success"]
+                else response["result"][:2],
             )
-        except (
-            pickle.PicklingError,
-            RecursionError,
-            TypeError,  # shouldn't happen, but does happen
-        ):
-            response["result"] = (
-                response["result"][0] or repr(response["result"][1]),
-                None,
+            try:
+                response["result"] = (
+                    response["result"][0] or repr(response["result"][1]),
+                    pickle.dumps(response["result"][1], 5),
+                )
+            except (pickle.PicklingError, TypeError, RecursionError):
+                response["result"] = (
+                    response["result"][0] or repr(response["result"][1]),
+                    None,
+                )
+            # except Exception:  # pylint: disable=broad-except
+            #     response["result"] = (
+            #         response["result"][0] or repr(response["result"][1]),
+            #         str().join(traceback.format_exception(*sys.exc_info())).strip(),
+            #     )
+            response["output"] = (
+                output.getvalue() if not output.closed else None
             )
+        except HTTPError:
+            raise
+        except Exception:  # pylint: disable=broad-except
+            self.set_status(500)
+            response = (
+                str().join(traceback.format_exception(*sys.exc_info())).strip()
+            )
+        except SystemExit as exc:
+            if not isinstance(exc.code, int):
+                exc.code = repr(exc.code)
+            new_args = []
+            for arg in exc.args:
+                try:
+                    pickle.dumps(arg)
+                    new_args.append(arg)
+                except Exception:  # pylint: disable=broad-except
+                    new_args.append(repr(arg))
+            exc.args = tuple(new_args)
+            response = exc
         self.set_header("Content-Type", "application/vnd.python.pickle")
-        await self.finish(pickle.dumps(response, 5))
+        await self.finish(
+            pickle.dumps(response, max(pickle.DEFAULT_PROTOCOL, 5))
+        )
 
     def write_error(self, status_code, **kwargs):
-        """Finish with the status code and the reason as dict."""
+        """Respond with None in case of error."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
-        self.finish(
-            pickle.dumps(
-                {
-                    "success": False,
-                    "result": (self.get_error_message(**kwargs), None),
-                }
-            )
-        )
+        self.finish(pickle.dumps(None))
