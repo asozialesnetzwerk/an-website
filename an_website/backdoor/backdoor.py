@@ -145,6 +145,7 @@ class Backdoor(APIRequestHandler):
 
     def write_error(self, status_code, **kwargs):
         """Finish with the status code and the reason as dict."""
+        self.set_header("Content-Type", "application/vnd.python.pickle")
         self.finish(
             pickle.dumps(
                 {
