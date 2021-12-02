@@ -175,6 +175,6 @@ class Backdoor(APIRequestHandler):
         )
 
     def write_error(self, status_code, **kwargs):
-        """Respond with None in case of error."""
+        """Respond with None in case of HTTPError."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         self.finish(pickle.dumps(None))

@@ -47,14 +47,16 @@ def run(code: str, session: Optional[str] = None):
         )
     except HTTPClientError as exc:
         if exc.response and exc.response.body:
+            body = pickle.loads(exc.response.body)
             exc.response._body = (  # pylint: disable=protected-access
-                pickle.loads(exc.response.body)
+                body if body is not None else ...  # type: ignore
             )
         raise
     return pickle.loads(response.body)
 
 
-def run_and_print(code: str, session: Optional[str] = None):
+def run_and_print(code: str, session: Optional[str] = None):  # noqa: C901
+    # pylint: disable=too-many-branches
     """Run the code and print the output."""
     try:
         response = run(code, session)
@@ -71,20 +73,26 @@ def run_and_print(code: str, session: Optional[str] = None):
             response = exc.response.body
         else:
             return
+    if response == ...:
+        return
     if isinstance(response, str):
         print("\033[91m" + response + "\033[0m")
         return
     if isinstance(response, SystemExit):
         raise response
-    if response["success"]:
-        if response["output"]:
-            print("Output:")
-            print(response["output"].strip())
-        if not response["result"][0] == "None":
-            print("Result:")
+    if isinstance(response, dict):
+        if response["success"]:
+            if response["output"]:
+                print("Output:")
+                print(response["output"].strip())
+            if not response["result"][0] == "None":
+                print("Result:")
+                print(response["result"][0])
+        else:
             print(response["result"][0])
     else:
-        print(response["result"][0])
+        print("Response has unknown type!")
+        print(response)
 
 
 if __name__ == "__main__":
