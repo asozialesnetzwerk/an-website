@@ -49,7 +49,7 @@ def run(code: str, session: Optional[str] = None):
         if exc.response and exc.response.body:
             body = pickle.loads(exc.response.body)
             exc.response._body = (  # pylint: disable=protected-access
-                body if body is not None else ...  # type: ignore
+                body if body else ...  # type: ignore
             )
         raise
     return pickle.loads(response.body)
@@ -73,7 +73,7 @@ def run_and_print(code: str, session: Optional[str] = None):  # noqa: C901
             response = exc.response.body
         else:
             return
-    if response == ...:
+    if response is ...:
         return
     if isinstance(response, str):
         print("\033[91m" + response + "\033[0m")

@@ -82,25 +82,14 @@ class Backdoor(APIRequestHandler):
                 else:
                     raise HTTPError(400)
             try:
-                try:
-                    code = compile(
-                        source,
-                        str(),
-                        mode,
-                        __future__.barry_as_FLUFL.compiler_flag,
-                        0x5F3759DF,
-                    )
-                    top_level_await = False
-                except SyntaxError:
-                    code = compile(
-                        source,
-                        str(),
-                        mode,
-                        __future__.barry_as_FLUFL.compiler_flag
-                        | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                        0x5F3759DF,
-                    )
-                    top_level_await = True
+                code = compile(
+                    source,
+                    str(),
+                    mode,
+                    __future__.barry_as_FLUFL.compiler_flag
+                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                    0x5F3759DF,
+                )
             except SyntaxError:
                 response = {"success": False, "result": sys.exc_info()}
             else:
@@ -118,7 +107,9 @@ class Backdoor(APIRequestHandler):
                             code, globals_dict
                         ),
                     }
-                    if top_level_await:
+                    if code.co_flags.bit_length() >= 8 and int(
+                        bin(code.co_flags)[-8]
+                    ):
                         response["result"] = await response["result"]
                 except Exception:  # pylint: disable=broad-except
                     response = {"success": False, "result": sys.exc_info()}
@@ -135,7 +126,9 @@ class Backdoor(APIRequestHandler):
             try:
                 response["result"] = (
                     response["result"][0] or repr(response["result"][1]),
-                    pickle.dumps(response["result"][1], 5),
+                    pickle.dumps(
+                        response["result"][1], max(pickle.DEFAULT_PROTOCOL, 5)
+                    ),
                 )
             except (pickle.PicklingError, TypeError, RecursionError):
                 response["result"] = (

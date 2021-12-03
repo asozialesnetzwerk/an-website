@@ -1,19 +1,19 @@
-#aiohttp[speedups]>=3.8 (not released yet)
-aioredis[hiredis]>=2.0.0,<3
+aiohttp[speedups]~=3.8
+aioredis[hiredis]~=2.0
 ansi2html~=1.6
 certifi
 defusedxml>=0.7.1,<2
 ecs-logging~=1.1
 elastic-apm~=6.6
-elasticsearch[async]>=7.15.1,<8
-git+https://github.com/pypy/pyrepl
-#markdown>=3.3.4,<4
+elasticsearch[async]>=7.15.2,<8
+git+https://github.com/blueyed/pyrepl.git@release-0.10.0
+#markdown>=3.3.6,<4
 #motor~=2.5
-orjson>=3.5.3,<4
+orjson~=3.6
 Pillow~=8.4
 pycurl>=7.44.1,<8
 python-Levenshtein>=0.12.2,<2
 #PyYAML~=6.0
 tornado~=6.1
 #umongo~=3.0
-uvloop>=0.15.2,<2
+uvloop~=0.16
