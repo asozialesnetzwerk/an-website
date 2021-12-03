@@ -19,8 +19,5 @@ config.ini
 # hangman-solver word lists
 full_wordlist.txt
 
-# Känguru-Soundboard
-an_website/kangaroo_soundboard/build/
-
-# wiki:
-an-website/wiki/build
+# backdoor client:
+an_website/backdoor/session.pickle
