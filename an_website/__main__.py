@@ -23,7 +23,7 @@ import ssl
 import sys
 from typing import Optional
 
-import hy
+import hy  # type: ignore
 from aioredis import BlockingConnectionPool, Redis  # type: ignore
 from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
