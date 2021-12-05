@@ -6,6 +6,7 @@ defusedxml>=0.7.1,<2
 ecs-logging~=1.1
 elastic-apm~=6.6
 elasticsearch[async]>=7.15.2,<8
+funcparserlib~=1.0.0a0
 git+https://github.com/blueyed/pyrepl.git@release-0.10.0
 hy~=1.0a3
 #markdown>=3.3.6,<4
