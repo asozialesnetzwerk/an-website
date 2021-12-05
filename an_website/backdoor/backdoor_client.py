@@ -24,23 +24,21 @@ from typing import Optional
 
 from tornado.httpclient import HTTPClient, HTTPClientError
 
-AUTH_KEY = "hunter2"
-URL = "http://localhost:8080/api/backdoor/"
 HTTP_CLIENT = HTTPClient()
 
 
 def run(
+    url: str,
+    key: str,
     code: str,
     session: Optional[str] = None,
-    url: str = URL,
-    auth_key: str = AUTH_KEY,
 ):
     """Make a request to the backdoor API."""
     try:
         _c = ast.parse(code, str(), "eval")
     except SyntaxError:
         _c = ast.parse(code, str(), "exec")
-    headers = {"Authorization": auth_key}
+    headers = {"Authorization": key}
     if session:
         headers["X-REPL-Session"] = session
     try:
@@ -53,23 +51,22 @@ def run(
         )
     except HTTPClientError as exc:
         if exc.response and exc.response.body:
-            body = pickle.loads(exc.response.body)
             exc.response._body = (  # pylint: disable=protected-access
-                body if body else ...  # type: ignore
+                pickle.loads(exc.response.body) or ...  # type: ignore
             )
         raise
     return pickle.loads(response.body)
 
 
 def run_and_print(  # noqa: C901
+    url: str,
+    key: str,
     code: str,
     session: Optional[str] = None,
-    url: str = URL,
-    auth_key: str = AUTH_KEY,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""
     try:
-        response = run(code, session, url, auth_key)
+        response = run(url, key, code, session)
     except SyntaxError:
         print(
             str()
@@ -108,9 +105,11 @@ def run_and_print(  # noqa: C901
 def startup():  # noqa: C901
     """Parse arguments, load the cache and start the backdoor client."""
     url = None
-    auth_key = None
+    key = None
     session = None
-    session_pickle = os.path.join(os.path.dirname(__file__), "session.pickle")
+    session_pickle = os.path.expanduser(
+        "~/.cache/an-backdoor-client/session.pickle"
+    )
     if "--clear-cache" in sys.argv:
         if os.path.exists(session_pickle):
             os.remove(session_pickle)
@@ -118,11 +117,11 @@ def startup():  # noqa: C901
     if "--no-cache" not in sys.argv:
         try:
             with open(session_pickle, "rb") as _f:
-                url, auth_key, session = pickle.load(_f)
+                url, key, session = pickle.load(_f)
                 if "--new-session" in sys.argv:
-                    print(f"Using url {url}")
+                    print(f"Using URL {url}")
                 else:
-                    print(f"Using url {url} with existing session {session}")
+                    print(f"Using URL {url} with existing session {session}")
         except FileNotFoundError:
             pass
     while not url:
@@ -130,27 +129,27 @@ def startup():  # noqa: C901
         if not url:
             print("No URL given!")
 
-    while not auth_key:
-        auth_key = input("Auth key: ").strip()
-        if not auth_key:
-            print("No auth key given!")
+    while not key:
+        key = input("Key: ").strip()
+        if not key:
+            print("No key given!")
 
     if not session or "--new-session" in sys.argv:
         session = str(uuid.uuid4())
         print(f"Creating new session {session}")
 
     if "--no-cache" not in sys.argv:
+        os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
         with open(session_pickle, "wb") as _f:
-            pickle.dump((url, auth_key, session), _f)
+            pickle.dump((url, key, session), _f)
         print("Saved session to cache")
 
     # pylint: disable=import-outside-toplevel
     from pyrepl.python_reader import ReaderConsole, main  # type: ignore
 
     # patch the reader console to use our run function
-    ReaderConsole.session = session
     ReaderConsole.execute = lambda self, code: run_and_print(
-        code, self.session, url, auth_key
+        url, key, code, session
     )
     # run the reader
     main()
@@ -162,7 +161,7 @@ if __name__ == "__main__":
             """Accepted arguments:
     - "--no-cache" to start without a cache
     - "--clear-cache" to clear the whole cache
-    - "--new-session" to start a new session with cached url and auth key
+    - "--new-session" to start a new session with cached URL and key
     - "--help" to show this help message"""
         )
         sys.exit(0)

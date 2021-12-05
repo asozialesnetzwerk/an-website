@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Kaenguru-Soundboard (Coole Sprüche/Sounds von Friedrich-Wilhelm)</title>
+    <description>Ein Soundboard zu den Känguru Chroniken mit coolen Sprüchen/Sounds von Friedrich-Wilhelm</description>
+    <language>de-de</language>
+    <link>https://asozial.org/kaenguru-soundboard/fw</link>
+        <item>
+      <title>[Die Känguru-Apokryphen, Kapitel 12 - Dabei] Friedrich-Wilhelm: »Ihr linken intellektuellen Fuzzies.«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/fw-ihr_linken_intellektuellen_fuzzies.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/fw-ihr_linken_intellektuellen_fuzzies.mp3"
+                 type="audio/mpeg">
+      <guid>fw-ihr_linken_intellektuellen_fuzzies</guid>
+    </item>
+
+  </channel>
+</rss>

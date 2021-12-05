@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Kaenguru-Soundboard (Coole Sprüche/Sounds von Sarah)</title>
+    <description>Ein Soundboard zu den Känguru Chroniken mit coolen Sprüchen/Sounds von Sarah</description>
+    <language>de-de</language>
+    <link>https://asozial.org/kaenguru-soundboard/sarah</link>
+        <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 5 - Whatever] Sarah: »I love life!«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-i_love_life.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-i_love_life.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-i_love_life</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 5 - Whatever] Sarah: »Yes, it's just perfect.«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-yes_its_just_perfect.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-yes_its_just_perfect.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-yes_its_just_perfect</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 5 - Whatever] Sarah: »The world is so beautiful.«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-the_world_is_so_beautiful.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-the_world_is_so_beautiful.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-the_world_is_so_beautiful</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 5 - Whatever] Sarah: »That's amazing, it's like you know I don't know kind of like whatever and stuff.«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-thats_amazing_its_like_you_know_i_dont_know_kind_of_like_whatever_and_stuff.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-thats_amazing_its_like_you_know_i_dont_know_kind_of_like_whatever_and_stuff.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-thats_amazing_its_like_you_know_i_dont_know_kind_of_like_whatever_and_stuff</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 13 - Die durch die Hölle gehen] Sarah: »Well that's just like you know amazing!«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-well_thats_just_like_you_know_amazing.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-well_thats_just_like_you_know_amazing.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-well_thats_just_like_you_know_amazing</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Offenbarung, Teil 2, Kapitel 13 - Die durch die Hölle gehen] Sarah: »Hey, that's cool.«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/sarah-hey_thats_cool.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/sarah-hey_thats_cool.mp3"
+                 type="audio/mpeg">
+      <guid>sarah-hey_thats_cool</guid>
+    </item>
+
+  </channel>
+</rss>

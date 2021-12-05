@@ -23,8 +23,9 @@ import ssl
 import sys
 from typing import Optional
 
-import aioredis  # type: ignore
-import ecs_logging
+import hy
+from aioredis import BlockingConnectionPool, Redis  # type: ignore
+from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
@@ -377,8 +378,8 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     #         app.settings["ELASTICSEARCH"].info()
     #     )
     # )
-    app.settings["REDIS"] = aioredis.Redis(
-        connection_pool=aioredis.BlockingConnectionPool.from_url(
+    app.settings["REDIS"] = Redis(
+        connection_pool=BlockingConnectionPool.from_url(
             config.get("REDIS", "URL", fallback="redis://localhost"),
             db=config.getint("REDIS", "DB", fallback=None),
             username=config.get("REDIS", "USERNAME", fallback=None),
@@ -422,13 +423,13 @@ def setup_logger(config):
 
     if not sys.flags.dev_mode:
         try:
-            os.mkdir("logs", mode=755)
+            os.mkdir("logs", 0o755)
         except FileExistsError:
             pass
         file_handler = logging.handlers.TimedRotatingFileHandler(
             f"logs/{NAME}.log", "midnight", backupCount=7, utc=True
         )
-        file_handler.setFormatter(ecs_logging.StdlibFormatter())
+        file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
 
     logging.captureWarnings(True)
@@ -440,6 +441,11 @@ def main():
 
     This is the main function that is called when running this file.
     """
+    try:
+        if os.nice(hy.eval(hy.read_str("(+ (* 3 4 5) (* 3 3))"))) == 69:
+            print("Nice!")
+    except AttributeError:
+        pass
     sys.setrecursionlimit(1_000_000)
     patches.apply()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")

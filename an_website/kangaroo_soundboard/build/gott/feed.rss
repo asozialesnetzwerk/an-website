@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Kaenguru-Soundboard (Coole Sprüche/Sounds von Maria (Gott))</title>
+    <description>Ein Soundboard zu den Känguru Chroniken mit coolen Sprüchen/Sounds von Maria (Gott)</description>
+    <language>de-de</language>
+    <link>https://asozial.org/kaenguru-soundboard/gott</link>
+        <item>
+      <title>[Die Känguru-Apokryphen, Kapitel 27 - Kleine Künstler] Maria (Gott): »Das ist privat!«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/gott-das_ist_privat.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/gott-das_ist_privat.mp3"
+                 type="audio/mpeg">
+      <guid>gott-das_ist_privat</guid>
+    </item>
+    <item>
+      <title>[Die Känguru-Apokryphen, Kapitel 48 - Die neue Nachbarin] Maria (Gott): »So, so, du hast also keine Eier?«</title>
+      <link>https://asozial.org/kaenguru-soundboard/files/gott-so_so_du_hast_also_keine_eier.mp3</link>
+      <enclosure url="https://asozial.org/kaenguru-soundboard/files/gott-so_so_du_hast_also_keine_eier.mp3"
+                 type="audio/mpeg">
+      <guid>gott-so_so_du_hast_also_keine_eier</guid>
+    </item>
+
+  </channel>
+</rss>
