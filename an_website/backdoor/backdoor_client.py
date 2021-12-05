@@ -22,6 +22,7 @@ import traceback
 import uuid
 from typing import Optional
 
+import hy  # type: ignore
 from tornado.httpclient import HTTPClient, HTTPClientError
 
 HTTP_CLIENT = HTTPClient()
@@ -32,8 +33,11 @@ def run(
     key: str,
     code: str,
     session: Optional[str] = None,
+    use_hy: bool = False,
 ):
     """Make a request to the backdoor API."""
+    if use_hy:
+        code = hy.disassemble(hy.read_str(code), True)
     try:
         _c = ast.parse(code, str(), "eval")
     except SyntaxError:
@@ -63,10 +67,11 @@ def run_and_print(  # noqa: C901
     key: str,
     code: str,
     session: Optional[str] = None,
+    use_hy: bool = False,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""
     try:
-        response = run(url, key, code, session)
+        response = run(url, key, code, session, use_hy)
     except SyntaxError:
         print(
             str()
@@ -149,7 +154,7 @@ def startup():  # noqa: C901
 
     # patch the reader console to use our run function
     ReaderConsole.execute = lambda self, code: run_and_print(
-        url, key, code, session
+        url, key, code, session, "--use-hy" in sys.argv
     )
     # run the reader
     main()
@@ -162,7 +167,8 @@ if __name__ == "__main__":
     - "--no-cache" to start without a cache
     - "--clear-cache" to clear the whole cache
     - "--new-session" to start a new session with cached URL and key
-    - "--help" to show this help message"""
+    - "--help" to show this help message
+    - "--use-hy" to use hy instead of python"""
         )
         sys.exit(0)
     startup()
