@@ -156,7 +156,8 @@ const wrongLinks = [
     [getDateBy(2021, 9, 6), "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/"],
     [getDateBy(2021, 10, 4), "https://img.zeit.de/administratives/kaenguru-comics/2021-10/4/original"],
     [getDateBy(2021, 10, 29), "https://img.zeit.de/administratives/kaenguru-comics/29/original"],
-    [getDateBy(2021, 11, 3), "https://img.zeit.de/administratives/kaenguru-comics/2021-11/03-11-21/original"]
+    [getDateBy(2021, 11, 3), "https://img.zeit.de/administratives/kaenguru-comics/2021-11/03-11-21/original"],
+    [getDateBy(2021, 12, 6), "https://img.zeit.de/administratives/kaenguru-comics/2021-12/6/original"]
 ]
 
 function getDateFromLink(link) {
