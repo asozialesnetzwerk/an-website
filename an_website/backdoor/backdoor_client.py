@@ -33,24 +33,24 @@ def run(
     key: str,
     code: str,
     session: Optional[str] = None,
-    use_hy: bool = False,
+    lisp: bool = False,
 ):
     """Make a request to the backdoor API."""
-    if use_hy:
+    if lisp:
         code = hy.disassemble(hy.read_str(code), True)
     try:
-        _c = ast.parse(code, str(), "eval")
+        parsed_code = ast.parse(code, str(), "eval")
     except SyntaxError:
-        _c = ast.parse(code, str(), "exec")
+        parsed_code = ast.parse(code, str(), "exec")
     headers = {"Authorization": key}
     if session:
-        headers["X-REPL-Session"] = session
+        headers["X-Backdoor-Session"] = session
     try:
         response = HTTP_CLIENT.fetch(
             f"{url}/api/backdoor/",
             method="POST",
             headers=headers,
-            body=pickle.dumps(_c, 5),
+            body=pickle.dumps(parsed_code, 5),
             validate_cert=False,
         )
     except HTTPClientError as exc:
@@ -67,11 +67,11 @@ def run_and_print(  # noqa: C901
     key: str,
     code: str,
     session: Optional[str] = None,
-    use_hy: bool = False,
+    lisp: bool = False,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""
     try:
-        response = run(url, key, code, session, use_hy)
+        response = run(url, key, code, session, lisp)
     except SyntaxError:
         print(
             str()
@@ -121,8 +121,8 @@ def startup():  # noqa: C901
         print("Cache cleared")
     if "--no-cache" not in sys.argv:
         try:
-            with open(session_pickle, "rb") as _f:
-                url, key, session = pickle.load(_f)
+            with open(session_pickle, "rb") as file:
+                url, key, session = pickle.load(file)
                 if "--new-session" in sys.argv:
                     print(f"Using URL {url}")
                 else:
@@ -145,8 +145,8 @@ def startup():  # noqa: C901
 
     if "--no-cache" not in sys.argv:
         os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
-        with open(session_pickle, "wb") as _f:
-            pickle.dump((url, key, session), _f)
+        with open(session_pickle, "wb") as file:
+            pickle.dump((url, key, session), file)
         print("Saved session to cache")
 
     # pylint: disable=import-outside-toplevel
@@ -154,7 +154,7 @@ def startup():  # noqa: C901
 
     # patch the reader console to use our run function
     ReaderConsole.execute = lambda self, code: run_and_print(
-        url, key, code, session, "--use-hy" in sys.argv
+        url, key, code, session, "--lisp" in sys.argv
     )
     # run the reader
     main()
@@ -167,8 +167,8 @@ if __name__ == "__main__":
     - "--no-cache" to start without a cache
     - "--clear-cache" to clear the whole cache
     - "--new-session" to start a new session with cached URL and key
-    - "--help" to show this help message
-    - "--use-hy" to use hy instead of python"""
+    - "--lisp" to enable Lots of Irritating Superfluous Parentheses
+    - "--help" to show this help message"""
         )
         sys.exit(0)
     startup()

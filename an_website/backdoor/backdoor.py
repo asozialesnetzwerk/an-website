@@ -18,6 +18,7 @@ import __future__
 import ast
 import io
 import pickle
+import pydoc
 import sys
 import traceback
 from typing import Dict
@@ -93,13 +94,15 @@ class Backdoor(APIRequestHandler):
             except SyntaxError:
                 response = {"success": False, "result": sys.exc_info()}
             else:
-                session = self.request.headers.get("X-REPL-Session")
+                session = self.request.headers.get("X-Backdoor-Session")
                 globals_dict = self.sessions.get(session) or {
-                    "app": self.application
+                    "__name__": "this",
+                    "app": self.application,
                 }
                 if session and session not in self.sessions:
                     self.sessions[session] = globals_dict
                 globals_dict["print"] = PrintWrapper(output)
+                globals_dict["help"] = pydoc.Helper(io.StringIO(), output)
                 try:
                     response = {
                         "success": True,

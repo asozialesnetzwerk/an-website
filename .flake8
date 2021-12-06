@@ -5,3 +5,5 @@ statistics = True
 doctests = True
 max-complexity = 10
 inline-quotes = double
+per-file-ignores =
+    an_website/hangman_solver/words/*:INP001
