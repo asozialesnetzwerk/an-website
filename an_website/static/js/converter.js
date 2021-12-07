@@ -38,10 +38,19 @@ function getDisplayValue(wert) {
 }
 
 function setEuroParam(euroVal) {
-    let url = window.location.href;
-    const end = url.lastIndexOf("?");
-    url = url.slice(0, end === -1 ? url.length : end) + "?euro=" + euroVal;
-    history.replaceState("", url, url);
+    setURLParam("euro", euroVal, euroVal, false);
+}
+
+function setURLParam(param, value, state, push = false) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(param, value);
+    const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+    if (push) {
+        history.pushState(state, newUrl, newUrl);
+    } else {
+        history.replaceState(state, newUrl, newUrl)
+    }
+    return newUrl;
 }
 
 function updateOutput() {
