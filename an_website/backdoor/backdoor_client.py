@@ -201,4 +201,7 @@ if __name__ == "__main__":
     - "--help" to show this help message"""
         )
         sys.exit()
-    startup()
+    try:
+        startup()
+    except (EOFError, KeyboardInterrupt):
+        print("Exiting.")
