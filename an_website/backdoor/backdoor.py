@@ -106,7 +106,14 @@ class Backdoor(APIRequestHandler):
                 if session and session not in self.sessions:
                     self.sessions[session] = _locals
                 _locals["print"] = PrintWrapper(output)
-                _locals["help"] = pydoc.Helper(io.StringIO(), output)
+
+                def _help(*args):
+                    helper_output = io.StringIO()
+                    pydoc.Helper(io.StringIO(), helper_output)(*args)
+                    return "HelperTuple", helper_output.getvalue()
+
+                _locals["help"] = _help
+
                 try:
                     response = {
                         "success": True,
@@ -118,6 +125,8 @@ class Backdoor(APIRequestHandler):
                         bin(code.co_flags)[-8]
                     ):
                         response["result"] = await response["result"]
+                    if response["result"] is _locals["help"]:
+                        response["result"] = help
                 except Exception:  # pylint: disable=broad-except
                     response = {"success": False, "result": sys.exc_info()}
             response["result"] = (

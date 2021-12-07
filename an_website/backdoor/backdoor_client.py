@@ -17,6 +17,7 @@ from __future__ import annotations, barry_as_FLUFL
 import ast
 import os
 import pickle
+import pydoc
 import sys
 import traceback
 import uuid
@@ -127,7 +128,18 @@ def run_and_print(  # noqa: C901
             if response["output"]:
                 print("Output:")
                 print(response["output"].strip())
-            if not response["result"][0] == "None":
+            try:
+                result_obj = pickle.loads(response["result"][1])
+            except (pickle.PicklingError, TypeError, RecursionError):
+                result_obj = None
+            if (
+                isinstance(result_obj, tuple)
+                and len(result_obj) == 2
+                and result_obj[0] == "HelperTuple"
+                and isinstance(result_obj[1], str)
+            ):
+                pydoc.pager(result_obj[1])
+            elif response["result"][0] != "None":
                 print("Result:")
                 print(response["result"][0])
         else:
@@ -137,7 +149,7 @@ def run_and_print(  # noqa: C901
         print(response)
 
 
-def startup():  # noqa: C901
+def startup():  # noqa: C901  # pylint: disable=too-many-branches
     """Parse arguments, load the cache and start the backdoor client."""
     url = None
     key = None
@@ -163,6 +175,12 @@ def startup():  # noqa: C901
         url = input("URL: ").strip().rstrip("/")
         if not url:
             print("No URL given!")
+        elif not url.startswith("http"):
+            if url.startswith("localhost") or url.startswith("127.0.0.1"):
+                url = f"http://{url}"
+            else:
+                url = f"https://{url}"
+            print(f"Using URL {url}")
 
     while not key:
         key = input("Key: ").strip()
