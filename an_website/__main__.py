@@ -19,6 +19,7 @@ import configparser
 import importlib
 import logging
 import os
+import signal
 import ssl
 import sys
 from typing import Optional
@@ -435,6 +436,12 @@ def setup_logger(config):
     logging.captureWarnings(True)
 
 
+def signal_handler(signalnum, frame):
+    # pylint: disable=unused-argument, missing-function-docstring
+    if signalnum == signal.SIGHUP:
+        raise KeyboardInterrupt
+
+
 def main():
     """
     Start everything.
@@ -447,6 +454,7 @@ def main():
     except AttributeError:
         pass
     sys.setrecursionlimit(1_000_000)
+    signal.signal(signal.SIGHUP, signal_handler)
     patches.apply()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)
@@ -468,7 +476,7 @@ def main():
 
     behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
 
-    app.listen(
+    server = app.listen(
         config.getint("TORNADO", "PORT", fallback=8080),
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
         xheaders=behind_proxy,
@@ -477,10 +485,14 @@ def main():
         address="127.0.0.1" if behind_proxy else "0.0.0.0",
     )
 
+    loop = asyncio.get_event_loop()
     try:
-        asyncio.get_event_loop().run_forever()
+        loop.run_forever()
     except KeyboardInterrupt:
         pass
+    finally:
+        server.stop()
+        loop.run_until_complete(server.close_all_connections())
 
 
 if __name__ == "__main__":

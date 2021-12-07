@@ -75,6 +75,7 @@ class BaseRequestHandler(RequestHandler):
 
     def initialize(
         self,
+        *,
         module_info: ModuleInfo,
         # default is true, because then empty args dicts are
         # enough to specify that the defaults should be used

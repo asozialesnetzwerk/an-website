@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The client for the backdoor API of the website."""
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
 import ast
 import os
@@ -20,12 +20,39 @@ import pickle
 import sys
 import traceback
 import uuid
-from typing import Optional
+from typing import Optional, Union
 
 import hy  # type: ignore
 from tornado.httpclient import HTTPClient, HTTPClientError
 
 HTTP_CLIENT = HTTPClient()
+
+
+def send(
+    url: str,
+    key: str,
+    parsed: Union[ast.Expression, ast.Module],
+    session: Optional[str] = None,
+):
+    """Make the actual request."""
+    headers = {"Authorization": key}
+    if session:
+        headers["X-Backdoor-Session"] = session
+    try:
+        response = HTTP_CLIENT.fetch(
+            f"{url}/api/backdoor/",
+            method="POST",
+            headers=headers,
+            body=pickle.dumps(parsed, 5),
+            validate_cert=False,
+        )
+    except HTTPClientError as exc:
+        if exc.response and exc.response.body:
+            exc.response._body = (  # pylint: disable=protected-access
+                pickle.loads(exc.response.body) or ...  # type: ignore
+            )
+        raise
+    return pickle.loads(response.body)
 
 
 def run(
@@ -37,29 +64,32 @@ def run(
 ):
     """Make a request to the backdoor API."""
     if lisp:
-        code = hy.disassemble(hy.read_str(code), True)
-    try:
-        parsed_code = ast.parse(code, str(), "eval")
-    except SyntaxError:
-        parsed_code = ast.parse(code, str(), "exec")
-    headers = {"Authorization": key}
-    if session:
-        headers["X-Backdoor-Session"] = session
-    try:
-        response = HTTP_CLIENT.fetch(
-            f"{url}/api/backdoor/",
-            method="POST",
-            headers=headers,
-            body=pickle.dumps(parsed_code, 5),
-            validate_cert=False,
+        spam, parsed = hy.compiler.hy_compile(
+            hy.read_str(code), "this", get_expr=True
         )
-    except HTTPClientError as exc:
-        if exc.response and exc.response.body:
-            exc.response._body = (  # pylint: disable=protected-access
-                pickle.loads(exc.response.body) or ...  # type: ignore
+        send(url, key, spam, session)
+    else:
+        try:
+            parsed = compile(
+                code,
+                str(),
+                "eval",
+                barry_as_FLUFL.compiler_flag
+                | ast.PyCF_TYPE_COMMENTS
+                | ast.PyCF_ONLY_AST,
+                0x5F3759DF,
             )
-        raise
-    return pickle.loads(response.body)
+        except SyntaxError:
+            parsed = compile(
+                code,
+                str(),
+                "exec",
+                barry_as_FLUFL.compiler_flag
+                | ast.PyCF_TYPE_COMMENTS
+                | ast.PyCF_ONLY_AST,
+                0x5F3759DF,
+            )
+    return send(url, key, parsed, session)
 
 
 def run_and_print(  # noqa: C901
@@ -170,5 +200,5 @@ if __name__ == "__main__":
     - "--lisp" to enable Lots of Irritating Superfluous Parentheses
     - "--help" to show this help message"""
         )
-        sys.exit(0)
+        sys.exit()
     startup()

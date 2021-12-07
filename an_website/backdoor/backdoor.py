@@ -12,16 +12,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The backdoor API of the website."""
-from __future__ import annotations
+from __future__ import annotations, barry_as_FLUFL
 
-import __future__
 import ast
 import io
 import pickle
 import pydoc
 import sys
 import traceback
-from typing import Dict
+from typing import Any, Dict
 
 from tornado.web import HTTPError
 
@@ -63,6 +62,14 @@ class Backdoor(APIRequestHandler):
     RATELIMIT_TOKENS: int = 0
 
     sessions: Dict[str, dict] = {}
+    _globals: Dict[str, Any] = {
+        "__builtins__": __builtins__,
+        "__name__": "this",
+    }
+
+    def initialize(self, **kwargs):
+        self._globals["app"] = self.application
+        super().initialize(**kwargs)
 
     async def post(self, mode=None):  # noqa: C901
         # pylint: disable=too-many-branches, too-many-statements
@@ -87,7 +94,7 @@ class Backdoor(APIRequestHandler):
                     source,
                     str(),
                     mode,
-                    __future__.barry_as_FLUFL.compiler_flag
+                    barry_as_FLUFL.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
                 )
@@ -95,19 +102,16 @@ class Backdoor(APIRequestHandler):
                 response = {"success": False, "result": sys.exc_info()}
             else:
                 session = self.request.headers.get("X-Backdoor-Session")
-                globals_dict = self.sessions.get(session) or {
-                    "__name__": "this",
-                    "app": self.application,
-                }
+                _locals = self.sessions.get(session) or {}
                 if session and session not in self.sessions:
-                    self.sessions[session] = globals_dict
-                globals_dict["print"] = PrintWrapper(output)
-                globals_dict["help"] = pydoc.Helper(io.StringIO(), output)
+                    self.sessions[session] = _locals
+                _locals["print"] = PrintWrapper(output)
+                _locals["help"] = pydoc.Helper(io.StringIO(), output)
                 try:
                     response = {
                         "success": True,
                         "result": eval(  # pylint: disable=eval-used
-                            code, globals_dict
+                            code, self._globals, _locals
                         ),
                     }
                     if code.co_flags.bit_length() >= 8 and int(

@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import os
 import re
-import sys
 
 from tornado.web import HTTPError
 
@@ -78,7 +77,7 @@ class Restart(APIRequestHandler):
             await self.finish(
                 {"status": 200, "reason": "Successful. Restarting now."}
             )
-            sys.exit(1)  # exit so supervisord will restart
+            raise KeyboardInterrupt  # exit so supervisord will restart
 
         raise HTTPError(
             401,
