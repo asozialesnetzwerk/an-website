@@ -30,6 +30,7 @@ from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
+from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
@@ -476,28 +477,30 @@ def main():  # noqa: C901
 
     behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
 
-    opts = {
-        "protocol": config.get("TORNADO", "PROTOCOL", fallback=None),
-        "xheaders": behind_proxy,
-        "decompress_request": True,
-        "ssl_options": get_ssl_context(config),
-    }
-    server_ipv4, server_ipv6 = None, None
-    if config.getboolean("TORNADO", "IPV4", fallback=True):
-        server_ipv4 = app.listen(
+    server = HTTPServer(
+        request_callback=app,
+        xheaders=behind_proxy,
+        ssl_options=get_ssl_context(config),
+        protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
+        decompress_request=True,
+    )
+
+    ipv4_enabled = config.getboolean("TORNADO", "IPV4", fallback=True)
+    if ipv4_enabled:
+        server.listen(
             config.getint("TORNADO", "PORT", fallback=8080),
-            address="127.0.0.1" if behind_proxy else "0.0.0.0",
-            **opts,
-        )
-    if config.getboolean("TORNADO", "IPV6", fallback=True):
-        server_ipv6 = app.listen(
-            config.getint("TORNADO", "PORT", fallback=8080),
-            address="::1" if behind_proxy else "::",
-            **opts,
+            "127.0.0.1" if behind_proxy else "0.0.0.0",
         )
 
-    if server_ipv4 is server_ipv6 is None:
-        raise ValueError("Both ipv4 and ipv6 are disabled.")
+    ipv6_enabled = config.getboolean("TORNADO", "IPV6", fallback=True)
+    if ipv6_enabled:
+        server.listen(
+            config.getint("TORNADO", "PORT", fallback=8080),
+            "::1" if behind_proxy else "::",
+        )
+
+    if not ipv4_enabled and not ipv6_enabled:
+        raise ValueError("Both IPv4 and IPv6 are disabled.")
 
     loop = asyncio.get_event_loop()
     try:
@@ -505,16 +508,8 @@ def main():  # noqa: C901
     except KeyboardInterrupt:
         pass
     finally:
-
-        async def close_all_connections():
-            for _s in (server_ipv4, server_ipv6):
-                if _s is not None:
-                    await _s.close_all_connections()
-
-        for _s in (server_ipv4, server_ipv6):
-            if _s is not None:
-                _s.stop()
-        loop.run_until_complete(close_all_connections())
+        server.stop()
+        loop.run_until_complete(server.close_all_connections())
 
 
 if __name__ == "__main__":
