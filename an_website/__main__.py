@@ -442,7 +442,7 @@ def signal_handler(signalnum, frame):
         raise KeyboardInterrupt
 
 
-def main():
+def main():  # noqa: C901
     """
     Start everything.
 
@@ -476,14 +476,28 @@ def main():
 
     behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
 
-    server = app.listen(
-        config.getint("TORNADO", "PORT", fallback=8080),
-        protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
-        xheaders=behind_proxy,
-        decompress_request=True,
-        ssl_options=get_ssl_context(config),
-        address="127.0.0.1" if behind_proxy else "0.0.0.0",
-    )
+    opts = {
+        "protocol": config.get("TORNADO", "PROTOCOL", fallback=None),
+        "xheaders": behind_proxy,
+        "decompress_request": True,
+        "ssl_options": get_ssl_context(config),
+    }
+    server_ipv4, server_ipv6 = None, None
+    if config.getboolean("TORNADO", "IPV4", fallback=True):
+        server_ipv4 = app.listen(
+            config.getint("TORNADO", "PORT", fallback=8080),
+            address="127.0.0.1" if behind_proxy else "0.0.0.0",
+            **opts,
+        )
+    if config.getboolean("TORNADO", "IPV6", fallback=True):
+        server_ipv6 = app.listen(
+            config.getint("TORNADO", "PORT", fallback=8080),
+            address="::1" if behind_proxy else "::",
+            **opts,
+        )
+
+    if server_ipv4 is server_ipv6 is None:
+        raise ValueError("Both ipv4 and ipv6 are disabled.")
 
     loop = asyncio.get_event_loop()
     try:
@@ -491,8 +505,16 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        server.stop()
-        loop.run_until_complete(server.close_all_connections())
+
+        async def close_all_connections():
+            for _s in (server_ipv4, server_ipv6):
+                if _s is not None:
+                    await _s.close_all_connections()
+
+        for _s in (server_ipv4, server_ipv6):
+            if _s is not None:
+                _s.stop()
+        loop.run_until_complete(close_all_connections())
 
 
 if __name__ == "__main__":
