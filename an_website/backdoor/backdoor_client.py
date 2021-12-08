@@ -207,8 +207,10 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
             print("No key given!")
 
     if not session or "--new-session" in sys.argv:
-        session = str(uuid.uuid4())
-        print(f"Creating new session {session}")
+        session = input("Session (enter nothing for random session): ")
+        if not session:
+            session = str(uuid.uuid4())
+        print(f"Using session {session}")
 
     if "--no-cache" not in sys.argv:
         os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
