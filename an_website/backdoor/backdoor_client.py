@@ -18,6 +18,7 @@ import ast
 import os
 import pickle
 import pydoc
+import re
 import sys
 import traceback
 import uuid
@@ -56,6 +57,29 @@ def send(
     return pickle.loads(response.body)
 
 
+def parse(code: str):
+    try:
+        return compile(
+            code,
+            str(),
+            "eval",
+            barry_as_FLUFL.compiler_flag
+            | ast.PyCF_TYPE_COMMENTS
+            | ast.PyCF_ONLY_AST,
+            0x5F3759DF,
+        )
+    except SyntaxError:
+        return compile(
+            code,
+            str(),
+            "exec",
+            barry_as_FLUFL.compiler_flag
+            | ast.PyCF_TYPE_COMMENTS
+            | ast.PyCF_ONLY_AST,
+            0x5F3759DF,
+        )
+
+
 def run(
     url: str,
     key: str,
@@ -70,26 +94,7 @@ def run(
         )
         send(url, key, spam, session)
     else:
-        try:
-            parsed = compile(
-                code,
-                str(),
-                "eval",
-                barry_as_FLUFL.compiler_flag
-                | ast.PyCF_TYPE_COMMENTS
-                | ast.PyCF_ONLY_AST,
-                0x5F3759DF,
-            )
-        except SyntaxError:
-            parsed = compile(
-                code,
-                str(),
-                "exec",
-                barry_as_FLUFL.compiler_flag
-                | ast.PyCF_TYPE_COMMENTS
-                | ast.PyCF_ONLY_AST,
-                0x5F3759DF,
-            )
+        parsed = parse(code)
     return send(url, key, parsed, session)
 
 
@@ -128,10 +133,14 @@ def run_and_print(  # noqa: C901
             if response["output"]:
                 print("Output:")
                 print(response["output"].strip())
-            try:
-                result_obj = pickle.loads(response["result"][1])
-            except (pickle.PicklingError, TypeError, RecursionError):
-                result_obj = None
+            result_obj = None
+            if response["result"][1]:
+                try:
+                    result_obj = pickle.loads(response["result"][1])
+                except (pickle.UnpicklingError, AttributeError, EOFError, ImportError, IndexError):
+                    pass
+                except Exception:
+                    traceback.print_exc()
             if (
                 isinstance(result_obj, tuple)
                 and len(result_obj) == 2
@@ -176,10 +185,11 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
         if not url:
             print("No URL given!")
         elif not url.startswith("http"):
-            if url.startswith("localhost") or url.startswith("127.0.0.1"):
-                url = f"http://{url}"
+            banana = url.split("/", maxsplit=1)
+            if re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]):
+                url = "http://" + url
             else:
-                url = f"https://{url}"
+                url = "https://" + url
             print(f"Using URL {url}")
 
     while not key:
@@ -197,6 +207,15 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
             pickle.dump((url, key, session), file)
         print("Saved session to cache")
 
+    if "--no-patch-help" not in sys.argv:
+        help_code = "def help(*args):\n" \
+                    "    import io\n" \
+                    "    import pydoc\n" \
+                    "    helper_output = io.StringIO()\n" \
+                    "    pydoc.Helper(io.StringIO(), helper_output)(*args)\n" \
+                    "    return 'HelperTuple', helper_output.getvalue()"
+        send(url, key, parse(help_code), session)
+
     # pylint: disable=import-outside-toplevel
     from pyrepl.python_reader import ReaderConsole, main  # type: ignore
 
@@ -204,6 +223,7 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
     ReaderConsole.execute = lambda self, code: run_and_print(
         url, key, code, session, "--lisp" in sys.argv
     )
+
     # run the reader
     main()
 
@@ -212,6 +232,7 @@ if __name__ == "__main__":
     if "--help" in sys.argv or "-h" in sys.argv:
         print(
             """Accepted arguments:
+    - "--no-patch-help" to not patch help()
     - "--no-cache" to start without a cache
     - "--clear-cache" to clear the whole cache
     - "--new-session" to start a new session with cached URL and key
@@ -219,6 +240,10 @@ if __name__ == "__main__":
     - "--help" to show this help message"""
         )
         sys.exit()
+    for arg in sys.argv[1:]:
+        if arg not in ("--no-patch-help", "--no-cache", "--clear-cache", "--new-session", "--lisp", "--help", "-h"):
+            print(f"Unknown argument: {arg}")
+            sys.exit(64)
     try:
         startup()
     except (EOFError, KeyboardInterrupt):
