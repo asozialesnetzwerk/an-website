@@ -43,9 +43,6 @@ sed "s/<user>/$USER/g" "$SERVICE_FILE_NAME" \
   | sed "s|<home>|$HOME|g" \
   | sed "s/<lang>/$LANG/g" > "$SERVICE_FILE_LOCATION"
 
-echo "Reread config"
-sudo supervisorctl reread
-
 # if the second argument is "no_restart"
 if [ -n "$2" ] && [ "$2" = "no_restart" ]
 then
@@ -53,6 +50,8 @@ then
 fi
 
 echo "Restart an_website"
-sudo supervisorctl restart an_website
+sudo supervisorctl reread
+sudo supervisorctl stop an_website
+sudo supervisorctl remove an_website
+sudo supervisorctl add an_website
 echo "Finished restarting"
-
