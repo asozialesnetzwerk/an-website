@@ -30,7 +30,6 @@ from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
-from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
@@ -443,7 +442,7 @@ def signal_handler(signalnum, frame):
         raise KeyboardInterrupt
 
 
-def main():  # noqa: C901
+def main():
     """
     Start everything.
 
@@ -477,30 +476,14 @@ def main():  # noqa: C901
 
     behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
 
-    server = HTTPServer(
-        request_callback=app,
+    server = app.listen(
+        config.getint("TORNADO", "PORT", fallback=8080),
+        "localhost" if behind_proxy else None,
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
         protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
         decompress_request=True,
     )
-
-    ipv4_enabled = config.getboolean("TORNADO", "IPV4", fallback=True)
-    if ipv4_enabled:
-        server.listen(
-            config.getint("TORNADO", "PORT", fallback=8080),
-            "127.0.0.1" if behind_proxy else "0.0.0.0",
-        )
-
-    ipv6_enabled = config.getboolean("TORNADO", "IPV6", fallback=True)
-    if ipv6_enabled:
-        server.listen(
-            config.getint("TORNADO", "PORT", fallback=8080),
-            "::1" if behind_proxy else "::",
-        )
-
-    if not ipv4_enabled and not ipv6_enabled:
-        raise ValueError("Both IPv4 and IPv6 are disabled.")
 
     loop = asyncio.get_event_loop()
     try:

@@ -19,8 +19,6 @@
 #port = 8080
 #behind_proxy = nope
 #cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
-#ipv4 = sure
-#ipv6 = sure
 
 #[ELASTIC_APM]
 #enabled = nope
