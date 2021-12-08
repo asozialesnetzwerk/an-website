@@ -105,9 +105,13 @@ class Backdoor(APIRequestHandler):
                 _locals = self.sessions.get(session) or {}
                 if session and session not in self.sessions:
                     self.sessions[session] = _locals
-                if "print" not in _locals or isinstance(_locals["print"], PrintWrapper):
+                if "print" not in _locals or isinstance(
+                    _locals["print"], PrintWrapper
+                ):
                     _locals["print"] = PrintWrapper(output)
-                if "help" not in _locals or isinstance(_locals["help"], pydoc.Helper):
+                if "help" not in _locals or isinstance(
+                    _locals["help"], pydoc.Helper
+                ):
                     _locals["help"] = pydoc.Helper(io.StringIO(), output)
 
                 try:

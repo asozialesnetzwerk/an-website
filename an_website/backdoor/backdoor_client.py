@@ -58,6 +58,7 @@ def send(
 
 
 def parse(code: str):
+    """Parse the code into an AST."""
     try:
         return compile(
             code,
@@ -137,9 +138,15 @@ def run_and_print(  # noqa: C901
             if response["result"][1]:
                 try:
                     result_obj = pickle.loads(response["result"][1])
-                except (pickle.UnpicklingError, AttributeError, EOFError, ImportError, IndexError):
+                except (
+                    pickle.UnpicklingError,
+                    AttributeError,
+                    EOFError,
+                    ImportError,
+                    IndexError,
+                ):
                     pass
-                except Exception:
+                except Exception:  # pylint: disable=broad-except
                     traceback.print_exc()
             if (
                 isinstance(result_obj, tuple)
@@ -186,7 +193,9 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
             print("No URL given!")
         elif not url.startswith("http"):
             banana = url.split("/", maxsplit=1)
-            if re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]):
+            if re.fullmatch(
+                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]
+            ):
                 url = "http://" + url
             else:
                 url = "https://" + url
@@ -208,12 +217,14 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
         print("Saved session to cache")
 
     if "--no-patch-help" not in sys.argv:
-        help_code = "def help(*args):\n" \
-                    "    import io\n" \
-                    "    import pydoc\n" \
-                    "    helper_output = io.StringIO()\n" \
-                    "    pydoc.Helper(io.StringIO(), helper_output)(*args)\n" \
-                    "    return 'HelperTuple', helper_output.getvalue()"
+        help_code = (
+            "def help(*args):\n"
+            "    import io\n"
+            "    import pydoc\n"
+            "    helper_output = io.StringIO()\n"
+            "    pydoc.Helper(io.StringIO(), helper_output)(*args)\n"
+            "    return 'HelperTuple', helper_output.getvalue()"
+        )
         send(url, key, parse(help_code), session)
 
     # pylint: disable=import-outside-toplevel
@@ -241,7 +252,15 @@ if __name__ == "__main__":
         )
         sys.exit()
     for arg in sys.argv[1:]:
-        if arg not in ("--no-patch-help", "--no-cache", "--clear-cache", "--new-session", "--lisp", "--help", "-h"):
+        if arg not in (
+            "--no-patch-help",
+            "--no-cache",
+            "--clear-cache",
+            "--new-session",
+            "--lisp",
+            "--help",
+            "-h",
+        ):
             print(f"Unknown argument: {arg}")
             sys.exit(64)
     try:
