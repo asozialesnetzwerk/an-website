@@ -20,7 +20,7 @@ from typing import Optional
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
-START_TIME = time.time()
+START_TIME = time.monotonic()
 
 
 def get_module_info() -> ModuleInfo:
@@ -39,7 +39,7 @@ def get_module_info() -> ModuleInfo:
 
 def calculate_uptime() -> float:
     """Calculate the uptime in seconds and return it."""
-    return time.time() - START_TIME
+    return time.monotonic() - START_TIME
 
 
 def uptime_to_str(uptime: Optional[float] = None) -> str:
