@@ -13,7 +13,7 @@
            rel="noreferrer"
            id="author">- {{wrong_quote.author}}</a>
     </div>
-    <div id="rating-container">
+    <div id="rating-container" class="tooltip">
         <table>
             <tr>
                 <th>
@@ -34,6 +34,7 @@
                 </th>
             </tr>
         </table>
+        <div class="tooltip-text">Die Bewertung des Zitates</div>
     </div>
     <div id="buttons">
         <a class="download tooltip" id="download" rel="noreferrer"
@@ -59,14 +60,16 @@
     {% raw form_appendix %}
     <input name="r" class="hidden-input" value="{{rating_filter}}">
     <button type="submit" id="upvote" name="vote"
-            class="form-button vote {% if vote == 1 %} voted {% end %}"
+            class="tooltip form-button vote {% if vote == 1 %} voted {% end %}"
             value={% if vote == 1 %}"0"{% else %}"1"{% end %} >
         <img src="/static/img/StempelWitzigKlein.svg" alt="WITZIG!">
+        <div class="tooltip-text">Bewerte das Zitat als witzig!</div>
     </button>
     <button type="submit" id="downvote" name="vote"
-            class="form-button vote {% if vote == -1 %} voted {% end %}"
+            class="tooltip form-button vote {% if vote == -1 %} voted {% end %}"
             value={% if vote == -1 %}"0"{% else %}"-1"{% end %} >
         <img src="/static/img/StempelNichtWitzigKlein.svg" alt="NICHT WITZIG!">
+        <div class="tooltip-text">Bewerte das Zitat als nicht witzig!</div>
     </button>
 </form>
 
@@ -74,7 +77,7 @@
     <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}" rel="noreferrer">
         <img class="button-img button-img-no-rotation"
              src="/static/img/plus.svg" alt="Zitat hinzufügen.">
-        <div class="tooltip-text">Füge neues Zitat hinzu.</div>
+        <div class="tooltip-text">Neues Zitat hinzufügen</div>
     </a>
 
     {% if contact_email is not None %}
@@ -88,7 +91,7 @@
         </a>
     {% end %}
 
-    <form method="get">
+    <form method="get" class="tooltip">
         {% raw form_appendix %}
         <select name="r" class="rating-form-el" onchange="this.form.submit()">
             <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
@@ -101,6 +104,7 @@
         <noscript>
             <button type="submit" class="rating-form-el">Submit</button>
         </noscript>
+        <div class="tooltip-text">Filtere nächste Zitate</div>
     </form>
 </div>
 
