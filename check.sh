@@ -38,6 +38,6 @@ python3 -m pylint --output-format=colorized an_website tests
 
 # run tests
 echo Tests:
-coverage run --source=an_website -m py.test tests/
+python3 -m coverage run --source=an_website -m py.test tests/
 
-echo 'Run "coverage report" to show the coverage'
+echo 'Run "python3 -m coverage report" to show the coverage'

@@ -56,9 +56,9 @@ def dumps(
         | orjson.OPT_UTC_Z
     )
     if sort_keys:
-        option = option | orjson.OPT_SORT_KEYS
+        option |= orjson.OPT_SORT_KEYS
     if indent is not None:
-        option = option | orjson.OPT_INDENT_2
+        option |= orjson.OPT_INDENT_2
     return orjson.dumps(obj, default, option).decode("utf-8")
 
 

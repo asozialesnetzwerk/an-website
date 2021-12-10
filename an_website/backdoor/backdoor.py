@@ -59,7 +59,6 @@ class Backdoor(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
-    RATELIMIT_TOKENS: int = 0
 
     sessions: Dict[str, dict] = {}
     _globals: Dict[str, Any] = {

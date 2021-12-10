@@ -157,7 +157,5 @@ async def test_request_handlers(fetch):
         if code not in (204, 304):
             response = await fetch(f"/{code}.html")
             assert response.code == code
-    response = await fetch("/error/")
-    assert response.code == 500
     response = await fetch("/qwertzuiop/")
     assert response.code == 404

@@ -22,6 +22,7 @@ import hashlib
 import random
 import re
 import sys
+import time
 import traceback
 import uuid
 from datetime import datetime
@@ -53,7 +54,7 @@ def get_module_info() -> ModuleInfo:
         name="Utilitys",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
-            (r"/error/", ZeroDivision, {}),
+            (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
         ),
         hidden=True,
@@ -64,9 +65,8 @@ def get_module_info() -> ModuleInfo:
 class BaseRequestHandler(RequestHandler):
     """The base Tornado request handler used by every page."""
 
-    RATELIMIT_NAME: str = ""  # can be overridden in subclasses
-    RATELIMIT_TOKENS: int = 1  # can be overridden in subclasses
-    REQUIRES_AUTHORIZATION: bool = False  # can be overridden in subclasses
+    # can be overridden in subclasses
+    REQUIRES_AUTHORIZATION: bool = False
 
     # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
@@ -105,16 +105,19 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Permissions-Policy", "interest-cohort=()")
 
     async def prepare(self):  # pylint: disable=invalid-overridden-method
-        """Check authorization and rate limits with Redis."""
+        """Check authorization and call self.ratelimit()."""
         if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
             # TODO: self.set_header("WWW-Authenticate")
             raise HTTPError(401)
 
+        if not await self.ratelimit(True):
+            await self.ratelimit()
+
+    async def ratelimit(self, global_ratelimit=False):
+        """Take b1nzy to space using Redis."""
         if (
             # whether ratelimits are enabled
             self.settings.get("RATELIMITS")
-            # ignore ratelimits in dev_mode
-            and not sys.flags.dev_mode
             # ignore ratelimits for authorized requests
             and not self.is_authorized()
             # ignore Delimits for requests with method OPTIONS
@@ -122,30 +125,57 @@ class BaseRequestHandler(RequestHandler):
         ):
             redis = self.settings.get("REDIS")
             prefix = self.settings.get("REDIS_PREFIX")
-            tokens = getattr(
-                self, "RATELIMIT_TOKENS_" + self.request.method, None
-            )
-            if tokens is None:
-                tokens = self.RATELIMIT_TOKENS
             remote_ip = hashlib.sha1(
                 self.request.remote_ip.encode("utf-8")
             ).hexdigest()
-            ratelimit_name = (
-                ":" + self.RATELIMIT_NAME if self.RATELIMIT_NAME else ""
-            )
+            if global_ratelimit:
+                key = f"{prefix}:ratelimit:{remote_ip}"
+                max_burst = 299
+                count_per_period = 1
+                period = 1
+                tokens = 1
+            else:
+                bucket = getattr(
+                    self, f"RATELIMIT_{self.request.method}_BUCKET", str()
+                )
+                limit = getattr(
+                    self, f"RATELIMIT_{self.request.method}_LIMIT", 0
+                )
+                key = f"{prefix}:ratelimit:{remote_ip}:{bucket}"
+                max_burst = limit - 1
+                count_per_period = getattr(
+                    self,
+                    f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
+                    1,
+                )
+                period = getattr(
+                    self, f"RATELIMIT_{self.request.method}_PERIOD", 1
+                )
+                tokens = 1
+                if not (bucket and limit):
+                    return False
             result = await redis.execute_command(
                 "CL.THROTTLE",
-                f"{prefix}:ratelimit:{remote_ip}{ratelimit_name}",
-                15,  # max burst
-                30,  # count per period
-                60,  # period
+                key,
+                max_burst,
+                count_per_period,
+                period,
                 tokens,
             )
-            self.set_header("X-RateLimit-Limit", result[1])
-            self.set_header("X-RateLimit-Remaining", result[2])
-            self.set_header("X-RateLimit-Reset", result[4])
             if result[0]:
                 self.set_header("Retry-After", result[3])
+                if global_ratelimit:
+                    self.set_header("X-RateLimit-Global", "true")
+            if not global_ratelimit:
+                self.set_header("X-RateLimit-Limit", result[1])
+                self.set_header("X-RateLimit-Remaining", result[2])
+                self.set_header("X-RateLimit-Reset", time.time() + result[4])
+                self.set_header("X-RateLimit-Reset-After", result[4])
+                self.set_header(
+                    "X-RateLimit-Bucket",
+                    hashlib.sha1(bucket.encode("utf-8")).hexdigest(),
+                )
+            if result[0]:
                 now = datetime.utcnow()
                 if now.month == 4 and now.day == 20:
                     self.set_status(420, "Enhance Your Calm")
@@ -153,6 +183,7 @@ class BaseRequestHandler(RequestHandler):
                 else:
                     self.set_status(429)
                     self.write_error(429)
+            return result[0]
 
     # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
@@ -519,8 +550,6 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFound(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
-    RATELIMIT_TOKENS = 0
-
     def initialize(  # type: ignore # pylint: disable=arguments-differ
         self,
         # set default of module_info to none to not throw error
@@ -626,8 +655,6 @@ class NotFound(BaseRequestHandler):
 class ErrorPage(BaseRequestHandler):
     """A request handler that throws an error."""
 
-    RATELIMIT_TOKENS = 0
-
     async def get(self, code: str):
         """Raise the error_code."""
         status_code: int = int(code)
@@ -650,8 +677,6 @@ class ErrorPage(BaseRequestHandler):
 
 class ZeroDivision(BaseRequestHandler):
     """A fun request handler that throws an error."""
-
-    RATELIMIT_TOKENS = 10
 
     async def prepare(self):
         """Divide by zero and throw an error."""

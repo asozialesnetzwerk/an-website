@@ -58,7 +58,6 @@ class Endpoints(BaseRequestHandler):
                 {
                     "path": _h[0],
                     "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],
-                    "ratelimit-tokens": _h[1].RATELIMIT_TOKENS,
                 }
                 for _h in _mi.handlers
                 if _h[0].startswith("/api/")
