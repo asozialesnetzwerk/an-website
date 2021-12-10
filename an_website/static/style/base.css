@@ -44,7 +44,7 @@ a:not(.no-style-a) {
 /* Tooltip container */
 .tooltip {
     position: relative;
-    display: inline-block;
+    width: max-content;
 }
 
 /* Tooltip text */
@@ -57,6 +57,7 @@ a:not(.no-style-a) {
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
+    font-size: initial;
 
     position: absolute;
     z-index: 1;

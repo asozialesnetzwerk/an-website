@@ -87,7 +87,7 @@
     justify-content: left;
 }
 
-#bottom-buttons-container * {
+#bottom-buttons-container .tooltip {
     margin: 5px;
 }
 
