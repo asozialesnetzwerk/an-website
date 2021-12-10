@@ -5,6 +5,8 @@ jobs:
     name: Look for Emoji in commit message
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Install newest version of required library
         run: python3 -m pip install --prefer-binary "emoji>=1.6.1"
       - name: Run the check
