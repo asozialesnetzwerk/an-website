@@ -81,7 +81,7 @@ SERVICES: tuple[Service, ...] = (
         {
             "Name": "Das Asoziale Netzwerk",
             "Domain": "stk.asozial.org",
-            "SuperTuxKart-Download": "https://supertuxkart.net/Download/",
+            "SuperTuxKart-Download": "https://supertuxkart.net/Download",
         },
     ),
     Service(
