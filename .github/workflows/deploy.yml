@@ -116,10 +116,11 @@ jobs:
             COLOR=orange
           fi
           curl "https://img.shields.io/badge/coverage-$total%25-$COLOR" > public/coverage/badge.svg
-          echo "--Contents of Public:" >> public/debug
-          ls -l public >> public/debug
-          echo "--Contents of public/coverage:" >> public/debug
-          ls -l public/coverage >> public/debug
+          # echo "--Contents of Public:" >> public/debug
+          # ls -lA public >> public/debug
+          # echo "--Contents of public/coverage:" >> public/debug
+          # ls -lA public/coverage >> public/debug
+          rm public/coverage/.gitignore
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
