@@ -212,9 +212,15 @@ class CreatePage(QuoteReadyCheckRequestHandler):
         # TODO: Search for real author, to reduce work for users
         real_author_str = self.get_argument("real-author-1", default="")
 
-        quotes = await get_quotes(quote_str)
-        real_authors = await get_authors(real_author_str)
-        fake_authors = await get_authors(fake_author_str)
+        quotes = [quote] if quote else await get_quotes(quote_str)
+        real_authors = (
+            [quote.author] if quote else await get_authors(real_author_str)
+        )
+        fake_authors = (
+            [fake_author]
+            if fake_author
+            else await get_authors(fake_author_str)
+        )
 
         if 1 == len(quotes) == len(real_authors) == len(fake_authors):
             _id = await create_wrong_quote(
