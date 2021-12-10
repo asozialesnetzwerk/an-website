@@ -36,7 +36,7 @@ function updateQuoteId(quoteId) {
     shareButton.href = `/zitate/${quoteId}/share/${params}`;
     downloadButton.href = `/zitate/${quoteId}/image.png${params}`;
     const [q_id, a_id] = quoteId.split("-", 2);
-    quote.href = `/zitate/info/q/${q_id}/${params}`;
+    quote.href = `/zitate/info/z/${q_id}/${params}`;
     author.href = `/zitate/info/a/${a_id}/${params}`;
 
     thisQuoteId[0] = quoteId;
