@@ -117,73 +117,72 @@ class BaseRequestHandler(RequestHandler):
         """Take b1nzy to space using Redis."""
         if (
             # whether ratelimits are enabled
-            self.settings.get("RATELIMITS")
+            not self.settings.get("RATELIMITS")
             # ignore ratelimits for authorized requests
-            and not self.is_authorized()
+            or self.is_authorized()
             # ignore Delimits for requests with method OPTIONS
-            and not self.request.method == "OPTIONS"
+            or self.request.method == "OPTIONS"
         ):
-            redis = self.settings.get("REDIS")
-            prefix = self.settings.get("REDIS_PREFIX")
-            remote_ip = hashlib.sha1(
-                self.request.remote_ip.encode("utf-8")
-            ).hexdigest()
-            if global_ratelimit:
-                key = f"{prefix}:ratelimit:{remote_ip}"
-                max_burst = 299
-                count_per_period = 1
-                period = 1
-                tokens = 1
-            else:
-                bucket = getattr(
-                    self, f"RATELIMIT_{self.request.method}_BUCKET", str()
-                )
-                limit = getattr(
-                    self, f"RATELIMIT_{self.request.method}_LIMIT", 0
-                )
-                key = f"{prefix}:ratelimit:{remote_ip}:{bucket}"
-                max_burst = limit - 1
-                count_per_period = getattr(
-                    self,
-                    f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
-                    1,
-                )
-                period = getattr(
-                    self, f"RATELIMIT_{self.request.method}_PERIOD", 1
-                )
-                tokens = 1
-                if not (bucket and limit):
-                    return False
-            result = await redis.execute_command(
-                "CL.THROTTLE",
-                key,
-                max_burst,
-                count_per_period,
-                period,
-                tokens,
+            return False  # not ratelimited
+        redis = self.settings.get("REDIS")
+        prefix = self.settings.get("REDIS_PREFIX")
+        remote_ip = hashlib.sha1(
+            self.request.remote_ip.encode("utf-8")
+        ).hexdigest()
+        if global_ratelimit:
+            key = f"{prefix}:ratelimit:{remote_ip}"
+            max_burst = 299
+            count_per_period = 1
+            period = 1
+            tokens = 1
+        else:
+            bucket = getattr(
+                self, f"RATELIMIT_{self.request.method}_BUCKET", str()
             )
-            if result[0]:
-                self.set_header("Retry-After", result[3])
-                if global_ratelimit:
-                    self.set_header("X-RateLimit-Global", "true")
-            if not global_ratelimit:
-                self.set_header("X-RateLimit-Limit", result[1])
-                self.set_header("X-RateLimit-Remaining", result[2])
-                self.set_header("X-RateLimit-Reset", time.time() + result[4])
-                self.set_header("X-RateLimit-Reset-After", result[4])
-                self.set_header(
-                    "X-RateLimit-Bucket",
-                    hashlib.sha1(bucket.encode("utf-8")).hexdigest(),
-                )
-            if result[0]:
-                now = datetime.utcnow()
-                if now.month == 4 and now.day == 20:
-                    self.set_status(420, "Enhance Your Calm")
-                    self.write_error(420)
-                else:
-                    self.set_status(429)
-                    self.write_error(429)
-            return result[0]
+            limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
+            key = f"{prefix}:ratelimit:{remote_ip}:{bucket}"
+            max_burst = limit - 1
+            count_per_period = getattr(
+                self,
+                f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
+                1,
+            )
+            period = getattr(
+                self, f"RATELIMIT_{self.request.method}_PERIOD", 1
+            )
+            tokens = 1
+            if not (bucket and limit):
+                return False
+        result = await redis.execute_command(
+            "CL.THROTTLE",
+            key,
+            max_burst,
+            count_per_period,
+            period,
+            tokens,
+        )
+        if result[0]:
+            self.set_header("Retry-After", result[3])
+            if global_ratelimit:
+                self.set_header("X-RateLimit-Global", "true")
+        if not global_ratelimit:
+            self.set_header("X-RateLimit-Limit", result[1])
+            self.set_header("X-RateLimit-Remaining", result[2])
+            self.set_header("X-RateLimit-Reset", time.time() + result[4])
+            self.set_header("X-RateLimit-Reset-After", result[4])
+            self.set_header(
+                "X-RateLimit-Bucket",
+                hashlib.sha1(bucket.encode("utf-8")).hexdigest(),
+            )
+        if result[0]:
+            now = datetime.utcnow()
+            if now.month == 4 and now.day == 20:
+                self.set_status(420, "Enhance Your Calm")
+                self.write_error(420)
+            else:
+                self.set_status(429)
+                self.write_error(429)
+        return result[0]
 
     # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
