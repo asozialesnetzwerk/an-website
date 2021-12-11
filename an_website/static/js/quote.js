@@ -26,9 +26,7 @@ const quote = document.getElementById("quote");
 const ratingText = document.getElementById("rating-text");
 const ratingImageContainer = document.getElementById("rating-img-container");
 
-const params = nextButton.href.includes("?")
-    ? "?" + nextButton.href.split("?", 2)[1]
-    : "";
+const params = window.location.search;
 
 nextButton.removeAttribute("href");
 
@@ -102,8 +100,8 @@ window.onpopstate = (event) => {
 
 nextButton.onclick = () => {
     get(
-        `/api/zitate/${nextQuoteId[0]}/${params}`,
-        {},
+        `/api/zitate/${nextQuoteId[0]}/`,
+        params,
         (data) => {
             if (handleData(data)) {
                 window.history.pushState(
