@@ -266,7 +266,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
     app.settings["CONFIG"] = config
 
     app.settings["cookie_secret"] = config.get(
-        "TORNADO", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
+        "GENERAL", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
     )
 
     app.settings["TRUSTED_API_SECRETS"] = tuple(
@@ -359,9 +359,6 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         client_key=config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None),
         retry_on_timeout=config.get(
             "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
-        ),
-        send_get_body_as=config.get(
-            "ELASTICSEARCH", "SEND_GET_BODY_AS", fallback=None
         ),
         http_compress=True,
         sniff_on_start=True,
@@ -474,14 +471,14 @@ def main():
 
     apply_config_to_app(app, config)
 
-    behind_proxy = config.getboolean("TORNADO", "BEHIND_PROXY", fallback=False)
+    behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
     server = app.listen(
-        config.getint("TORNADO", "PORT", fallback=8080),
+        config.getint("GENERAL", "PORT", fallback=8080),
         "localhost" if behind_proxy else None,
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
-        protocol=config.get("TORNADO", "PROTOCOL", fallback=None),
+        protocol=config.get("GENERAL", "PROTOCOL", fallback=None),
         decompress_request=True,
     )
 

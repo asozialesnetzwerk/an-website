@@ -101,7 +101,7 @@ class HeaderInfo(Info):
     @lru_cache(100)
     def to_html(
         self,
-        fix_url_func: Callable[  # pylint: disable=unused-argument
+        fix_url_func: Callable[
             [str], str
         ] = lambda url: url,
         query: Optional[str] = None,
@@ -165,7 +165,7 @@ class SoundInfo(Info):
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
         query: Optional[str] = None,
-    ) -> str:  # pylint: disable=unused-argument
+    ) -> str:
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
         href = fix_url_func(f"/kaenguru-soundboard/{self.person.name}")

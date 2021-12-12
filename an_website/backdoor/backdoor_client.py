@@ -220,11 +220,11 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
 
     if "--no-patch-help" not in sys.argv:
         help_code = (
-            "def help(*args):\n"
+            "def help(*args, **kwargs):\n"
             "    import io\n"
             "    import pydoc\n"
             "    helper_output = io.StringIO()\n"
-            "    pydoc.Helper(io.StringIO(), helper_output)(*args)\n"
+            "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'HelperTuple', helper_output.getvalue()"
         )
         send(url, key, parse(help_code), session)

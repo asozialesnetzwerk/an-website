@@ -214,7 +214,6 @@ LINE_REGEX: Pattern[str] = re.compile(
 )
 
 
-# pylint: disable=too-many-return-statements
 @functools.lru_cache(maxsize=20)
 def parse_config_line(  # noqa: C901
     line: str, line_num: int = -1

@@ -34,7 +34,7 @@ python3 -m mypy --pretty -p an_website -p tests
 echo Flake8:
 python3 -m flake8 --extend-ignore=D100,D101,D102,D103,D104,E501 an_website tests
 echo Pylint:
-python3 -m pylint --output-format=colorized an_website tests
+python3 -m pylint --output-format=colorized -e useless-suppression an_website tests
 
 # run tests
 echo Tests:

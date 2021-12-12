@@ -18,7 +18,6 @@ This should only contain request handlers and the get_module_info function.
 """
 from __future__ import annotations
 
-import hashlib
 import random
 import re
 import sys
@@ -34,6 +33,7 @@ import orjson as json
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 
 # pylint: disable=no-name-in-module
+from blake3 import blake3  # type: ignore
 from Levenshtein import distance  # type: ignore
 from tornado import httputil, web
 from tornado.web import HTTPError, RequestHandler
@@ -118,21 +118,20 @@ class BaseRequestHandler(RequestHandler):
         if (
             # whether ratelimits are enabled
             not self.settings.get("RATELIMITS")
-            # ignore ratelimits for authorized requests
-            or self.is_authorized()
             # ignore Delimits for requests with method OPTIONS
             or self.request.method == "OPTIONS"
+            # ignore ratelimits for authorized requests
+            or self.is_authorized()
         ):
-            return False  # not ratelimited
+            return False
         redis = self.settings.get("REDIS")
         prefix = self.settings.get("REDIS_PREFIX")
-        remote_ip = hashlib.sha1(
-            self.request.remote_ip.encode("utf-8")
-        ).hexdigest()
+        # pylint: disable=not-callable
+        remote_ip = blake3(self.request.remote_ip.encode("utf-8")).hexdigest()
         if global_ratelimit:
             key = f"{prefix}:ratelimit:{remote_ip}"
-            max_burst = 299
-            count_per_period = 1
+            max_burst = 99
+            count_per_period = 20
             period = 1
             tokens = 1
         else:
@@ -172,7 +171,8 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("X-RateLimit-Reset-After", result[4])
             self.set_header(
                 "X-RateLimit-Bucket",
-                hashlib.sha1(bucket.encode("utf-8")).hexdigest(),
+                # pylint: disable=not-callable
+                blake3(bucket.encode("utf-8")).hexdigest(),
             )
         if result[0]:
             now = datetime.utcnow()
@@ -232,9 +232,11 @@ class BaseRequestHandler(RequestHandler):
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote ip and return it."""
-        return hashlib.sha1(
+        # pylint: disable=not-callable
+        return blake3(
             self.request.remote_ip.encode("utf-8")
-            + hashlib.sha1(
+            # pylint: disable=not-callable
+            + blake3(
                 datetime.utcnow().date().isoformat().encode("utf-8")
             ).digest()
         ).hexdigest()
@@ -461,7 +463,7 @@ class BaseRequestHandler(RequestHandler):
         default: Union[
             None,
             str,
-            web._ArgDefaultMarker,  # pylint: disable=protected-access
+            web._ArgDefaultMarker,
         ] = web._ARG_DEFAULT,  # pylint: disable=protected-access
         strip: bool = True,
     ) -> Optional[str]:

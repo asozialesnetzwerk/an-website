@@ -1,12 +1,13 @@
 aiohttp[speedups]~=3.8
 aioredis[hiredis]~=2.0
 ansi2html~=1.6
+blake3>=0.2.1,<2
 certifi
 defusedxml>=0.7.1,<2
 ecs-logging~=1.1
-elastic-apm~=6.6
-elasticsearch[async]>=7.15.2,<8
-funcparserlib~=1.0.0a0
+elastic-apm~=6.7
+elasticsearch[async]~=7.16.0
+funcparserlib>=1.0.0a0,<2
 git+https://github.com/blueyed/pyrepl.git@release-0.10.0
 hy~=1.0a3
 #markdown>=3.3.6,<4

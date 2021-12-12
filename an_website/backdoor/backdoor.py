@@ -80,7 +80,7 @@ class Backdoor(APIRequestHandler):
             else:
                 try:
                     source = pickle.loads(self.request.body)
-                except Exception:  # pylint: disable=broad-except
+                except Exception:
                     raise HTTPError(400)  # pylint: disable=raise-missing-from
                 if isinstance(source, ast.Expression):
                     mode = "eval"
@@ -150,7 +150,7 @@ class Backdoor(APIRequestHandler):
                     response["result"][0] or repr(response["result"][1]),
                     None,
                 )
-            # except Exception:  # pylint: disable=broad-except
+            # except Exception:
             #     response["result"] = (
             #         response["result"][0] or repr(response["result"][1]),
             #         str().join(traceback.format_exception(*sys.exc_info())).strip(),
