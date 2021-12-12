@@ -75,7 +75,7 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     """Parse a vote str to the corresponding int."""
     if vote == "-1":
         return -1
-    if vote in ("0", "", None):
+    if vote in ("0", str(), None):
         return 0
     if vote == "1":
         return 1
@@ -204,7 +204,7 @@ class QuoteById(QuoteBaseHandler):
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)
         new_vote_str = self.get_argument("vote", default=None)
-        if new_vote_str is None or new_vote_str == "":
+        if new_vote_str is None or new_vote_str == str():
             return await self.render_quote(quote_id, author_id)
         if (vote := vote_to_int(new_vote_str)) == new_vote_str:
             return await self.render_quote(quote_id, author_id)
@@ -213,7 +213,7 @@ class QuoteById(QuoteBaseHandler):
 
         await self.update_saved_votes(quote_id, author_id, vote)
 
-        contributed_by = self.get_argument("user-name", default="")
+        contributed_by = self.get_argument("user-name", default=str())
         if contributed_by is not None:
             contributed_by = contributed_by.strip()
         if contributed_by is None or len(contributed_by) < 2:

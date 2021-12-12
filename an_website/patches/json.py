@@ -132,6 +132,6 @@ def load(
 
 
 def make_pyflakes_shut_up():
-    JSONDecodeError("", "", 0)
+    JSONDecodeError(str(), str(), int())
     JSONDecoder()
     JSONEncoder()

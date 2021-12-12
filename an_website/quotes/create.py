@@ -210,7 +210,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
             )
 
         # TODO: Search for real author, to reduce work for users
-        real_author_str = self.get_argument("real-author-1", default="")
+        real_author_str = self.get_argument("real-author-1", default=str())
 
         quotes = [quote] if quote else await get_quotes(quote_str)
         real_authors = (

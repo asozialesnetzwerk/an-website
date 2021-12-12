@@ -107,7 +107,7 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
                 (  # check if the annotations specify the return
                     # type as Module info
                     module.get_module_info.__annotations__.get(  # type: ignore
-                        "return", ""
+                        "return", str()
                     )
                     == "ModuleInfo"
                 )
@@ -461,7 +461,7 @@ def main():
 
     # read ignored modules from the config
     for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=""
+        "GENERAL", "IGNORED_MODULES", fallback=str()
     ).split(","):
         module_name = module_name.strip()
         if len(module_name) > 0:

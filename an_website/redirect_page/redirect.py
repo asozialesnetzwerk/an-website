@@ -42,9 +42,9 @@ class RedirectPage(BaseRequestHandler):
 
     async def get(self):
         """Handle the GET request to the request page and render it."""
-        redirect_url = self.get_query_argument("to", default="")
+        redirect_url = self.get_query_argument("to", default=str())
 
-        if redirect_url in ("", "/"):
+        if redirect_url in (str(), "/"):
             # empty arg so redirect to main page
             # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url("/"))

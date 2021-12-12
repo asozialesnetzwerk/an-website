@@ -154,7 +154,7 @@ HTTP_CLIENT = AsyncHTTPClient()
 
 async def make_api_request(
     end_point: str,
-    args: str = "",
+    args: str = str(),
     method: Literal["GET", "POST"] = "GET",
     body: str = None,
 ) -> dict:

@@ -54,7 +54,7 @@ del books, chapters, person_dict
 @lru_cache(100)
 def mark_query(text: str, query: Optional[str]) -> str:
     """Replace the instances of the query with itself in a div."""
-    if query is None or query == "":
+    if query is None or query == str():
         return text
 
     query = re.sub("(ä|ae)", "(ä|ae)", query.lower())
@@ -101,9 +101,7 @@ class HeaderInfo(Info):
     @lru_cache(100)
     def to_html(
         self,
-        fix_url_func: Callable[
-            [str], str
-        ] = lambda url: url,
+        fix_url_func: Callable[[str], str] = lambda url: url,
         query: Optional[str] = None,
     ) -> str:
         """
@@ -142,7 +140,7 @@ class SoundInfo(Info):
         """Parse the text to return the name of the file."""
         return re.sub(
             r"[^a-z0-9_-]+",
-            "",
+            str(),
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
@@ -225,7 +223,7 @@ def name_to_id(val: str) -> str:
     return re.sub(
         r"-+",
         "-",
-        re.sub(r"[^a-z0-9-]", "", replace_umlauts(val.replace(" ", "-"))),
+        re.sub(r"[^a-z0-9-]", str(), replace_umlauts(val.replace(" ", "-"))),
     )
 
 

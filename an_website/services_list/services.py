@@ -58,7 +58,7 @@ class Service:
 
             html.append("</table>")
 
-        return "".join(html)
+        return str().join(html)
 
 
 SERVICES: tuple[Service, ...] = (

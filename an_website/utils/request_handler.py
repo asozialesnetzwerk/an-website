@@ -226,7 +226,9 @@ class BaseRequestHandler(RequestHandler):
             kwargs["exc_info"][0], HTTPError
         ):
             if self.settings.get("serve_traceback"):
-                return "".join(traceback.format_exception(*kwargs["exc_info"]))
+                return str().join(
+                    traceback.format_exception(*kwargs["exc_info"])
+                )
             return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
         return self._reason
 
@@ -364,7 +366,7 @@ class BaseRequestHandler(RequestHandler):
                 f"value='{bool_to_str(self.get_no_3rd_party())}'>"
             )
         else:
-            form_appendix = ""
+            form_appendix = str()
 
         if (
             "theme" in self.request.query_arguments
@@ -405,7 +407,7 @@ class BaseRequestHandler(RequestHandler):
                 "keywords": (
                     "Asoziales Netzwerk, Känguru-Chroniken"
                     + (
-                        ""
+                        str()
                         if self.module_info is None
                         else ", "
                         + self.module_info.get_keywords_as_str(
@@ -567,8 +569,8 @@ class NotFound(BaseRequestHandler):
 
     def get_query(self) -> str:
         """Get the query how you would add it to the end of the url."""
-        if self.request.query == "":
-            return ""  # if empty without question mark
+        if self.request.query == str():
+            return str()  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query
 
     async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
@@ -661,7 +663,7 @@ class ErrorPage(BaseRequestHandler):
         status_code: int = int(code)
 
         # get the reason
-        reason: str = httputil.responses.get(status_code, "")
+        reason: str = httputil.responses.get(status_code, str())
 
         # set the status code if Tornado doesn't throw an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:

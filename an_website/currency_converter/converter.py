@@ -64,7 +64,7 @@ def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
         return float(string) / divide_by
     except ValueError:
         try:
-            return float(re.sub(r"[^0-9\.]", "", string)) / divide_by
+            return float(re.sub(r"[^0-9\.]", str(), string)) / divide_by
         except ValueError:
             return None
 
@@ -75,7 +75,7 @@ def num_to_string(num: float) -> str:
 
     The number has 2 or 0 digits after the comma.
     """
-    return f"{num:.2f}".replace(".", ",").replace(",00", "")
+    return f"{num:.2f}".replace(".", ",").replace(",00", str())
 
 
 async def conversion_string(value_dict: dict) -> str:

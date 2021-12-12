@@ -45,7 +45,7 @@ class Restart(APIRequestHandler):
 
     async def post(self):
         """Handle the POST request to the restart API."""
-        commit = self.get_query_argument("commit", default="", strip=True)
+        commit = self.get_query_argument("commit", default=str(), strip=True)
 
         # check if commit only contains valid letters and numbers
         # used to protect against code execution

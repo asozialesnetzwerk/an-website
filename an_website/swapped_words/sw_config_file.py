@@ -68,7 +68,7 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
             )
         )
     # create new word and return it
-    return "".join(new_word)
+    return str().join(new_word)
 
 
 class ConfigLine:  # pylint: disable=R0903
@@ -78,7 +78,7 @@ class ConfigLine:  # pylint: disable=R0903
         self, len_of_left: Optional[int] = None
     ):  # pylint: disable=no-self-use, unused-argument
         """Get how this would look like in a config."""
-        return ""
+        return str()
 
 
 @dataclass(frozen=True)
@@ -90,7 +90,7 @@ class Comment(ConfigLine):
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
         return (
-            ""
+            str()
             if self.comment is None or len(self.comment) == 0
             else f"# {self.comment}"
         )
@@ -103,7 +103,7 @@ class WordPair(ConfigLine):
     word1: str
     word2: str
     # separator between the two words, that shouldn't be changed:
-    separator: str = field(default="", init=False)
+    separator: str = field(default=str(), init=False)
 
     def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
         """Get the replacement for a given word with the same case."""
@@ -121,7 +121,7 @@ class WordPair(ConfigLine):
         """Get how this would look like in a config."""
         left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:
-            return "".join((left, separator.strip(), right))
+            return str().join((left, separator.strip(), right))
         return (
             left
             + (" " * (1 + len_of_left - self.len_of_left()))
@@ -223,7 +223,7 @@ def parse_config_line(  # noqa: C901
     line = line.strip()
 
     if len(line) == 0:
-        return Comment("")  # empty comment → empty line
+        return Comment(str())  # empty comment → empty line
 
     # print(len(line.strip()), f"'{line.strip()}'")
 
