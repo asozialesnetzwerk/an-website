@@ -24,6 +24,12 @@ body {
     max-width: 100%;
     padding: 5px;
 }
+/* .text is for version page */
+#body, .text {
+    white-space: normal;
+    line-break: auto;
+    hyphens: auto;
+}
 
 a:not(.no-style-a) {
     color: var(--main)
@@ -44,7 +50,7 @@ a:not(.no-style-a) {
 /* Tooltip container */
 .tooltip {
     position: relative;
-    width: max-content;
+    max-width: max-content;
 }
 
 /* Tooltip text */
@@ -123,6 +129,8 @@ a:not(.no-style-a) {
 
 .header h1 {
     margin: 10px;
+    overflow-x: hidden;
+    white-space: nowrap;
 }
 
 .open-pane {

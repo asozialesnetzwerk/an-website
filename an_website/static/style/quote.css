@@ -125,6 +125,7 @@
     padding: 10px !important;
     margin: 5px;
     height: 60px;
+    max-width: initial;
 }
 
 .vote:hover:not(.voted) {
