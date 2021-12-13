@@ -170,8 +170,9 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
     url = None
     key = None
     session = None
-    session_pickle = os.path.expanduser(
-        "~/.cache/an-backdoor-client/session.pickle"
+    session_pickle = os.path.join(
+        os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
+        "an-backdoor-client/session.pickle",
     )
     if "--clear-cache" in sys.argv:
         if os.path.exists(session_pickle):
@@ -213,7 +214,7 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
         print(f"Using session {session}")
 
     if "--no-cache" not in sys.argv:
-        os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
+        os.makedirs(os.path.dirname(session_pickle), True)
         with open(session_pickle, "wb") as file:
             pickle.dump((url, key, session), file)
         print("Saved session to cache")

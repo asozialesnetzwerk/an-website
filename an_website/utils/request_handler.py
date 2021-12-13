@@ -127,7 +127,7 @@ class BaseRequestHandler(RequestHandler):
         redis = self.settings.get("REDIS")
         prefix = self.settings.get("REDIS_PREFIX")
         # pylint: disable=not-callable
-        remote_ip = blake3(self.request.remote_ip.encode("utf-8")).hexdigest()
+        remote_ip = blake3(self.request.remote_ip.encode("ascii")).hexdigest()
         if global_ratelimit:
             key = f"{prefix}:ratelimit:{remote_ip}"
             max_burst = 99
@@ -172,7 +172,7 @@ class BaseRequestHandler(RequestHandler):
             self.set_header(
                 "X-RateLimit-Bucket",
                 # pylint: disable=not-callable
-                blake3(bucket.encode("utf-8")).hexdigest(),
+                blake3(bucket.encode("ascii")).hexdigest(),
             )
         if result[0]:
             now = datetime.utcnow()
@@ -219,27 +219,33 @@ class BaseRequestHandler(RequestHandler):
         """
         Get the error message and return it.
 
-        If the server_traceback setting is true (debug mode is activated)
+        If the serve_traceback setting is true (debug mode is activated)
         the traceback gets returned.
         """
         if "exc_info" in kwargs and not issubclass(
             kwargs["exc_info"][0], HTTPError
         ):
-            if self.settings.get("serve_traceback"):
-                return str().join(
-                    traceback.format_exception(*kwargs["exc_info"])
+            if self.settings.get("serve_traceback") or self.is_authorized():
+                return (
+                    str()
+                    .join(traceback.format_exception(*kwargs["exc_info"]))
+                    .strip()
                 )
-            return traceback.format_exception_only(*kwargs["exc_info"][:2])[-1]
+            return (
+                str()
+                .join(traceback.format_exception_only(*kwargs["exc_info"][:2]))
+                .strip()
+            )
         return self._reason
 
     def get_hashed_remote_ip(self) -> str:
-        """Hash the remote ip and return it."""
+        """Hash the remote IP and return it."""
         # pylint: disable=not-callable
         return blake3(
-            self.request.remote_ip.encode("utf-8")
+            self.request.remote_ip.encode("ascii")
             # pylint: disable=not-callable
             + blake3(
-                datetime.utcnow().date().isoformat().encode("utf-8")
+                datetime.utcnow().date().isoformat().encode("ascii")
             ).digest()
         ).hexdigest()
 
@@ -251,7 +257,7 @@ class BaseRequestHandler(RequestHandler):
             # TODO: ask for cookie consent
             user_id = str(uuid.uuid4())
         else:
-            user_id = user_id.decode("utf-8")
+            user_id = user_id.decode("ascii")
         # save it in cookie or reset expiry date
         self.set_secure_cookie(
             "user_id",
@@ -265,17 +271,17 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
         """
-        Fix a url and return it.
+        Fix a URL and return it.
 
-        If the url is from another website, link to it with the redirect page.
-        Otherwise just return the url with no_3rd_party appended.
+        If the URL is from another website, link to it with the redirect page.
+        Otherwise just return the URL with no_3rd_party appended.
         """
         if this_url is None:
             # used for Discord page
             this_url = self.request.full_url()
 
         if url.startswith("http") and f"//{self.request.host}" not in url:
-            # url is to other website:
+            # URL is to other website:
             url = f"/redirect/?to={quote(url)}&from={quote(this_url)}"
 
         url = add_args_to_url(
@@ -292,7 +298,7 @@ class BaseRequestHandler(RequestHandler):
             url = url[:-1]
 
         if url.startswith("/"):
-            # don't use relative urls
+            # don't use relative URLs
             protocol = None
             if self.request.host_name.endswith(".onion"):
                 # if the host is an onion domain, use HTTP
@@ -564,11 +570,11 @@ class NotFound(BaseRequestHandler):
         super().initialize(**kwargs)
 
     def get_protocol_and_host(self) -> str:
-        """Get the beginning of the url."""
+        """Get the beginning of the URL."""
         return f"{self.request.protocol}://{self.request.host}"
 
     def get_query(self) -> str:
-        """Get the query how you would add it to the end of the url."""
+        """Get the query how you would add it to the end of the URL."""
         if self.request.query == str():
             return str()  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query

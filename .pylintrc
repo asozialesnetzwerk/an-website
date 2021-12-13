@@ -1,5 +1,26 @@
 [MASTER]
+load-plugins=
+    #pylint.extensions.empty_comment,
+    #pylint.extensions.typing,
+    #pylint.extensions.comparetozero,
+    #pylint.extensions.for_any_all,
+    #pylint.extensions.bad_builtin,
+    pylint.extensions.overlapping_exceptions,
+    pylint.extensions.emptystring,
+    #pylint.extensions.confusing_elif,
+    pylint.extensions.redefined_variable_type,
+    #pylint.extensions.docstyle,
+    pylint.extensions.docparams,
+    #pylint.extensions.consider_ternary_expression,
+    #pylint.extensions.code_style,
+    #pylint.extensions.while_used,
+    #pylint.extensions.broad_try_clause,
+    pylint.extensions.comparison_placement,
+    #pylint.extensions.mccabe,
+    pylint.extensions.check_elif,
+    #pylint.extensions.set_membership,
 extension-pkg-allow-list=orjson
+py-version=3.9
 
 [BASIC]
 include-naming-hint=yes

@@ -12,6 +12,7 @@
 
 #[LOGGING]
 #debug = nope
+#path = logs
 
 #[SSL]
 #enabled = nope

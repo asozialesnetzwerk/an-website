@@ -71,7 +71,7 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
     return str().join(new_word)
 
 
-class ConfigLine:  # pylint: disable=R0903
+class ConfigLine:  # pylint: disable=too-few-public-methods
     """Class used to represent a word pair."""
 
     def to_conf_line(

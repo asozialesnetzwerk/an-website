@@ -188,7 +188,7 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 
 @cache
 def add_args_to_url(url: str, **kwargs) -> str:
-    """Add a query arguments to a url."""
+    """Add query arguments to a URL."""
     if len(kwargs) == 0:
         return url
 

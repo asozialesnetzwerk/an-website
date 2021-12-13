@@ -20,11 +20,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install Pyflakes
-        run: |
-          grep -E "^pyflakes" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^pyflakes" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Pyflakes
-        run: |
-          pyflakes an_website
+        run: pyflakes an_website
 
   test:
     name: Run tests
@@ -39,16 +37,15 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.10"
+      - name: Install libcurl4-openssl-dev for compiling PycURL
+        run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: |
-          grep -v "^[#]" requirements.txt | grep -v "pycurl*" | xargs pip install --prefer-binary
+        run: grep -v "^[#]" requirements.txt | xargs pip install --prefer-binary
       - name: Install pytest and coverage
-        run: |
-          grep -E "^(pytest|coverage)" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^(pytest|coverage)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
-        run: |
-          coverage run --source=an_website -m py.test tests/
+        run: coverage run --source=an_website -m py.test tests/
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:

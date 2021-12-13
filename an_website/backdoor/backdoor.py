@@ -158,13 +158,6 @@ class Backdoor(APIRequestHandler):
             response["output"] = (
                 output.getvalue() if not output.closed else None
             )
-        except HTTPError:
-            raise
-        except Exception:  # pylint: disable=broad-except
-            self.set_status(500)
-            response = (
-                str().join(traceback.format_exception(*sys.exc_info())).strip()
-            )
         except SystemExit as exc:
             if not isinstance(exc.code, int):
                 exc.code = repr(exc.code)
@@ -176,13 +169,16 @@ class Backdoor(APIRequestHandler):
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
             exc.args = tuple(new_args)
-            response = exc
+            response = exc  # pylint: disable=redefined-variable-type
         self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(
             pickle.dumps(response, max(pickle.DEFAULT_PROTOCOL, 5))
         )
 
     def write_error(self, status_code, **kwargs):
-        """Respond with None in case of HTTPError."""
+        """Respond with error message."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
-        self.finish(pickle.dumps(None))
+        if "exc_info" in kwargs and not issubclass(
+            kwargs["exc_info"][0], HTTPError
+        ):
+            self.finish(pickle.dumps(self.get_error_message(**kwargs)))

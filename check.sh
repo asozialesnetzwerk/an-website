@@ -1,12 +1,12 @@
 #!/bin/sh
 
-#if [ -d venv ];
-#then
-#    . venv/bin/activate
-#    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet
-#else
-#    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet --user
-#fi
+if [ -d venv ];
+then
+    . venv/bin/activate
+    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet
+else
+    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet --user
+fi
 
 # install pre-commit hooks
 pre-commit install
@@ -34,7 +34,7 @@ python3 -m mypy --pretty -p an_website -p tests
 echo Flake8:
 python3 -m flake8 --extend-ignore=D100,D101,D102,D103,D104,E501 an_website tests
 echo Pylint:
-python3 -m pylint --output-format=colorized -e useless-suppression an_website tests
+python3 -m pylint --output-format=colorized -e all -d locally-disabled,suppressed-message an_website tests
 
 # run tests
 echo Tests:

@@ -419,13 +419,16 @@ def setup_logger(config):
     )
     root_logger.addHandler(stream_handler)
 
-    if not sys.flags.dev_mode:
-        try:
-            os.mkdir("logs", 0o755)
-        except FileExistsError:
-            pass
+    path = config.get(
+        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
+    )
+    if path:
+        os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
-            f"logs/{NAME}.log", "midnight", backupCount=7, utc=True
+            os.path.join(path, f"{NAME}.log"),
+            "midnight",
+            backupCount=7,
+            utc=True,
         )
         file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
