@@ -18,10 +18,8 @@ It displays funny, but wrong, quotes.
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 import random
-import sys
 from functools import cache
 from typing import Literal, Optional
 
@@ -37,7 +35,6 @@ from . import (
     get_random_id,
     get_wrong_quote,
     get_wrong_quotes,
-    start_updating_cache_periodically,
 )
 from .quotes_img import QuoteAsImg
 from .share_page import ShareQuote
@@ -348,13 +345,3 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
                 "next": f"{next_q}-{next_a}",
             }
         )
-
-
-try:  # TODO: add better fix for tests
-    if "pytest" not in sys.modules:
-        # don't connect to the internet when running with pytest
-        asyncio.run_coroutine_threadsafe(
-            start_updating_cache_periodically(), asyncio.get_event_loop()
-        )
-except RuntimeError:
-    pass

@@ -267,27 +267,58 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
     return wrong_quote
 
 
-async def start_updating_cache_periodically():
+async def start_updating_cache_periodically(app):
     """Start updating the cache every hour."""
+    redis = app.settings.get("REDIS")
+    prefix = app.settings.get("REDIS_PREFIX")
+    if redis:
+        wrongquotes = await redis.get(
+            f"{prefix}:cached-quote-data:wrongquotes"
+        )
+        if wrongquotes:
+            for _wq in json.loads(wrongquotes.decode("utf-8")):
+                parse_wrong_quote(_wq)
+        quotes = await redis.get(f"{prefix}:cached-quote-data:quotes")
+        if quotes:
+            for _q in json.loads(quotes.decode("utf-8")):
+                parse_quote(_q)
+        authors = await redis.get(f"{prefix}:cached-quote-data:authors")
+        if authors:
+            for _a in json.loads(authors.decode("utf-8")):
+                parse_author(_a)
     while True:
-        await update_cache()
+        await update_cache(redis, prefix)
         await asyncio.sleep(60 * 60)
 
 
-async def update_cache():
+async def update_cache(redis=None, redis_prefix=None):
     """Fill the cache with all data from the API."""
     logger.info("Update quotes cache.")
     wq_data = await make_api_request("wrongquotes")
     for wrong_quote in wq_data:
         parse_wrong_quote(wrong_quote)
-
+    if wq_data and redis:
+        await redis.set(
+            f"{redis_prefix}:cached-quote-data:wrongquotes",
+            json.dumps(wq_data),
+        )
     quotes_data = await make_api_request("quotes")
     for quote in quotes_data:
         parse_quote(quote)
+    if quotes_data and redis:
+        await redis.set(
+            f"{redis_prefix}:cached-quote-data:quotes",
+            json.dumps(quotes_data),
+        )
 
     authors_data = await make_api_request("authors")
     for author in authors_data:
         parse_author(author)
+    if authors_data and redis:
+        await redis.set(
+            f"{redis_prefix}:cached-quote-data:authors",
+            json.dumps(authors_data),
+        )
 
 
 async def get_author_by_id(author_id: int) -> Author:
