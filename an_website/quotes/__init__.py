@@ -137,7 +137,7 @@ def get_wrong_quotes(
 ) -> tuple[WrongQuote, ...]:
     """Get cached wrong quotes."""
     wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
-    if filter is not None:
+    if filter_fun is not None:
         wqs = filter(filter_fun, wqs)
     if filter_real_quotes:
         wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
