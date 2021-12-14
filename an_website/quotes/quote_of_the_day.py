@@ -36,8 +36,6 @@ def get_module_info() -> ModuleInfo:
         description="Ein RSS-Feed mit dem Zitat des Tages.",
         path="/zitat-des-tages/feed/",
         keywords=(
-            "falsch",
-            "zugeordnet",
             "Zitate",
             "Witzig",
             "Känguru",
@@ -77,10 +75,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
                         _q,
                     )
                 )
-        self.set_header(
-            "Content-Type",
-            "application/xml",
-        )
+        self.set_header("Content-Type", "application/xml")
         await self.render(
             "rss/quote_of_the_day.xml",
             quotes=quotes,
@@ -124,8 +119,8 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
 
     async def get_quote_of_today(self) -> Optional[WrongQuote]:
         """Get the quote for today."""
-        today = datetime.now(tz=timezone.utc).date()
-        _wq = await self.get_quote_by_date(today)
+        _today = datetime.now(tz=timezone.utc).date()
+        _wq = await self.get_quote_by_date(_today)
         if _wq:  # if was saved already
             return _wq
         quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
@@ -142,7 +137,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
                 await self.set_used(_wq_id)
                 redis = self.settings.get("REDIS")
                 await redis.setex(  # type: ignore
-                    self.get_redis_quote_date_key(today),
+                    self.get_redis_quote_date_key(_today),
                     30 * 24 * 60 * 60,
                     _wq_id,
                 )
