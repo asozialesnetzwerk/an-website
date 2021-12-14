@@ -22,7 +22,7 @@ import re
 import sys
 import traceback
 import uuid
-from typing import Optional, Union
+from typing import Optional
 
 import hy  # type: ignore
 from tornado.httpclient import HTTPClient, HTTPClientError
@@ -30,23 +30,33 @@ from tornado.httpclient import HTTPClient, HTTPClientError
 HTTP_CLIENT = HTTPClient()
 
 
+def detect_mode(code: str):
+    """Detect which mode needs to be used."""
+    try:
+        ast.parse(code, mode="eval")
+        return "eval"
+    except SyntaxError:
+        ast.parse(code, mode="exec")
+        return "exec"
+
+
 def send(
     url: str,
     key: str,
-    parsed: Union[ast.Expression, ast.Module],
+    code: str,
+    mode: str = "exec",
     session: Optional[str] = None,
 ):
-    """Make the actual request."""
+    """Send code to the backdoor API."""
     headers = {"Authorization": key}
     if session:
         headers["X-Backdoor-Session"] = session
     try:
         response = HTTP_CLIENT.fetch(
-            f"{url}/api/backdoor/",
+            f"{url}/api/backdoor/{mode}/",
             method="POST",
             headers=headers,
-            body=pickle.dumps(parsed, 5),
-            validate_cert=False,
+            body=code,
         )
     except HTTPClientError as exc:
         if exc.response and exc.response.body:
@@ -57,48 +67,6 @@ def send(
     return pickle.loads(response.body)
 
 
-def parse(code: str):
-    """Parse the code into an AST."""
-    try:
-        return compile(
-            code,
-            str(),
-            "eval",
-            barry_as_FLUFL.compiler_flag
-            | ast.PyCF_TYPE_COMMENTS
-            | ast.PyCF_ONLY_AST,
-            0x5F3759DF,
-        )
-    except SyntaxError:
-        return compile(
-            code,
-            str(),
-            "exec",
-            barry_as_FLUFL.compiler_flag
-            | ast.PyCF_TYPE_COMMENTS
-            | ast.PyCF_ONLY_AST,
-            0x5F3759DF,
-        )
-
-
-def run(
-    url: str,
-    key: str,
-    code: str,
-    session: Optional[str] = None,
-    lisp: bool = False,
-):
-    """Make a request to the backdoor API."""
-    if lisp:
-        spam, parsed = hy.compiler.hy_compile(
-            hy.read_str(code), "this", get_expr=True
-        )
-        send(url, key, spam, session)
-    else:
-        parsed = parse(code)
-    return send(url, key, parsed, session)
-
-
 def run_and_print(  # noqa: C901
     url: str,
     key: str,
@@ -107,8 +75,10 @@ def run_and_print(  # noqa: C901
     lisp: bool = False,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""
+    if lisp:
+        code = hy.disassemble(hy.read_str(code), True)
     try:
-        response = run(url, key, code, session, lisp)
+        response = send(url, key, code, detect_mode(code), session)
     except SyntaxError:
         print(
             str()
@@ -165,7 +135,8 @@ def run_and_print(  # noqa: C901
         print(response)
 
 
-def startup():  # noqa: C901  # pylint: disable=too-many-branches
+def startup():  # noqa: C901
+    # pylint: disable=too-many-branches, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
     url = None
     key = None
@@ -220,7 +191,7 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
         print("Saved session to cache")
 
     if "--no-patch-help" not in sys.argv:
-        help_code = (
+        code = (
             "def help(*args, **kwargs):\n"
             "    import io\n"
             "    import pydoc\n"
@@ -228,7 +199,13 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'HelperTuple', helper_output.getvalue()"
         )
-        send(url, key, parse(help_code), session)
+        send(url, key, code, "exec", session)
+
+    if "--lisp" in sys.argv:
+        try:
+            send(url, key, "import hy", "exec", session)
+        except HTTPClientError:
+            print("\033[91mImporting Hy failed!\033[0m")
 
     # pylint: disable=import-outside-toplevel
     from pyrepl.python_reader import ReaderConsole, main  # type: ignore

@@ -179,6 +179,7 @@ class TwoWayPair(WordPair):
 
 
 # mypy doesn't allow this with lowercase tuple
+# pylint: disable=deprecated-typing-alias
 WORDS_TUPLE = Tuple[ConfigLine, ...]  # pylint: disable=invalid-name
 
 LINE_END_REGEX: Pattern[str] = re.compile(

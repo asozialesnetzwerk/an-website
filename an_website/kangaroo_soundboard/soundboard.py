@@ -14,8 +14,9 @@
 """Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from functools import cache
-from typing import Callable, Iterable, Optional
+from typing import Optional
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 

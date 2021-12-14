@@ -50,14 +50,14 @@ class RedirectPage(BaseRequestHandler):
             return self.redirect(self.fix_url("/"))
 
         if not redirect_url.startswith("http"):
-            # it is a local url, so just redirect
+            # it is a local URL, so just redirect
             # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url(redirect_url))
 
         if redirect_url.startswith("https://chat.asozial.org/"):
             return self.redirect(redirect_url)
 
-        # get the url the redirect comes from
+        # get the URL the redirect comes from
         from_url = self.get_query_argument("from", default="/")
 
         await self.render(

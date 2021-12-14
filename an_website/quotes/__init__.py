@@ -19,8 +19,9 @@ import datetime
 import logging
 import os
 import random
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Callable, Iterable, Literal, Optional
+from typing import Literal, Optional
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient

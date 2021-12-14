@@ -17,10 +17,11 @@ from __future__ import annotations
 import email.utils
 import os
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache, lru_cache
-from typing import Callable, Optional, Type, Union
+from typing import Optional, Union
 
 import orjson as json
 
@@ -96,7 +97,7 @@ class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
-    type: Type[Union[Book, Chapter, Person]] = Book
+    type: type[Union[Book, Chapter, Person]] = Book
 
     @lru_cache(100)
     def to_html(

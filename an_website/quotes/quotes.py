@@ -111,7 +111,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         return rating_filter
 
     def get_next_url(self) -> str:
-        """Get the url of the next quote."""
+        """Get the URL of the next quote."""
         next_q, next_a = self.get_next_id()
         url = f"/zitate/{next_q}-{next_a}/"
         if (rating_filter := self.rating_filter()) != "smart":
@@ -196,7 +196,7 @@ class QuoteById(QuoteBaseHandler):
         """
         Handle the POST request to this page and render the quote.
 
-        This is used to vote the quote, without changing the url.
+        This is used to vote the quote, without changing the URL.
         """
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)

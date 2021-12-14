@@ -142,8 +142,6 @@ async def test_request_handlers(fetch):
     assert response.code == 404
     response = await fetch("/api/restart/")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/api/backdoor/")
-    assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/eval/")
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/exec/")

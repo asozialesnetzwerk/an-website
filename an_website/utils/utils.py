@@ -21,9 +21,10 @@ import os
 import random
 import re
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
-from typing import Any, Callable, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Optional, Tuple, TypeVar, Union
 
 import tornado.httputil
 from tornado.web import HTTPError, RequestHandler
@@ -37,11 +38,12 @@ STATIC_DIR: str = os.path.join(SITE_BASE_DIR, "static")
 TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
 
 Handler = Union[
-    tuple[str, Type[RequestHandler]],
-    tuple[str, Type[RequestHandler], dict[str, Any]],
-    tuple[str, Type[RequestHandler], dict[str, Any], str],
+    tuple[str, type[RequestHandler]],
+    tuple[str, type[RequestHandler], dict[str, Any]],
+    tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 # following should be tuple[Handler, ...] but mypy then complains
+# pylint: disable=deprecated-typing-alias
 HandlerTuple = Tuple[Handler, ...]
 
 

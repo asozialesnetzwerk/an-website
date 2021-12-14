@@ -55,7 +55,7 @@ HTTP_CLIENT = AsyncHTTPClient()
 
 
 async def url_returns_200(url: str) -> bool:
-    """Check whether a url returns a status code of 200."""
+    """Check whether a URL returns a status code of 200."""
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     return response.code == 200
 
@@ -66,7 +66,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 
     How to get the invite:
         - from the widget (has to be enabled in guild settings)
-        - from disboard (the guild needs to set it up first)
+        - from DISBOARD (the guild needs to set it up first)
     If the invite couldn't be fetched a HTTPError is thrown.
     """
     reason = "Invite not found."
@@ -81,7 +81,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
             return invite, url
         reason = f"No instant invite in widget ({url}) found."
 
-    # try getting the invite from disboard
+    # try getting the invite from DISBOARD
     url = f"https://disboard.org/site/get-invite/{guild_id}"
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
@@ -90,12 +90,12 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
             f"https://disboard.org/server/{guild_id}",
         )
 
-    # check if top.gg lists the guild
+    # check if Top.gg lists the guild
     url = f"https://top.gg/servers/{guild_id}/join"
     if await url_returns_200(url):
         return url, f"https://top.gg/servers/{guild_id}/"
 
-    # check if discords.com lists the guild
+    # check if Discords.com lists the guild
     if await url_returns_200(
         # API endpoint that only returns 200 if the guild exists
         f"https://discords.com/api-v2/server/{guild_id}/relevant"

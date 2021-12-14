@@ -20,7 +20,7 @@ import pickle
 import pydoc
 import sys
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 from tornado.web import HTTPError
 
@@ -31,13 +31,9 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=(
-            (r"/api/backdoor/", Backdoor),
-            (r"/api/backdoor/(eval|exec)/", Backdoor),
-        ),
+        handlers=((r"/api/backdoor/(eval|exec)/", Backdoor),),
         name="Backdoor",
         description="🚪",
-        path="/api/backdoor/",
         hidden=True,
     )
 
@@ -60,8 +56,8 @@ class Backdoor(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
 
-    sessions: Dict[str, dict] = {}
-    _globals: Dict[str, Any] = {
+    sessions: dict[str, dict] = {}
+    _globals: dict[str, Any] = {
         "__builtins__": __builtins__,
         "__name__": "this",
     }
@@ -70,32 +66,31 @@ class Backdoor(APIRequestHandler):
         self._globals["app"] = self.application
         super().initialize(**kwargs)
 
-    async def post(self, mode=None):  # noqa: C901
-        # pylint: disable=too-many-branches, too-many-statements
+    async def post(self, mode):  # noqa: C901
+        # pylint: disable=too-many-branches
         """Handle the POST request to the backdoor API."""
         try:
             output = io.StringIO()
-            if mode:
-                source = self.request.body
-            else:
-                try:
-                    source = pickle.loads(self.request.body)
-                except Exception:
-                    raise HTTPError(400)  # pylint: disable=raise-missing-from
-                if isinstance(source, ast.Expression):
-                    mode = "eval"
-                elif isinstance(source, ast.Module):
-                    mode = "exec"
-                else:
-                    raise HTTPError(400)
+            source = self.request.body
             try:
-                code = compile(
+                parsed = compile(
                     source,
+                    str(),
+                    mode,
+                    barry_as_FLUFL.compiler_flag
+                    | ast.PyCF_ONLY_AST
+                    | ast.PyCF_TYPE_COMMENTS,
+                    0x5F3759DF,
+                    _feature_version=9,
+                )
+                code = compile(
+                    parsed,
                     str(),
                     mode,
                     barry_as_FLUFL.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
+                    _feature_version=9,
                 )
             except SyntaxError:
                 response = {"success": False, "result": sys.exc_info()}

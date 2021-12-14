@@ -1,7 +1,7 @@
 [MASTER]
 load-plugins=
     #pylint.extensions.empty_comment,
-    #pylint.extensions.typing,
+    pylint.extensions.typing,
     #pylint.extensions.comparetozero,
     #pylint.extensions.for_any_all,
     #pylint.extensions.bad_builtin,

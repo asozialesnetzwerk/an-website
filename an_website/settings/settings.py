@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Union
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str
@@ -45,7 +45,7 @@ class SettingsPage(BaseRequestHandler):
         name: str,
         value: Union[str, bytes],
         domain: Optional[str] = None,
-        expires: Optional[Union[float, Tuple, datetime.datetime]] = None,
+        expires: Optional[Union[float, tuple, datetime.datetime]] = None,
         path: str = "/",
         expires_days: Optional[float] = 365,  # changed
         **kwargs: Any,
@@ -83,7 +83,7 @@ class SettingsPage(BaseRequestHandler):
                 "theme" in self.request.query_arguments
                 or "no_3rd_party" in self.request.query_arguments
             ):
-                # remove all the information saved in the cookies from the url
+                # remove all the information saved in the cookies from the URL
                 replace_url_with = (
                     f"{self.request.protocol}://{self.request.host}"
                     f"{self.request.path}?save_in_cookie=sure"

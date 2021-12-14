@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Info-page to show information about authors and quotes."""
+"""Info page to show information about authors and quotes."""
 from __future__ import annotations
 
 import re
@@ -75,7 +75,7 @@ async def search_wikipedia(
     """
     Search wikipedia to get information about the query.
 
-    Return a tuple with the url and the content.
+    Return a tuple with the URL and the content.
     """
     if len(query) == 0:
         return None
@@ -90,7 +90,7 @@ async def search_wikipedia(
             return await search_wikipedia(query, WIKI_API_EN)
         return None  # nothing found
     page_name = response_json[1][0]
-    # get the url of the content & replace "," with "%2C"
+    # get the URL of the content & replace "," with "%2C"
     url = str(response_json[3][0]).replace(",", "%2C")
 
     return (
