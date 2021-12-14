@@ -45,7 +45,7 @@ Handler = Union[
 HandlerTuple = Tuple[Handler, ...]
 
 
-# sortable so the pages can be linked in a order
+# sortable so the pages can be linked in an order;
 # frozen so it's immutable
 @dataclass(order=True, frozen=True)
 class PageInfo:
@@ -63,7 +63,7 @@ class PageInfo:
         Check whether this should be shown on the search page.
 
         0   → doesn't contain any part of the string
-        > 0 → parts of the string are contained, the higher the better
+        > 0 → parts of the string are contained, the higher, the better
         """
         if self.hidden or self.path is None:
             return 0
@@ -300,11 +300,11 @@ def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
 
 
 async def run(
-    programm, *args, stdin=asyncio.subprocess.PIPE
+    program, *args, stdin=asyncio.subprocess.PIPE
 ) -> tuple[Optional[int], bytes, bytes]:
     """Run a programm & return the return code, stdout and stderr as tuple."""
     proc = await asyncio.create_subprocess_exec(
-        programm,
+        program,
         *args,
         stdin=stdin,
         stdout=asyncio.subprocess.PIPE,

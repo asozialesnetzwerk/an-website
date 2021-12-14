@@ -214,7 +214,7 @@ def startup():  # noqa: C901  # pylint: disable=too-many-branches
         print(f"Using session {session}")
 
     if "--no-cache" not in sys.argv:
-        os.makedirs(os.path.dirname(session_pickle), True)
+        os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
         with open(session_pickle, "wb") as file:
             pickle.dump((url, key, session), file)
         print("Saved session to cache")

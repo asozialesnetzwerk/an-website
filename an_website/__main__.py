@@ -442,7 +442,7 @@ def signal_handler(signalnum, frame):
         raise KeyboardInterrupt
 
 
-def main():
+def main(app: Application):
     """
     Start everything.
 
@@ -470,15 +470,13 @@ def main():
         if len(module_name) > 0:
             IGNORED_MODULES.append(module_name)
 
-    app = make_app()
-
     apply_config_to_app(app, config)
 
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
     server = app.listen(
         config.getint("GENERAL", "PORT", fallback=8080),
-        "localhost" if behind_proxy else None,
+        "localhost" if behind_proxy else "",
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
         protocol=config.get("GENERAL", "PROTOCOL", fallback=None),
@@ -496,4 +494,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    application = make_app()
+    main(application)
