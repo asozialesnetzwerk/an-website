@@ -268,6 +268,20 @@ class BaseRequestHandler(RequestHandler):
         )
         return user_id
 
+    def get_url_without_path(self):
+        """Get the request URL without the path."""
+        protocol = None
+        if self.request.host_name.endswith(".onion"):
+            # if the host is an onion domain, use HTTP
+            protocol = self.settings["ONION_PROTOCOL"]
+        elif self.settings.get("LINK_TO_HTTPS"):
+            # always use HTTPS if the config is set
+            protocol = "https"
+        if protocol is None:
+            # otherwise use the protocol of the request
+            protocol = self.request.protocol
+        return f"{protocol}://{self.request.host}"
+
     @cache
     def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
         """
@@ -299,24 +313,13 @@ class BaseRequestHandler(RequestHandler):
 
         if url.startswith("/"):
             # don't use relative URLs
-            protocol = None
-            if self.request.host_name.endswith(".onion"):
-                # if the host is an onion domain, use HTTP
-                protocol = self.settings["ONION_PROTOCOL"]
-            elif self.settings.get("LINK_TO_HTTPS"):
-                # always use HTTPS if the config is set
-                protocol = "https"
-            if protocol is None:
-                # otherwise use the protocol of the request
-                protocol = self.request.protocol
-
             if (
                 "?" not in url
                 and not url.endswith("/")
                 and "." not in url.split("/")[-1]
             ):
                 url += "/"
-            return f"{protocol}://{self.request.host}{url}"
+            return self.get_url_without_path() + url
 
         return url
 

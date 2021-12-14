@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+{% whitespace oneline %}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Zitat des Tages</title>
+    <description>Das Zitat des Tages.</description>
+    <language>de-de</language>
+    <link>{{url}}</link>
+    <atom:link href="{{url}}" rel="self" type="application/rss+xml" />
+
+    {% for date, q_url, quote in quotes %}
+    <item>
+      <title>{{quote}}</title>
+      <quote>{{quote.quote.quote}}</quote>
+      <author>{{quote.author.name}}</author>
+      <link>{{q_url}}</link>
+      <guid>{{quote.get_id_as_str()}}</guid>
+      <pubDate>{{date}}</pubDate>
+    </item>
+    {% end %}
+  </channel>
+</rss>
