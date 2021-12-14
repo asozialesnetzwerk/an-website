@@ -51,11 +51,11 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
 
     async def get(self):
         """Handle GET requests."""
-        today = datetime.now(tz=timezone.utc).date()
+        _today_date = datetime.now(tz=timezone.utc).date()
         today = datetime(
-            year=today.year,
-            month=today.month,
-            day=today.day,
+            year=_today_date.year,
+            month=_today_date.month,
+            day=_today_date.day,
             tzinfo=timezone.utc,
         )
         quote = await self.get_quote_of_today()
@@ -87,10 +87,12 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
         )
 
     def get_redis_used_key(self, _wq_id: str) -> str:
+        """Get the Redis used key."""
         prefix = self.settings.get("REDIS_PREFIX")
         return f"{prefix}:quote-of-the-day:used:{_wq_id}"
 
     def get_redis_quote_date_key(self, date) -> str:
+        """Get the Redis key for getting quotes by date."""
         prefix = self.settings.get("REDIS_PREFIX")
         return f"{prefix}:quote-of-the-day:by-date:{date}"
 

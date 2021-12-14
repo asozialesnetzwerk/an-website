@@ -476,7 +476,7 @@ def main(app: Application):
 
     server = app.listen(
         config.getint("GENERAL", "PORT", fallback=8080),
-        "localhost" if behind_proxy else "",
+        "localhost" if behind_proxy else str(),
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
         protocol=config.get("GENERAL", "PROTOCOL", fallback=None),
