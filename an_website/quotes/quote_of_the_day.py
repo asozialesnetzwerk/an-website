@@ -63,9 +63,10 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
         quotes: list[tuple[str, str, WrongQuote]] = [
             (email.utils.format_datetime(today), q_url, quote)
         ]
-        for _i in range(5):
+        for _i in range(1, 5):
             _date = today - timedelta(days=_i)
             _q = await self.get_quote_by_date(_date)
+            print(_date, _q)
             if _q:
                 quotes.append(
                     (
@@ -89,7 +90,8 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
     def get_redis_quote_date_key(self, date) -> str:
         """Get the Redis key for getting quotes by date."""
         prefix = self.settings.get("REDIS_PREFIX")
-        return f"{prefix}:quote-of-the-day:by-date:{date}"
+        date_str = str(date.date() if isinstance(date, datetime) else date)
+        return f"{prefix}:quote-of-the-day:by-date:{date_str}"
 
     async def has_been_used(self, _wq_id: str):
         """Check with Redis here."""
