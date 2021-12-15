@@ -72,7 +72,7 @@ class Restart(APIRequestHandler):
             f"cd {repo_path} ; ./restart.sh '{commit}' 'no_restart'",
         )
 
-        if code == 0:
+        if not code:
             await self.finish(
                 {"status": 200, "reason": "Successful. Restarting now."}
             )

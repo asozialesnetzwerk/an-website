@@ -91,7 +91,7 @@ async def generate_pattern_str(
 
     invalid_chars = fix_invalid(invalid)
 
-    if len(invalid_chars) == 0:
+    if not invalid_chars:
         # there are no invalid chars,
         # so the wildcard can be replaced with just "."
         return WILDCARDS_REGEX.sub(
@@ -178,7 +178,7 @@ async def get_words_and_letters(
 ) -> tuple[frozenset[str], dict[str, int]]:
     """Generate a word set and a letters dict and return them in a tuple."""
     input_letters: str = WILDCARDS_REGEX.sub(str(), input_str)
-    matches_always = len(invalid) == 0 and len(input_letters) == 0
+    matches_always = not invalid and not input_letters
 
     if matches_always and not crossword_mode:
         return get_words(file_name), get_letters(file_name)

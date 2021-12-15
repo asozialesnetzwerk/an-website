@@ -147,7 +147,7 @@ def create_image(  # pylint: disable=too-many-locals
     )
 
     # draw rating
-    if rating != 0:
+    if rating:
         width, height = FONT.getsize(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(

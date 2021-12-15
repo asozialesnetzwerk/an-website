@@ -91,18 +91,18 @@ async def create_wrong_quote(
 ) -> str:
     """Create a wrong quote and return the id in the q_id-a_id format."""
     if isinstance(fake_author_param, str):
-        if len(fake_author_param) == 0:
+        if not fake_author_param:
             raise HTTPError(400, "Fake author is needed, but empty.")
         fake_author = await create_author(fake_author_param)
     else:
         fake_author = fake_author_param
 
     if isinstance(quote_param, str):
-        if len(quote_param) == 0:
+        if not quote_param:
             raise HTTPError(400, "Quote is needed, but empty.")
 
         if isinstance(real_author_param, str):
-            if len(real_author_param) == 0:
+            if not real_author_param:
                 raise HTTPError(400, "Real author is needed, but empty.")
             real_author = await create_author(real_author_param)
         else:

@@ -115,6 +115,7 @@ class BaseRequestHandler(RequestHandler):
 
     async def ratelimit(self, global_ratelimit=False):
         """Take b1nzy to space using Redis."""
+        # pylint: disable=too-many-locals
         if (
             # whether ratelimits are enabled
             not self.settings.get("RATELIMITS")
@@ -133,7 +134,7 @@ class BaseRequestHandler(RequestHandler):
             max_burst = 99
             count_per_period = 20
             period = 1
-            tokens = 1
+            tokens = 10 if self.settings.get("UNDER_ATTACK") else 1
         else:
             bucket = getattr(
                 self, f"RATELIMIT_{self.request.method}_BUCKET", str()
@@ -161,14 +162,16 @@ class BaseRequestHandler(RequestHandler):
             tokens,
         )
         if result[0]:
-            self.set_header("Retry-After", result[3])
+            retry_after = result[3] + 1  # redis-cell stupidly rounds down
+            self.set_header("Retry-After", retry_after)
             if global_ratelimit:
                 self.set_header("X-RateLimit-Global", "true")
         if not global_ratelimit:
+            reset_after = result[4] + 1  # redis-cell stupidly rounds down
             self.set_header("X-RateLimit-Limit", result[1])
             self.set_header("X-RateLimit-Remaining", result[2])
-            self.set_header("X-RateLimit-Reset", time.time() + result[4])
-            self.set_header("X-RateLimit-Reset-After", result[4])
+            self.set_header("X-RateLimit-Reset", time.time() + reset_after)
+            self.set_header("X-RateLimit-Reset-After", reset_after)
             self.set_header(
                 "X-RateLimit-Bucket",
                 # pylint: disable=not-callable
@@ -502,7 +505,7 @@ class BaseRequestHandler(RequestHandler):
         """Check whether the request is authorized."""
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
 
-        if api_secrets is None or len(api_secrets) == 0:
+        if not api_secrets:
             return False
 
         secret = self.request.headers.get("Authorization")

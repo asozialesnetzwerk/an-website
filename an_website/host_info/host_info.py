@@ -93,10 +93,15 @@ class UwuHostInfo(BaseRequestHandler):
             "uwufetch",
             "-w",
         )
-        if wetuwn_code != 0:
+        if wetuwn_code == 127:
             raise HTTPEwwow(
                 501,
-                reason="Sowwy. This sewvew h-hasn't instawwed uwufetch.",
+                reason="Sowwy. This sewvew h-hasn't instawwed UwUFetch.",
+            )
+        if wetuwn_code:
+            raise HTTPEwwow(
+                500,
+                reason=f"UwUFetch has exited with wetuwn code {wetuwn_code}.",
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         await self.render(

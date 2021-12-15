@@ -189,7 +189,7 @@ async def make_api_request(
 def get_author_updated_with(author_id: int, author_name: str):
     """Get the author with the given id and the name."""
     author_name = author_name.strip()
-    if len(author_name) == 0:
+    if not author_name:
         author_name = "None"
     author = AUTHORS_CACHE.setdefault(
         author_id,
@@ -458,8 +458,8 @@ class QuoteReadyCheckRequestHandler(BaseRequestHandler):
 
     async def prepare(self):
         """Fail if quotes aren't ready yet."""
-        if len(WRONG_QUOTES_CACHE) == 0:
+        if not WRONG_QUOTES_CACHE:
             # should work in a few seconds, the quotes just haven't loaded yet
-            self.set_header("Retry-After", "3")
+            self.set_header("Retry-After", "5")
             raise HTTPError(503, reason="Service available in a few seconds.")
         await super().prepare()

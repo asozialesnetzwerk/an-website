@@ -135,6 +135,7 @@ async def test_quote_request_handlers(http_server_client):
 
 def test_parsing_vote_str():
     """Test parsing vote str."""
+    # pylint: disable=compare-to-zero
     assert main_page.vote_to_int("-1") == -1
     assert main_page.vote_to_int("0") == 0
     assert main_page.vote_to_int("1") == 1

@@ -483,7 +483,7 @@ def main(app: Application):
         decompress_request=True,
     )
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_event_loop_policy().get_event_loop()
 
     # pylint: disable=import-outside-toplevel
     from .quotes import start_updating_cache_periodically
@@ -491,6 +491,7 @@ def main(app: Application):
     asyncio.run_coroutine_threadsafe(
         start_updating_cache_periodically(app), loop
     )
+
     try:
         loop.run_forever()
     except KeyboardInterrupt:

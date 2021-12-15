@@ -56,7 +56,7 @@ def get_module_info() -> ModuleInfo:
 
 def string_to_num(string: str, divide_by: int = 1) -> Optional[float]:
     """Convert a string to a number and divide it by divide_by."""
-    if string is None or len(string) == 0:
+    if not string:
         return None
 
     string = string.replace(",", ".")

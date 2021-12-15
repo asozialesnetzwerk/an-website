@@ -148,7 +148,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         elif rating_filter == "rated":
             wrong_quotes = get_wrong_quotes()
 
-        if wrong_quotes is None or len(wrong_quotes) == 0:
+        if not wrong_quotes:
             return get_random_id()
 
         return random.choice(wrong_quotes).get_id()
@@ -183,7 +183,7 @@ class QuoteById(QuoteBaseHandler):
         int_quote_id = int(quote_id)
         if author_id is None:
             _wqs = get_wrong_quotes(lambda _wq: _wq.id == int_quote_id)
-            if len(_wqs) == 0:
+            if not _wqs:
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
                 self.fix_url(

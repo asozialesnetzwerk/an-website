@@ -89,11 +89,7 @@ class Comment(ConfigLine):
 
     def to_conf_line(self, len_of_left: Optional[int] = None):
         """Get how this would look like in a config."""
-        return (
-            str()
-            if self.comment is None or len(self.comment) == 0
-            else f"# {self.comment}"
-        )
+        return str() if not self.comment else f"# {self.comment}"
 
 
 @dataclass(frozen=True, init=False)
@@ -223,7 +219,7 @@ def parse_config_line(  # noqa: C901
     # remove white spaces to fix stuff, behaves weird otherwise
     line = line.strip()
 
-    if len(line) == 0:
+    if not line:
         return Comment(str())  # empty comment → empty line
 
     # print(len(line.strip()), f"'{line.strip()}'")
@@ -236,7 +232,7 @@ def parse_config_line(  # noqa: C901
         raise InvalidConfigException(line_num, line, "Line is invalid.")
 
     left, separator, right = _m.group(1), _m.group(2), _m.group(3)
-    if left is None or len(left) == 0:
+    if not left:
         raise InvalidConfigException(
             line_num, line, "Left of separator is empty."
         )
@@ -244,7 +240,7 @@ def parse_config_line(  # noqa: C901
         raise InvalidConfigException(
             line_num, line, "No separator ('<=>' or '=>') present."
         )
-    if right is None or len(right) == 0:
+    if not right:
         raise InvalidConfigException(
             line_num, line, "Right of separator is empty."
         )

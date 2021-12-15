@@ -46,7 +46,6 @@ DIR = os.path.dirname(__file__)
 
 def apply():
     """Apply the patches."""
-    patch_json()
     defusedxml.defuse_stdlib()
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
         {"sure": True, "nope": False}
@@ -62,6 +61,7 @@ def apply():
         )
     )
     anonymize_logs()
+    patch_json()
 
 
 def anonymize_logs():

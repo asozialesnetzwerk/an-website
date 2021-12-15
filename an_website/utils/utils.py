@@ -83,7 +83,7 @@ class PageInfo:
         # remove empty strings from words and make the rest lower case
         words = [_w.lower() for _w in words if len(_w) > 0]
 
-        if len(words) == 0:
+        if not words:
             # query empty, so find in everything
             return 1.0
 
@@ -191,7 +191,7 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 @cache
 def add_args_to_url(url: str, **kwargs) -> str:
     """Add query arguments to a URL."""
-    if len(kwargs) == 0:
+    if not kwargs:
         return url
 
     url_args: dict[str, str] = {}
@@ -203,7 +203,7 @@ def add_args_to_url(url: str, **kwargs) -> str:
             else:
                 url_args[key] = str(value)
 
-    if len(url_args) == 0:
+    if not url_args:
         return url
 
     return tornado.httputil.url_concat(url, url_args)

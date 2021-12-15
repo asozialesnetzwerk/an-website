@@ -49,7 +49,7 @@ async def find_solutions(
 
     word_len = len(word)
 
-    if word_len == 0:
+    if not word_len:
         return solutions
 
     ignore = (*ignore, word)
@@ -107,7 +107,7 @@ class WordGameHelper(BaseRequestHandler):
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         ]
 
-        if len(word) == 0 and word not in before:
+        if not word and word not in before:
             new_before = before
         else:
             # get the new_before as set with only unique words

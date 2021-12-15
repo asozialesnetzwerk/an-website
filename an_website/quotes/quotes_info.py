@@ -77,7 +77,7 @@ async def search_wikipedia(
 
     Return a tuple with the URL and the content.
     """
-    if len(query) == 0:
+    if not query:
         return None
     # try to get the info from wikipedia
     response = await HTTP_CLIENT.fetch(
@@ -85,7 +85,7 @@ async def search_wikipedia(
         f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
     )
     response_json = json.loads(response.body)
-    if len(response_json[1]) == 0:
+    if not response_json[1]:
         if api == WIKI_API_DE:
             return await search_wikipedia(query, WIKI_API_EN)
         return None  # nothing found
