@@ -19,6 +19,8 @@ import datetime as dt
 import email.utils
 import random
 
+from tornado.web import HTTPError
+
 from ..utils.utils import ModuleInfo
 from . import (
     WRONG_QUOTES_CACHE,
@@ -31,7 +33,14 @@ from . import (
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/zitat-des-tages/feed/", QuoteOfTheDayRss),),
+        handlers=(
+            (r"/zitat-des-tages/feed/", QuoteOfTheDayRss),
+            (r"/zitat-des-tages/", QuoteOfTheDayRedirect),
+            (
+                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
+                QuoteOfTheDayRedirect,
+            ),
+        ),
         name="Falsche Zitate",
         description="Ein RSS-Feed mit dem Zitat des Tages.",
         path="/zitat-des-tages/feed/",
@@ -73,8 +82,70 @@ class QuoteOfTheDayData:
         return f"Das Zitat des Tages vom {self.date:%d. %m. %Y}"
 
 
-class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
-    """The base request handler for the quotes package."""
+class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
+    """The base request handler for the quote of the day."""
+
+    def get_redis_used_key(self, _wq_id: str) -> str:
+        """Get the Redis used key."""
+        return f"{self.redis_prefix}:quote-of-the-day:used:{_wq_id}"
+
+    def get_redis_quote_date_key(self, date: dt.date) -> str:
+        """Get the Redis key for getting quotes by date."""
+        date_str = str(date.date() if isinstance(date, dt.datetime) else date)
+        return f"{self.redis_prefix}:quote-of-the-day:by-date:{date_str}"
+
+    async def has_been_used(self, _wq_id: str):
+        """Check with Redis here."""
+        return await self.redis.get(  # type: ignore
+            self.get_redis_used_key(_wq_id)
+        )
+
+    async def set_used(self, _wq_id: str):
+        """Set Redis key with used state and TTL here."""
+        return await self.redis.setex(  # type: ignore
+            self.get_redis_used_key(_wq_id),
+            #  we have over 720 funny wrong quotes, so 420 should be ok
+            420 * 24 * 60 * 60,  # TTL
+            1,  # True
+        )
+
+    async def get_quote_by_date(self, date: dt.date) -> None | WrongQuote:
+        """Get the quote of the date if one was saved."""
+        _wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
+        if not _wq_id:
+            return None
+        _q, _a = tuple(int(_i) for _i in _wq_id.decode("utf-8").split("-"))
+        return WRONG_QUOTES_CACHE.get((_q, _a))
+
+    async def get_quote_of_today(self) -> WrongQuote | None:
+        """Get the quote for today."""
+        _today = dt.datetime.now(tz=dt.timezone.utc).date()
+        _wq = await self.get_quote_by_date(_today)
+        if _wq:  # if was saved already
+            return _wq
+        quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
+            lambda _wq: _wq.rating > 1
+        )
+        count = len(quotes)
+        index = random.randrange(0, count)
+        for _i in range(1, count):
+            quote = quotes[index]
+            if await self.has_been_used(quote.get_id_as_str()):
+                index = (index + 1) % count
+            else:
+                _wq_id = quote.get_id_as_str()
+                await self.set_used(_wq_id)
+                await self.redis.setex(
+                    self.get_redis_quote_date_key(_today),
+                    420 * 24 * 60 * 60,  # TTL
+                    _wq_id,
+                )
+                return quote
+        return None
+
+
+class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
+    """The request handler for the quote of the day RSS feed."""
 
     async def get(self):
         """Handle GET requests."""
@@ -106,62 +177,23 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
             quotes=quotes,
         )
 
-    def get_redis_used_key(self, _wq_id: str) -> str:
-        """Get the Redis used key."""
-        return f"{self.redis_prefix}:quote-of-the-day:used:{_wq_id}"
 
-    def get_redis_quote_date_key(self, date: dt.date) -> str:
-        """Get the Redis key for getting quotes by date."""
-        date_str = str(date.date() if isinstance(date, dt.datetime) else date)
-        return f"{self.redis_prefix}:quote-of-the-day:by-date:{date_str}"
+class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
+    """Redirect to the quote of the day."""
 
-    async def has_been_used(self, _wq_id: str):
-        """Check with Redis here."""
-        return await self.redis.get(  # type: ignore
-            self.get_redis_used_key(_wq_id)
-        )
+    async def get(self, _date_str: str = None):
+        """Handle get requests."""
+        if _date_str:
+            _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
+            _wq = await self.get_quote_by_date(
+                dt.date(year=_y, month=_m, day=_d)
+            )
+        else:
+            _wq = await self.get_quote_of_today()
 
-    async def set_used(self, _wq_id: str):
-        """Set Redis key with used state and TTL here."""
-        return await self.redis.setex(  # type: ignore
-            self.get_redis_used_key(_wq_id),
-            #  we have over 720 funny wrong quotes, so 420 should be ok
-            420 * 24 * 60 * 60,  # TTL
-            1,  # True
-        )
-
-    async def get_quote_by_date(self, _date: dt.date) -> None | WrongQuote:
-        """Get the quote of the date if one was saved."""
-        _wq_id = await self.redis.get(  # type: ignore
-            self.get_redis_quote_date_key(_date)
-        )
-        if not _wq_id:
-            return None
-        _q, _a = tuple(int(_i) for _i in _wq_id.decode("utf-8").split("-"))
-        return WRONG_QUOTES_CACHE.get((_q, _a))
-
-    async def get_quote_of_today(self) -> WrongQuote | None:
-        """Get the quote for today."""
-        _today = dt.datetime.now(tz=dt.timezone.utc).date()
-        _wq = await self.get_quote_by_date(_today)
-        if _wq:  # if was saved already
-            return _wq
-        quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
-            lambda _wq: _wq.rating > 1
-        )
-        count = len(quotes)
-        index = random.randrange(0, count)
-        for _i in range(1, count):
-            quote = quotes[index]
-            if await self.has_been_used(quote.get_id_as_str()):
-                index = (index + 1) % count
-            else:
-                _wq_id = quote.get_id_as_str()
-                await self.set_used(_wq_id)
-                await self.redis.setex(  # type: ignore
-                    self.get_redis_quote_date_key(_today),
-                    30 * 24 * 60 * 60,
-                    _wq_id,
-                )
-                return quote
-        return None
+        if _wq:
+            self.redirect(
+                f"{self.get_url_without_path()}/zitate/{_wq.get_id_as_str()}/",
+                False,
+            )
+        raise HTTPError(404)
