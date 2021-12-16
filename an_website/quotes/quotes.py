@@ -203,10 +203,11 @@ class QuoteById(QuoteBaseHandler):
         new_vote_str = self.get_argument("vote", default=None)
         if new_vote_str is None or new_vote_str == str():
             return await self.render_quote(quote_id, author_id)
-        if (vote := vote_to_int(new_vote_str)) == new_vote_str:
-            return await self.render_quote(quote_id, author_id)
 
         old_vote = await self.get_old_vote(quote_id, author_id)
+
+        if (vote := vote_to_int(new_vote_str)) == old_vote:
+            return await self.render_quote(quote_id, author_id)
 
         await self.update_saved_votes(quote_id, author_id, vote)
 
