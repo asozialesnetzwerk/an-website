@@ -14,7 +14,7 @@
 """The main page of the website."""
 from __future__ import annotations
 
-from ..utils.request_handler import BaseRequestHandler
+from ..quotes.quote_of_the_day import QuoteOfTheDayBaseHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -30,7 +30,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class MainPage(BaseRequestHandler):
+class MainPage(QuoteOfTheDayBaseHandler):
     """The request handler of the main page."""
 
     RATELIMIT_TOKENS = 0
@@ -39,4 +39,5 @@ class MainPage(BaseRequestHandler):
         """Handle the GET requests and display the main page."""
         await self.render(
             "pages/main_page.html",
+            quote_data=await self.get_quote_of_today(),
         )

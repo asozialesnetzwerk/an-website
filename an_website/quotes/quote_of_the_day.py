@@ -61,9 +61,9 @@ class QuoteOfTheDayData:
     quote: WrongQuote
     url_without_path: str
 
-    def get_quote_as_str(self) -> str:
+    def get_quote_as_str(self, new_line_char="\n") -> str:
         """Get the quote as a string with new line."""
-        return f"»{self.quote.quote}«\n- {self.quote.author}"
+        return f"»{self.quote.quote}«{new_line_char}- {self.quote.author}"
 
     def get_quote_url(self) -> str:
         """Get the URL of the quote."""
@@ -133,6 +133,8 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
 
     async def get_quote_of_today(self) -> QuoteOfTheDayData | None:
         """Get the quote for today."""
+        if not self.redis:
+            return None
         today = dt.datetime.now(tz=dt.timezone.utc).date()
         quote_data = await self.get_quote_by_date(today)
         if quote_data:  # if was saved already

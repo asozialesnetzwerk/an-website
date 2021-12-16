@@ -2,9 +2,20 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<h2>
-    Liste der Seiten:
-</h2>
+{% if quote_data %}
+<a id="quote-of-the-day"
+   class="no-style-a"
+   href="{{quote_data.get_quote_url()}}"
+   style="text-align: center" >
+    <div>
+        {{quote_data.quote.quote}}
+    </div>
+    <div>
+        - {{quote_data.quote.author}}
+    </div>
+</a>
+{% end %}
+<h2>Liste der Seiten:</h2>
 <ul>
 {% for info in handler.settings.get("MODULE_INFOS") %}
     {% if not info.hidden and not info.path is None and not info.path == "/" %}
