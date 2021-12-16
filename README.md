@@ -28,7 +28,8 @@ You need:
 - python3.10
 - packages from requirements.txt
 - supervisord
-- redis (+ redis-cell) for ratelimits
+- redis
+- redis-cell (for ratelimits)
 - uwufetch
 
 How
