@@ -30,6 +30,7 @@ from typing import Optional, Union
 from urllib.parse import quote, unquote
 
 import orjson as json
+from aioredis import Redis  # type: ignore
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 
 # pylint: disable=no-name-in-module
@@ -100,6 +101,16 @@ class BaseRequestHandler(RequestHandler):
     def data_received(self, chunk):
         """Do nothing."""
 
+    @property
+    def redis(self) -> Redis:
+        """Get the Redis client from the settings."""
+        return self.settings.get("REDIS")  # type: ignore
+
+    @property
+    def redis_prefix(self) -> str:
+        """Get the Redis prefix from the settings."""
+        return self.settings.get("REDIS_PREFIX")  # type: ignore
+
     def set_default_headers(self):
         """Opt out of all FLoC cohort calculation."""
         self.set_header("Permissions-Policy", "interest-cohort=()")
@@ -115,7 +126,6 @@ class BaseRequestHandler(RequestHandler):
 
     async def ratelimit(self, global_ratelimit=False):
         """Take b1nzy to space using Redis."""
-        # pylint: disable=too-many-locals
         if (
             # whether ratelimits are enabled
             not self.settings.get("RATELIMITS")
@@ -125,12 +135,10 @@ class BaseRequestHandler(RequestHandler):
             or self.is_authorized()
         ):
             return False
-        redis = self.settings.get("REDIS")
-        prefix = self.settings.get("REDIS_PREFIX")
         # pylint: disable=not-callable
         remote_ip = blake3(self.request.remote_ip.encode("ascii")).hexdigest()
         if global_ratelimit:
-            key = f"{prefix}:ratelimit:{remote_ip}"
+            key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
             max_burst = 99
             count_per_period = 20
             period = 1
@@ -140,7 +148,7 @@ class BaseRequestHandler(RequestHandler):
                 self, f"RATELIMIT_{self.request.method}_BUCKET", str()
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
-            key = f"{prefix}:ratelimit:{remote_ip}:{bucket}"
+            key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
             max_burst = limit - 1
             count_per_period = getattr(
                 self,
@@ -153,7 +161,7 @@ class BaseRequestHandler(RequestHandler):
             tokens = 1
             if not (bucket and limit):
                 return False
-        result = await redis.execute_command(
+        result = await self.redis.execute_command(
             "CL.THROTTLE",
             key,
             max_burst,
@@ -245,7 +253,7 @@ class BaseRequestHandler(RequestHandler):
         """Hash the remote IP and return it."""
         # pylint: disable=not-callable
         return blake3(
-            self.request.remote_ip.encode("ascii")
+            (self.request.remote_ip or "None").encode("ascii")
             # pylint: disable=not-callable
             + blake3(
                 datetime.utcnow().date().isoformat().encode("ascii")

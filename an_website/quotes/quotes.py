@@ -275,16 +275,16 @@ class QuoteById(QuoteBaseHandler):
     @cache
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
         """Get the key to save the votes with Redis."""
-        prefix = self.settings.get("REDIS_PREFIX")
-        user_id = self.get_user_id()
-        return f"{prefix}:quote-votes:{user_id}:{quote_id}-{author_id}"
+        return (
+            f"{self.redis_prefix}:quote-votes:"
+            f"{self.get_user_id()}:{quote_id}-{author_id}"
+        )
 
     async def update_saved_votes(
         self, quote_id: int, author_id: int, vote: int
     ):
         """Save the new vote in the cookies."""
-        redis = self.settings["REDIS"]
-        result = await redis.setex(
+        result = await self.redis.setex(
             self.get_redis_votes_key(quote_id, author_id),
             60 * 60 * 24 * 90,  # time to live in seconds (3 months)
             str(vote),  # value to save (the vote)
@@ -314,7 +314,7 @@ class QuoteById(QuoteBaseHandler):
         if "REDIS" not in self.settings:
             logger.warning("No Redis connection")
             return 0
-        result = await self.settings["REDIS"].get(
+        result = await self.redis.get(
             self.get_redis_votes_key(quote_id, author_id)
         )
         if result in ("-1", b"-1"):

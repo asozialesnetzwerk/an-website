@@ -146,8 +146,7 @@ class AuthorsInfoPage(BaseRequestHandler):
 
     def get_redis_info_key(self, author_name) -> str:
         """Get the key to save the author info with Redis."""
-        prefix = self.settings.get("REDIS_PREFIX")
-        return f"{prefix}:quote-author-info:{author_name}"
+        return f"{self.redis_prefix}:quote-author-info:{author_name}"
 
     async def get(self, _id_str: str):
         """Handle GET requests to the author info page."""
@@ -155,16 +154,15 @@ class AuthorsInfoPage(BaseRequestHandler):
         author = await get_author_by_id(_id)
         if author.info is None:
             result = None
-            redis = self.settings.get("REDIS")
             fixed_author_name = fix_author_for_wikipedia_search(author.name)
-            if redis is not None:
+            if self.redis is not None:
                 # try to get the info from Redis
-                result = await redis.get(
+                result = await self.redis.get(
                     self.get_redis_info_key(fixed_author_name)
                 )
             if result:
                 info: list[str] = result.decode("utf-8").split("|", maxsplit=1)
-                remaining_ttl = await redis.ttl(
+                remaining_ttl = await self.redis.ttl(
                     self.get_redis_info_key(fixed_author_name)
                 )
                 creation_date = datetime.now(tz=timezone.utc) - timedelta(
@@ -179,8 +177,8 @@ class AuthorsInfoPage(BaseRequestHandler):
                 if author.info is None or author.info[1] is None:
                     # nothing found
                     logger.info("No information found about %s", repr(author))
-                elif redis is not None:
-                    await redis.setex(
+                elif self.redis is not None:
+                    await self.redis.setex(
                         self.get_redis_info_key(fixed_author_name),
                         AUTHOR_INFO_NEW_TTL,
                         # value to save (the author info)

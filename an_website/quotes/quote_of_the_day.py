@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import email.utils
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
 from ..utils.utils import ModuleInfo
@@ -84,35 +84,34 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
 
     def get_redis_used_key(self, _wq_id: str) -> str:
         """Get the Redis used key."""
-        prefix = self.settings.get("REDIS_PREFIX")
-        return f"{prefix}:quote-of-the-day:used:{_wq_id}"
+        return f"{self.redis_prefix}:quote-of-the-day:used:{_wq_id}"
 
-    def get_redis_quote_date_key(self, date) -> str:
+    def get_redis_quote_date_key(self, _date: datetime | date) -> str:
         """Get the Redis key for getting quotes by date."""
-        prefix = self.settings.get("REDIS_PREFIX")
-        date_str = str(date.date() if isinstance(date, datetime) else date)
-        return f"{prefix}:quote-of-the-day:by-date:{date_str}"
+        date_str = str(_date.date() if isinstance(_date, datetime) else _date)
+        return f"{self.redis_prefix}:quote-of-the-day:by-date:{date_str}"
 
     async def has_been_used(self, _wq_id: str):
         """Check with Redis here."""
-        return await self.settings.get("REDIS").get(  # type: ignore
+        return await self.redis.get(  # type: ignore
             self.get_redis_used_key(_wq_id)
         )
 
     async def set_used(self, _wq_id: str):
         """Set Redis key with used state and TTL here."""
-        return await self.settings.get("REDIS").setex(  # type: ignore
+        return await self.redis.setex(  # type: ignore
             self.get_redis_used_key(_wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
             420 * 24 * 60 * 60,  # TTL
             1,  # True
         )
 
-    async def get_quote_by_date(self, date) -> Optional[WrongQuote]:
+    async def get_quote_by_date(
+        self, _date: datetime | date
+    ) -> None | WrongQuote:
         """Get the quote of the date if one was saved."""
-        redis = self.settings.get("REDIS")
-        _wq_id = await redis.get(  # type: ignore
-            self.get_redis_quote_date_key(date)
+        _wq_id = await self.redis.get(  # type: ignore
+            self.get_redis_quote_date_key(_date)
         )
         if not _wq_id:
             return None
@@ -137,8 +136,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
             else:
                 _wq_id = quote.get_id_as_str()
                 await self.set_used(_wq_id)
-                redis = self.settings.get("REDIS")
-                await redis.setex(  # type: ignore
+                await self.redis.setex(  # type: ignore
                     self.get_redis_quote_date_key(_today),
                     30 * 24 * 60 * 60,
                     _wq_id,
