@@ -21,6 +21,7 @@ import random
 
 from tornado.web import HTTPError
 
+from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     WRONG_QUOTES_CACHE,
@@ -40,10 +41,15 @@ def get_module_info() -> ModuleInfo:
                 r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
                 QuoteOfTheDayRedirect,
             ),
+            (r"/api/zitat-des-tages/", QuoteOfTheDayAPI),
+            (
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
+                QuoteOfTheDayAPI,
+            ),
         ),
-        name="Falsche Zitate",
-        description="Ein RSS-Feed mit dem Zitat des Tages.",
-        path="/zitat-des-tages/feed/",
+        name="Das Zitat des Tages",
+        description="Jeden Tag ein anderes Zitat.",
+        path="/zitat-des-tages/",
         keywords=(
             "Zitate",
             "Witzig",
@@ -88,6 +94,15 @@ class QuoteOfTheDayData:
     def get_title(self) -> str:
         """Get the title for the quote of the day."""
         return f"Das Zitat des Tages vom {self.date:%d. %m. %Y}"
+
+    def to_json(self) -> dict:
+        """Get the quote of the day as json."""
+        return {
+            "date": self.date.isoformat(),
+            "quote": self.quote.to_json(),
+            "url": self.get_quote_url(),
+            "image": self.get_quote_image_url(),
+        }
 
 
 class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
@@ -185,6 +200,24 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
                 if _q
             ),
         )
+
+
+class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
+    """Handler for the JSON API that returns the quote of the day."""
+
+    async def get(self, _date_str: str = None):
+        """Handle get requests."""
+        if _date_str:
+            _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
+            _wq = await self.get_quote_by_date(
+                dt.date(year=_y, month=_m, day=_d)
+            )
+        else:
+            _wq = await self.get_quote_of_today()
+
+        if _wq:
+            await self.finish(_wq.to_json())
+        raise HTTPError(404)
 
 
 class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):

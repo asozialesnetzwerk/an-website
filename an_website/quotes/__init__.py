@@ -21,7 +21,7 @@ import os
 import random
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -73,6 +73,21 @@ class Author(QuotesObjBase):
             self.info = None
             self.name = name
 
+    def to_json(self) -> dict[str, Any]:
+        """Get the author as json."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "path": f"/zitate/info/a/{self.id}/",
+            "info": {
+                "source": self.info[0],
+                "text": self.info[1],
+                "date": self.info[2].isoformat(),
+            }
+            if self.info
+            else None,
+        }
+
     def __str__(self):
         """Return the name of the author."""
         return self.name.strip()
@@ -92,6 +107,15 @@ class Quote(QuotesObjBase):
             self.author.update_name(author_name)
             return
         self.author = get_author_updated_with(author_id, author_name)
+
+    def to_json(self) -> dict[str, Any]:
+        """Get the quote as json."""
+        return {
+            "id": self.id,
+            "quote": self.quote,
+            "author": self.author.to_json(),
+            "path": f"/zitate/info/z/{self.id}/",
+        }
 
     def __str__(self):
         """Return the the content of the quote."""
@@ -121,6 +145,16 @@ class WrongQuote(QuotesObjBase):
         Format: quote_id-author_id
         """
         return f"{self.quote.id}-{self.author.id}"
+
+    def to_json(self) -> dict[str, Any]:
+        """Get the wrong quote as json."""
+        return {
+            "id": self.id,
+            "quote": self.quote.to_json(),
+            "author": self.author.to_json(),
+            "rating": self.rating,
+            "path": f"/zitate/{self.get_id_as_str()}/",
+        }
 
     def __str__(self):
         r"""
