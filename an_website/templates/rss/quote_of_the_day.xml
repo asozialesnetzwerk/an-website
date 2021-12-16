@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-{% whitespace oneline %}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Zitat des Tages</title>
@@ -14,6 +13,7 @@
       <description>{{data.get_quote_as_str()}}</description>
       <quote>{{data.quote.quote.quote}}</quote>
       <author>{{data.quote.author.name}}</author>
+      <rating>{{data.quote.rating}}</rating>
       <link>{{data.get_quote_url()}}</link>
       <image>{{data.get_quote_image_url()}}</image>
       <guid>{{data.quote.get_id_as_str()}}</guid>

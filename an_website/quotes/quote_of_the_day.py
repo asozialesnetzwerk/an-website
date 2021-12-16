@@ -100,7 +100,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
                         self.get_url_without_path(),
                     )
                 )
-        self.set_header("Content-Type", "application/xml")
+        self.set_header("Content-Type", "application/rss+xml")
         await self.render(
             "rss/quote_of_the_day.xml",
             quotes=quotes,
