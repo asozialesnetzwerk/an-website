@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from urllib.parse import quote as quote_url
 
 import orjson as json
@@ -71,7 +70,7 @@ WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
 
 async def search_wikipedia(
     query: str, api: str = WIKI_API_DE
-) -> Optional[tuple[str, Optional[str], datetime]]:
+) -> tuple[str, str | None, datetime] | None:
     """
     Search wikipedia to get information about the query.
 
@@ -102,7 +101,7 @@ async def search_wikipedia(
 
 async def get_wikipedia_page_content(
     page_name: str, api: str = WIKI_API_DE
-) -> Optional[str]:
+) -> str | None:
     """Get content from a wikipedia page and return it."""
     response = await HTTP_CLIENT.fetch(
         f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"

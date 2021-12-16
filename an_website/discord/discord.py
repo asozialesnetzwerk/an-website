@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import time
-from typing import Union
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -110,10 +109,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
 
 invite_cache: dict[
     int,
-    Union[
-        tuple[float, str, str],
-        tuple[float, HTTPError],
-    ],
+    tuple[float, str, str] | tuple[float, HTTPError],
 ] = {}
 
 

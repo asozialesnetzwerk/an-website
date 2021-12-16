@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Optional
 from urllib.parse import quote
 
 from ..utils.request_handler import BaseRequestHandler
@@ -40,7 +39,7 @@ class Service:
 
     title: str
     text: str
-    infos: Optional[dict[str, str]] = None
+    infos: dict[str, str] | None = None
 
     def to_html(self) -> str:
         """Create a HTML representation of this service and return it."""

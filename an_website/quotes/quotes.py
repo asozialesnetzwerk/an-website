@@ -21,7 +21,7 @@ from __future__ import annotations
 import logging
 import random
 from functools import cache
-from typing import Literal, Optional
+from typing import Literal
 
 from tornado.web import HTTPError
 
@@ -304,7 +304,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def get_saved_vote(
         self, quote_id: int, author_id: int
-    ) -> Optional[Literal[-1, 0, 1]]:
+    ) -> Literal[-1, 0, 1] | None:
         """
         Get the vote of the current user saved with Redis.
 

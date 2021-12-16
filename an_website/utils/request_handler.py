@@ -26,7 +26,6 @@ import traceback
 import uuid
 from datetime import datetime
 from functools import cache
-from typing import Optional, Union
 from urllib.parse import quote, unquote
 
 import orjson as json
@@ -253,7 +252,9 @@ class BaseRequestHandler(RequestHandler):
         """Hash the remote IP and return it."""
         # pylint: disable=not-callable
         return blake3(
-            (self.request.remote_ip or "None").encode("ascii")
+            # Item "None" of "Optional[Any]" has no attribute "encode"
+            # since mypy 0.920
+            self.request.remote_ip.encode("ascii")  # type: ignore
             # pylint: disable=not-callable
             + blake3(
                 datetime.utcnow().date().isoformat().encode("ascii")
@@ -294,7 +295,7 @@ class BaseRequestHandler(RequestHandler):
         return f"{protocol}://{self.request.host}"
 
     @cache
-    def fix_url(self, url: str, this_url: Optional[str] = None) -> str:
+    def fix_url(self, url: str, this_url: str | None = None) -> str:
         """
         Fix a URL and return it.
 
@@ -398,7 +399,7 @@ class BaseRequestHandler(RequestHandler):
 
         return form_appendix
 
-    def get_contact_email(self) -> Optional[str]:
+    def get_contact_email(self) -> str | None:
         """Get the contact email from the settings."""
         email = self.settings.get("CONTACT_EMAIL")
         if email is None:
@@ -451,8 +452,8 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_request_var(
-        self, name: str, default: Optional[str] = None
-    ) -> Optional[str]:
+        self, name: str, default: str | None = None
+    ) -> str | None:
         """
         Get the a value by name for the request.
 
@@ -471,8 +472,8 @@ class BaseRequestHandler(RequestHandler):
         return value
 
     def get_request_var_as_bool(
-        self, name: str, default: Optional[bool] = None
-    ) -> Optional[bool]:
+        self, name: str, default: bool | None = None
+    ) -> bool | None:
         """Get the a value by name as bool for the request."""
         value_str = self.get_request_var(name, default=None)
         if value_str is None:
@@ -482,13 +483,11 @@ class BaseRequestHandler(RequestHandler):
     def get_argument(  # type: ignore[override]
         self,
         name: str,
-        default: Union[
-            None,
-            str,
-            web._ArgDefaultMarker,
-        ] = web._ARG_DEFAULT,  # pylint: disable=protected-access
+        default: None
+        | str
+        | web._ArgDefaultMarker = web._ARG_DEFAULT,  # pylint: disable=protected-access
         strip: bool = True,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get an argument based on body or query."""
         arg = super().get_argument(name, default=None, strip=strip)
         if arg is not None:

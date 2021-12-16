@@ -22,7 +22,6 @@ import re
 import sys
 import traceback
 import uuid
-from typing import Optional
 
 import hy  # type: ignore
 from tornado.httpclient import HTTPClient, HTTPClientError
@@ -45,7 +44,7 @@ def send(
     key: str,
     code: str,
     mode: str = "exec",
-    session: Optional[str] = None,
+    session: str | None = None,
 ):
     """Send code to the backdoor API."""
     headers = {"Authorization": key}
@@ -71,7 +70,7 @@ def run_and_print(  # noqa: C901
     url: str,
     key: str,
     code: str,
-    session: Optional[str] = None,
+    session: str | None = None,
     lisp: bool = False,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""

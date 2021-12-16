@@ -14,10 +14,9 @@
 """Get a random quote for a given day."""
 from __future__ import annotations
 
+import datetime as dt
 import email.utils
 import random
-from datetime import date, datetime, timedelta, timezone
-from typing import Optional
 
 from ..utils.utils import ModuleInfo
 from . import (
@@ -49,12 +48,12 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
 
     async def get(self):
         """Handle GET requests."""
-        _today_date = datetime.now(tz=timezone.utc).date()
-        today = datetime(
+        _today_date = dt.datetime.now(tz=dt.timezone.utc).date()
+        today = dt.datetime(
             year=_today_date.year,
             month=_today_date.month,
             day=_today_date.day,
-            tzinfo=timezone.utc,
+            tzinfo=dt.timezone.utc,
         )
         quote = await self.get_quote_of_today()
         q_url = (
@@ -64,7 +63,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
             (email.utils.format_datetime(today), q_url, quote)
         ]
         for _i in range(1, 5):
-            _date = today - timedelta(days=_i)
+            _date = today - dt.timedelta(days=_i)
             _q = await self.get_quote_by_date(_date)
             print(_date, _q)
             if _q:
@@ -86,9 +85,9 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
         """Get the Redis used key."""
         return f"{self.redis_prefix}:quote-of-the-day:used:{_wq_id}"
 
-    def get_redis_quote_date_key(self, _date: datetime | date) -> str:
+    def get_redis_quote_date_key(self, date: dt.date) -> str:
         """Get the Redis key for getting quotes by date."""
-        date_str = str(_date.date() if isinstance(_date, datetime) else _date)
+        date_str = str(date.date() if isinstance(date, dt.datetime) else date)
         return f"{self.redis_prefix}:quote-of-the-day:by-date:{date_str}"
 
     async def has_been_used(self, _wq_id: str):
@@ -106,9 +105,7 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
             1,  # True
         )
 
-    async def get_quote_by_date(
-        self, _date: datetime | date
-    ) -> None | WrongQuote:
+    async def get_quote_by_date(self, _date: dt.date) -> None | WrongQuote:
         """Get the quote of the date if one was saved."""
         _wq_id = await self.redis.get(  # type: ignore
             self.get_redis_quote_date_key(_date)
@@ -118,9 +115,9 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
         _q, _a = tuple(int(_i) for _i in _wq_id.decode("utf-8").split("-"))
         return WRONG_QUOTES_CACHE.get((_q, _a))
 
-    async def get_quote_of_today(self) -> Optional[WrongQuote]:
+    async def get_quote_of_today(self) -> WrongQuote | None:
         """Get the quote for today."""
-        _today = datetime.now(tz=timezone.utc).date()
+        _today = dt.datetime.now(tz=dt.timezone.utc).date()
         _wq = await self.get_quote_by_date(_today)
         if _wq:  # if was saved already
             return _wq

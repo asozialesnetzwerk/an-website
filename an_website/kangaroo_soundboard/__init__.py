@@ -21,7 +21,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import cache, lru_cache
-from typing import Optional, Union
 
 import orjson as json
 
@@ -53,7 +52,7 @@ del books, chapters, person_dict
 
 
 @lru_cache(100)
-def mark_query(text: str, query: Optional[str]) -> str:
+def mark_query(text: str, query: str | None) -> str:
     """Replace the instances of the query with itself in a div."""
     if query is None or query == str():
         return text
@@ -86,7 +85,7 @@ class Info:
         fix_url_func: Callable[  # pylint: disable=unused-argument
             [str], str
         ] = lambda url: url,
-        query: Optional[str] = None,
+        query: str | None = None,
     ) -> str:
         """Return the text of the info and mark the query."""
         return mark_query(self.text, query)
@@ -97,13 +96,13 @@ class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
     tag: str = "h1"
-    type: type[Union[Book, Chapter, Person]] = Book
+    type: type[Book | Chapter | Person] = Book
 
     @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
-        query: Optional[str] = None,
+        query: str | None = None,
     ) -> str:
         """
         Return a HTML element with the tag and the content of the HeaderInfo.
@@ -145,7 +144,7 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
-    def contains(self, _str: Optional[str]) -> bool:
+    def contains(self, _str: str | None) -> bool:
         """Check whether this sound info contains a given string."""
         if _str is None:
             return False
@@ -163,7 +162,7 @@ class SoundInfo(Info):
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
-        query: Optional[str] = None,
+        query: str | None = None,
     ) -> str:
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
@@ -179,7 +178,7 @@ class SoundInfo(Info):
         )
 
     @cache
-    def to_rss(self, url: Optional[str]) -> str:
+    def to_rss(self, url: str | None) -> str:
         """Parse the info to a RSS item."""
         file_name = self.get_file_name()
         path = f"/files/{file_name}.mp3"

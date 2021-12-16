@@ -22,7 +22,6 @@ import os
 import signal
 import ssl
 import sys
-from typing import Optional
 
 import hy  # type: ignore
 from aioredis import BlockingConnectionPool, Redis  # type: ignore
@@ -394,7 +393,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
 
 def get_ssl_context(
     config: configparser.ConfigParser,
-) -> Optional[ssl.SSLContext]:
+) -> ssl.SSLContext | None:
     """Create SSL config and configure using the config."""
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)

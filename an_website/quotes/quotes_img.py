@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import io
 import textwrap
-from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -105,7 +104,7 @@ def draw_lines(
 
 
 def create_image(  # pylint: disable=too-many-locals
-    quote: str, author: str, rating: int, source: Optional[str]
+    quote: str, author: str, rating: int, source: str | None
 ):
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
@@ -208,7 +207,7 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
                 if wrong_quote.id != -1
                 else f"{quote_id}-{author_id}"
             )
-            source: Optional[str] = f"{self.request.host_name}/z/{_id}"
+            source: str | None = f"{self.request.host_name}/z/{_id}"
         else:
             source = None
         self.set_header("Content-Type", "image/png")

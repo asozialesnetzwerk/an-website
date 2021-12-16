@@ -14,8 +14,6 @@
 """Show a list of all API endpoints."""
 from __future__ import annotations
 
-from typing import Union
-
 import orjson as json
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
@@ -54,7 +52,7 @@ class Endpoints(BaseRequestHandler):
         """Get a list of all API endpoints and return it."""
         endpoints: list[dict] = []
         for _mi in self.settings["MODULE_INFOS"]:
-            api_paths: list[dict[str, Union[str, int, list]]] = [
+            api_paths: list[dict[str, str | int | list]] = [
                 {
                     "path": _h[0],
                     "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],

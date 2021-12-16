@@ -20,7 +20,7 @@ load-plugins=
     pylint.extensions.check_elif,
     #pylint.extensions.set_membership,
 extension-pkg-allow-list=orjson
-py-version=3.9
+py-version=3.10
 
 [BASIC]
 include-naming-hint=yes

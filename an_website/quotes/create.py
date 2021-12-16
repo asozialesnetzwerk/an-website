@@ -15,7 +15,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
 
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
@@ -85,9 +84,9 @@ async def create_author(author_str: str) -> Author:
 
 
 async def create_wrong_quote(
-    real_author_param: Union[Author, str],
-    fake_author_param: Union[Author, str],
-    quote_param: Union[Quote, str],
+    real_author_param: Author | Author,
+    fake_author_param: Author | Author,
+    quote_param: Quote | Quote,
 ) -> str:
     """Create a wrong quote and return the id in the q_id-a_id format."""
     if isinstance(fake_author_param, str):
@@ -114,14 +113,14 @@ async def create_wrong_quote(
     return f"{quote.id}-{fake_author.id}"
 
 
-async def get_authors(author_name: str) -> list[Union[Author, str]]:
+async def get_authors(author_name: str) -> list[Author | str]:
     """Get the possible meant authors based on the str."""
     author = get_author_by_name(author_name)
     if author is not None:
         return [author]
 
     author_name_lower = author_name.lower()
-    authors: list[Union[Author, str]] = [
+    authors: list[Author | str] = [
         *filter(
             lambda _a: distance(_a.name.lower(), author_name_lower) < 6,
             AUTHORS_CACHE.values(),
@@ -142,7 +141,7 @@ async def get_authors(author_name: str) -> list[Union[Author, str]]:
     return authors
 
 
-def get_author_by_name(name: str) -> Optional[Author]:
+def get_author_by_name(name: str) -> Author | None:
     """Get an author by its name."""
     lower_name = name.lower()
     for _a in AUTHORS_CACHE.values():
@@ -151,7 +150,7 @@ def get_author_by_name(name: str) -> Optional[Author]:
     return None
 
 
-def get_quote_by_str(quote_str: str) -> Optional[Quote]:
+def get_quote_by_str(quote_str: str) -> Quote | None:
     """Get an author by its name."""
     lower_quote = fix_quote_str(quote_str).lower()
     for _q in QUOTES_CACHE.values():
@@ -160,14 +159,14 @@ def get_quote_by_str(quote_str: str) -> Optional[Quote]:
     return None
 
 
-async def get_quotes(quote_str: str) -> list[Union[Quote, str]]:
+async def get_quotes(quote_str: str) -> list[Quote | str]:
     """Get the possible meant authors based on the str."""
-    quote: Optional[Quote] = get_quote_by_str(quote_str)
+    quote: Quote | None = get_quote_by_str(quote_str)
     if isinstance(quote, Quote):
         return [quote]
 
     lower_quote_str = quote_str.lower()
-    quotes: list[Union[Quote, str]] = [
+    quotes: list[Quote | str] = [
         *filter(
             lambda _q: distance(_q.quote.lower(), lower_quote_str) < 10,
             QUOTES_CACHE.values(),

@@ -18,7 +18,7 @@ import functools
 import re
 from dataclasses import dataclass, field
 from re import Match, Pattern
-from typing import Optional, Tuple
+from typing import Tuple
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -75,7 +75,7 @@ class ConfigLine:  # pylint: disable=too-few-public-methods
     """Class used to represent a word pair."""
 
     def to_conf_line(
-        self, len_of_left: Optional[int] = None
+        self, len_of_left: int | None = None
     ):  # pylint: disable=no-self-use, unused-argument
         """Get how this would look like in a config."""
         return str()
@@ -87,7 +87,7 @@ class Comment(ConfigLine):
 
     comment: str
 
-    def to_conf_line(self, len_of_left: Optional[int] = None):
+    def to_conf_line(self, len_of_left: int | None = None):
         """Get how this would look like in a config."""
         return str() if not self.comment else f"# {self.comment}"
 
@@ -113,7 +113,7 @@ class WordPair(ConfigLine):
         """Get the length to the left of the separator."""
         return len(self.word1)
 
-    def to_conf_line(self, len_of_left: Optional[int] = None):
+    def to_conf_line(self, len_of_left: int | None = None):
         """Get how this would look like in a config."""
         left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:

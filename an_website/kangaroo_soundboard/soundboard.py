@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from functools import cache
-from typing import Optional
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 
@@ -100,7 +99,7 @@ def get_module_info() -> ModuleInfo:
 
 
 @cache
-def get_rss_str(path: str, protocol_and_host: str) -> Optional[str]:
+def get_rss_str(path: str, protocol_and_host: str) -> str | None:
     """Return the RSS string for the given path."""
     if path is not None:
         path = path.lower()
@@ -186,7 +185,7 @@ class SoundboardHTMLHandler(BaseRequestHandler):
 
     async def parse_path(
         self, path
-    ) -> Optional[tuple[Iterable[Info], Optional[str]]]:
+    ) -> tuple[Iterable[Info], str | None] | None:
         """Get a info list based on the path and return it with the query."""
         if path in (None, str(), "index", "/"):
             return MAIN_PAGE_INFO, None

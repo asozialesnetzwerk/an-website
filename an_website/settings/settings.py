@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import Any, Optional, Union
+from typing import Any
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str
@@ -43,11 +43,11 @@ class SettingsPage(BaseRequestHandler):
     def set_cookie(  # pylint: disable=too-many-arguments
         self,
         name: str,
-        value: Union[str, bytes],
-        domain: Optional[str] = None,
-        expires: Optional[Union[float, tuple, datetime.datetime]] = None,
+        value: str | bytes,
+        domain: str | None = None,
+        expires: float | tuple | datetime.datetime | None = None,
         path: str = "/",
-        expires_days: Optional[float] = 365,  # changed
+        expires_days: float | None = 365,  # changed
         **kwargs: Any,
     ):
         """Override the set_cookie method to set expires days."""

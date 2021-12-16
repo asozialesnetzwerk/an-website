@@ -24,7 +24,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
-from typing import Any, Optional, Tuple, TypeVar, Union
+from typing import Any, Tuple, TypeVar, Union
 
 import tornado.httputil
 from tornado.web import HTTPError, RequestHandler
@@ -37,6 +37,7 @@ REPO_URL: str = f"{GIT_URL}/an-website"
 STATIC_DIR: str = os.path.join(SITE_BASE_DIR, "static")
 TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
 
+# pylint: disable=consider-alternative-union-syntax
 Handler = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
@@ -55,12 +56,12 @@ class PageInfo:
 
     name: str
     description: str
-    path: Optional[str] = None
+    path: str | None = None
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
 
-    def search(self, query: Union[str, list[str]]) -> float:  # noqa: C901
+    def search(self, query: str | list[str]) -> float:  # noqa: C901
         """
         Check whether this should be shown on the search page.
 
@@ -140,7 +141,7 @@ class ModuleInfo(PageInfo):
 
         return ", ".join(self.keywords)
 
-    def search(self, query: Union[str, list[str]]) -> float:
+    def search(self, query: str | list[str]) -> float:
         score = super().search(query)
 
         if len(self.sub_pages) > 0:
@@ -157,7 +158,7 @@ class Timer:
 
     def __init__(self):
         """Start the timer."""
-        self._execution_time: Optional[float] = None
+        self._execution_time: float | None = None
         self._start_time: float = time.perf_counter()
 
     def stop(self) -> float:
@@ -288,7 +289,7 @@ def length_of_match(_m: re.Match):
     return span[1] - span[0]
 
 
-def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
+def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
     """Get and return _n elements of the set as a new set."""
     i = 0
     new_set = set()
@@ -303,7 +304,7 @@ def n_from_set(_set: Union[set[T], frozenset[T]], _n: int) -> set[T]:
 
 async def run(
     program, *args, stdin=asyncio.subprocess.PIPE
-) -> tuple[Optional[int], bytes, bytes]:
+) -> tuple[None | int, bytes, bytes]:
     """Run a programm & return the return code, stdout and stderr as tuple."""
     proc = await asyncio.create_subprocess_exec(
         program,
@@ -317,7 +318,7 @@ async def run(
     return proc.returncode, stdout, stderr
 
 
-def str_to_bool(val: str, default: Optional[bool] = None) -> bool:
+def str_to_bool(val: str, default: None | bool = None) -> bool:
     """Convert a string representation of truth to True or False."""
     if isinstance(val, bool):
         return val

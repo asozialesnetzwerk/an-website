@@ -4,10 +4,11 @@
 [![Check emoji](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml)
 [![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 ## How to develop
 You need:
-- python3.9
+- python3.10
 - packages from requirements.txt (`pip install -r requirements.txt`)
 - packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 
@@ -24,7 +25,7 @@ You need:
 ## How to run (production)
 ### Linux (tested with arch):
 You need:
-- python3.9
+- python3.10
 - packages from requirements.txt
 - supervisord
 - redis (+ redis-cell) for ratelimits

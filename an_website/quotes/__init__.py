@@ -21,7 +21,7 @@ import os
 import random
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Literal
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -63,8 +63,8 @@ class Author(QuotesObjBase):
     """The author object with a name."""
 
     name: str
-    # tuple(url_to_info, info_str)
-    info: Optional[tuple[str, Optional[str], datetime.date]] = None
+    # tuple(url_to_info, info_str, creation_date)
+    info: tuple[str, str | None, datetime.date] | None = None
 
     def update_name(self, name: str):
         """Update author data with another author."""
@@ -132,7 +132,7 @@ class WrongQuote(QuotesObjBase):
 
 
 def get_wrong_quotes(
-    filter_fun: Optional[Callable[[WrongQuote], bool]] = None,
+    filter_fun: Callable[[WrongQuote], bool] | None = None,
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
 ) -> tuple[WrongQuote, ...]:
