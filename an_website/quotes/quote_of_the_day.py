@@ -57,7 +57,7 @@ def get_module_info() -> ModuleInfo:
 class QuoteOfTheDayData:
     """The class representing data for the quote of the day."""
 
-    date: dt.datetime
+    date: dt.date
     quote: WrongQuote
     url_without_path: str
 
@@ -75,7 +75,15 @@ class QuoteOfTheDayData:
 
     def get_date_for_rss(self) -> str:
         """Get the date as specified in RFC 2822."""
-        return email.utils.format_datetime(self.date)
+        return email.utils.format_datetime(
+            dt.datetime(
+                year=self.date.year,
+                month=self.date.month,
+                day=self.date.day,
+                tzinfo=dt.timezone.utc,
+            ),
+            True,
+        )
 
     def get_title(self) -> str:
         """Get the title for the quote of the day."""
@@ -91,8 +99,9 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
 
     def get_redis_quote_date_key(self, date: dt.date) -> str:
         """Get the Redis key for getting quotes by date."""
-        date_str = str(date.date() if isinstance(date, dt.datetime) else date)
-        return f"{self.redis_prefix}:quote-of-the-day:by-date:{date_str}"
+        return (
+            f"{self.redis_prefix}:quote-of-the-day:by-date:{date.isoformat()}"
+        )
 
     async def has_been_used(self, _wq_id: str):
         """Check with Redis here."""
@@ -109,20 +118,25 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
             1,  # True
         )
 
-    async def get_quote_by_date(self, date: dt.date) -> None | WrongQuote:
+    async def get_quote_by_date(
+        self, date: dt.date
+    ) -> None | QuoteOfTheDayData:
         """Get the quote of the date if one was saved."""
         _wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
         if not _wq_id:
             return None
         _q, _a = tuple(int(_i) for _i in _wq_id.decode("utf-8").split("-"))
-        return WRONG_QUOTES_CACHE.get((_q, _a))
+        _wq = WRONG_QUOTES_CACHE.get((_q, _a))
+        if not _wq:
+            return None
+        return QuoteOfTheDayData(date, _wq, self.get_url_without_path())
 
-    async def get_quote_of_today(self) -> WrongQuote | None:
+    async def get_quote_of_today(self) -> QuoteOfTheDayData | None:
         """Get the quote for today."""
-        _today = dt.datetime.now(tz=dt.timezone.utc).date()
-        _wq = await self.get_quote_by_date(_today)
-        if _wq:  # if was saved already
-            return _wq
+        today = dt.datetime.now(tz=dt.timezone.utc).date()
+        quote_data = await self.get_quote_by_date(today)
+        if quote_data:  # if was saved already
+            return quote_data
         quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
             lambda _wq: _wq.rating > 1
         )
@@ -136,11 +150,13 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
                 _wq_id = quote.get_id_as_str()
                 await self.set_used(_wq_id)
                 await self.redis.setex(
-                    self.get_redis_quote_date_key(_today),
+                    self.get_redis_quote_date_key(today),
                     420 * 24 * 60 * 60,  # TTL
                     _wq_id,
                 )
-                return quote
+                return QuoteOfTheDayData(
+                    today, quote, self.get_url_without_path()
+                )
         return None
 
 
@@ -149,32 +165,25 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 
     async def get(self):
         """Handle GET requests."""
-        _today_date = dt.datetime.now(tz=dt.timezone.utc).date()
-        today = dt.datetime(
-            year=_today_date.year,
-            month=_today_date.month,
-            day=_today_date.day,
-            tzinfo=dt.timezone.utc,
-        )
-        quote = await self.get_quote_of_today()
-        quotes: list[QuoteOfTheDayData] = [
-            QuoteOfTheDayData(today, quote, self.get_url_without_path())
-        ]
-        for _i in range(1, 5):
-            date = today - dt.timedelta(days=_i)
-            _wq = await self.get_quote_by_date(date)
-            if _wq:
-                quotes.append(
-                    QuoteOfTheDayData(
-                        date,
-                        _wq,
-                        self.get_url_without_path(),
-                    )
-                )
+        today = dt.datetime.now(tz=dt.timezone.utc).date()
         self.set_header("Content-Type", "application/rss+xml")
         await self.render(
             "rss/quote_of_the_day.xml",
-            quotes=quotes,
+            quotes=tuple(
+                _q
+                for _q in (
+                    [await self.get_quote_of_today()]
+                    + [
+                        (
+                            await self.get_quote_by_date(
+                                today - dt.timedelta(days=_i)
+                            )
+                        )
+                        for _i in range(1, 5)
+                    ]
+                )
+                if _q
+            ),
         )
 
 
@@ -193,7 +202,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
 
         if _wq:
             self.redirect(
-                f"{self.get_url_without_path()}/zitate/{_wq.get_id_as_str()}/",
+                _wq.get_quote_url(),
                 False,
             )
         raise HTTPError(404)
