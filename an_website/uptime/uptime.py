@@ -84,6 +84,6 @@ class UptimeAPIHandler(APIRequestHandler):
             {
                 "uptime": uptime,
                 "uptime_str": uptime_to_str(uptime),
-                "start_time": START_TIME,
+                "start_time": time.time() - uptime,
             }
         )
