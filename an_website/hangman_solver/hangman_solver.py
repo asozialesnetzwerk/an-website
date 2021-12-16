@@ -120,7 +120,7 @@ def fix_letter_counter_crossword_mode(
 
 @lru_cache(5)
 def filter_words(
-    words: frozenset[str] | frozenset[str],
+    words: frozenset[str] | str,
     regex: re.Pattern,
     input_letters: str,
     crossword_mode: bool = False,

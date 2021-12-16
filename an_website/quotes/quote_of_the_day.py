@@ -14,6 +14,7 @@
 """Get a random quote for a given day."""
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import email.utils
 import random
@@ -43,6 +44,35 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+@dataclasses.dataclass
+class QuoteOfTheDayData:
+    """The class representing data for the quote of the day."""
+
+    date: dt.datetime
+    quote: WrongQuote
+    url_without_path: str
+
+    def get_quote_as_str(self) -> str:
+        """Get the quote as a string with new line."""
+        return f"»{self.quote.quote}«\n- {self.quote.author}"
+
+    def get_quote_url(self) -> str:
+        """Get the URL of the quote."""
+        return f"{self.url_without_path}/zitate/{self.quote.get_id_as_str()}/"
+
+    def get_quote_image_url(self) -> str:
+        """Get the URL of the image of the quote."""
+        return self.get_quote_url() + "image.png"
+
+    def get_date_for_rss(self) -> str:
+        """Get the date as specified in RFC 2822."""
+        return email.utils.format_datetime(self.date)
+
+    def get_title(self) -> str:
+        """Get the title for the quote of the day."""
+        return f"Das Zitat des Tages vom {self.date:%d. %m. %Y}"
+
+
 class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
 
@@ -56,23 +86,18 @@ class QuoteOfTheDayRss(QuoteReadyCheckRequestHandler):
             tzinfo=dt.timezone.utc,
         )
         quote = await self.get_quote_of_today()
-        q_url = (
-            f"{self.get_url_without_path()}/zitate/{quote.get_id_as_str()}/"
-        )
-        quotes: list[tuple[str, str, WrongQuote]] = [
-            (email.utils.format_datetime(today), q_url, quote)
+        quotes: list[QuoteOfTheDayData] = [
+            QuoteOfTheDayData(today, quote, self.get_url_without_path())
         ]
         for _i in range(1, 5):
-            _date = today - dt.timedelta(days=_i)
-            _q = await self.get_quote_by_date(_date)
-            print(_date, _q)
-            if _q:
+            date = today - dt.timedelta(days=_i)
+            _wq = await self.get_quote_by_date(date)
+            if _wq:
                 quotes.append(
-                    (
-                        email.utils.format_datetime(_date),
-                        f"{self.get_url_without_path()}"
-                        f"/zitate/{_q.get_id_as_str()}/",
-                        _q,
+                    QuoteOfTheDayData(
+                        date,
+                        _wq,
+                        self.get_url_without_path(),
                     )
                 )
         self.set_header("Content-Type", "application/xml")

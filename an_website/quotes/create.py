@@ -84,9 +84,9 @@ async def create_author(author_str: str) -> Author:
 
 
 async def create_wrong_quote(
-    real_author_param: Author | Author,
-    fake_author_param: Author | Author,
-    quote_param: Quote | Quote,
+    real_author_param: Author | str,
+    fake_author_param: Author | str,
+    quote_param: Quote | str,
 ) -> str:
     """Create a wrong quote and return the id in the q_id-a_id format."""
     if isinstance(fake_author_param, str):

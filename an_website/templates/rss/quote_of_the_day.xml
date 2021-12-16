@@ -8,14 +8,16 @@
     <link>{{url}}</link>
     <atom:link href="{{url}}" rel="self" type="application/rss+xml" />
 
-    {% for date, q_url, quote in quotes %}
+    {% for data in quotes %}
     <item>
-      <title>{{quote}}</title>
-      <quote>{{quote.quote.quote}}</quote>
-      <author>{{quote.author.name}}</author>
-      <link>{{q_url}}</link>
-      <guid>{{quote.get_id_as_str()}}</guid>
-      <pubDate>{{date}}</pubDate>
+      <title>{{data.get_title()}}</title>
+      <description>{{data.get_quote_as_str()}}</description>
+      <quote>{{data.quote.quote.quote}}</quote>
+      <author>{{data.quote.author.name}}</author>
+      <link>{{data.get_quote_url()}}</link>
+      <image>{{data.get_quote_image_url()}}</image>
+      <guid>{{data.quote.get_id_as_str()}}</guid>
+      <pubDate>{{data.get_date_for_rss()}}</pubDate>
     </item>
     {% end %}
   </channel>
