@@ -70,7 +70,7 @@ WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
 
 async def search_wikipedia(
     query: str, api: str = WIKI_API_DE
-) -> tuple[str, str | None, datetime] | None:
+) -> None | tuple[str, None | str, datetime]:
     """
     Search wikipedia to get information about the query.
 
@@ -101,7 +101,7 @@ async def search_wikipedia(
 
 async def get_wikipedia_page_content(
     page_name: str, api: str = WIKI_API_DE
-) -> str | None:
+) -> None | str:
     """Get content from a wikipedia page and return it."""
     response = await HTTP_CLIENT.fetch(
         f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"

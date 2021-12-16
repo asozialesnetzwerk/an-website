@@ -39,7 +39,7 @@ def fetch(http_server_client):
     return fetch_url
 
 
-async def test_json_apis(fetch):
+async def test_json_apis(fetch):  # 42
     """Check whether the APIs return valid JSON."""
     json_apis = (
         "/api/endpoints/",
@@ -66,7 +66,7 @@ async def test_json_apis(fetch):
 
 
 # pylint: disable=too-many-statements
-async def test_request_handlers(fetch):
+async def test_request_handlers(fetch):  # 69
     """Check if the request handlers return 200 codes."""
     response = await fetch("/")
     assert response.code == 200

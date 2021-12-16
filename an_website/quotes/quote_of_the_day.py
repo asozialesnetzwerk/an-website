@@ -105,13 +105,11 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
 
     async def has_been_used(self, _wq_id: str):
         """Check with Redis here."""
-        return await self.redis.get(  # type: ignore
-            self.get_redis_used_key(_wq_id)
-        )
+        return await self.redis.get(self.get_redis_used_key(_wq_id))
 
     async def set_used(self, _wq_id: str):
         """Set Redis key with used state and TTL here."""
-        return await self.redis.setex(  # type: ignore
+        return await self.redis.setex(
             self.get_redis_used_key(_wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
             420 * 24 * 60 * 60,  # TTL
@@ -131,7 +129,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
             return None
         return QuoteOfTheDayData(date, _wq, self.get_url_without_path())
 
-    async def get_quote_of_today(self) -> QuoteOfTheDayData | None:
+    async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
         if not self.redis:
             return None
@@ -193,7 +191,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
     """Redirect to the quote of the day."""
 
     async def get(self, _date_str: str = None):
-        """Handle get requests."""
+        """Handle GET requests."""
         if _date_str:
             _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
             _wq = await self.get_quote_by_date(

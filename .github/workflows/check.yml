@@ -18,7 +18,9 @@ on:
       - "pyproject.toml"
       - ".mypy.ini"
       - ".pylintrc"
+
 jobs:
+
   check_formatting:
     name: Check formatting
     runs-on: ubuntu-latest
@@ -42,6 +44,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "fix formatting 🤦"
+
   check_types:
     name: Check types
     runs-on: ubuntu-latest
@@ -67,7 +70,8 @@ jobs:
       - name: Install types in check-requrements.txt
         run: grep -E "^types-" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run mypy
-        run: mypy -p an_website
+        run: mypy --no-warn-unused-ignores --no-warn-redundant-casts -p an_website
+
   lint:
     name: Lint
     runs-on: ubuntu-latest

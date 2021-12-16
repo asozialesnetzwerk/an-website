@@ -26,7 +26,7 @@ import orjson as json
 
 DIR = os.path.dirname(__file__)
 
-with open(f"{DIR}/info.json", "r", encoding="utf-8") as my_file:
+with open(f"{DIR}/info.json", encoding="utf-8") as my_file:
     info = json.loads(my_file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
@@ -52,7 +52,7 @@ del books, chapters, person_dict
 
 
 @lru_cache(100)
-def mark_query(text: str, query: str | None) -> str:
+def mark_query(text: str, query: None | str) -> str:
     """Replace the instances of the query with itself in a div."""
     if query is None or query == str():
         return text
@@ -85,7 +85,7 @@ class Info:
         fix_url_func: Callable[  # pylint: disable=unused-argument
             [str], str
         ] = lambda url: url,
-        query: str | None = None,
+        query: None | str = None,
     ) -> str:
         """Return the text of the info and mark the query."""
         return mark_query(self.text, query)
@@ -102,7 +102,7 @@ class HeaderInfo(Info):
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
-        query: str | None = None,
+        query: None | str = None,
     ) -> str:
         """
         Return a HTML element with the tag and the content of the HeaderInfo.
@@ -144,7 +144,7 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
-    def contains(self, _str: str | None) -> bool:
+    def contains(self, _str: None | str) -> bool:
         """Check whether this sound info contains a given string."""
         if _str is None:
             return False
@@ -162,7 +162,7 @@ class SoundInfo(Info):
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
-        query: str | None = None,
+        query: None | str = None,
     ) -> str:
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
@@ -178,7 +178,7 @@ class SoundInfo(Info):
         )
 
     @cache
-    def to_rss(self, url: str | None) -> str:
+    def to_rss(self, url: None | str) -> str:
         """Parse the info to a RSS item."""
         file_name = self.get_file_name()
         path = f"/files/{file_name}.mp3"

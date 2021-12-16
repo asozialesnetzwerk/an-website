@@ -56,7 +56,7 @@ class PageInfo:
 
     name: str
     description: str
-    path: str | None = None
+    path: None | str = None
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
@@ -158,7 +158,7 @@ class Timer:
 
     def __init__(self):
         """Start the timer."""
-        self._execution_time: float | None = None
+        self._execution_time: None | float = None
         self._start_time: float = time.perf_counter()
 
     def stop(self) -> float:
@@ -318,7 +318,7 @@ async def run(
     return proc.returncode, stdout, stderr
 
 
-def str_to_bool(val: str, default: None | bool = None) -> bool:
+def str_to_bool(val: str | bool, default: None | bool = None) -> bool:
     """Convert a string representation of truth to True or False."""
     if isinstance(val, bool):
         return val

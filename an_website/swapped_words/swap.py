@@ -75,7 +75,7 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config_str: str | None, reset: str):
+    def handle_text(self, text: str, config_str: None | str, reset: str):
         """Use the text to display the HTML page."""
         check_text_too_long(text)
 

@@ -99,7 +99,7 @@ def get_module_info() -> ModuleInfo:
 
 
 @cache
-def get_rss_str(path: str, protocol_and_host: str) -> str | None:
+def get_rss_str(path: str, protocol_and_host: str) -> None | str:
     """Return the RSS string for the given path."""
     if path is not None:
         path = path.lower()
@@ -152,7 +152,7 @@ async def search_main_page_info(
                         "h1",  # if it gets to h3 this doesn't work as
                         # then this should also be done for h2 when the ones
                         # before are h3
-                        last.tag,  # type: ignore
+                        last.tag,
                     )
                 )
             ):
@@ -185,7 +185,7 @@ class SoundboardHTMLHandler(BaseRequestHandler):
 
     async def parse_path(
         self, path
-    ) -> tuple[Iterable[Info], str | None] | None:
+    ) -> None | tuple[Iterable[Info], None | str]:
         """Get a info list based on the path and return it with the query."""
         if path in (None, str(), "index", "/"):
             return MAIN_PAGE_INFO, None

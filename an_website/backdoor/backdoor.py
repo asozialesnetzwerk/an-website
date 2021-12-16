@@ -63,8 +63,8 @@ class Backdoor(APIRequestHandler):
     }
 
     def initialize(self, **kwargs):
-        self._globals["app"] = self.application
         super().initialize(**kwargs)
+        self._globals["app"] = self.application
 
     async def post(self, mode):  # noqa: C901
         # pylint: disable=too-many-branches

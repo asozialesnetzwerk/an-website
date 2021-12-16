@@ -64,7 +64,7 @@ class Author(QuotesObjBase):
 
     name: str
     # tuple(url_to_info, info_str, creation_date)
-    info: tuple[str, str | None, datetime.date] | None = None
+    info: None | tuple[str, None | str, datetime.date] = None
 
     def update_name(self, name: str):
         """Update author data with another author."""
@@ -132,7 +132,7 @@ class WrongQuote(QuotesObjBase):
 
 
 def get_wrong_quotes(
-    filter_fun: Callable[[WrongQuote], bool] | None = None,
+    filter_fun: None | Callable[[WrongQuote], bool] = None,
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
 ) -> tuple[WrongQuote, ...]:
@@ -249,8 +249,6 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
     id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
     rating = json_data["rating"]
     wrong_quote_id = int(json_data.get("id", -1))
-    if wrong_quote_id is None:
-        wrong_quote_id = -1
     wrong_quote = WRONG_QUOTES_CACHE.setdefault(
         id_tuple,
         WrongQuote(
@@ -458,8 +456,8 @@ class QuoteReadyCheckRequestHandler(BaseRequestHandler):
 
     async def prepare(self):
         """Fail if quotes aren't ready yet."""
+        await super().prepare()
         if not WRONG_QUOTES_CACHE:
             # should work in a few seconds, the quotes just haven't loaded yet
             self.set_header("Retry-After", "5")
             raise HTTPError(503, reason="Service available in a few seconds.")
-        await super().prepare()

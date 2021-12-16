@@ -1,5 +1,5 @@
 name: Check emoji
-on: [push, pull_request]
+on: [ push, pull_request ]
 jobs:
   check_emoji:
     name: Look for Emoji in commit message
@@ -10,4 +10,10 @@ jobs:
       - name: Install newest version of required library
         run: python3 -m pip install --prefer-binary "emoji>=1.6.1"
       - name: Run the check
-        run: python3 -c 'import emoji, os; exit(None if emoji.emoji_count(os.popen("git show -s --format=%B ${{env.GITHUB_SHA}}").read()) else "No Emoji found. 👎")'
+        shell: python
+        run: |
+          import os
+          import emoji
+          commit_message = os.popen("git show -s --format=%B ${{ env.GITHUB_SHA }}").read()
+          if not emoji.emoji_count(commit_message):
+            exit("No Emoji found. 👎")

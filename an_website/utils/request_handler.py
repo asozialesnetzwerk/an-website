@@ -26,16 +26,18 @@ import traceback
 import uuid
 from datetime import datetime
 from functools import cache
+from http.client import responses
 from urllib.parse import quote, unquote
 
 import orjson as json
-from aioredis import Redis  # type: ignore
+from aioredis import Redis
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 
 # pylint: disable=no-name-in-module
 from blake3 import blake3  # type: ignore
+from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
-from tornado import httputil, web
+from tornado import web
 from tornado.web import HTTPError, RequestHandler
 
 from an_website.utils.utils import (
@@ -109,6 +111,16 @@ class BaseRequestHandler(RequestHandler):
     def redis_prefix(self) -> str:
         """Get the Redis prefix from the settings."""
         return self.settings.get("REDIS_PREFIX")  # type: ignore
+
+    @property
+    def elasticsearch(self) -> AsyncElasticsearch:
+        """Get the Elasticsearch client from the settings."""
+        return self.settings.get("ELASTICSEARCH")  # type: ignore
+
+    @property
+    def elasticsearch_prefix(self) -> str:
+        """Get the Elasticsearch prefix from the settings."""
+        return self.settings.get("ELASTICSEARCH_PREFIX")  # type: ignore
 
     def set_default_headers(self):
         """Opt out of all FLoC cohort calculation."""
@@ -295,7 +307,7 @@ class BaseRequestHandler(RequestHandler):
         return f"{protocol}://{self.request.host}"
 
     @cache
-    def fix_url(self, url: str, this_url: str | None = None) -> str:
+    def fix_url(self, url: str, this_url: None | str = None) -> str:
         """
         Fix a URL and return it.
 
@@ -399,7 +411,7 @@ class BaseRequestHandler(RequestHandler):
 
         return form_appendix
 
-    def get_contact_email(self) -> str | None:
+    def get_contact_email(self) -> None | str:
         """Get the contact email from the settings."""
         email = self.settings.get("CONTACT_EMAIL")
         if email is None:
@@ -452,8 +464,8 @@ class BaseRequestHandler(RequestHandler):
         return namespace
 
     def get_request_var(
-        self, name: str, default: str | None = None
-    ) -> str | None:
+        self, name: str, default: None | str = None
+    ) -> None | str:
         """
         Get the a value by name for the request.
 
@@ -472,8 +484,8 @@ class BaseRequestHandler(RequestHandler):
         return value
 
     def get_request_var_as_bool(
-        self, name: str, default: bool | None = None
-    ) -> bool | None:
+        self, name: str, default: None | bool = None
+    ) -> None | bool:
         """Get the a value by name as bool for the request."""
         value_str = self.get_request_var(name, default=None)
         if value_str is None:
@@ -483,11 +495,11 @@ class BaseRequestHandler(RequestHandler):
     def get_argument(  # type: ignore[override]
         self,
         name: str,
-        default: None
-        | str
-        | web._ArgDefaultMarker = web._ARG_DEFAULT,  # pylint: disable=protected-access
+        default: (
+            None | str | web._ArgDefaultMarker
+        ) = web._ARG_DEFAULT,  # pylint: disable=protected-access
         strip: bool = True,
-    ) -> str | None:
+    ) -> None | str:
         """Get an argument based on body or query."""
         arg = super().get_argument(name, default=None, strip=strip)
         if arg is not None:
@@ -572,7 +584,7 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFound(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
-    def initialize(  # type: ignore # pylint: disable=arguments-differ
+    def initialize(  # pylint: disable=arguments-differ
         self,
         # set default of module_info to none to not throw error
         module_info: ModuleInfo = None,
@@ -596,6 +608,7 @@ class NotFound(BaseRequestHandler):
         self,
     ):
         """Throw a 404 HTTP error or redirect to another page."""
+        await super().prepare()
         new_path = self.request.path.lower()
         if new_path.endswith("/index.html"):
             # len("index.html") = 10
@@ -682,7 +695,7 @@ class ErrorPage(BaseRequestHandler):
         status_code: int = int(code)
 
         # get the reason
-        reason: str = httputil.responses.get(status_code, str())
+        reason: str = responses.get(status_code, str())
 
         # set the status code if Tornado doesn't throw an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
@@ -703,5 +716,4 @@ class ZeroDivision(BaseRequestHandler):
     async def prepare(self):
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
-            await super().prepare()
-            await self.finish(str(0 / 0))
+            0 / 0  # pylint: disable=pointless-statement

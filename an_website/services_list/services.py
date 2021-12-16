@@ -39,7 +39,7 @@ class Service:
 
     title: str
     text: str
-    infos: dict[str, str] | None = None
+    infos: None | dict[str, str] = None
 
     def to_html(self) -> str:
         """Create a HTML representation of this service and return it."""

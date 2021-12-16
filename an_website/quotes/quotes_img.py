@@ -104,7 +104,7 @@ def draw_lines(
 
 
 def create_image(  # pylint: disable=too-many-locals
-    quote: str, author: str, rating: int, source: str | None
+    quote: str, author: str, rating: int, source: None | str
 ):
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
@@ -207,7 +207,7 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
                 if wrong_quote.id != -1
                 else f"{quote_id}-{author_id}"
             )
-            source: str | None = f"{self.request.host_name}/z/{_id}"
+            source: None | str = f"{self.request.host_name}/z/{_id}"
         else:
             source = None
         self.set_header("Content-Type", "image/png")

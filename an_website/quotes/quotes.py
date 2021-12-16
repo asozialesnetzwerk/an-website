@@ -304,7 +304,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def get_saved_vote(
         self, quote_id: int, author_id: int
-    ) -> Literal[-1, 0, 1] | None:
+    ) -> None | Literal[-1, 0, 1]:
         """
         Get the vote of the current user saved with Redis.
 

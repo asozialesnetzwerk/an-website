@@ -44,10 +44,10 @@ class SettingsPage(BaseRequestHandler):
         self,
         name: str,
         value: str | bytes,
-        domain: str | None = None,
-        expires: float | tuple | datetime.datetime | None = None,
+        domain: None | str = None,
+        expires: None | float | tuple | datetime.datetime = None,
         path: str = "/",
-        expires_days: float | None = 365,  # changed
+        expires_days: None | float = 365,  # changed
         **kwargs: Any,
     ):
         """Override the set_cookie method to set expires days."""

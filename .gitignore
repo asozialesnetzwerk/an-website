@@ -1,20 +1,16 @@
-__pycache__/
-venv/
-logs/
+__pycache__
+venv
+logs
 config.ini
 
 # Unit test / coverage reports
 .coverage
-.pytest_cache/
-
-# mypy
-.mypy_cache/
 
 # nano backup files:
 *~
 
 # Jetbrains
-.idea/
+.idea
 
 # hangman-solver word lists
 full_wordlist.txt

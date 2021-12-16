@@ -3,9 +3,9 @@
 if [ -d venv ];
 then
     . venv/bin/activate
-    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet
+    python3 -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dev.txt --quiet
 else
-    python3 -m pip install --disable-pip-version-check -U -r requirements-dev.txt --quiet --user
+    python3 -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dev.txt --quiet --user
 fi
 
 # install pre-commit hooks
@@ -28,7 +28,7 @@ python3 -m black --check --diff --color an_website tests || echo 'Run "python3 -
 
 # check types
 echo mypy:
-python3 -m mypy --pretty -p an_website -p tests
+python3 -m mypy --pretty --warn-unused-ignores --warn-redundant-casts -p an_website -p tests
 
 # lint
 echo Flake8:

@@ -44,7 +44,7 @@ def send(
     key: str,
     code: str,
     mode: str = "exec",
-    session: str | None = None,
+    session: None | str = None,
 ):
     """Send code to the backdoor API."""
     headers = {"Authorization": key}
@@ -70,7 +70,7 @@ def run_and_print(  # noqa: C901
     url: str,
     key: str,
     code: str,
-    session: str | None = None,
+    session: None | str = None,
     lisp: bool = False,
 ):  # pylint: disable=too-many-branches
     """Run the code and print the output."""

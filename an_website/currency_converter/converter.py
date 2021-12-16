@@ -53,7 +53,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def string_to_num(string: str, divide_by: int = 1) -> float | None:
+def string_to_num(string: str, divide_by: int = 1) -> None | float:
     """Convert a string to a number and divide it by divide_by."""
     if not string:
         return None
@@ -115,7 +115,7 @@ async def get_value_dict(euro: float) -> ValueDict:
 
 async def arguments_to_value_dict(
     request_handler: RequestHandler,
-) -> ValueDict | None:
+) -> None | ValueDict:
     """
     Parse the arguments to get the value dict and return it.
 

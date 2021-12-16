@@ -141,7 +141,7 @@ async def get_authors(author_name: str) -> list[Author | str]:
     return authors
 
 
-def get_author_by_name(name: str) -> Author | None:
+def get_author_by_name(name: str) -> None | Author:
     """Get an author by its name."""
     lower_name = name.lower()
     for _a in AUTHORS_CACHE.values():
@@ -150,7 +150,7 @@ def get_author_by_name(name: str) -> Author | None:
     return None
 
 
-def get_quote_by_str(quote_str: str) -> Quote | None:
+def get_quote_by_str(quote_str: str) -> None | Quote:
     """Get an author by its name."""
     lower_quote = fix_quote_str(quote_str).lower()
     for _q in QUOTES_CACHE.values():
@@ -161,7 +161,7 @@ def get_quote_by_str(quote_str: str) -> Quote | None:
 
 async def get_quotes(quote_str: str) -> list[Quote | str]:
     """Get the possible meant authors based on the str."""
-    quote: Quote | None = get_quote_by_str(quote_str)
+    quote: None | Quote = get_quote_by_str(quote_str)
     if isinstance(quote, Quote):
         return [quote]
 

@@ -47,7 +47,7 @@ DIR = os.path.dirname(__file__)
 def apply():
     """Apply the patches."""
     defusedxml.defuse_stdlib()
-    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
+    configparser.RawConfigParser.BOOLEAN_STATES.update(
         {"sure": True, "nope": False}
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())

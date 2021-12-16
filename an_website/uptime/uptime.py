@@ -41,7 +41,7 @@ def calculate_uptime() -> float:
     return time.monotonic() - START_TIME
 
 
-def uptime_to_str(uptime: float | None = None) -> str:
+def uptime_to_str(uptime: None | float = None) -> str:
     """Convert the uptime into a string with second precision."""
     if uptime is None:
         uptime = calculate_uptime()

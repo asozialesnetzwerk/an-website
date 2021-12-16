@@ -24,7 +24,7 @@ import ssl
 import sys
 
 import hy  # type: ignore
-from aioredis import BlockingConnectionPool, Redis  # type: ignore
+from aioredis import BlockingConnectionPool, Redis
 from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch
@@ -393,7 +393,7 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
 
 def get_ssl_context(
     config: configparser.ConfigParser,
-) -> ssl.SSLContext | None:
+) -> None | ssl.SSLContext:
     """Create SSL config and configure using the config."""
     if config.getboolean("SSL", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
