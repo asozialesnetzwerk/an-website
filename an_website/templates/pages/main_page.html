@@ -5,7 +5,7 @@
 {% if quote_data %}
 <a id="quote-of-the-day"
    class="no-style-a"
-   href="{{quote_data.get_quote_url()}}"
+   href="{{fix_url(quote_data.get_quote_url())}}"
    style="text-align: center" >
         {{quote_data.quote.quote}}
         <br>
