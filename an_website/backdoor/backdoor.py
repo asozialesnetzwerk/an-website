@@ -24,6 +24,7 @@ from typing import Any
 
 from tornado.web import HTTPError
 
+from ..quotes import get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -96,7 +97,9 @@ class Backdoor(APIRequestHandler):
                 response = {"success": False, "result": sys.exc_info()}
             else:
                 session = self.request.headers.get("X-Backdoor-Session")
-                _locals = self.sessions.get(session) or {}
+                _locals: dict[str, Any] = self.sessions.get(session) or {
+                    "get_wrong_quotes": get_wrong_quotes,
+                }
                 if session and session not in self.sessions:
                     self.sessions[session] = _locals
                 if "print" not in _locals or isinstance(

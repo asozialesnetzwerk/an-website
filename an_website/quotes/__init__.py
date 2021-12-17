@@ -169,18 +169,23 @@ def get_wrong_quotes(
     filter_fun: None | Callable[[WrongQuote], bool] = None,
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
+    shuffle: bool = False,
 ) -> tuple[WrongQuote, ...]:
     """Get cached wrong quotes."""
+    if shuffle is sort is True:
+        raise ValueError("Sort and shuffle can't be both true.")
     wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
     if filter_fun is not None:
         wqs = filter(filter_fun, wqs)
     if filter_real_quotes:
         wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
-    if not sort:
+    if shuffle is sort is False:  # pylint: disable=compare-to-zero
         return tuple(wqs)
-
-    wqs_list = list(wqs)
-    wqs_list.sort(key=lambda _wq: _wq.rating, reverse=True)
+    wqs_list = list(wqs)  # shuffle or sort is True
+    if shuffle:
+        random.shuffle(wqs_list)
+    if sort:
+        wqs_list.sort(key=lambda _wq: _wq.rating, reverse=True)
     return tuple(wqs_list)
 
 
