@@ -326,10 +326,12 @@ class BaseRequestHandler(RequestHandler):
             url,
             # the no_3rd_party param:
             no_3rd_party=self.get_no_3rd_party()
-            if self.get_no_3rd_party() != self.get_no_3rd_party_default()
+            if self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else None,
             # the theme param:
-            theme=self.get_theme() if self.get_theme() != "default" else None,
+            theme=self.get_theme()
+            if self.get_theme() != self.get_saved_theme()
+            else None,
         )
 
         if url.endswith("?"):
@@ -351,23 +353,37 @@ class BaseRequestHandler(RequestHandler):
         """Get the default value for the no_3rd_party param."""
         return self.request.host_name.endswith(".onion")
 
+    def get_saved_no_3rd_party(self) -> bool:
+        """Get the saved value for no_3rd_party."""
+        default = self.get_no_3rd_party_default()
+        no_3rd_party = self.get_cookie("no_3rd_party")
+        if no_3rd_party is None:
+            return default
+        return str_to_bool(no_3rd_party, default)
+
     @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
-        default = self.get_no_3rd_party_default()
-        no_3rd_party = self.get_request_var_as_bool(
-            "no_3rd_party", default=default
-        )
-        return default if no_3rd_party is None else no_3rd_party
+        default = self.get_saved_no_3rd_party()
+        no_3rd_party = self.get_argument("no_3rd_party", default=None)
+        if no_3rd_party is None:
+            return default
+        return str_to_bool(no_3rd_party, default)
+
+    def get_saved_theme(self):
+        """Get the theme saved in the cookie."""
+        theme = self.get_cookie("theme")
+        if theme in THEMES:
+            return theme
+        return "default"
 
     @cache
     def get_theme(self):
         """Get the theme currently selected."""
-        theme = self.get_request_var("theme", default=None)
-
+        theme = self.get_argument("theme", default=None)
         if theme in THEMES:
             return theme
-        return "default"
+        return self.get_saved_theme()
 
     def get_display_theme(self):
         """Get the theme currently displayed."""
@@ -392,7 +408,7 @@ class BaseRequestHandler(RequestHandler):
 
         if (
             "no_3rd_party" in self.request.query_arguments
-            and self.get_no_3rd_party() != self.get_no_3rd_party_default()
+            and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
         ):
             form_appendix = (
                 f"<input name='no_3rd_party' class='hidden-input' "
@@ -401,10 +417,7 @@ class BaseRequestHandler(RequestHandler):
         else:
             form_appendix = str()
 
-        if (
-            "theme" in self.request.query_arguments
-            and (theme := self.get_theme()) != "default"
-        ):
+        if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
                 f"<input name='theme' class='hidden-input' value='{theme}'>"
             )
@@ -462,35 +475,6 @@ class BaseRequestHandler(RequestHandler):
             }
         )
         return namespace
-
-    def get_request_var(
-        self, name: str, default: None | str = None
-    ) -> None | str:
-        """
-        Get the a value by name for the request.
-
-        First try to get it as query argument, if that isn't present try to
-        get the cookie with the name.
-        """
-        value = self.get_query_argument(name, default=None)
-
-        if value is not None:
-            return value
-
-        value = self.get_cookie(name, default=None)
-        if value is None:
-            return default
-
-        return value
-
-    def get_request_var_as_bool(
-        self, name: str, default: None | bool = None
-    ) -> None | bool:
-        """Get the a value by name as bool for the request."""
-        value_str = self.get_request_var(name, default=None)
-        if value_str is None:
-            return default
-        return str_to_bool(value_str, default=default)
 
     def get_argument(  # type: ignore[override]
         self,

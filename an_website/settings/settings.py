@@ -18,7 +18,7 @@ import datetime
 from typing import Any
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import THEMES, ModuleInfo, bool_to_str
+from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
 
 
 def get_module_info() -> ModuleInfo:
@@ -67,8 +67,12 @@ class SettingsPage(BaseRequestHandler):
 
     def get(self):
         """Handle GET requests to the settings page."""
-        save_in_cookie = self.get_request_var_as_bool(
-            "save_in_cookie", default=False
+        save_in_cookie = str_to_bool(
+            self.get_argument(
+                "save_in_cookie",
+                default=self.get_cookie("save_in_cookie", default=None),
+            ),
+            False,
         )
 
         replace_url_with = None
