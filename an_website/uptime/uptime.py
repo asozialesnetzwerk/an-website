@@ -65,11 +65,9 @@ class UptimeHandler(BaseRequestHandler):
 
     async def get(self):
         """Handle the GET request and render the page."""
-        uptime = calculate_uptime()
-
         await self.render(
             "pages/uptime.html",
-            uptime=uptime,
+            uptime=(uptime := calculate_uptime()),
             uptime_str=uptime_to_str(uptime),
         )
 
@@ -79,10 +77,9 @@ class UptimeAPIHandler(APIRequestHandler):
 
     async def get(self):
         """Handle the GET request to the API."""
-        uptime = calculate_uptime()
         await self.finish(
             {
-                "uptime": uptime,
+                "uptime": (uptime := calculate_uptime()),
                 "uptime_str": uptime_to_str(uptime),
                 "start_time": time.time() - uptime,
             }

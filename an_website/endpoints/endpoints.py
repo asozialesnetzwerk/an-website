@@ -59,6 +59,7 @@ class Endpoints(BaseRequestHandler):
                 }
                 for _h in _mi.handlers
                 if _h[0].startswith("/api/")
+                if self.is_authorized() or not _h[1].REQUIRES_AUTHORIZATION
             ]
             if len(api_paths) > 0:
                 endpoints.append(
