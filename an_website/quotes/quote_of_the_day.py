@@ -46,6 +46,11 @@ def get_module_info() -> ModuleInfo:
                 r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
                 QuoteOfTheDayAPI,
             ),
+            (r"/api/zitat-des-tages/full/", QuoteOfTheDayAPI),
+            (
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full/",
+                QuoteOfTheDayAPI,
+            ),
         ),
         name="Das Zitat des Tages",
         description="Jeden Tag ein anderes Zitat.",
@@ -64,16 +69,22 @@ class QuoteOfTheDayData:
     """The class representing data for the quote of the day."""
 
     date: dt.date
-    quote: WrongQuote
+    wrong_quote: WrongQuote
     url_without_path: str
 
     def get_quote_as_str(self, new_line_char="\n") -> str:
         """Get the quote as a string with new line."""
-        return f"»{self.quote.quote}«{new_line_char}- {self.quote.author}"
+        return (
+            f"»{self.wrong_quote.quote}«{new_line_char}"
+            f"- {self.wrong_quote.author}"
+        )
 
     def get_quote_url(self) -> str:
         """Get the URL of the quote."""
-        return f"{self.url_without_path}/zitate/{self.quote.get_id_as_str()}/"
+        return (
+            f"{self.url_without_path}/zitate/"
+            f"{self.wrong_quote.get_id_as_str()}/"
+        )
 
     def get_quote_image_url(self) -> str:
         """Get the URL of the image of the quote."""
@@ -99,7 +110,7 @@ class QuoteOfTheDayData:
         """Get the quote of the day as json."""
         return {
             "date": self.date.isoformat(),
-            "quote": self.quote.to_json(),
+            "wrong_quote": self.wrong_quote.to_json(),
             "url": self.get_quote_url(),
             "image": self.get_quote_image_url(),
         }
@@ -209,14 +220,26 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
         """Handle get requests."""
         if _date_str:
             _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
-            _wq = await self.get_quote_by_date(
+            quote_data = await self.get_quote_by_date(
                 dt.date(year=_y, month=_m, day=_d)
             )
         else:
-            _wq = await self.get_quote_of_today()
+            quote_data = await self.get_quote_of_today()
 
-        if _wq:
-            await self.finish(_wq.to_json())
+        if quote_data:
+            if self.request.path.endswith("/full/"):
+                return await self.finish(quote_data.to_json())
+            _wq = quote_data.wrong_quote
+            return await self.finish(
+                {
+                    "date": quote_data.date.isoformat(),
+                    "url": quote_data.get_quote_url(),
+                    "id": _wq.get_id_as_str(),
+                    "quote": _wq.quote.quote,
+                    "author": _wq.author.name,
+                    "rating": _wq.rating,
+                }
+            )
         raise HTTPError(404)
 
 

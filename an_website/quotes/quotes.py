@@ -52,7 +52,10 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
-            (r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteAPIHandler),
+            (
+                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/(?:full/)?",
+                QuoteAPIHandler,
+            ),
         ),
         name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
@@ -336,6 +339,14 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
     async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
         """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
+        if self.request.path.endswith("/full/"):
+            return await self.finish(
+                {
+                    "wrong_quote": wrong_quote.to_json(),
+                    "next": f"{next_q}-{next_a}",
+                    "vote": vote,
+                }
+            )
         return await self.finish(
             {
                 "id": wrong_quote.get_id_as_str(),
