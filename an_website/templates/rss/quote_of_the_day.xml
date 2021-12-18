@@ -11,12 +11,12 @@
     <item>
       <title>{{data.get_title()}}</title>
       <description>{{data.get_quote_as_str()}}</description>
-      <quote>{{data.quote.quote.quote}}</quote>
-      <author>{{data.quote.author.name}}</author>
-      <rating>{{data.quote.rating}}</rating>
+      <quote>{{data.wrong_quote.quote.quote}}</quote>
+      <author>{{data.wrong_quote.author.name}}</author>
+      <rating>{{data.wrong_quote.rating}}</rating>
       <link>{{data.get_quote_url()}}</link>
       <image>{{data.get_quote_image_url()}}</image>
-      <guid>{{data.quote.get_id_as_str()}}</guid>
+      <guid>{{data.wrong_quote.get_id_as_str()}}</guid>
       <pubDate>{{data.get_date_for_rss()}}</pubDate>
     </item>
     {% end %}
