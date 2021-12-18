@@ -64,4 +64,5 @@ class RedirectPage(BaseRequestHandler):
             "pages/ask_for_redirect.html",
             redirect_url=redirect_url,
             from_url=from_url,
+            discord=False,
         )

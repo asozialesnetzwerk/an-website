@@ -148,6 +148,7 @@ class Discord(BaseRequestHandler):
             "pages/ask_for_redirect.html",
             redirect_url=(await get_invite_with_cache(guild_id))[0],
             from_url=None,
+            discord=True,
         )
 
 
