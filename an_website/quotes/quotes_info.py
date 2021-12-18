@@ -159,8 +159,9 @@ class AuthorsInfoPage(BaseRequestHandler):
                 result = await self.redis.get(
                     self.get_redis_info_key(fixed_author_name)
                 )
-            if result:
-                info: list[str] = result.decode("utf-8").split("|", maxsplit=1)
+            if result and (
+                len(info := result.decode("utf-8").split("|", maxsplit=1)) > 1
+            ):
                 remaining_ttl = await self.redis.ttl(
                     self.get_redis_info_key(fixed_author_name)
                 )
