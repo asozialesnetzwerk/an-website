@@ -26,8 +26,8 @@ import orjson as json
 
 DIR = os.path.dirname(__file__)
 
-with open(f"{DIR}/info.json", encoding="utf-8") as my_file:
-    info = json.loads(my_file.read())
+with open(f"{DIR}/info.json", encoding="utf-8") as f:
+    info = json.loads(f.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
 person_dict: dict[str, str] = info["personen"]

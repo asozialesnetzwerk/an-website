@@ -49,7 +49,9 @@ class LOLWUT(BaseRequestHandler):
             command = "LOLWUT VERSION " + " ".join(arguments)
         else:
             command = "LOLWUT"
-        lolwut = (await self.redis.execute_command(command)).decode("utf-8")
+        if not self.redis:
+            raise HTTPError(503)
+        lolwut = await self.redis.execute_command(command)
         await self.render(
             "pages/ansi2html.html",
             ansi=lolwut,

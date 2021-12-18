@@ -287,12 +287,14 @@ class QuoteById(QuoteBaseHandler):
         self, quote_id: int, author_id: int, vote: int
     ):
         """Save the new vote in the cookies."""
-        result = await self.redis.setex(
-            self.get_redis_votes_key(quote_id, author_id),
-            60 * 60 * 24 * 90,  # time to live in seconds (3 months)
-            str(vote),  # value to save (the vote)
-        )
-        if result not in (True, "OK"):
+        result = None
+        if self.redis:
+            result = await self.redis.setex(
+                self.get_redis_votes_key(quote_id, author_id),
+                60 * 60 * 24 * 90,  # time to live in seconds (3 months)
+                str(vote),  # value to save (the vote)
+            )
+        if result != "OK":
             logger.warning("Could not save vote in Redis: %s", result)
             raise HTTPError(500, "Could not save vote in Redis")
 
@@ -314,7 +316,7 @@ class QuoteById(QuoteBaseHandler):
         Use the quote_id and author_id to query the vote.
         Return None if nothing is saved.
         """
-        if "REDIS" not in self.settings:
+        if not self.redis:
             logger.warning("No Redis connection")
             return 0
         result = await self.redis.get(

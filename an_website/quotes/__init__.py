@@ -75,7 +75,7 @@ class Author(QuotesObjBase):
             self.name = name
 
     def to_json(self) -> dict[str, Any]:
-        """Get the author as json."""
+        """Get the author as JSON."""
         return {
             "id": self.id,
             "name": self.name,
@@ -110,7 +110,7 @@ class Quote(QuotesObjBase):
         self.author = get_author_updated_with(author_id, author_name)
 
     def to_json(self) -> dict[str, Any]:
-        """Get the quote as json."""
+        """Get the quote as JSON."""
         return {
             "id": self.id,
             "quote": self.quote,
@@ -148,7 +148,7 @@ class WrongQuote(QuotesObjBase):
         return f"{self.quote.id}-{self.author.id}"
 
     def to_json(self) -> dict[str, Any]:
-        """Get the wrong quote as json."""
+        """Get the wrong quote as JSON."""
         return {
             "id": self.get_id_as_str(),
             "quote": self.quote.to_json(),
@@ -173,14 +173,14 @@ def get_wrong_quotes(
     shuffle: bool = False,
 ) -> tuple[WrongQuote, ...]:
     """Get cached wrong quotes."""
-    if shuffle is sort is True:
+    if shuffle and sort:
         raise ValueError("Sort and shuffle can't be both true.")
     wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
     if filter_fun is not None:
         wqs = filter(filter_fun, wqs)
     if filter_real_quotes:
         wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
-    if shuffle is sort is False:  # pylint: disable=compare-to-zero
+    if not (shuffle or sort):
         return tuple(wqs)
     wqs_list = list(wqs)  # shuffle or sort is True
     if shuffle:
@@ -194,14 +194,14 @@ HTTP_CLIENT = AsyncHTTPClient()
 
 
 async def make_api_request(
-    end_point: str,
+    endpoint: str,
     args: str = str(),
     method: Literal["GET", "POST"] = "GET",
     body: str = None,
 ) -> dict:
     """Make API request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
-        f"{API_URL}/{end_point}?{args}",
+        f"{API_URL}/{endpoint}?{args}",
         raise_error=False,
         method=method,
         body=body,
@@ -213,7 +213,7 @@ async def make_api_request(
             "failed with code=%d and reason='%s'",
             method,
             API_URL,
-            end_point,
+            endpoint,
             args,
             body,
             response.code,
@@ -221,7 +221,7 @@ async def make_api_request(
         )
         raise HTTPError(
             400,
-            reason=f"{API_URL}/{end_point} returned: '{response.reason}'",
+            reason=f"{API_URL}/{endpoint} returned: {response.code} {response.reason}",
         )
     return json.loads(response.body)
 
@@ -315,29 +315,33 @@ def parse_list_of_quote_data(
     return tuple(parse_fun(json_data) for json_data in json_list)
 
 
-async def start_updating_cache_periodically(app):
+async def update_cache_periodically(  # noqa: C901
+    app, setup_redis_awaitable=None
+):
     """Start updating the cache every hour."""
+    if setup_redis_awaitable:
+        await setup_redis_awaitable
     redis = app.settings.get("REDIS")
-    prefix = app.settings.get("REDIS_PREFIX")
+    prefix = app.settings.get("REDIS_PREFIX", str())
     if redis:
         wrongquotes = await redis.get(
             f"{prefix}:cached-quote-data:wrongquotes"
         )
         if wrongquotes:
             parse_list_of_quote_data(
-                json.loads(wrongquotes.decode("utf-8")),
+                json.loads(wrongquotes),
                 parse_wrong_quote,
             )
         quotes = await redis.get(f"{prefix}:cached-quote-data:quotes")
         if quotes:
             parse_list_of_quote_data(
-                json.loads(quotes.decode("utf-8")),
+                json.loads(quotes),
                 parse_quote,
             )
         authors = await redis.get(f"{prefix}:cached-quote-data:authors")
         if authors:
             parse_list_of_quote_data(
-                json.loads(authors.decode("utf-8")),
+                json.loads(authors),
                 parse_author,
             )
     if redis and QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
@@ -345,7 +349,7 @@ async def start_updating_cache_periodically(app):
             f"{prefix}:cached-quote-data:last-update"
         )
         if last_update:
-            last_update_int = int(last_update.decode("utf-8"))
+            last_update_int = int(last_update)
             since_last_update = int(time.time()) - last_update_int
             if 0 <= since_last_update < 60 * 60:
                 # wait until the last update is at least one hour old
@@ -354,13 +358,18 @@ async def start_updating_cache_periodically(app):
                 await asyncio.sleep(update_cache_in)
 
     while True:  # update the cache every hour
-        await update_cache(redis, prefix)
+        try:
+            await update_cache(app)
+        except Exception:  # pylint: disable=broad-except
+            pass
         await asyncio.sleep(60 * 60)
 
 
-async def update_cache(redis=None, redis_prefix=None):
+async def update_cache(app):
     """Fill the cache with all data from the API."""
     logger.info("Update quotes cache.")
+    redis = app.settings.get("REDIS")
+    prefix = app.settings.get("REDIS_PREFIX", str())
     wq_data = await make_api_request("wrongquotes")
     parse_list_of_quote_data(
         wq_data,
@@ -368,7 +377,7 @@ async def update_cache(redis=None, redis_prefix=None):
     )
     if wq_data and redis:
         await redis.set(
-            f"{redis_prefix}:cached-quote-data:wrongquotes",
+            f"{prefix}:cached-quote-data:wrongquotes",
             json.dumps(wq_data),
         )
     quotes_data = await make_api_request("quotes")
@@ -378,7 +387,7 @@ async def update_cache(redis=None, redis_prefix=None):
     )
     if quotes_data and redis:
         await redis.set(
-            f"{redis_prefix}:cached-quote-data:quotes",
+            f"{prefix}:cached-quote-data:quotes",
             json.dumps(quotes_data),
         )
 
@@ -389,13 +398,13 @@ async def update_cache(redis=None, redis_prefix=None):
     )
     if authors_data and redis:
         await redis.set(
-            f"{redis_prefix}:cached-quote-data:authors",
+            f"{prefix}:cached-quote-data:authors",
             json.dumps(authors_data),
         )
 
     if redis:
         await redis.set(
-            f"{redis_prefix}:cached-quote-data:last-update",
+            f"{prefix}:cached-quote-data:last-update",
             int(time.time()),
         )
 
@@ -534,10 +543,13 @@ class QuoteReadyCheckRequestHandler(BaseRequestHandler):
 
     RATELIMIT_NAME = "quotes"
 
-    async def prepare(self):
+    async def check_ready(self):
         """Fail if quotes aren't ready yet."""
-        await super().prepare()
         if not WRONG_QUOTES_CACHE:
             # should work in a few seconds, the quotes just haven't loaded yet
             self.set_header("Retry-After", "5")
             raise HTTPError(503, reason="Service available in a few seconds.")
+
+    async def prepare(self):
+        await super().prepare()
+        await self.check_ready()

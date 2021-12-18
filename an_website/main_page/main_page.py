@@ -33,7 +33,8 @@ def get_module_info() -> ModuleInfo:
 class MainPage(QuoteOfTheDayBaseHandler):
     """The request handler of the main page."""
 
-    RATELIMIT_TOKENS = 0
+    async def check_ready(self):
+        pass
 
     async def get(self):
         """Handle the GET requests and display the main page."""

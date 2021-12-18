@@ -103,24 +103,24 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     @property
-    def redis(self) -> Redis:
+    def redis(self) -> None | Redis:
         """Get the Redis client from the settings."""
-        return self.settings.get("REDIS")  # type: ignore
+        return self.settings.get("REDIS")
 
     @property
     def redis_prefix(self) -> str:
         """Get the Redis prefix from the settings."""
-        return self.settings.get("REDIS_PREFIX")  # type: ignore
+        return self.settings.get("REDIS_PREFIX", str())
 
     @property
-    def elasticsearch(self) -> AsyncElasticsearch:
+    def elasticsearch(self) -> None | AsyncElasticsearch:
         """Get the Elasticsearch client from the settings."""
-        return self.settings.get("ELASTICSEARCH")  # type: ignore
+        return self.settings.get("ELASTICSEARCH")
 
     @property
     def elasticsearch_prefix(self) -> str:
         """Get the Elasticsearch prefix from the settings."""
-        return self.settings.get("ELASTICSEARCH_PREFIX")  # type: ignore
+        return self.settings.get("ELASTICSEARCH_PREFIX", str())
 
     def set_default_headers(self):
         """Opt out of all FLoC cohort calculation."""

@@ -107,7 +107,7 @@ class QuoteOfTheDayData:
         return f"Das Zitat des Tages vom {self.date:%d. %m. %Y}"
 
     def to_json(self) -> dict:
-        """Get the quote of the day as json."""
+        """Get the quote of the day as JSON."""
         return {
             "date": self.date.isoformat(),
             "wrong_quote": self.wrong_quote.to_json(),
@@ -129,13 +129,17 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
             f"{self.redis_prefix}:quote-of-the-day:by-date:{date.isoformat()}"
         )
 
-    async def has_been_used(self, _wq_id: str):
+    async def has_been_used(self, _wq_id: str) -> None | bool:
         """Check with Redis here."""
-        return await self.redis.get(self.get_redis_used_key(_wq_id))
+        if not self.redis:
+            return None
+        return bool(await self.redis.get(self.get_redis_used_key(_wq_id)))
 
-    async def set_used(self, _wq_id: str):
+    async def set_used(self, _wq_id: str) -> None:
         """Set Redis key with used state and TTL here."""
-        return await self.redis.setex(
+        if not self.redis:
+            return
+        await self.redis.setex(
             self.get_redis_used_key(_wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
             420 * 24 * 60 * 60,  # TTL
@@ -146,10 +150,12 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
         self, date: dt.date
     ) -> None | QuoteOfTheDayData:
         """Get the quote of the date if one was saved."""
+        if not self.redis:
+            return None
         _wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
         if not _wq_id:
             return None
-        _q, _a = tuple(int(_i) for _i in _wq_id.decode("utf-8").split("-"))
+        _q, _a = tuple(int(_i) for _i in _wq_id.split("-"))
         _wq = WRONG_QUOTES_CACHE.get((_q, _a))
         if not _wq:
             return None
@@ -217,7 +223,7 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
     """Handler for the JSON API that returns the quote of the day."""
 
     async def get(self, _date_str: str = None):
-        """Handle get requests."""
+        """Handle GET requests."""
         if _date_str:
             _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
             quote_data = await self.get_quote_by_date(

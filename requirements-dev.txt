@@ -6,6 +6,7 @@ flake8-no-pep420~=2.0
 flake8-quotes~=3.3
 isort~=5.10
 mypy>=0.920,<2
+numpy
 pre-commit~=2.16
 pyflakes~=2.4
 pylint~=2.12

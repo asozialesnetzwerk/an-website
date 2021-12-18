@@ -22,12 +22,13 @@ import os
 import signal
 import ssl
 import sys
+import traceback
 
 import hy  # type: ignore
-from aioredis import BlockingConnectionPool, Redis
+from aioredis import BlockingConnectionPool, Redis, RedisError
 from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import AsyncElasticsearch, ElasticsearchException
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
@@ -297,6 +298,58 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         "GENERAL", "RATELIMITS", fallback=False
     )
 
+    app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
+    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
+        "ELASTICSEARCH", "PREFIX", fallback=NAME
+    )
+
+
+def get_ssl_context(
+    config: configparser.ConfigParser,
+) -> None | ssl.SSLContext:
+    """Create SSL config and configure using the config."""
+    if config.getboolean("SSL", "ENABLED", fallback=False):
+        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_ctx.load_cert_chain(
+            config.get("SSL", "CERTFILE"),
+            config.get("SSL", "KEYFILE", fallback=None),
+            config.get("SSL", "PASSWORD", fallback=None),
+        )
+        return ssl_ctx
+
+    return None
+
+
+def setup_logger(config: configparser.ConfigParser):
+    """Configure the root logger."""
+    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler.setFormatter(
+        logging.Formatter() if sys.flags.dev_mode else LogFormatter()
+    )
+    root_logger.addHandler(stream_handler)
+
+    path = config.get(
+        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
+    )
+    if path:
+        os.makedirs(path, 0o755, True)
+        file_handler = logging.handlers.TimedRotatingFileHandler(
+            os.path.join(path, f"{NAME}.log"),
+            "midnight",
+            backupCount=7,
+            utc=True,
+        )
+        file_handler.setFormatter(StdlibFormatter())
+        root_logger.addHandler(file_handler)
+
+    logging.captureWarnings(True)
+
+
+def setup_apm(app: Application, config: configparser.ConfigParser):
+    """Setup APM."""  # noqa: D401
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
         "SERVER_URL": config.get(
@@ -337,11 +390,38 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
         ],
     }
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
-    app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
+
+
+async def setup_redis(app: Application, config: configparser.ConfigParser):
+    """Setup Redis."""  # noqa: D401
+    redis = Redis(
+        connection_pool=BlockingConnectionPool.from_url(
+            config.get("REDIS", "URL", fallback="redis://localhost"),
+            db=config.getint("REDIS", "DB", fallback=None),
+            username=config.get("REDIS", "USERNAME", fallback=None),
+            password=config.get("REDIS", "PASSWORD", fallback=None),
+            decode_responses=True,
+        )
+    )
+    try:
+        await redis.ping()
+    except RedisError as exc:
+        logger.error(str().join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error("Redis is unavailable!")
+        app.settings["REDIS"] = None
+    else:
+        app.settings["REDIS"] = redis
+
+
+async def setup_elasticsearch(
+    app: Application, config: configparser.ConfigParser
+):
+    """Setup Elasticsearch."""  # noqa: D401
+    elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         host=config.get("ELASTICSEARCH", "HOST", fallback="localhost"),
         port=config.get("ELASTICSEARCH", "PORT", fallback=None),
-        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=None),
+        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=str()),
         use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
@@ -360,79 +440,45 @@ def apply_config_to_app(app: Application, config: configparser.ConfigParser):
             "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
         ),
         http_compress=True,
-        sniff_on_start=True,
-        sniff_on_connection_fail=True,
-        sniffer_timeout=60,
+        # sniff_on_start=True,
+        # sniff_on_connection_fail=True,
+        # sniffer_timeout=60,
         headers={
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
-    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
-        "ELASTICSEARCH", "PREFIX", fallback=NAME
-    )
-    # sys.exit(
-    #     asyncio.get_event_loop().run_until_complete(
-    #         app.settings["ELASTICSEARCH"].info()
-    #     )
-    # )
-    app.settings["REDIS"] = Redis(
-        connection_pool=BlockingConnectionPool.from_url(
-            config.get("REDIS", "URL", fallback="redis://localhost"),
-            db=config.getint("REDIS", "DB", fallback=None),
-            username=config.get("REDIS", "USERNAME", fallback=None),
-            password=config.get("REDIS", "PASSWORD", fallback=None),
-        )
-    )
-    app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
-    # sys.exit(
-    #     asyncio.get_event_loop()
-    #     .run_until_complete(app.settings["REDIS"].execute_command("LOLWUT"))
-    #     .decode("utf-8")
-    # )
+    try:
+        await elasticsearch.info()
+    except ElasticsearchException as exc:
+        logger.error(str().join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error("Elasticsearch is unavailable!")
+        app.settings["ELASTICSEARCH"] = None
+    else:
+        app.settings["ELASTICSEARCH"] = elasticsearch
 
 
-def get_ssl_context(
-    config: configparser.ConfigParser,
-) -> None | ssl.SSLContext:
-    """Create SSL config and configure using the config."""
-    if config.getboolean("SSL", "ENABLED", fallback=False):
-        ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        ssl_ctx.load_cert_chain(
-            config.get("SSL", "CERTFILE"),
-            config.get("SSL", "KEYFILE", fallback=None),
-            config.get("SSL", "PASSWORD", fallback=None),
-        )
-        return ssl_ctx
+def cancel_all_tasks(loop):
+    """Cancel all tasks."""
+    tasks = asyncio.all_tasks(loop)
+    if not tasks:
+        return
 
-    return None
+    for task in tasks:
+        task.cancel()
 
+    loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
 
-def setup_logger(config):
-    """Configure the root logger."""
-    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(
-        logging.Formatter() if sys.flags.dev_mode else LogFormatter()
-    )
-    root_logger.addHandler(stream_handler)
-
-    path = config.get(
-        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
-    )
-    if path:
-        os.makedirs(path, 0o755, True)
-        file_handler = logging.handlers.TimedRotatingFileHandler(
-            os.path.join(path, f"{NAME}.log"),
-            "midnight",
-            backupCount=7,
-            utc=True,
-        )
-        file_handler.setFormatter(StdlibFormatter())
-        root_logger.addHandler(file_handler)
-
-    logging.captureWarnings(True)
+    for task in tasks:
+        if task.cancelled():
+            continue
+        if task.exception() is not None:
+            loop.call_exception_handler(
+                {
+                    "message": "unhandled exception during shutdown",
+                    "exception": task.exception(),
+                    "task": task,
+                }
+            )
 
 
 def signal_handler(signalnum, frame):
@@ -457,7 +503,7 @@ def main(app: Application):
     patches.apply()
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)
-    config.read("config.ini")
+    config.read("config.ini", encoding="utf-8")
     setup_logger(config)
     logger.warning("Starting %s with version %s", NAME, version.VERSION)
 
@@ -482,22 +528,43 @@ def main(app: Application):
         decompress_request=True,
     )
 
+    setup_apm(app, config)
+
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
-    # pylint: disable=import-outside-toplevel
-    from .quotes import start_updating_cache_periodically
-
-    asyncio.run_coroutine_threadsafe(
-        start_updating_cache_periodically(app), loop
+    setup_redis_task = loop.create_task(
+        setup_redis(app, config), name="Setup Redis"
     )
+    setup_elasticsearch_task = loop.create_task(
+        setup_elasticsearch(app, config), name="Setup Elasticsearch"
+    )
+
+    # pylint: disable=import-outside-toplevel
+    from .quotes import update_cache_periodically
+
+    cache_update_task = loop.create_task(
+        update_cache_periodically(app, setup_redis_task),
+        name="Update cache periodically",
+    )
+
+    # make Pyflakes shut up
+    setup_elasticsearch_task, cache_update_task  # pylint: disable=pointless-statement
 
     try:
         loop.run_forever()
     except KeyboardInterrupt:
         pass
     finally:
-        server.stop()
-        loop.run_until_complete(server.close_all_connections())
+        try:
+            server.stop()
+            loop.run_until_complete(server.close_all_connections())
+        finally:
+            try:
+                cancel_all_tasks(loop)
+                loop.run_until_complete(loop.shutdown_asyncgens())
+                loop.run_until_complete(loop.shutdown_default_executor())
+            finally:
+                loop.close()
 
 
 if __name__ == "__main__":

@@ -159,10 +159,8 @@ class AuthorsInfoPage(BaseRequestHandler):
                 result = await self.redis.get(
                     self.get_redis_info_key(fixed_author_name)
                 )
-            if result and (
-                len(info := result.decode("utf-8").split("|", maxsplit=1)) > 1
-            ):
-                remaining_ttl = await self.redis.ttl(
+            if result and (len(info := result.split("|", maxsplit=1)) > 1):
+                remaining_ttl = await self.redis.ttl(  # type: ignore
                     self.get_redis_info_key(fixed_author_name)
                 )
                 creation_date = datetime.now(tz=timezone.utc) - timedelta(
