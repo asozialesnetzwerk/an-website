@@ -161,7 +161,7 @@ class WrongQuote(QuotesObjBase):
         r"""
         Return the wrong quote.
 
-        like: '»quote«\n - author'.
+        like: '»quote« - author'.
         """
         return f"»{self.quote}« - {self.author}"
 
