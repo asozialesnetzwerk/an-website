@@ -46,4 +46,5 @@ class WikiHandler(BaseRequestHandler):
             "pages/ask_for_redirect.html",
             redirect_url="https://asoziales-wiki.de/",
             from_url=None,
+            discord=False,
         )
