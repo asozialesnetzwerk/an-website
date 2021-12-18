@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Zitat des Tages</title>
-    <description>Das Zitat des Tages.</description>
+    <description>Jeden Tag wird hier ein witziges falsches Zitat hinzugefügt.</description>
     <language>de-de</language>
     <link>{{url}}</link>
     <atom:link href="{{url}}" rel="self" type="application/rss+xml" />
