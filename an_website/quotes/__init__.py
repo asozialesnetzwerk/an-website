@@ -19,6 +19,7 @@ import datetime
 import logging
 import os
 import random
+import sys
 import time
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -198,7 +199,7 @@ async def make_api_request(
     args: str = str(),
     method: Literal["GET", "POST"] = "GET",
     body: str = None,
-) -> dict:
+) -> Any:
     """Make API request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/{endpoint}?{args}",
@@ -312,38 +313,30 @@ def parse_list_of_quote_data(
     """Parse a list of quote data."""
     if not json_list:
         return tuple()
+    if isinstance(json_list, str):
+        json_list = json.loads(json_list)
     return tuple(parse_fun(json_data) for json_data in json_list)
 
 
-async def update_cache_periodically(  # noqa: C901
-    app, setup_redis_awaitable=None
-):
+async def update_cache_periodically(app, setup_redis_awaitable=None):
     """Start updating the cache every hour."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
     redis = app.settings.get("REDIS")
     prefix = app.settings.get("REDIS_PREFIX", str())
     if redis:
-        wrongquotes = await redis.get(
-            f"{prefix}:cached-quote-data:wrongquotes"
+        parse_list_of_quote_data(
+            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),
+            parse_wrong_quote,
         )
-        if wrongquotes:
-            parse_list_of_quote_data(
-                json.loads(wrongquotes),
-                parse_wrong_quote,
-            )
-        quotes = await redis.get(f"{prefix}:cached-quote-data:quotes")
-        if quotes:
-            parse_list_of_quote_data(
-                json.loads(quotes),
-                parse_quote,
-            )
-        authors = await redis.get(f"{prefix}:cached-quote-data:authors")
-        if authors:
-            parse_list_of_quote_data(
-                json.loads(authors),
-                parse_author,
-            )
+        parse_list_of_quote_data(
+            await redis.get(f"{prefix}:cached-quote-data:quotes"),
+            parse_quote,
+        )
+        parse_list_of_quote_data(
+            await redis.get(f"{prefix}:cached-quote-data:authors"),
+            parse_author,
+        )
     if redis and QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
         last_update = await redis.get(
             f"{prefix}:cached-quote-data:last-update"
@@ -354,6 +347,11 @@ async def update_cache_periodically(  # noqa: C901
             if 0 <= since_last_update < 60 * 60:
                 # wait until the last update is at least one hour old
                 update_cache_in = 60 * 60 - since_last_update
+                if not sys.flags.dev_mode and update_cache_in > 60:
+                    # if in production mode update wrong quotes just to be sure
+                    await update_cache(
+                        app, update_quotes=False, update_authors=False
+                    )
                 logger.info("Update cache in %d seconds", update_cache_in)
                 await asyncio.sleep(update_cache_in)
 
@@ -365,42 +363,49 @@ async def update_cache_periodically(  # noqa: C901
         await asyncio.sleep(60 * 60)
 
 
-async def update_cache(app):
+async def update_cache(
+    app,
+    update_wrong_quotes: bool = True,
+    update_quotes: bool = True,
+    update_authors: bool = True,
+):
     """Fill the cache with all data from the API."""
+    if True not in (update_wrong_quotes, update_quotes, update_authors):
+        return
     logger.info("Update quotes cache.")
     redis = app.settings.get("REDIS")
     prefix = app.settings.get("REDIS_PREFIX", str())
-    wq_data = await make_api_request("wrongquotes")
-    parse_list_of_quote_data(
-        wq_data,
-        parse_wrong_quote,
-    )
-    if wq_data and redis:
-        await redis.set(
-            f"{prefix}:cached-quote-data:wrongquotes",
-            json.dumps(wq_data),
-        )
-    quotes_data = await make_api_request("quotes")
-    parse_list_of_quote_data(
-        quotes_data,
-        parse_quote,
-    )
-    if quotes_data and redis:
-        await redis.set(
-            f"{prefix}:cached-quote-data:quotes",
-            json.dumps(quotes_data),
-        )
 
-    authors_data = await make_api_request("authors")
-    parse_list_of_quote_data(
-        authors_data,
-        parse_author,
-    )
-    if authors_data and redis:
-        await redis.set(
-            f"{prefix}:cached-quote-data:authors",
-            json.dumps(authors_data),
+    if update_wrong_quotes:
+        parse_list_of_quote_data(
+            wq_data := await make_api_request("wrongquotes"),
+            parse_wrong_quote,
         )
+        if wq_data and redis:
+            await redis.set(
+                f"{prefix}:cached-quote-data:wrongquotes",
+                json.dumps(wq_data),
+            )
+    if update_quotes:
+        parse_list_of_quote_data(
+            quotes_data := await make_api_request("quotes"),
+            parse_quote,
+        )
+        if quotes_data and redis:
+            await redis.set(
+                f"{prefix}:cached-quote-data:quotes",
+                json.dumps(quotes_data),
+            )
+    if update_authors:
+        parse_list_of_quote_data(
+            authors_data := await make_api_request("authors"),
+            parse_author,
+        )
+        if authors_data and redis:
+            await redis.set(
+                f"{prefix}:cached-quote-data:authors",
+                json.dumps(authors_data),
+            )
 
     if redis:
         await redis.set(
