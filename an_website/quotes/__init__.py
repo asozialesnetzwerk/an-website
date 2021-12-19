@@ -352,14 +352,14 @@ async def update_cache_periodically(app, setup_redis_awaitable=None):
                     await update_cache(
                         app, update_quotes=False, update_authors=False
                     )
-                logger.info("Update cache in %d seconds", update_cache_in)
+                logger.info(
+                    "Next update of quotes cache in %d seconds",
+                    update_cache_in,
+                )
                 await asyncio.sleep(update_cache_in)
 
     while True:  # update the cache every hour
-        try:
-            await update_cache(app)
-        except Exception:  # pylint: disable=broad-except
-            pass
+        await update_cache(app)
         await asyncio.sleep(60 * 60)
 
 
@@ -370,48 +370,52 @@ async def update_cache(
     update_authors: bool = True,
 ):
     """Fill the cache with all data from the API."""
-    if True not in (update_wrong_quotes, update_quotes, update_authors):
-        return
-    logger.info("Update quotes cache.")
+    logger.info("Updating quotes cache...")
     redis = app.settings.get("REDIS")
     prefix = app.settings.get("REDIS_PREFIX", str())
+    try:
 
-    if update_wrong_quotes:
-        parse_list_of_quote_data(
-            wq_data := await make_api_request("wrongquotes"),
-            parse_wrong_quote,
-        )
-        if wq_data and redis:
-            await redis.set(
-                f"{prefix}:cached-quote-data:wrongquotes",
-                json.dumps(wq_data),
+        if update_wrong_quotes:
+            parse_list_of_quote_data(
+                wq_data := await make_api_request("wrongquotes"),
+                parse_wrong_quote,
             )
-    if update_quotes:
-        parse_list_of_quote_data(
-            quotes_data := await make_api_request("quotes"),
-            parse_quote,
-        )
-        if quotes_data and redis:
-            await redis.set(
-                f"{prefix}:cached-quote-data:quotes",
-                json.dumps(quotes_data),
+            if wq_data and redis:
+                await redis.set(
+                    f"{prefix}:cached-quote-data:wrongquotes",
+                    json.dumps(wq_data),
+                )
+
+        if update_quotes:
+            parse_list_of_quote_data(
+                quotes_data := await make_api_request("quotes"),
+                parse_quote,
             )
-    if update_authors:
-        parse_list_of_quote_data(
-            authors_data := await make_api_request("authors"),
-            parse_author,
-        )
-        if authors_data and redis:
+            if quotes_data and redis:
+                await redis.set(
+                    f"{prefix}:cached-quote-data:quotes",
+                    json.dumps(quotes_data),
+                )
+
+        if update_authors:
+            parse_list_of_quote_data(
+                authors_data := await make_api_request("authors"),
+                parse_author,
+            )
+            if authors_data and redis:
+                await redis.set(
+                    f"{prefix}:cached-quote-data:authors",
+                    json.dumps(authors_data),
+                )
+
+        if redis and update_wrong_quotes and update_quotes and update_authors:
             await redis.set(
-                f"{prefix}:cached-quote-data:authors",
-                json.dumps(authors_data),
+                f"{prefix}:cached-quote-data:last-update",
+                int(time.time()),
             )
 
-    if redis:
-        await redis.set(
-            f"{prefix}:cached-quote-data:last-update",
-            int(time.time()),
-        )
+    except Exception:  # pylint: disable=broad-except
+        logger.error("Updating quotes cache failed.")
 
 
 async def get_author_by_id(author_id: int) -> Author:

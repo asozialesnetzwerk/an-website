@@ -62,7 +62,7 @@ async def test_json_apis(fetch):  # 42
             "application/json; charset=UTF-8"
         )
         print(api)
-        assert json.loads(response.body.decode("utf-8"))
+        assert json.loads(response.body)
 
 
 # pylint: disable=too-many-statements

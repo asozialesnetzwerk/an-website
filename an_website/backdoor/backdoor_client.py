@@ -78,10 +78,10 @@ def run_and_print(  # noqa: C901
         code = hy.disassemble(hy.read_str(code), True)
     try:
         response = send(url, key, code, detect_mode(code), session)
-    except SyntaxError:
+    except SyntaxError as exc:
         print(
             str()
-            .join(traceback.format_exception_only(*sys.exc_info()[0:2]))
+            .join(traceback.format_exception_only(exc))  # type: ignore
             .strip()
         )
         return

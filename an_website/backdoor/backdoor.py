@@ -18,7 +18,6 @@ import ast
 import io
 import pickle
 import pydoc
-import sys
 import traceback
 from typing import Any
 
@@ -58,14 +57,6 @@ class Backdoor(APIRequestHandler):
     REQUIRES_AUTHORIZATION: bool = True
 
     sessions: dict[str, dict] = {}
-    _globals: dict[str, Any] = {
-        "__builtins__": __builtins__,
-        "__name__": "this",
-    }
-
-    def initialize(self, **kwargs):
-        super().initialize(**kwargs)
-        self._globals["app"] = self.application
 
     async def post(self, mode):  # noqa: C901
         # pylint: disable=too-many-branches
@@ -82,7 +73,7 @@ class Backdoor(APIRequestHandler):
                     | ast.PyCF_ONLY_AST
                     | ast.PyCF_TYPE_COMMENTS,
                     0x5F3759DF,
-                    _feature_version=9,
+                    _feature_version=10,
                 )
                 code = compile(
                     parsed,
@@ -91,46 +82,49 @@ class Backdoor(APIRequestHandler):
                     barry_as_FLUFL.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
                     0x5F3759DF,
-                    _feature_version=9,
+                    _feature_version=10,
                 )
-            except SyntaxError:
-                response = {"success": False, "result": sys.exc_info()}
+            except SyntaxError as exc:
+                response = {"success": False, "result": exc}
             else:
-                session = self.request.headers.get("X-Backdoor-Session")
-                _locals: dict[str, Any] = self.sessions.get(session) or {
+                session_id = self.request.headers.get("X-Backdoor-Session")
+                session: dict[str, Any] = self.sessions.get(session_id) or {
+                    "__builtins__": __builtins__,
+                    "__name__": "this",
+                    "app": self.application,
                     "get_wrong_quotes": get_wrong_quotes,
                 }
-                if session and session not in self.sessions:
-                    self.sessions[session] = _locals
-                if "print" not in _locals or isinstance(
-                    _locals["print"], PrintWrapper
+                if session_id and session_id not in self.sessions:
+                    self.sessions[session_id] = session
+                if "print" not in session or isinstance(
+                    session["print"], PrintWrapper
                 ):
-                    _locals["print"] = PrintWrapper(output)
-                if "help" not in _locals or isinstance(
-                    _locals["help"], pydoc.Helper
+                    session["print"] = PrintWrapper(output)
+                if "help" not in session or isinstance(
+                    session["help"], pydoc.Helper
                 ):
-                    _locals["help"] = pydoc.Helper(io.StringIO(), output)
+                    session["help"] = pydoc.Helper(io.StringIO(), output)
 
                 try:
                     response = {
                         "success": True,
                         "result": eval(  # pylint: disable=eval-used
-                            code, self._globals, _locals
+                            code, session
                         ),
                     }
                     if code.co_flags.bit_length() >= 8 and int(
                         bin(code.co_flags)[-8]
                     ):
                         response["result"] = await response["result"]
-                    if response["result"] is _locals["help"]:
+                    if response["result"] is session["help"]:
                         response["result"] = help
-                except Exception:  # pylint: disable=broad-except
-                    response = {"success": False, "result": sys.exc_info()}
+                except Exception as exc:  # pylint: disable=broad-except
+                    response = {"success": False, "result": exc}
             response["result"] = (
                 None
                 if response["success"]
                 else str()
-                .join(traceback.format_exception(*response["result"]))
+                .join(traceback.format_exception(response["result"]))
                 .strip(),
                 response["result"]
                 if response["success"]
@@ -148,10 +142,10 @@ class Backdoor(APIRequestHandler):
                     response["result"][0] or repr(response["result"][1]),
                     None,
                 )
-            # except Exception:
+            # except Exception as exc:
             #     response["result"] = (
             #         response["result"][0] or repr(response["result"][1]),
-            #         str().join(traceback.format_exception(*sys.exc_info())).strip(),
+            #         str().join(traceback.format_exception(exc)).strip(),
             #     )
             response["output"] = (
                 output.getvalue() if not output.closed else None

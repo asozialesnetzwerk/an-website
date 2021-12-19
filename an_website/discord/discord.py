@@ -74,7 +74,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
-        response_json = json.loads(response.body.decode("utf-8"))
+        response_json = json.loads(response.body)
         invite = response_json["instant_invite"]
         if invite is not None:
             return invite, url
@@ -85,7 +85,7 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     response = await HTTP_CLIENT.fetch(url, raise_error=False)
     if response.code == 200:
         return (
-            json.loads(response.body.decode("utf-8")),
+            json.loads(response.body),
             f"https://disboard.org/server/{guild_id}",
         )
 

@@ -532,23 +532,19 @@ def main(app: Application):
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
-    setup_redis_task = loop.create_task(
-        setup_redis(app, config), name="Setup Redis"
-    )
-    setup_elasticsearch_task = loop.create_task(
-        setup_elasticsearch(app, config), name="Setup Elasticsearch"
-    )
+    setup_redis_task = loop.create_task(setup_redis(app, config))
+    setup_es_task = loop.create_task(setup_elasticsearch(app, config))
 
     # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
 
     cache_update_task = loop.create_task(
-        update_cache_periodically(app, setup_redis_task),
-        name="Update cache periodically",
+        update_cache_periodically(app, setup_redis_task)
     )
 
-    # make Pyflakes shut up
-    setup_elasticsearch_task, cache_update_task  # pylint: disable=pointless-statement
+    # Pyflakes doesn't like unused names
+    # pylint: disable=pointless-statement
+    cache_update_task, setup_es_task
 
     try:
         loop.run_forever()
