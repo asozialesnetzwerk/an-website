@@ -348,8 +348,9 @@ def setup_logger(config: configparser.ConfigParser):
     logging.captureWarnings(True)
 
 
-def setup_apm(app: Application, config: configparser.ConfigParser):
+def setup_apm(app: Application):
     """Setup APM."""  # noqa: D401
+    config = app.settings["CONFIG"]
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
         "SERVER_URL": config.get(
@@ -392,8 +393,9 @@ def setup_apm(app: Application, config: configparser.ConfigParser):
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
 
 
-async def setup_redis(app: Application, config: configparser.ConfigParser):
+async def setup_redis(app: Application):
     """Setup Redis."""  # noqa: D401
+    config = app.settings["CONFIG"]
     redis = Redis(
         connection_pool=BlockingConnectionPool.from_url(
             config.get("REDIS", "URL", fallback="redis://localhost"),
@@ -413,10 +415,9 @@ async def setup_redis(app: Application, config: configparser.ConfigParser):
         app.settings["REDIS"] = redis
 
 
-async def setup_elasticsearch(
-    app: Application, config: configparser.ConfigParser
-):
+async def setup_elasticsearch(app: Application):
     """Setup Elasticsearch."""  # noqa: D401
+    config = app.settings["CONFIG"]
     elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         host=config.get("ELASTICSEARCH", "HOST", fallback="localhost"),
@@ -528,23 +529,21 @@ def main(app: Application):
         decompress_request=True,
     )
 
-    setup_apm(app, config)
+    setup_apm(app)
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
-    setup_redis_task = loop.create_task(setup_redis(app, config))
-    setup_es_task = loop.create_task(setup_elasticsearch(app, config))
+    setup_redis_task = loop.create_task(setup_redis(app))
+    # pylint: disable=unused-variable
+    setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
 
     # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
 
-    cache_update_task = loop.create_task(
+    # pylint: disable=unused-variable
+    cache_update_task = loop.create_task(  # noqa: F841
         update_cache_periodically(app, setup_redis_task)
     )
-
-    # Pyflakes doesn't like unused names
-    # pylint: disable=pointless-statement
-    cache_update_task, setup_es_task
 
     try:
         loop.run_forever()

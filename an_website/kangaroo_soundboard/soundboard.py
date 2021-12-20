@@ -190,14 +190,14 @@ class SoundboardHTMLHandler(BaseRequestHandler):
         if path in (None, str(), "index", "/"):
             return MAIN_PAGE_INFO, None
 
-        if path in ("persons", "personen"):
+        if path in {"persons", "personen"}:
             persons_list: list[Info] = []
             for _k, person_sounds in PERSON_SOUNDS.items():
                 persons_list.append(HeaderInfo(Person[_k].value, type=Person))
                 persons_list += person_sounds
             return persons_list, None
 
-        if path in ("search", "suche"):
+        if path in {"search", "suche"}:
             query = self.get_query_argument("q", str())
             if query is None or query == str():
                 return MAIN_PAGE_INFO, query

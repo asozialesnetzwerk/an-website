@@ -178,8 +178,10 @@ def get_wrong_quotes(
         raise ValueError("Sort and shuffle can't be both true.")
     wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
     if filter_fun is not None:
+        # pylint: disable=bad-builtin
         wqs = filter(filter_fun, wqs)
     if filter_real_quotes:
+        # pylint: disable=bad-builtin
         wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
     if not (shuffle or sort):
         return tuple(wqs)

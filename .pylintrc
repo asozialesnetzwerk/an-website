@@ -4,7 +4,7 @@ load-plugins=
     pylint.extensions.typing,
     pylint.extensions.comparetozero,
     #pylint.extensions.for_any_all,
-    #pylint.extensions.bad_builtin,
+    pylint.extensions.bad_builtin,
     pylint.extensions.overlapping_exceptions,
     pylint.extensions.emptystring,
     #pylint.extensions.confusing_elif,
@@ -18,7 +18,7 @@ load-plugins=
     pylint.extensions.comparison_placement,
     #pylint.extensions.mccabe,
     pylint.extensions.check_elif,
-    #pylint.extensions.set_membership,
+    pylint.extensions.set_membership,
 extension-pkg-allow-list=orjson
 py-version=3.10
 

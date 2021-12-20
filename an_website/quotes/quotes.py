@@ -322,11 +322,11 @@ class QuoteById(QuoteBaseHandler):
         result = await self.redis.get(
             self.get_redis_votes_key(quote_id, author_id)
         )
-        if result in ("-1", b"-1"):
+        if result == "-1":
             return -1
-        if result in ("0", b"0"):
+        if result == "0":
             return 0
-        if result in ("1", b"1"):
+        if result == "1":
             return 1
         return None
 

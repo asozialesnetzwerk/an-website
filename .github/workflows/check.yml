@@ -31,15 +31,10 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Install Black and isort
         run: grep -E "^(black|isort)" requirements-dev.txt | xargs pip install --prefer-binary
-      - name: Run Black
-        run: black .
       - name: Run isort
         run: isort .
-      - name: Sort requirements
-        run: |
-          sudo locale-gen de_DE.UTF-8
-          LC_COLLATE=de_DE.UTF-8 sort -d -o requirements.txt requirements.txt
-          LC_COLLATE=de_DE.UTF-8 sort -d -o requirements-dev.txt requirements-dev.txt
+      - name: Run Black
+        run: black .
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

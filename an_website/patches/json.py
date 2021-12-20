@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
-from json.decoder import JSONDecodeError, JSONDecoder
-from json.encoder import JSONEncoder
+# pylint: disable=unused-import
+from json.decoder import JSONDecodeError, JSONDecoder  # noqa: F401
+from json.encoder import JSONEncoder  # noqa: F401
 
 import orjson
 
@@ -129,9 +130,3 @@ def load(
         object_pairs_hook=object_pairs_hook,
         **kw,
     )
-
-
-def make_pyflakes_shut_up():
-    JSONDecodeError(str(), str(), int())
-    JSONDecoder()
-    JSONEncoder()

@@ -1,3 +1,4 @@
+-r requirements.txt
 black>=21.12b0
 coverage~=6.2
 flake8~=4.0
@@ -8,7 +9,6 @@ isort~=5.10
 mypy>=0.920,<2
 numpy
 pre-commit~=2.16
-pyflakes~=2.4
 pylint~=2.12
 pytest>=6.2.5,<7
 pytest-tornasync>=0.6,<2

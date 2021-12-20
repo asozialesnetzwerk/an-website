@@ -3,9 +3,9 @@
 if [ -d venv ];
 then
     . venv/bin/activate
-    python3 -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dev.txt --quiet
+    python3 -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet
 else
-    python3 -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dev.txt --quiet --user
+    python3 -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet --user
 fi
 
 # install pre-commit hooks
@@ -13,10 +13,6 @@ pre-commit install
 
 # test hashing files (important to see if umlaute are used)
 git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
-
-# check for errors
-echo Pyflakes:
-python3 -m pyflakes an_website tests || exit 1
 
 # sort imports
 echo isort:

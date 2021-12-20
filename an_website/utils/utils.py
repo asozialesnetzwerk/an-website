@@ -324,11 +324,11 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
         return val
     if isinstance(val, str):
         val = val.lower()
-        if val in ("sure", "y", "yes", "t", "true", "on", "1"):
+        if val in {"sure", "y", "yes", "t", "true", "on", "1"}:
             return True
-        if val in ("nope", "n", "no", "f", "false", "off", "0"):
+        if val in {"nope", "n", "no", "f", "false", "off", "0"}:
             return False
-        if val in ("maybe", "idc"):
+        if val in {"maybe", "idc"}:
             return random.choice((True, False))
     if default is None:
         raise ValueError(f"invalid truth value '{val}'")

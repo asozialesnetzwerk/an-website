@@ -117,7 +117,7 @@ async def test_request_handlers(fetch):  # 69
     response = await fetch("/host-info/")
     assert response.code == 200
     response = await fetch("/host-info/uwu/")
-    assert response.code in (200, 501)
+    assert response.code in {200, 501}
     response = await fetch("/settings/")
     assert response.code == 200
     response = await fetch("/wiki/")
