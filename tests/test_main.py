@@ -21,6 +21,7 @@ import re
 
 import an_website.__main__ as main
 from an_website import patches
+from an_website.utils.request_handler import BaseRequestHandler
 
 
 async def get_module_infos():
@@ -67,7 +68,7 @@ def test_parsing_module_infos():
         min(
             len(handler)
             for handler in main.get_all_handlers(module_infos)
-            # if issubclass(handler[1], BaseRequestHandler)
+            if issubclass(handler[1], BaseRequestHandler)
         )
         == 3
     )

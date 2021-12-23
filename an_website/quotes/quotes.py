@@ -143,17 +143,14 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         if rating_filter == "all":
             return get_random_id()
 
-        wrong_quotes = None
         if rating_filter == "w":
             wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating > 0)
         elif rating_filter == "n":
             wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating < 0)
         elif rating_filter == "rated":
             wrong_quotes = get_wrong_quotes()
-
-        if not wrong_quotes:
+        else:  # invalid rating filter
             return get_random_id()
-
         return random.choice(wrong_quotes).get_id()
 
     def on_finish(self):
@@ -294,7 +291,7 @@ class QuoteById(QuoteBaseHandler):
                 60 * 60 * 24 * 90,  # time to live in seconds (3 months)
                 str(vote),  # value to save (the vote)
             )
-        if result != "OK":
+        if not result:
             logger.warning("Could not save vote in Redis: %s", result)
             raise HTTPError(500, "Could not save vote in Redis")
 
