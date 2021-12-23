@@ -42,7 +42,7 @@ def get_module_info() -> ModuleInfo:
 class NimmMalKurzRoomAPI(APIRequestHandler):
     """The request handler for the room creation API for "Nimm mal kurz!"."""
 
-    async def get(self, command: str):
+    async def post(self, command: str):
         """Handle a GET request."""
         if command == "create":
             await self.create_room()
@@ -73,8 +73,29 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
                 "Don't include a room ID in the request when creating a room.",
             )
         # Create room with settings from the request
-        # room_id = str(uuid.uuid4())
-        # user_id = await self.get_nmk_user_id()
+        room_id = str(uuid.uuid4())
+        settings = {
+            "name": self.get_argument("name", ""),
+            "password": self.get_argument("password", ""),
+            "max_players": self.get_argument("max_players", "5"),
+            "cards": self.get_argument("cards", "K=10-S|3≤S≤5"),
+            "max_time": self.get_argument("max_time", "-1"),
+            "max_time_per_card": self.get_argument(
+                "max_time_per_card", "30"  # in seconds
+            ),
+            "owner": self.get_user_id(),
+        }
+        await self.redis.hset(
+            self.get_redis_key("room", room_id, "settings"), mapping=settings
+        )
+
+    async def player_is_owner_of_room(
+        self, user_id: str, room_id: str
+    ) -> bool:
+        """Check if the user is the owner of the room."""
+        return user_id == await self.redis.hget(
+            self.get_redis_key("room", room_id, "settings"), "owner"
+        )
 
     async def join_room(self):
         """Join a room."""
@@ -85,7 +106,24 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
         #     raise HTTPError(400, reason="User is currently in a room.")
         room_id = self.get_room_id()
         user_id = await self.get_nmk_user_id()
-        if not self.redis.sadd(  # TODO: Check if room is full and if it exists
+
+        player_count = len(await self.redis.smembers(
+                self.get_redis_key("room", room_id, "users")
+        ))
+        if player_count >= int(await self.redis.hget(
+                self.get_redis_key("room", room_id, "settings"), "max_players"
+        )):
+            raise HTTPError(400, reason="Room is full.")
+
+        if (  # pw check
+            _pw := self.redis.hget(
+                self.get_redis_key("room", room_id, "settings"), "password"
+            )
+        ):
+            if _pw != self.get_argument("password", ""):
+                raise HTTPError(400, reason="Wrong password.")
+
+        if not self.redis.sadd(
             self.get_redis_key("room", room_id, "users"),
             user_id,
         ):
@@ -94,22 +132,42 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
             self.get_redis_key("user", user_id, "room"),
             room_id,
         )
+        if player_count == 0:
+            await self.redis.hset(
+                self.get_redis_key("room", room_id, "settings"),
+                "owner",
+                user_id,
+            )
 
         await self.finish({"success": True})
+
+    async def get_room_settings(self, room_id: str):
+        """Get the settings for a room."""
+        return await self.redis.hgetall(
+            self.get_redis_key("room", room_id, "settings")
+        )
 
     async def leave_room(self):
         """Leave the room."""
         user_id, room_id = await self.is_in_room()
         if not (user_id and room_id):
             raise HTTPError(400, reason="User is currently not in a room.")
+        users_redis_key = self.get_redis_key("room", room_id, "users")
         if not await self.redis.srem(
-            self.get_redis_key("room", room_id, "users"),
+            users_redis_key,
             user_id,
         ):
             raise HTTPError(500, reason="Could not remove user from room.")
         await self.redis.delete(self.get_redis_key("user", user_id, "room"))
+        # check if user is the last one in the room
+        if not self.redis.smembers(users_redis_key):
+            # TODO: improve room deletion
+            await self.redis.delete(users_redis_key)
+            await self.redis.delete(
+                self.get_redis_key("room", room_id, "settings")
+            )
+
         # TODO: Do stuff when game is running
-        # TODO: Check if user is the last one in the room
 
         await self.finish({"success": True})
 
