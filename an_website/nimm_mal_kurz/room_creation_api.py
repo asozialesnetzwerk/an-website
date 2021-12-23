@@ -107,18 +107,20 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
         room_id = self.get_room_id()
         user_id = await self.get_nmk_user_id()
 
-        player_count = len(await self.redis.smembers(
+        player_count = len(
+            await self.redis.smembers(
                 self.get_redis_key("room", room_id, "users")
-        ))
-        if player_count >= int(await self.redis.hget(
+            )
+        )
+        if player_count >= int(
+            await self.redis.hget(
                 self.get_redis_key("room", room_id, "settings"), "max_players"
-        )):
+            )
+        ):
             raise HTTPError(400, reason="Room is full.")
 
-        if (  # pw check
-            _pw := self.redis.hget(
-                self.get_redis_key("room", room_id, "settings"), "password"
-            )
+        if _pw := self.redis.hget(  # pw check
+            self.get_redis_key("room", room_id, "settings"), "password"
         ):
             if _pw != self.get_argument("password", ""):
                 raise HTTPError(400, reason="Wrong password.")
@@ -132,7 +134,7 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
             self.get_redis_key("user", user_id, "room"),
             room_id,
         )
-        if player_count == 0:
+        if not player_count:
             await self.redis.hset(
                 self.get_redis_key("room", room_id, "settings"),
                 "owner",
