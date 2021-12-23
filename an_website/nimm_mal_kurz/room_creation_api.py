@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import uuid
 
+from aioredis import Redis
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler
@@ -29,7 +30,7 @@ def get_module_info() -> ModuleInfo:
             (r"/api/nimm-mal-kurz/raum/([a-z0-9]+)/", NimmMalKurzRoomAPI),
         ),
         name="Nimm mal kurz!",
-        description="Ein Klon des beliebten Karten-Spiels \"Halt mal kurz!\".",
+        description='Ein Klon des beliebten Karten-Spiels "Halt mal kurz!".',
         keywords=(
             "Halt mal kurz",
             "Nimm mal kurz",
@@ -43,41 +44,47 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
 
     async def get(self, command: str):
         """Handle a GET request."""
-        match command:
-            case "create":
-                await self.create_room()
-            case "join":
-                await self.join_room()
-            case "leave":
-                await self.leave_room()
-            # case "list":
-            #     await self.list_rooms()
-            case "init-websocket":
-                await self.init_websocket()
-            case _:
-                raise HTTPError(404)
+        if command == "create":
+            await self.create_room()
+        elif command == "join":
+            await self.join_room()
+        elif command == "leave":
+            await self.leave_room()
+        elif command == "init-websocket":
+            await self.init_websocket()
+        elif command == "list":
+            pass  # await self.list_rooms()
+        else:
+            raise HTTPError(400)
 
-    async def prepare(self):
-        """Prepare the request handler."""
-        if not self.redis:
+    @property
+    def redis(self) -> Redis:
+        """Return the Redis instance."""
+        _r = super().redis
+        if not _r:
             raise HTTPError(500)  # TODO: Better error handling
+        return _r
 
     async def create_room(self):
+        """Create a new room."""
         if self.get_room_id():
             raise HTTPError(
                 400,
-                "Don't include a room ID in the request when creating a room."
+                "Don't include a room ID in the request when creating a room.",
             )
-        # TODO: Create room
+        # Create room with settings from the request
+        # room_id = str(uuid.uuid4())
+        # user_id = await self.get_nmk_user_id()
 
     async def join_room(self):
+        """Join a room."""
         if not self.get_room_id():
             raise HTTPError(400, reason="No room ID provided.")
         # TODO: Check if user is already in a room
         # if None not in (self.get_room_id()):
         #     raise HTTPError(400, reason="User is currently in a room.")
         room_id = self.get_room_id()
-        user_id = await self.get_user_id()
+        user_id = await self.get_nmk_user_id()
         if not self.redis.sadd(  # TODO: Check if room is full and if it exists
             self.get_redis_key("room", room_id, "users"),
             user_id,
@@ -100,15 +107,11 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
             user_id,
         ):
             raise HTTPError(500, reason="Could not remove user from room.")
-        await self.redis.delete(
-            self.get_redis_key("user", user_id, "room")
-        )
+        await self.redis.delete(self.get_redis_key("user", user_id, "room"))
         # TODO: Do stuff when game is running
+        # TODO: Check if user is the last one in the room
 
         await self.finish({"success": True})
-
-    async def list_rooms(self):
-        pass
 
     async def init_websocket(self):
         """
@@ -123,7 +126,7 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
 
     def get_redis_key(self, *args):
         """Get the redis key for "Nimm mal kurz!"."""
-        if len(args) == 0:
+        if not args:
             return f"{self.redis_prefix}:nimm-mal-kurz"
         return f"{self.redis_prefix}:nimm-mal-kurz:{':'.join(args)}"
 
@@ -131,7 +134,7 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
         """Get the room ID from the request headers."""
         return self.request.headers.get("X-Room-ID")
 
-    async def get_user_id(self) -> str:
+    async def get_nmk_user_id(self) -> str:
         """Get or create the user ID from the request headers."""
         user_id = await self.is_logged_in_as()
         if not user_id:
@@ -154,6 +157,7 @@ class NimmMalKurzRoomAPI(APIRequestHandler):
             user_id,
         ):
             return user_id, room_id
+        return None, None
 
     async def is_logged_in_as(self, requires_login=False) -> None | str:
         """Check if the user is logged in as a user and return the user id."""
