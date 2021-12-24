@@ -92,4 +92,4 @@ jobs:
       - name: Run Flake8
         run: flake8 --extend-ignore=D100,D101,D102,D103,D104,E501
       - name: Run Pylint
-        run: pylint -d fixme,line-too-long an_website
+        run: pylint -d fixme an_website

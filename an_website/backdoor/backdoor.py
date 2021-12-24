@@ -116,10 +116,11 @@ class Backdoor(APIRequestHandler):
                         bin(code.co_flags)[-8]
                     ):
                         response["result"] = await response["result"]
-                    if response["result"] is session["help"]:
-                        response["result"] = help
                 except Exception as exc:  # pylint: disable=broad-except
                     response = {"success": False, "result": exc}
+                else:
+                    if response["result"] is session["help"]:
+                        response["result"] = help
             response["result"] = (
                 None
                 if response["success"]

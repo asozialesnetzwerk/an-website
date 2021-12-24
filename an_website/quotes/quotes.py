@@ -134,6 +134,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 
         if rating_filter == "unrated":
             # get a random quote, but filter out already rated quotes
+            # pylint: disable=while-used
             while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
                 if WRONG_QUOTES_CACHE[ids].id == -1:
                     # Check for wrong quotes, that are unrated but in

@@ -6,7 +6,7 @@ flake8-docstrings~=1.6
 flake8-no-pep420~=2.0
 flake8-quotes~=3.3
 isort~=5.10
-mypy>=0.920,<2
+mypy>=0.930,<2
 numpy
 pre-commit~=2.16
 pylint~=2.12
@@ -14,6 +14,6 @@ pytest>=6.2.5,<7
 pytest-tornasync>=0.6,<2
 #types-Markdown~=3.3.9
 types-orjson~=3.6.1
-types-Pillow~=8.3.8
+types-Pillow~=8.3.9
 #types-PyYAML~=6.0.1
 types-requests~=2.26.2

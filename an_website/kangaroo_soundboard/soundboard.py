@@ -143,7 +143,7 @@ async def search_main_page_info(
                 found.append(info)
         elif isinstance(info, HeaderInfo):
             tag = info.tag
-            while (
+            while (  # pylint: disable=while-used
                 len(found) > 0
                 and isinstance(last := found[-1], HeaderInfo)
                 and (
@@ -159,6 +159,7 @@ async def search_main_page_info(
                 del found[-1]
             found.append(info)
 
+    # pylint: disable=while-used
     while len(found) > 0 and isinstance(found[-1], HeaderInfo):
         del found[-1]
 

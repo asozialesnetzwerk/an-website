@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import gc
 import importlib
 import logging
 import os
@@ -106,14 +107,12 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
             if (
                 (  # check if the annotations specify the return
                     # type as Module info
-                    module.get_module_info.__annotations__.get(  # type: ignore
-                        "return", str()
-                    )
+                    module.get_module_info.__annotations__.get("return", str())
                     == "ModuleInfo"
                 )
                 # check if returned module_info is type ModuleInfo
                 and isinstance(
-                    module_info := module.get_module_info(),  # type: ignore
+                    module_info := module.get_module_info(),
                     ModuleInfo,
                 )
             ):
@@ -563,5 +562,7 @@ def main(app: Application):
 
 
 if __name__ == "__main__":
+    if sys.flags.dev_mode:
+        gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
     application = make_app()
     main(application)

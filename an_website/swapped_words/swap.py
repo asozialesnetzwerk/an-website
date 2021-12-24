@@ -104,10 +104,11 @@ class SwappedWords(BaseRequestHandler):
                     SameSite="Strict",
                 )
 
-            if config_str is None or str_to_bool(reset):
-                sw_config = DEFAULT_CONFIG
-            else:
-                sw_config = SwappedWordsConfig(config_str)
+            sw_config = (
+                DEFAULT_CONFIG
+                if config_str is None or str_to_bool(reset)
+                else SwappedWordsConfig(config_str)
+            )
 
             self.render(
                 "pages/swapped_words.html",
@@ -161,10 +162,11 @@ class SwappedWordsAPI(APIRequestHandler):
         )
 
         try:
-            if config_str is None:
-                sw_config = DEFAULT_CONFIG
-            else:
-                sw_config = SwappedWordsConfig(config_str)
+            sw_config = (
+                DEFAULT_CONFIG
+                if config_str is None
+                else SwappedWordsConfig(config_str)
+            )
 
             if str_to_bool(return_config, False):
 

@@ -135,19 +135,18 @@ class BaseRequestHandler(RequestHandler):
         if not await self.ratelimit(True):
             await self.ratelimit()
 
-    async def ratelimit(self, global_ratelimit=False):
+    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
         if (
-            # whether ratelimits are enabled
             not self.settings.get("RATELIMITS")
-            # ignore Delimits for requests with method OPTIONS
             or self.request.method == "OPTIONS"
-            # ignore ratelimits for authorized requests
             or self.is_authorized()
         ):
             return False
         # pylint: disable=not-callable
-        remote_ip = blake3(self.request.remote_ip.encode("ascii")).hexdigest()
+        remote_ip = blake3(
+            str(self.request.remote_ip).encode("ascii")
+        ).hexdigest()
         if global_ratelimit:
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
             max_burst = 99
@@ -172,7 +171,9 @@ class BaseRequestHandler(RequestHandler):
             tokens = 1
             if not (bucket and limit):
                 return False
-        result = await self.redis.execute_command(
+        # self.redis could be None
+        # but it's better to complain loudly than to fail silently
+        result = await self.redis.execute_command(  # type: ignore
             "CL.THROTTLE",
             key,
             max_burst,
@@ -264,9 +265,7 @@ class BaseRequestHandler(RequestHandler):
         """Hash the remote IP and return it."""
         # pylint: disable=not-callable
         return blake3(
-            # Item "None" of "Optional[Any]" has no attribute "encode"
-            # since mypy 0.920
-            self.request.remote_ip.encode("ascii")  # type: ignore
+            str(self.request.remote_ip).encode("ascii")
             # pylint: disable=not-callable
             + blake3(
                 datetime.utcnow().date().isoformat().encode("ascii")
@@ -277,11 +276,10 @@ class BaseRequestHandler(RequestHandler):
     def get_user_id(self):
         """Get the user id saved in the cookie or create one."""
         user_id = self.get_secure_cookie("user_id", max_age_days=90)
-        if user_id is None:
-            # TODO: ask for cookie consent
-            user_id = str(uuid.uuid4())
-        else:
-            user_id = user_id.decode("ascii")
+        # TODO: ask for cookie consent
+        user_id = (
+            str(uuid.uuid4()) if user_id is None else user_id.decode("ascii")
+        )
         # save it in cookie or reset expiry date
         self.set_secure_cookie(
             "user_id",
@@ -406,16 +404,13 @@ class BaseRequestHandler(RequestHandler):
         """Get HTML to add to forms to keep important query args."""
         form_appendix: str
 
-        if (
-            "no_3rd_party" in self.request.query_arguments
+        form_appendix = (
+            f"<input name='no_3rd_party' class='hidden-input' "
+            f"value='{bool_to_str(self.get_no_3rd_party())}'>"
+            if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
-        ):
-            form_appendix = (
-                f"<input name='no_3rd_party' class='hidden-input' "
-                f"value='{bool_to_str(self.get_no_3rd_party())}'>"
-            )
-        else:
-            form_appendix = str()
+            else str()
+        )
 
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
@@ -491,12 +486,13 @@ class BaseRequestHandler(RequestHandler):
 
         try:
             body = json.loads(self.request.body)
+        except json.JSONDecodeError:
+            pass
+        else:
             if name in body:
                 if strip and isinstance(body[name], str):
                     return body[name].strip()
                 return body[name]
-        except json.JSONDecodeError:
-            pass
 
         # pylint: disable=protected-access
         if isinstance(default, web._ArgDefaultMarker):

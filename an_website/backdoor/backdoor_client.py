@@ -158,7 +158,7 @@ def startup():  # noqa: C901
                     print(f"Using URL {url} with existing session {session}")
         except FileNotFoundError:
             pass
-    while not url:
+    while not url:  # pylint: disable=while-used
         url = input("URL: ").strip().rstrip("/")
         if not url:
             print("No URL given!")
@@ -172,7 +172,7 @@ def startup():  # noqa: C901
                 url = "https://" + url
             print(f"Using URL {url}")
 
-    while not key:
+    while not key:  # pylint: disable=while-used
         key = input("Key: ").strip()
         if not key:
             print("No key given!")

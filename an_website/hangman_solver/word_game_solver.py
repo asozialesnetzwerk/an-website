@@ -107,11 +107,10 @@ class WordGameHelper(BaseRequestHandler):
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         ]
 
-        if not word and word not in before:
-            new_before = before
-        else:
-            # get the new_before as set with only unique words
-            new_before = [*before, word]
+        # get the new_before as set with only unique words
+        new_before = (
+            before if not word and word not in before else [*before, word]
+        )
 
         await self.render(
             "pages/word_game_helper.html",

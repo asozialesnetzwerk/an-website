@@ -360,6 +360,7 @@ async def update_cache_periodically(app, setup_redis_awaitable=None):
                 )
                 await asyncio.sleep(update_cache_in)
 
+    # pylint: disable=while-used
     while True:  # update the cache every hour
         await update_cache(app)
         await asyncio.sleep(60 * 60)
@@ -375,7 +376,7 @@ async def update_cache(
     logger.info("Updating quotes cache...")
     redis = app.settings.get("REDIS")
     prefix = app.settings.get("REDIS_PREFIX", str())
-    try:
+    try:  # pylint: disable=too-many-try-statements
 
         if update_wrong_quotes:
             parse_list_of_quote_data(
