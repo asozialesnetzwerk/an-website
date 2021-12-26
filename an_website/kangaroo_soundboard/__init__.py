@@ -24,6 +24,8 @@ from functools import cache, lru_cache
 
 import orjson as json
 
+from ..utils.utils import name_to_id, replace_umlauts
+
 DIR = os.path.dirname(__file__)
 
 with open(f"{DIR}/info.json", encoding="utf-8") as f:
@@ -107,20 +109,20 @@ class HeaderInfo(Info):
         """
         Return a HTML element with the tag and the content of the HeaderInfo.
 
-        The HTML element gets a id and a href with a # to
+        The HTML element gets an id and a href with a # to
         itself based on the text content.
         """
         _id = name_to_id(self.text)
         return (
             f'<{self.tag} id="{_id}">'
-            f'<a href="#{_id}" rel="noreferrer" class="{self.tag}-a">🔗 '
+            f'<a href="#{_id}" rel="noreferrer" class="header-id-link"></a>'
             + (
                 self.text  # no need to mark query if type
                 # is  book as the book title is excluded from the search
                 if self.type == Book
                 else mark_query(self.text, query)
             )
-            + "</a></{self.tag}>"
+            + "</{self.tag}>"
         )
 
 
@@ -150,10 +152,11 @@ class SoundInfo(Info):
             return False
 
         content = " ".join([self.chapter.name, self.person.value, self.text])
-        content = replace_umlauts(content)
+        content = replace_umlauts(content.lower())
 
         return not any(
-            word not in content for word in replace_umlauts(_str).split(" ")
+            word not in content
+            for word in replace_umlauts(_str.lower()).split(" ")
         )
 
     @lru_cache(100)
@@ -203,26 +206,6 @@ class SoundInfo(Info):
             f"<pubDate>{modification_time}</pubDate>\n"
             f"</item>"
         )
-
-
-def replace_umlauts(text: str) -> str:
-    """Make a string lower case and replace ä,ö,ü,ß."""
-    return (
-        text.lower()
-        .replace("ä", "ae")
-        .replace("ö", "oe")
-        .replace("ü", "ue")
-        .replace("ß", "ss")
-    )
-
-
-def name_to_id(val: str) -> str:
-    """Replace umlauts and whitespaces in a string so it is a valid HTML id."""
-    return re.sub(
-        r"-+",
-        "-",
-        re.sub(r"[^a-z0-9-]", str(), replace_umlauts(val.replace(" ", "-"))),
-    )
 
 
 all_sounds: list[SoundInfo] = []

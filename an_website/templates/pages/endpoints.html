@@ -3,7 +3,9 @@
 
 {% block body %}
     {% for ep in endpoints %}
-<h2>{{ep["name"]}}</h2>
+<h2 id="{{name_to_id(ep['name'])}}">
+    <a href="#{{name_to_id(ep['name'])}}" rel="noreferrer" class="header-id-link"></a>{{ep["name"]}}
+</h2>
 <p>{{ep["description"]}}</p>
 <table>
   <tr>
@@ -18,5 +20,10 @@
 {% end %}
 </table>
     {% end %}
-<style>th{text-align: left}</style>
+<style>
+    th{text-align: left}
+    h2:hover .header-id-link:before, h2:focus-within .header-id-link:before {
+        content: "🔗";
+    }
+</style>
 {% end %}

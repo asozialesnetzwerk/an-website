@@ -302,6 +302,38 @@ def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
     return new_set
 
 
+def replace_umlauts(text: str) -> str:
+    """Replace Ä, Ö, Ü, ẞ, ä, ö, ü, ß in string."""
+    if " " in text:
+        return " ".join(replace_umlauts(word) for word in text.split(" "))
+    if text.isupper():
+        return (
+            text.replace("Ä", "AE")
+            .replace("Ö", "OE")
+            .replace("Ü", "UE")
+            .replace("ẞ", "SS")
+        )
+    return (
+        text.replace("ä", "ae")
+        .replace("ö", "oe")
+        .replace("ü", "ue")
+        .replace("ß", "ss")
+        .replace("Ä", "Ae")
+        .replace("Ö", "Oe")
+        .replace("Ü", "Ue")
+        .replace("ẞ", "SS")
+    )
+
+
+def name_to_id(val: str) -> str:
+    """Replace umlauts and whitespaces in a string to get a valid HTML id."""
+    return re.sub(
+        r"[^a-z0-9]+",
+        "-",
+        replace_umlauts(val).lower(),
+    ).strip("-")
+
+
 async def run(
     program, *args, stdin=asyncio.subprocess.PIPE
 ) -> tuple[None | int, bytes, bytes]:

@@ -17,7 +17,7 @@ from __future__ import annotations
 import orjson as json
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, name_to_id
 
 
 def get_module_info() -> ModuleInfo:
@@ -34,10 +34,6 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def get_endpoints() -> list[dict]:
-    """Get a list of all API endpoints."""
-
-
 class Endpoints(BaseRequestHandler):
     """Endpoint page request handler."""
 
@@ -46,6 +42,7 @@ class Endpoints(BaseRequestHandler):
         self.render(
             "pages/endpoints.html",
             endpoints=self.get_endpoints(),
+            name_to_id=name_to_id,
         )
 
     def get_endpoints(self) -> list[dict]:
