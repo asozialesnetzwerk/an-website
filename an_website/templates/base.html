@@ -34,6 +34,7 @@
     {% block head %} {% end %}
 </head>
 <body>
+    <a href="#body" id="skip-to-content">Skip to content.</a>
     {% include "header.html" %}
     <div id="body">{% block body %}{{ content }}{% end %}</div>
     {% include "footer.html" %}
