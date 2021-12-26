@@ -26,7 +26,7 @@ from typing import Literal
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, str_to_bool
 from . import (
     WRONG_QUOTES_CACHE,
     QuoteReadyCheckRequestHandler,
@@ -257,7 +257,11 @@ class QuoteById(QuoteBaseHandler):
         if wrong_quote.id in (None, -1):
             return "---"
         if (
-            self.rating_filter() == "smart"
+            not str_to_bool(  # always show the rating if the user wants it
+                self.get_query_argument("show-rating", default=None),
+                default=False,
+            )
+            and self.rating_filter() == "smart"
             and await self.get_saved_vote(
                 wrong_quote.quote.id, wrong_quote.author.id
             )
