@@ -64,10 +64,5 @@ document.getElementById("form").action = "javascript:void(0)";
 document.getElementById("reset").onclick = onReset;
 document.getElementById("submit").onclick = onSubmit;
 
-window.onpopstate = (event) => {
-    const data = event.state;
-    if (data) {
-        ondata(data, true);
-    }
-}
+window.onpopstate = (event) => event.state && ondata(event.state, true);
 // @license-end

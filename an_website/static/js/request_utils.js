@@ -8,14 +8,9 @@ function post(
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
-        headers: {
-          'Accept': 'application/json',
-        }
-    })
-        .then(response => response.json())
-        .catch(onerror)
-        .then(ondata)
-        .catch(onerror);
+        headers: {'Accept': 'application/json'}
+    }).then(response => response.json()).catch(onerror)
+        .then(ondata).catch(onerror);
 }
 
 function get(
@@ -26,13 +21,8 @@ function get(
 ) {
     fetch(url + '?' + (new URLSearchParams( params )).toString(), {
         method: "GET",
-        headers: {
-          'Accept': 'application/json',
-        }
-    })
-        .then(response => response.json())
-        .catch(onerror)
-        .then(ondata)
-        .catch(onerror);
+        headers: {'Accept': 'application/json'}
+    }).then(response => response.json()).catch(onerror)
+        .then(ondata).catch(onerror);
 }
 // @license-end

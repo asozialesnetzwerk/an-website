@@ -1,11 +1,11 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
+const params = window.location.search;
 const nextButton = document.getElementById("next");
-
 const upvoteButton = document.getElementById("upvote");
 const downvoteButton = document.getElementById("downvote");
 
 const keys = (() => {
-    let k = new URLSearchParams(window.location.search).get("keys");
+    let k = new URLSearchParams(params).get("keys");
     if (!(k && k.length)) {
         return "WASD";
     }  // for vim-like set keys to khjl
@@ -17,7 +17,8 @@ const keys = (() => {
     }
 })();  // currently only letter keys are supported
 document.getElementById("wasd").innerText = (
-    `${keys[0]} (Upvote), ${keys[2]} (Downvote), ${keys[1]} (Previous) and ${keys[3]} (Next)`
+    `${keys[0]} (Upvote), ${keys[2]} (Downvote), `
+    + `${keys[1]} (Previous) and ${keys[3]} (Next)`
 );
 
 document.addEventListener("keydown", function(event) {
@@ -32,7 +33,6 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-
 const shareButton = document.getElementById("share");
 const downloadButton = document.getElementById("download");
 
@@ -40,9 +40,9 @@ const author = document.getElementById("author");
 const quote = document.getElementById("quote");
 
 const ratingText = document.getElementById("rating-text");
-const ratingImageContainer = document.getElementById("rating-img-container");
-
-const params = window.location.search;
+const ratingImageContainer = document.getElementById(
+    "rating-img-container"
+);
 
 nextButton.removeAttribute("href");
 
@@ -52,23 +52,25 @@ function updateQuoteId(quoteId) {
     const [q_id, a_id] = quoteId.split("-", 2);
     quote.href = `/zitate/info/z/${q_id}/${params}`;
     author.href = `/zitate/info/a/${a_id}/${params}`;
-
     thisQuoteId[0] = quoteId;
 }
 
 function updateRating(rating) {
     ratingText.innerText = rating;
-    const ratingImg = document.createElement("div")
-    if (rating === "---" || rating === "???" || rating === 0) {
+    if (rating in ["---", "???", 0, "0"]) {
         ratingImageContainer.innerHTML = "";
+        console.log("rating:", rating);
     } else {
+        const ratingImg = document.createElement("div")
         const ratingNum = Number.parseInt(rating);
         if (ratingNum > 0) {
             ratingImg.className = "rating-img witzig";
-        } else if (ratingNum  < 0) {
+        } else if (ratingNum < 0) {
             ratingImg.className = "rating-img nicht-witzig";
         }
-        ratingImageContainer.innerHTML = (ratingImg.outerHTML + " ").repeat(Math.min(4, Math.abs(ratingNum)));
+        ratingImageContainer.innerHTML = (
+            ratingImg.outerHTML + " "
+        ).repeat(Math.min(4, Math.abs(ratingNum)));
     }
 }
 
@@ -92,11 +94,10 @@ function updateVote(vote) {
 function handleData(data) {
     if (data["status"]) {
         console.error(data)
-        if (data["status"] === 429 || data["status"] === 420) {
+        if (data["status"] in [429, 420]) {
             alert(data["reason"]);
         }
-        return false;
-    } else if (typeof data !== "undefined" && typeof data["id"] !== "undefined") {
+    } else if (data && data["id"]) {
         updateQuoteId(data["id"]);
         nextQuoteId[0] = data["next"];
         quote.innerText = `»${data["quote"]}«`;
@@ -107,45 +108,32 @@ function handleData(data) {
     }
 }
 
-window.onpopstate = (event) => {
-    const data = event.state;
-    if (data) {
-        handleData(data);
-    }
-}
+window.onpopstate = (event) => event.state && handleData(event.state);
 
-nextButton.onclick = () => {
-    get(
-        `/api/zitate/${nextQuoteId[0]}/`,
-        params,
-        (data) => {
-            if (handleData(data)) {
-                window.history.pushState(
-                    data,
-                    "Falsche Zitate",
-                    `/zitate/${data["id"]}/${params}`
-                );
-            }
-        }
+
+nextButton.onclick = () => get(
+    `/api/zitate/${nextQuoteId[0]}/`,
+    params,
+    (data) => (
+        handleData(data) && window.history.pushState(
+            data,
+            "Falsche Zitate",
+            `/zitate/${data["id"]}/${params}`
+        )
     )
-}
+);
+
 
 function vote(vote) {
     post(
         `/api/zitate/${thisQuoteId[0]}/`,
-        {
-            "vote": vote
-        },
-        (data) => {
-            handleData(data)
-        }
+        {"vote": vote},
+        (data) => handleData(data)
     );
 }
 
 for (const voteButton of [upvoteButton, downvoteButton]) {
     voteButton.type = "button";
-    voteButton.onclick = () => {
-        vote(voteButton.value);
-    }
+    voteButton.onclick = () => vote(voteButton.value);
 }
 // @license-end

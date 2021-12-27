@@ -10,14 +10,9 @@ for (let child of quoteList.children) {
 }
 
 quoteInput.oninput = () => {
-    // console.log(quoteInput);
     const author = realAuthors[quoteInput.value.toLowerCase()];
-    if (author) {
-        realAuthorInput.value = author;
-        realAuthorInput.disabled = true;
-        return;
-    }
-    // Not found in realAuthors; enable real author input again.
-    realAuthorInput.disabled = false;
+    // when real author is found disable input and set the value
+    realAuthorInput.disabled = !author;
+    if (author) realAuthorInput.value = author;
 }
 // @license-end

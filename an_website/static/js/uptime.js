@@ -11,13 +11,10 @@ function displayUptime() {
     // display uptime:
     const div_60 = Math.floor(uptime / 60);
     const div_60_60 = Math.floor(div_60 / 60);
-
-    const seconds = uptime % 60;
-    const minutes = div_60 % 60;
-    const hours = div_60_60 % 24;
-    const days = Math.floor(div_60_60 / 24);
-
-    uptimeDiv.innerText = `${days}d ${hours}h ${minutes}min ${seconds}s`;
+    uptimeDiv.innerText = (
+      `${Math.floor(div_60_60 / 24)}d ${div_60_60 % 24}h `
+      + `${div_60 % 60}min ${uptime % 60}s`
+    );
 }
 displayUptime();
 setInterval(displayUptime, 1000);

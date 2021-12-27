@@ -8,7 +8,6 @@ const fields = [
     document.getElementById("ost"),
     document.getElementById("schwarz")
 ];
-
 const factors = [
     1, //Euro
     2, //Deutsche Mark
@@ -18,23 +17,16 @@ const factors = [
 
 const regex = /^([1-9]\d*|0)([.,]\d{2})?$/;
 
+const numberFormat = new Intl.NumberFormat(
+    'de-DE',
+    { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false}
+)
+
 function getDisplayValue(wert) {
-    let str = wert.toString().replace(".", ",");
-    if (regex.test(str)) {
-        return str;
+    if (typeof wert === "string") {
+        wert = parseFloat(wert.replace(".", ","));
     }
-    if (str.startsWith(",")) {
-        return "0" + str;
-    }
-    if (str.endsWith(",")) {
-        return str.slice(0, -1);
-    }
-    const split = str.split(",");
-    if (split.length > 1) {
-        return split[0] + "," + (split[1] + "00")
-            .slice(0, 2).replace(/,00$/, "");
-    }
-    return str;
+    return numberFormat.format(wert).replace(",00", "");
 }
 
 function setEuroParam(euroVal) {
