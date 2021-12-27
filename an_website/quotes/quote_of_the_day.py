@@ -18,6 +18,7 @@ import dataclasses
 import datetime as dt
 import email.utils
 import random
+from typing import Any
 
 from tornado.web import HTTPError
 
@@ -72,7 +73,7 @@ class QuoteOfTheDayData:
     wrong_quote: WrongQuote
     url_without_path: str
 
-    def get_quote_as_str(self, new_line_char="\n") -> str:
+    def get_quote_as_str(self, new_line_char: str = "\n") -> str:
         """Get the quote as a string with new line."""
         return (
             f"»{self.wrong_quote.quote}«{new_line_char}"
@@ -106,7 +107,7 @@ class QuoteOfTheDayData:
         """Get the title for the quote of the day."""
         return f"Das Zitat des Tages vom {self.date:%d. %m. %Y}"
 
-    def to_json(self) -> dict:
+    def to_json(self) -> dict[str, Any]:
         """Get the quote of the day as JSON."""
         return {
             "date": self.date.isoformat(),
@@ -159,7 +160,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
         _wq = WRONG_QUOTES_CACHE.get((_q, _a))
         if not _wq:
             return None
-        return QuoteOfTheDayData(date, _wq, self.get_url_without_path())
+        return QuoteOfTheDayData(date, _wq, self.get_protocol_and_host())
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
@@ -187,7 +188,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
                     _wq_id,
                 )
                 return QuoteOfTheDayData(
-                    today, quote, self.get_url_without_path()
+                    today, quote, self.get_protocol_and_host()
                 )
         return None
 
@@ -195,7 +196,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
     """The request handler for the quote of the day RSS feed."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle GET requests."""
         today = dt.datetime.now(tz=dt.timezone.utc).date()
         self.set_header("Content-Type", "application/rss+xml")
@@ -222,7 +223,7 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
     """Handler for the JSON API that returns the quote of the day."""
 
-    async def get(self, _date_str: str = None):
+    async def get(self, _date_str: None | str = None) -> None:
         """Handle GET requests."""
         if _date_str:
             _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
@@ -252,7 +253,7 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
 class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
     """Redirect to the quote of the day."""
 
-    async def get(self, _date_str: str = None):
+    async def get(self, _date_str: None | str = None) -> None:
         """Handle GET requests."""
         if _date_str:
             _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))

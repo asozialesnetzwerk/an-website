@@ -77,7 +77,7 @@ def num_to_string(num: float) -> str:
     return f"{num:.2f}".replace(".", ",").replace(",00", str())
 
 
-async def conversion_string(value_dict: dict) -> str:
+async def conversion_string(value_dict: ValueDict) -> str:
     """Generate a text that complains how expensive everything is."""
     return (
         f"{value_dict.get('euro_str')} Euro, "
@@ -150,21 +150,21 @@ async def arguments_to_value_dict(
 class CurrencyConverter(BaseRequestHandler):
     """Request handler for the currency converter page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request and display the page."""
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
             value_dict = await get_value_dict(0)
             description = self.description
         else:
-            description = value_dict["text"]
+            description = str(value_dict["text"])
 
         replace_url_with = None
 
         if value_dict.get("too_many_params", False):
             key = value_dict.get("key_used")
             replace_url_with = self.fix_url(
-                f"{self.request.path}?{key}={value_dict.get(key + '_str')}"
+                f"{self.request.path}?{key}={value_dict.get(f'{key}_str')}"
             )
 
         await self.render(
@@ -178,7 +178,7 @@ class CurrencyConverter(BaseRequestHandler):
 class CurrencyConverterAPI(APIRequestHandler):
     """Request handler for the currency converter JSON API."""
 
-    async def get(self):
+    async def get(self) -> None:
         """
         Handle the GET request and return the value dict as JSON.
 

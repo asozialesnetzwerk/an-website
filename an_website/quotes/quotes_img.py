@@ -35,7 +35,7 @@ HOST_NAME_FONT = ImageFont.truetype(
 )
 
 
-def load_png(file_name) -> Image.Image:
+def load_png(file_name: str) -> Image.Image:
     """Load a png into memory."""
     img = Image.open(f"{DIR}/files/{file_name}.png", formats=("PNG",))
     img_copy = img.copy()
@@ -71,7 +71,7 @@ def draw_text(
     _x: int,
     _y: int,
     font: ImageFont.FreeTypeFont = FONT,
-):
+) -> None:
     """Draw a text on an image."""
     img.text(
         (_x, _y),
@@ -105,7 +105,7 @@ def draw_lines(
 
 def create_image(  # pylint: disable=too-many-locals
     quote: str, author: str, rating: int, source: None | str
-):
+) -> bytes:
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
     draw = ImageDraw.Draw(img, mode="RGBA")
@@ -192,7 +192,7 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
 
     RATELIMIT_TOKENS = 4
 
-    async def get(self, quote_id: str, author_id: str):
+    async def get(self, quote_id: str, author_id: str) -> None:
         """Handle the GET request to this page and render the quote as img."""
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
 

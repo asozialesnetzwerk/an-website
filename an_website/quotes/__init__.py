@@ -21,11 +21,12 @@ import os
 import random
 import sys
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass
 from typing import Any, Literal
 
 import orjson as json
+import tornado.web
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
@@ -51,11 +52,11 @@ class QuotesObjBase:
 
     id: int  # pylint: disable=invalid-name
 
-    def get_id_as_str(self):
+    def get_id_as_str(self) -> str:
         """Get the id of the object as a string."""
         return str(self.id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return a basic string with the id."""
         return f"QuotesObj({self.id})"
 
@@ -68,7 +69,7 @@ class Author(QuotesObjBase):
     # tuple(url_to_info, info_str, creation_date)
     info: None | tuple[str, None | str, datetime.date] = None
 
-    def update_name(self, name: str):
+    def update_name(self, name: str) -> None:
         """Update author data with another author."""
         if self.name != name:
             # name changed -> info should change too
@@ -90,7 +91,7 @@ class Author(QuotesObjBase):
             else None,
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the name of the author."""
         return self.name.strip()
 
@@ -102,7 +103,9 @@ class Quote(QuotesObjBase):
     quote: str
     author: Author
 
-    def update_quote(self, quote: str, author_id: int, author_name: str):
+    def update_quote(
+        self, quote: str, author_id: int, author_name: str
+    ) -> None:
         """Update quote data with new data."""
         self.quote = quote
         if self.author.id == author_id:
@@ -119,7 +122,7 @@ class Quote(QuotesObjBase):
             "path": f"/zitate/info/z/{self.id}/",
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return the the content of the quote."""
         return self.quote.strip()
 
@@ -140,7 +143,7 @@ class WrongQuote(QuotesObjBase):
         """
         return self.quote.id, self.author.id
 
-    def get_id_as_str(self):
+    def get_id_as_str(self) -> str:
         """
         Get the id of the wrong quote as a string.
 
@@ -158,7 +161,7 @@ class WrongQuote(QuotesObjBase):
             "path": f"/zitate/{self.get_id_as_str()}/",
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         r"""
         Return the wrong quote.
 
@@ -200,8 +203,8 @@ async def make_api_request(
     endpoint: str,
     args: str = str(),
     method: Literal["GET", "POST"] = "GET",
-    body: str = None,
-) -> Any:
+    body: None | str = None,
+) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
     response = await HTTP_CLIENT.fetch(
         f"{API_URL}/{endpoint}?{args}",
@@ -229,7 +232,7 @@ async def make_api_request(
     return json.loads(response.body)
 
 
-def get_author_updated_with(author_id: int, author_name: str):
+def get_author_updated_with(author_id: int, author_name: str) -> Author:
     """Get the author with the given id and the name."""
     author_name = author_name.strip()
     if not author_name:
@@ -243,7 +246,7 @@ def get_author_updated_with(author_id: int, author_name: str):
     return author
 
 
-def parse_author(json_data: dict) -> Author:
+def parse_author(json_data: dict[str, Any]) -> Author:
     """Parse a author from JSON data."""
     return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
@@ -262,7 +265,7 @@ def fix_quote_str(quote_str: str) -> str:
     return quote_str.strip()
 
 
-def parse_quote(json_data: dict) -> Quote:
+def parse_quote(json_data: dict[str, Any]) -> Quote:
     """Parse a quote from JSON data."""
     quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])
@@ -287,7 +290,7 @@ def parse_quote(json_data: dict) -> Quote:
     return quote
 
 
-def parse_wrong_quote(json_data: dict) -> WrongQuote:
+def parse_wrong_quote(json_data: dict[str, Any]) -> WrongQuote:
     """Parse a quote."""
     id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
     rating = json_data["rating"]
@@ -310,17 +313,23 @@ def parse_wrong_quote(json_data: dict) -> WrongQuote:
 
 
 def parse_list_of_quote_data(
-    json_list, parse_fun: Callable[[dict], QuotesObjBase]
+    json_list: str | list[dict[str, Any]],
+    parse_fun: Callable[[dict[str, Any]], QuotesObjBase],
 ) -> tuple[QuotesObjBase, ...]:
     """Parse a list of quote data."""
     if not json_list:
         return tuple()
     if isinstance(json_list, str):
-        json_list = json.loads(json_list)
-    return tuple(parse_fun(json_data) for json_data in json_list)
+        _json_list: list[dict[str, Any]] = json.loads(json_list)
+    else:
+        _json_list = json_list
+    return tuple(parse_fun(json_data) for json_data in _json_list)
 
 
-async def update_cache_periodically(app, setup_redis_awaitable=None):
+async def update_cache_periodically(
+    app: tornado.web.Application,
+    setup_redis_awaitable: None | Awaitable[Any] = None,
+) -> None:
     """Start updating the cache every hour."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
@@ -367,11 +376,11 @@ async def update_cache_periodically(app, setup_redis_awaitable=None):
 
 
 async def update_cache(
-    app,
+    app: tornado.web.Application,
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,
     update_authors: bool = True,
-):
+) -> None:
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
     redis = app.settings.get("REDIS")
@@ -439,7 +448,7 @@ async def get_quote_by_id(quote_id: int) -> Quote:
 
 
 async def get_wrong_quote(
-    quote_id: int, author_id: int, use_cache=True
+    quote_id: int, author_id: int, use_cache: bool = True
 ) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote_id = (quote_id, author_id)
@@ -555,13 +564,13 @@ class QuoteReadyCheckRequestHandler(BaseRequestHandler):
 
     RATELIMIT_NAME = "quotes"
 
-    async def check_ready(self):
+    async def check_ready(self) -> None:
         """Fail if quotes aren't ready yet."""
         if not WRONG_QUOTES_CACHE:
             # should work in a few seconds, the quotes just haven't loaded yet
             self.set_header("Retry-After", "5")
             raise HTTPError(503, reason="Service available in a few seconds.")
 
-    async def prepare(self):
+    async def prepare(self) -> None:
         await super().prepare()
         await self.check_ready()

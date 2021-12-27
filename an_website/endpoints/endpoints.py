@@ -37,7 +37,7 @@ def get_module_info() -> ModuleInfo:
 class Endpoints(BaseRequestHandler):
     """Endpoint page request handler."""
 
-    def get(self):
+    def get(self) -> None:
         """Handle a GET request."""
         self.render(
             "pages/endpoints.html",
@@ -45,11 +45,15 @@ class Endpoints(BaseRequestHandler):
             name_to_id=name_to_id,
         )
 
-    def get_endpoints(self) -> list[dict]:
+    def get_endpoints(
+        self,
+    ) -> list[dict[str, str | list[dict[str, str | int | list[str]]]]]:
         """Get a list of all API endpoints and return it."""
-        endpoints: list[dict] = []
+        endpoints: list[
+            dict[str, str | list[dict[str, str | int | list[str]]]]
+        ] = []
         for _mi in self.settings["MODULE_INFOS"]:
-            api_paths: list[dict[str, str | int | list]] = [
+            api_paths: list[dict[str, str | int | list[str]]] = [
                 {
                     "path": _h[0],
                     "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],
@@ -72,6 +76,6 @@ class Endpoints(BaseRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
-    def get(self):
+    def get(self) -> None:
         """Handle a GET request."""
         self.finish(json.dumps(self.get_endpoints()))

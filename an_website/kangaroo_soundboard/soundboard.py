@@ -118,7 +118,7 @@ def get_rss_str(path: str, protocol_and_host: str) -> None | str:
 class SoundboardRSSHandler(BaseRequestHandler):
     """The Tornado handler that handles requests to the RSS feeds."""
 
-    async def get(self, path="/"):
+    async def get(self, path: str = "/") -> None:
         """Handle the GET request and generate the feed content."""
         rss_str = get_rss_str(
             path, f"{self.request.protocol}://{self.request.host}"
@@ -126,7 +126,7 @@ class SoundboardRSSHandler(BaseRequestHandler):
 
         if rss_str is not None:
             self.set_header("Content-Type", "application/rss+xml")
-            return self.render("rss/soundboard.xml", rss_str=rss_str)
+            await self.render("rss/soundboard.xml", rss_str=rss_str)
 
         raise HTTPError(404, reason="Feed not found.")
 
@@ -169,7 +169,7 @@ async def search_main_page_info(
 class SoundboardHTMLHandler(BaseRequestHandler):
     """The Tornado handler that handles requests to the HTML pages."""
 
-    async def get(self, path="/"):
+    async def get(self, path: str = "/") -> None:
         """Handle the GET request and generate the page content."""
         if path is not None:
             path = path.lower()
@@ -178,14 +178,14 @@ class SoundboardHTMLHandler(BaseRequestHandler):
         if parsed_info is None:
             raise HTTPError(404, reason="Page not found")
 
-        return self.render(
+        await self.render(
             "pages/soundboard.html",
             sound_info_list=parsed_info[0],
             query=parsed_info[1],
         )
 
     async def parse_path(
-        self, path
+        self, path: None | str
     ) -> None | tuple[Iterable[Info], None | str]:
         """Get a info list based on the path and return it with the query."""
         if path in (None, str(), "index", "/"):
@@ -199,7 +199,7 @@ class SoundboardHTMLHandler(BaseRequestHandler):
             return persons_list, None
 
         if path in {"search", "suche"}:
-            query = self.get_query_argument("q", str())
+            query = self.get_query_argument("q", default=str())
             if query is None or query == str():
                 return MAIN_PAGE_INFO, query
 

@@ -44,16 +44,16 @@ DIR = os.path.dirname(__file__)
 # pylint: disable=protected-access, invalid-name
 
 
-def apply():
+def apply() -> None:
     """Apply the patches."""
     defusedxml.defuse_stdlib()
-    configparser.RawConfigParser.BOOLEAN_STATES.update(
+    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
         {"sure": True, "nope": False}
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     tornado.platform.asyncio.AsyncIOMainLoop().install()
     tornado.web.RequestHandler.SUPPORTED_METHODS = (
-        tornado.web.RequestHandler.SUPPORTED_METHODS
+        tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore
         + (
             "PROPFIND",
             "BREW",
@@ -64,17 +64,17 @@ def apply():
     patch_json()
 
 
-def anonymize_logs():
+def anonymize_logs() -> None:
     """Anonymize logs."""
-    tornado.web.RequestHandler._request_summary = (
+    tornado.web.RequestHandler._request_summary = (  # type: ignore
         lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
         % (
             self.request.method,
             self.request.uri,
-            anonymize_ip(self.request.remote_ip),
+            anonymize_ip(str(self.request.remote_ip)),
         )
     )
-    tornado.httputil.HTTPServerRequest.__repr__ = (
+    tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore
         lambda self: "%s(%s)"  # pylint: disable=consider-using-f-string
         % (
             self.__class__.__name__,
@@ -92,29 +92,29 @@ def anonymize_logs():
     )
 
 
-def patch_json():
+def patch_json() -> None:
     """Replace json with orjson."""
     logger = logging.getLogger(json.__name__)
 
-    def dump(obj, fp, **kwargs):
+    def dump(obj, fp, **kwargs):  # type: ignore
         logger.debug(
             "json.dump() has been called!", stack_info=True, stacklevel=2
         )
         fp.write(stdlib_json_dumps(obj, **kwargs))
 
-    def dumps(obj, **kwargs):
+    def dumps(obj, **kwargs):  # type: ignore
         logger.debug(
             "json.dumps() has been called!", stack_info=True, stacklevel=2
         )
         return stdlib_json_dumps(obj, **kwargs)
 
-    def load(fp, **kwargs):
+    def load(fp, **kwargs):  # type: ignore
         logger.debug(
             "json.load() has been called!", stack_info=True, stacklevel=2
         )
         return stdlib_json_loads(fp.read(), **kwargs)
 
-    def loads(s, **kwargs):
+    def loads(s, **kwargs):  # type: ignore
         logger.debug(
             "json.loads() has been called!", stack_info=True, stacklevel=2
         )
@@ -125,9 +125,9 @@ def patch_json():
     stdlib_json.load = load
     stdlib_json.loads = loads
 
-    ecs_logging._utils.json = json
+    ecs_logging._utils.json = json  # type: ignore
     elasticapm.utils.cloud.json = json
     elasticapm.utils.json_encoder.json = json
-    elasticsearch.connection.base.json = json
-    elasticsearch.serializer.json = json
-    tornado.escape.json = json
+    elasticsearch.connection.base.json = json  # type: ignore
+    elasticsearch.serializer.json = json  # type: ignore
+    tornado.escape.json = json  # type: ignore

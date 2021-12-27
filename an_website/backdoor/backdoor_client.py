@@ -22,6 +22,7 @@ import re
 import sys
 import traceback
 import uuid
+from typing import Any
 
 import hy  # type: ignore
 from tornado.httpclient import HTTPClient, HTTPClientError
@@ -29,7 +30,7 @@ from tornado.httpclient import HTTPClient, HTTPClientError
 HTTP_CLIENT = HTTPClient()
 
 
-def detect_mode(code: str):
+def detect_mode(code: str) -> str:
     """Detect which mode needs to be used."""
     try:
         ast.parse(code, mode="eval")
@@ -45,7 +46,7 @@ def send(
     code: str,
     mode: str = "exec",
     session: None | str = None,
-):
+) -> Any:
     """Send code to the backdoor API."""
     headers = {"Authorization": key}
     if session:
@@ -66,13 +67,13 @@ def send(
     return pickle.loads(response.body)
 
 
-def run_and_print(  # noqa: C901
+def run_and_print(  # noqa: C901  # pylint: disable=too-many-branches
     url: str,
     key: str,
     code: str,
     session: None | str = None,
     lisp: bool = False,
-):  # pylint: disable=too-many-branches
+) -> None:
     """Run the code and print the output."""
     if lisp:
         code = hy.disassemble(hy.read_str(code), True)
@@ -134,7 +135,7 @@ def run_and_print(  # noqa: C901
         print(response)
 
 
-def startup():  # noqa: C901
+def startup() -> None:  # noqa: C901
     # pylint: disable=too-many-branches, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
     url = None

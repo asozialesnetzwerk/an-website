@@ -45,11 +45,11 @@ class SettingsPage(BaseRequestHandler):
         name: str,
         value: str | bytes,
         domain: None | str = None,
-        expires: None | float | tuple | datetime.datetime = None,
+        expires: None | float | tuple[int, ...] | datetime.datetime = None,
         path: str = "/",
         expires_days: None | float = 365,  # changed
         **kwargs: Any,
-    ):
+    ) -> None:
         """Override the set_cookie method to set expires days."""
         if "samesite" not in kwargs:
             # default for same site should be strict
@@ -65,7 +65,7 @@ class SettingsPage(BaseRequestHandler):
             **kwargs,
         )
 
-    def get(self):
+    def get(self) -> None:
         """Handle GET requests to the settings page."""
         save_in_cookie = str_to_bool(
             self.get_argument(

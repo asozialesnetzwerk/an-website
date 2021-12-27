@@ -20,7 +20,7 @@ import re
 from an_website.hangman_solver import hangman_solver as solver
 
 
-def test_filter_words():
+def test_filter_words() -> None:
     """Test filtering words."""
     words = frozenset(
         {
@@ -56,7 +56,7 @@ def test_filter_words():
         assert len(sorted_letters) == 1
 
 
-def test_solving_hangman():
+def test_solving_hangman() -> None:
     """Test solving hangman puzzles."""
     hangman: solver.Hangman = asyncio.run(
         solver.solve_hangman(
@@ -72,7 +72,7 @@ def test_solving_hangman():
     assert "test" in hangman.words
     assert hangman.letters["s"] == 1
 
-    hangman: solver.Hangman = asyncio.run(
+    hangman = asyncio.run(
         solver.solve_hangman(
             input_str="_est",
             invalid="n",
@@ -85,7 +85,7 @@ def test_solving_hangman():
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman: solver.Hangman = asyncio.run(
+    hangman = asyncio.run(
         solver.solve_hangman(
             input_str="_est",
             invalid="x",
@@ -98,7 +98,7 @@ def test_solving_hangman():
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman: solver.Hangman = asyncio.run(
+    hangman = asyncio.run(
         solver.solve_hangman(
             input_str="_est",
             invalid="x",
@@ -112,7 +112,7 @@ def test_solving_hangman():
     assert "test" in hangman.words
     assert hangman.letters["t"] == 1
 
-    hangman: solver.Hangman = asyncio.run(
+    hangman = asyncio.run(
         solver.solve_hangman(
             input_str="______",
             invalid="e",
@@ -129,7 +129,7 @@ def test_solving_hangman():
     assert "ö" not in hangman.letters
     assert "ü" not in hangman.letters
 
-    hangman: solver.Hangman = asyncio.run(
+    hangman = asyncio.run(
         solver.solve_hangman(
             input_str="______",
             invalid=str(),

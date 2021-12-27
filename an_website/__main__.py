@@ -24,6 +24,7 @@ import signal
 import ssl
 import sys
 import traceback
+from typing import Any
 
 import hy  # type: ignore
 from aioredis import BlockingConnectionPool, Redis, RedisError
@@ -161,7 +162,7 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
     return tuple(module_infos)
 
 
-def sort_module_infos(module_infos: list[ModuleInfo]):
+def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
     """Sort a list of module info and move the main page to the top."""
     # sort it so the order makes sense.
     module_infos.sort()
@@ -260,7 +261,9 @@ def make_app() -> Application:
     )
 
 
-def apply_config_to_app(app: Application, config: configparser.ConfigParser):
+def apply_config_to_app(
+    app: Application, config: configparser.ConfigParser
+) -> None:
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
@@ -319,7 +322,7 @@ def get_ssl_context(
     return None
 
 
-def setup_logger(config: configparser.ConfigParser):
+def setup_logger(config: configparser.ConfigParser) -> None:
     """Configure the root logger."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
     root_logger = logging.getLogger()
@@ -347,7 +350,7 @@ def setup_logger(config: configparser.ConfigParser):
     logging.captureWarnings(True)
 
 
-def setup_apm(app: Application):
+def setup_apm(app: Application) -> None:
     """Setup APM."""  # noqa: D401
     config = app.settings["CONFIG"]
     app.settings["ELASTIC_APM"] = {
@@ -392,7 +395,7 @@ def setup_apm(app: Application):
     app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
 
 
-async def setup_redis(app: Application):
+async def setup_redis(app: Application) -> None:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
     redis = Redis(
@@ -414,7 +417,7 @@ async def setup_redis(app: Application):
         app.settings["REDIS"] = redis
 
 
-async def setup_elasticsearch(app: Application):
+async def setup_elasticsearch(app: Application) -> None:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
     elasticsearch = AsyncElasticsearch(
@@ -457,7 +460,7 @@ async def setup_elasticsearch(app: Application):
         app.settings["ELASTICSEARCH"] = elasticsearch
 
 
-def cancel_all_tasks(loop):
+def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
     """Cancel all tasks."""
     tasks = asyncio.all_tasks(loop)
     if not tasks:
@@ -481,13 +484,13 @@ def cancel_all_tasks(loop):
             )
 
 
-def signal_handler(signalnum, frame):
+def signal_handler(signalnum: Any, frame: Any) -> None:
     # pylint: disable=unused-argument, missing-function-docstring
     if signalnum == signal.SIGHUP:
         raise KeyboardInterrupt
 
 
-def main(app: Application):
+def main(app: Application) -> None:
     """
     Start everything.
 

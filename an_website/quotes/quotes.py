@@ -106,12 +106,22 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
 
     @cache
-    def rating_filter(self):
+    def rating_filter(
+        self,
+    ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
         """Get a rating filter."""
         rating_filter = self.get_query_argument("r", default="smart")
-        if rating_filter not in ("w", "n", "unrated", "rated", "all"):
-            return "smart"
-        return rating_filter
+        if rating_filter == "w":
+            return "w"
+        if rating_filter == "n":
+            return "n"
+        if rating_filter == "unrated":
+            return "unrated"
+        if rating_filter == "rated":
+            return "rated"
+        if rating_filter == "all":
+            return "all"
+        return "smart"
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
@@ -124,7 +134,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 
     @cache
     def get_next_id(  # noqa: C901
-        self, rating_filter: str = None
+        self, rating_filter: None | str = None
     ) -> tuple[int, int]:
         """Get the id of the next quote."""
         if rating_filter is None:
@@ -154,7 +164,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
             return get_random_id()
         return random.choice(wrong_quotes).get_id()
 
-    def on_finish(self):
+    def on_finish(self) -> None:
         """
         Request the data for the next quote, to improve performance.
 
@@ -170,7 +180,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteMainPage(QuoteBaseHandler):
     """The main quote page that should render a random quote."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
         self.redirect(self.fix_url(f"/zitate/{quote_id}-{author_id}"))
@@ -179,7 +189,7 @@ class QuoteMainPage(QuoteBaseHandler):
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
-    async def get(self, quote_id: str, author_id: str = None):
+    async def get(self, quote_id: str, author_id: None | str = None) -> None:
         """Handle the GET request to this page and render the quote."""
         int_quote_id = int(quote_id)
         if author_id is None:
@@ -193,7 +203,7 @@ class QuoteById(QuoteBaseHandler):
             )
         await self.render_quote(int_quote_id, int(author_id))
 
-    async def post(self, quote_id_str: str, author_id_str: str):
+    async def post(self, quote_id_str: str, author_id_str: str) -> None:
         """
         Handle the POST request to this page and render the quote.
 
@@ -238,10 +248,12 @@ class QuoteById(QuoteBaseHandler):
             raise HTTPError(500)
         await self.render_wrong_quote(wrong_quote, vote)
 
-    async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
+    async def render_wrong_quote(
+        self, wrong_quote: WrongQuote, vote: int
+    ) -> None:
         """Render the page with the wrong_quote and this vote."""
         next_q, next_a = self.get_next_id()
-        return await self.render(
+        await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
@@ -270,9 +282,9 @@ class QuoteById(QuoteBaseHandler):
             return "???"
         return str(wrong_quote.rating)
 
-    async def render_quote(self, quote_id: int, author_id: int):
+    async def render_quote(self, quote_id: int, author_id: int) -> None:
         """Get and render a wrong quote based on author id and author id."""
-        return await self.render_wrong_quote(
+        await self.render_wrong_quote(
             await get_wrong_quote(quote_id, author_id),
             await self.get_old_vote(quote_id, author_id),
         )
@@ -287,7 +299,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def update_saved_votes(
         self, quote_id: int, author_id: int, vote: int
-    ):
+    ) -> None:
         """Save the new vote in the cookies."""
         result = None
         if self.redis:
@@ -340,24 +352,27 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
     RATELIMIT_NAME = "quotes-api"
     ALLOWED_METHODS = ("GET", "POST")
 
-    async def render_wrong_quote(self, wrong_quote: WrongQuote, vote: int):
+    async def render_wrong_quote(
+        self, wrong_quote: WrongQuote, vote: int
+    ) -> None:
         """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
         if self.request.path.endswith("/full/"):
-            return await self.finish(
+            await self.finish(
                 {
                     "wrong_quote": wrong_quote.to_json(),
                     "next": f"{next_q}-{next_a}",
                     "vote": vote,
                 }
             )
-        return await self.finish(
-            {
-                "id": wrong_quote.get_id_as_str(),
-                "quote": wrong_quote.quote.quote,
-                "author": wrong_quote.author.name,
-                "rating": await self.get_rating_str(wrong_quote),
-                "vote": vote,
-                "next": f"{next_q}-{next_a}",
-            }
-        )
+        else:
+            await self.finish(
+                {
+                    "id": wrong_quote.get_id_as_str(),
+                    "quote": wrong_quote.quote.quote,
+                    "author": wrong_quote.author.name,
+                    "rating": await self.get_rating_str(wrong_quote),
+                    "vote": vote,
+                    "next": f"{next_q}-{next_a}",
+                }
+            )

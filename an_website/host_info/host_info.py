@@ -57,7 +57,7 @@ def get_module_info() -> ModuleInfo:
 class HostInfo(BaseRequestHandler):
     """The request handler for the host info page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """
         Handle the GET requests to the host info page.
 
@@ -75,7 +75,7 @@ class HostInfo(BaseRequestHandler):
 class UwuHostInfo(BaseRequestHandler):
     """The wequest handwew fow the coowew host info page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """
         Handwe the GET wequests to coowew the host info page.
 

@@ -23,7 +23,7 @@ import orjson
 
 
 # pylint: disable=unused-argument,invalid-name,missing-function-docstring
-def dumps(
+def dumps(  # type: ignore
     obj,
     *,
     skipkeys=False,
@@ -63,7 +63,7 @@ def dumps(
     return orjson.dumps(obj, default, option).decode("utf-8")
 
 
-def dump(
+def dump(  # type: ignore
     obj,
     fp,
     *,
@@ -79,7 +79,7 @@ def dump(
     **kw,
 ):
     fp.write(
-        dumps(
+        dumps(  # type: ignore
             obj,
             skipkeys=skipkeys,
             ensure_ascii=ensure_ascii,
@@ -95,7 +95,7 @@ def dump(
     )
 
 
-def loads(
+def loads(  # type: ignore
     s,
     *,
     cls=None,
@@ -109,7 +109,7 @@ def loads(
     return orjson.loads(s)
 
 
-def load(
+def load(  # type: ignore
     fp,
     *,
     cls=None,
@@ -120,7 +120,7 @@ def load(
     object_pairs_hook=None,
     **kw,
 ):
-    return loads(
+    return loads(  # type: ignore
         fp.read(),
         cls=cls,
         object_hook=object_hook,

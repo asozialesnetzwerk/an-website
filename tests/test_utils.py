@@ -22,7 +22,7 @@ import pytest
 from an_website.utils import utils
 
 
-def test_n_from_set():
+def test_n_from_set() -> None:
     """Test the n_from_set function."""
     _set = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
     assert len(utils.n_from_set(_set, 3)) == 3
@@ -30,14 +30,16 @@ def test_n_from_set():
         assert len(utils.n_from_set(_set, i)) == min(len(_set), i)
 
 
-def test_bool_str_conversion():
+def test_bool_str_conversion() -> None:
     """Test the conversion from bool to str and from str to bool."""
     for _b in (False, True):
         assert _b == utils.str_to_bool(utils.bool_to_str(_b))
         assert _b == utils.str_to_bool(str(_b))
 
-    for _b in ("sure", "nope"):
-        assert _b == utils.bool_to_str(utils.str_to_bool(_b))
+    for _b_str in ("sure", "nope"):
+        _b_bool = utils.str_to_bool(_b_str)
+        assert isinstance(_b_bool, bool)
+        assert _b_str == utils.bool_to_str(_b_bool)
 
     with pytest.raises(ValueError):
         utils.str_to_bool("Invalid bool value")
@@ -45,7 +47,7 @@ def test_bool_str_conversion():
     assert utils.str_to_bool("Invalid bool value", default=True)
 
 
-def test_adding_stuff_to_url():
+def test_adding_stuff_to_url() -> None:
     """Test the utils.add_args_to_url function."""
     for url in (
         "https://example.com/",

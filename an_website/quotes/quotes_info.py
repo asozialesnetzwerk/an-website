@@ -50,7 +50,7 @@ class QuotesInfoPage(BaseRequestHandler):
 
     RATELIMIT_NAME = "quotes-info"
 
-    async def get(self, _id_str: str):
+    async def get(self, _id_str: str) -> None:
         """Handle GET requests to the quote info page."""
         _id: int = int(_id_str)
         quote = await get_quote_by_id(_id)
@@ -110,11 +110,12 @@ async def get_wikipedia_page_content(
     response_json = json.loads(response.body)
     if "query" not in response_json or "pages" not in response_json["query"]:
         return None
-    pages: dict = response_json["query"]["pages"]
+    pages: dict[str, str] = response_json["query"]["pages"]
     page = tuple(pages.values())[0]
     if "extract" not in page:
         return None
-    return page["extract"]
+    # let's trust the wikipedia API
+    return page["extract"]  # type: ignore
 
 
 def fix_author_for_wikipedia_search(author: str) -> str:
@@ -143,11 +144,11 @@ class AuthorsInfoPage(BaseRequestHandler):
     RATELIMIT_NAME = "quotes-info"
     RATELIMIT_TOKENS = 5
 
-    def get_redis_info_key(self, author_name) -> str:
+    def get_redis_info_key(self, author_name: str) -> str:
         """Get the key to save the author info with Redis."""
         return f"{self.redis_prefix}:quote-author-info:{author_name}"
 
-    async def get(self, _id_str: str):
+    async def get(self, _id_str: str) -> None:
         """Handle GET requests to the author info page."""
         _id: int = int(_id_str)
         author = await get_author_by_id(_id)

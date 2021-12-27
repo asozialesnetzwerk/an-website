@@ -37,7 +37,7 @@ def get_module_info() -> ModuleInfo:
 class LOLWUT(BaseRequestHandler):
     """The request handler for the LOLWUT page."""
 
-    async def get(self, args=None):
+    async def get(self, args: str = str()) -> None:
         """Handle GET requests to the LOLWUT page."""
         if args:
             arguments = args.split("/")
@@ -51,10 +51,9 @@ class LOLWUT(BaseRequestHandler):
             command = "LOLWUT"
         if not self.redis:
             raise HTTPError(503)
-        lolwut = await self.redis.execute_command(command)
         await self.render(
             "pages/ansi2html.html",
-            ansi=lolwut,
+            ansi=await self.redis.execute_command(command),  # type: ignore
             powered_by="https://redis.io",
             powered_by_name="Redis",
         )

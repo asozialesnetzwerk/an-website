@@ -24,8 +24,9 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
-from typing import Any, Tuple, TypeVar, Union
+from typing import IO, Any, Tuple, TypeVar, Union
 
+import elasticapm  # type: ignore
 import tornado.httputil
 from tornado.web import HTTPError, RequestHandler
 
@@ -156,7 +157,7 @@ class ModuleInfo(PageInfo):
 class Timer:
     """Timer class used for timing stuff."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Start the timer."""
         self._execution_time: None | float = None
         self._start_time: float = time.perf_counter()
@@ -190,14 +191,15 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 
 
 @cache
-def add_args_to_url(url: str, **kwargs) -> str:
+def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
     """Add query arguments to a URL."""
     if not kwargs:
         return url
 
     url_args: dict[str, str] = {}
 
-    for key, value in kwargs.items():
+    for key in kwargs:  # pylint: disable=consider-using-dict-items
+        value: Any = kwargs[key]  # make mypy happy
         if value is not None:
             if isinstance(value, bool):
                 url_args[key] = bool_to_str(value)
@@ -210,7 +212,7 @@ def add_args_to_url(url: str, **kwargs) -> str:
     return tornado.httputil.url_concat(url, url_args)
 
 
-def anonymize_ip(ip_address, *, ignore_invalid=False):
+def anonymize_ip(ip_address: str, *, ignore_invalid: bool = False) -> str:
     """Anonymize an IP address."""
     try:
         version = ipaddress.ip_address(ip_address).version
@@ -235,8 +237,8 @@ def anonymize_ip(ip_address, *, ignore_invalid=False):
 
 
 def apm_anonymization_processor(  # pylint: disable=unused-argument
-    client, event
-):
+    client: elasticapm.Client, event: dict[str, Any]
+) -> dict[str, Any]:
     """Anonymize the APM events."""
     if "context" in event and "request" in event["context"]:
         request = event["context"]["request"]
@@ -283,7 +285,7 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def length_of_match(_m: re.Match):
+def length_of_match(_m: re.Match[str]) -> int:
     """Calculate the length of the regex match and return it."""
     span = _m.span()
     return span[1] - span[0]
@@ -335,7 +337,9 @@ def name_to_id(val: str) -> str:
 
 
 async def run(
-    program, *args, stdin=asyncio.subprocess.PIPE
+    program: str,
+    *args: str,
+    stdin: int | IO[Any] | None = asyncio.subprocess.PIPE,
 ) -> tuple[None | int, bytes, bytes]:
     """Run a programm & return the return code, stdout and stderr as tuple."""
     proc = await asyncio.create_subprocess_exec(

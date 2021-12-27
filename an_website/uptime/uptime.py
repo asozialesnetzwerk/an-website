@@ -63,7 +63,7 @@ def uptime_to_str(uptime: None | float = None) -> str:
 class UptimeHandler(BaseRequestHandler):
     """The request handler for the uptime page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request and render the page."""
         await self.render(
             "pages/uptime.html",
@@ -75,7 +75,7 @@ class UptimeHandler(BaseRequestHandler):
 class UptimeAPIHandler(APIRequestHandler):
     """The request handler for the uptime API."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request to the API."""
         await self.finish(
             {

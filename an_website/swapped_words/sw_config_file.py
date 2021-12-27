@@ -74,9 +74,9 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
 class ConfigLine:  # pylint: disable=too-few-public-methods
     """Class used to represent a word pair."""
 
-    def to_conf_line(
+    def to_conf_line(  # pylint: disable=no-self-use, unused-argument
         self, len_of_left: None | int = None
-    ):  # pylint: disable=no-self-use, unused-argument
+    ) -> str:
         """Get how this would look like in a config."""
         return str()
 
@@ -87,7 +87,7 @@ class Comment(ConfigLine):
 
     comment: str
 
-    def to_conf_line(self, len_of_left: None | int = None):
+    def to_conf_line(self, len_of_left: None | int = None) -> str:
         """Get how this would look like in a config."""
         return str() if not self.comment else f"# {self.comment}"
 
@@ -113,7 +113,7 @@ class WordPair(ConfigLine):
         """Get the length to the left of the separator."""
         return len(self.word1)
 
-    def to_conf_line(self, len_of_left: None | int = None):
+    def to_conf_line(self, len_of_left: None | int = None) -> str:
         """Get how this would look like in a config."""
         left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:
@@ -276,7 +276,7 @@ class InvalidConfigException(Exception):
     line: str
     reason: str
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Exception to str."""
         return (
             f"Error in line {self.line_num}: '{self.line.strip()}' "
@@ -294,7 +294,7 @@ class SwappedWordsConfig:
             for i, line in enumerate(re.split(LINE_END_REGEX, config.strip()))
         )
 
-    def get_regex(self):
+    def get_regex(self) -> Pattern[str]:
         """Get the regex that matches every word in this."""
         return re.compile(
             "|".join(
@@ -343,11 +343,11 @@ class SwappedWordsConfig:
         # if an unknown error happens return the match to change nothing:
         return match.group()
 
-    def swap_words(self, text):
+    def swap_words(self, text: str) -> str:
         """Swap the words in the text."""
         return self.get_regex().sub(self.get_replaced_word, text)
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: object) -> bool:
         """Check equality based on the lines."""
         if not isinstance(other, SwappedWordsConfig):
             return NotImplemented

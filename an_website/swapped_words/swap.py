@@ -57,7 +57,7 @@ with open(f"{DIR}/config.sw", encoding="utf-8") as file:
     DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
 
 
-def check_text_too_long(text: str):
+def check_text_too_long(text: str) -> None:
     """Raise an HTTP error if the text is too long."""
     len_text = len(text)
 
@@ -75,7 +75,9 @@ def check_text_too_long(text: str):
 class SwappedWords(BaseRequestHandler):
     """The request handler for the swapped words page."""
 
-    def handle_text(self, text: str, config_str: None | str, reset: str):
+    def handle_text(
+        self, text: str, config_str: None | str, reset: str
+    ) -> None:
         """Use the text to display the HTML page."""
         check_text_too_long(text)
 
@@ -128,20 +130,20 @@ class SwappedWords(BaseRequestHandler):
                 error_msg=str(_e),
             )
 
-    def get(self):
+    def get(self) -> None:
         """Handle GET requests to the swapped words page."""
         self.handle_text(
-            self.get_query_argument("text", default=str()),
+            self.get_query_argument("text", default=None) or str(),
             self.get_query_argument("config", default=None),
-            self.get_query_argument("reset", default="nope"),
+            self.get_query_argument("reset", default=None) or "nope",
         )
 
-    def post(self):
+    def post(self) -> None:
         """Handle POST requests to the swapped words page."""
         self.handle_text(
-            self.get_argument("text", default=str()),
+            self.get_argument("text") or str(),
             self.get_argument("config", default=None),
-            self.get_argument("reset", default="nope"),
+            self.get_argument("reset") or "nope",
         )
 
 
@@ -150,17 +152,16 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
-    def get(self):
+    def get(self) -> None:
         """Handle GET requests to the swapped words API."""
-        text = self.get_argument("text", default=str(), strip=True)
+        text = self.get_argument("text", default=None, strip=True) or str()
 
         check_text_too_long(text)
 
         config_str = self.get_argument("config", default=None, strip=True)
-        return_config = self.get_argument(
-            "return_config", default="nope", strip=True
+        return_config = str(
+            self.get_argument("return_config", default="nope", strip=True)
         )
-
         try:
             sw_config = (
                 DEFAULT_CONFIG
@@ -201,6 +202,6 @@ class SwappedWordsAPI(APIRequestHandler):
                 }
             )
 
-    def post(self):
+    def post(self) -> None:
         """Handle POST requests to the swapped words API."""
         self.get()

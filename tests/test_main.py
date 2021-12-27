@@ -22,14 +22,15 @@ import re
 import an_website.__main__ as main
 from an_website import patches
 from an_website.utils.request_handler import BaseRequestHandler
+from an_website.utils.utils import ModuleInfo
 
 
-async def get_module_infos():
+async def get_module_infos() -> tuple[ModuleInfo, ...]:
     """Wrap main.get_module_infos in an async functions."""
     return main.get_module_infos()
 
 
-def test_parsing_module_infos():
+def test_parsing_module_infos() -> None:
     """Tests about the module infos in an_website __main__."""
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
@@ -74,7 +75,7 @@ def test_parsing_module_infos():
     )
 
 
-def test_making_app():
+def test_making_app() -> None:
     """Run the making app functions, to make sure they don't fail."""
     patches.apply()
 

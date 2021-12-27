@@ -40,9 +40,9 @@ def get_module_info() -> ModuleInfo:
 class WikiHandler(BaseRequestHandler):
     """The request handler for the wiki page."""
 
-    def get(self):
+    def get(self) -> None:
         """Handle the GET requests to the wiki page."""
-        return self.render(
+        self.render(
             "pages/ask_for_redirect.html",
             redirect_url="https://asoziales-wiki.de/",
             from_url=None,

@@ -67,4 +67,5 @@ def get_words(file_name: str) -> frozenset[str]:
 def get_letters(file_name: str) -> dict[str, int]:
     """Get the letters dict with the file_name and return it."""
     with open(f"{BASE_WORD_DIR}/{file_name}.json", encoding="utf-8") as file:
-        return json.loads(file.read())
+        # we know the files, so we know the type
+        return json.loads(file.read())  # type: ignore

@@ -41,13 +41,13 @@ def get_module_info() -> ModuleInfo:
 class PrintWrapper:  # pylint: disable=too-few-public-methods
     """Wrapper for print()."""
 
-    def __init__(self, output):  # noqa: D107
-        self._output = output
+    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
+        self._output: io.TextIOBase = output
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: list[Any], **kwargs: dict[str, Any]) -> None:
         if "file" not in kwargs:
-            kwargs["file"] = self._output
-        print(*args, **kwargs)
+            kwargs["file"] = self._output  # type: ignore
+        print(*args, **kwargs)  # type: ignore
 
 
 class Backdoor(APIRequestHandler):
@@ -56,10 +56,11 @@ class Backdoor(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
 
-    sessions: dict[str, dict] = {}
+    sessions: dict[str, dict[str, Any]] = {}
 
-    async def post(self, mode):  # noqa: C901
-        # pylint: disable=too-many-branches
+    async def post(  # noqa: C901  # pylint: disable=too-many-statements, too-many-branches
+        self, mode: str
+    ) -> None:
         """Handle the POST request to the backdoor API."""
         try:
             output = io.StringIO()
@@ -85,17 +86,21 @@ class Backdoor(APIRequestHandler):
                     _feature_version=10,
                 )
             except SyntaxError as exc:
-                response = {"success": False, "result": exc}
+                response: dict[str, Any] = {"success": False, "result": exc}
             else:
-                session_id = self.request.headers.get("X-Backdoor-Session")
-                session: dict[str, Any] = self.sessions.get(session_id) or {
-                    "__builtins__": __builtins__,
-                    "__name__": "this",
-                    "app": self.application,
-                    "get_wrong_quotes": get_wrong_quotes,
-                }
-                if session_id and session_id not in self.sessions:
-                    self.sessions[session_id] = session
+                session_id: None | str = self.request.headers.get(
+                    "X-Backdoor-Session"
+                )
+                if session_id:
+                    session: dict[str, Any] = (
+                        self.sessions.get(session_id)
+                        or self.get_default_session()
+                    )
+                    if session_id not in self.sessions:
+                        self.sessions[session_id] = session
+                else:
+                    session = self.get_default_session()
+
                 if "print" not in session or isinstance(
                     session["print"], PrintWrapper
                 ):
@@ -121,6 +126,8 @@ class Backdoor(APIRequestHandler):
                 else:
                     if response["result"] is session["help"]:
                         response["result"] = help
+                    if response["result"] is session["print"]:
+                        response["result"] = print
             response["result"] = (
                 None
                 if response["success"]
@@ -153,7 +160,7 @@ class Backdoor(APIRequestHandler):
             )
         except SystemExit as exc:
             if not isinstance(exc.code, int):
-                exc.code = repr(exc.code)
+                exc.code = repr(exc.code)  # type: ignore
             new_args = []
             for arg in exc.args:
                 try:
@@ -162,16 +169,33 @@ class Backdoor(APIRequestHandler):
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
             exc.args = tuple(new_args)
-            response = exc  # pylint: disable=redefined-variable-type
+            self.set_header("Content-Type", "application/vnd.python.pickle")
+            await self.finish(
+                pickle.dumps(exc, max(pickle.DEFAULT_PROTOCOL, 5))
+            )
+            return
         self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(
             pickle.dumps(response, max(pickle.DEFAULT_PROTOCOL, 5))
         )
 
-    def write_error(self, status_code, **kwargs):
+    def get_default_session(self) -> dict[str, Any]:
+        """Create the default session and return it."""
+        return {
+            "__builtins__": __builtins__,
+            "__name__": "this",
+            "app": self.application,
+            "get_wrong_quotes": get_wrong_quotes,
+        }
+
+    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Respond with error message."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
-        if "exc_info" in kwargs and not issubclass(
-            kwargs["exc_info"][0], HTTPError
-        ):
-            self.finish(pickle.dumps(self.get_error_message(**kwargs)))
+        if "exc_info" in kwargs:
+            exc_info: tuple[
+                type[BaseException], BaseException, Any  # Any ≙ traceback
+            ] = kwargs[
+                "exc_info"
+            ]  # type: ignore
+            if not issubclass(exc_info[0], HTTPError):
+                self.finish(pickle.dumps(self.get_error_message(**kwargs)))

@@ -16,6 +16,8 @@
 from __future__ import annotations
 
 import pytest
+import tornado.simple_httpclient
+import tornado.web
 
 import an_website.quotes.quotes as main_page
 from an_website import __main__ as main
@@ -23,7 +25,7 @@ from an_website import quotes
 
 
 @pytest.fixture
-def app():
+def app() -> tornado.web.Application:
     """Create the application."""
     return main.make_app()
 
@@ -50,7 +52,7 @@ WRONG_QUOTE_DATA = {
 }
 
 
-async def test_parsing_wrong_quotes():
+async def test_parsing_wrong_quotes() -> None:
     """Test parsing wrong_quotes."""
     wrong_quote = quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
     assert wrong_quote.id == 1
@@ -61,13 +63,13 @@ async def test_parsing_wrong_quotes():
     # parsing the same dict twice should return the same object twice
     assert id(wrong_quote) == id(quotes.parse_wrong_quote(WRONG_QUOTE_DATA))
 
-    author = quotes.parse_author(WRONG_QUOTE_DATA["author"])
+    author = quotes.parse_author(WRONG_QUOTE_DATA["author"])  # type: ignore
     assert id(author) == id(wrong_quote.author)
     assert author == await quotes.get_author_by_id(author_id=author.id)
     assert author.name == "Kim Jong-il"
     assert author.id == 2
 
-    quote = quotes.parse_quote(WRONG_QUOTE_DATA["quote"])
+    quote = quotes.parse_quote(WRONG_QUOTE_DATA["quote"])  # type: ignore
     assert id(quote) == id(wrong_quote.quote)
     assert quote == await quotes.get_quote_by_id(quote_id=quote.id)
     assert quote.id == 1
@@ -79,7 +81,7 @@ async def test_parsing_wrong_quotes():
     assert 2 == len(quotes.AUTHORS_CACHE) == quotes.MAX_AUTHORS_ID[0]
 
 
-def test_author_updating():
+def test_author_updating() -> None:
     """Test updating the author."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
@@ -90,7 +92,7 @@ def test_author_updating():
     assert author.name == "Abraham Lincoln"
 
 
-async def test_quote_updating():
+async def test_quote_updating() -> None:
     """Test updating the quote."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
@@ -112,7 +114,9 @@ async def test_quote_updating():
     )
 
 
-async def test_quote_request_handlers(http_server_client):
+async def test_quote_request_handlers(
+    http_server_client: tornado.simple_httpclient.SimpleAsyncHTTPClient,
+) -> None:
     """Test the request handlers for the quotes page."""
     response = await http_server_client.fetch("/zitate/1-1/")
     assert response.code == 200
@@ -133,7 +137,7 @@ async def test_quote_request_handlers(http_server_client):
     assert response.code == 200
 
 
-def test_parsing_vote_str():
+def test_parsing_vote_str() -> None:
     """Test parsing vote str."""
     # pylint: disable=compare-to-zero
     assert main_page.vote_to_int("-1") == -1

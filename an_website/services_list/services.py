@@ -116,7 +116,7 @@ class ServicesHandler(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 0
 
-    def get(self):
+    def get(self) -> None:
         """Handle GET requests to the service list page."""
         self.render(
             "pages/services.html",

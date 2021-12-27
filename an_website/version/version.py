@@ -22,7 +22,7 @@ from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
 
-def run_cmd(cmd):
+def run_cmd(cmd: str) -> str:
     """Run a command in a subprocess."""
     return subprocess.run(
         cmd,
@@ -61,7 +61,7 @@ def get_module_info() -> ModuleInfo:
 class VersionAPI(APIRequestHandler):
     """The Tornado request handler for the version API."""
 
-    def get(self):
+    def get(self) -> None:
         """Handle the GET request to the version API."""
         self.finish(
             {
@@ -74,7 +74,7 @@ class VersionAPI(APIRequestHandler):
 class Version(BaseRequestHandler):
     """The Tornado request handler for the version page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request to the version page."""
         await self.render(
             "pages/version.html",

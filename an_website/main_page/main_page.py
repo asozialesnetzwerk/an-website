@@ -33,10 +33,10 @@ def get_module_info() -> ModuleInfo:
 class MainPage(QuoteOfTheDayBaseHandler):
     """The request handler of the main page."""
 
-    async def check_ready(self):
+    async def check_ready(self) -> None:
         pass
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET requests and display the main page."""
         await self.render(
             "pages/main_page.html",

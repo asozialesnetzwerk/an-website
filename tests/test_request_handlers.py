@@ -17,29 +17,38 @@
 from __future__ import annotations
 
 import importlib
+from collections.abc import Awaitable, Callable
 
 import orjson as json
 import pytest
+import tornado.httpclient
+import tornado.web
 
 
 @pytest.fixture
-def app():
+def app() -> tornado.web.Application:
     """Create the application."""
-    return importlib.import_module("an_website.__main__").make_app()
+    return importlib.import_module(  # type: ignore
+        "an_website.__main__"
+    ).make_app()
 
 
 @pytest.fixture
-def fetch(http_server_client):
+def fetch(
+    http_server_client: tornado.httpclient.AsyncHTTPClient,
+) -> Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]:
     """Fetch a URL."""
 
-    async def fetch_url(url):
+    async def fetch_url(url: str) -> tornado.httpclient.HTTPResponse:  # 42
         """Fetch a URL."""
         return await http_server_client.fetch(url, raise_error=False)
 
     return fetch_url
 
 
-async def test_json_apis(fetch):  # 42
+async def test_json_apis(
+    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
         "/api/endpoints/",
@@ -57,7 +66,7 @@ async def test_json_apis(fetch):  # 42
     )
     for api in json_apis:
         response = await fetch(api)
-        assert response.code == 200
+        assert response.code == 200  # 69
         assert response.headers["Content-Type"] == (
             "application/json; charset=UTF-8"
         )
@@ -66,7 +75,9 @@ async def test_json_apis(fetch):  # 42
 
 
 # pylint: disable=too-many-statements
-async def test_request_handlers(fetch):  # 69
+async def test_request_handlers(
+    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+) -> None:
     """Check if the request handlers return 200 codes."""
     response = await fetch("/")
     assert response.code == 200

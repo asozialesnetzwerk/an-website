@@ -189,7 +189,7 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
 class CreatePage(QuoteReadyCheckRequestHandler):
     """The request handler for the create page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle GET requests to the create page."""
         await self.render(
             "pages/quotes/create1.html",
@@ -197,15 +197,23 @@ class CreatePage(QuoteReadyCheckRequestHandler):
             authors=tuple(AUTHORS_CACHE.values()),
         )
 
-    async def post(self):
+    async def post(self) -> None:
         """Handle POST requests to the create page."""
-        quote_str = self.get_argument("quote-1")
-        fake_author_str = self.get_argument("fake-author-1")
+        quote_str = self.get_argument("quote-1", default=None)
+        fake_author_str = self.get_argument("fake-author-1", default=None)
+        if not (quote_str and fake_author_str):
+            raise HTTPError(
+                400,
+                reason=(
+                    "Missing arguments. "
+                    "quote-1 and fake-author-1 are needed."
+                ),
+            )
+        assert quote_str and fake_author_str  # for mypy
+        quote: None | Quote = get_quote_by_str(quote_str)
+        fake_author: None | Author = get_author_by_name(fake_author_str)
 
-        if None not in (
-            (quote := get_quote_by_str(quote_str)),
-            (fake_author := get_author_by_name(fake_author_str)),
-        ):
+        if quote and fake_author:
             # if selected existing quote and existing
             # fake author just redirect to the page of this quote
             return self.redirect(
@@ -213,13 +221,19 @@ class CreatePage(QuoteReadyCheckRequestHandler):
             )
 
         # TODO: Search for real author, to reduce work for users
-        real_author_str = self.get_argument("real-author-1", default=str())
+        real_author_str = self.get_argument("real-author-1", default=None)
+        if not real_author_str:
+            raise HTTPError(
+                400, reason="Missing arguments. real-author-1 is needed."
+            )
 
-        quotes = [quote] if quote else await get_quotes(quote_str)
-        real_authors = (
+        quotes: list[Quote | str] = (
+            [quote] if quote else await get_quotes(quote_str)
+        )
+        real_authors: list[Author | str] = (
             [quote.author] if quote else await get_authors(real_author_str)
         )
-        fake_authors = (
+        fake_authors: list[Author | str] = (
             [fake_author]
             if fake_author
             else await get_authors(fake_author_str)
@@ -247,14 +261,21 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
     RATELIMIT_TOKENS = 4
     RATELIMIT_NAME = "quotes-create"
 
-    async def post(self):
+    async def post(self) -> None:
         """Handle POST requests to the create page."""
-        quote_str = self.get_argument("quote-2")
-        fake_author_str = self.get_argument("fake-author-2")
+        quote_str = self.get_argument("quote-2", default=None)
+        fake_author_str = self.get_argument("fake-author-2", default=None)
 
-        if None not in (
-            (quote := get_quote_by_str(quote_str)),
-            (fake_author := get_author_by_name(fake_author_str)),
+        if not (quote_str and fake_author_str):
+            raise HTTPError(
+                400,
+                reason=(
+                    "Missing arguments. quote-2 and fake-author-2 are needed."
+                ),
+            )
+
+        if (quote := get_quote_by_str(quote_str)) and (
+            fake_author := get_author_by_name(fake_author_str)
         ):
             # if selected existing quote and existing
             # fake author just redirect to the page of this quote
@@ -262,8 +283,16 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
                 self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
             )
 
+        real_author = self.get_argument("real-author-2", default=None)
+
+        if not real_author:
+            raise HTTPError(
+                400,
+                reason="Missing argument. real-author-2 is required.",
+            )
+
         _id = await create_wrong_quote(
-            self.get_argument("real-author-2"),
+            real_author,
             fake_author_str,
             quote_str,
         )

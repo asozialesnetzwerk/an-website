@@ -47,7 +47,7 @@ def get_module_info() -> ModuleInfo:
 
 
 @cache
-def get_js_file_names():
+def get_js_file_names() -> list[str]:
     """Get the names of the JS files in this project."""
     js_files_dir = os.path.join(STATIC_DIR, "js")
     return os.listdir(js_files_dir)
@@ -58,7 +58,7 @@ class JSLicenses(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 0
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET requests to the JS-licenses page."""
         await self.render(
             "pages/js_licenses.html", js_files=get_js_file_names()

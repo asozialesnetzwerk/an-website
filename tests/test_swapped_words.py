@@ -21,7 +21,7 @@ import pytest
 from an_website.swapped_words import sw_config_file as sw_config
 
 
-def test_copying_case_of_letters():
+def test_copying_case_of_letters() -> None:
     """Test the copying of cases for single letters."""
     lower_char = "a"
     upper_char = "A"
@@ -40,7 +40,7 @@ def test_copying_case_of_letters():
         assert sw_config.copy_case_letter(char, char.lower()) == char
 
 
-def test_copying_case():
+def test_copying_case() -> None:
     """Test the copying of cases for strings."""
     for word in ("lower", "Upper", "CAPS", "AlTeRnAtInG", "lasT", "AHh!1!1!!"):
         assert sw_config.copy_case(word, word.lower()) == word
@@ -59,7 +59,7 @@ def test_copying_case():
     assert sw_config.copy_case("Long Short", "short LONG") == "Short Long"
 
 
-def test_parsing_config():
+def test_parsing_config() -> None:
     """Test parsing the sw-config."""
     str_to_replace = "A a B b  XX  Cc cc cC CC  XX  Dd dd dD DD"
 

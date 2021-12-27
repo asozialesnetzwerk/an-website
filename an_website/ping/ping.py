@@ -32,7 +32,7 @@ def get_module_info() -> ModuleInfo:
 class Ping(APIRequestHandler):
     """The Tornado request handler for the ping pong API."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request to the ping pong API."""
         self.set_header("Content-Type", "text/plain; charset=utf-8")
         await self.finish("🏓")

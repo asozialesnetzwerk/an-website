@@ -9,6 +9,7 @@
 ## How to develop
 You need:
 - python3.10
+- git
 - packages from requirements.txt (`pip install -r requirements.txt`)
 - packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 
@@ -31,6 +32,7 @@ You need:
 - redis
 - redis-cell (for ratelimits)
 - uwufetch
+- git
 
 How
 - clone this repo in the home directory of a user

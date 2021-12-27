@@ -43,9 +43,11 @@ class Restart(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
 
-    async def post(self):
+    async def post(self) -> None:
         """Handle the POST request to the restart API."""
-        commit = self.get_query_argument("commit", default=str(), strip=True)
+        commit: str = str(
+            self.get_query_argument("commit", default=str(), strip=True)
+        )
 
         # check if commit only contains valid letters and numbers
         # used to protect against code execution
@@ -80,6 +82,6 @@ class Restart(APIRequestHandler):
 
         raise HTTPError(
             401,
-            reason=f"restart.sh exited with code={code}, "
-            f"stdout='{stdout}' and stderr='{stderr}'",
+            reason=f"restart.sh exited with code={code!r}, "
+            f"stdout='{stdout!r}' and stderr='{stderr!r}'",
         )

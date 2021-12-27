@@ -27,6 +27,7 @@ import uuid
 from datetime import datetime
 from functools import cache
 from http.client import responses
+from typing import Any
 from urllib.parse import quote, unquote
 
 import orjson as json
@@ -38,7 +39,7 @@ from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
-from tornado.web import HTTPError, RequestHandler
+from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from an_website.utils.utils import (
     REPO_URL,
@@ -46,6 +47,7 @@ from an_website.utils.utils import (
     ModuleInfo,
     add_args_to_url,
     bool_to_str,
+    name_to_id,
     str_to_bool,
 )
 
@@ -83,7 +85,7 @@ class BaseRequestHandler(RequestHandler):
         # enough to specify that the defaults should be used
         default_title: bool = True,
         default_description: bool = True,
-    ):
+    ) -> None:
         """
         Get title and description from the kwargs.
 
@@ -99,7 +101,7 @@ class BaseRequestHandler(RequestHandler):
                 self.request.path
             ).description
 
-    def data_received(self, chunk):
+    def data_received(self, chunk: Any) -> None:
         """Do nothing."""
 
     @property
@@ -122,11 +124,13 @@ class BaseRequestHandler(RequestHandler):
         """Get the Elasticsearch prefix from the settings."""
         return self.settings.get("ELASTICSEARCH_PREFIX", str())
 
-    def set_default_headers(self):
+    def set_default_headers(self) -> None:
         """Opt out of all FLoC cohort calculation."""
         self.set_header("Permissions-Policy", "interest-cohort=()")
 
-    async def prepare(self):  # pylint: disable=invalid-overridden-method
+    async def prepare(  # pylint: disable=invalid-overridden-method
+        self,
+    ) -> None:
         """Check authorization and call self.ratelimit()."""
         if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
             # TODO: self.set_header("WWW-Authenticate")
@@ -205,7 +209,7 @@ class BaseRequestHandler(RequestHandler):
             else:
                 self.set_status(429)
                 self.write_error(429)
-        return result[0]
+        return bool(result[0])
 
     # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
@@ -229,7 +233,7 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} is not a valid HTTP response status code."
         )
 
-    def write_error(self, status_code: int, **kwargs):
+    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Render the error page with the status_code as a HTML page."""
         self.render(
             "error.html",
@@ -238,7 +242,7 @@ class BaseRequestHandler(RequestHandler):
             description=self.get_error_page_description(status_code),
         )
 
-    def get_error_message(self, **kwargs):
+    def get_error_message(self, **kwargs: dict[str, Any]) -> str:
         """
         Get the error message and return it.
 
@@ -246,39 +250,53 @@ class BaseRequestHandler(RequestHandler):
         the traceback gets returned.
         """
         if "exc_info" in kwargs and not issubclass(
-            kwargs["exc_info"][0], HTTPError
+            kwargs["exc_info"][0], HTTPError  # type: ignore
         ):
             if self.settings.get("serve_traceback") or self.is_authorized():
                 return (
                     str()
-                    .join(traceback.format_exception(*kwargs["exc_info"]))
+                    .join(
+                        traceback.format_exception(
+                            *kwargs["exc_info"]  # type: ignore
+                        )
+                    )
                     .strip()
                 )
             return (
                 str()
-                .join(traceback.format_exception_only(*kwargs["exc_info"][:2]))
+                .join(
+                    traceback.format_exception_only(
+                        *kwargs["exc_info"][:2]  # type: ignore
+                    )
+                )
                 .strip()
             )
-        return self._reason
+        if "exc_info" in kwargs and isinstance(
+            kwargs["exc_info"][1], MissingArgumentError  # type: ignore
+        ):
+            return kwargs["exc_info"][1].log_message  # type: ignore
+        return str(self._reason)
 
     def get_hashed_remote_ip(self) -> str:
         """Hash the remote IP and return it."""
         # pylint: disable=not-callable
-        return blake3(
-            str(self.request.remote_ip).encode("ascii")
-            # pylint: disable=not-callable
-            + blake3(
-                datetime.utcnow().date().isoformat().encode("ascii")
-            ).digest()
-        ).hexdigest()
+        return str(
+            blake3(
+                str(self.request.remote_ip).encode("ascii")
+                # pylint: disable=not-callable
+                + blake3(
+                    datetime.utcnow().date().isoformat().encode("ascii")
+                ).digest()
+            ).hexdigest()
+        )
 
     @cache
-    def get_user_id(self):
+    def get_user_id(self) -> str:
         """Get the user id saved in the cookie or create one."""
-        user_id = self.get_secure_cookie("user_id", max_age_days=90)
+        _user_id = self.get_secure_cookie("user_id", max_age_days=90)
         # TODO: ask for cookie consent
         user_id = (
-            str(uuid.uuid4()) if user_id is None else user_id.decode("ascii")
+            str(uuid.uuid4()) if _user_id is None else _user_id.decode("ascii")
         )
         # save it in cookie or reset expiry date
         self.set_secure_cookie(
@@ -290,8 +308,8 @@ class BaseRequestHandler(RequestHandler):
         )
         return user_id
 
-    def get_url_without_path(self):
-        """Get the request URL without the path."""
+    def get_protocol_and_host(self) -> str:
+        """Get the beginning of the URL."""
         protocol = None
         if self.request.host_name.endswith(".onion"):
             # if the host is an onion domain, use HTTP
@@ -303,6 +321,10 @@ class BaseRequestHandler(RequestHandler):
             # otherwise use the protocol of the request
             protocol = self.request.protocol
         return f"{protocol}://{self.request.host}"
+
+    def get_module_infos(self) -> tuple[ModuleInfo, ...]:
+        """Get the module infos."""
+        return self.settings.get("MODULE_INFOS") or tuple()
 
     @cache
     def fix_url(self, url: str, this_url: None | str = None) -> str:
@@ -343,7 +365,7 @@ class BaseRequestHandler(RequestHandler):
                 and "." not in url.split("/")[-1]
             ):
                 url += "/"
-            return self.get_url_without_path() + url
+            return self.get_protocol_and_host() + url
 
         return url
 
@@ -368,7 +390,7 @@ class BaseRequestHandler(RequestHandler):
             return default
         return str_to_bool(no_3rd_party, default)
 
-    def get_saved_theme(self):
+    def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
         theme = self.get_cookie("theme")
         if theme in THEMES:
@@ -376,14 +398,14 @@ class BaseRequestHandler(RequestHandler):
         return "default"
 
     @cache
-    def get_theme(self):
+    def get_theme(self) -> str:
         """Get the theme currently selected."""
         theme = self.get_argument("theme", default=None)
         if theme in THEMES:
             return theme
         return self.get_saved_theme()
 
-    def get_display_theme(self):
+    def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
         theme = self.get_theme()
 
@@ -400,7 +422,7 @@ class BaseRequestHandler(RequestHandler):
             tuple(_t for _t in THEMES if _t not in ignore_themes)
         )
 
-    def get_form_appendix(self):
+    def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
         form_appendix: str
 
@@ -422,16 +444,15 @@ class BaseRequestHandler(RequestHandler):
     def get_contact_email(self) -> None | str:
         """Get the contact email from the settings."""
         email = self.settings.get("CONTACT_EMAIL")
-        if email is None:
+        if not email:
             return None
-        if not email.startswith("@"):
-            return email
-        # if mail starts with @ it is a catch all email
-        return (
-            self.request.path.replace("/", "-").strip("-") + "_contact" + email
-        )
+        email_str = str(email)
+        if not email_str.startswith("@"):
+            return email_str
+        # if mail starts with @ it is a catch-all email
+        return name_to_id(self.request.path) + "_contact" + email_str
 
-    def get_template_namespace(self):
+    def get_template_namespace(self) -> dict[str, Any]:
         """
         Add useful things to the template namespace and return it.
 
@@ -490,9 +511,8 @@ class BaseRequestHandler(RequestHandler):
             pass
         else:
             if name in body:
-                if strip and isinstance(body[name], str):
-                    return body[name].strip()
-                return body[name]
+                val = str(body[name])
+                return val.strip() if strip else val
 
         # pylint: disable=protected-access
         if isinstance(default, web._ArgDefaultMarker):
@@ -526,7 +546,7 @@ class APIRequestHandler(BaseRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
-    def set_default_headers(self):
+    def set_default_headers(self) -> None:
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Max-Age
@@ -544,7 +564,7 @@ class APIRequestHandler(BaseRequestHandler):
             ", ".join((*self.ALLOWED_METHODS, "OPTIONS")),
         )
 
-    def write_error(self, status_code, **kwargs):
+    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""
         self.finish(
             {
@@ -553,7 +573,9 @@ class APIRequestHandler(BaseRequestHandler):
             }
         )
 
-    def options(self, *args):  # pylint: disable=unused-argument
+    def options(  # pylint: disable=unused-argument
+        self, *args: list[Any]
+    ) -> None:
         """Handle OPTIONS requests."""
         # no body; only the default headers get used
         # `*args` is for route with `path arguments` supports
@@ -564,19 +586,13 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFound(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
-    def initialize(  # pylint: disable=arguments-differ
-        self,
-        # set default of module_info to none to not throw error
-        module_info: ModuleInfo = None,
-        **kwargs,
-    ):
+    def initialize(  # type: ignore  # pylint: disable=arguments-differ
+        self, *args: list[Any], **kwargs: dict[str, Any]
+    ) -> None:
         """Do nothing to have default title and desc."""
-        kwargs["module_info"] = module_info
-        super().initialize(**kwargs)
-
-    def get_protocol_and_host(self) -> str:
-        """Get the beginning of the URL."""
-        return f"{self.request.protocol}://{self.request.host}"
+        if "module_info" not in kwargs:
+            kwargs["module_info"] = None  # type: ignore
+        super().initialize(*args, **kwargs)  # type: ignore
 
     def get_query(self) -> str:
         """Get the query how you would add it to the end of the URL."""
@@ -586,7 +602,7 @@ class NotFound(BaseRequestHandler):
 
     async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
         self,
-    ):
+    ) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
         await super().prepare()
         new_path = self.request.path.lower()
@@ -636,7 +652,7 @@ class NotFound(BaseRequestHandler):
         # prevent redirecting from /aa/ to /z/
         max_dist = min(4, len(this_path) - 3)
 
-        for _mi in self.application.settings.get("MODULE_INFOS"):
+        for _mi in self.get_module_infos():
             if _mi.path is not None:
                 # get the smallest distance possible with the aliases
                 dist = min(
@@ -670,7 +686,7 @@ class NotFound(BaseRequestHandler):
 class ErrorPage(BaseRequestHandler):
     """A request handler that throws an error."""
 
-    async def get(self, code: str):
+    async def get(self, code: str) -> None:
         """Raise the error_code."""
         status_code: int = int(code)
 
@@ -693,7 +709,7 @@ class ErrorPage(BaseRequestHandler):
 class ZeroDivision(BaseRequestHandler):
     """A fun request handler that throws an error."""
 
-    async def prepare(self):
+    async def prepare(self) -> None:
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
             0 / 0  # pylint: disable=pointless-statement

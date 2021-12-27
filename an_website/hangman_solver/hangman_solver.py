@@ -109,7 +109,7 @@ async def generate_pattern_str(
 
 def fix_letter_counter_crossword_mode(
     letter_counter: Counter[str], input_letters: str, matched_words_count: int
-):
+) -> None:
     """Fix the letter count for crossword mode."""
     n_word_count = -1 * matched_words_count
     update_dict: dict[str, int] = {}
@@ -121,7 +121,7 @@ def fix_letter_counter_crossword_mode(
 @lru_cache(5)
 def filter_words(
     words: frozenset[str] | str,
-    regex: re.Pattern,
+    regex: re.Pattern[str],
     input_letters: str,
     crossword_mode: bool = False,
     matches_always: bool = False,
@@ -282,7 +282,7 @@ class HangmanSolver(BaseRequestHandler):
 
     RATELIMIT_TOKENS = 3
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request and render the page."""
         hangman = await handle_request(self)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
@@ -293,7 +293,7 @@ class HangmanSolverAPI(APIRequestHandler):
 
     RATELIMIT_TOKENS = 3
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle the GET request and write the Hangman object as JSON."""
         hangman = await handle_request(self)
         hangman_dict = asdict(hangman)

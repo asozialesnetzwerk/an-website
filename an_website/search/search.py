@@ -34,15 +34,15 @@ def get_module_info() -> ModuleInfo:
 class Search(BaseRequestHandler):
     """The Tornado request handler for the search page."""
 
-    async def get(self):
+    async def get(self) -> None:
         """Handle GET requests to the search page."""
-        query = self.get_query_argument("q", default=str(), strip=True)
+        query = str(self.get_query_argument("q", strip=True, default=str()))
 
         module_infos: list[
             tuple[float, ModuleInfo, list[tuple[float, PageInfo]]]
         ] = []
 
-        for module_info in self.settings.get("MODULE_INFOS"):
+        for module_info in self.get_module_infos():
             score = module_info.search(query)
             if score > 0:
                 sub_pages = [
