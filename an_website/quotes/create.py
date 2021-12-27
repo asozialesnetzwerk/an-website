@@ -120,10 +120,12 @@ async def get_authors(author_name: str) -> list[Author | str]:
         return [author]
 
     author_name_lower = author_name.lower()
+    max_distance = min(5, len(author_name) // 2 + 1)
     authors: list[Author | str] = [
-        *filter(  # pylint: disable=bad-builtin
-            lambda _a: distance(_a.name.lower(), author_name_lower) < 6,
-            AUTHORS_CACHE.values(),
+        *(
+            _a
+            for _a in AUTHORS_CACHE.values()
+            if distance(_a.name.lower(), author_name_lower) <= max_distance
         ),
         author_name,
     ]
@@ -166,10 +168,12 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
         return [quote]
 
     lower_quote_str = quote_str.lower()
+    max_distance = min(16, len(quote_str) // 2 + 1)
     quotes: list[Quote | str] = [
-        *filter(  # pylint: disable=bad-builtin
-            lambda _q: distance(_q.quote.lower(), lower_quote_str) < 10,
-            QUOTES_CACHE.values(),
+        *(
+            _q
+            for _q in QUOTES_CACHE.values()
+            if distance(_q.quote.lower(), lower_quote_str) <= max_distance
         ),
         fix_quote_str(quote_str),
     ]
