@@ -4,14 +4,30 @@ const nextButton = document.getElementById("next");
 const upvoteButton = document.getElementById("upvote");
 const downvoteButton = document.getElementById("downvote");
 
+const keys = (() => {
+    let k = new URLSearchParams(window.location.search).get("keys");
+    if (!(k && k.length)) {
+        return "WASD";
+    }  // for vim-like set keys to khjl
+    if (k.length === 4) {
+        return k.toUpperCase();
+    } else {
+        alert("Invalid keys given, using default.");
+        return "WASD";
+    }
+})();  // currently only letter keys are supported
+document.getElementById("wasd").innerText = (
+    `${keys[0]} (Upvote), ${keys[2]} (Downvote), ${keys[1]} (Previous) and ${keys[3]} (Next)`
+);
+
 document.addEventListener("keydown", function(event) {
-    if(event.code === "ArrowUp" || event.code === "KeyW") {
+    if (event.code === `Key${keys[0]}`) {
         upvoteButton.click();
-    } else if(event.code === "ArrowLeft" || event.code === "KeyA") {
+    } else if (event.code === `Key${keys[1]}`) {
         window.history.back();
-    } else if(event.code === "ArrowDown" || event.code === "KeyS") {
+    } else if (event.code === `Key${keys[2]}`) {
         downvoteButton.click();
-    } else if(event.code === "ArrowRight" || event.code === "KeyD") {
+    } else if (event.code === `Key${keys[3]}`) {
         nextButton.click();
     }
 });
