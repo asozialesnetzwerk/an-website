@@ -89,7 +89,7 @@ a:not(.no-style-a) {
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltip-text {
+.tooltip:hover .tooltip-text, .tooltip:focus-within .tooltip-text {
     visibility: visible;
 }
 
