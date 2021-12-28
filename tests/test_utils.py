@@ -18,6 +18,7 @@ from __future__ import annotations
 from urllib.parse import urlparse
 
 import pytest
+import tornado.web
 
 from an_website.utils import utils
 
@@ -65,6 +66,11 @@ def test_adding_stuff_to_url() -> None:
     )
 
     assert (
+        utils.add_args_to_url("https://example.com/", a="b", c="d", e=True)
+        == f"https://example.com/?a=b&c=d&e={utils.bool_to_str(True)}"
+    )
+
+    assert (
         f"a={utils.bool_to_str(True)}"
         == urlparse(
             utils.add_args_to_url("https://example.com/", a=True)
@@ -72,7 +78,46 @@ def test_adding_stuff_to_url() -> None:
     )
 
 
+def test_anonomyze_ip() -> None:
+    """Test the anonomyze_ip function."""
+    assert utils.anonymize_ip("127.0.0.1") == "127.0.0.0"
+    assert utils.anonymize_ip("127.0.0.1", ignore_invalid=True) == "127.0.0.0"
+    assert utils.anonymize_ip("69.69.69.69") == "69.69.69.0"
+    assert utils.anonymize_ip("69.6.9.69", ignore_invalid=True) == "69.6.9.0"
+    assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"
+
+    with pytest.raises(ValueError):
+        utils.anonymize_ip("invalid")
+
+
+def test_replace_umlauts() -> None:
+    """Test the replace_umlauts function."""
+    assert utils.replace_umlauts("äöüß") == "aeoeuess"
+    assert utils.replace_umlauts("ÄÖÜẞ") == "AEOEUESS"
+    assert utils.replace_umlauts("Äöüß") == "Aeoeuess"
+    assert utils.replace_umlauts("Öäüß") == "Oeaeuess"
+    assert utils.replace_umlauts("Üöäß") == "Ueoeaess"
+    assert utils.replace_umlauts("ẞäöü") == "SSaeoeue"
+    assert utils.replace_umlauts("ẞäöü ÄÖÜẞ") == "SSaeoeue AEOEUESS"
+    assert utils.replace_umlauts("ẞäöü ÄÖÜß") == "SSaeoeue AeOeUess"
+
+
+def test_name_to_id() -> None:
+    """Test the name_to_id function."""
+    assert utils.name_to_id("     test 42069     ") == "test-42069"
+    assert utils.name_to_id("     test-test-42069") == "test-test-42069"
+    assert utils.name_to_id("     test_TEST_42069") == "test-test-42069"
+    assert utils.name_to_id("     test test 42069") == "test-test-42069"
+    assert utils.name_to_id("test_test_TEST_42069") == "test-test-test-42069"
+    assert utils.name_to_id("test test test 42069") == "test-test-test-42069"
+    assert utils.name_to_id("TEST test_test_42069") == "test-test-test-42069"
+    assert utils.name_to_id("ẞ Ä Ö Ü-ẞÄÖÜ        ") == "ss-ae-oe-ue-ssaeoeue"
+
+
 if __name__ == "__main__":
     test_n_from_set()
     test_bool_str_conversion()
     test_adding_stuff_to_url()
+    test_anonomyze_ip()
+    test_replace_umlauts()
+    test_name_to_id()
