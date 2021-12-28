@@ -18,7 +18,6 @@ from __future__ import annotations
 from urllib.parse import urlparse
 
 import pytest
-import tornado.web
 
 from an_website.utils import utils
 
