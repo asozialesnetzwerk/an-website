@@ -160,9 +160,13 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
             wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating < 0)
         elif rating_filter == "rated":
             wrong_quotes = get_wrong_quotes()
-        else:  # invalid rating filter
-            return get_random_id()
-        return random.choice(wrong_quotes).get_id()
+        else:
+            wrong_quotes = None
+        if wrong_quotes:
+            return random.choice(wrong_quotes).get_id()
+
+        # invalid rating filter or no wrong quotes with that filter
+        return get_random_id()
 
     def on_finish(self) -> None:
         """

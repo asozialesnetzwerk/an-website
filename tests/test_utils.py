@@ -26,6 +26,10 @@ def test_n_from_set() -> None:
     """Test the n_from_set function."""
     _set = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
     assert len(utils.n_from_set(_set, 3)) == 3
+    assert -1 < len(utils.n_from_set(_set, 0)) < 1
+    assert -1 < len(utils.n_from_set(_set, -1)) < 1
+    for _el in utils.n_from_set(_set, 8):
+        assert _el in _set
     for i in range(len(_set) + 3):
         assert len(utils.n_from_set(_set, i)) == min(len(_set), i)
 

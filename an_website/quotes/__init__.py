@@ -56,6 +56,10 @@ class QuotesObjBase:
         """Get the id of the object as a string."""
         return str(self.id)
 
+    async def fetch_new_data(self) -> QuotesObjBase:
+        """Fetch new data from the API."""
+        raise NotImplementedError
+
     def __str__(self) -> str:
         """Return a basic string with the id."""
         return f"QuotesObj({self.id})"
@@ -75,6 +79,10 @@ class Author(QuotesObjBase):
             # name changed -> info should change too
             self.info = None
             self.name = name
+
+    async def fetch_new_data(self) -> Author:
+        """Fetch new data from the API."""
+        return parse_author(await make_api_request(f"authors/{self.id}"))
 
     def to_json(self) -> dict[str, Any]:
         """Get the author as JSON."""
@@ -113,6 +121,10 @@ class Quote(QuotesObjBase):
             return
         self.author = get_author_updated_with(author_id, author_name)
 
+    async def fetch_new_data(self) -> Quote:
+        """Fetch new data from the API."""
+        return parse_quote(await make_api_request(f"quotes/{self.id}"))
+
     def to_json(self) -> dict[str, Any]:
         """Get the quote as JSON."""
         return {
@@ -150,6 +162,12 @@ class WrongQuote(QuotesObjBase):
         Format: quote_id-author_id
         """
         return f"{self.quote.id}-{self.author.id}"
+
+    async def fetch_new_data(self) -> WrongQuote:
+        """Fetch new data from the API."""
+        return parse_wrong_quote(
+            await make_api_request(f"wrongquotes/{self.id}")
+        )
 
     def to_json(self) -> dict[str, Any]:
         """Get the wrong quote as JSON."""
@@ -194,6 +212,32 @@ def get_wrong_quotes(
     if sort:
         wqs_list.sort(key=lambda _wq: _wq.rating, reverse=True)
     return tuple(wqs_list)
+
+
+def get_quotes(
+    filter_fun: None | Callable[[Quote], bool] = None,
+    shuffle: bool = False,
+) -> list[Quote]:
+    """Get cached quotes."""
+    quotes: list[Quote] = list(QUOTES_CACHE.values())
+    if filter_fun is not None:
+        quotes = [_q for _q in quotes if filter_fun(_q)]
+    if shuffle:
+        random.shuffle(quotes)
+    return quotes
+
+
+def get_authors(
+    filter_fun: None | Callable[[Author], bool] = None,
+    shuffle: bool = False,
+) -> list[Author]:
+    """Get cached authors."""
+    authors: list[Author] = list(AUTHORS_CACHE.values())
+    if filter_fun is not None:
+        authors = [_a for _a in authors if filter_fun(_a)]
+    if shuffle:
+        random.shuffle(authors)
+    return list(authors)
 
 
 HTTP_CLIENT = AsyncHTTPClient()
@@ -247,7 +291,7 @@ def get_author_updated_with(author_id: int, author_name: str) -> Author:
 
 
 def parse_author(json_data: dict[str, Any]) -> Author:
-    """Parse a author from JSON data."""
+    """Parse an author from JSON data."""
     return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
 

@@ -23,7 +23,7 @@ from typing import Any
 
 from tornado.web import HTTPError
 
-from ..quotes import get_wrong_quotes
+from ..quotes import get_authors, get_quotes, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -185,7 +185,10 @@ class Backdoor(APIRequestHandler):
             "__builtins__": __builtins__,
             "__name__": "this",
             "app": self.application,
+            "settings": self.settings,
             "get_wrong_quotes": get_wrong_quotes,
+            "get_authors": get_authors,
+            "get_quotes": get_quotes,
         }
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
