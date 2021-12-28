@@ -108,7 +108,7 @@ def test_name_to_id() -> None:
     assert utils.name_to_id("     test-test-42069") == "test-test-42069"
     assert utils.name_to_id("     test_TEST_42069") == "test-test-42069"
     assert utils.name_to_id("     test test 42069") == "test-test-42069"
-    assert utils.name_to_id("test_test_TEST_42069") == "test-test-test-42069"
+    assert utils.name_to_id("test__  __TEST_42069") == "test-test-42069"
     assert utils.name_to_id("test test test 42069") == "test-test-test-42069"
     assert utils.name_to_id("TEST test_test_42069") == "test-test-test-42069"
     assert utils.name_to_id("ẞ Ä Ö Ü-ẞÄÖÜ        ") == "ss-ae-oe-ue-ssaeoeue"
