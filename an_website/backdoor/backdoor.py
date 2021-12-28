@@ -18,9 +18,7 @@ import ast
 import io
 import pickle
 import pydoc
-import sys
 import traceback
-from types import TracebackType
 from typing import Any
 
 from tornado.web import HTTPError
@@ -66,9 +64,7 @@ class Backdoor(APIRequestHandler):
         """Handle the POST request to the backdoor API."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         try:
-            exc_info: None | tuple[
-                type[BaseException], BaseException, TracebackType
-            ] | tuple[None, None, None] = None
+            exception: None | BaseException = None
             result: Any = None
             source, output = self.request.body, io.StringIO()
             try:
@@ -91,8 +87,8 @@ class Backdoor(APIRequestHandler):
                     0x5F3759DF,
                     _feature_version=10,
                 )
-            except SyntaxError:
-                exc_info = sys.exc_info()
+            except SyntaxError as exc:
+                exception = exc
             else:
                 session_id: None | str = self.request.headers.get(
                     "X-Backdoor-Session"
@@ -123,18 +119,20 @@ class Backdoor(APIRequestHandler):
                         and int(bin(code.co_flags)[-8])
                         else _result
                     )
-                except Exception:  # pylint: disable=broad-except
-                    exc_info = sys.exc_info()
+                except Exception as exc:  # pylint: disable=broad-except
+                    exception = exc  # pylint: disable=redefined-variable-type
                 else:
                     if result is session["help"]:
                         result = help
                     elif result is session["print"]:
                         result = print
             result_tuple: tuple[None | str, Any] = (
-                str().join(traceback.format_exception(*exc_info)).strip()
-                if exc_info
+                str()
+                .join(traceback.format_exception(exception))  # type: ignore
+                .strip()
+                if exception
                 else None,
-                exc_info[:2] if exc_info else result,
+                exception or result,
             )
             try:
                 result_tuple = (
@@ -171,7 +169,7 @@ class Backdoor(APIRequestHandler):
         await self.finish(
             pickle.dumps(
                 {
-                    "success": not exc_info,
+                    "success": not exception,
                     "result": result_tuple,
                     "output": output.getvalue() if not output.closed else None,
                 },
