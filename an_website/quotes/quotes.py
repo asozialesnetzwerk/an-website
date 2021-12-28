@@ -226,28 +226,24 @@ class QuoteById(QuoteBaseHandler):
 
         await self.update_saved_votes(quote_id, author_id, vote)
 
-        contributed_by = self.get_argument("user-name", default=str())
-        if contributed_by is not None:
+        contributed_by = self.get_argument("user-name", default=None)
+        if contributed_by:
             contributed_by = contributed_by.strip()
-        if contributed_by is None or len(contributed_by) < 2:
+        if not contributed_by or len(contributed_by) < 2:
             contributed_by = f"an-website_{self.get_hashed_remote_ip()}"
         # do the voting:
         if vote > old_vote:
             wrong_quote = await create_wq_and_vote(
                 1, quote_id, author_id, contributed_by
             )
-            if vote - old_vote == 2:  # TODO: add better fix
-                wrong_quote = await create_wq_and_vote(
-                    1, quote_id, author_id, contributed_by, True
-                )
+            if vote - old_vote == 2:
+                wrong_quote = await wrong_quote.vote(1, fast=True)
         elif vote < old_vote:
             wrong_quote = await create_wq_and_vote(
                 -1, quote_id, author_id, contributed_by
             )
-            if vote - old_vote == -2:  # TODO: add better fix
-                wrong_quote = await create_wq_and_vote(
-                    -1, quote_id, author_id, contributed_by, True
-                )
+            if vote - old_vote == -2:
+                wrong_quote = await wrong_quote.vote(-1, fast=True)
         else:
             raise HTTPError(500)
         await self.render_wrong_quote(wrong_quote, vote)
@@ -304,7 +300,7 @@ class QuoteById(QuoteBaseHandler):
     async def update_saved_votes(
         self, quote_id: int, author_id: int, vote: int
     ) -> None:
-        """Save the new vote in the cookies."""
+        """Save the new vote in Redis."""
         result = None
         if self.redis:
             result = await self.redis.setex(

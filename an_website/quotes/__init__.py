@@ -166,7 +166,39 @@ class WrongQuote(QuotesObjBase):
     async def fetch_new_data(self) -> WrongQuote:
         """Fetch new data from the API."""
         return parse_wrong_quote(
-            await make_api_request(f"wrongquotes/{self.id}")
+            (
+                await make_api_request(
+                    "wrongquotes",
+                    f"quote={self.quote.id}"
+                    f"&author={self.author.id}"
+                    f"&simulate=true",
+                )
+            )[0]
+            if self.id == -1
+            else await make_api_request(f"wrongquotes/{self.id}")
+        )
+
+    async def vote(
+        self, vote: Literal[-1, 1], fast: bool = False
+    ) -> WrongQuote:
+        """Vote for the wrong quote."""
+        if self.id == -1:
+            raise ValueError("Can't vote for a not existing quote.")
+        if fast:  # simulate the vote and do the actual voting later
+            self.rating += vote
+            asyncio.get_running_loop().call_soon_threadsafe(
+                self.vote,
+                vote,
+                False,
+            )
+            return self
+        # do the voting
+        return parse_wrong_quote(
+            await make_api_request(
+                f"wrongquotes/{self.id}",
+                method="POST",
+                body=f"vote={vote}",
+            )
         )
 
     def to_json(self) -> dict[str, Any]:
@@ -338,7 +370,7 @@ def parse_wrong_quote(json_data: dict[str, Any]) -> WrongQuote:
     """Parse a quote."""
     id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
     rating = json_data["rating"]
-    wrong_quote_id = int(json_data.get("id", -1))
+    wrong_quote_id = int(json_data.get("id") or -1)
     wrong_quote = WRONG_QUOTES_CACHE.setdefault(
         id_tuple,
         WrongQuote(
@@ -348,7 +380,9 @@ def parse_wrong_quote(json_data: dict[str, Any]) -> WrongQuote:
             rating=rating,
         ),
     )
+    # make sure the wrong quote is the correct one
     assert (wrong_quote.quote.id, wrong_quote.author.id) == id_tuple
+    # update the data of the wrong quote
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
     if wrong_quote.id != wrong_quote_id:
@@ -495,16 +529,14 @@ async def get_wrong_quote(
     quote_id: int, author_id: int, use_cache: bool = True
 ) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
-    wrong_quote_id = (quote_id, author_id)
-    wrong_quote = WRONG_QUOTES_CACHE.get(wrong_quote_id, None)
-    if use_cache and wrong_quote is not None:
-        return wrong_quote
+    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
 
-    if not use_cache and wrong_quote is not None and wrong_quote.id != -1:
-        # use the id of the wrong quote to get the data more efficient
-        return parse_wrong_quote(
-            await make_api_request(f"wrongquotes/{wrong_quote.id}")
-        )
+    if wrong_quote:
+        if use_cache:
+            return wrong_quote
+        # do not use cache, so update the wrong quote data
+        return await wrong_quote.fetch_new_data()
+    # wrong quote not in cache
     if use_cache and quote_id in QUOTES_CACHE and author_id in AUTHORS_CACHE:
         # we don't need to request anything, as the wrong_quote probably has
         # no ratings just use the cached quote and author
@@ -514,19 +546,15 @@ async def get_wrong_quote(
             AUTHORS_CACHE[author_id],
             0,
         )
+    # request the wrong quote from the API
     result = await make_api_request(
         "wrongquotes",
         f"quote={quote_id}&author={author_id}&simulate=true",
     )
-    if len(result) > 0:
+    if result:
         return parse_wrong_quote(result[0])
 
-    return WrongQuote(
-        -1,
-        await get_quote_by_id(quote_id),
-        await get_author_by_id(author_id),
-        rating=0,
-    )
+    raise HTTPError(404, reason="Falsches Zitat nicht gefunden.")
 
 
 async def get_rating_by_id(quote_id: int, author_id: int) -> int:
@@ -552,28 +580,6 @@ def get_random_id() -> tuple[int, int]:
     )
 
 
-async def vote_wrong_quote(
-    vote: Literal[-1, 1], wrong_quote: WrongQuote
-) -> WrongQuote:
-    """Vote for the wrong_quote with the given id."""
-    return parse_wrong_quote(
-        await make_api_request(
-            f"wrongquotes/{wrong_quote.id}",
-            method="POST",
-            body=f"vote={vote}",
-        )
-    )
-
-
-def vote_wrong_quote_fast(
-    vote: Literal[-1, 1], wrong_quote: WrongQuote
-) -> WrongQuote:
-    """Vote for the wrong_quote with the given id."""
-    wrong_quote.rating += vote
-    asyncio.create_task(vote_wrong_quote(vote, wrong_quote))
-    return wrong_quote
-
-
 async def create_wq_and_vote(
     vote: Literal[-1, 1],
     quote_id: int,
@@ -587,10 +593,8 @@ async def create_wq_and_vote(
     If the wrong_quote doesn't exist yet, create it.
     """
     wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
-    if wrong_quote is not None and wrong_quote.id != -1:
-        if fast:
-            return vote_wrong_quote_fast(vote, wrong_quote)
-        return await vote_wrong_quote(vote, wrong_quote)
+    if wrong_quote and wrong_quote.id != -1:
+        return await wrong_quote.vote(vote, fast)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote
     wrong_quote = parse_wrong_quote(
         await make_api_request(
@@ -600,7 +604,7 @@ async def create_wq_and_vote(
             f"contributed_by={contributed_by}",
         )
     )
-    return vote_wrong_quote_fast(vote, wrong_quote)
+    return await wrong_quote.vote(vote, fast=True)
 
 
 class QuoteReadyCheckRequestHandler(BaseRequestHandler):

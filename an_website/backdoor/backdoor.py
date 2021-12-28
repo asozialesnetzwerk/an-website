@@ -18,12 +18,14 @@ import ast
 import io
 import pickle
 import pydoc
+import sys
 import traceback
+from types import TracebackType
 from typing import Any
 
 from tornado.web import HTTPError
 
-from ..quotes import get_authors, get_quotes, get_wrong_quotes
+from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -62,9 +64,13 @@ class Backdoor(APIRequestHandler):
         self, mode: str
     ) -> None:
         """Handle the POST request to the backdoor API."""
+        self.set_header("Content-Type", "application/vnd.python.pickle")
         try:
-            output = io.StringIO()
-            source = self.request.body
+            exc_info: None | tuple[
+                type[BaseException], BaseException, TracebackType
+            ] | tuple[None, None, None] = None
+            result: Any = None
+            source, output = self.request.body, io.StringIO()
             try:
                 parsed = compile(
                     source,
@@ -85,8 +91,8 @@ class Backdoor(APIRequestHandler):
                     0x5F3759DF,
                     _feature_version=10,
                 )
-            except SyntaxError as exc:
-                response: dict[str, Any] = {"success": False, "result": exc}
+            except SyntaxError:
+                exc_info = sys.exc_info()
             else:
                 session_id: None | str = self.request.headers.get(
                     "X-Backdoor-Session"
@@ -109,45 +115,37 @@ class Backdoor(APIRequestHandler):
                     session["help"], pydoc.Helper
                 ):
                     session["help"] = pydoc.Helper(io.StringIO(), output)
-
                 try:
-                    response = {
-                        "success": True,
-                        "result": eval(  # pylint: disable=eval-used
-                            code, session
-                        ),
-                    }
-                    if code.co_flags.bit_length() >= 8 and int(
-                        bin(code.co_flags)[-8]
-                    ):
-                        response["result"] = await response["result"]
-                except Exception as exc:  # pylint: disable=broad-except
-                    response = {"success": False, "result": exc}
+                    _result = eval(code, session)  # pylint: disable=eval-used
+                    result = (
+                        await _result
+                        if code.co_flags.bit_length() >= 8
+                        and int(bin(code.co_flags)[-8])
+                        else _result
+                    )
+                except Exception:  # pylint: disable=broad-except
+                    exc_info = sys.exc_info()
                 else:
-                    if response["result"] is session["help"]:
-                        response["result"] = help
-                    if response["result"] is session["print"]:
-                        response["result"] = print
-            response["result"] = (
-                None
-                if response["success"]
-                else str()
-                .join(traceback.format_exception(response["result"]))
-                .strip(),
-                response["result"]
-                if response["success"]
-                else response["result"][:2],
+                    if result is session["help"]:
+                        result = help
+                    elif result is session["print"]:
+                        result = print
+            result_tuple: tuple[None | str, Any] = (
+                str().join(traceback.format_exception(*exc_info)).strip()
+                if exc_info
+                else None,
+                exc_info[:2] if exc_info else result,
             )
             try:
-                response["result"] = (
-                    response["result"][0] or repr(response["result"][1]),
+                result_tuple = (
+                    result_tuple[0] or repr(result_tuple[1]),
                     pickle.dumps(
-                        response["result"][1], max(pickle.DEFAULT_PROTOCOL, 5)
+                        result_tuple[1], max(pickle.DEFAULT_PROTOCOL, 5)
                     ),
                 )
             except (pickle.PicklingError, TypeError, RecursionError):
-                response["result"] = (
-                    response["result"][0] or repr(response["result"][1]),
+                result_tuple = (
+                    result_tuple[0] or repr(result_tuple[1]),
                     None,
                 )
             # except Exception as exc:
@@ -155,9 +153,6 @@ class Backdoor(APIRequestHandler):
             #         response["result"][0] or repr(response["result"][1]),
             #         str().join(traceback.format_exception(exc)).strip(),
             #     )
-            response["output"] = (
-                output.getvalue() if not output.closed else None
-            )
         except SystemExit as exc:
             if not isinstance(exc.code, int):
                 exc.code = repr(exc.code)  # type: ignore
@@ -169,14 +164,19 @@ class Backdoor(APIRequestHandler):
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
             exc.args = tuple(new_args)
-            self.set_header("Content-Type", "application/vnd.python.pickle")
             await self.finish(
                 pickle.dumps(exc, max(pickle.DEFAULT_PROTOCOL, 5))
             )
             return
-        self.set_header("Content-Type", "application/vnd.python.pickle")
         await self.finish(
-            pickle.dumps(response, max(pickle.DEFAULT_PROTOCOL, 5))
+            pickle.dumps(
+                {
+                    "success": not exc_info,
+                    "result": result_tuple,
+                    "output": output.getvalue() if not output.closed else None,
+                },
+                max(pickle.DEFAULT_PROTOCOL, 5),
+            )
         )
 
     def get_default_session(self) -> dict[str, Any]:
@@ -186,7 +186,8 @@ class Backdoor(APIRequestHandler):
             "__name__": "this",
             "app": self.application,
             "settings": self.settings,
-            "get_wrong_quotes": get_wrong_quotes,
+            "get_wq": get_wrong_quote,
+            "get_wqs": get_wrong_quotes,
             "get_authors": get_authors,
             "get_quotes": get_quotes,
         }

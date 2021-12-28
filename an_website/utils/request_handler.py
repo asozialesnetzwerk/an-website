@@ -18,6 +18,7 @@ This should only contain request handlers and the get_module_info function.
 """
 from __future__ import annotations
 
+import logging
 import random
 import re
 import sys
@@ -50,6 +51,8 @@ from an_website.utils.utils import (
     name_to_id,
     str_to_bool,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -162,6 +165,13 @@ class BaseRequestHandler(RequestHandler):
                 self, f"RATELIMIT_{self.request.method}_BUCKET", str()
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
+            if not (bucket and limit):
+                logger.warning(
+                    "No ratelimit for %s with %s request",
+                    self.request.path,
+                    self.request.method,
+                )
+                return False
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
             max_burst = limit - 1
             count_per_period = getattr(
@@ -173,8 +183,6 @@ class BaseRequestHandler(RequestHandler):
                 self, f"RATELIMIT_{self.request.method}_PERIOD", 1
             )
             tokens = 1
-            if not (bucket and limit):
-                return False
         # self.redis could be None
         # but it's better to complain loudly than to fail silently
         result = await self.redis.execute_command(  # type: ignore
