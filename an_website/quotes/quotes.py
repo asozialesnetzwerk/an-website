@@ -268,8 +268,7 @@ class QuoteById(QuoteBaseHandler):
     def get_show_rating(self) -> bool:
         """Return whether the user wants to see the rating."""
         return str_to_bool(
-            self.get_query_argument("show-rating", default=None),
-            default=False
+            self.get_query_argument("show-rating", default=None), default=False
         )
 
     async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
