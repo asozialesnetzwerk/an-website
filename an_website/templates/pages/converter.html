@@ -7,7 +7,7 @@
 <form action="{{url}}" method="get" id="form">
     <label class="form-element">
         Euro:
-        <input pattern="^\d*([.,]\d*)?$"
+        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                type="text"
                id="euro"
                name="euro"
@@ -16,7 +16,7 @@
 
     <label class="form-element">
         D-Mark:
-        <input pattern="^\d*([.,]\d*)?$"
+        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                type="text"
                id="mark"
                name="mark"
@@ -25,7 +25,7 @@
 
     <label class="form-element">
         Ostmark:
-        <input pattern="^\d*([.,]\d*)?$"
+        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                type="text"
                id="ost"
                name="ost"
@@ -34,7 +34,7 @@
 
     <label class="form-element">
         Ostmark auf dem Schwarzmarkt:
-        <input pattern="^\d*([.,]\d*)?$"
+        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                type="text"
                id="schwarz"
                name="schwarz"
@@ -54,6 +54,7 @@
 </div>
 
 {% include "../util/replace_url_with.html" %}
+<style>.invalid {color: var(--contrast-2)}</style>
 {% end %}
 
 {% block head %}

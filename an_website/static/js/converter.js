@@ -9,24 +9,57 @@ const fields = [
     document.getElementById("schwarz")
 ];
 const factors = [
-    1, //Euro
-    2, //Deutsche Mark
-    4, //Ostmark
-    20 //Ostmark auf dem Schwarzmarkt
+    1n, //Euro
+    2n, //Deutsche Mark
+    4n, //Ostmark
+    20n //Ostmark auf dem Schwarzmarkt
 ];
 
-const regex = /^([1-9]\d*|0)([.,]\d{2})?$/;
-
-const numberFormat = new Intl.NumberFormat(
-    'de-DE',
-    { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false}
-)
+const numberRegex = /^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;
 
 function getDisplayValue(wert) {
     if (typeof wert === "string") {
-        wert = parseFloat(wert.replace(".", ","));
+        wert = strToBigInt(wert);
     }
-    return numberFormat.format(wert).replace(",00", "");
+    if (typeof wert !== "bigint") {
+        alert(`Ungültiger Wert ${wert} mit type ${typeof wert}`);
+    }
+    let str = wert.toString();
+    if (str.length === 1) {
+        if (str === "0") {
+            return "0";
+        }
+        str = "0" + str;
+    }
+    if (str.length === 2) {
+        if (str === "00") {
+            return "0";
+        }
+        return "0," + str
+    } else if (str.endsWith("00")) {
+        return str.slice(0, str.length - 2);
+    } else {
+        return str.slice(0, str.length - 2) + "," + str.slice(str.length - 2);
+    }
+}
+
+function strToBigInt(str) {
+    if (!str.length) {
+        return 0n;
+    }
+    let preComma, postComma;
+    if (str.includes(",")) {
+        [preComma, postComma] = str.split(",");
+    } else if (str.includes(".")) {
+        [preComma, postComma] = str.split(".");
+    } else {
+        preComma = str;
+        postComma = "00";
+    }
+    if (postComma.length !== 2) {
+        postComma = (postComma + "00").substr(0, 2);
+    }
+    return BigInt(preComma + postComma);
 }
 
 function setEuroParam(euroVal) {
@@ -55,7 +88,7 @@ function updateOutput() {
 }
 
 function setAllFields(euroValue, ignored) {
-    setEuroParam(euroValue.toString().replace(".", ","));
+    setEuroParam(getDisplayValue(euroValue));
     for (let i = 0; i < 4; i++) {
         const value = getDisplayValue(euroValue * factors[i]);
         fields[i].placeholder = value;
@@ -68,11 +101,7 @@ function setAllFields(euroValue, ignored) {
 
 function onSubmit() {
     for (const feld of fields) {
-        feld.value = getDisplayValue(
-            Number.parseFloat(
-                feld.value.replace(",", ".")
-            )
-        );
+        feld.value = getDisplayValue(feld.value);
     }
     setEuroParam(fields[0].value);
     updateOutput();
@@ -80,8 +109,19 @@ function onSubmit() {
 
 for (let i = 0; i < 4; i++) {
     fields[i].oninput = function () {
-        let val = fields[i].value.replace(",", ".");
-        if (!isNaN(val)) { //if it is not Not a Number
+        for (let j = 0; j < 4; j++) {
+            if (j !== i) {
+                fields[j].className = "";
+            }
+        }
+        if (numberRegex.test(fields[i].value)) {
+            fields[i].className = "";
+        } else {
+            fields[i].className = "invalid";
+            return;
+        }
+        let val = strToBigInt(fields[i].value)
+        if (val) { //if it is not Not a Number
             setAllFields(val / factors[i], i);
         }
     }
