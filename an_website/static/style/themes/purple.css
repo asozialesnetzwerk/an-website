@@ -1,7 +1,7 @@
 :root {
     /* colors: */
-    --main: hsl(279, 100%, 45%);
-    --main-2: hsl(279, 100%, 32%);
+    --main: hsl(279, 100%, 56%);
+    --main-2: hsl(279, 100%, 42%);
 
     --text-color: hsl(0, 0%, 90%);
     --secondary-text-color: hsl(0, 0%, 60%);
@@ -10,6 +10,6 @@
     --secondary-bg: hsl(0, 0%, 10%);
     --tooltip-bg: hsl(0, 0%, 20%);
 
-    --contrast: hsl(0, 100%, 30%);
-    --contrast-2: hsl(0, 100%, 50%);
+    --contrast: hsl(0, 100%, 40%);
+    --contrast-2: hsl(0, 100%, 60%);
 }
