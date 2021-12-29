@@ -1,15 +1,15 @@
 :root {
     /* colors: */
-    --main: hsl(240, 100%, 60%);
+    --main: hsl(230, 100%, 64%);
     --main-2: hsl(195, 100%, 60%);
 
     --text-color: hsl(0, 0%, 90%);
-    --secondary-text-color: hsl(0, 0%, 60%);
+    --secondary-text-color: hsl(0, 0%, 70%);
 
     --bg: hsl(0, 0%, 0%);
-    --secondary-bg: hsl(0, 0%, 10%);
-    --tooltip-bg: hsl(0, 0%, 20%);
+    --secondary-bg: hsl(0, 0%, 9%);
+    --tooltip-bg: hsl(0, 0%, 18%);
 
-    --contrast: hsl(0, 100%, 40%);
-    --contrast-2: hsl(0, 100%, 60%);
+    --contrast: hsl(0, 90%, 48%);
+    --contrast-2: hsl(0, 90%, 62%);
 }
