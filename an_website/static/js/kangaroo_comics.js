@@ -168,8 +168,6 @@ const linkFormat = "https://img.zeit.de/administratives/kaenguru-comics/%y-%m/%d
 function generateComicLink(date) {
     for (const arr of wrongLinks) {
         if (datesEqual(date, arr[0])) {
-            console.log(date, arr)
-
             return  arr[1];
         }
     }

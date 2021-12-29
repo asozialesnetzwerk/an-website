@@ -59,7 +59,6 @@ function updateRating(rating) {
     ratingText.innerText = rating;
     if (rating in ["---", "???", 0, "0"]) {
         ratingImageContainer.innerHTML = "";
-        console.log("rating:", rating);
     } else {
         const ratingImg = document.createElement("div")
         const ratingNum = Number.parseInt(rating);

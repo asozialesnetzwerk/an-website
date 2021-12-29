@@ -91,20 +91,31 @@
         </a>
     {% end %}
 
-    <form method="get" class="tooltip">
+    <form method="get">
         {% raw form_appendix %}
-        <select name="r" class="rating-form-el" onchange="this.form.submit()">
-            <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
-            <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
-            <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
-            <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
-            <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
-            <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
-        </select>
+        <div class="tooltip rating-form-el">
+            <select name="r" id="rating-filter-select" class="rating-form-el" onchange="this.form.submit()">
+                <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
+                <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
+                <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
+                <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
+                <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
+                <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
+            </select>
+            <label for="rating-filter-select" class="tooltip-text">Filtere nächste Zitate</label>
+        </div>
+        <label for="show-rating" class="rating-form-el">Zeige Bewertung</label>
+        <input {% if show_rating %}checked{% end %}
+               type="checkbox"
+               id="show-rating"
+               name="show-rating"
+               class="rating-form-el"
+               onchange="this.form.submit()"
+               value="sure">
+
         <noscript>
             <button type="submit" class="rating-form-el">Submit</button>
         </noscript>
-        <div class="tooltip-text">Filtere nächste Zitate</div>
     </form>
 </div>
 

@@ -92,6 +92,7 @@
 }
 
 .rating-form-el {
+    display: inline-block;
     width: auto !important;
 }
 

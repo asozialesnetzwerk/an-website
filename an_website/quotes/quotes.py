@@ -261,7 +261,15 @@ class QuoteById(QuoteBaseHandler):
             description=str(wrong_quote),
             rating_filter=self.rating_filter(),
             rating=await self.get_rating_str(wrong_quote),
+            show_rating=self.get_show_rating(),
             vote=vote,
+        )
+
+    def get_show_rating(self) -> bool:
+        """Return whether the user wants to see the rating."""
+        return str_to_bool(
+            self.get_query_argument("show-rating", default=None),
+            default=False
         )
 
     async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
@@ -269,10 +277,7 @@ class QuoteById(QuoteBaseHandler):
         if wrong_quote.id in (None, -1):
             return "---"
         if (
-            not str_to_bool(  # always show the rating if the user wants it
-                self.get_query_argument("show-rating", default=None),
-                default=False,
-            )
+            not self.get_show_rating()  # don't hide the rating on wish of user
             and self.rating_filter() == "smart"
             and await self.get_saved_vote(
                 wrong_quote.quote.id, wrong_quote.author.id
