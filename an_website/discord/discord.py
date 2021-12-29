@@ -23,7 +23,7 @@ from tornado.web import HTTPError
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
-GUILD_ID: str = "367648314184826880"
+GUILD_ID: int = 367648314184826880
 
 
 def get_module_info() -> ModuleInfo:
@@ -31,8 +31,6 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/discord/", ANDiscord),
-            (f"/discord/({GUILD_ID})/", ANDiscord),
-            (r"/discord/(\d+)/", Discord),
             (r"/api/discord/", ANDiscordAPI),
             (f"/api/discord/({GUILD_ID})/", ANDiscordAPI),
             (r"/api/discord/(\d+)/", DiscordAPI),
@@ -59,7 +57,7 @@ async def url_returns_200(url: str) -> bool:
     return response.code == 200
 
 
-async def get_invite(guild_id: int = int(GUILD_ID)) -> tuple[str, str]:
+async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     """
     Get the invite to a Discord guild and return it with the source.
 
@@ -136,27 +134,20 @@ async def get_invite_with_cache(
     return invite, source
 
 
-class Discord(BaseRequestHandler):
+class ANDiscord(BaseRequestHandler):
     """The request handler that gets the Discord invite and redirects to it."""
-
-    RATELIMIT_NAME = "discord"
-    RATELIMIT_TOKENS = 10
-
-    async def get(self, guild_id: str = GUILD_ID) -> None:
-        """Get the Discord invite."""
-        return await self.render(
-            "pages/ask_for_redirect.html",
-            redirect_url=(await get_invite_with_cache(int(guild_id)))[0],
-            from_url=None,
-            discord=True,
-        )
-
-
-class ANDiscord(Discord):
-    """The request handler only for the AN Discord guild."""
 
     RATELIMIT_NAME = "discord-an"
     RATELIMIT_TOKENS = 4
+
+    async def get(self) -> None:
+        """Get the Discord invite."""
+        return await self.render(
+            "pages/ask_for_redirect.html",
+            redirect_url=(await get_invite_with_cache(GUILD_ID))[0],
+            from_url=None,
+            discord=True,
+        )
 
 
 class DiscordAPI(APIRequestHandler):
@@ -165,7 +156,7 @@ class DiscordAPI(APIRequestHandler):
     RATELIMIT_NAME = "discord"
     RATELIMIT_TOKENS = 9
 
-    async def get(self, guild_id: str = GUILD_ID) -> None:
+    async def get(self, guild_id: str = str(GUILD_ID)) -> None:
         """Get the Discord invite and render it as JSON."""
         invite, source_url = await get_invite_with_cache(int(guild_id))
         await self.finish({"invite": invite, "source": source_url})
