@@ -1,7 +1,7 @@
 :root {
     /* colors: */
-    --main: hsl(0, 100%, 40%);
-    --main-2: hsl(0, 100%, 60%);
+    --main: hsl(0, 80%, 48%);
+    --main-2: hsl(0, 80%, 62%);
 
     --text-color: hsl(0, 0%, 90%);
     --secondary-text-color: hsl(0, 0%, 60%);

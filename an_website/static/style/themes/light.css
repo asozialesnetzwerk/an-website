@@ -1,12 +1,12 @@
 :root {
     /* colors: */
-    --main: hsl(0, 100%, 40%);
-    --main-2: hsl(5, 100%, 30%);
+    --main: hsl(0, 100%, 33%);
+    --main-2: hsl(5, 100%, 20%);
 
     --text-color: hsl(0, 0%, 0%);
     --secondary-text-color: hsl(0, 0%, 15%);
 
-    --bg: hsl(180, 40%, 90%);
+    --bg: hsl(180, 30%, 90%);
     --secondary-bg: hsl(180, 10%, 75%);
     --tooltip-bg: hsl(180, 10%, 60%);
 
