@@ -14,51 +14,193 @@
 """A subtle clone of the card game "Halt mal kurz!"."""
 from __future__ import annotations
 
-from typing import Awaitable, Optional
+import os
+import uuid
+from typing import Any
+
+from argon2 import PasswordHasher
 
 import orjson as json
-import tornado.websocket
+import tornado.websocket as websocket
+from aioredis import Redis
+from elasticsearch import AsyncElasticsearch
+from tornado.web import HTTPError
 
-from .utils import NimmMalKurzUtils
+from names_generator import generate_name
 
 
-class GameWebsocket(tornado.websocket.WebSocketHandler, NimmMalKurzUtils):
+PH = PasswordHasher()  # nicht die Webseite
+
+
+class GameWebsocket(websocket.WebSocketHandler):
     """The Websocket handler."""
 
     user_id: None | str = None
     room_id: None | str = None
-    auth_key: None | str = None
 
-    async def open(self, *args):
+    async def open(self, *args) -> None:
         print("WebSocket opened")
 
-    async def on_message(self, message):
+    async def on_message(self, message) -> None:
         print("WebSocket message:", message)
         json_message = json.loads(message)
-        if not (self.user_id and self.room_id and self.auth_key):
-            self.user_id = json_message.get("user_id")
-            self.room_id = json_message.get("room_id")
-            self.auth_key = json_message.get("auth_key")
-            user_id, room_id = await self.is_in_room()
-            if user_id and room_id:
-                return self.write_message(json.dumps({"success": True}))
-            return self.write_message(json.dumps({"success": False}))
-        # TODO: Handle more commands
+
+        command = json_message.get("command")
+        if not command:
+            await self.write_message(
+                {"type": "error", "message": "No command"}
+            )
+            return
+        if command == "init":
+            self.user_id = await self.login_as_new_user(
+                json_message.get("nickname")
+            )
+        elif command == "login":
+            self.user_id = await self.login(json_message)
+        if not self.user_id:
+            self.close(reason="Please login with the first message.")
+            return
+
+        # TODO: Handle commands
 
     async def on_close(self):
         print("WebSocket closed")
 
-    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
+    async def data_received(self, chunk: bytes) -> None:
         pass
 
-    def get_room_id_specified_by_user(self) -> None | str:
-        """Get the room id specified by the user."""
-        return self.room_id
+    async def login(self, json_message: dict[str, Any]) -> None | str:
+        """Login the user."""
+        user_id = json_message.get("user_id")
+        auth_key = json_message.get("auth_key")
 
-    def get_user_id_specified_by_user(self) -> None | str:
-        """Get the user id specified by the user."""
-        return self.user_id
+        if not (user_id and auth_key):
+            await self.write_message(
+                {"type": "error", "message": "No user_id or auth_key"}
+            )
+            return None
 
-    def get_auth_key_specified_by_user(self) -> None | str:
-        """Get the auth key specified by the user."""
-        return self.auth_key
+        user = await self.elasticsearch.get(
+            index=self.elasticsearch_prefix + "-halt_mal_kurz-users",
+            id=user_id,
+        )
+
+        if not user or not (user.get("user_id") == user_id):
+            await self.write_message(
+                {"type": "error", "message": "User not found"}
+            )
+            return None
+
+        if user_id and PH.verify(user.get("auth_key_hash"), auth_key):
+            # auth key verified
+            if nickname := json_message.get("nickname"):
+                if len(nickname) > 69:  # nice
+                    nickname = nickname[:69]
+                await self.elasticsearch.update(
+                    index=self.elasticsearch_prefix + "-halt_mal_kurz-users",
+                    id=user_id,
+                    # TODO: read the fucking docs
+                    body={"doc": {"nickname": nickname}},
+                )
+            else:
+                nickname = user.get("nickname")
+
+            await self.write_message(
+                {
+                    "type": "login",
+                    "user_id": user_id,
+                    "auth_key": auth_key,
+                    "nickname": nickname,
+                }
+            )
+            return user_id
+        # login failed
+        await self.write_message(
+            {"type": "error", "message": "Wrong user_id or auth_key"}
+        )
+        return None
+
+    @property
+    def redis(self) -> Redis:
+        """Return the Redis instance."""
+        _r = self.settings.get("REDIS")
+        if not _r:
+            raise HTTPError(500)  # TODO: Better error handling
+        return _r  # type: ignore
+
+    @property
+    def elasticsearch(self) -> None | AsyncElasticsearch:
+        """Get the Elasticsearch client from the settings."""
+        return self.settings.get("ELASTICSEARCH")
+
+    @property
+    def elasticsearch_prefix(self) -> str:
+        """Get the Elasticsearch prefix from the settings."""
+        return self.settings.get("ELASTICSEARCH_PREFIX", str())
+
+    async def login_as_new_user(
+        self, nickname: None | str = None
+    ) -> str | None:
+        """Login as a new user."""
+        user_id = uuid.uuid4().hex
+        auth_key = os.urandom(32).hex()
+        nickname = nickname or generate_name(style='capital')
+        if len(nickname) > 69:  # nice
+            nickname = nickname[:69]
+        await self.elasticsearch.index(
+            index=self.elasticsearch_prefix + "-halt_mal_kurz-users",
+            id=user_id,
+            document={
+                "user_id": user_id,
+                "auth_key_hash": PH.hash(auth_key),
+                "nickname": nickname,
+            },
+        )
+        await self.write_message(
+            {
+                "type": "login",
+                "user_id": user_id,
+                "auth_key": auth_key,
+                "nickname": nickname,
+            }
+        )
+        return user_id
+
+    async def player_is_owner_of_room(
+        self, user_id: str, room_id: str
+    ) -> bool:
+        """Check if the user is the owner of the room."""
+        return user_id == await self.redis.hget(
+            self.get_redis_key("room", room_id, "settings"), "owner"
+        )
+
+    async def get_room_settings(self, room_id: str) -> dict[str, Any]:
+        """Get the settings for a room."""
+        return await self.redis.hgetall(  # type: ignore
+            self.get_redis_key("room", room_id, "settings")
+        )
+
+    def get_redis_key(self, *args: str) -> str:
+        """Get the redis key for "Nimm mal kurz!"."""
+        prefix = self.settings.get("REDIS_PREFIX")
+        if not args:
+            return f"{prefix}:nimm-mal-kurz"
+        return f"{prefix}:nimm-mal-kurz:{':'.join(args)}"
+
+    async def is_in_room(self) -> None | str:
+        """Check if the user is in a room the room ID."""
+        user_id = self.user_id
+        if not user_id:
+            return None
+        # get the room if from the user id with redis
+        room_id = await self.redis.get(
+            self.get_redis_key("user", user_id, "room")
+        )
+        if not room_id:
+            return None
+        if await self.redis.sismember(
+            self.get_redis_key("room", room_id, "users"),
+            user_id,
+        ):
+            return room_id
+        return None

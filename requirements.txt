@@ -1,6 +1,7 @@
 aiohttp[speedups]~=3.8
 aioredis[hiredis]~=2.0
 ansi2html~=1.6
+argon2-cffi~=21.3.0
 blake3>=0.2.1,<2
 certifi
 defusedxml>=0.7.1,<2
@@ -13,6 +14,7 @@ hy~=1.0a3
 jxlpy~=0.9
 #markdown>=3.3.6,<4
 #motor~=2.5
+names-generator~=0.1.0
 orjson~=3.6
 Pillow~=9.0
 pycurl>=7.44.1,<8
