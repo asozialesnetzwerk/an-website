@@ -18,16 +18,13 @@ import os
 import uuid
 from typing import Any
 
-from argon2 import PasswordHasher
-
 import orjson as json
 import tornado.websocket as websocket
 from aioredis import Redis
+from argon2 import PasswordHasher
 from elasticsearch import AsyncElasticsearch
-from tornado.web import HTTPError
-
 from names_generator import generate_name
-
+from tornado.web import HTTPError
 
 PH = PasswordHasher()  # nicht die Webseite
 
@@ -144,7 +141,7 @@ class GameWebsocket(websocket.WebSocketHandler):
         """Login as a new user."""
         user_id = uuid.uuid4().hex
         auth_key = os.urandom(32).hex()
-        nickname = nickname or generate_name(style='capital')
+        nickname = nickname or generate_name(style="capital")
         if len(nickname) > 69:  # nice
             nickname = nickname[:69]
         await self.elasticsearch.index(
