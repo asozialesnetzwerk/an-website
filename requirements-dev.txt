@@ -4,7 +4,6 @@ coverage~=6.2
 flake8~=4.0
 flake8-docstrings~=1.6
 flake8-no-pep420~=2.0
-flake8-quotes~=3.3
 isort~=5.10
 mypy>=0.930,<2
 numpy
