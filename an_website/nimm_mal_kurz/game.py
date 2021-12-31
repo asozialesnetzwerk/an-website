@@ -55,7 +55,7 @@ class GameWebsocket(websocket.WebSocketHandler):
         elif command == "login":
             self.user_id = await self.login(json_message)
         if not self.user_id:
-            self.close(reason="Please login with the first message.")
+            self.close(reason="Please log in with the first message.")
             return
 
         # TODO: Handle commands
