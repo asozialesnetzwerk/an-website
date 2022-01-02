@@ -17,8 +17,7 @@ from __future__ import annotations
 import os
 import uuid
 from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Literal
+from typing import Any
 
 import orjson as json
 import tornado.websocket as websocket
@@ -28,13 +27,26 @@ from elasticsearch import AsyncElasticsearch
 from names_generator import generate_name
 from tornado.web import HTTPError
 
+from ..utils.utils import ModuleInfo, str_to_bool
+
 PH = PasswordHasher()  # nicht die Webseite
 
 
-class ValueType(Enum):
-    """The type of value."""
-
-    STRING = "String"
+def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
+    return ModuleInfo(
+        handlers=(
+            # (r"/api/nimm-mal-kurz/raum/([a-z0-9]+)/", NimmMalKurzRoomAPI),
+            (r"/nimm-mal-kurz/spielen/", GameWebsocket),
+        ),
+        name="Nimm mal kurz!",
+        description='Ein Klon des beliebten Karten-Spiels "Halt mal kurz!".',
+        keywords=(
+            "Halt mal kurz",
+            "Nimm mal kurz",
+            "Kartenspiel",
+        ),
+    )
 
 
 @dataclass(frozen=True)
@@ -44,8 +56,8 @@ class ArgumentInfo:
     name: str
     description: str
     optional: bool
-    default: Any
-    value_type: ValueType = ValueType.STRING
+    default: None | Any = None
+    type: type = str
 
 
 @dataclass(frozen=True)
@@ -92,6 +104,54 @@ LOGIN_COMMANDS: dict[str, CommandInfo] = {
         ("error", "login"),
     ),
 }
+
+GENERAL_COMMANDS: dict[str, CommandInfo] = {
+    "create_room": CommandInfo(
+        "create_room",
+        "Create a new room.",
+        (
+            ArgumentInfo("name", "The name of the room.", optional=False),
+            ArgumentInfo(
+                "password",
+                "The password of the room.",
+                optional=True,
+                default="",
+            ),
+            ArgumentInfo(
+                "public",
+                "Whether the room is public or not.",
+                optional=True,
+                default=False,
+                type=bool,
+            ),
+            ArgumentInfo(
+                "max_players",
+                "The max players of the room.",
+                optional=True,
+                default=5,
+                type=int,
+            ),
+            ArgumentInfo(
+                "card_count",
+                "The card count of the room.",
+                optional=True,
+                default=5,
+                type=int,
+            ),
+            ArgumentInfo(
+                "max_time_per_card",
+                "The max time per card of the room.",
+                optional=True,
+                default=60,  # in seconds
+                type=int,
+            ),
+        ),
+        ("room_id", "name", "password"),
+        ("error", "room_join"),
+    ),
+}
+
+REDIS_EXP = 60 * 60 * 24 * 7  # 7 days
 
 
 class GameWebsocket(websocket.WebSocketHandler):
@@ -145,7 +205,7 @@ class GameWebsocket(websocket.WebSocketHandler):
                     {"type": "error", "message": "Command not allowed in room"}
                 )
             return
-
+        # user is not in a room
         if command == "create_room":
             await self.create_room()
         elif command == "join_room":
@@ -289,28 +349,53 @@ class GameWebsocket(websocket.WebSocketHandler):
         # Create room with settings from the request
         room_id = str(uuid.uuid4())
         settings = {
-            "name": self.get_argument("name", str()),
-            "password": self.get_argument("password", str()),
-            "max_players": self.get_argument("max_players", "5"),
-            "cards": self.get_argument("cards", "K=10-S|3≤S≤5"),
-            "max_time": self.get_argument("max_time", "-1"),
-            "max_time_per_card": self.get_argument(
-                "max_time_per_card", "30"  # in seconds
+            "name": json_msg.get("name", str()),
+            "password": json_msg.get("password", str()),
+            "public": str_to_bool(json_msg.get("public", "false"), False),
+            "max_players": int(json_msg.get("max_players", 5)),
+            "card_count": int(json_msg.get("card_count", 5)),
+            "max_time_per_card": int(
+                json_msg.get("max_time_per_card", "30")  # in seconds
             ),
-            "owner": self.get_user_id(),
+            "owner": self.user_id,
         }
         await self.redis.hset(
             self.get_redis_key("room", room_id, "settings"), mapping=settings
         )
+        await self.redis.expire(
+            self.get_redis_key("room", room_id, "settings"), REDIS_EXP
+        )
+        # Add the room to the user's list of rooms
+        await self.redis.sadd(
+            self.get_redis_key("room", room_id, "users"), self.user_id
+        )
+        await self.redis.expire(
+            self.get_redis_key("room", room_id, "users"), REDIS_EXP
+        )
 
-    async def join_room(self):
+        if settings["public"]:
+            await self.redis.sadd(
+                self.get_redis_key("public-rooms"), room_id
+            )
+
+        await self.write_message(
+            {
+                "type": "room_join",
+                "room": {
+                    "id": room_id,
+                    "settings": settings,
+                },
+            }
+        )
+
+    async def join_room(self, json_msg: dict[str, Any]) -> None:
         """Join a room."""
-        if not self.get_room_id_specified_by_user():
-            raise HTTPError(400, reason="No room ID provided.")
-        # TODO: Check if user is already in a room
-        # if None not in (self.get_room_id()):
-        #     raise HTTPError(400, reason="User is currently in a room.")
-        room_id = self.room_id or self.redis.get("user", self.user_id, "room")
+        if "room_id" not in json_msg:
+            await self.write_message(
+                {"type": "error", "message": "No room_id"}
+            )
+            return
+        room_id = json_msg["room_id"]
 
         player_count = len(
             await self.redis.smembers(
@@ -322,33 +407,33 @@ class GameWebsocket(websocket.WebSocketHandler):
                 self.get_redis_key("room", room_id, "settings"), "max_players"
             )
         ):
-            raise HTTPError(400, reason="Room is full.")
+            await self.write_message(
+                {"type": "error", "message": "Room is full."}
+            )
+            return
 
-        if _pw := self.redis.hget(  # pw check
-            self.get_redis_key("room", room_id, "settings"), "password"
-        ):
-            if _pw != self.get_argument("password", str()):
-                raise HTTPError(400, reason="Wrong password.")
+        if (
+            _pw := self.redis.hget(  # pw check
+                self.get_redis_key("room", room_id, "settings"), "password"
+            )
+        ) and _pw != json_msg.get("password", str()):
+            await self.write_message(
+                {"type": "error", "message": "Wrong password."}
+            )
+            return
 
-        if not self.redis.sadd(
+        await self.redis.sadd(
             self.get_redis_key("room", room_id, "users"),
-            user_id,
-        ):
-            raise HTTPError(500, reason="Could not add user to room.")
+            self.user_id,
+        )
         await self.redis.set(
-            self.get_redis_key("user", user_id, "room"),
+            self.get_redis_key("user", self.user_id, "room"),
             room_id,
         )
-        if not player_count:
-            await self.redis.hset(
-                self.get_redis_key("room", room_id, "settings"),
-                "owner",
-                user_id,
-            )
 
         await self.write_message(
             {
-                "type": "joined_room",
+                "type": "room_join",
                 "room": {
                     "id": room_id,
                     "settings": await self.get_room_settings(room_id),
@@ -369,11 +454,20 @@ class GameWebsocket(websocket.WebSocketHandler):
         )
         # check if user is the last one in the room
         if not self.redis.smembers(users_redis_key):
-            # TODO: improve room deletion
-            await self.redis.delete(users_redis_key)
-            await self.redis.delete(
-                self.get_redis_key("room", room_id, "settings")
-            )
+            await self.delete_room(room_id)
 
         # TODO: Do stuff when game is running
         await self.write_message({"type": "left_room"})
+
+
+    async def delete_room(self, room_id: str):
+        """Delete a room."""
+        await self.redis.delete(
+            self.get_redis_key("room", room_id, "users")
+        )
+        await self.redis.delete(
+            self.get_redis_key("room", room_id, "settings")
+        )
+        await self.redis.srem(
+            self.get_redis_key("public-rooms"), room_id
+        )

@@ -60,8 +60,7 @@ IGNORED_MODULES = [
     "quotes.quotes_img",
     "quotes.share_page",
     "backdoor.backdoor_client",
-    "nimm_mal_kurz.game",
-    "nimm_mal_kurz.utils",
+    "nimm_mal_kurz.nmk_client",
 ]
 
 logger = logging.getLogger(__name__)
