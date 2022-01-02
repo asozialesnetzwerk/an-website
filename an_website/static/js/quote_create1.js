@@ -12,7 +12,7 @@ for (let child of quoteList.children) {
 quoteInput.oninput = () => {
     const author = realAuthors[quoteInput.value.toLowerCase()];
     // when real author is found disable input and set the value
-    realAuthorInput.disabled = !author;
+    realAuthorInput.disabled = !!author;
     if (author) realAuthorInput.value = author;
 }
 // @license-end

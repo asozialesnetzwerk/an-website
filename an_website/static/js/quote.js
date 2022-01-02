@@ -56,17 +56,16 @@ function updateQuoteId(quoteId) {
 }
 
 function updateRating(rating) {
+    rating = rating.toString()
     ratingText.innerText = rating;
-    if (rating in ["---", "???", 0, "0"]) {
+    if (["---", "???", "0"].includes(rating)) {
         ratingImageContainer.innerHTML = "";
     } else {
-        const ratingImg = document.createElement("div")
         const ratingNum = Number.parseInt(rating);
-        if (ratingNum > 0) {
-            ratingImg.className = "rating-img witzig";
-        } else if (ratingNum < 0) {
-            ratingImg.className = "rating-img nicht-witzig";
-        }
+        const ratingImg = document.createElement("div")
+        ratingImg.className = "rating-img" + (
+            ratingNum > 0 ? " witzig" : " nicht-witzig"
+        );
         ratingImageContainer.innerHTML = (
             ratingImg.outerHTML + " "
         ).repeat(Math.min(4, Math.abs(ratingNum)));
