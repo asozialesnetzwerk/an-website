@@ -374,9 +374,7 @@ class GameWebsocket(websocket.WebSocketHandler):
         )
 
         if settings["public"]:
-            await self.redis.sadd(
-                self.get_redis_key("public-rooms"), room_id
-            )
+            await self.redis.sadd(self.get_redis_key("public-rooms"), room_id)
 
         await self.write_message(
             {
@@ -459,15 +457,10 @@ class GameWebsocket(websocket.WebSocketHandler):
         # TODO: Do stuff when game is running
         await self.write_message({"type": "left_room"})
 
-
     async def delete_room(self, room_id: str):
         """Delete a room."""
-        await self.redis.delete(
-            self.get_redis_key("room", room_id, "users")
-        )
+        await self.redis.delete(self.get_redis_key("room", room_id, "users"))
         await self.redis.delete(
             self.get_redis_key("room", room_id, "settings")
         )
-        await self.redis.srem(
-            self.get_redis_key("public-rooms"), room_id
-        )
+        await self.redis.srem(self.get_redis_key("public-rooms"), room_id)

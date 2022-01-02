@@ -11,6 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from __future__ import annotations
+
 import json
 import os
 import sys
@@ -60,10 +62,7 @@ async def authenticate(
     response = await websocket.recv()
     print(response)
     response_json = json.loads(response)
-    if (
-        response_json["type"] == "login"
-        and "auth_key" in response_json
-    ):
+    if response_json["type"] == "login" and "auth_key" in response_json:
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w", encoding="UTF-8") as f:
             json.dump(
@@ -77,12 +76,11 @@ async def authenticate(
 
 
 def exit_on_q(key):
-    if key in ('q', 'Q'):
+    if key in ("q", "Q"):
         raise urwid.ExitMainLoop()
 
 
 class TextInputBox(urwid.Filler):
-
     def __init__(
         self,
         body,
@@ -97,19 +95,20 @@ class TextInputBox(urwid.Filler):
         super().__init__(body, valign, height, min_height, top, bottom)
 
     def keypress(self, size, key):
-        if key != 'enter':
+        if key != "enter":
             return super().keypress(size, key)
         _output = self.on_input(edit.edit_text)
         # sys.exit(type(_output))
         if _output is not None:
             self.original_widget = edit.edit_text
 
-edit = urwid.Edit(u"What is your name?\n")
+
+edit = urwid.Edit("What is your name?\n")
 fill = TextInputBox(
     edit,
     on_input=lambda x: urwid.Text(
         f"Nice to meet you,\n{x}.\n\nPress Q to exit."
-    )
+    ),
 )
 loop = urwid.MainLoop(fill, unhandled_input=exit_on_q)
 loop.run()
