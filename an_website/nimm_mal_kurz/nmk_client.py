@@ -63,7 +63,7 @@ async def authenticate(
     if None in (user_id, auth_key):
         data = {"type": "init"}
         if name is not None:
-            pass # TODO: ask user for name
+            pass  # TODO: ask user for name
     else:
         data = {
             "type": "login",
@@ -126,9 +126,7 @@ class TextInputBox(urwid.Filler):
 
 def on_name_input(x: str) -> urwid.Text:
     """Handle input from the user."""
-    asyncio.get_running_loop().create_task(
-        authenticate(websocket, x)
-    )
+    asyncio.get_running_loop().create_task(authenticate(websocket, x))
 
 
 edit = urwid.Edit("What is your name?\n")
