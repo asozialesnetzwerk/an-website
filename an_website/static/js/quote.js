@@ -74,6 +74,7 @@ function updateRating(rating) {
 
 function updateVote(vote) {
     if (vote === 1) {
+        // now voted up
         upvoteButton.classList.add("voted");
         upvoteButton.value = "0";
     } else {
@@ -81,6 +82,7 @@ function updateVote(vote) {
         upvoteButton.value = "1";
     }
     if (vote === -1) {
+        // now voted down
         downvoteButton.classList.add("voted");
         downvoteButton.value = "0";
     } else {
@@ -101,7 +103,7 @@ function handleData(data) {
         quote.innerText = `»${data["quote"]}«`;
         author.innerText = `- ${data["author"]}`;
         updateRating(data["rating"]);
-        updateVote(data["vote"]);
+        updateVote(Number.parseInt(data["vote"]));
         return true;
     }
 }
@@ -130,8 +132,17 @@ function vote(vote) {
     );
 }
 
+function setDisabledOfVoteButtons(disabled) {
+    upvoteButton.disabled = disabled;
+    downvoteButton.disabled = disabled;
+}
+
 for (const voteButton of [upvoteButton, downvoteButton]) {
     voteButton.type = "button";
-    voteButton.onclick = () => vote(voteButton.value);
+    voteButton.onclick = () => {
+        setDisabledOfVoteButtons(true);
+        vote(voteButton.value);
+        setDisabledOfVoteButtons(false);
+    }
 }
 // @license-end

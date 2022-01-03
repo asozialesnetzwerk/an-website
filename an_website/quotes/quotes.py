@@ -18,10 +18,12 @@ It displays funny, but wrong, quotes.
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import random
+from collections.abc import Awaitable
 from functools import cache
-from typing import Literal
+from typing import Any, Literal
 
 from tornado.web import HTTPError
 
@@ -105,6 +107,11 @@ def get_random_rating_filter() -> str:
 class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
 
+    def __init__(self, *args, **kwargs):  # type: ignore
+        """Initialize the base request handler."""
+        super().__init__(*args, **kwargs)
+        self.awaitables: list[Awaitable[Any]] = []
+
     @cache
     def rating_filter(
         self,
@@ -174,11 +181,13 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 
         This is done to ensure that the data is always up to date.
         """
-        # quote_id, author_id = self.get_next_id()
-        # asyncio.run_coroutine_threadsafe(
-        #     get_wrong_quote(quote_id, author_id, use_cache=False),
-        #     asyncio.get_event_loop(),
-        # )
+        if not self.awaitables:
+            quote_id, author_id = self.get_next_id()
+            asyncio.get_running_loop().run_until_complete(
+                get_wrong_quote(quote_id, author_id, use_cache=False)
+            )
+        for awaitable in self.awaitables:
+            asyncio.get_running_loop().run_until_complete(awaitable)
 
 
 class QuoteMainPage(QuoteBaseHandler):
@@ -237,13 +246,15 @@ class QuoteById(QuoteBaseHandler):
                 1, quote_id, author_id, contributed_by
             )
             if vote - old_vote == 2:
-                wrong_quote = await wrong_quote.vote(1, fast=True)
+                self.awaitables.append(wrong_quote.vote(1))
+                wrong_quote.rating += 1
         elif vote < old_vote:
             wrong_quote = await create_wq_and_vote(
                 -1, quote_id, author_id, contributed_by
             )
             if vote - old_vote == -2:
-                wrong_quote = await wrong_quote.vote(-1, fast=True)
+                self.awaitables.append(wrong_quote.vote(-1))
+                wrong_quote.rating -= 1
         else:
             raise HTTPError(500)
         await self.render_wrong_quote(wrong_quote, vote)
