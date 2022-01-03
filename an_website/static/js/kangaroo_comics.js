@@ -67,10 +67,7 @@ function onLoad() {
     currentImg.onerror = (event) => {
         dateIncreaseByDays(today, -1);
         setCurrentComic(today);
-
-        if (loaded < comicCountToLoadOnCLick) {
-            loaded++;
-        }
+        if (loaded < comicCountToLoadOnCLick) loaded++;
     };
 }
 
@@ -123,27 +120,25 @@ const wrongLinks = [
 ]
 
 function getDateFromLink(link) {
-    let arr = link.toLowerCase().match(newLinkRegex);
-    if (arr && arr.length > 3) {
-        return getDateBy(arr[1], arr[2], arr[3]);
+    for (const reg of [newLinkRegex, relativeLinkRegex]) {
+        // urls with year, month, day in them as three groups
+        const match = link.toLowerCase().match(reg);
+        if (match && match.length > 3) {
+            return getDateBy(match[1], match[2], match[3]);
+        }
     }
-    arr = link.toLowerCase().match(relativeLinkRegex);
-    if (arr && arr.length > 3) {
-        return getDateBy(arr[1], arr[2], arr[3]);
-    }
-    arr = link.toLowerCase().match(oldLinkRegex);
+    // urls with incrementing number in them
+    let arr = link.toLowerCase().match(oldLinkRegex);
     if (arr && arr.length > 1) {
         const num = arr[1] - 5;
         let date = new Date(firstDateWithOldLink.getTime());
         for (let i = 0; i < num; i++) {
             date.setTime(dateIncreaseByDays(date, isSunday(date) ? 2 : 1));
         }
-        return isSunday(date)
-            ? dateIncreaseByDays(date, 1)
-            : date;
+        return isSunday(date) ? dateIncreaseByDays(date, 1) : date;
     }
     link = link.toLowerCase().trim()
-    switch(link) {
+    switch(link) {  // first urls with special format
         case "https://img.zeit.de/administratives/kaenguru-comics/pilot-kaenguru/original":
             return getDateBy(2020, 11, 29);
         case "https://img.zeit.de/administratives/kaenguru-comics/pow-kaenguru/original":
@@ -158,18 +153,14 @@ function getDateFromLink(link) {
             return getDateBy(2020, 12, 19);
     }
     for (const arr of wrongLinks) {
-        if (link === arr[1]) {
-            return  arr[0];
-        }
+        if (link === arr[1]) return  arr[0];
     }
 }
 
 const linkFormat = "https://img.zeit.de/administratives/kaenguru-comics/%y-%m/%d/original"
 function generateComicLink(date) {
     for (const arr of wrongLinks) {
-        if (datesEqual(date, arr[0])) {
-            return  arr[1];
-        }
+        if (datesEqual(date, arr[0])) return arr[1];
     }
     let month = (date.getMonth() + 1).toString();
     let day = date.getDate().toString();
@@ -181,6 +172,7 @@ function generateComicLink(date) {
 function isSunday(date) {
     return date
         && date.getDay() === 0
+        // exception for 2020-12-20 (sunday) because there was a comic
         && !dateEquals(date,2020, 12, 20);
 }
 
@@ -238,13 +230,14 @@ function loadMoreComics() {
         image.classList.add("normal-img")
         image.src = link;
         image.alt = getDateString(date);
-        image.onclick = () => {
-            createImgPopup(image);
-        }
+        image.onclick = () => createImgPopup(image);
         image.onerror = () => {
             if (isSunday(date)) {
+                // normally the image is not available on sundays
+                // so we can remove the image if it is not available
                 list.removeChild(listItem);
             } else {
+                // if the image is not available, display an error message
                 listItem.append(" konnte nicht geladen werden.");
             }
         }
@@ -293,5 +286,4 @@ function createImgPopup(image) {
 // add links to comics list
 comics.push.apply(comics, links.split("\n")); //first 50 comics 29.11.2020 - 17.01.21
 addLinksToComics();
-
 // @license-end

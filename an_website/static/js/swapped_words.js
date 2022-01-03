@@ -16,9 +16,7 @@ function onerror(error) {
 }
 
 function ondata(data, onpopstate = false) {
-    if (data.error) {
-        return onerror(data);
-    }
+    if (data.error) return onerror(data);
     if (!onpopstate) {
         window.history.pushState(
             data,

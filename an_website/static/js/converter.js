@@ -44,7 +44,7 @@ function getDisplayValue(wert) {
 }
 
 function strToBigInt(str) {
-    if (!str.length) {
+    if (!str) {
         return 0n;
     }
     let preComma, postComma;
@@ -96,40 +96,31 @@ function setAllFields(euroValue, ignored) {
             fields[i].value = value;
         }
     }
-    updateOutput();
 }
 
 function onSubmit() {
-    for (const feld of fields) {
-        feld.value = getDisplayValue(feld.value);
-    }
+    for (const feld of fields) feld.value = getDisplayValue(feld.value);
     setEuroParam(fields[0].value);
     updateOutput();
 }
 
 for (let i = 0; i < 4; i++) {
     fields[i].oninput = function () {
-        for (let j = 0; j < 4; j++) {
-            if (j !== i) {
-                fields[j].className = "";
-            }
-        }
-        if (numberRegex.test(fields[i].value)) {
-            fields[i].className = "";
-        } else {
+        // remove "invalid" class
+        for (const field of fields) field.className = "";
+        // add "invalid" class if input is not a number
+        if (!numberRegex.test(fields[i].value)) {
             fields[i].className = "invalid";
             return;
         }
-        let val = strToBigInt(fields[i].value)
-        if (val) { //if it is not Not a Number
-            setAllFields(val / factors[i], i);
-        }
+        // parse input as it is a number
+        setAllFields(strToBigInt(fields[i].value) / factors[i], i);
+        // update the output
+        updateOutput();
     }
 }
-// set the value of the fields to
-for (let i = 0; i < 4; i++) {
-    fields[i].value = fields[i].placeholder;
-}
+// set the value of the fields to the placeholder set by tornado
+for (const field of fields) field.value = field.placeholder;
 // disable submit button
 document.getElementById("form").action = "javascript:onSubmit()";
 // @license-end
