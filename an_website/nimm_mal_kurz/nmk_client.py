@@ -13,10 +13,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import sys
 from collections.abc import Callable
+from dataclasses import dataclass
 
 try:
     import urwid
@@ -31,10 +33,20 @@ except ImportError:
     sys.exit(1)
 
 
+@dataclass
+class LobbyState:
+    """The currently available information."""
+
+    user_id: str
+    user_name: str
+    auth_key: str
+    rom_id: None | str
+
+
 async def authenticate(
     websocket,
     name: None | str = None,
-) -> None:
+) -> None | LobbyState:
     """Authenticate with the server."""
     user_id = None
     auth_key = None
@@ -50,6 +62,8 @@ async def authenticate(
 
     if None in (user_id, auth_key):
         data = {"type": "init"}
+        if name is not None:
+            pass # TODO: ask user for name
     else:
         data = {
             "type": "login",
@@ -62,17 +76,24 @@ async def authenticate(
     response = await websocket.recv()
     print(response)
     response_json = json.loads(response)
-    if response_json["type"] == "login" and "auth_key" in response_json:
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        with open(cache_path, "w", encoding="UTF-8") as f:
-            json.dump(
-                {
-                    "id": response_json["user_id"],
-                    "key": response_json["auth_key"],
-                },
-                f,
-                ensure_ascii=False,
-            )
+    if response_json["type"] == "login":
+        if "auth_key" in response_json:
+            os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+            with open(cache_path, "w", encoding="UTF-8") as f:
+                json.dump(
+                    {
+                        "id": response_json["user_id"],
+                        "key": response_json["auth_key"],
+                    },
+                    f,
+                    ensure_ascii=False,
+                )
+        return LobbyState(
+            user_id=response_json["user_id"],
+            user_name=response_json["name"],
+            auth_key=response_json.get("auth_key") or auth_key,
+            rom_id=None,
+        )
 
 
 def exit_on_q(key):
@@ -100,14 +121,21 @@ class TextInputBox(urwid.Filler):
         _output = self.on_input(edit.edit_text)
         # sys.exit(type(_output))
         if _output is not None:
-            self.original_widget = edit.edit_text
+            self.original_widget = _output
+
+
+def on_name_input(x: str) -> urwid.Text:
+    """Handle input from the user."""
+    asyncio.get_running_loop().create_task(
+        authenticate(websocket, x)
+    )
 
 
 edit = urwid.Edit("What is your name?\n")
 fill = TextInputBox(
     edit,
     on_input=lambda x: urwid.Text(
-        f"Nice to meet you,\n{x}.\n\nPress Q to exit."
+        f"Nice to meet you, {x}.\n\nPress Q to exit."
     ),
 )
 loop = urwid.MainLoop(fill, unhandled_input=exit_on_q)
