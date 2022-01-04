@@ -133,6 +133,10 @@ async def test_quote_request_handlers(
     assert response.code == 200
     response = await http_server_client.fetch("/zitate/1-1/image.png")
     assert response.code == 200
+    response = await http_server_client.fetch("/zitate/1-1/image.gif")
+    assert response.code == 200
+    response = await http_server_client.fetch("/zitate/1-1/image.jpeg")
+    assert response.code == 200
     response = await http_server_client.fetch("/zitate/1-1/share/")
     assert response.code == 200
 

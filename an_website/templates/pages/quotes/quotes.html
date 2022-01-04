@@ -38,8 +38,8 @@
     </div>
     <div id="buttons">
         <a class="download tooltip" id="download" rel="noreferrer"
-           href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}"
-           download="zitat-{{ wrong_quote.get_id_as_str() }}.png"
+           href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.gif')}}"
+           download="zitat-{{ wrong_quote.get_id_as_str() }}.gif"
         >
             <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
             <div class="tooltip-text">Downloade das Zitat als Bild.</div>
@@ -130,7 +130,7 @@ JS is currently <noscript>not</noscript> enabled.
 
 {% block head %}
 <!--<meta property="og:image"
-          content="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.png')}}">
+          content="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.gif')}}">
 -->
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <link rel="stylesheet" type="text/css" href="/static/style/quote.css">

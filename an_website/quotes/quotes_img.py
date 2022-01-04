@@ -18,6 +18,7 @@ import io
 import textwrap
 
 from PIL import Image, ImageDraw, ImageFont
+from tornado.web import HTTPError
 
 from ..utils.utils import str_to_bool
 from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
@@ -104,7 +105,11 @@ def draw_lines(
 
 
 def create_image(  # pylint: disable=too-many-locals
-    quote: str, author: str, rating: int, source: None | str
+    quote: str,
+    author: str,
+    rating: int,
+    source: None | str,
+    file_type: str = "png",
 ) -> bytes:
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
@@ -180,7 +185,7 @@ def create_image(  # pylint: disable=too-many-locals
     io_buf = io.BytesIO()
     img.save(
         io_buf,
-        format="PNG",
+        format=file_type,
     )
     return io_buf.getvalue()
 
@@ -192,8 +197,14 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
 
     RATELIMIT_TOKENS = 4
 
-    async def get(self, quote_id: str, author_id: str) -> None:
+    async def get(
+        self, quote_id: str, author_id: str, file_type: str = "png"
+    ) -> None:
         """Handle the GET request to this page and render the quote as img."""
+        if (file_type := file_type.lower()) not in {"png", "gif", "jpeg"}:
+            raise HTTPError(
+                status_code=400, reason=f"Invalid file type: {file_type}"
+            )
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
 
         if not (
@@ -210,12 +221,13 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
             source: None | str = f"{self.request.host_name}/z/{_id}"
         else:
             source = None
-        self.set_header("Content-Type", "image/png")
+        self.set_header("Content-Type", f"image/{file_type}")
         await self.finish(
             create_image(
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
                 wrong_quote.rating,
                 source,
+                file_type,
             )
         )

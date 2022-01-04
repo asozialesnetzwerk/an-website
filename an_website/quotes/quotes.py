@@ -52,7 +52,10 @@ def get_module_info() -> ModuleInfo:
             # {1,10} is too much, but better too much than not enough
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})/", QuoteById),
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.png", QuoteAsImg),
+            (
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.(png|gif|jpeg)",
+                QuoteAsImg,
+            ),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
             (
                 r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/(?:full/)?",

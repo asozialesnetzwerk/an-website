@@ -48,7 +48,7 @@ nextButton.removeAttribute("href");
 
 function updateQuoteId(quoteId) {
     shareButton.href = `/zitate/${quoteId}/share/${params}`;
-    downloadButton.href = `/zitate/${quoteId}/image.png${params}`;
+    downloadButton.href = `/zitate/${quoteId}/image.gif${params}`;
     const [q_id, a_id] = quoteId.split("-", 2);
     quote.href = `/zitate/info/z/${q_id}/${params}`;
     author.href = `/zitate/info/a/${a_id}/${params}`;
@@ -110,7 +110,6 @@ function handleData(data) {
 
 window.onpopstate = (event) => event.state && handleData(event.state);
 
-
 nextButton.onclick = () => get(
     `/api/zitate/${nextQuoteId[0]}/`,
     params,
@@ -122,7 +121,6 @@ nextButton.onclick = () => get(
         )
     )
 );
-
 
 function vote(vote) {
     post(
