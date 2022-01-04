@@ -96,7 +96,7 @@ async def authenticate(
                 websocket=websocket,
                 rom_id=None,
             )
-    return None # if error
+    return None  # if error
 
 
 def exit_on_q(key):
@@ -130,9 +130,7 @@ class TextInputBox(urwid.Filler):
 def on_name_input(x: str) -> urwid.Text:
     """Handle input from the user."""
     asyncio.get_running_loop().run_until_complete(authenticate(x))
-    return urwid.Text(
-        f"Nice to meet you, {x}.\n\nPress Q to exit."
-    )
+    return urwid.Text(f"Nice to meet you, {x}.\n\nPress Q to exit.")
 
 
 edit = urwid.Edit("What is your name?\n")
