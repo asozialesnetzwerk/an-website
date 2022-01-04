@@ -183,9 +183,28 @@ def create_image(  # pylint: disable=too-many-locals
         )
 
     io_buf = io.BytesIO()
+    kwargs = {"format": file_type, "optimize": True}
+    if file_type == "4-color-gif":
+        colors: list[tuple[int, tuple[int, int, int]]] = img.getcolors(  # type: ignore
+            9999
+        )
+        colors.sort(reverse=True)
+        _vals: list[int] = []
+        for _, _c in colors[:4]:
+            _vals.extend(_c)
+        kwargs.update(
+            format="gif",
+            palette=bytearray(_vals),
+        )
+    elif file_type == "webp":
+        kwargs.update(
+            lossless=True,
+            quality=42,
+            method=3,
+        )
     img.save(
         io_buf,
-        format=file_type,
+        **kwargs,  # type: ignore
     )
     return io_buf.getvalue()
 
@@ -201,7 +220,14 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
         self, quote_id: str, author_id: str, file_type: str = "png"
     ) -> None:
         """Handle the GET request to this page and render the quote as img."""
-        if (file_type := file_type.lower()) not in {"png", "gif", "jpeg"}:
+        if (file_type := file_type.lower()) not in {
+            "png",
+            "gif",
+            "jpeg",
+            "webp",
+            "bmp",
+            "pdf",
+        }:
             raise HTTPError(
                 status_code=400, reason=f"Invalid file type: {file_type}"
             )
@@ -222,6 +248,11 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
         else:
             source = None
         self.set_header("Content-Type", f"image/{file_type}")
+        if file_type == "gif" and str_to_bool(
+            self.get_query_argument("small", default="False"),
+            default=False,
+        ):
+            file_type = "4-color-gif"
         await self.finish(
             create_image(
                 wrong_quote.quote.quote,

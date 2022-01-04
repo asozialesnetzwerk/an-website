@@ -53,7 +53,8 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
             (r"/zitate/([0-9]{1,10})/", QuoteById),
             (
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.(png|gif|jpeg)",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image."
+                r"(png|gif|jpeg|webp|bmp|pdf)",
                 QuoteAsImg,
             ),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
