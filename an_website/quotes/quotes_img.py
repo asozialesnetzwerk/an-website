@@ -15,6 +15,8 @@
 from __future__ import annotations
 
 import io
+import logging
+import math
 import textwrap
 
 from jxlpy import (  # type: ignore  # noqa  # pylint: disable=W0611
@@ -26,12 +28,19 @@ from tornado.web import HTTPError
 from ..utils.utils import str_to_bool
 from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 
+
+logger = logging.getLogger(__name__)
+
 AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
 TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
 FONT = ImageFont.truetype(
     font=f"{DIR}/files/oswald.regular.ttf",
     size=50,
+)
+FONT_SMALLER = ImageFont.truetype(
+    font=f"{DIR}/files/oswald.regular.ttf",
+    size=44,
 )
 HOST_NAME_FONT = ImageFont.truetype(
     font=f"{DIR}/files/oswald.regular.ttf",
@@ -54,19 +63,19 @@ NICHT_WITZIG_IMG = load_png("StempelNichtWitzig")
 
 
 def get_lines_and_max_height(
-    text: str, max_width: int
+    text: str, max_width: int, font: ImageFont.FreeTypeFont,
 ) -> tuple[list[str], int]:
     """Get the lines of the text and the max line height."""
-    column_count = 42
+    column_count = 46
     lines: list[str] = []
 
     max_line_length = max_width + 1
     while max_line_length > max_width:  # pylint: disable=while-used
         lines = textwrap.wrap(text, width=column_count)
-        max_line_length = max(FONT.getsize(line)[0] for line in lines)
+        max_line_length = max(font.getsize(line)[0] for line in lines)
         column_count -= 1
 
-    return lines, max(FONT.getsize(line)[1] for line in lines)
+    return lines, max(font.getsize(line)[1] for line in lines)
 
 
 def draw_text(
@@ -74,7 +83,7 @@ def draw_text(
     text: str,
     _x: int,
     _y: int,
-    font: ImageFont.FreeTypeFont = FONT,
+    font: ImageFont.FreeTypeFont,
 ) -> None:
     """Draw a text on an image."""
     img.text(
@@ -93,15 +102,18 @@ def draw_lines(
     y_start: int,
     max_w: int,
     max_h: int,
+    font: ImageFont.FreeTypeFont,
+    padding_left: int = 0,
 ) -> int:
     """Draw the lines on the image and return the last y position."""
     for line in lines:
-        width = FONT.getsize(line)[0]
+        width = font.getsize(line)[0]
         draw_text(
             img=img,
             text=line,
-            _x=(max_w - width) // 2,
+            _x=padding_left + math.ceil((max_w - width) / 2),
             _y=y_start,
+            font=font,
         )
         y_start += max_h
     return y_start
@@ -113,55 +125,80 @@ def create_image(  # pylint: disable=too-many-locals  # noqa: C901
     rating: int,
     source: None | str,
     file_type: str = "png",
+    font: ImageFont.FreeTypeFont = FONT,
 ) -> bytes:
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
     draw = ImageDraw.Draw(img, mode="RGBA")
 
     # draw quote
-    quote_lines, max_line_height = get_lines_and_max_height(
-        f"»{quote}«", QUOTE_MAX_WIDTH
-    )
+    quote_str = f"»{quote}«"
+    width, max_line_height = font.getsize(quote_str)
+    if width <= AUTHOR_MAX_WIDTH:
+        quote_lines = [quote_str]
+    else:
+        quote_lines, max_line_height = get_lines_and_max_height(
+            quote_str, QUOTE_MAX_WIDTH, font
+        )
     if len(quote_lines) < 3:
         y_start = 175
     elif len(quote_lines) < 4:
         y_start = 125
-    else:
+    elif len(quote_lines) < 6:
         y_start = 75
+    else:
+        y_start = 50
     y_text = draw_lines(
         draw,
         quote_lines,
         y_start,
         QUOTE_MAX_WIDTH,
         max_line_height,
+        font,
     )
 
     # draw author
-    author = f"- {author}"
-    width, max_line_height = FONT.getsize(author)
+    author_str = f"- {author}"
+    width, max_line_height = font.getsize(author_str)
     if width <= AUTHOR_MAX_WIDTH:
-        author_lines = [author]
+        author_lines = [author_str]
     else:
         author_lines, max_line_height = get_lines_and_max_height(
-            author, AUTHOR_MAX_WIDTH
+            author_str, AUTHOR_MAX_WIDTH, font
         )
-    draw_lines(
+    y_text = draw_lines(
         draw,
         author_lines,
-        max(y_text + 20, IMAGE_HEIGHT - 220),
+        max(
+            y_text + 20, IMAGE_HEIGHT - (220 if len(author_lines) < 3 else 280)
+        ),
         AUTHOR_MAX_WIDTH,
         max_line_height,
+        font,
+        10,
     )
+
+    if y_text > IMAGE_HEIGHT and font is FONT:
+        logger.info("Using smaller font for quote %s", source)
+        return create_image(
+            quote=quote,
+            author=author,
+            rating=rating,
+            source=source,
+            file_type=file_type,
+            font=FONT_SMALLER,
+        )
 
     # draw rating
     if rating:
-        width, height = FONT.getsize(str(rating))
+        width, height = FONT_SMALLER.getsize(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(
             img=draw,
             text=str(rating),
             _x=25,
             _y=y_rating,
+            font=FONT_SMALLER,  # always use same font for rating
         )
         # draw rating img
         icon = NICHT_WITZIG_IMG if rating < 0 else WITZIG_IMG
@@ -169,7 +206,7 @@ def create_image(  # pylint: disable=too-many-locals  # noqa: C901
             icon,
             box=(
                 25 + 5 + width,
-                y_rating + 8,  # 8 is a magic number, that makes it look good
+                y_rating + 8,  # 8 is a magic number 🧝
             ),
             mask=icon,
         )
