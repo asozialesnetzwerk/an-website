@@ -17,6 +17,9 @@ from __future__ import annotations
 import io
 import textwrap
 
+from jxlpy import (  # type: ignore  # noqa  # pylint: disable=W0611
+    JXLImagePlugin,
+)
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
@@ -104,7 +107,7 @@ def draw_lines(
     return y_start
 
 
-def create_image(  # pylint: disable=too-many-locals
+def create_image(  # pylint: disable=too-many-locals  # noqa: C901
     quote: str,
     author: str,
     rating: int,
@@ -183,7 +186,11 @@ def create_image(  # pylint: disable=too-many-locals
         )
 
     io_buf = io.BytesIO()
-    kwargs = {"format": file_type, "optimize": True}
+    kwargs = {
+        "format": file_type,
+        "optimize": True,
+        "save_all": False,
+    }
     if file_type == "4-color-gif":
         colors: list[tuple[int, tuple[int, int, int]]] = img.getcolors(  # type: ignore
             9999
@@ -199,14 +206,34 @@ def create_image(  # pylint: disable=too-many-locals
     elif file_type == "webp":
         kwargs.update(
             lossless=True,
-            quality=42,
-            method=3,
         )
+    elif file_type == "tiff":
+        kwargs.update(
+            compression="zlib",
+        )
+    elif file_type == "jxl":
+        kwargs.update(lossless=True, effort=7)
     img.save(
         io_buf,
         **kwargs,  # type: ignore
     )
     return io_buf.getvalue()
+
+
+FILE_EXTENSIONS = {
+    "png": "png",
+    "gif": "gif",
+    "jpeg": "jpeg",
+    "jpg": "jpeg",
+    "jfif": "jpeg",
+    "jpe": "jpeg",
+    "jxl": "jxl",
+    "webp": "webp",
+    "bmp": "bmp",
+    "pdf": "pdf",
+    "spi": "spider",
+    "tiff": "tiff",
+}
 
 
 class QuoteAsImg(QuoteReadyCheckRequestHandler):
@@ -217,20 +244,16 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
     RATELIMIT_TOKENS = 4
 
     async def get(
-        self, quote_id: str, author_id: str, file_type: str = "png"
+        self, quote_id: str, author_id: str, file_extension: str = "png"
     ) -> None:
         """Handle the GET request to this page and render the quote as img."""
-        if (file_type := file_type.lower()) not in {
-            "png",
-            "gif",
-            "jpeg",
-            "webp",
-            "bmp",
-            "pdf",
-        }:
+        if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
             raise HTTPError(
-                status_code=400, reason=f"Invalid file type: {file_type}"
+                status_code=400,
+                reason=f"Unsupported file extension: {file_extension} "
+                f"(supported: {', '.join(FILE_EXTENSIONS.keys())}).",
             )
+        file_type = FILE_EXTENSIONS[file_extension]
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
 
         if not (

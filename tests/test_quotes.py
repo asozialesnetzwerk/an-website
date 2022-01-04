@@ -131,20 +131,24 @@ async def test_quote_request_handlers(
         assert response1.body.decode() == response2.body.decode()
     response = await http_server_client.fetch("/zitate/info/z/1/")
     assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.png")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.gif")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.jpeg")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.webp")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.bmp")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/image.pdf")
-    assert response.code == 200
+
     response = await http_server_client.fetch("/zitate/1-1/share/")
     assert response.code == 200
+
+    response = await http_server_client.fetch("/zitate/1-1/image.gif")
+    assert response.code == 200
+    # pylint: disable=import-outside-toplevel
+    from an_website.quotes.quotes_img import FILE_EXTENSIONS
+
+    for _e in FILE_EXTENSIONS:
+        response = await http_server_client.fetch(f"/zitate/1-1/image.{_e}")
+        assert response.code == 200
+        response = await http_server_client.fetch(
+            f"/zitate/1-1/image.{_e.upper()}"
+        )
+        assert response.code == 200
+        response = await http_server_client.fetch(f"/zitate/1-2/image.{_e}")
+        assert response.code == 200
 
 
 def test_parsing_vote_str() -> None:
