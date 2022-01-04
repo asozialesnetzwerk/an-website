@@ -28,7 +28,6 @@ from tornado.web import HTTPError
 from ..utils.utils import str_to_bool
 from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
 
-
 logger = logging.getLogger(__name__)
 
 AUTHOR_MAX_WIDTH: int = 686
@@ -63,7 +62,9 @@ NICHT_WITZIG_IMG = load_png("StempelNichtWitzig")
 
 
 def get_lines_and_max_height(
-    text: str, max_width: int, font: ImageFont.FreeTypeFont,
+    text: str,
+    max_width: int,
+    font: ImageFont.FreeTypeFont,
 ) -> tuple[list[str], int]:
     """Get the lines of the text and the max line height."""
     column_count = 46
@@ -96,7 +97,7 @@ def draw_text(
     )
 
 
-def draw_lines(
+def draw_lines(  # pylint: disable=too-many-arguments
     img: ImageDraw.ImageDraw,
     lines: list[str],
     y_start: int,
@@ -119,7 +120,7 @@ def draw_lines(
     return y_start
 
 
-def create_image(  # pylint: disable=too-many-locals  # noqa: C901
+def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
     quote: str,
     author: str,
     rating: int,
