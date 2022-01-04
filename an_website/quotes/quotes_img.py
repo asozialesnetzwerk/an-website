@@ -199,24 +199,14 @@ def create_image(  # pylint: disable=too-many-locals  # noqa: C901
         _vals: list[int] = []
         for _, _c in colors[:4]:
             _vals.extend(_c)
-        kwargs.update(
-            format="gif",
-            palette=bytearray(_vals),
-        )
+        kwargs.update(format="gif", palette=bytearray(_vals))
     elif file_type == "webp":
-        kwargs.update(
-            lossless=True,
-        )
+        kwargs.update(lossless=True)
     elif file_type == "tiff":
-        kwargs.update(
-            compression="zlib",
-        )
+        kwargs.update(compression="zlib")
     elif file_type == "jxl":
         kwargs.update(lossless=True, effort=7)
-    img.save(
-        io_buf,
-        **kwargs,  # type: ignore
-    )
+    img.save(io_buf, **kwargs)  # type: ignore
     return io_buf.getvalue()
 
 

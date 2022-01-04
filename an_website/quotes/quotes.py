@@ -186,11 +186,9 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         """
         if not self.awaitables:
             quote_id, author_id = self.get_next_id()
-            asyncio.get_running_loop().run_until_complete(
-                get_wrong_quote(quote_id, author_id, use_cache=False)
-            )
+            asyncio.run(get_wrong_quote(quote_id, author_id, use_cache=False))
         for awaitable in self.awaitables:
-            asyncio.get_running_loop().run_until_complete(awaitable)
+            asyncio.run(awaitable)
 
 
 class QuoteMainPage(QuoteBaseHandler):
