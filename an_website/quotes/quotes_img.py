@@ -182,7 +182,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
         max_line_height,
         font,
         10,
-        stroke_width=1 if file_type == "4-color-gif" else 0.
+        stroke_width=1 if file_type == "4-color-gif" else 0,
     )
 
     if y_text > IMAGE_HEIGHT and font is FONT:
