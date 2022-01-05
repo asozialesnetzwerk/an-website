@@ -85,6 +85,7 @@ def draw_text(
     _x: int,
     _y: int,
     font: ImageFont.FreeTypeFont,
+    stroke_width: int = 0,
 ) -> None:
     """Draw a text on an image."""
     img.text(
@@ -93,6 +94,7 @@ def draw_text(
         font=font,
         fill=TEXT_COLOR,
         align="right",
+        stroke_width=stroke_width,
         spacing=54,
     )
 
@@ -105,6 +107,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
     max_h: int,
     font: ImageFont.FreeTypeFont,
     padding_left: int = 0,
+    stroke_width: int = 0,
 ) -> int:
     """Draw the lines on the image and return the last y position."""
     for line in lines:
@@ -115,6 +118,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
             _x=padding_left + math.ceil((max_w - width) / 2),
             _y=y_start,
             font=font,
+            stroke_width=stroke_width,
         )
         y_start += max_h
     return y_start
@@ -130,7 +134,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
 ) -> bytes:
     """Create an image with the given quote and author."""
     img = BG_IMG.copy()
-    draw = ImageDraw.Draw(img, mode="RGBA")
+    draw = ImageDraw.Draw(img, mode="RGB")
 
     # draw quote
     quote_str = f"»{quote}«"
@@ -156,6 +160,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
         QUOTE_MAX_WIDTH,
         max_line_height,
         font,
+        stroke_width=1 if file_type == "4-color-gif" else 0,
     )
 
     # draw author
@@ -177,6 +182,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
         max_line_height,
         font,
         10,
+        stroke_width=1 if file_type == "4-color-gif" else 0.
     )
 
     if y_text > IMAGE_HEIGHT and font is FONT:
@@ -200,6 +206,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
             _x=25,
             _y=y_rating,
             font=FONT_SMALLER,  # always use same font for rating
+            stroke_width=1,
         )
         # draw rating img
         icon = NICHT_WITZIG_IMG if rating < 0 else WITZIG_IMG
@@ -213,7 +220,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
         )
 
     # draw host name
-    if source is not None:
+    if source:
         width, height = HOST_NAME_FONT.getsize(source)
         draw_text(
             img=draw,
@@ -221,6 +228,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
             _x=IMAGE_WIDTH - 5 - width,
             _y=IMAGE_HEIGHT - 5 - height,
             font=HOST_NAME_FONT,
+            stroke_width=1,
         )
 
     io_buf = io.BytesIO()
