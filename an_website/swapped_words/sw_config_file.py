@@ -18,7 +18,6 @@ import functools
 import re
 from dataclasses import dataclass, field
 from re import Match, Pattern
-from typing import Tuple
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -174,9 +173,7 @@ class TwoWayPair(WordPair):
         return f"{self.word1}|{self.word2}"
 
 
-# mypy doesn't allow this with lowercase tuple
-# pylint: disable=deprecated-typing-alias
-WORDS_TUPLE = Tuple[ConfigLine, ...]  # pylint: disable=invalid-name
+WORDS_TUPLE = tuple[ConfigLine, ...]  # pylint: disable=invalid-name
 
 LINE_END_REGEX: Pattern[str] = re.compile(
     r"[\n;]",  # ";" or new line

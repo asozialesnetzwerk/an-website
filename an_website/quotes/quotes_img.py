@@ -228,7 +228,7 @@ def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
             _x=IMAGE_WIDTH - 5 - width,
             _y=IMAGE_HEIGHT - 5 - height,
             font=HOST_NAME_FONT,
-            stroke_width=1,
+            stroke_width=0,
         )
 
     io_buf = io.BytesIO()
