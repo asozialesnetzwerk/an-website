@@ -21,6 +21,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
+from asyncio import Task
 from collections.abc import Awaitable
 from functools import cache
 from typing import Any, Literal
@@ -57,6 +58,7 @@ def get_module_info() -> ModuleInfo:
                 QuoteAsImg,
             ),
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
+            (r"/api/zitate/(full/|)", QuoteRedirectAPI),
             (
                 r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/(?:full/)?",
                 QuoteAPIHandler,
@@ -109,6 +111,8 @@ def get_random_rating_filter() -> str:
 
 class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quotes package."""
+
+    TASK_REFERENCES: list[Task[Any]] = []
 
     def __init__(self, *args, **kwargs):  # type: ignore
         """Initialize the base request handler."""
@@ -186,18 +190,37 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         """
         if not self.awaitables:
             quote_id, author_id = self.get_next_id()
-            asyncio.run(get_wrong_quote(quote_id, author_id, use_cache=False))
+            self.TASK_REFERENCES.append(
+                asyncio.create_task(
+                    get_wrong_quote(quote_id, author_id, use_cache=False)
+                )
+            )
         for awaitable in self.awaitables:
-            asyncio.run(awaitable)
+            self.TASK_REFERENCES.append(asyncio.create_task(awaitable))
+        for task in self.TASK_REFERENCES[:]:  # iterate over copy
+            if task.done():
+                self.TASK_REFERENCES.remove(task)
 
 
 class QuoteMainPage(QuoteBaseHandler):
     """The main quote page that should render a random quote."""
 
-    async def get(self) -> None:
+    URL_PREFIX = str()
+
+    async def get(self, suffix: str = str()) -> None:
         """Handle the GET request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
-        self.redirect(self.fix_url(f"/zitate/{quote_id}-{author_id}"))
+        self.redirect(
+            self.fix_url(
+                f"{self.URL_PREFIX}/zitate/{quote_id}-{author_id}/{suffix}"
+            )
+        )
+
+
+class QuoteRedirectAPI(QuoteMainPage, APIRequestHandler):
+    """Redirect to the api for a random quote."""
+
+    URL_PREFIX = "/api"
 
 
 class QuoteById(QuoteBaseHandler):
