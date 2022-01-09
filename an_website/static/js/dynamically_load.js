@@ -36,7 +36,7 @@ function onData(data, onpopstate) {
     }
     for (const scriptURL of data["stylesheets"]) {
         const link = document.createElement("link");
-        link.ref = "stylesheet";
+        link.rel = "stylesheet";
         link.type = "text/css"
         link.href = scriptURL;
         bodyDiv.appendChild(link);
@@ -45,6 +45,7 @@ function onData(data, onpopstate) {
         const scriptElement = document.createElement("script");
         if (script["src"]) scriptElement.src = script["src"];
         if (script["script"]) scriptElement.innerHTML = script["script"];
+        if (script["onload"]) scriptElement.onload = () => eval(script["onload"]);
         bodyDiv.appendChild(scriptElement);
     }
     document.title = data["title"];
@@ -52,20 +53,27 @@ function onData(data, onpopstate) {
 }
 
 function onLoad() {
-    const currentUrlStart = window.location.protocol + "//" + window.location.host;
     for (const anchor of document.getElementsByTagName("A")) {
-        if (anchor.href.startsWith(currentUrlStart)
-            && !anchor.href.endsWith("#body")
-            && !anchor.href.startsWith("#")
-        ) {
-            const href = anchor.href;
+        const href = anchor.href;
+        if (href.includes("#")) {
+            console.log(href)
+        }
+        if ((href.startsWith(window.location.origin) || href.startsWith("/"))) {
+            // check if it is a link to this page with a hash
+            if (href.includes("#")) {
+                if ((!window.location.hash  // current url has no hash
+                    && href.startsWith(window.location.href + "#"))
+                    || href.startsWith(window.location.pathname + window.location.search + "#")
+                    || href.startsWith(window.location.origin + window.location.pathname  + window.location.search + "#")
+                ) return;
+                if (href.startsWith("#")) return;
+            }
+
             const [requestUrl, params] = getJSONURLWithParams(href);
             anchor.href = "javascript:void(0);";
             anchor.onclick = () => {
                 console.log("Processing anchor", href);
-                if (href === window.location.href) {
-                    // window.location.reload();
-                } else {
+                if (href !== window.location.href) {
                     bodyDiv.innerHTML = "Loading...";
                     get(
                         requestUrl,

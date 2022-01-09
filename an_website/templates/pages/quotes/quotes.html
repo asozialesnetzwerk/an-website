@@ -121,11 +121,6 @@
 
 If your browser supports JS, you can navigate the page with <span id="wasd">WASD</span>.
 JS is currently <noscript>not</noscript> enabled.
-
-<script>
-    const thisQuoteId = ["{{wrong_quote.get_id_as_str()}}"];
-    const nextQuoteId = ["{{next_id}}"];
-</script>
 {% end %}
 
 {% block head %}
@@ -134,5 +129,6 @@ JS is currently <noscript>not</noscript> enabled.
 -->
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <link rel="stylesheet" type="text/css" href="/static/style/quote.css">
-    <script defer src="/static/js/quote.js"></script>
+    <script defer src="/static/js/quote.js"
+            onload="startQuotes('{{wrong_quote.get_id_as_str()}}', '{{next_id}}')"></script>
 {% end %}

@@ -819,6 +819,7 @@ class JSONRequestHandler(APIRequestHandler):
                     {
                         "src": _s.get("src"),
                         "script": _s.string,
+                        "onload": _s.get("onload"),
                     }
                     for _s in soup.find_all("script")
                     if "class" not in _s.attrs

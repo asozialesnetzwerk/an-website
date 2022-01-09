@@ -53,11 +53,10 @@
     <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
 </div>
 
-{% include "../util/replace_url_with.html" %}
-<style>.invalid {color: var(--contrast-2)}</style>
-{% end %}
+{% include "../util/replace_url_with.html" %} {% end %}
 
 {% block head %}
+    <style>.invalid {color: var(--contrast-2)}</style>
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <script defer src="/static/js/converter.js"></script>
 {% end %}

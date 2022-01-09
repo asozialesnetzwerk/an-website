@@ -20,21 +20,19 @@ Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sor
   <input id="load-button" type="button" value="Lade mehr Comics!" onclick="loadMoreComics()">
 </main>
 
-<script src="/static/js/kangaroo_comics.js"></script>
+<script {% if not no_3rd_party %}onload="onLoad()"{%end%} src="/static/js/kangaroo_comics.js"></script>
    {% if no_3rd_party %}
 <script>
-  const main = document.getElementsByTagName("main")[0];
-  main.style.display = "none";
-  function removeButtonAndLoad() {
-    document.getElementById("start-button-no_3rd_party").remove();
-    main.style.display = "inherit";
-    onLoad();
-  }
+    document.getElementsByTagName("main")[0].style.display = "none";
+
+    function removeButtonAndLoad() {
+        document.getElementById("start-button-no_3rd_party").remove();
+        document.getElementsByTagName("main")[0].style.display = "inherit";
+        onLoad();
+    }
 </script>
 <button onclick="removeButtonAndLoad()" id="start-button-no_3rd_party">
   Lade Inhalte von zeit.de
 </button>
-   {% else %}
-<script>onLoad();</script>
    {% end %}
 {% end %}
