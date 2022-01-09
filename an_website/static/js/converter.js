@@ -62,10 +62,6 @@ function strToBigInt(str) {
     return BigInt(preComma + postComma);
 }
 
-function setEuroParam(euroVal) {
-    setURLParam("euro", euroVal, euroVal, false);
-}
-
 function setURLParam(param, value, state, push = false) {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set(param, value);
@@ -76,6 +72,10 @@ function setURLParam(param, value, state, push = false) {
         history.replaceState(state, newUrl, newUrl)
     }
     return newUrl;
+}
+
+function setEuroParam(euroVal) {
+    setURLParam("euro", euroVal, euroVal, false);
 }
 
 function updateOutput() {

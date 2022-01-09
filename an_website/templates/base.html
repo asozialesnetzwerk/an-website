@@ -17,8 +17,8 @@
     <meta name="referrer" content="no-referrer" />
     {% if c %}<style>@import url("/static/style/comic.css");</style>{% end %}
     {% if not no_3rd_party and settings and settings.get("ELASTIC_APM") %}
-        <script src="{{fix_url('/elastic-apm-rum.umd.min.js')}}"></script>
-        <script>
+        <script class="on-every-page" src="{{fix_url('/elastic-apm-rum.umd.min.js')}}"></script>
+        <script class="on-every-page">
             elasticApm.init({
                 active: {% raw "true" if settings["ELASTIC_APM"]["ENABLED"] else "false" %},
                 serverUrl: '{% raw settings["ELASTIC_APM"]["SERVER_URL"] %}',
@@ -29,12 +29,15 @@
         </script>
     {% end %}
     <link rel="canonical" href="{{url.split('?')[0]}}">
-    <link rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
-    <link rel="stylesheet" type="text/css" href="/static/style/base.css">
+    <link class="on-every-page" rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
+    <link class="on-every-page" rel="stylesheet" type="text/css" href="/static/style/base.css">
+
+    <script class="on-every-page" defer src="/static/js/request_utils.js"></script>
+    <script class="on-every-page" defer src="/static/js/dynamically_load.js"></script>
 
     {% block head %} {% end %}
 </head>
-<body>
+<body onload="onLoad()">
     <a href="#body" id="skip-to-content">Skip to content.</a>
     {% include "header.html" %}
     <div id="body">{% block body %}{{ content }}{% end %}</div>

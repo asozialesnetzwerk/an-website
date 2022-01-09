@@ -36,7 +36,11 @@ from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
 from . import DIR, patches
-from .utils.request_handler import BaseRequestHandler, NotFound
+from .utils.request_handler import (
+    BaseRequestHandler,
+    JSONRequestHandler,
+    NotFound,
+)
 from .utils.utils import (
     STATIC_DIR,
     TEMPLATES_DIR,
@@ -183,7 +187,9 @@ def get_all_handlers(
     If a handler has only 2 elements a dict with title and description gets
     added. This information is gotten from the module info.
     """
-    handlers: list[Handler] = []
+    handlers: list[Handler] = [
+        (r"(/.+/|/)json/", JSONRequestHandler, {"module_info": None})
+    ]
 
     for module_info in module_infos:
         for handler in module_info.handlers:
@@ -524,14 +530,16 @@ def main() -> None:
 
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
+    port: int = config.getint("GENERAL", "PORT", fallback=8080)
     server = app.listen(
-        config.getint("GENERAL", "PORT", fallback=8080),
+        port,
         "localhost" if behind_proxy else str(),
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
         protocol=config.get("GENERAL", "PROTOCOL", fallback=None),
         decompress_request=True,
     )
+    app.settings["PORT"] = port
 
     setup_apm(app)
 

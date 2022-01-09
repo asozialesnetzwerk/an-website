@@ -37,6 +37,7 @@ from ansi2html import Ansi2HTMLConverter  # type: ignore
 
 # pylint: disable=no-name-in-module
 from blake3 import blake3  # type: ignore
+from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
@@ -666,7 +667,7 @@ class NotFound(BaseRequestHandler):
         elif (
             # path already ends with a slash
             not new_path.endswith("/")
-            # path is a file (has a . in the last part like "favicon.ico")
+            # path is a file (has a "." in the last part like "favicon.ico")
             and "." not in new_path.split("/")[-1]
         ):
             new_path += "/"
@@ -785,3 +786,58 @@ class ElasticRUM(BaseRequestHandler):
             self.set_header("SourceMap", self.URL + ".map")
         self.set_header("Cache-Control", f"min-fresh={60 * 60 * 24}")
         return await self.finish(self.SCRIPTS[ending])
+
+
+class JSONRequestHandler(APIRequestHandler):
+    """A request handler that returns the page wrapped in JSON."""
+
+    async def get(self, path: str) -> None:  # TODO: Improve this
+        """Get the page wrapped in JSON and send it."""
+        http_client = AsyncHTTPClient()
+        url = self.get_protocol_and_host()
+        if self.get_protocol_and_host().endswith(".onion"):
+            url = f"http://localhost:{self.settings.get('PORT')}"
+        url += path
+        if self.request.query:
+            url += "?" + self.request.query
+        response = await http_client.fetch(
+            url,
+            raise_error=False,
+            # cookies=self.request.cookies,
+        )
+        if response.code != 200:
+            raise HTTPError(response.code, reason=response.reason)
+        soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
+        await self.finish(
+            {
+                "url": response.effective_url,
+                "title": (soup.title.string if soup.title else str()),
+                "body": str()
+                .join(str(_el) for _el in soup.find_all(id="body")[0].contents)
+                .strip(),  # ids are unique
+                "scripts": [
+                    str(_s).strip()
+                    for _s in soup.head.find_all("script")
+                    if "class" not in _s.attrs
+                    or "on-every-page" not in _s["class"]
+                ]
+                if soup.head
+                else [],
+                "styles": (
+                    [
+                        str(_s).strip()
+                        for _s in soup.head.find_all("style")
+                        # if "class" not in _s.attrs
+                        # or "on-every-page" not in _s["class"]
+                    ]
+                    + [
+                        str(_s).strip()
+                        for _s in soup.head.find_all("link", rel="stylesheet")
+                        if "class" not in _s.attrs
+                        or "on-every-page" not in _s["class"]
+                    ]
+                )
+                if soup.head
+                else [],
+            }
+        )

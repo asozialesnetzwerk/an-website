@@ -19,7 +19,8 @@ function get(
     ondata = (data) => console.log(data),
     onerror = (data) => console.error(data)
 ) {
-    fetch(url + '?' + (new URLSearchParams( params )).toString(), {
+    console.log("GET", url, params);
+    fetch(url + '?' + (new URLSearchParams(params)).toString(), {
         method: "GET",
         headers: {'Accept': 'application/json'}
     }).then(response => response.json()).catch(onerror)
