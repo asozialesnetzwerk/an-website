@@ -816,28 +816,33 @@ class JSONRequestHandler(APIRequestHandler):
                 .join(str(_el) for _el in soup.find_all(id="body")[0].contents)
                 .strip(),  # ids are unique
                 "scripts": [
-                    str(_s).strip()
-                    for _s in soup.head.find_all("script")
+                    {
+                        "src": _s.get("src"),
+                        "script": _s.string,
+                    }
+                    for _s in soup.find_all("script")
                     if "class" not in _s.attrs
                     or "on-every-page" not in _s["class"]
                 ]
                 if soup.head
                 else [],
-                "styles": (
+                "stylesheets": (
                     [
-                        str(_s).strip()
-                        for _s in soup.head.find_all("style")
-                        # if "class" not in _s.attrs
-                        # or "on-every-page" not in _s["class"]
-                    ]
-                    + [
-                        str(_s).strip()
-                        for _s in soup.head.find_all("link", rel="stylesheet")
+                        str(_s.get("href")).strip()
+                        for _s in soup.find_all("link", rel="stylesheet")
                         if "class" not in _s.attrs
                         or "on-every-page" not in _s["class"]
                     ]
                 )
                 if soup.head
                 else [],
+                "css": "\n".join(
+                    str(_s.string or str())
+                    for _s in soup.find_all("style")
+                    if "class" not in _s.attrs
+                    or "on-every-page" not in _s["class"]
+                ).strip()
+                if soup.head
+                else str(),
             }
         )

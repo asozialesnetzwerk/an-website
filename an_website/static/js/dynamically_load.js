@@ -15,20 +15,38 @@ function getJSONURLWithParams(originalUrl) {
 
 const lastLoaded = [];
 function onData(data, onpopstate) {
-    console.log("Handling data", data);
+    if (!data) {
+        return;
+    }
     const url = data["url"];
+    console.log("Handling data", url);
     if (!onpopstate) {
         if (lastLoaded.length === 1 && lastLoaded[0] === url) {
             console.log("Data url is the same as last loaded, ignoring");
             return;
-        } else {
-            lastLoaded[0] = url;
         }
         history.pushState(url, url, url);
     }
-    bodyDiv.innerHTML = (
-        data["styles"].join("") + data["scripts"].join("") + data["body"]
-    );
+    // lastLoaded[0] = url;
+    bodyDiv.innerHTML = data["body"];
+    if (data["css"]) {
+        const style = document.createElement("style");
+        style.innerHTML = data["css"];
+        bodyDiv.appendChild(style)
+    }
+    for (const scriptURL of data["stylesheets"]) {
+        const link = document.createElement("link");
+        link.ref = "stylesheet";
+        link.type = "text/css"
+        link.href = scriptURL;
+        bodyDiv.appendChild(link);
+    }
+    for (const script of data["scripts"]) {
+        const scriptElement = document.createElement("script");
+        if (script["src"]) scriptElement.src = script["src"];
+        if (script["script"]) scriptElement.innerHTML = script["script"];
+        bodyDiv.appendChild(scriptElement);
+    }
     document.title = data["title"];
     onLoad();
 }
@@ -42,7 +60,7 @@ function onLoad() {
         ) {
             const href = anchor.href;
             const [requestUrl, params] = getJSONURLWithParams(href);
-            anchor.href = "#";
+            anchor.href = "javascript:void(0);";
             anchor.onclick = () => {
                 console.log("Processing anchor", href);
                 if (href === window.location.href) {
@@ -81,6 +99,6 @@ window.onpopstate = (event) => {
         }
     }
     console.error("Couldn't handle state. ", event.state);
-    // window.location.reload();
+    window.location.reload();
 }
 // @license-end

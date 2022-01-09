@@ -8,7 +8,7 @@ function post(
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
-        headers: {'Accept': 'application/json'}
+        headers: {"Accept": "application/json"}
     }).then(response => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
@@ -20,9 +20,9 @@ function get(
     onerror = (data) => console.error(data)
 ) {
     console.log("GET", url, params);
-    fetch(url + '?' + (new URLSearchParams(params)).toString(), {
+    fetch(url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()), {
         method: "GET",
-        headers: {'Accept': 'application/json'}
+        headers: {"Accept": "application/json"}
     }).then(response => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
