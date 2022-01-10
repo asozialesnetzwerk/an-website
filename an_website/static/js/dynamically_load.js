@@ -49,26 +49,45 @@ function onData(data, onpopstate) {
         bodyDiv.appendChild(scriptElement);
     }
     document.title = data["title"];
-    onLoad();
+    replaceAnchors();
 }
 
-function onLoad() {
+function replaceAnchors() {
     for (const anchor of document.getElementsByTagName("A")) {
         const href = anchor.href;
         if (href.includes("#")) {
             console.log(href)
         }
-        if ((href.startsWith(window.location.origin) || href.startsWith("/"))) {
-            // check if it is a link to this page with a hash
-            if (href.includes("#")) {
-                if ((!window.location.hash  // current url has no hash
-                    && href.startsWith(window.location.href + "#"))
-                    || href.startsWith(window.location.pathname + window.location.search + "#")
-                    || href.startsWith(window.location.origin + window.location.pathname  + window.location.search + "#")
-                ) return;
-                if (href.startsWith("#")) return;
-            }
-
+        if (
+            // link is to same domain
+            (href.startsWith(window.location.origin) || href.startsWith("/"))
+            && // check if it is a link to this page with a hash
+            !( // invert bool
+                href.includes("#")  // if has hash
+                &&
+                (
+                    href.startsWith("#") // starts with hash -> to the same page
+                    ||
+                    (
+                        (
+                            !window.location.hash // current url has no hash
+                            && href.startsWith(window.location.href + "#")
+                        )
+                        || href.startsWith( // is a real url to the same page
+                            window.location.pathname
+                            + window.location.search
+                            + "#"
+                        )
+                        || href.startsWith(  // is url to the same page
+                            window.location.origin
+                            + window.location.pathname
+                            + window.location.search
+                            + "#"
+                        )
+                    )
+                )
+            )
+        ) {
             const [requestUrl, params] = getJSONURLWithParams(href);
             anchor.href = "javascript:void(0);";
             anchor.onclick = () => {

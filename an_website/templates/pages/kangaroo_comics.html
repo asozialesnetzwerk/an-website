@@ -1,10 +1,6 @@
 {% whitespace oneline %}
 {% extends "../base.html" %}
 
-{% block head %}
-<link rel="stylesheet" href="/static/style/kangaroo_comics.css">
-{% end %}
-
 {% block body %}
 <noscript>
 Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(
@@ -17,22 +13,25 @@ Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sor
   <h1>Alte Comics:</h1>
   <ul id="old-comics-list">
   </ul>
-  <input id="load-button" type="button" value="Lade mehr Comics!" onclick="loadMoreComics()">
+  <input id="load-button" type="button" value="Lade mehr Comics!" onclick="alert('You should never see this.')">
 </main>
-
-<script {% if not no_3rd_party %}onload="onLoad()"{%end%} src="/static/js/kangaroo_comics.js"></script>
-   {% if no_3rd_party %}
+    {% if no_3rd_party %}
+<button onclick="removeButtonAndLoad()" id="start-button-no_3rd_party">
+    Lade Inhalte von zeit.de
+</button>
 <script>
     document.getElementsByTagName("main")[0].style.display = "none";
 
     function removeButtonAndLoad() {
         document.getElementById("start-button-no_3rd_party").remove();
         document.getElementsByTagName("main")[0].style.display = "inherit";
-        onLoad();
+        startLoadingComics();
     }
 </script>
-<button onclick="removeButtonAndLoad()" id="start-button-no_3rd_party">
-  Lade Inhalte von zeit.de
-</button>
-   {% end %}
+  {% end %}
+{% end %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/style/kangaroo_comics.css">
+<script defer {% if not no_3rd_party %}onload="startLoadingComics()"{%end%} src="/static/js/kangaroo_comics.js"></script>
 {% end %}

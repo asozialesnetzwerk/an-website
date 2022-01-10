@@ -25,9 +25,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
 from typing import IO, Any, Tuple, TypeVar, Union
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import elasticapm  # type: ignore
-import tornado.httputil
 from tornado.web import HTTPError, RequestHandler
 
 from an_website import DIR as SITE_BASE_DIR
@@ -196,20 +196,31 @@ def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
     if not kwargs:
         return url
 
-    url_args: dict[str, str] = {}
+    parsed_url = urlparse(url)
+    url_args: dict[str, str] = dict(
+        parse_qsl(parsed_url.query, keep_blank_values=True)
+    )
 
-    for key in kwargs:  # pylint: disable=consider-using-dict-items
-        value: Any = kwargs[key]  # make mypy happy
-        if value is not None:
-            if isinstance(value, bool):
-                url_args[key] = bool_to_str(value)
-            else:
-                url_args[key] = str(value)
+    for key, value in kwargs.items():  # type: str, Any
+        url_args[key] = str(value)
+        if value is None:
+            if key in url_args:
+                del url_args[key]
+        elif isinstance(value, bool):
+            url_args[key] = bool_to_str(value)
+        else:
+            url_args[key] = str(value)
 
-    if not url_args:
-        return url
-
-    return tornado.httputil.url_concat(url, url_args)
+    return urlunparse(
+        (
+            parsed_url[0],
+            parsed_url[1],
+            parsed_url[2],
+            parsed_url[3],
+            urlencode(url_args),
+            parsed_url[5],
+        )
+    )
 
 
 def anonymize_ip(ip_address: str, *, ignore_invalid: bool = False) -> str:

@@ -29,7 +29,7 @@ from datetime import datetime
 from functools import cache
 from http.client import responses
 from typing import Any
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urlparse, urlunparse
 
 import orjson as json
 from aioredis import Redis
@@ -341,7 +341,12 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("MODULE_INFOS") or tuple()
 
     @cache
-    def fix_url(self, url: str, this_url: None | str = None) -> str:
+    def fix_url(
+        self,
+        url: str,
+        this_url: None | str = None,
+        always_add_params: bool = False,
+    ) -> str:
         """
         Fix a URL and return it.
 
@@ -360,11 +365,12 @@ class BaseRequestHandler(RequestHandler):
             url,
             # the no_3rd_party param:
             no_3rd_party=self.get_no_3rd_party()
-            if self.get_no_3rd_party() != self.get_saved_no_3rd_party()
+            if always_add_params
+            or self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else None,
             # the theme param:
             theme=self.get_theme()
-            if self.get_theme() != self.get_saved_theme()
+            if always_add_params or self.get_theme() != self.get_saved_theme()
             else None,
         )
 
@@ -794,23 +800,33 @@ class JSONRequestHandler(APIRequestHandler):
     async def get(self, path: str) -> None:  # TODO: Improve this
         """Get the page wrapped in JSON and send it."""
         http_client = AsyncHTTPClient()
-        url = self.get_protocol_and_host()
-        if self.get_protocol_and_host().endswith(".onion"):
-            url = f"http://localhost:{self.settings.get('PORT')}"
-        url += path
-        if self.request.query:
-            url += "?" + self.request.query
+        url = path + (
+            "?" + self.request.query if self.request.query else str()
+        )
+
         response = await http_client.fetch(
-            url,
+            re.sub(
+                r"^https?://[^/]+\.onion/",  # TODO: do this properly
+                f"http://localhost:{self.settings.get('PORT')}/",
+                self.fix_url(url, always_add_params=True),
+            ),
             raise_error=False,
-            # cookies=self.request.cookies,
         )
         if response.code != 200:
             raise HTTPError(response.code, reason=response.reason)
         soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
+        print(response.effective_url)
         await self.finish(
             {
-                "url": response.effective_url,
+                "url": self.fix_url(
+                    urlunparse(
+                        (
+                            self.request.protocol,
+                            self.request.host,
+                            *urlparse(response.effective_url)[2:],
+                        )
+                    )
+                ),
                 "title": (soup.title.string if soup.title else str()),
                 "body": str()
                 .join(str(_el) for _el in soup.find_all(id="body")[0].contents)

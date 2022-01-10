@@ -4,7 +4,8 @@ function removeAllPopups() {
         node.remove();
     }
 }
-function onLoad() {
+
+function startLoadingComics() {
     const comics = [];
 
     const links = `/static/img/2020-11-03.jpg
@@ -53,8 +54,7 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-42/original
 https://img.zeit.de/administratives/kaenguru-comics/kaenguru-43/original
 https://img.zeit.de/administratives/kaenguru-comics/kaenguru-44/original
 https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
-`
-
+`;
     function addLinksToComics() {
         const today = getToday();
         const date = copyDate(firstDateWithNewLink);
@@ -252,8 +252,8 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.visibility = "invisible";
         }
     }
-
     document.getElementById("load-button").onclick = loadMoreComics;
+    console.log(document.getElementById("load-button").onclick)
 
     function createImgPopup(image) {
         removeAllPopups();
