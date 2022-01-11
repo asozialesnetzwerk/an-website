@@ -112,7 +112,6 @@ jobs:
     name: Deploy website
     runs-on: ubuntu-latest
     needs:
-      - run_tests
       - gh_pages
     steps:
       - name: Deploy website

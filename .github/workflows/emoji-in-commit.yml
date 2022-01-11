@@ -14,6 +14,6 @@ jobs:
         run: |
           import os
           import emoji
-          commit_message = os.popen("git show -s --format=%B ${{ env.GITHUB_SHA }}").read()
+          commit_message = os.popen("git show -s --format=%B ${{ github.sha }}").read()
           if not emoji.emoji_count(commit_message):
             exit("No Emoji found. 👎")
