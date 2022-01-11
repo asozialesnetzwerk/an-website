@@ -159,7 +159,7 @@ class DiscordAPI(APIRequestHandler):
     async def get(self, guild_id: str = str(GUILD_ID)) -> None:
         """Get the Discord invite and render it as JSON."""
         invite, source_url = await get_invite_with_cache(int(guild_id))
-        await self.finish({"invite": invite, "source": source_url})
+        return await self.finish({"invite": invite, "source": source_url})
 
 
 class ANDiscordAPI(DiscordAPI):

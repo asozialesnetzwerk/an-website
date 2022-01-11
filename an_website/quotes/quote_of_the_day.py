@@ -264,7 +264,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
             _wq = await self.get_quote_of_today()
 
         if _wq:
-            self.redirect(
+            return self.redirect(
                 self.fix_url(_wq.get_quote_url()),
                 False,
             )

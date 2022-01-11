@@ -186,7 +186,6 @@ class CurrencyConverterAPI(APIRequestHandler):
         """
         value_dict = await arguments_to_value_dict(self)
         if value_dict is None:
-            await self.finish(dict(zip(keys, [None] * len(keys))))
-            return
+            return await self.finish(dict(zip(keys, [None] * len(keys))))
 
-        await self.finish(value_dict)
+        return await self.finish(value_dict)

@@ -299,7 +299,7 @@ class HangmanSolverAPI(APIRequestHandler):
         hangman_dict = asdict(hangman)
         # convert set to list, because the set can't be converted to JSON.
         hangman_dict["words"] = list(hangman_dict["words"])
-        await self.finish(hangman_dict)
+        return await self.finish(hangman_dict)
 
 
 # def profile():

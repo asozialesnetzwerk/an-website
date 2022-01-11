@@ -137,7 +137,7 @@ class WordGameHelperAPI(APIRequestHandler):
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         )
 
-        await self.finish(
+        return await self.finish(
             {
                 "before": before,
                 "word": word,

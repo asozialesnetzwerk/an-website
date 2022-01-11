@@ -152,7 +152,7 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
-    def get(self) -> None:
+    async def get(self) -> None:
         """Handle GET requests to the swapped words API."""
         text = self.get_argument("text", default=None, strip=True) or str()
 
@@ -174,7 +174,7 @@ class SwappedWordsAPI(APIRequestHandler):
                 minify_config = self.get_argument(
                     "minify_config", default="sure", strip=True
                 )
-                self.finish(
+                return await self.finish(
                     {
                         "text": text,
                         "return_config": True,
@@ -184,17 +184,16 @@ class SwappedWordsAPI(APIRequestHandler):
                         "replaced_text": sw_config.swap_words(text),
                     }
                 )
-            else:
-                self.finish(
-                    {
-                        "text": text,
-                        "return_config": False,
-                        "replaced_text": sw_config.swap_words(text),
-                    }
-                )
+            return await self.finish(
+                {
+                    "text": text,
+                    "return_config": False,
+                    "replaced_text": sw_config.swap_words(text),
+                }
+            )
         except InvalidConfigException as _e:
             self.set_status(400)
-            self.finish(
+            return await self.finish(
                 {
                     "error": _e.reason,
                     "line": _e.line,

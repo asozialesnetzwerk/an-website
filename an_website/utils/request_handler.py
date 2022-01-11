@@ -653,7 +653,7 @@ class NotFound(BaseRequestHandler):
 
         if len(this_path) < 4:
             # if /a/ redirect to / instead of /z/
-            self.redirect(
+            return self.redirect(
                 self.get_protocol_and_host() + "/" + self.get_query()
             )
 

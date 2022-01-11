@@ -162,11 +162,10 @@ class Backdoor(APIRequestHandler):
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
             exc.args = tuple(new_args)
-            await self.finish(
+            return await self.finish(
                 pickle.dumps(exc, max(pickle.DEFAULT_PROTOCOL, 5))
             )
-            return
-        await self.finish(
+        return await self.finish(
             pickle.dumps(
                 {
                     "success": not exception,
@@ -201,3 +200,5 @@ class Backdoor(APIRequestHandler):
             ]  # type: ignore
             if not issubclass(exc_info[0], HTTPError):
                 self.finish(pickle.dumps(self.get_error_message(**kwargs)))
+                return None
+        return None

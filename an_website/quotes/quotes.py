@@ -210,7 +210,7 @@ class QuoteMainPage(QuoteBaseHandler):
     async def get(self, suffix: str = str()) -> None:
         """Handle the GET request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
-        self.redirect(
+        return self.redirect(
             self.fix_url(
                 f"{self.URL_PREFIX}/zitate/{quote_id}-{author_id}/{suffix}"
             )
@@ -397,21 +397,20 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
         """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
         if self.request.path.endswith("/full/"):
-            await self.finish(
+            return await self.finish(
                 {
                     "wrong_quote": wrong_quote.to_json(),
                     "next": f"{next_q}-{next_a}",
                     "vote": vote,
                 }
             )
-        else:
-            await self.finish(
-                {
-                    "id": wrong_quote.get_id_as_str(),
-                    "quote": wrong_quote.quote.quote,
-                    "author": wrong_quote.author.name,
-                    "rating": await self.get_rating_str(wrong_quote),
-                    "vote": vote,
-                    "next": f"{next_q}-{next_a}",
-                }
-            )
+        return await self.finish(
+            {
+                "id": wrong_quote.get_id_as_str(),
+                "quote": wrong_quote.quote.quote,
+                "author": wrong_quote.author.name,
+                "rating": await self.get_rating_str(wrong_quote),
+                "vote": vote,
+                "next": f"{next_q}-{next_a}",
+            }
+        )

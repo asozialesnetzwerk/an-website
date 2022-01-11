@@ -77,7 +77,7 @@ class UptimeAPIHandler(APIRequestHandler):
 
     async def get(self) -> None:
         """Handle the GET request to the API."""
-        await self.finish(
+        return await self.finish(
             {
                 "uptime": (uptime := calculate_uptime()),
                 "uptime_str": uptime_to_str(uptime),

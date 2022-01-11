@@ -312,7 +312,7 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
             default=False,
         ):
             file_type = "4-color-gif"
-        await self.finish(
+        return await self.finish(
             create_image(
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,

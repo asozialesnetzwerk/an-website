@@ -37,9 +37,9 @@ def get_module_info() -> ModuleInfo:
 class Endpoints(BaseRequestHandler):
     """Endpoint page request handler."""
 
-    def get(self) -> None:
+    async def get(self) -> None:
         """Handle a GET request."""
-        self.render(
+        return await self.render(
             "pages/endpoints.html",
             endpoints=self.get_endpoints(),
             name_to_id=name_to_id,
@@ -76,6 +76,6 @@ class Endpoints(BaseRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
-    def get(self) -> None:
+    async def get(self) -> None:
         """Handle a GET request."""
-        self.finish(json.dumps(self.get_endpoints()))
+        return await self.finish(json.dumps(self.get_endpoints()))
