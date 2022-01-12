@@ -126,6 +126,8 @@ class Backdoor(APIRequestHandler):
                         result = help
                     elif result is session["print"]:
                         result = print
+                    if result is not None:
+                        session["_"] = result
             result_tuple: tuple[None | str, Any] = (
                 str()
                 .join(traceback.format_exception(exception))  # type: ignore
