@@ -490,7 +490,7 @@ def signal_handler(signalnum: Any, frame: Any) -> None:
         raise KeyboardInterrupt
 
 
-def main(app: Application) -> None:
+def main() -> None:
     """
     Start everything.
 
@@ -512,11 +512,13 @@ def main(app: Application) -> None:
 
     # read ignored modules from the config
     for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=str()
+            "GENERAL", "IGNORED_MODULES", fallback=str()
     ).split(","):
         module_name = module_name.strip()
         if len(module_name) > 0:
             IGNORED_MODULES.append(module_name)
+
+    app = make_app()
 
     apply_config_to_app(app, config)
 
@@ -567,5 +569,4 @@ def main(app: Application) -> None:
 if __name__ == "__main__":
     if sys.flags.dev_mode:
         gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
-    application = make_app()
-    main(application)
+    main()
