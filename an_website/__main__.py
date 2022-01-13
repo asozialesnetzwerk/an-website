@@ -512,7 +512,7 @@ def main() -> None:
 
     # read ignored modules from the config
     for module_name in config.get(
-            "GENERAL", "IGNORED_MODULES", fallback=str()
+        "GENERAL", "IGNORED_MODULES", fallback=str()
     ).split(","):
         module_name = module_name.strip()
         if len(module_name) > 0:
