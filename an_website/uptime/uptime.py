@@ -15,7 +15,12 @@
 from __future__ import annotations
 
 import time
+from collections import Counter
+from typing import Literal
 
+from elasticsearch import AsyncElasticsearch
+
+from ..__main__ import NAME
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -60,6 +65,53 @@ def uptime_to_str(uptime: None | float = None) -> str:
     )
 
 
+async def get_uptime_perc(
+    elasticsearch: AsyncElasticsearch, hours: Literal[1, 6, 12, 24]
+) -> str:
+    """Get the uptime percentage for the last `hours`."""
+    up_perc_counter: Counter[str] = Counter(
+        [
+            hit["_source"]["monitor"]["status"]  # "up" / "down"
+            for hit in (
+                await elasticsearch.search(
+                    index="heartbeat*",
+                    query={
+                        "bool": {
+                            "must": [
+                                {
+                                    "range": {
+                                        "@timestamp": {
+                                            "gte": f"now-{hours}h",
+                                        },
+                                    },
+                                },
+                                {
+                                    "term": {
+                                        "monitor.id": {
+                                            "value": NAME,
+                                        }
+                                    },
+                                },
+                            ]
+                        }
+                    },
+                    size=10_000,
+                    _source=[
+                        "monitor.id",
+                        "monitor.status",
+                        # "@timestamp"  # TODO: Cache with the timestamp
+                    ],
+                )
+            )["hits"]["hits"]
+            # if hit["_source"]["monitor"]["id"] == NAME
+        ]
+    )
+    _up, down = up_perc_counter["up"], up_perc_counter["down"]
+    total = _up + down
+    perc = 100 * _up / total if total else 0
+    return f"{_up}/{total} ({perc}%)"
+
+
 class UptimeHandler(BaseRequestHandler):
     """The request handler for the uptime page."""
 
@@ -82,5 +134,16 @@ class UptimeAPIHandler(APIRequestHandler):
                 "uptime": (uptime := calculate_uptime()),
                 "uptime_str": uptime_to_str(uptime),
                 "start_time": time.time() - uptime,
+                # "uptime_perc_last_24h": await get_uptime_perc(
+                #     self.elasticsearch, 24
+                # ),
+                # "uptime_perc_last_12h": await get_uptime_perc(
+                #     self.elasticsearch, 12
+                # ),
+                "uptime_perc_last_1h": await get_uptime_perc(
+                    self.elasticsearch, 1
+                )
+                if self.elasticsearch
+                else "n/a",
             }
         )
