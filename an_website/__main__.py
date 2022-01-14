@@ -543,10 +543,15 @@ def main() -> None:
 
     # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
+    from .uptime.uptime import get_uptime_perc_periodically
 
     # pylint: disable=unused-variable
     cache_update_task = loop.create_task(  # noqa: F841
         update_cache_periodically(app, setup_redis_task)
+    )
+    # pylint: disable=unused-variable
+    uptime_perc_task = loop.create_task(  # noqa: F841
+        get_uptime_perc_periodically(app, setup_redis_task, setup_es_task)
     )
 
     try:
