@@ -16,7 +16,7 @@
     <meta name="referrer" content="never" />
     <meta name="referrer" content="no-referrer" />
     {% if not no_3rd_party and settings and settings.get("ELASTIC_APM") %}
-        <script src="https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js" crossorigin></script>
+        <script src="{{fix_url('/elastic-apm-rum.umd.min.js')}}"></script>
         <script>
             elasticApm.init({
                 active: {% raw "true" if settings["ELASTIC_APM"]["ENABLED"] else "false" %},

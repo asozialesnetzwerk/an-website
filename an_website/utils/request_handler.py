@@ -40,6 +40,7 @@ from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
+from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from an_website.utils.utils import (
@@ -63,6 +64,7 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
+            (r"/elastic-apm-rum.umd.min.js", ElasticRUM),
         ),
         hidden=True,
     )
@@ -721,3 +723,26 @@ class ZeroDivision(BaseRequestHandler):
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
             0 / 0  # pylint: disable=pointless-statement
+
+
+# https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js
+class ElasticRUM(BaseRequestHandler):
+    """A request handler that serves the RUM script."""
+
+    URL = (
+        "https://unpkg.com/@elastic/apm-rum@^5"
+        "/dist/bundles/elastic-apm-rum.umd.min.js"
+    )
+    SCRIPT: list[str] = []
+
+    async def get(self) -> None:
+        """Serve the RUM script."""
+        if not self.SCRIPT:
+            response = await AsyncHTTPClient().fetch(
+                self.URL, raise_error=False
+            )
+            if response.code != 200:
+                raise HTTPError(response.code, reason=response.reason)
+            self.SCRIPT.append(response.body.decode())
+        self.set_header("Content-Type", "application/javascript")
+        return await self.finish(self.SCRIPT[0])
