@@ -799,23 +799,22 @@ class JSONRequestHandler(APIRequestHandler):
 
     async def get(self, path: str) -> None:  # TODO: Improve this
         """Get the page wrapped in JSON and send it."""
-        http_client = AsyncHTTPClient()
-        url = path + (
-            "?" + self.request.query if self.request.query else str()
+        url = re.sub(
+            r"^https?://[^/]+\.onion/",  # TODO: do this properly
+            f"http://localhost:{self.settings.get('PORT')}/",
+            self.fix_url(
+                path
+                + ("?" + self.request.query if self.request.query else str()),
+                always_add_params=True,
+            ),
         )
 
-        response = await http_client.fetch(
-            re.sub(
-                r"^https?://[^/]+\.onion/",  # TODO: do this properly
-                f"http://localhost:{self.settings.get('PORT')}/",
-                self.fix_url(url, always_add_params=True),
-            ),
-            raise_error=False,
-        )
+        response = await AsyncHTTPClient().fetch(url, raise_error=False)
         if response.code != 200:
             raise HTTPError(response.code, reason=response.reason)
+
         soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
-        print(response.effective_url)
+
         await self.finish(
             {
                 "url": self.fix_url(
