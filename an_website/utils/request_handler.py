@@ -214,7 +214,7 @@ class BaseRequestHandler(RequestHandler):
         if result[0]:
             now = datetime.utcnow()
             if now.month == 4 and now.day == 20:
-                self.set_status(420, "Enhance Your Calm")
+                self.set_status(420)
                 self.write_error(420)
             else:
                 self.set_status(429)
@@ -646,7 +646,7 @@ class NotFound(BaseRequestHandler):
             "/wp-upload/",
             "/wp-upload.php",
         }:
-            raise HTTPError(469, reason="Nice try.")
+            raise HTTPError(469)
         if new_path.endswith("/index.html"):
             # len("index.html") = 10
             new_path = new_path[:-10]

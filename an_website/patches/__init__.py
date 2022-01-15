@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
@@ -60,8 +61,8 @@ def apply() -> None:
             "WHEN",
         )
     )
-    tornado.httputil.responses[469] = "Nice Try"  # type: ignore
-    tornado.httputil.responses[420] = "Enhance Your Calm"  # type: ignore
+    http.client.responses[420] = "Enhance Your Calm"
+    http.client.responses[469] = "Nice Try"
     anonymize_logs()
     patch_json()
 
