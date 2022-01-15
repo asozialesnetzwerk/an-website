@@ -1,0 +1,25 @@
+#container {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+#status {
+    font-size: 100px;
+    color: var(--main);
+}
+
+#reason {
+    white-space: pre;
+    font-family: monospace;
+    color: var(--main-2);
+}
+
+#🐈 {
+    width: 500px;
+    height: 308px;
+    object-fit: cover;
+    object-position: 0 0;
+}

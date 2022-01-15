@@ -9,8 +9,12 @@
 <div id="container">
     <div id="status">{{status}}</div>
     <div id="reason">{{reason}}</div>
-    {% if not no_3rd_party %}
-        <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
+    {% if status == 469 %}
+        <img id="🐈" alt="🐈" src="{{fix_url('/static/img/469.jpg')}}">
+    {% else %}
+        {% if not no_3rd_party %}
+            <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
+        {% end %}
     {% end %}
 </div>
 
@@ -18,31 +22,5 @@
 
 {% block head %}
 <meta name="robots" content="noindex">
-<style>
-    #container {
-        position: absolute;
-        left: 50%;
-        top: 40%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-    }
-    #status {
-        font-size: 100px;
-        color: var(--main);
-    }
-    #reason {
-        white-space: pre;
-        font-family: monospace;
-        color: var(--main-2);
-    }
-
-    {% if not no_3rd_party %}
-    #🐈 {
-        width: 500px;
-        height: 308px;
-        object-fit: cover;
-        object-position: 0 0;
-    }
-    {% end %}
-</style>
+<link rel="stylesheet" type="text/css" href="{{fix_url('/static/style/error.css')}}">
 {% end %}

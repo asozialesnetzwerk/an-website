@@ -616,6 +616,37 @@ class NotFound(BaseRequestHandler):
         """Throw a 404 HTTP error or redirect to another page."""
         await super().prepare()
         new_path = self.request.path.lower()
+        if new_path in {
+            "/3.php",
+            "/admin/controller/extension/extension/",
+            "/assets/filemanager/dialog.php",
+            "/assets/vendor/server/php/index.php",
+            "/.aws/credentials/",
+            "/aws.yml",
+            "/.env",
+            "/.env.bak",
+            "/.ftpconfig",
+            "/phpinfo.php",
+            "/-profiler/phpinfo/",
+            "/public/assets/jquery-file-upload/server/php/index.php",
+            "/root.php",
+            "/settings/aws.yml",
+            "/uploads/",
+            "/wordpress/",
+            "/wp/",
+            "/wp-admin",
+            "/wp-admin/",
+            "/wp-admin/css/",
+            "/wp-includes",
+            "/wp-includes/",
+            "/wp-login",
+            "/wp-login/",
+            "/wp-login.php",
+            "/wp-upload",
+            "/wp-upload/",
+            "/wp-upload.php",
+        }:
+            raise HTTPError(469, reason="Nice try.")
         if new_path.endswith("/index.html"):
             # len("index.html") = 10
             new_path = new_path[:-10]
