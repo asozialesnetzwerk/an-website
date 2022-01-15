@@ -1,8 +1,4 @@
 #container {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -50%);
     text-align: center;
 }
 
@@ -18,8 +14,7 @@
 }
 
 #🐈 {
-    width: 500px;
-    height: 308px;
-    object-fit: cover;
-    object-position: 0 0;
+    width: 50%;
+    border-style: solid;
+    clip-path: inset(7.1666% 9.0666% 24% 9.0666%);
 }

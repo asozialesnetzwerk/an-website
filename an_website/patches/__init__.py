@@ -60,6 +60,7 @@ def apply() -> None:
             "WHEN",
         )
     )
+    tornado.httputil.responses[469] = "Nice Try"
     anonymize_logs()
     patch_json()
 
