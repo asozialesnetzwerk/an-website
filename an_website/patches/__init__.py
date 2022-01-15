@@ -60,7 +60,8 @@ def apply() -> None:
             "WHEN",
         )
     )
-    tornado.httputil.responses[469] = "Nice Try"
+    tornado.httputil.responses[469] = "Nice Try"  # type: ignore
+    tornado.httputil.responses[420] = "Enhance Your Calm"  # type: ignore
     anonymize_logs()
     patch_json()
 
