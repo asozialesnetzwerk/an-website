@@ -64,7 +64,7 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
-            (r"/elastic-apm-rum.umd.min.js", ElasticRUM),
+            (r"/elastic-apm-rum.umd.min.js(\.map|)", ElasticRUM),
         ),
         hidden=True,
     )
@@ -725,7 +725,6 @@ class ZeroDivision(BaseRequestHandler):
             0 / 0  # pylint: disable=pointless-statement
 
 
-# https://unpkg.com/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js
 class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the RUM script."""
 
@@ -733,16 +732,21 @@ class ElasticRUM(BaseRequestHandler):
         "https://unpkg.com/@elastic/apm-rum@^5"
         "/dist/bundles/elastic-apm-rum.umd.min.js"
     )
-    SCRIPT: list[str] = []
+    SCRIPTS: dict[str, str] = {}
 
-    async def get(self) -> None:
+    async def get(self, ending: str = str()) -> None:
         """Serve the RUM script."""
-        if not self.SCRIPT:
+        if ending not in self.SCRIPTS:
             response = await AsyncHTTPClient().fetch(
-                self.URL, raise_error=False
+                self.URL + ending, raise_error=False
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPT.append(response.body.decode())
-        self.set_header("Content-Type", "application/javascript")
-        return await self.finish(self.SCRIPT[0])
+            self.SCRIPTS[ending] = response.body.decode()
+        if ending == ".map":
+            self.set_header("Content-Type", "application/json")
+        else:
+            self.set_header("Content-Type", "application/javascript")
+            self.set_header("SourceMap", self.URL + ".map")
+        self.set_header("Cache-Control", f"min-fresh={60 * 60 * 24}")
+        return await self.finish(self.SCRIPTS[ending])

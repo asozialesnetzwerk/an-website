@@ -185,6 +185,7 @@ class UptimeHandler(BaseRequestHandler):
 
     async def get(self) -> None:
         """Handle the GET request and render the page."""
+        self.set_header("Cache-Control", "no-cache")
         await self.render(
             "pages/uptime.html",
             uptime=(uptime := calculate_uptime()),
@@ -197,6 +198,7 @@ class UptimeAPIHandler(APIRequestHandler):
 
     async def get(self) -> None:
         """Handle the GET request to the API."""
+        self.set_header("Cache-Control", "no-cache")
         return await self.finish(
             {
                 "uptime": (uptime := calculate_uptime()),

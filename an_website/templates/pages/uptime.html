@@ -4,40 +4,12 @@
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}
 
 {% block body %}
-    {% if not no_3rd_party %}
-        <link href="https://fonts.googleapis.com/css?family=Orbitron"
-              rel="stylesheet"
-              type="text/css">
-    {% end %}
     <div class="center">
         Diese Webseite läuft bereits <div id="uptime">{{uptime_str}}</div>
     </div>
-
-<script>
-    const uptimeAtStart = {{uptime}};
-</script>
 {% end %}
 
-
 {% block head %}
-<style>
-    .center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        font-size: xx-large;
-    }
-        {% if no_3rd_party %}
-    #uptime {
-        font-weight: bold;
-    }
-        {% else %}
-    #uptime {
-        font-family: 'Orbitron', sans-serif;
-    }
-        {% end %}
-</style>
-<script defer src="/static/js/uptime.js"></script>
+<link rel="stylesheet" type="text/css" href="{{fix_url('/static/style/uptime.css')}}">
+<script defer src="{{fix_url('/static/js/uptime.js')}}" onload="startDisplayingUptime({{uptime}})"></script>
 {% end %}
