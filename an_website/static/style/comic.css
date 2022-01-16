@@ -1,0 +1,10 @@
+@font-face {
+    font-family: "comic";
+    font-style: normal;
+    /* https://www.wfonts.com/font/comic-sans-ms */
+    src: url("/static/style/fonts/comic.ttf") format("truetype");
+}
+
+* {
+    font-family: "comic", "Comic Sans MS", serif;
+}

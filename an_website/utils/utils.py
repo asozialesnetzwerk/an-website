@@ -360,7 +360,7 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
         return val
     if isinstance(val, str):
         val = val.lower()
-        if val in {"sure", "y", "yes", "t", "true", "on", "1"}:
+        if val in {"sure", "y", "yes", "t", "true", "on", "1", "s"}:
             return True
         if val in {"nope", "n", "no", "f", "false", "off", "0"}:
             return False

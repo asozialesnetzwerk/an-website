@@ -141,6 +141,9 @@ class BaseRequestHandler(RequestHandler):
             # TODO: self.set_header("WWW-Authenticate")
             raise HTTPError(401)
 
+        if (_d := random.randint(0, 1337)) in (69, 420):
+            self.set_cookie("c", "s", expires_days=_d/24, path="/")
+
         if not await self.ratelimit(True):
             await self.ratelimit()
 
@@ -426,7 +429,7 @@ class BaseRequestHandler(RequestHandler):
         ignore_themes = ["random", "random-dark"]
 
         if theme == "random-dark":
-            ignore_themes.extend(("light", "light-blue"))
+            ignore_themes.extend(("light", "light-blue", "fun"))
 
         return random.choice(
             tuple(_t for _t in THEMES if _t not in ignore_themes)
@@ -498,6 +501,7 @@ class BaseRequestHandler(RequestHandler):
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
                 "settings": self.settings,
+                "c": str_to_bool(self.get_cookie("c", "n"), False),
             }
         )
         return namespace
