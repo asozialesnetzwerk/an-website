@@ -122,7 +122,9 @@
     }
     // set the value of the fields to the placeholder set by tornado
     for (const field of fields) field.value = field.placeholder;
-    // disable submit button
-    document.getElementById("form").action = "javascript:onSubmit()";
+    // fix form submit
+    const form = document.getElementById("form");
+    form.action = "javascript:void(0)";
+    form.onsubmit = () => onSubmit();
 })();
 // @license-end

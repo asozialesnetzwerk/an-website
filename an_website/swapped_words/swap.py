@@ -201,6 +201,6 @@ class SwappedWordsAPI(APIRequestHandler):
                 }
             )
 
-    def post(self) -> None:
+    async def post(self) -> None:
         """Handle POST requests to the swapped words API."""
-        self.get()
+        return await self.get()

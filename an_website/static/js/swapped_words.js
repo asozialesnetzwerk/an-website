@@ -17,6 +17,10 @@
     }
 
     function ondata(data, onpopstate = false) {
+        if (!data) {
+            console.log("data is falsy!")
+            return;
+        }
         if (data.error) return onerror(data);
         if (!onpopstate) {
             window.history.pushState(

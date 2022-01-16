@@ -15,9 +15,7 @@ function getJSONURLWithParams(originalUrl) {
 
 const lastLoaded = [];
 function onData(data, onpopstate) {
-    if (!data) {
-        return;
-    }
+    if (!data) return;
     const url = data["url"];
     console.log("Handling data", url);
     if (!onpopstate) {
@@ -111,6 +109,7 @@ function replaceAnchors() {
 
 window.onpopstate = (event) => {
     if (event.state) {
+        console.log("Handling popstate", event.state);
         const [url, params] = getJSONURLWithParams(event.state)
         if (url && params) {
             get(
