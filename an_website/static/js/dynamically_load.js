@@ -23,7 +23,7 @@ function onData(data, onpopstate) {
             console.log("Data url is the same as last loaded, ignoring");
             return;
         }
-        history.pushState(url, url, url);
+        history.pushState({"url": url}, url, url);
     }
     // lastLoaded[0] = url;
     bodyDiv.innerHTML = data["body"];
@@ -108,9 +108,9 @@ function replaceAnchors() {
 }
 
 window.onpopstate = (event) => {
-    if (event.state) {
+    if (event.state && event.state["url"]) {
         console.log("Handling popstate", event.state);
-        const [url, params] = getJSONURLWithParams(event.state)
+        const [url, params] = getJSONURLWithParams(event.state["url"])
         if (url && params) {
             get(
                 url,
