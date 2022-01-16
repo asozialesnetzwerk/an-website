@@ -11,13 +11,10 @@
     <div id="reason">{{reason}}</div>
     {% if status == 469 %}
         <img id="🐈" alt="🐈" src="{{fix_url('/static/img/469.jpg')}}">
-    {% else %}
-        {% if not no_3rd_party %}
-            <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
-        {% end %}
+    {% elif not no_3rd_party %}
+        <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
     {% end %}
 </div>
-
 {% end %}
 
 {% block head %}
