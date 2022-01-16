@@ -142,7 +142,7 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(401)
 
         if (_d := random.randint(0, 1337)) in (69, 420):
-            self.set_cookie("c", "s", expires_days=_d/24, path="/")
+            self.set_cookie("c", "s", expires_days=_d / 24, path="/")
 
         if not await self.ratelimit(True):
             await self.ratelimit()
