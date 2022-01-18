@@ -306,6 +306,8 @@ class SwappedWordsConfig:
 
     def to_config_str(self, minified: bool = False) -> str:
         """Create a readable config str from this."""
+        if not self.lines:
+            return str()
         if minified:
             return ";".join(
                 word_pair.to_conf_line()
@@ -313,9 +315,12 @@ class SwappedWordsConfig:
                 if isinstance(word_pair, WordPair)
             )
         max_len = max(
-            word_pair.len_of_left()
-            for word_pair in self.lines
-            if isinstance(word_pair, WordPair)
+            (
+                word_pair.len_of_left()
+                for word_pair in self.lines
+                if isinstance(word_pair, WordPair)
+            )
+            or (0,)
         )
         return "\n".join(
             word_pair.to_conf_line(max_len) for word_pair in self.lines

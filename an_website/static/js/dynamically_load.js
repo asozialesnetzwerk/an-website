@@ -14,16 +14,35 @@ function getJSONURLWithParams(originalUrl) {
 }
 
 const lastLoaded = [];
-function onData(data, onpopstate) {
-    if (!data) return;
+function dynLoadOnData(data, onpopstate) {
+    if (!data){
+        console.error("No data received");
+        return;
+    }
+    if (data["redirect"]) {
+        window.location.href = data["redirect"];
+        return;
+    }
     const url = data["url"];
-    console.log("Handling data", url);
+    if (!url) {
+        console.error("No URL in data ", data);
+        return;
+    }
+    console.log("Handling data", data);
     if (!onpopstate) {
         if (lastLoaded.length === 1 && lastLoaded[0] === url) {
             console.log("Data url is the same as last loaded, ignoring");
             return;
         }
-        history.pushState({"url": url}, url, url);
+        history.pushState(
+            {"data": data, "url": url, "stateType": "dynLoad"},
+            data["title"],
+            url
+        );
+    }
+    if (!data["body"]) {
+        window.location.reload();
+        return
     }
     // lastLoaded[0] = url;
     bodyDiv.innerHTML = data["body"];
@@ -32,25 +51,31 @@ function onData(data, onpopstate) {
         style.innerHTML = data["css"];
         bodyDiv.appendChild(style)
     }
-    for (const scriptURL of data["stylesheets"]) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.type = "text/css"
-        link.href = scriptURL;
-        bodyDiv.appendChild(link);
+    if (data["stylesheets"]) {
+        for (const scriptURL of data["stylesheets"]) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.type = "text/css"
+            link.href = scriptURL;
+            bodyDiv.appendChild(link);
+        }
     }
-    for (const script of data["scripts"]) {
-        const scriptElement = document.createElement("script");
-        if (script["src"]) scriptElement.src = script["src"];
-        if (script["script"]) scriptElement.innerHTML = script["script"];
-        if (script["onload"]) scriptElement.onload = () => eval(script["onload"]);
-        bodyDiv.appendChild(scriptElement);
+    if (data["scripts"]) {
+        for (const script of data["scripts"]) {
+            const scriptElement = document.createElement("script");
+            if (script["src"]) scriptElement.src = script["src"];
+            if (script["script"]) scriptElement.innerHTML = script["script"];
+            if (script["onload"]) scriptElement.onload = () => eval(script["onload"]);
+            bodyDiv.appendChild(scriptElement);
+        }
     }
     document.title = data["title"];
-    replaceAnchors();
+    dynLoadReplaceAnchors();
+    window.urlData = data;
+    return true
 }
 
-function replaceAnchors() {
+function dynLoadReplaceAnchors() {
     for (const anchor of document.getElementsByTagName("A")) {
         const href = anchor.href;
         if (href.includes("#")) {
@@ -90,12 +115,27 @@ function replaceAnchors() {
             anchor.href = "javascript:void(0);";
             anchor.onclick = () => {
                 console.log("Processing anchor", href);
+                history.replaceState(
+                    {
+                        "data": window.urlData,
+                        "url": window.location.href,
+                        "scrollPos": [
+                            document.documentElement.scrollLeft
+                            || document.body.scrollLeft,
+                            document.documentElement.scrollTop
+                            || document.body.scrollTop
+                        ],
+                        "stateType": "dynLoad"
+                    },
+                    document.title,
+                    window.location.href
+                );
                 if (href !== window.location.href) {
                     bodyDiv.innerHTML = "Loading...";
                     get(
                         requestUrl,
                         params,
-                        (data) => onData(data, false),
+                        (data) => dynLoadOnData(data, false),
                         (error) => {
                             console.log(error);
                             window.location.href = href;
@@ -107,19 +147,29 @@ function replaceAnchors() {
     }
 }
 
-window.onpopstate = (event) => {
-    if (event.state && event.state["url"]) {
-        console.log("Handling popstate", event.state);
-        const [url, params] = getJSONURLWithParams(event.state["url"])
-        if (url && params) {
+function dynLoadOnPopState(event) {
+    if (event.state) {
+        console.log("Popstate", event.state);
+        if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
+            // when the data did not get handled properly
+            const [requestUrl, params] = getJSONURLWithParams(
+                 event.state["url"] || window.location.href
+            );
+            bodyDiv.innerHTML = "Loading...";
             get(
-                url,
+                requestUrl,
                 params,
-                (data) => onData(data, true),
+                (data) => dynLoadOnData(data, false),
                 (error) => {
-                    console.error(error);
-                    window.location.reload();
+                    console.log(error);
+                    window.location.reload()
                 }
+            );
+        }
+        if (event.state["scrollPos"]) {
+            window.scrollTo(
+                event.state["scrollPos"][0],
+                event.state["scrollPos"][1]
             );
             return;
         }
@@ -127,4 +177,16 @@ window.onpopstate = (event) => {
     console.error("Couldn't handle state. ", event.state);
     window.location.reload();
 }
+
+window.PopStateHandlers = {"dynLoad": dynLoadOnPopState};
+window.onpopstate = (event) => {
+    if (event.state
+        && event.state["stateType"]
+        && window.PopStateHandlers[event.state["stateType"]]) {
+        window.PopStateHandlers[event.state["stateType"]](event);
+    } else {
+        console.error("Couldn't handle state. ", event.state);
+        window.location.reload();
+    }
+};
 // @license-end

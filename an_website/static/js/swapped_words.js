@@ -23,15 +23,16 @@
         }
         if (data.error) return onerror(data);
         if (!onpopstate) {
+            data["stateType"] = "swappedWords";
             window.history.pushState(
                 data,
                 "Vertauschte Wörter",
                 window.location.href
             );
         }
-        textInput.value = data.text;
-        configInput.value = data.config;
-        outputText.innerText = data.replaced_text;
+        textInput.value = data["text"] || "";
+        configInput.value = data["config"] || "";
+        outputText.innerText = data["replaced_text"] || "";
         errorText.innerText = "";
     }
 
@@ -39,8 +40,8 @@
         post(
             "/api/vertauschte-woerter/",
             {
-                text: textInput.value,
-                config: configInput.value,
+                text: textInput.value || "",
+                config: configInput.value || "",
                 minify_config: false,
                 return_config: true
             },
@@ -66,6 +67,9 @@
     document.getElementById("reset").onclick = onReset;
     document.getElementById("submit").onclick = onSubmit;
 
-    window.onpopstate = (event) => event.state && ondata(event.state, true);
+    window.PopStateHandlers["swappedWords"] = (event) => (
+        event.state && ondata(event.state, true)
+    );
+
 })();
 // @license-end

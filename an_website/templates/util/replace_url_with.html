@@ -2,6 +2,11 @@
     {% if replace_url_with is not None %}
 <script>
     // replace the url, without loading the website again
-    window.history.pushState("", "", "{% raw replace_url_with.replace('"', "%22") %}");
+    // TODO: check if this still works
+    window.history.pushState(
+        {"stateType": "dynLoad"},
+        "",
+        "{% raw replace_url_with.replace('"', "%22") %}"
+    );
 </script>
     {% end %}

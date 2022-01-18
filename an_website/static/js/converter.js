@@ -67,6 +67,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set(param, value);
         const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+        state["stateType"] = "currencyConverter";
         if (push) {
             history.pushState(state, newUrl, newUrl);
         } else {

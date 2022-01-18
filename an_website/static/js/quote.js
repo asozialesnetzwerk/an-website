@@ -111,18 +111,23 @@ function startQuotes(currId, nextId) {
         }
     }
 
-    window.onpopstate = (event) => event.state && handleData(event.state);
+    window.PopStateHandlers["quotes"] = (event) => (
+        event.state && handleData(event.state)
+    )
 
     nextButton.onclick = () => get(
         `/api/zitate/${nextQuoteId[0]}/`,
         params,
-        (data) => (
-            handleData(data) && window.history.pushState(
-                data,
-                "Falsche Zitate",
-                `/zitate/${data["id"]}/${params}`
-            )
-        )
+        (data) => {
+            if (handleData(data)) {
+                data["stateType"] = "quotes";
+                window.history.pushState(
+                    data,
+                    "Falsche Zitate",
+                    `/zitate/${data["id"]}/${params}`
+                )
+            }
+        }
     );
 
     function vote(vote) {

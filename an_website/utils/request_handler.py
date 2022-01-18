@@ -813,8 +813,22 @@ class JSONRequestHandler(APIRequestHandler):
         if response.code != 200:
             raise HTTPError(response.code, reason=response.reason)
 
-        soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
+        parsed_response_url = urlparse(response.effective_url)
 
+        if parsed_response_url.netloc not in {
+            "127.0.0.1",
+            f"127.0.0.1:{self.settings.get('PORT')}" "localhost",
+            f"localhost:{self.settings.get('PORT')}",
+            self.request.host,
+            self.request.host_name,
+        }:
+            return await self.finish(
+                {  # TODO: Don't do the request for /chat/ or other known redi
+                    "redirect": response.effective_url,
+                }
+            )
+
+        soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
         await self.finish(
             {
                 "url": self.fix_url(
@@ -822,7 +836,7 @@ class JSONRequestHandler(APIRequestHandler):
                         (
                             self.request.protocol,
                             self.request.host,
-                            *urlparse(response.effective_url)[2:],
+                            *parsed_response_url[2:],
                         )
                     )
                 ),
