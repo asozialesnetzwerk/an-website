@@ -509,6 +509,7 @@ class BaseRequestHandler(RequestHandler):
                 "url": self.request.full_url(),
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
+                "dynload": str_to_bool(self.get_cookie("dynload", "n"), False),
             }
         )
         return namespace
@@ -823,7 +824,7 @@ class JSONRequestHandler(APIRequestHandler):
             self.request.host_name,
         }:
             return await self.finish(
-                {  # TODO: Don't do the request for /chat/ or other known redi
+                {  # TODO: Don't do the request for /chat/ or other known redir
                     "redirect": response.effective_url,
                 }
             )

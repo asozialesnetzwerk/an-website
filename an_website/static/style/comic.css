@@ -5,6 +5,17 @@
     src: url("/static/style/fonts/comic.ttf") format("truetype");
 }
 
-* {
+*:not(pre) {
     font-family: "comic", "Comic Sans MS", serif;
+}
+
+@font-face {
+    font-family: "comic-mono";
+    font-style: normal;
+    /* https://dtinth.github.io/comic-mono-font/ */
+    src: url("/static/style/fonts/ComicMono.ttf") format("truetype");
+}
+
+pre * {
+    font-family: "comic-mono", monospace, monospace;
 }

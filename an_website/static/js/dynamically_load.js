@@ -70,6 +70,7 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
     document.title = data["title"];
+    document.getElementById("title").innerText = data["title"];
     dynLoadReplaceAnchors();
     window.urlData = data;
     return true
@@ -179,6 +180,7 @@ function dynLoadOnPopState(event) {
 }
 
 window.PopStateHandlers = {"dynLoad": dynLoadOnPopState};
+
 window.onpopstate = (event) => {
     if (event.state
         && event.state["stateType"]
