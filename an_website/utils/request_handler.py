@@ -322,19 +322,20 @@ class BaseRequestHandler(RequestHandler):
         )
         return user_id
 
-    def get_protocol_and_host(self) -> str:
-        """Get the beginning of the URL."""
-        protocol = None
+    def get_protocol(self) -> str:
+        """Get scheme of the URL."""
         if self.request.host_name.endswith(".onion"):
             # if the host is an onion domain, use HTTP
-            protocol = self.settings["ONION_PROTOCOL"]
-        elif self.settings.get("LINK_TO_HTTPS"):
+            return self.settings["ONION_PROTOCOL"] or "http"
+        if self.settings.get("LINK_TO_HTTPS"):
             # always use HTTPS if the config is set
-            protocol = "https"
-        if protocol is None:
-            # otherwise use the protocol of the request
-            protocol = self.request.protocol
-        return f"{protocol}://{self.request.host}"
+            return "https"
+        # otherwise use the protocol of the request
+        return self.request.protocol
+
+    def get_protocol_and_host(self) -> str:
+        """Get the beginning of the URL."""
+        return f"{self.get_protocol()}://{self.request.host}"
 
     def get_module_infos(self) -> tuple[ModuleInfo, ...]:
         """Get the module infos."""
@@ -353,16 +354,26 @@ class BaseRequestHandler(RequestHandler):
         If the URL is from another website, link to it with the redirect page.
         Otherwise just return the URL with no_3rd_party appended.
         """
-        if this_url is None:
-            # used for Discord page
-            this_url = self.request.full_url()
+        parsed_url = urlparse(url)
 
-        if url.startswith("http") and f"//{self.request.host}" not in url:
+        if parsed_url.netloc and parsed_url.netloc != self.request.host:
             # URL is to other website:
-            url = f"/redirect/?to={quote(url)}&from={quote(this_url)}"
+            parsed_url = urlparse(
+                f"/redirect/?to={quote(url)}"
+                f"&from={quote(this_url or self.request.full_url())}"
+            )
 
-        url = add_args_to_url(
-            url,
+        return add_args_to_url(
+            urlunparse(
+                (
+                    self.get_protocol(),
+                    parsed_url.netloc or self.request.host,
+                    parsed_url.path,
+                    parsed_url.params,
+                    parsed_url.query,
+                    parsed_url.fragment,
+                )
+            ),
             # the no_3rd_party param:
             no_3rd_party=self.get_no_3rd_party()
             if always_add_params
@@ -373,21 +384,6 @@ class BaseRequestHandler(RequestHandler):
             if always_add_params or self.get_theme() != self.get_saved_theme()
             else None,
         )
-
-        if url.endswith("?"):
-            url = url[:-1]
-
-        if url.startswith("/"):
-            # don't use relative URLs
-            if (
-                "?" not in url
-                and not url.endswith("/")
-                and "." not in url.split("/")[-1]
-            ):
-                url += "/"
-            return self.get_protocol_and_host() + url
-
-        return url
 
     def get_no_3rd_party_default(self) -> bool:
         """Get the default value for the no_3rd_party param."""
@@ -810,7 +806,9 @@ class JSONRequestHandler(APIRequestHandler):
             ),
         )
 
-        response = await AsyncHTTPClient().fetch(url, raise_error=False)
+        response = await AsyncHTTPClient().fetch(
+            url, raise_error=False, headers=self.request.headers
+        )
         if response.code != 200:
             raise HTTPError(response.code, reason=response.reason)
 

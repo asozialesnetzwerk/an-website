@@ -202,7 +202,6 @@ def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
     )
 
     for key, value in kwargs.items():  # type: str, Any
-        url_args[key] = str(value)
         if value is None:
             if key in url_args:
                 del url_args[key]
