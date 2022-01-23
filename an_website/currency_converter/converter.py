@@ -14,6 +14,7 @@
 """The currency converter page that converts german currencies."""
 from __future__ import annotations
 
+import random
 import re
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
@@ -90,20 +91,32 @@ async def continuation_string(
 ) -> str:
     """Generate a second text that complains how expensive everything is."""
     _ticket_price: float = ticket_price or values[0]
+    _rand = random.Random(_ticket_price)
     kino_count = int(values[-1])
     output = [
         "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker "
         "für eine Ostmark ins Kino gehen! Das heißt man konnte "
-        f"von {values[-1]} Ostmark {kino_count} Mal ins Kino gehen."
+        f"von {values[-1]} Ostmark {kino_count}-mal ins Kino gehen."
     ]
     while True:  # pylint: disable=while-used
         euro, mark, ost, schwarz = convert(_ticket_price * kino_count)
-        output.append(
-            f"Wenn ihr aber heute {kino_count} Mal ins Kino gehen wollt, "
-            f"müsst ihr {num_to_string(euro)} Euro bezahlen."
+        no_time = (
+            (
+                " — dafür habt ihr ja keine Zeit im Kapitalismus, "
+                "aber wenn ihr die Zeit hättet —"
+            )
+            if mark > 20_300_000_000
+            else str()
         )
+        output.append(
+            f"Wenn ihr aber heute {kino_count}-mal ins "
+            f"Kino gehen wollt{no_time}, müsst ihr heute"
+        )
+        if euro > 1_000_000:
+            output.append("...äh...")
+        output.append(f"{num_to_string(euro)} Euro bezahlen.")
         if mark > 20_300_000_000:  # Staatsschulden der DDR
-            output.append(
+            output.append(  # the end of the text
                 "Ich weiß, was ihr denkt! "
                 "Davon hätte man die DDR entschulden können! Von einmal ins "
                 "Kino gehen. So teuer ist das alles geworden."
@@ -111,10 +124,19 @@ async def continuation_string(
             break
         new_kino_count = int(schwarz)
         output.append(
-            f"Jaja, ich weiß, was ihr denkt! "
+            _rand.choice(
+                (
+                    "Ja! Ja! Ich weiß, was ihr denkt!",
+                    "Ja, ja, ich weiß, was ihr denkt!",
+                    "Ich weiß, was ihr denkt!",
+                )
+            )
+        )
+        # TODO: Add random chance to get approximation
+        output.append(
             f"{num_to_string(mark)} Mark, {num_to_string(ost)} Ostmark, "
             f"{num_to_string(schwarz)} Ostmark auf dem Schwarzmarkt, "
-            f"davon konnte man {new_kino_count} Mal ins Kino gehen."
+            f"davon konnte man {new_kino_count}-mal ins Kino gehen."
         )
         if new_kino_count <= kino_count:
             # it doesn't grow, exit to avoid infinite loop
