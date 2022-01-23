@@ -16,8 +16,6 @@ from __future__ import annotations
 
 import re
 
-from tornado.web import RequestHandler
-
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -82,9 +80,48 @@ async def conversion_string(value_dict: ValueDict) -> str:
     return (
         f"{value_dict.get('euro_str')} Euro, "
         f"das sind ja {value_dict.get('mark_str')} Mark; "
-        f"{value_dict.get('ost_str')} Ostmark "
-        f"und {value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
+        f"{value_dict.get('ost_str')} Ostmark und "
+        f"{value_dict.get('schwarz_str')} Ostmark auf dem Schwarzmarkt!"
     )
+
+
+async def continuation_string(
+    values: ValuesTuple, ticket_price: None | float = None
+) -> str:
+    """Generate a second text that complains how expensive everything is."""
+    _ticket_price: float = ticket_price or values[0]
+    kino_count = int(values[-1])
+    output = [
+        "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker "
+        "für eine Ostmark ins Kino gehen! Das heißt man konnte "
+        f"von {values[-1]} Ostmark {kino_count} Mal ins Kino gehen."
+    ]
+    while True:  # pylint: disable=while-used
+        euro, mark, ost, schwarz = convert(_ticket_price * kino_count)
+        output.append(
+            f"Wenn ihr aber heute {kino_count} Mal ins Kino gehen wollt, "
+            f"müsst ihr {num_to_string(euro)} Euro bezahlen."
+        )
+        if mark > 20_300_000_000:  # Staatsschulden der DDR
+            output.append(
+                "Ich weiß, was ihr denkt! "
+                "Davon hätte man die DDR entschulden können! Von einmal ins "
+                "Kino gehen. So teuer ist das alles geworden."
+            )
+            break
+        new_kino_count = int(schwarz)
+        output.append(
+            f"Jaja, ich weiß, was ihr denkt! "
+            f"{num_to_string(mark)} Mark, {num_to_string(ost)} Ostmark, "
+            f"{num_to_string(schwarz)} Ostmark auf dem Schwarzmarkt, "
+            f"davon konnte man {new_kino_count} Mal ins Kino gehen."
+        )
+        if new_kino_count <= kino_count:
+            # it doesn't grow, exit to avoid infinite loop
+            break
+        kino_count = new_kino_count
+
+    return " ".join(output)
 
 
 # class ValueDict(TypedDict):
@@ -98,53 +135,26 @@ async def conversion_string(value_dict: ValueDict) -> str:
 #     schwarz_str: str
 #     text: str
 ValueDict = dict[str, str | float | bool]
+#                    euro, mark,  ost,   schwarz
+ValuesTuple = tuple[float, float, float, float]
+
+
+def convert(euro: float) -> ValuesTuple:
+    """Convert a number to the german representation of a number."""
+    return tuple(euro * _m for _m in multipliers)  # type: ignore
 
 
 async def get_value_dict(euro: float) -> ValueDict:
     """Create the value dict base on the euro."""
+    values = convert(euro)
     value_dict: ValueDict = {}
-    for _i, key in enumerate(keys):
-        val = multipliers[_i] * euro
+    for key, val in zip(keys, values):
         value_dict[key] = val
         value_dict[key + "_str"] = num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
-
+    value_dict["text2"] = await continuation_string(values)
     return value_dict
-
-
-async def arguments_to_value_dict(
-    request_handler: RequestHandler,
-) -> None | ValueDict:
-    """
-    Parse the arguments to get the value dict and return it.
-
-    Return None if no argument is given.
-    """
-    arg_list: list[tuple[int, str, str]] = []
-
-    for _i, key in enumerate(keys):
-        num_str = request_handler.get_query_argument(name=key, default=None)
-        if num_str is not None:
-            arg_list.append((_i, key, num_str))
-
-    print(arg_list)
-
-    too_many_params: bool = len(arg_list) > 1
-
-    for _i, key, num_str in arg_list:
-        euro = string_to_num(num_str, multipliers[_i])
-
-        if euro is not None:
-            value_dict: ValueDict = await get_value_dict(euro)
-
-            if too_many_params:
-                value_dict["too_many_params"] = True
-
-            value_dict["key_used"] = key
-
-            return value_dict
-    return None
 
 
 class CurrencyConverter(BaseRequestHandler):
@@ -152,7 +162,7 @@ class CurrencyConverter(BaseRequestHandler):
 
     async def get(self) -> None:
         """Handle the GET request and display the page."""
-        value_dict = await arguments_to_value_dict(self)
+        value_dict = await self.create_value_dict()
         if value_dict is None:
             value_dict = await get_value_dict(0)
             description = self.description
@@ -174,8 +184,37 @@ class CurrencyConverter(BaseRequestHandler):
             replace_url_with=replace_url_with,
         )
 
+    async def create_value_dict(self) -> None | ValueDict:
+        """
+        Parse the arguments to get the value dict and return it.
 
-class CurrencyConverterAPI(APIRequestHandler):
+        Return None if no argument is given.
+        """
+        arg_list: list[tuple[int, str, str]] = []
+
+        for _i, key in enumerate(keys):
+            num_str = self.get_query_argument(name=key, default=None)
+            if num_str is not None:
+                arg_list.append((_i, key, num_str))
+        # print(arg_list)
+        too_many_params: bool = len(arg_list) > 1
+
+        for _i, key, num_str in arg_list:
+            euro = string_to_num(num_str, multipliers[_i])
+
+            if euro is not None:
+                value_dict: ValueDict = await get_value_dict(euro)
+
+                if too_many_params:
+                    value_dict["too_many_params"] = True
+
+                value_dict["key_used"] = key
+
+                return value_dict
+        return None
+
+
+class CurrencyConverterAPI(CurrencyConverter, APIRequestHandler):
     """Request handler for the currency converter JSON API."""
 
     async def get(self) -> None:
@@ -184,7 +223,7 @@ class CurrencyConverterAPI(APIRequestHandler):
 
         If no arguments are given the potential arguments are shown.
         """
-        value_dict = await arguments_to_value_dict(self)
+        value_dict = await self.create_value_dict()
         if value_dict is None:
             return await self.finish(dict(zip(keys, [None] * len(keys))))
 

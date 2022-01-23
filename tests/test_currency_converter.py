@@ -57,6 +57,8 @@ def test_currency_conversion() -> None:
                 val_dict[currency]  # type: ignore
             )
             assert str(val_dict[f"{currency}_str"]) in str(val_dict["text"])
+    assert converter.convert(1) == (1, 2, 4, 20)
+    assert converter.convert(2) == (2, 4, 8, 40)
 
 
 if __name__ == "__main__":
