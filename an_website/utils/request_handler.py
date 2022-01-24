@@ -136,12 +136,11 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # community.torproject.org/onion-services/advanced/onion-location/
         if (
-            self.settings.get("ONION_ADDRESS")
-            and not self.request.host.endswith(".onion")
-        ):
+            _oa := self.settings.get("ONION_ADDRESS")
+        ) and not self.request.host.endswith(".onion"):
             self.set_header(
                 "Onion-Location",
-                self.settings.get("ONION_ADDRESS")
+                _oa
                 + self.request.path
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
