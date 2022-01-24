@@ -87,19 +87,29 @@ async def conversion_string(value_dict: ValueDict) -> str:
 
 
 async def continuation_string(
-    values: ValuesTuple, ticket_price: None | float = None
+    values: ValuesTuple,
+    ticket_price: None | float = None,
+    ins_kino_gehen: None | str = None,
 ) -> str:
     """Generate a second text that complains how expensive everything is."""
-    _ticket_price: float = ticket_price or values[0]
-    _rand = random.Random(_ticket_price)
-    kino_count = int(values[-1])
+    price: float = ticket_price or values[0]
+    if not ins_kino_gehen:
+        ins_kino_gehen = "ins Kino gehen"
+    price_ostmark: float = (
+        1 if ins_kino_gehen == "ins Kino gehen" else round(price / 8) / 2
+    )
+    _rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
+    kino_count: int = int(values[-1] / price_ostmark)
     output = [
-        "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker "
-        "für eine Ostmark ins Kino gehen! Das heißt man konnte "
-        f"von {values[-1]} Ostmark {kino_count}-mal ins Kino gehen."
+        "Und ich weiß nicht, ob ihr das noch wisst, "
+        "aber man konnte locker für",
+        "eine" if price_ostmark == 1 else num_to_string(price_ostmark),
+        f"Ostmark {ins_kino_gehen}! Das heißt man konnte von "
+        f"{num_to_string(values[-1])} Ostmark "
+        f"{kino_count}-mal {ins_kino_gehen}.",
     ]
     while True:  # pylint: disable=while-used
-        euro, mark, ost, schwarz = convert(_ticket_price * kino_count)
+        euro, mark, ost, schwarz = convert(price * kino_count)
         no_time = (
             (
                 " — dafür habt ihr ja keine Zeit im Kapitalismus, "
@@ -109,20 +119,12 @@ async def continuation_string(
             else ""
         )
         output.append(
-            f"Wenn ihr aber heute {kino_count}-mal ins "
-            f"Kino gehen wollt{no_time}, müsst ihr heute"
+            f"Wenn ihr aber heute {kino_count}-mal "
+            f"{ins_kino_gehen} wollt{no_time}, müsst ihr"
         )
         if euro > 1_000_000:
             output.append("...äh...")
         output.append(f"{num_to_string(euro)} Euro bezahlen.")
-        if mark > 20_300_000_000:  # Staatsschulden der DDR
-            output.append(  # the end of the text
-                "Ich weiß, was ihr denkt! "
-                "Davon hätte man die DDR entschulden können! Von einmal ins "
-                "Kino gehen. So teuer ist das alles geworden."
-            )
-            break
-        new_kino_count = int(schwarz)
         output.append(
             _rand.choice(
                 (
@@ -132,11 +134,19 @@ async def continuation_string(
                 )
             )
         )
+        if mark > 20_300_000_000:  # Staatsschulden der DDR
+            output.append(  # the end of the text
+                "Davon hätte man die DDR entschulden können! "
+                f"Von einmal {ins_kino_gehen}. "
+                "So teuer ist das alles geworden."
+            )
+            break
+        new_kino_count = int(schwarz * price_ostmark)
         # TODO: Add random chance to get approximation
         output.append(
             f"{num_to_string(mark)} Mark, {num_to_string(ost)} Ostmark, "
             f"{num_to_string(schwarz)} Ostmark auf dem Schwarzmarkt, "
-            f"davon konnte man {new_kino_count}-mal ins Kino gehen."
+            f"davon konnte man {new_kino_count}-mal {ins_kino_gehen}."
         )
         if new_kino_count <= kino_count:
             # it doesn't grow, exit to avoid infinite loop
@@ -166,7 +176,10 @@ def convert(euro: float) -> ValuesTuple:
     return tuple(euro * _m for _m in multipliers)  # type: ignore
 
 
-async def get_value_dict(euro: float) -> ValueDict:
+async def get_value_dict(
+    euro: float,
+    ins_kino_gehen: None | str = None,
+) -> ValueDict:
     """Create the value dict base on the euro."""
     values = convert(euro)
     value_dict: ValueDict = {}
@@ -175,7 +188,9 @@ async def get_value_dict(euro: float) -> ValueDict:
         value_dict[key + "_str"] = num_to_string(val)
 
     value_dict["text"] = await conversion_string(value_dict)
-    value_dict["text2"] = await continuation_string(values)
+    value_dict["text2"] = await continuation_string(
+        values, ins_kino_gehen=ins_kino_gehen
+    )
     return value_dict
 
 
@@ -215,7 +230,7 @@ class CurrencyConverter(BaseRequestHandler):
         arg_list: list[tuple[int, str, str]] = []
 
         for _i, key in enumerate(keys):
-            num_str = self.get_query_argument(name=key, default=None)
+            num_str = self.get_argument(name=key, default=None)
             if num_str is not None:
                 arg_list.append((_i, key, num_str))
         # print(arg_list)
@@ -225,7 +240,9 @@ class CurrencyConverter(BaseRequestHandler):
             euro = string_to_num(num_str, multipliers[_i])
 
             if euro is not None:
-                value_dict: ValueDict = await get_value_dict(euro)
+                value_dict: ValueDict = await get_value_dict(
+                    euro, ins_kino_gehen=self.get_argument("text", None)
+                )
 
                 if too_many_params:
                     value_dict["too_many_params"] = True
