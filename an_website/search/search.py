@@ -36,7 +36,7 @@ class Search(BaseRequestHandler):
 
     async def get(self) -> None:
         """Handle GET requests to the search page."""
-        query = str(self.get_query_argument("q", strip=True, default=str()))
+        query = str(self.get_query_argument("q", strip=True, default=""))
 
         module_infos: list[
             tuple[float, ModuleInfo, list[tuple[float, PageInfo]]]

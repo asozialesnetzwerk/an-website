@@ -124,7 +124,7 @@ class SwappedWords(BaseRequestHandler):
             self.render(
                 "pages/swapped_words.html",
                 text=text,
-                output=str(),
+                output="",
                 config=config_str,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(_e),
@@ -133,7 +133,7 @@ class SwappedWords(BaseRequestHandler):
     def get(self) -> None:
         """Handle GET requests to the swapped words page."""
         self.handle_text(
-            self.get_query_argument("text", default=None) or str(),
+            self.get_query_argument("text", default=None) or "",
             self.get_query_argument("config", default=None),
             self.get_query_argument("reset", default=None) or "nope",
         )
@@ -141,7 +141,7 @@ class SwappedWords(BaseRequestHandler):
     def post(self) -> None:
         """Handle POST requests to the swapped words page."""
         self.handle_text(
-            self.get_argument("text") or str(),
+            self.get_argument("text") or "",
             self.get_argument("config", default=None),
             self.get_argument("reset") or "nope",
         )
@@ -154,7 +154,7 @@ class SwappedWordsAPI(APIRequestHandler):
 
     async def get(self) -> None:
         """Handle GET requests to the swapped words API."""
-        text = self.get_argument("text", default=None, strip=True) or str()
+        text = self.get_argument("text", default=None, strip=True) or ""
 
         check_text_too_long(text)
 

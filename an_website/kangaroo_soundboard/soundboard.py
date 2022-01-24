@@ -104,7 +104,7 @@ def get_rss_str(path: str, protocol_and_host: str) -> None | str:
     if path is not None:
         path = path.lower()
 
-    if path in (None, "/", str()):
+    if path in {None, "/", ""}:
         _infos: Iterable[SoundInfo] = ALL_SOUNDS
     elif path in PERSON_SOUNDS:
         _infos = PERSON_SOUNDS[path]
@@ -188,7 +188,7 @@ class SoundboardHTMLHandler(BaseRequestHandler):
         self, path: None | str
     ) -> None | tuple[Iterable[Info], None | str]:
         """Get a info list based on the path and return it with the query."""
-        if path in (None, str(), "index", "/"):
+        if path in {None, "", "index", "/"}:
             return MAIN_PAGE_INFO, None
 
         if path in {"persons", "personen"}:
@@ -199,8 +199,8 @@ class SoundboardHTMLHandler(BaseRequestHandler):
             return persons_list, None
 
         if path in {"search", "suche"}:
-            query = self.get_query_argument("q", default=str())
-            if query is None or query == str():
+            query = self.get_query_argument("q", default="")
+            if not query:
                 return MAIN_PAGE_INFO, query
 
             return (

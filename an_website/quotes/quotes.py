@@ -82,7 +82,7 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     """Parse a vote str to the corresponding int."""
     if vote == "-1":
         return -1
-    if vote in ("0", str(), None):
+    if vote in {"0", "", None}:
         return 0
     if vote == "1":
         return 1
@@ -205,9 +205,9 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteMainPage(QuoteBaseHandler):
     """The main quote page that should render a random quote."""
 
-    URL_PREFIX = str()
+    URL_PREFIX = ""
 
-    async def get(self, suffix: str = str()) -> None:
+    async def get(self, suffix: str = "") -> None:
         """Handle the GET request to the main quote page and render a quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
         return self.redirect(
@@ -249,7 +249,7 @@ class QuoteById(QuoteBaseHandler):
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)
         new_vote_str = self.get_argument("vote", default=None)
-        if new_vote_str is None or new_vote_str == str():
+        if not new_vote_str:
             return await self.render_quote(quote_id, author_id)
 
         old_vote = await self.get_old_vote(quote_id, author_id)

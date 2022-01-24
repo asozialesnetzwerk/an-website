@@ -41,7 +41,7 @@ def test_num_string_conversion() -> None:
     assert converter.num_to_string(1.5) == "1,50"
     assert converter.num_to_string(100) == "100"
 
-    for not_a_num in (str(), ".", "..", "text"):
+    for not_a_num in ("", ".", "..", "text"):
         assert converter.string_to_num(not_a_num) is None
 
 

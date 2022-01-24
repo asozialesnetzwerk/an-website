@@ -37,7 +37,7 @@ def get_module_info() -> ModuleInfo:
 class LOLWUT(BaseRequestHandler):
     """The request handler for the LOLWUT page."""
 
-    async def get(self, args: str = str()) -> None:
+    async def get(self, args: str = "") -> None:
         """Handle GET requests to the LOLWUT page."""
         if args:
             arguments = args.split("/")

@@ -132,7 +132,7 @@ def test_solving_hangman() -> None:
     hangman = asyncio.run(
         solver.solve_hangman(
             input_str="______",
-            invalid=str(),
+            invalid="",
             language="de",
             max_words=10,
             crossword_mode=False,

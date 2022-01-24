@@ -82,7 +82,7 @@ def lisp_always_active() -> bool:
             )(1),
             sys.byteorder,
         )
-        // ((69 - 5) // 4)
+        // (69 // 4 - 1)
     )
 
 
@@ -100,9 +100,9 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-branches
         response = send(url, key, code, detect_mode(code), session)
     except SyntaxError as exc:
         print(
-            str()
-            .join(traceback.format_exception_only(exc))  # type: ignore
-            .strip()
+            "".join(
+                traceback.format_exception_only(exc)  # type: ignore
+            ).strip()
         )
         return
     except HTTPClientError as exc:

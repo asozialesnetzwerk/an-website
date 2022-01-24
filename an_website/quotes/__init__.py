@@ -277,7 +277,7 @@ HTTP_CLIENT = AsyncHTTPClient()
 
 async def make_api_request(
     endpoint: str,
-    args: str = str(),
+    args: str = "",
     method: Literal["GET", "POST"] = "GET",
     body: None | str = None,
 ) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
@@ -412,7 +412,7 @@ async def update_cache_periodically(
     if setup_redis_awaitable:
         await setup_redis_awaitable
     redis = app.settings.get("REDIS")
-    prefix = app.settings.get("REDIS_PREFIX", str())
+    prefix = app.settings.get("REDIS_PREFIX", "")
     if redis:
         parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),
@@ -462,7 +462,7 @@ async def update_cache(
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
     redis = app.settings.get("REDIS")
-    prefix = app.settings.get("REDIS_PREFIX", str())
+    prefix = app.settings.get("REDIS_PREFIX", "")
     try:  # pylint: disable=too-many-try-statements
 
         if update_wrong_quotes:

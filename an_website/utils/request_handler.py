@@ -118,7 +118,7 @@ class BaseRequestHandler(RequestHandler):
     @property
     def redis_prefix(self) -> str:
         """Get the Redis prefix from the settings."""
-        return self.settings.get("REDIS_PREFIX", str())
+        return self.settings.get("REDIS_PREFIX", "")
 
     @property
     def elasticsearch(self) -> None | AsyncElasticsearch:
@@ -128,7 +128,7 @@ class BaseRequestHandler(RequestHandler):
     @property
     def elasticsearch_prefix(self) -> str:
         """Get the Elasticsearch prefix from the settings."""
-        return self.settings.get("ELASTICSEARCH_PREFIX", str())
+        return self.settings.get("ELASTICSEARCH_PREFIX", "")
 
     def set_default_headers(self) -> None:
         """Opt out of all FLoC cohort calculation."""
@@ -168,7 +168,7 @@ class BaseRequestHandler(RequestHandler):
             tokens = 10 if self.settings.get("UNDER_ATTACK") else 1
         else:
             bucket = getattr(
-                self, f"RATELIMIT_{self.request.method}_BUCKET", str()
+                self, f"RATELIMIT_{self.request.method}_BUCKET", ""
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
             if not (bucket and limit):
@@ -267,24 +267,16 @@ class BaseRequestHandler(RequestHandler):
             kwargs["exc_info"][0], HTTPError  # type: ignore
         ):
             if self.settings.get("serve_traceback") or self.is_authorized():
-                return (
-                    str()
-                    .join(
-                        traceback.format_exception(
-                            *kwargs["exc_info"]  # type: ignore
-                        )
+                return "".join(
+                    traceback.format_exception(
+                        *kwargs["exc_info"]  # type: ignore
                     )
-                    .strip()
+                ).strip()
+            return "".join(
+                traceback.format_exception_only(
+                    *kwargs["exc_info"][:2]  # type: ignore
                 )
-            return (
-                str()
-                .join(
-                    traceback.format_exception_only(
-                        *kwargs["exc_info"][:2]  # type: ignore
-                    )
-                )
-                .strip()
-            )
+            ).strip()
         if "exc_info" in kwargs and isinstance(
             kwargs["exc_info"][1], MissingArgumentError  # type: ignore
         ):
@@ -447,7 +439,7 @@ class BaseRequestHandler(RequestHandler):
             f"value='{bool_to_str(self.get_no_3rd_party())}'>"
             if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
-            else str()
+            else ""
         )
 
         if (theme := self.get_theme()) != self.get_saved_theme():
@@ -485,7 +477,7 @@ class BaseRequestHandler(RequestHandler):
                 "keywords": (
                     "Asoziales Netzwerk, Känguru-Chroniken"
                     + (
-                        str()
+                        ""
                         if self.module_info is None
                         else ", "
                         + self.module_info.get_keywords_as_str(
@@ -614,8 +606,8 @@ class NotFound(BaseRequestHandler):
 
     def get_query(self) -> str:
         """Get the query how you would add it to the end of the URL."""
-        if self.request.query == str():
-            return str()  # if empty without question mark
+        if not self.request.query:
+            return ""  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query
 
     async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
@@ -740,7 +732,7 @@ class ErrorPage(BaseRequestHandler):
         status_code: int = int(code)
 
         # get the reason
-        reason: str = responses.get(status_code, str())
+        reason: str = responses.get(status_code, "")
 
         # set the status code if Tornado doesn't throw an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
@@ -773,7 +765,7 @@ class ElasticRUM(BaseRequestHandler):
     )
     SCRIPTS: dict[str, str] = {}
 
-    async def get(self, ending: str = str()) -> None:
+    async def get(self, ending: str = "") -> None:
         """Serve the RUM script."""
         if ending not in self.SCRIPTS:
             response = await AsyncHTTPClient().fetch(
@@ -803,7 +795,7 @@ class JSONRequestHandler(APIRequestHandler):
             f"http://localhost:{self.settings.get('PORT')}/",
             self.fix_url(
                 path
-                + ("?" + self.request.query if self.request.query else str()),
+                + ("?" + self.request.query if self.request.query else ""),
                 always_add_params=True,
             ),
         )
@@ -841,10 +833,10 @@ class JSONRequestHandler(APIRequestHandler):
                         )
                     )
                 ),
-                "title": (soup.title.string if soup.title else str()),
-                "body": str()
-                .join(str(_el) for _el in soup.find_all(id="body")[0].contents)
-                .strip(),  # ids are unique
+                "title": (soup.title.string if soup.title else ""),
+                "body": "".join(
+                    str(_el) for _el in soup.find_all(id="body")[0].contents
+                ).strip(),  # ids are unique
                 "scripts": [
                     {
                         "src": _s.get("src"),
@@ -868,12 +860,12 @@ class JSONRequestHandler(APIRequestHandler):
                 if soup.head
                 else [],
                 "css": "\n".join(
-                    str(_s.string or str())
+                    str(_s.string or "")
                     for _s in soup.find_all("style")
                     if "class" not in _s.attrs
                     or "on-every-page" not in _s["class"]
                 ).strip()
                 if soup.head
-                else str(),
+                else "",
             }
         )

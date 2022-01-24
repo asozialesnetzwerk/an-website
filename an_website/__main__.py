@@ -110,7 +110,7 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
             if (
                 (  # check if the annotations specify the return
                     # type as Module info
-                    module.get_module_info.__annotations__.get("return", str())
+                    module.get_module_info.__annotations__.get("return", "")
                     == "ModuleInfo"
                 )
                 # check if returned module_info is type ModuleInfo
@@ -414,7 +414,7 @@ async def setup_redis(app: Application) -> None:
     try:
         await redis.ping()
     except RedisError as exc:
-        logger.error(str().join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error("".join(traceback.format_exception_only(exc)).strip())  # type: ignore
         logger.error("Redis is unavailable!")
         app.settings["REDIS"] = None
     else:
@@ -432,7 +432,7 @@ async def setup_elasticsearch(app: Application) -> None:
         )
         if config.has_option("ELASTICSEARCH", "HOSTS")
         else None,
-        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=str()),
+        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=""),
         use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
@@ -461,7 +461,7 @@ async def setup_elasticsearch(app: Application) -> None:
     try:
         await elasticsearch.info()
     except ElasticsearchException as exc:
-        logger.error(str().join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error("".join(traceback.format_exception_only(exc)).strip())  # type: ignore
         logger.error("Elasticsearch is unavailable!")
         app.settings["ELASTICSEARCH"] = None
     else:
@@ -520,7 +520,7 @@ def main() -> None:
 
     # read ignored modules from the config
     for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=str()
+        "GENERAL", "IGNORED_MODULES", fallback=""
     ).split(","):
         module_name = module_name.strip()
         if len(module_name) > 0:
@@ -535,7 +535,7 @@ def main() -> None:
     port: int = config.getint("GENERAL", "PORT", fallback=8080)
     server = app.listen(
         port,
-        "localhost" if behind_proxy else str(),
+        "localhost" if behind_proxy else "",
         xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
         protocol=config.get("GENERAL", "PROTOCOL", fallback=None),

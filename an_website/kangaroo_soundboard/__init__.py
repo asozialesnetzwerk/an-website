@@ -56,7 +56,7 @@ del books, chapters, person_dict
 @lru_cache(100)
 def mark_query(text: str, query: None | str) -> str:
     """Replace the instances of the query with itself in a div."""
-    if query is None or query == str():
+    if not query:
         return text
 
     query = re.sub("(ä|ae)", "(ä|ae)", query.lower())
@@ -142,7 +142,7 @@ class SoundInfo(Info):
         """Parse the text to return the name of the file."""
         return re.sub(
             r"[^a-z0-9_-]+",
-            str(),
+            "",
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 

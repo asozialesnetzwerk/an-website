@@ -87,7 +87,7 @@ async def get_uptime_perc_periodically(
     # pylint: disable=while-used
     while True:
         redis: None | Redis = app.settings.get("REDIS")
-        prefix: str = app.settings.get("REDIS_PREFIX", str())
+        prefix: str = app.settings.get("REDIS_PREFIX", "")
         elasticsearch: None | AsyncElasticsearch = app.settings.get(
             "ELASTICSEARCH"
         )

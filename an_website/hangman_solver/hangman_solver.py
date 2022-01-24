@@ -52,8 +52,8 @@ def get_module_info() -> ModuleInfo:
 class Hangman:  # pylint: disable=too-many-instance-attributes
     """Hangman object that holds all the important information."""
 
-    input: str = str()
-    invalid: str = str()
+    input: str = ""
+    invalid: str = ""
     words: frozenset[str] = field(default_factory=frozenset)
     word_count: int = 0
     letters: dict[str, int] = field(default_factory=dict)
@@ -72,7 +72,7 @@ def fix_input_str(_input: str) -> str:
 def fix_invalid(invalid: str) -> str:
     """Replace chars that aren't word chars and remove duplicate chars."""
     return NOT_WORD_CHAR.sub(
-        str(), str().join(set(invalid.lower()))
+        "", "".join(set(invalid.lower()))
     )  # replace stuff that could be bad
 
 
@@ -176,7 +176,7 @@ async def get_words_and_letters(
     crossword_mode: bool,
 ) -> tuple[frozenset[str], dict[str, int]]:
     """Generate a word set and a letters dict and return them in a tuple."""
-    input_letters: str = WILDCARDS_REGEX.sub(str(), input_str)
+    input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = not invalid and not input_letters
 
     if matches_always and not crossword_mode:
@@ -264,9 +264,9 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
         request_handler.get_query_argument("lang", default="de_only_a-z")
     )
 
-    input_str = str(request_handler.get_query_argument("input", default=str()))
+    input_str = str(request_handler.get_query_argument("input", default=""))
 
-    invalid = str(request_handler.get_query_argument("invalid", default=str()))
+    invalid = str(request_handler.get_query_argument("invalid", default=""))
 
     return await solve_hangman(
         max_words=max_words,

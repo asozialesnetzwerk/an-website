@@ -67,7 +67,7 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
             )
         )
     # create new word and return it
-    return str().join(new_word)
+    return "".join(new_word)
 
 
 class ConfigLine:  # pylint: disable=too-few-public-methods
@@ -77,7 +77,7 @@ class ConfigLine:  # pylint: disable=too-few-public-methods
         self, len_of_left: None | int = None
     ) -> str:
         """Get how this would look like in a config."""
-        return str()
+        return ""
 
 
 @dataclass(frozen=True)
@@ -88,7 +88,7 @@ class Comment(ConfigLine):
 
     def to_conf_line(self, len_of_left: None | int = None) -> str:
         """Get how this would look like in a config."""
-        return str() if not self.comment else f"# {self.comment}"
+        return "" if not self.comment else f"# {self.comment}"
 
 
 @dataclass(frozen=True, init=False)
@@ -98,7 +98,7 @@ class WordPair(ConfigLine):
     word1: str
     word2: str
     # separator between the two words, that shouldn't be changed:
-    separator: str = field(default=str(), init=False)
+    separator: str = field(default="", init=False)
 
     def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
         """Get the replacement for a given word with the same case."""
@@ -116,7 +116,7 @@ class WordPair(ConfigLine):
         """Get how this would look like in a config."""
         left, separator, right = self.word1, self.separator, self.word2
         if len_of_left is None:
-            return str().join((left, separator.strip(), right))
+            return "".join((left, separator.strip(), right))
         return (
             left
             + (" " * (1 + len_of_left - self.len_of_left()))
@@ -217,7 +217,7 @@ def parse_config_line(  # noqa: C901
     line = line.strip()
 
     if not line:
-        return Comment(str())  # empty comment → empty line
+        return Comment("")  # empty comment → empty line
 
     # print(len(line.strip()), f"'{line.strip()}'")
 
@@ -307,7 +307,7 @@ class SwappedWordsConfig:
     def to_config_str(self, minified: bool = False) -> str:
         """Create a readable config str from this."""
         if not self.lines:
-            return str()
+            return ""
         if minified:
             return ";".join(
                 word_pair.to_conf_line()

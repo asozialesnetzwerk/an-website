@@ -71,7 +71,7 @@ class Backdoor(APIRequestHandler):
             try:
                 parsed = compile(
                     source,
-                    str(),
+                    "",
                     mode,
                     barry_as_FLUFL.compiler_flag
                     | ast.PyCF_ONLY_AST
@@ -81,7 +81,7 @@ class Backdoor(APIRequestHandler):
                 )
                 code = compile(
                     parsed,
-                    str(),
+                    "",
                     mode,
                     barry_as_FLUFL.compiler_flag
                     | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
@@ -130,9 +130,9 @@ class Backdoor(APIRequestHandler):
                     if result is not None:
                         session["_"] = result
             result_tuple: tuple[None | str, Any] = (
-                str()
-                .join(traceback.format_exception(exception))  # type: ignore
-                .strip()
+                "".join(
+                    traceback.format_exception(exception)  # type: ignore
+                ).strip()
                 if exception
                 else None,
                 exception or result,
@@ -152,7 +152,7 @@ class Backdoor(APIRequestHandler):
             # except Exception as exc:
             #     response["result"] = (
             #         response["result"][0] or repr(response["result"][1]),
-            #         str().join(traceback.format_exception(exc)).strip(),
+            #         "".join(traceback.format_exception(exc)).strip(),
             #     )
         except SystemExit as exc:
             if not isinstance(exc.code, int):
