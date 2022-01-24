@@ -19,6 +19,7 @@ import io
 import pickle
 import pydoc
 import traceback
+from types import TracebackType
 from typing import Any
 
 from tornado.web import HTTPError
@@ -200,11 +201,12 @@ class Backdoor(APIRequestHandler):
         self.set_header("Content-Type", "application/vnd.python.pickle")
         if "exc_info" in kwargs:
             exc_info: tuple[
-                type[BaseException], BaseException, Any  # Any ≙ traceback
+                type[BaseException], BaseException, TracebackType
             ] = kwargs[
                 "exc_info"
             ]  # type: ignore
             if not issubclass(exc_info[0], HTTPError):
                 self.finish(pickle.dumps(self.get_error_message(**kwargs)))
                 return None
+        self.finish(pickle.dumps(None))
         return None

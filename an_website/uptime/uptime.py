@@ -25,7 +25,7 @@ import tornado.web
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 
-from ..__main__ import NAME  # pylint: disable=cyclic-import
+from .. import NAME
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -43,7 +43,7 @@ def get_module_info() -> ModuleInfo:
             (r"/api/uptime/", UptimeAPIHandler),
         ),
         name="Betriebszeit",
-        description="Die Dauer die, die Webseite am Stück in Betrieb ist",
+        description="Die Dauer, die die Webseite am Stück in Betrieb ist",
         path="/uptime/",
         keywords=("uptime", "Betriebszeit", "Zeit"),
     )
@@ -79,39 +79,34 @@ async def get_uptime_perc_periodically(
     setup_es_awaitable: None | Awaitable[Any] = None,
 ) -> None:
     """Get the uptime percentage periodically."""
+    hours: tuple[Literal[1, 3, 6, 12, 24], ...] = (1, 3, 6, 12, 24)
     if setup_redis_awaitable:
         await setup_redis_awaitable
     if setup_es_awaitable:
         await setup_es_awaitable
-    redis: None | Redis = app.settings.get("REDIS")
-    prefix: None | str = app.settings.get("REDIS_PREFIX", str())
-    elasticsearch: None | AsyncElasticsearch = app.settings.get(
-        "ELASTICSEARCH"
-    )
-    if not redis or not elasticsearch:
-        logger.warning(
-            "Redis or Elasticsearch not available. "
-            "Don't get uptime periodically."
-        )
-        return
     # pylint: disable=while-used
     while True:
-        hours: tuple[Literal[1, 12, 24], ...] = (1, 12, 24)
-        for _h in hours:
-            await get_uptime_perc(
-                elasticsearch=elasticsearch,
-                hours=_h,
-                redis=redis,
-                redis_prefix=prefix,
-                get_from_cache=False,
-            )
-        logger.debug("Got uptime percentage.")
+        redis: None | Redis = app.settings.get("REDIS")
+        prefix: str = app.settings.get("REDIS_PREFIX", str())
+        elasticsearch: None | AsyncElasticsearch = app.settings.get(
+            "ELASTICSEARCH"
+        )
+        if redis and elasticsearch:
+            for _h in hours:
+                await get_uptime_perc(
+                    elasticsearch=elasticsearch,
+                    hours=_h,
+                    redis=redis,
+                    redis_prefix=prefix,
+                    get_from_cache=False,
+                )
+            logger.debug("Got uptime percentage.")
         await asyncio.sleep(5 * 60)  # every 5 minutes
 
 
 async def get_uptime_perc(
     elasticsearch: AsyncElasticsearch,
-    hours: Literal[1, 12, 24],
+    hours: Literal[1, 3, 6, 12, 24],
     redis: None | Redis = None,
     redis_prefix: None | str = None,
     get_from_cache: bool = True,
@@ -151,7 +146,8 @@ async def get_uptime_perc(
                                 ]
                             }
                         },
-                        size=10_000,  # max size (is more than needed for 24h)
+                        # pylint: disable=line-too-long
+                        size=10_000,  # max size (is more than needed for 24h if the monitor is configured with "@every 10s")
                         _source=[
                             "monitor.id",
                             "monitor.status",
@@ -221,6 +217,30 @@ class UptimeAPIHandler(APIRequestHandler):
                         await get_uptime_perc(
                             self.elasticsearch,
                             12,
+                            self.redis,
+                            self.redis_prefix,
+                        )
+                    )
+                )
+                if self.elasticsearch and self.redis  # would take too long
+                else None,
+                "perc_last_6h": get_up_perc_dict(
+                    *(
+                        await get_uptime_perc(
+                            self.elasticsearch,
+                            6,
+                            self.redis,
+                            self.redis_prefix,
+                        )
+                    )
+                )
+                if self.elasticsearch and self.redis  # would take too long
+                else None,
+                "perc_last_3h": get_up_perc_dict(
+                    *(
+                        await get_uptime_perc(
+                            self.elasticsearch,
+                            3,
                             self.redis,
                             self.redis_prefix,
                         )

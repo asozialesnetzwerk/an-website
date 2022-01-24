@@ -35,7 +35,7 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
-from . import DIR, patches
+from . import DIR, NAME, patches
 from .utils.request_handler import (
     BaseRequestHandler,
     JSONRequestHandler,
@@ -51,8 +51,6 @@ from .utils.utils import (
     time_function,
 )
 from .version import version
-
-NAME = "an-website"
 
 # list of blocked modules
 IGNORED_MODULES = [
@@ -328,15 +326,13 @@ def get_ssl_context(
     return None
 
 
-def setup_logger(config: configparser.ConfigParser) -> None:
-    """Configure the root logger."""
+def setup_logging(config: configparser.ConfigParser) -> None:
+    """Configure logging."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(
-        logging.Formatter() if sys.flags.dev_mode else LogFormatter()
-    )
+    stream_handler.setFormatter(LogFormatter())
     root_logger.addHandler(stream_handler)
 
     path = config.get(
@@ -354,6 +350,8 @@ def setup_logger(config: configparser.ConfigParser) -> None:
         root_logger.addHandler(file_handler)
 
     logging.captureWarnings(True)
+
+    logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
 def setup_apm(app: Application) -> None:
@@ -428,8 +426,12 @@ async def setup_elasticsearch(app: Application) -> None:
     config = app.settings["CONFIG"]
     elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
-        host=config.get("ELASTICSEARCH", "HOST", fallback="localhost"),
-        port=config.get("ELASTICSEARCH", "PORT", fallback=None),
+        hosts=tuple(
+            host.strip()
+            for host in config.get("ELASTICSEARCH", "HOSTS").split(",")
+        )
+        if config.has_option("ELASTICSEARCH", "HOSTS")
+        else None,
         url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=str()),
         use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
@@ -513,7 +515,7 @@ def main() -> None:
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini", encoding="utf-8")
-    setup_logger(config)
+    setup_logging(config)
     logger.warning("Starting %s with version %s", NAME, version.VERSION)
 
     # read ignored modules from the config
@@ -546,7 +548,6 @@ def main() -> None:
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
     setup_redis_task = loop.create_task(setup_redis(app))
-    # pylint: disable=unused-variable
     setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
 
     # pylint: disable=import-outside-toplevel

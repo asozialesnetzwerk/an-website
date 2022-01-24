@@ -28,8 +28,7 @@
 
 #[ELASTICSEARCH]
 #cloud_id = ...
-#host = localhost
-#port = 9200
+#hosts = localhost:9200
 #url_prefix = /
 #use_ssl = nope
 #verify_certs = sure

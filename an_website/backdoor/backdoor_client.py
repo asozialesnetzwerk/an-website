@@ -82,7 +82,7 @@ def lisp_always_active() -> bool:
             )(1),
             sys.byteorder,
         )
-        // (69 - 5)
+        // ((69 - 5) // 4)
     )
 
 

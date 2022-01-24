@@ -60,7 +60,7 @@ logger = logging.getLogger(__name__)
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        name="Utilitys",
+        name="Utilities",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
             (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
@@ -796,6 +796,8 @@ class JSONRequestHandler(APIRequestHandler):
 
     async def get(self, path: str) -> None:  # TODO: Improve this
         """Get the page wrapped in JSON and send it."""
+        if path.startswith("/api/"):
+            raise HTTPError(403)
         url = re.sub(
             r"^https?://[^/]+\.onion/",  # TODO: do this properly
             f"http://localhost:{self.settings.get('PORT')}/",

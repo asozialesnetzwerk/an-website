@@ -3,11 +3,11 @@ black>=21.12b0
 coverage~=6.2
 flake8~=4.0
 flake8-docstrings~=1.6
-flake8-no-pep420~=2.0
+flake8-no-pep420~=2.1
 isort~=5.10
-mypy>=0.930,<2
+mypy>=0.931,<2
 numpy
-pre-commit~=2.16
+pre-commit~=2.17
 pylint~=2.12
 pytest>=6.2.5,<7
 pytest-tornasync>=0.6,<2
