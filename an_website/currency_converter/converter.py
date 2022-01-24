@@ -96,7 +96,9 @@ async def continuation_string(
     if not ins_kino_gehen:
         ins_kino_gehen = "ins Kino gehen"
     price_ostmark: float = (
-        1 if ins_kino_gehen == "ins Kino gehen" else round(price / 8) / 2
+        1
+        if ins_kino_gehen == "ins Kino gehen"
+        else max(round(price / 8) / 2, 0.5)
     )
     _rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
     kino_count: int = int(values[-1] / price_ostmark)
