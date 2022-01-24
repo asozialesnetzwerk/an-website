@@ -133,6 +133,11 @@ class BaseRequestHandler(RequestHandler):
     def set_default_headers(self) -> None:
         """Opt out of all FLoC cohort calculation."""
         self.set_header("Permissions-Policy", "interest-cohort=()")
+        if self.settings.get("ONION_ADDRESS"):
+            self.set_header(
+                "Onion-Location",
+                self.settings.get("ONION_ADDRESS") + self.request.path,
+            )
 
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
