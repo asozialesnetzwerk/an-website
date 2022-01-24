@@ -131,12 +131,19 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("ELASTICSEARCH_PREFIX", "")
 
     def set_default_headers(self) -> None:
-        """Opt out of all FLoC cohort calculation."""
+        """Set default headers."""
+        # Opt out of all FLoC cohort calculation.
         self.set_header("Permissions-Policy", "interest-cohort=()")
-        if self.settings.get("ONION_ADDRESS"):
+        # community.torproject.org/onion-services/advanced/onion-location/
+        if (
+            self.settings.get("ONION_ADDRESS")
+            and not self.request.host.endswith(".onion")
+        ):
             self.set_header(
                 "Onion-Location",
-                self.settings.get("ONION_ADDRESS") + self.request.path,
+                self.settings.get("ONION_ADDRESS")
+                + self.request.path
+                + (f"?{self.request.query}" if self.request.query else ""),
             )
 
     async def prepare(  # pylint: disable=invalid-overridden-method

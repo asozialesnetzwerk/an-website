@@ -15,10 +15,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="never" />
     <meta name="referrer" content="no-referrer" />
-    {% if settings.get("ONION_ADDRESS") %}
-        <meta http-equiv="onion-location"
-              content="{{settings.get('ONION_ADDRESS')}}" />
-    {% end %}
     {% if c %}<style>@import url("/static/style/comic.css");</style>{% end %}
     {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
         <script class="on-every-page" src="{{fix_url('/elastic-apm-rum.umd.min.js')}}"></script>
