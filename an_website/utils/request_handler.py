@@ -80,6 +80,7 @@ class BaseRequestHandler(RequestHandler):
 
     # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
+    short_title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
     module_info: ModuleInfo
 
@@ -100,7 +101,9 @@ class BaseRequestHandler(RequestHandler):
         """
         self.module_info: ModuleInfo = module_info
         if not default_title:
-            self.title = self.module_info.get_page_info(self.request.path).name
+            page_info = self.module_info.get_page_info(self.request.path)
+            self.title = page_info.name
+            self.short_title = page_info.short_name or self.title
 
         if not default_description:
             self.description = self.module_info.get_page_info(
@@ -484,6 +487,7 @@ class BaseRequestHandler(RequestHandler):
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
                 "title": self.title,
+                "short_title": self.short_title,
                 "description": self.description,
                 "keywords": (
                     "Asoziales Netzwerk, Känguru-Chroniken"

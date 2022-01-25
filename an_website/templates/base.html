@@ -30,6 +30,14 @@
     <link rel="canonical" href="{{url.split('?')[0]}}">
     <link class="on-every-page" rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
     <link class="on-every-page" rel="stylesheet" type="text/css" href="/static/style/base.css">
+    {% if title != short_title %}
+<style>
+    #title:after {content: "{{short_title}}";}
+    @media only screen and (min-width: 500px) {
+        #title:after {content: "{{title}}";}
+    }
+</style>
+    {% end %}
 
     <script class="on-every-page" defer src="/static/js/request_utils.js"></script>
     <script class="on-every-page"

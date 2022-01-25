@@ -61,6 +61,7 @@ class PageInfo:
     # keywords, that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
+    short_name: None | str = None  # short name for the page
 
     def search(self, query: str | list[str]) -> float:  # noqa: C901
         """

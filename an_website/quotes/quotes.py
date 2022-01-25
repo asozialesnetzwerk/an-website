@@ -64,8 +64,9 @@ def get_module_info() -> ModuleInfo:
                 QuoteAPIHandler,
             ),
         ),
-        name="Falsche Zitate",
-        description="Eine Webseite mit falsch zugeordneten Zitaten",
+        name="Falsch zugeordnete Zitate",
+        short_name="Falsche Zitate",
+        description="Witzige, aber falsch zugeordnete Zitate",
         path="/zitate/",
         aliases=("/z/",),
         keywords=(
@@ -74,6 +75,9 @@ def get_module_info() -> ModuleInfo:
             "Zitate",
             "Witzig",
             "Känguru",
+            "Marc-Uwe Kling",
+            "falsche Zitate",
+            "falsch zugeordnete Zitate",
         ),
     )
 
