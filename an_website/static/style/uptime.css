@@ -12,7 +12,7 @@
     font-family: "clock-face";
     font-style: normal;
     /* https://www.fontspace.com/cursed-timer-ulil-font-f29411 */
-    src: url("/static/style/fonts/CursedTimerUlil-Aznm.woff") format("woff");
+    src: url("/static/style/fonts/CursedTimerUlil-Aznm.woff2") format("woff2");
 }
 
 #uptime {
