@@ -2,7 +2,7 @@
     font-family: "comic";
     font-style: normal;
     /* https://www.wfonts.com/font/comic-sans-ms */
-    src: url("/static/style/fonts/comic.ttf") format("truetype");
+    src: url("/static/style/fonts/comic.woff") format("woff");
 }
 
 *:not(pre) {
@@ -13,7 +13,7 @@
     font-family: "comic-mono";
     font-style: normal;
     /* https://dtinth.github.io/comic-mono-font/ */
-    src: url("/static/style/fonts/ComicMono.ttf") format("truetype");
+    src: url("/static/style/fonts/ComicMono.woff") format("woff");
 }
 
 pre * {
