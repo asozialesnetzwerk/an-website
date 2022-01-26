@@ -78,10 +78,12 @@ function dynLoadOnData(data, onpopstate) {
 
 function dynLoadReplaceAnchors() {
     for (const anchor of document.getElementsByTagName("A")) {
-        const href = anchor.href;
+        const href = anchor.href.startsWith("/")
+            ? (window.location.origin + anchor.href)
+            : anchor.href;
         if (
             // link is to same domain
-            (href.startsWith(window.location.origin) || href.startsWith("/"))
+            href.startsWith(window.location.origin)
             && !(href.split("/").pop().includes("."))
             && // check if it is a link to this page with a hash
             !( // invert bool
@@ -94,11 +96,6 @@ function dynLoadReplaceAnchors() {
                         (
                             !window.location.hash // current url has no hash
                             && href.startsWith(window.location.href + "#")
-                        )
-                        || href.startsWith( // is a real url to the same page
-                            window.location.pathname
-                            + window.location.search
-                            + "#"
                         )
                         || href.startsWith(  // is url to the same page
                             window.location.origin

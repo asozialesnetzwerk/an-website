@@ -353,6 +353,7 @@ class BaseRequestHandler(RequestHandler):
         url: str,
         this_url: None | str = None,
         always_add_params: bool = False,
+        force_absolute: bool = True,
     ) -> str:
         """
         Fix a URL and return it.
@@ -368,12 +369,17 @@ class BaseRequestHandler(RequestHandler):
                 f"/redirect/?to={quote(url)}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
-
+        protocol = self.get_protocol()
+        host = parsed_url.netloc or self.request.host
         return add_args_to_url(
             urlunparse(
                 (
-                    self.get_protocol(),
-                    parsed_url.netloc or self.request.host,
+                    protocol
+                    if force_absolute or protocol != self.request.protocol
+                    else "",
+                    host
+                    if force_absolute or host != self.request.host
+                    else "",
                     parsed_url.path,
                     parsed_url.params,
                     parsed_url.query,
