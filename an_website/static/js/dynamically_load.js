@@ -70,7 +70,7 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
     document.title = data["title"];
-    document.getElementById("title").innerText = data["title"];
+    //document.getElementById("title").;
     dynLoadReplaceAnchors();
     window.urlData = data;
     return true
@@ -79,12 +79,10 @@ function dynLoadOnData(data, onpopstate) {
 function dynLoadReplaceAnchors() {
     for (const anchor of document.getElementsByTagName("A")) {
         const href = anchor.href;
-        if (href.includes("#")) {
-            console.log(href)
-        }
         if (
             // link is to same domain
             (href.startsWith(window.location.origin) || href.startsWith("/"))
+            && !(href.split("/").pop().includes("."))
             && // check if it is a link to this page with a hash
             !( // invert bool
                 href.includes("#")  // if has hash
