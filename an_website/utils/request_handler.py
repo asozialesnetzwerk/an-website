@@ -42,11 +42,7 @@ from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
 from tornado.httpclient import AsyncHTTPClient
-from tornado.web import (
-    HTTPError,
-    MissingArgumentError,
-    RequestHandler,
-)
+from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from an_website.utils.utils import (
     REPO_URL,

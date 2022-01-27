@@ -13,7 +13,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Minify all js files in this repo and move them to /static/js/."""
+from __future__ import annotations
+
 import os
+
 import rjsmin
 
 DIR = os.path.dirname(__file__)
@@ -26,17 +29,17 @@ for folder, _, files in os.walk(
     os.path.join(DIR, "an_website"),
     topdown=True,
     onerror=None,
-    followlinks=False
+    followlinks=False,
 ):
     for file in files:
         if file.endswith(".js"):
             print(file, os.path.join(STATIC_DIR, file))
             with open(
-                    os.path.join(folder, file), "r", encoding="UTF-8"
+                os.path.join(folder, file), "r", encoding="UTF-8"
             ) as _f1:
                 content = rjsmin.jsmin(_f1.read())
                 with open(
-                        os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
+                    os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
                 ) as _f2:
                     _f2.write(
                         "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
