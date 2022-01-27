@@ -550,18 +550,15 @@ class BaseRequestHandler(RequestHandler):
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
         api_secrets = self.settings.get("TRUSTED_API_SECRETS")
-
-        if not api_secrets:
-            return False
-
-        secret = self.request.headers.get("Authorization")
-
-        if secret in api_secrets:
-            return True
-        # TODO: add some sort of UI to put the auth_key in the cookie
-        secret = self.get_cookie("auth_key", default=None)
-
-        return bool(secret in api_secrets)
+        return bool(
+            api_secrets  # api_secrets has to be truthy
+            and (
+                # check authorization header
+                self.request.headers.get("Authorization") in api_secrets
+                # check the auth_key cookie
+                or self.get_cookie("auth_key", default=None) in api_secrets
+            )
+        )
 
 
 class APIRequestHandler(BaseRequestHandler):
