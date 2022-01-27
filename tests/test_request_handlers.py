@@ -47,6 +47,7 @@ def fetch(
 
 
 async def test_json_apis(
+    # pylint: disable=redefined-outer-name
     fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
 ) -> None:
     """Check whether the APIs return valid JSON."""
@@ -76,6 +77,7 @@ async def test_json_apis(
 
 # pylint: disable=too-many-statements
 async def test_request_handlers(
+    # pylint: disable=redefined-outer-name
     fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
 ) -> None:
     """Check if the request handlers return 200 codes."""
