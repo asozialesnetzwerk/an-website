@@ -369,17 +369,13 @@ class BaseRequestHandler(RequestHandler):
                 f"/redirect/?to={quote(url)}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
-        protocol = self.get_protocol()
         host = parsed_url.netloc or self.request.host
+        add_prot_and_host = force_absolute or host != self.request.host
         return add_args_to_url(
             urlunparse(
                 (
-                    protocol
-                    if force_absolute or protocol != self.request.protocol
-                    else "",
-                    host
-                    if force_absolute or host != self.request.host
-                    else "",
+                    self.get_protocol() if add_prot_and_host else "",
+                    host if add_prot_and_host else "",
                     parsed_url.path,
                     parsed_url.params,
                     parsed_url.query,
