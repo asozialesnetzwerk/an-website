@@ -151,7 +151,7 @@ function dynLoadOnPopState(event) {
             const [requestUrl, params] = getJSONURLWithParams(
                  event.state["url"] || window.location.href
             );
-            bodyDiv.innerHTML = "Loading...";
+            bodyDiv.innerHTML = "Loading... If this takes too long (over a few seconds), just refresh the page.";
             get(
                 requestUrl,
                 params,
