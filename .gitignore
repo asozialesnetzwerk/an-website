@@ -3,8 +3,6 @@ venv
 logs
 config.ini
 
-an_website/static_tmp
-
 # Unit test / coverage reports
 .coverage
 
