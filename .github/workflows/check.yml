@@ -92,7 +92,7 @@ jobs:
       - name: Install requirements
         run: grep -v "^[#]" requirements.txt | xargs pip install --prefer-binary
       - name: Install Flake8 and Pylint
-        run: grep -E "^(flake8|pylint)" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^(flake8|pylint|pytest)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Flake8
         run: flake8 --extend-ignore=D100,D101,D102,D103,D104,E501 an_website tests
       - name: Run Pylint
