@@ -1,0 +1,21 @@
+.redirect_content {
+    font-size: xx-large;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.form-button {
+    color: var(--text-color);
+}
+.leave:hover {
+    background-color: var(--contrast)!important;
+}
+.leave {
+    background-color: var(--contrast-2)!important;
+}
+.stay {
+    background-color: var(--main-2)!important;
+}
+.stay:hover {
+    background-color: var(--main)!important;
+}

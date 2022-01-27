@@ -1,0 +1,23 @@
+#container {
+    text-align: center;
+}
+
+#status {
+    font-size: 69px;
+    color: var(--main);
+}
+
+#reason {
+    white-space: pre;
+    font-family: monospace;
+    color: var(--main-2);
+}
+
+#🐈 {
+    margin-top: -6.9px;
+    width: 600px;
+    max-width: 95%;
+    object-fit: fill;
+    /* Is not good for portrait images like 422 & 300 */
+    clip-path: inset(7.37% 9.1% 24% 9.1%);
+}

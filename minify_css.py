@@ -12,38 +12,46 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Minify all js files in this repo and move them to /static/js/."""
+"""Minify all css files in style and move them to an_website/static/style/."""
 from __future__ import annotations
 
 import os
 
-import rjsmin
+import rcssmin
 
 DIR = os.path.dirname(__file__)
 
-STATIC_DIR = os.path.join(DIR, "an_website/static/js")
+STATIC_DIR = os.path.join(DIR, "an_website/static/style")
+STYLE_DIR = os.path.join(DIR, "style")
 
 os.makedirs(STATIC_DIR, exist_ok=True)
 
 for folder, _, files in os.walk(
-    os.path.join(DIR, "an_website"),
+    STYLE_DIR,
     topdown=True,
     onerror=None,
     followlinks=False,
 ):
+    new_dir = (
+        os.path.join(STATIC_DIR, folder[len(STYLE_DIR + "/") :])
+        if folder.startswith(STYLE_DIR + "/")
+        else STATIC_DIR
+    )
+
+    os.makedirs(new_dir, exist_ok=True)
     for file in files:
-        if file.endswith(".js"):
+        if file.endswith(".css"):
             with open(
                 os.path.join(folder, file), "r", encoding="UTF-8"
             ) as _f1:
-                content = rjsmin.jsmin(_f1.read())
+                content = rcssmin.cssmin(_f1.read())
                 with open(
-                    os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
+                    os.path.join(
+                        new_dir,
+                        file,
+                    ),
+                    "w",
+                    encoding="UTF-8",
                 ) as _f2:
-                    _f2.write(
-                        "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
-                        + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
-                        + content
-                        + "\n// @license-end\n"
-                    )
+                    _f2.write(content + "\n")
                     _f2.flush()

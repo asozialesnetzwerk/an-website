@@ -20,7 +20,7 @@ python3 -m isort an_website tests
 
 # check formatting
 echo Black:
-python3 -m black --check --diff --color an_website tests || echo 'Run "python3 -m black an_website tests" to reformat.'
+python3 -m black --check --diff --color . || echo 'Run "python3 -m black an_website tests" to reformat.'
 
 # check types
 echo mypy:

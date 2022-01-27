@@ -37,6 +37,8 @@ jobs:
         run: black .
       - name: Minify JS files
         run: python3 minify_js.py
+      - name: Minify CSS files
+        run: python3 minify_css.py
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
