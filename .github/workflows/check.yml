@@ -30,7 +30,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - name: Install Black and isort
-        run: grep -E "^(black|isort|rjsmin)" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^(black|isort|rjsmin|rcssmin)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run isort
         run: isort .
       - name: Run Black
