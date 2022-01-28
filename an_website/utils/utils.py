@@ -24,7 +24,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import cache
-from typing import IO, Any, Tuple, TypeVar, Union
+from typing import IO, Any, TypeVar, Union
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import elasticapm  # type: ignore
@@ -44,9 +44,6 @@ Handler = Union[
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
-# following should be tuple[Handler, ...] but mypy then complains
-# pylint: disable=deprecated-typing-alias
-HandlerTuple = Tuple[Handler, ...]
 
 
 # sortable so the pages can be linked in an order;
@@ -120,7 +117,7 @@ class ModuleInfo(PageInfo):
     This gets created by every module to add the handlers.
     """
 
-    handlers: HandlerTuple = field(default_factory=HandlerTuple)
+    handlers: tuple[Handler, ...] = field(default_factory=tuple[Handler, ...])
     sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
     aliases: tuple[str, ...] = field(default_factory=tuple)
 

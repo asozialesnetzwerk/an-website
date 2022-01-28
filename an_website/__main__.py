@@ -33,7 +33,7 @@ from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch, ElasticsearchException
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
-from tornado.web import Application, RedirectHandler
+from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 from . import DIR, NAME, patches
 from .utils.request_handler import (
@@ -45,7 +45,6 @@ from .utils.utils import (
     STATIC_DIR,
     TEMPLATES_DIR,
     Handler,
-    HandlerTuple,
     ModuleInfo,
     Timer,
     time_function,
@@ -176,19 +175,42 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
             break
 
 
-def get_all_handlers(
+def get_all_handlers(  # noqa: C901
     module_infos: tuple[ModuleInfo, ...],
-) -> HandlerTuple:
+) -> list[Handler]:
     """
     Parse the module information and return the handlers in a tuple.
 
     If a handler has only 2 elements a dict with title and description gets
     added. This information is gotten from the module info.
     """
-    handlers: list[Handler] = [
-        (r"(/.+/|/)json/", JSONRequestHandler, {"module_info": None})
-    ]
+    handlers: list[Handler] = []
 
+    if sys.flags.dev_mode:  # add handlers for the not minified js files
+        for folder, _, files in os.walk(
+            DIR,
+            topdown=True,
+            onerror=None,
+            followlinks=False,
+        ):
+            if folder != os.path.join(STATIC_DIR, "js"):
+                handlers.extend(
+                    (
+                        f"/static/js/({file})",
+                        StaticFileHandler,
+                        {"path": folder},
+                    )
+                    for file in files
+                    if file.endswith(".js")
+                )
+
+    # static files in /static/, add it here, so it is after the js handlers
+    handlers.append((r"/static/(.*)", StaticFileHandler, {"path": STATIC_DIR}))
+    # add the handler for the json pages, after the static file handler
+    handlers.append(
+        (r"(/.+/|/)json/", JSONRequestHandler, {"module_info": None})
+    )
+    # add all the normal handlers
     for module_info in module_infos:
         for handler in module_info.handlers:
             # if the handler is a request handler from us
@@ -238,7 +260,7 @@ def get_all_handlers(
             ("; ".join(str(handler) for handler in handlers)),
         )
 
-    return tuple(handlers)
+    return handlers
 
 
 def make_app() -> Application:
@@ -249,8 +271,9 @@ def make_app() -> Application:
             "Getting the module infos took %ss. That's probably too long.",
             duration,
         )
+    handlers = get_all_handlers(module_infos)
     return Application(
-        get_all_handlers(module_infos),  # type: ignore
+        handlers,  # type: ignore
         MODULE_INFOS=module_infos,
         # General settings
         autoreload=False,
@@ -258,10 +281,10 @@ def make_app() -> Application:
         debug=bool(sys.flags.dev_mode),
         default_handler_class=NotFound,
         websocket_ping_interval=10,
+        HANDLERS=handlers,  # allow getting the handlers in the backdoor
         # Template settings
         template_path=TEMPLATES_DIR,
-        # Static file settings
-        static_path=STATIC_DIR,
+        # don't set static_path, because we already have a static handler
     )
 
 
@@ -414,7 +437,11 @@ async def setup_redis(app: Application) -> None:
     try:
         await redis.ping()
     except RedisError as exc:
-        logger.error("".join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error(
+            "".join(
+                traceback.format_exception_only(exc)  # type: ignore
+            ).strip()
+        )
         logger.error("Redis is unavailable!")
         app.settings["REDIS"] = None
     else:
@@ -461,7 +488,11 @@ async def setup_elasticsearch(app: Application) -> None:
     try:
         await elasticsearch.info()
     except ElasticsearchException as exc:
-        logger.error("".join(traceback.format_exception_only(exc)).strip())  # type: ignore
+        logger.error(
+            "".join(
+                traceback.format_exception_only(exc)  # type: ignore
+            ).strip()
+        )
         logger.error("Elasticsearch is unavailable!")
         app.settings["ELASTICSEARCH"] = None
     else:

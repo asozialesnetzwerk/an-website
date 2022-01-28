@@ -31,19 +31,20 @@ for folder, _, files in os.walk(
     onerror=None,
     followlinks=False,
 ):
-    for file in files:
-        if file.endswith(".js"):
-            with open(
-                os.path.join(folder, file), "r", encoding="UTF-8"
-            ) as _f1:
-                content = rjsmin.jsmin(_f1.read())
+    if folder != STATIC_DIR:
+        for file in files:
+            if file.endswith(".js"):
                 with open(
-                    os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
-                ) as _f2:
-                    _f2.write(
-                        "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
-                        + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
-                        + content
-                        + "\n// @license-end\n"
-                    )
-                    _f2.flush()
+                    os.path.join(folder, file), "r", encoding="UTF-8"
+                ) as _f1:
+                    content = rjsmin.jsmin(_f1.read())
+                    with open(
+                        os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
+                    ) as _f2:
+                        _f2.write(
+                            "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
+                            + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
+                            + content
+                            + "\n// @license-end\n"
+                        )
+                        _f2.flush()
