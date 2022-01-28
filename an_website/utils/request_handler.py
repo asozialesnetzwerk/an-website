@@ -68,7 +68,7 @@ def get_module_info() -> ModuleInfo:
             (
                 r"/@elastic/apm-rum@(.+)/dist/bundles"
                 r"/elastic-apm-rum.umd.min.js(\.map|)",
-                ElasticRUM
+                ElasticRUM,
             ),
         ),
         hidden=True,
@@ -798,7 +798,8 @@ class ElasticRUM(BaseRequestHandler):
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
             self.SCRIPTS[key] = (
-                response.body.decode(), time.monotonic() + 365 * 60 * 60 * 24
+                response.body.decode(),
+                time.monotonic() + 365 * 60 * 60 * 24,
             )
             new_path = urlparse(response.effective_url).path
             if new_path.endswith(".js"):
