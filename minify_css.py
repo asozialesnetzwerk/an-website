@@ -16,6 +16,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 
 import rcssmin
 
@@ -24,6 +26,8 @@ DIR = os.path.dirname(__file__)
 STATIC_DIR = os.path.join(DIR, "an_website/static/style")
 STYLE_DIR = os.path.join(DIR, "style")
 
+if "--clean" in sys.argv:
+    shutil.rmtree(STATIC_DIR)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
 for folder, _, files in os.walk(
@@ -37,7 +41,6 @@ for folder, _, files in os.walk(
         if folder.startswith(STYLE_DIR + "/")
         else STATIC_DIR
     )
-
     os.makedirs(new_dir, exist_ok=True)
     for file in files:
         if file.endswith(".css"):

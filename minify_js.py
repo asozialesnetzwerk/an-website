@@ -16,6 +16,8 @@
 from __future__ import annotations
 
 import os
+import shutil
+import sys
 
 import rjsmin
 
@@ -23,6 +25,8 @@ DIR = os.path.dirname(__file__)
 
 STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
+if "--clean" in sys.argv:
+    shutil.rmtree(STATIC_DIR)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
 for folder, _, files in os.walk(
