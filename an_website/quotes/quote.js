@@ -50,7 +50,7 @@ function startQuotes(currId, nextId) {
     nextButton.removeAttribute("href");
 
     function updateQuoteId(quoteId) {
-        shareButton.href = `/zitate/${quoteId}/share/${params}`;
+        shareButton.href = `/zitate/${quoteId}/${params}/share`;
         downloadButton.href = `/zitate/${quoteId}/image.gif${params}`;
         const [q_id, a_id] = quoteId.split("-", 2);
         quote.href = `/zitate/info/z/${q_id}/${params}`;

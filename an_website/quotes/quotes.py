@@ -26,7 +26,7 @@ from collections.abc import Awaitable
 from functools import cache
 from typing import Any, Literal
 
-from tornado.web import HTTPError
+from tornado.web import HTTPError, RedirectHandler
 
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, str_to_bool
@@ -57,7 +57,12 @@ def get_module_info() -> ModuleInfo:
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
                 QuoteAsImg,
             ),
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/", ShareQuote),
+            (  # redirect to the new URL (changed because of robots.txt)
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/",
+                RedirectHandler,
+                {"url": "/zitate/share/{0}-{1}/"},
+            ),
+            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})/", ShareQuote),
             (r"/api/zitate/(full/|)", QuoteRedirectAPI),
             (
                 r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/(?:full/)?",
