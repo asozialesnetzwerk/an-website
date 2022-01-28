@@ -17,13 +17,18 @@
     <meta name="referrer" content="no-referrer" />
     {% if c %}<style>@import url("/static/style/comic.css");</style>{% end %}
     {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
-        <script class="on-every-page" src="{{fix_url('/elastic-apm-rum.umd.min.js')}}"></script>
         <script class="on-every-page">
-            elasticApm.init({
-                serverUrl: '{% raw settings["ELASTIC_APM"]["SERVER_URL"] %}',
+            ;(function(d, s, c) {
+              var j = d.createElement(s),
+                t = d.getElementsByTagName(s)[0]
+              j.src = "{{fix_url('/elastic-apm-rum.umd.min.js')}}"
+              j.onload = function() {elasticApm.init(c)}
+              t.parentNode.insertBefore(j, t)
+            })(document, 'script', {
                 serviceName: '{% raw settings["ELASTIC_APM"]["SERVICE_NAME"] %}',
+                serverUrl: '{% raw settings["ELASTIC_APM"]["SERVER_URL"] %}',
                 serviceVersion: '{% raw settings["ELASTIC_APM"]["SERVICE_VERSION"] %}',
-                environment: '{% raw settings["ELASTIC_APM"]["ENVIRONMENT"] %}',
+                environment: '{% raw settings["ELASTIC_APM"]["ENVIRONMENT"] %}'
             })
         </script>
     {% end %}
