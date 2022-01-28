@@ -78,69 +78,86 @@ function dynLoadOnData(data, onpopstate) {
 
 function dynLoadReplaceAnchors() {
     for (const anchor of document.getElementsByTagName("A")) {
-        const href = anchor.href.startsWith("/")
+        dynLoadReplaceHrefOnAnchor(anchor);
+    }
+}
+
+function dynLoadReplaceHrefOnAnchor(anchor) {
+    const href = anchor.href.startsWith("/")
             ? (window.location.origin + anchor.href)
             : anchor.href;
-        if (
-            // link is to same domain
-            href.startsWith(window.location.origin)
-            && !(href.split("/").pop().includes("."))
-            && // check if it is a link to this page with a hash
-            !( // invert bool
-                href.includes("#")  // if has hash
-                &&
+    if (
+        // already dealt with
+        href === "javascript:void(0);"
+        // link is to different domain
+        || !href.startsWith(window.location.origin)
+        // link is to file, not html page
+        || href.split("/").pop().includes(".")
+    ) return;
+
+    if (
+        href.includes("#")  // if has hash
+        &&
+        (
+            href.startsWith("#") // starts with hash -> to the same page
+            ||
+            (
                 (
-                    href.startsWith("#") // starts with hash -> to the same page
-                    ||
-                    (
-                        (
-                            !window.location.hash // current url has no hash
-                            && href.startsWith(window.location.href + "#")
-                        )
-                        || href.startsWith(  // is url to the same page
-                            window.location.origin
-                            + window.location.pathname
-                            + window.location.search
-                            + "#"
-                        )
-                    )
+                    !window.location.hash // current url has no hash
+                    && href.startsWith(window.location.href + "#")
+                )
+                || href.startsWith(  // is url to the same page
+                    window.location.origin
+                    + window.location.pathname
+                    + window.location.search
+                    + "#"
                 )
             )
-        ) {
-            const [requestUrl, params] = getJSONURLWithParams(href);
-            anchor.href = "javascript:void(0);";
-            anchor.onclick = () => {
-                console.log("Processing anchor", href);
-                history.replaceState(
-                    {
-                        "data": window.urlData,
-                        "url": window.location.href,
-                        "scrollPos": [
-                            document.documentElement.scrollLeft
-                            || document.body.scrollLeft,
-                            document.documentElement.scrollTop
-                            || document.body.scrollTop
-                        ],
-                        "stateType": "dynLoad"
-                    },
-                    document.title,
-                    window.location.href
-                );
-                if (href !== window.location.href) {
-                    bodyDiv.innerHTML = "Loading...";
-                    get(
-                        requestUrl,
-                        params,
-                        (data) => dynLoadOnData(data, false),
-                        (error) => {
-                            console.log(error);
-                            window.location.href = href;
-                        }
-                    );
-                }
-            };
-        }
+        )
+    ) return;
+
+    anchor.href = "javascript:void(0);";
+    anchor.onclick = () => {
+        console.log("Processing anchor", href);
+        history.replaceState(
+            {
+                "data": window.urlData,
+                "url": window.location.href,
+                "scrollPos": [
+                    document.documentElement.scrollLeft
+                    || document.body.scrollLeft,
+                    document.documentElement.scrollTop
+                    || document.body.scrollTop
+                ],
+                "stateType": "dynLoad"
+            },
+            document.title,
+            window.location.href
+        );
+        dynLoadSwitchToURL(href);
+    };
+}
+
+function dynLoadSwitchToURL(url, allowSameUrl = false) {
+    if (!allowSameUrl && url === window.location.href) {
+        console.error("URL is the same as current, ignoring");
+        return;
     }
+    const [requestUrl, params] = getJSONURLWithParams(url);
+    bodyDiv.innerHTML = "Loading... If this takes too long (over a few seconds), just refresh the page.";
+    get(
+        requestUrl,
+        params,
+        (data) => dynLoadOnData(data, false),
+        (error) => {
+            console.log(error);
+            if (url === window.location.href) {
+                window.location.href = url;
+            } else {
+                window.location.reload();
+            }
+        }
+    );
 }
 
 function dynLoadOnPopState(event) {
@@ -148,18 +165,8 @@ function dynLoadOnPopState(event) {
         console.log("Popstate", event.state);
         if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
             // when the data did not get handled properly
-            const [requestUrl, params] = getJSONURLWithParams(
-                 event.state["url"] || window.location.href
-            );
-            bodyDiv.innerHTML = "Loading... If this takes too long (over a few seconds), just refresh the page.";
-            get(
-                requestUrl,
-                params,
-                (data) => dynLoadOnData(data, false),
-                (error) => {
-                    console.log(error);
-                    window.location.reload()
-                }
+            dynLoadSwitchToURL(
+                event.state["url"] || window.location.href, true
             );
         }
         if (event.state["scrollPos"]) {
