@@ -21,7 +21,7 @@
             ;(function(d, s, c) {
               var j = d.createElement(s),
                 t = d.getElementsByTagName(s)[0]
-              j.src = "{{fix_url('/elastic-apm-rum.umd.min.js')}}"
+              j.src = "{{fix_url(elastic_rum_js_url)}}"
               j.onload = function() {elasticApm.init(c)}
               t.parentNode.insertBefore(j, t)
             })(document, 'script', {

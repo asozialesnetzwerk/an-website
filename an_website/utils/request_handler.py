@@ -65,7 +65,11 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
-            (r"/elastic-apm-rum.umd.min.js(\.map|)", ElasticRUM),
+            (
+                r"/@elastic/apm-rum@(.+)/dist/bundles"
+                r"/elastic-apm-rum.umd.min.js(\.map|)",
+                ElasticRUM
+            ),
         ),
         hidden=True,
     )
@@ -77,6 +81,10 @@ class BaseRequestHandler(RequestHandler):
 
     # can be overridden in subclasses
     REQUIRES_AUTHORIZATION: bool = False
+
+    ELASTIC_RUM_JS_URL = (
+        "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js"
+    )
 
     # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
@@ -509,6 +517,7 @@ class BaseRequestHandler(RequestHandler):
                 "REPO_URL": self.fix_url(REPO_URL),
                 "theme": self.get_display_theme(),
                 "contact_email": self.get_contact_email(),
+                "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
                 # this is not important because we don't need the templates
                 # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
@@ -774,27 +783,38 @@ class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the RUM script."""
 
     URL = (
-        "https://unpkg.com/@elastic/apm-rum@^5"
+        "https://unpkg.com/@elastic/apm-rum@%s"
         "/dist/bundles/elastic-apm-rum.umd.min.js"
     )
-    SCRIPTS: dict[str, str] = {}
+    SCRIPTS: dict[str, tuple[str, float]] = {}
 
-    async def get(self, ending: str = "") -> None:
+    async def get(self, version: str, ending: str = "") -> None:
         """Serve the RUM script."""
-        if ending not in self.SCRIPTS:
+        key = version + ending
+        if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
             response = await AsyncHTTPClient().fetch(
-                self.URL + ending, raise_error=False
+                (self.URL % version) + ending, raise_error=False
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[ending] = response.body.decode()
+            self.SCRIPTS[key] = (
+                response.body.decode(), time.monotonic() + 365 * 60 * 60 * 24
+            )
+            new_path = urlparse(response.effective_url).path
+            if new_path.endswith(".js"):
+                BaseRequestHandler.ELASTIC_RUM_JS_URL = new_path
+            logger.info("RUM script %s updated", new_path)
+            self.redirect(self.fix_url(new_path), False)
+            return
         if ending == ".map":
             self.set_header("Content-Type", "application/json")
         else:
             self.set_header("Content-Type", "application/javascript")
             self.set_header("SourceMap", self.URL + ".map")
-        self.set_header("Cache-Control", f"min-fresh={60 * 60 * 24}")
-        return await self.finish(self.SCRIPTS[ending])
+        self.set_header(
+            "Cache-Control", f"min-fresh={365 * 60 * 60 * 24}, immutable"
+        )
+        return await self.finish(self.SCRIPTS[key][0])
 
 
 class JSONRequestHandler(APIRequestHandler):
