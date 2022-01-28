@@ -47,7 +47,12 @@ for folder, _, files in os.walk(
             with open(
                 os.path.join(folder, file), "r", encoding="UTF-8"
             ) as _f1:
-                content = rcssmin.cssmin(_f1.read())
+                orig = _f1.read()
+                small = rcssmin.cssmin(orig) + "\n"
+                print(
+                    f"{file}: {len(orig)} -> {len(small)} chars "
+                    f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
+                )
                 with open(
                     os.path.join(
                         new_dir,
@@ -56,5 +61,5 @@ for folder, _, files in os.walk(
                     "w",
                     encoding="UTF-8",
                 ) as _f2:
-                    _f2.write(content + "\n")
+                    _f2.write(small)
                     _f2.flush()

@@ -41,14 +41,19 @@ for folder, _, files in os.walk(
                 with open(
                     os.path.join(folder, file), "r", encoding="UTF-8"
                 ) as _f1:
-                    content = rjsmin.jsmin(_f1.read())
+                    orig = _f1.read()
+                    small = (
+                        "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
+                        + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
+                        + rjsmin.jsmin(orig)
+                        + "\n// @license-end\n"
+                    )
+                    print(
+                        f"{file}: {len(orig)} -> {len(small)} chars "
+                        f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
+                    )
                     with open(
                         os.path.join(STATIC_DIR, file), "w", encoding="UTF-8"
                     ) as _f2:
-                        _f2.write(
-                            "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
-                            + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
-                            + content
-                            + "\n// @license-end\n"
-                        )
+                        _f2.write(small)
                         _f2.flush()
