@@ -9,6 +9,8 @@ on:
       - "pyproject.toml"
       - ".mypy.ini"
       - ".pylintrc"
+      - "minify_js.py"
+      - "minify_css.py"
   pull_request:
     paths:
       - "tests/**"
@@ -18,6 +20,8 @@ on:
       - "pyproject.toml"
       - ".mypy.ini"
       - ".pylintrc"
+      - "minify_js.py"
+      - "minify_css.py"
 
 jobs:
 
