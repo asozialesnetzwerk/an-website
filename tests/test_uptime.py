@@ -17,37 +17,37 @@ from __future__ import annotations
 from an_website.uptime import uptime
 
 
-def test_get_up_perc_dict() -> None:
-    """Test the get_up_perc_dict function."""
-    assert uptime.get_up_perc_dict(10, 90) == {
+def test_get_availability_dict() -> None:
+    """Test the get_availability_dict function."""
+    assert uptime.get_availability_dict(10, 90) == {
         "up": 10,
         "down": 90,
         "total": 100,
-        "perc": 10.0,
+        "percentage": 10.0,
     }
-    assert uptime.get_up_perc_dict(90, 10) == {
+    assert uptime.get_availability_dict(90, 10) == {
         "up": 90,
         "down": 10,
         "total": 100,
-        "perc": 90.0,
+        "percentage": 90.0,
     }
-    assert uptime.get_up_perc_dict(50, 50) == {
+    assert uptime.get_availability_dict(50, 50) == {
         "up": 50,
         "down": 50,
         "total": 100,
-        "perc": 50.0,
+        "percentage": 50.0,
     }
-    assert uptime.get_up_perc_dict(42, 0) == {
+    assert uptime.get_availability_dict(42, 0) == {
         "up": 42,
         "down": 0,
         "total": 42,
-        "perc": 100.0,
+        "percentage": 100.0,
     }
-    assert uptime.get_up_perc_dict(0, 0) == {
+    assert uptime.get_availability_dict(0, 0) == {
         "up": 0,
         "down": 0,
         "total": 0,
-        "perc": 0.0,
+        "percentage": 0.0,
     }
 
 
@@ -60,5 +60,5 @@ def test_uptime_to_str() -> None:
 
 
 if __name__ == "__main__":
-    test_get_up_perc_dict()
+    test_get_availability_dict()
     test_uptime_to_str()

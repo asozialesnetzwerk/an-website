@@ -23,6 +23,7 @@ extension-pkg-allow-list=orjson
 py-version=3.10
 
 [MESSAGES_CONTROL]
+enable=all
 disable=file-ignored,
         locally-disabled,
         suppressed-message

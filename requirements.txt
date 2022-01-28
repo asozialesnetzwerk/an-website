@@ -15,6 +15,7 @@ hyrule>=0.1,<2
 jxlpy~=0.9
 #markdown>=3.3.6,<4
 #motor~=2.5
+numpy~=1.22
 orjson~=3.6
 Pillow~=9.0
 pycurl>=7.44.1,<8

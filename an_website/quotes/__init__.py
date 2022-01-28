@@ -504,8 +504,11 @@ async def update_cache(
                 int(time.time()),
             )
 
-    except Exception:  # pylint: disable=broad-except
+    except Exception as exc:  # pylint: disable=broad-except
         logger.error("Updating quotes cache failed.")
+        logger.exception(exc)
+    else:
+        logger.info("Updated quotes cache successfully.")
 
 
 async def get_author_by_id(author_id: int) -> Author:

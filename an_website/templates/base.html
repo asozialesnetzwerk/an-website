@@ -25,10 +25,10 @@
               j.onload = function() {elasticApm.init(c)}
               t.parentNode.insertBefore(j, t)
             })(document, 'script', {
-                serviceName: '{% raw settings["ELASTIC_APM"]["SERVICE_NAME"] %}',
                 serverUrl: '{% raw settings["ELASTIC_APM"]["SERVER_URL"] %}',
+                serviceName: '{% raw settings["ELASTIC_APM"]["SERVICE_NAME"] %}',
                 serviceVersion: '{% raw settings["ELASTIC_APM"]["SERVICE_VERSION"] %}',
-                environment: '{% raw settings["ELASTIC_APM"]["ENVIRONMENT"] %}'
+                environment: '{% raw settings["ELASTIC_APM"]["ENVIRONMENT"] %}',
             })
         </script>
     {% end %}
@@ -53,7 +53,7 @@
 <body>
     <a href="#body" id="skip-to-content">Skip to content.</a>
     {% include "header.html" %}
-    <div id="body">{% block body %}{{ content }}{% end %}</div>
+    <div id="body" data-elastic-include>{% block body %}{{ content }}{% end %}</div>
     {% include "footer.html" %}
 </body>
 </html>

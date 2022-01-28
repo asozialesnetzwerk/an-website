@@ -186,7 +186,7 @@ def get_all_handlers(  # noqa: C901
     """
     handlers: list[Handler] = []
 
-    if sys.flags.dev_mode:  # add handlers for the not minified js files
+    if sys.flags.dev_mode:  # add handlers for the not minified JS files
         for folder, _, files in os.walk(
             DIR,
             topdown=True,
@@ -204,9 +204,9 @@ def get_all_handlers(  # noqa: C901
                     if file.endswith(".js")
                 )
 
-    # static files in /static/, add it here, so it is after the js handlers
+    # static files in /static/, add it here, so it is after the JS handlers
     handlers.append((r"/static/(.*)", StaticFileHandler, {"path": STATIC_DIR}))
-    # add the handler for the json pages, after the static file handler
+    # add the handler for the JSON pages, after the static file handler
     handlers.append(
         (r"(/.+/|/)json/", JSONRequestHandler, {"module_info": None})
     )
@@ -275,16 +275,15 @@ def make_app() -> Application:
     return Application(
         handlers,  # type: ignore
         MODULE_INFOS=module_infos,
+        HANDLERS=handlers,  # allow getting the handlers in the backdoor
         # General settings
         autoreload=False,
         compress_response=True,
         debug=bool(sys.flags.dev_mode),
         default_handler_class=NotFound,
         websocket_ping_interval=10,
-        HANDLERS=handlers,  # allow getting the handlers in the backdoor
         # Template settings
         template_path=TEMPLATES_DIR,
-        # don't set static_path, because we already have a static handler
     )
 
 
@@ -374,6 +373,7 @@ def setup_logging(config: configparser.ConfigParser) -> None:
 
     logging.captureWarnings(True)
 
+    logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
@@ -583,7 +583,7 @@ def main() -> None:
 
     # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
-    from .uptime.uptime import get_uptime_perc_periodically
+    from .uptime.uptime import get_availability_data_periodically
 
     # pylint: disable=unused-variable
     cache_update_task = loop.create_task(  # noqa: F841
@@ -591,7 +591,9 @@ def main() -> None:
     )
     # pylint: disable=unused-variable
     uptime_perc_task = loop.create_task(  # noqa: F841
-        get_uptime_perc_periodically(app, setup_redis_task, setup_es_task)
+        get_availability_data_periodically(
+            app, setup_redis_task, setup_es_task
+        )
     )
 
     try:

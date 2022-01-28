@@ -31,6 +31,7 @@ import elasticapm.utils.cloud  # type: ignore
 import elasticapm.utils.json_encoder  # type: ignore
 import elasticsearch.connection.base
 import elasticsearch.serializer
+import numpy._version
 import tornado.escape
 import tornado.httputil
 import tornado.platform.asyncio
@@ -100,25 +101,25 @@ def patch_json() -> None:
     logger = logging.getLogger(json.__name__)
 
     def dump(obj, fp, **kwargs):  # type: ignore
-        logger.debug(
+        logger.warning(
             "json.dump() has been called!", stack_info=True, stacklevel=2
         )
         fp.write(stdlib_json_dumps(obj, **kwargs))
 
     def dumps(obj, **kwargs):  # type: ignore
-        logger.debug(
+        logger.warning(
             "json.dumps() has been called!", stack_info=True, stacklevel=2
         )
         return stdlib_json_dumps(obj, **kwargs)
 
     def load(fp, **kwargs):  # type: ignore
-        logger.debug(
+        logger.warning(
             "json.load() has been called!", stack_info=True, stacklevel=2
         )
         return stdlib_json_loads(fp.read(), **kwargs)
 
     def loads(s, **kwargs):  # type: ignore
-        logger.debug(
+        logger.warning(
             "json.loads() has been called!", stack_info=True, stacklevel=2
         )
         return stdlib_json_loads(s, **kwargs)
@@ -133,4 +134,5 @@ def patch_json() -> None:
     elasticapm.utils.json_encoder.json = json
     elasticsearch.connection.base.json = json  # type: ignore
     elasticsearch.serializer.json = json  # type: ignore
+    numpy._version.json = json  # type: ignore
     tornado.escape.json = json  # type: ignore

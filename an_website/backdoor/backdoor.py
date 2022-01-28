@@ -104,6 +104,7 @@ class Backdoor(APIRequestHandler):
                 else:
                     session = self.get_default_session()
 
+                session["self"] = self
                 if "print" not in session or isinstance(
                     session["print"], PrintWrapper
                 ):
@@ -112,23 +113,27 @@ class Backdoor(APIRequestHandler):
                     session["help"], pydoc.Helper
                 ):
                     session["help"] = pydoc.Helper(io.StringIO(), output)
+
                 try:
-                    _result = eval(code, session)  # pylint: disable=eval-used
-                    result = (
-                        await _result
-                        if code.co_flags.bit_length() >= 8
-                        and int(bin(code.co_flags)[-8])
-                        else _result
-                    )
+                    result = eval(code, session)  # pylint: disable=eval-used
+                    if code.co_flags.bit_length() >= 8 and int(
+                        bin(code.co_flags)[-8]
+                    ):
+                        result = await result
                 except Exception as exc:  # pylint: disable=broad-except
                     exception = exc  # pylint: disable=redefined-variable-type
                 else:
-                    if result is session["help"]:
-                        result = help
-                    elif result is session["print"]:
+                    if result is session["print"]:
                         result = print
+                    elif result is session["help"]:
+                        result = help
                     if result is not None:
                         session["_"] = result
+                finally:
+                    output_str = (
+                        output.getvalue() if not output.closed else None
+                    )
+                    output.close()
             result_tuple: tuple[None | str, Any] = (
                 "".join(
                     traceback.format_exception(exception)  # type: ignore
@@ -155,15 +160,14 @@ class Backdoor(APIRequestHandler):
             #         "".join(traceback.format_exception(exc)).strip(),
             #     )
         except SystemExit as exc:
-            if not isinstance(exc.code, int):
-                exc.code = repr(exc.code)  # type: ignore
             new_args = []
             for arg in exc.args:
                 try:
                     pickle.dumps(arg)
-                    new_args.append(arg)
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
+                else:
+                    new_args.append(arg)
             exc.args = tuple(new_args)
             return await self.finish(
                 pickle.dumps(exc, max(pickle.DEFAULT_PROTOCOL, 5))
@@ -173,7 +177,7 @@ class Backdoor(APIRequestHandler):
                 {
                     "success": not exception,
                     "result": result_tuple,
-                    "output": output.getvalue() if not output.closed else None,
+                    "output": output_str,
                 },
                 max(pickle.DEFAULT_PROTOCOL, 5),
             )

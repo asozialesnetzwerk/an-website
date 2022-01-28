@@ -19,11 +19,12 @@ import logging
 import time
 from collections import Counter
 from collections.abc import Awaitable
-from typing import Any, Literal
+from typing import Any
 
 import tornado.web
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.helpers import async_scan
 
 from .. import NAME
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
@@ -73,13 +74,12 @@ def uptime_to_str(uptime: None | float = None) -> str:
     )
 
 
-async def get_uptime_perc_periodically(
-    app: tornado.web.Application,  # pylint: disable=duplicate-code
+async def get_availability_data_periodically(
+    app: tornado.web.Application,
     setup_redis_awaitable: None | Awaitable[Any] = None,
     setup_es_awaitable: None | Awaitable[Any] = None,
 ) -> None:
-    """Get the uptime percentage periodically."""
-    hours: tuple[Literal[1, 3, 6, 12, 24], ...] = (1, 3, 6, 12, 24)
+    """Get the availability data periodically."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
     if setup_es_awaitable:
@@ -92,87 +92,98 @@ async def get_uptime_perc_periodically(
             "ELASTICSEARCH"
         )
         if redis and elasticsearch:
-            for _h in hours:
-                await get_uptime_perc(
+            logger.info("Updating availability data cache...")
+            try:
+                await get_availability_data(
                     elasticsearch=elasticsearch,
-                    hours=_h,
                     redis=redis,
                     redis_prefix=prefix,
-                    get_from_cache=False,
+                    update_cache=True,
                 )
-            logger.debug("Got uptime percentage.")
-        await asyncio.sleep(5 * 60)  # every 5 minutes
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.error("Updating availability data cache failed.")
+                logger.exception(exc)
+            else:
+                logger.info("Updated availability data cache successfully.")
+        await asyncio.sleep(60)
 
 
-async def get_uptime_perc(
+async def get_availability_data(
     elasticsearch: AsyncElasticsearch,
-    hours: Literal[1, 3, 6, 12, 24],
-    redis: None | Redis = None,
-    redis_prefix: None | str = None,
-    get_from_cache: bool = True,
-) -> tuple[int, int]:  # (up, down)
-    """Get the uptime percentage for the last `hours`."""
-    if (
-        get_from_cache
-        and redis
-        and (val := await redis.get(f"{redis_prefix}:uptime:last_{hours}h"))
-    ):
-        # get the uptime from redis
-        upp, down = val.split(",")
-    else:
-        up_perc_counter: Counter[str] = Counter(
+    redis: Redis,
+    redis_prefix: str,
+    update_cache: bool = False,
+) -> None | tuple[int, int]:  # (up, down)
+    """Get the availability data."""
+    if update_cache:
+        up_down_counter: Counter[str] = Counter(
             [
-                hit["_source"]["monitor"]["status"]  # is "up" or "down"
-                for hit in (
-                    await elasticsearch.search(
-                        index="heartbeat*",
-                        query={
+                doc["_source"]["monitor"]["status"]  # type: ignore[index]
+                async for doc in async_scan(
+                    client=elasticsearch,
+                    index="heartbeat-*,synthetics-*",
+                    query={
+                        "query": {
                             "bool": {
                                 "must": [
                                     {
                                         "range": {
                                             "@timestamp": {
-                                                "gte": f"now-{hours}h",
+                                                "gte": "now-1M",
                                             },
                                         },
                                     },
                                     {
                                         "term": {
-                                            "monitor.id": {
+                                            "service.name": {
                                                 "value": NAME,
+                                            }
+                                        },
+                                    },
+                                    {
+                                        "term": {
+                                            "monitor.type": {
+                                                "value": "http",
                                             }
                                         },
                                     },
                                 ]
                             }
-                        },
-                        # pylint: disable=line-too-long
-                        size=10_000,  # max size (is more than needed for 24h if the monitor is configured with "@every 10s")
-                        _source=[
-                            "monitor.id",
-                            "monitor.status",
-                        ],
-                    )
-                )["hits"]["hits"]
+                        }
+                    },
+                    scroll="30s",
+                    size=10_000,
+                    _source=[
+                        "monitor.status",
+                    ],
+                )
             ]
         )
-        upp, down = up_perc_counter["up"], up_perc_counter["down"]
-        if redis:
-            await redis.setex(
-                f"{redis_prefix}:uptime:last_{hours}h",
-                5 * 60 + 10,  # 5 minutes (+ 10 seconds (for safety))
-                f"{upp},{down}",
-            )
-    return int(upp), int(down)
+        # pylint: disable=invalid-name
+        up, down = up_down_counter["up"], up_down_counter["down"]
+        await redis.setex(
+            f"{redis_prefix}:availability",
+            90,  # TTL
+            f"{up}|{down}",
+        )
+    else:
+        # get the data from redis
+        data = await redis.get(f"{redis_prefix}:availability")
+        if not data:
+            return None
+        # pylint: disable=invalid-name
+        up, down = data.split("|")
+    return int(up), int(down)
 
 
-def get_up_perc_dict(upp: int, down: int) -> dict[str, int | float]:
-    """Get the uptime percentage as a dict."""
+def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
+    # pylint: disable=invalid-name
+    """Get the availability data as a dict."""
     return {
-        "up": upp,
+        "up": up,
         "down": down,
-        "total": upp + down,
-        "perc": 100 * upp / (upp + down) if upp + down else 0,
+        "total": up + down,
+        "percentage": 100 * up / (up + down) if up + down else 0,
     }
 
 
@@ -195,70 +206,22 @@ class UptimeAPIHandler(APIRequestHandler):
     async def get(self) -> None:
         """Handle the GET request to the API."""
         self.set_header("Cache-Control", "no-cache")
+        availability_data = (
+            await get_availability_data(
+                self.elasticsearch,
+                self.redis,
+                self.redis_prefix,
+            )
+            if self.elasticsearch and self.redis
+            else None
+        )
         return await self.finish(
             {
                 "uptime": (uptime := calculate_uptime()),
                 "uptime_str": uptime_to_str(uptime),
                 "start_time": time.time() - uptime,
-                "perc_last_24h": get_up_perc_dict(
-                    *(
-                        await get_uptime_perc(
-                            self.elasticsearch,
-                            24,
-                            self.redis,
-                            self.redis_prefix,
-                        )
-                    )
-                )
-                if self.elasticsearch and self.redis  # would take too long
-                else None,
-                "perc_last_12h": get_up_perc_dict(
-                    *(
-                        await get_uptime_perc(
-                            self.elasticsearch,
-                            12,
-                            self.redis,
-                            self.redis_prefix,
-                        )
-                    )
-                )
-                if self.elasticsearch and self.redis  # would take too long
-                else None,
-                "perc_last_6h": get_up_perc_dict(
-                    *(
-                        await get_uptime_perc(
-                            self.elasticsearch,
-                            6,
-                            self.redis,
-                            self.redis_prefix,
-                        )
-                    )
-                )
-                if self.elasticsearch and self.redis  # would take too long
-                else None,
-                "perc_last_3h": get_up_perc_dict(
-                    *(
-                        await get_uptime_perc(
-                            self.elasticsearch,
-                            3,
-                            self.redis,
-                            self.redis_prefix,
-                        )
-                    )
-                )
-                if self.elasticsearch and self.redis  # would take too long
-                else None,
-                "perc_last_1h": get_up_perc_dict(
-                    *(
-                        await get_uptime_perc(
-                            self.elasticsearch,
-                            1,
-                            self.redis,
-                            self.redis_prefix,
-                        )
-                    )
-                )
-                if self.elasticsearch
+                "availability": get_availability_dict(*availability_data)
+                if availability_data
                 else None,
             }
         )

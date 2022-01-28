@@ -19,7 +19,7 @@ import logging
 import math
 import textwrap
 
-from jxlpy import (  # type: ignore  # noqa  # pylint: disable=W0611
+from jxlpy import (  # type: ignore  # noqa  # pylint: disable=unused-import
     JXLImagePlugin,
 )
 from PIL import Image, ImageDraw, ImageFont
@@ -124,7 +124,8 @@ def draw_lines(  # pylint: disable=too-many-arguments
     return y_start
 
 
-def create_image(  # pylint: disable=R0912, R0913, R0914, R0915  # noqa: C901
+def create_image(  # noqa: C901
+    # pylint: disable=too-many-branches, too-many-arguments, too-many-locals, too-many-statements
     quote: str,
     author: str,
     rating: int,

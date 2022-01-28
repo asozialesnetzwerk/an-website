@@ -67,7 +67,7 @@ def get_module_info() -> ModuleInfo:
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
                 r"/@elastic/apm-rum@(.+)/dist/bundles"
-                r"/elastic-apm-rum.umd.min.js(\.map|)",
+                r"/elastic-apm-rum.umd(\.min|).js(\.map|)",
                 ElasticRUM,
             ),
         ),
@@ -83,14 +83,16 @@ class BaseRequestHandler(RequestHandler):
     REQUIRES_AUTHORIZATION: bool = False
 
     ELASTIC_RUM_JS_URL = (
-        "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum.umd.min.js"
+        "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
+        f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
     # info about page, can be overridden in module_info
+    module_info: ModuleInfo
     title = "Das Asoziale Netzwerk"
     short_title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
-    module_info: ModuleInfo
+    _geoip: dict[str, dict[str, Any]]
 
     def initialize(
         self,
@@ -107,7 +109,7 @@ class BaseRequestHandler(RequestHandler):
         If title and description are present in the kwargs they
         override self.title and self.description.
         """
-        self.module_info: ModuleInfo = module_info
+        self.module_info = module_info
         if not default_title:
             page_info = self.module_info.get_page_info(self.request.path)
             self.title = page_info.name
@@ -117,6 +119,7 @@ class BaseRequestHandler(RequestHandler):
             self.description = self.module_info.get_page_info(
                 self.request.path
             ).description
+        self._geoip = {}
 
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
@@ -194,8 +197,8 @@ class BaseRequestHandler(RequestHandler):
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
             if not (bucket and limit):
-                logger.warning(
-                    "No ratelimit for %s with %s request",
+                logger.debug(
+                    "No ratelimit for path %s with method %s",
                     self.request.path,
                     self.request.method,
                 )
@@ -378,12 +381,12 @@ class BaseRequestHandler(RequestHandler):
                 f"&from={quote(this_url or self.request.full_url())}"
             )
         host = parsed_url.netloc or self.request.host
-        add_prot_and_host = force_absolute or host != self.request.host
+        add_protocol_and_host = force_absolute or host != self.request.host
         return add_args_to_url(
             urlunparse(
                 (
-                    self.get_protocol() if add_prot_and_host else "",
-                    host if add_prot_and_host else "",
+                    self.get_protocol() if add_protocol_and_host else "",
+                    host if add_protocol_and_host else "",
                     parsed_url.path,
                     parsed_url.params,
                     parsed_url.query,
@@ -569,6 +572,56 @@ class BaseRequestHandler(RequestHandler):
             )
         )
 
+    async def geoip(
+        self, database: str = "GeoLite2-City.mmdb"
+    ) -> None | dict[str, Any]:
+        """Get GeoIP information."""
+        if database not in self._geoip:
+            if not self.elasticsearch:
+                return None
+
+            if database == "GeoLite2-City.mmdb":
+                properties = [
+                    "continent_name",
+                    "country_iso_code",
+                    "country_name",
+                    "region_iso_code",
+                    "region_name",
+                    "city_name",
+                    "location",
+                    "timezone",
+                ]
+            elif database == "GeoLite2-Country.mmdb":
+                properties = [
+                    "continent_name",
+                    "country_iso_code",
+                    "country_name",
+                ]
+            elif database == "GeoLite2-ASN.mmdb":
+                properties = ["asn", "network", "organization_name"]
+            else:
+                properties = None
+
+            self._geoip[database] = (
+                await self.elasticsearch.ingest.simulate(
+                    body={
+                        "pipeline": {
+                            "processors": [
+                                {
+                                    "geoip": {
+                                        "field": "ip",
+                                        "database_file": database,
+                                        "properties": properties,
+                                    }
+                                }
+                            ]
+                        },
+                        "docs": [{"_source": {"ip": self.request.remote_ip}}],
+                    }
+                )
+            )["docs"][0]["doc"]["_source"].get("geoip", {})
+        return self._geoip[database]
+
 
 class APIRequestHandler(BaseRequestHandler):
     """
@@ -619,7 +672,7 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFound(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
-    def initialize(  # type: ignore  # pylint: disable=arguments-differ
+    def initialize(  # type: ignore
         self, *args: list[Any], **kwargs: dict[str, Any]
     ) -> None:
         """Do nothing to have default title and desc."""
@@ -783,17 +836,17 @@ class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the RUM script."""
 
     URL = (
-        "https://unpkg.com/@elastic/apm-rum@%s"
-        "/dist/bundles/elastic-apm-rum.umd.min.js"
+        "https://unpkg.com/@elastic/apm-rum@{}"
+        "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
     SCRIPTS: dict[str, tuple[str, float]] = {}
 
-    async def get(self, version: str, ending: str = "") -> None:
+    async def get(self, version: str, spam: str = "", eggs: str = "") -> None:
         """Serve the RUM script."""
-        key = version + ending
+        key = version + spam + eggs
         if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
             response = await AsyncHTTPClient().fetch(
-                (self.URL % version) + ending, raise_error=False
+                self.URL.format(version, spam, eggs), raise_error=False
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
@@ -807,11 +860,12 @@ class ElasticRUM(BaseRequestHandler):
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
-        if ending == ".map":
+        if eggs:
             self.set_header("Content-Type", "application/json")
         else:
             self.set_header("Content-Type", "application/javascript")
-            self.set_header("SourceMap", self.URL + ".map")
+            if spam:
+                self.set_header("SourceMap", self.URL + ".map")
         self.set_header(
             "Cache-Control", f"min-fresh={365 * 60 * 60 * 24}, immutable"
         )
