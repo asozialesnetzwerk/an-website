@@ -30,6 +30,8 @@ if "--clean" in sys.argv:
     shutil.rmtree(STATIC_DIR)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
+FILE_COUNTER, MINIFIED_COUNTER = 0, 0
+
 for folder, _, files in os.walk(
     STYLE_DIR,
     topdown=True,
@@ -43,23 +45,24 @@ for folder, _, files in os.walk(
     )
     os.makedirs(new_dir, exist_ok=True)
     for file in files:
-        if file.endswith(".css"):
-            with open(
-                os.path.join(folder, file), "r", encoding="UTF-8"
-            ) as _f1:
-                orig = _f1.read()
-                small = rcssmin.cssmin(orig) + "\n"
-                print(
-                    f"{file}: {len(orig)} -> {len(small)} chars "
-                    f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
-                )
-                with open(
-                    os.path.join(
-                        new_dir,
-                        file,
-                    ),
-                    "w",
-                    encoding="UTF-8",
-                ) as _f2:
-                    _f2.write(small)
-                    _f2.flush()
+        if not file.endswith(".css"):
+            continue
+        FILE_COUNTER += 1
+        with open(os.path.join(folder, file), "r", encoding="UTF-8") as _f1:
+            orig = _f1.read()
+            small = rcssmin.cssmin(orig) + "\n"
+            new_file_path = os.path.join(new_dir, file)
+            if os.path.isfile(new_file_path):
+                with open(new_file_path, "r", encoding="UTF-8") as _f2_r_:
+                    if _f2_r_.read() == small:
+                        continue
+            print(
+                f"{file}: {len(orig)} -> {len(small)} chars "
+                f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
+            )
+            MINIFIED_COUNTER += 1
+            with open(new_file_path, "w", encoding="UTF-8") as _f2:
+                _f2.write(small)
+                _f2.flush()
+
+print(f"Minified {MINIFIED_COUNTER} of {FILE_COUNTER} files.")
