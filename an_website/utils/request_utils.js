@@ -26,4 +26,17 @@ function get(
     }).then(response => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
+
+window.PopStateHandlers = {};
+
+window.onpopstate = (event) => {
+    if (event.state
+        && event.state["stateType"]
+        && window.PopStateHandlers[event.state["stateType"]]) {
+        window.PopStateHandlers[event.state["stateType"]](event);
+    } else {
+        console.error("Couldn't handle state. ", event.state);
+        window.location.reload();
+    }
+};
 // @license-end

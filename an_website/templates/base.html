@@ -43,10 +43,12 @@
     </style>
 
     <script class="on-every-page" defer src="/static/js/request_utils.js"></script>
+    {% if dynload %}
     <script class="on-every-page"
             defer src="/static/js/dynamically_load.js"
-            {% if dynload %} onload="dynLoadReplaceAnchors()" {% end %}
+            onload="dynLoadReplaceAnchors()"
     ></script>
+    {% end %}
 
     {% block head %} {% end %}
 </head>

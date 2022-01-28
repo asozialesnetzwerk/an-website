@@ -181,16 +181,5 @@ function dynLoadOnPopState(event) {
     window.location.reload();
 }
 
-window.PopStateHandlers = {"dynLoad": dynLoadOnPopState};
-
-window.onpopstate = (event) => {
-    if (event.state
-        && event.state["stateType"]
-        && window.PopStateHandlers[event.state["stateType"]]) {
-        window.PopStateHandlers[event.state["stateType"]](event);
-    } else {
-        console.error("Couldn't handle state. ", event.state);
-        window.location.reload();
-    }
-};
+window.PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 // @license-end

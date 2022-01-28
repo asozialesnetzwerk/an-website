@@ -22,5 +22,5 @@ const[requestUrl,params]=getJSONURLWithParams(url);bodyDiv.innerHTML="Loading...
 function dynLoadOnPopState(event){if(event.state){console.log("Popstate",event.state);if(!(event.state["data"]&&dynLoadOnData(event.state,true))){dynLoadSwitchToURL(event.state["url"]||window.location.href,true);}
 if(event.state["scrollPos"]){window.scrollTo(event.state["scrollPos"][0],event.state["scrollPos"][1]);return;}}
 console.error("Couldn't handle state. ",event.state);window.location.reload();}
-window.PopStateHandlers={"dynLoad":dynLoadOnPopState};window.onpopstate=(event)=>{if(event.state&&event.state["stateType"]&&window.PopStateHandlers[event.state["stateType"]]){window.PopStateHandlers[event.state["stateType"]](event);}else{console.error("Couldn't handle state. ",event.state);window.location.reload();}};
+window.PopStateHandlers["dynLoad"]=dynLoadOnPopState;
 // @license-end
