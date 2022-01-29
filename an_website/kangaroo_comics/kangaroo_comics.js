@@ -10,82 +10,82 @@ function startLoadingComics() {
     const wrongLinks = [
         [
             getDateBy(2021, 5, 25),
-            "https://img.zeit.de/administratives/kaenguru-comics/25/original/"
+            "administratives/kaenguru-comics/25/original/"
         ],
         [
             getDateBy(2021, 9, 6),
-            "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/"
+            "administratives/kaenguru-comics/2021-09/6/original/"
         ],
         [
             getDateBy(2021, 10, 4),
-            "https://img.zeit.de/administratives/kaenguru-comics/2021-10/4/original"
+            "administratives/kaenguru-comics/2021-10/4/original"
         ],
         [
             getDateBy(2021, 10, 29),
-            "https://img.zeit.de/administratives/kaenguru-comics/29/original"
+            "administratives/kaenguru-comics/29/original"
         ],
         [
             getDateBy(2021, 11, 3),
-            "https://img.zeit.de/administratives/kaenguru-comics/2021-11/03-11-21/original"
+            "administratives/kaenguru-comics/2021-11/03-11-21/original"
         ],
         [
             getDateBy(2021, 12, 6),
-            "https://img.zeit.de/administratives/kaenguru-comics/2021-12/6/original"
+            "administratives/kaenguru-comics/2021-12/6/original"
         ],
         [
             getDateBy(2022, 1, 29),
-            "https://img.zeit.de/administratives/kaenguru-comics/2022-01/29-3/original"
+            "administratives/kaenguru-comics/2022-01/29-3/original"
         ]
     ];
 
     const comics = [];
 
     const links = `/static/img/2020-11-03.jpg
-https://img.zeit.de/administratives/kaenguru-comics/pilot-kaenguru/original
-https://img.zeit.de/administratives/kaenguru-comics/pow-kaenguru/original
-https://img.zeit.de/static/img/kaenguru-announcement/original
-https://img.zeit.de/administratives/kaenguru-comics/der-baum-kaenguru/original
-https://img.zeit.de/administratives/kaenguru-comics/warnung-kaenguru/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-005/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-006/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-007/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-008/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-009/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-010/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-011/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-012/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-013/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-014/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-015/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-016/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-017/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-018/original
-https://img.zeit.de/administratives/2020-12/kaenguru-comics-kaenguru-019/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-020/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-021/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-023/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-024/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-025/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-026/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-027/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-028/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-029/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-030/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-031/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-032/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-033/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-034/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-035/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-036/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-037/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-038-2/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-039/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-040/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-41/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-42/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-43/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-44/original
-https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
+administratives/kaenguru-comics/pilot-kaenguru/original
+administratives/kaenguru-comics/pow-kaenguru/original
+static/img/kaenguru-announcement/original
+administratives/kaenguru-comics/der-baum-kaenguru/original
+administratives/kaenguru-comics/warnung-kaenguru/original
+administratives/kaenguru-comics/kaenguru-005/original
+administratives/kaenguru-comics/kaenguru-006/original
+administratives/kaenguru-comics/kaenguru-007/original
+administratives/kaenguru-comics/kaenguru-008/original
+administratives/kaenguru-comics/kaenguru-009/original
+administratives/kaenguru-comics/kaenguru-010/original
+administratives/kaenguru-comics/kaenguru-011/original
+administratives/kaenguru-comics/kaenguru-012/original
+administratives/kaenguru-comics/kaenguru-013/original
+administratives/kaenguru-comics/kaenguru-014/original
+administratives/kaenguru-comics/kaenguru-015/original
+administratives/kaenguru-comics/kaenguru-016/original
+administratives/kaenguru-comics/kaenguru-017/original
+administratives/kaenguru-comics/kaenguru-018/original
+administratives/2020-12/kaenguru-comics-kaenguru-019/original
+administratives/kaenguru-comics/kaenguru-020/original
+administratives/kaenguru-comics/kaenguru-021/original
+administratives/kaenguru-comics/kaenguru-023/original
+administratives/kaenguru-comics/kaenguru-024/original
+administratives/kaenguru-comics/kaenguru-025/original
+administratives/kaenguru-comics/kaenguru-026/original
+administratives/kaenguru-comics/kaenguru-027/original
+administratives/kaenguru-comics/kaenguru-028/original
+administratives/kaenguru-comics/kaenguru-029/original
+administratives/kaenguru-comics/kaenguru-030/original
+administratives/kaenguru-comics/kaenguru-031/original
+administratives/kaenguru-comics/kaenguru-032/original
+administratives/kaenguru-comics/kaenguru-033/original
+administratives/kaenguru-comics/kaenguru-034/original
+administratives/kaenguru-comics/kaenguru-035/original
+administratives/kaenguru-comics/kaenguru-036/original
+administratives/kaenguru-comics/kaenguru-037/original
+administratives/kaenguru-comics/kaenguru-038-2/original
+administratives/kaenguru-comics/kaenguru-039/original
+administratives/kaenguru-comics/kaenguru-040/original
+administratives/kaenguru-comics/kaenguru-41/original
+administratives/kaenguru-comics/kaenguru-42/original
+administratives/kaenguru-comics/kaenguru-43/original
+administratives/kaenguru-comics/kaenguru-44/original
+administratives/kaenguru-comics/kaenguru-045/original
 `;
     function addLinksToComics() {
         const today = getToday();
@@ -102,6 +102,7 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
     //const currentImgContainer = document.getElementById("current-img-container");
     function setCurrentComic(date) {
         let link = generateComicLink(date);
+        link = link.startsWith("/") ? link : "https://img.zeit.de/" + link
         currentImg.src = link;
         currentImgHeader.innerText = "Neuster " + getDateString(date) + ":";
         currentImgHeader.href = link;
@@ -132,12 +133,12 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
     }
 
     const firstDateWithOldLink = getDateBy(2020, 12, 3);
-    const oldLinkRegex = /https?:\/\/img\.zeit\.de\/administratives\/kaenguru-comics\/kaenguru-(\d{2,3})(?:-2)?\/original\/?/;
+    const oldLinkRegex = /administratives\/kaenguru-comics\/kaenguru-(\d{2,3})(?:-2)?\/original\/?/;
 
     const firstDateWithNewLink = getDateBy(2021, 1, 19);
-    const newLinkRegex = /https?:\/\/img\.zeit\.de\/administratives\/kaenguru-comics\/(\d{4})-(\d{2})\/(\d{2})\/original\/?/;
+    const newLinkRegex = /administratives\/kaenguru-comics\/(\d{4})-(\d{2})\/(\d{2})\/original\/?/;
 
-    const relativeLinkRegex = /img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;
+    const relativeLinkRegex = /\/static\/img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;
 
     function getDateFromLink(link) {
         for (const reg of [newLinkRegex, relativeLinkRegex]) {
@@ -159,17 +160,17 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
         }
         link = link.toLowerCase().trim()
         switch (link) {  // first urls with special format
-            case "https://img.zeit.de/administratives/kaenguru-comics/pilot-kaenguru/original":
+            case "administratives/kaenguru-comics/pilot-kaenguru/original":
                 return getDateBy(2020, 11, 29);
-            case "https://img.zeit.de/administratives/kaenguru-comics/pow-kaenguru/original":
+            case "administratives/kaenguru-comics/pow-kaenguru/original":
                 return getDateBy(2020, 11, 30);
-            case "https://img.zeit.de/static/img/kaenguru-announcement/original":
+            case "static/img/kaenguru-announcement/original":
                 return getDateBy(2020, 11, 30);
-            case "https://img.zeit.de/administratives/kaenguru-comics/der-baum-kaenguru/original":
+            case "administratives/kaenguru-comics/der-baum-kaenguru/original":
                 return getDateBy(2020, 12, 1);
-            case "https://img.zeit.de/administratives/kaenguru-comics/warnung-kaenguru/original":
+            case "administratives/kaenguru-comics/warnung-kaenguru/original":
                 return getDateBy(2020, 12, 2);
-            case "https://img.zeit.de/administratives/2020-12/kaenguru-comics-kaenguru-019/original":
+            case "administratives/2020-12/kaenguru-comics-kaenguru-019/original":
                 return getDateBy(2020, 12, 19);
         }
         for (const arr of wrongLinks) {
@@ -177,7 +178,7 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
-    const linkFormat = "https://img.zeit.de/administratives/kaenguru-comics/%y-%m/%d/original"
+    const linkFormat = "administratives/kaenguru-comics/%y-%m/%d/original"
 
     function generateComicLink(date) {
         for (const arr of wrongLinks) {
@@ -238,8 +239,9 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
             const c = comics.length - loaded;
             if (c < 0) break;
 
-            const link = comics[c];
+            let link = comics[c];
             const date = getDateFromLink(link);
+            link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
 
             const listItem = document.createElement("li");
             const header = document.createElement("a");
