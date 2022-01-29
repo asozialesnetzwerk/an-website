@@ -558,8 +558,6 @@ class BaseRequestHandler(RequestHandler):
                 "theme": self.get_display_theme(),
                 "contact_email": self.get_contact_email(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
-                # this is not important because we don't need the templates
-                # in a context without the request for soundboard and wiki
                 "url": self.request.full_url(),
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
