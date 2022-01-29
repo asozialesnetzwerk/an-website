@@ -18,7 +18,13 @@ import datetime
 from typing import Any
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
+from ..utils.utils import (
+    THEMES,
+    ModuleInfo,
+    add_args_to_url,
+    bool_to_str,
+    str_to_bool,
+)
 
 
 def get_module_info() -> ModuleInfo:
@@ -67,37 +73,59 @@ class SettingsPage(BaseRequestHandler):
 
     def get(self) -> None:
         """Handle GET requests to the settings page."""
-        save_in_cookie = str_to_bool(
-            self.get_argument(
-                "save_in_cookie",
-                default=self.get_cookie("save_in_cookie", default=None),
-            ),
-            False,
-        )
-
-        replace_url_with = None
-
-        if save_in_cookie:
-            self.set_cookie("theme", self.get_theme())
-            self.set_cookie(
-                "no_3rd_party",
-                bool_to_str(self.get_no_3rd_party()),
-            )
-            if (
-                "theme" in self.request.query_arguments
-                or "no_3rd_party" in self.request.query_arguments
-            ):
-                # remove all the information saved in the cookies from the URL
-                replace_url_with = (
-                    f"{self.request.protocol}://{self.request.host}"
-                    f"{self.request.path}?save_in_cookie=sure"
-                )
-
         self.render(
             "pages/settings.html",
             theme_name=self.get_theme(),
             themes=THEMES,
             no_3rd_party_default=self.get_no_3rd_party_default(),
+            dynload=self.get_dynload(),
+            save_in_cookie=str_to_bool(
+                self.get_argument("save_in_cookie", "true")
+            ),
+            replace_url_with=None,
+        )
+
+    def post(self) -> None:
+        """Handle POST requests to the settings page."""
+        theme: str = self.get_argument("theme", None) or "default"
+        no_3rd_party: str = self.get_argument(
+            "no_3rd_party", None
+        ) or bool_to_str(self.get_no_3rd_party_default())
+        dynload: str = self.get_argument("dynload", None) or "nope"
+
+        save_in_cookie = str_to_bool(
+            self.get_argument(
+                "save_in_cookie",
+                default="f",
+            ),
+            False,
+        )
+        if save_in_cookie:
+            self.set_cookie("theme", theme)
+            self.set_cookie("no_3rd_party", no_3rd_party)
+            self.set_cookie("dynload", dynload)
+            replace_url_with = add_args_to_url(
+                self.request.full_url(),
+                dynload=None,
+                no_3rd_party=None,
+                theme=None,
+                save_in_cookie=True,
+            )
+        else:
+            replace_url_with = self.fix_url(
+                self.request.full_url(),
+                dynload=dynload,
+                no_3rd_party=no_3rd_party,
+                theme=theme,
+            )
+
+        self.render(
+            "pages/settings.html",
+            theme_name=theme,
+            themes=THEMES,
+            no_3rd_party=str_to_bool(no_3rd_party),
+            no_3rd_party_default=self.get_no_3rd_party_default(),
+            dynload=str_to_bool(dynload),
             save_in_cookie=save_in_cookie,
             replace_url_with=replace_url_with,
         )

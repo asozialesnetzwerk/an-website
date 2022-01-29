@@ -1,12 +1,17 @@
 {% whitespace oneline %}
     {% if replace_url_with is not None %}
 <script>
-    // replace the url, without loading the website again
-    // TODO: check if this still works
-    window.history.pushState(
-        {"stateType": "dynLoad"},
-        "",
-        "{% raw replace_url_with.replace('"', "%22") %}"
-    );
+    /* replace the url, without loading the website again */
+    (()=>{
+        const url = "{% raw replace_url_with.replace('"', "%22") %}";
+        if (url !== window.location.href) {
+            window.history.replaceState(
+                {
+                    "stateType": "replaceURL",
+                    "origin": window.location.toString(),
+                }, "{{title}}", url
+            );
+        }
+    })();
 </script>
     {% end %}

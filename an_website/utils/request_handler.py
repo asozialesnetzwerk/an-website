@@ -359,12 +359,16 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("MODULE_INFOS") or tuple()
 
     @cache
-    def fix_url(
+    def fix_url(  # pylint: disable=too-many-arguments
         self,
         url: str,
         this_url: None | str = None,
         always_add_params: bool = False,
         force_absolute: bool = True,
+        # to override them (used in the settings)
+        theme: None | str = None,
+        no_3rd_party: None | bool = None,
+        dynload: None | bool = None,
     ) -> str:
         """
         Fix a URL and return it.
@@ -382,6 +386,14 @@ class BaseRequestHandler(RequestHandler):
             )
         host = parsed_url.netloc or self.request.host
         add_protocol_and_host = force_absolute or host != self.request.host
+
+        if no_3rd_party is None:
+            no_3rd_party = self.get_no_3rd_party()
+        if theme is None:
+            theme = self.get_theme()
+        if dynload is None:
+            dynload = self.get_dynload()
+
         return add_args_to_url(
             urlunparse(
                 (
@@ -394,13 +406,17 @@ class BaseRequestHandler(RequestHandler):
                 )
             ),
             # the no_3rd_party param:
-            no_3rd_party=self.get_no_3rd_party()
+            no_3rd_party=no_3rd_party
             if always_add_params
-            or self.get_no_3rd_party() != self.get_saved_no_3rd_party()
+            or no_3rd_party != self.get_saved_no_3rd_party()
             else None,
             # the theme param:
-            theme=self.get_theme()
-            if always_add_params or self.get_theme() != self.get_saved_theme()
+            theme=theme
+            if always_add_params or theme != self.get_saved_theme()
+            else None,
+            # the dynload param:
+            dynload=dynload
+            if always_add_params or dynload != self.get_saved_dynload()
             else None,
         )
 
@@ -419,11 +435,26 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
-        default = self.get_saved_no_3rd_party()
+        saved = self.get_saved_no_3rd_party()
         no_3rd_party = self.get_argument("no_3rd_party", default=None)
         if no_3rd_party is None:
-            return default
-        return str_to_bool(no_3rd_party, default)
+            return saved
+        return str_to_bool(no_3rd_party, saved)
+
+    def get_saved_dynload(self) -> bool:
+        """Get the saved value for dynload."""
+        dynload = self.get_cookie("dynload")
+        if dynload is None:
+            return False
+        return str_to_bool(dynload, False)
+
+    def get_dynload(self) -> bool:
+        """Return the dynload query argument as boolean."""
+        saved = self.get_saved_dynload()
+        dynload = self.get_argument("dynload", default=None)
+        if dynload is None:
+            return saved
+        return str_to_bool(dynload, saved)
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
@@ -468,6 +499,12 @@ class BaseRequestHandler(RequestHandler):
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else ""
         )
+
+        if self.get_dynload() != self.get_saved_dynload():
+            form_appendix += (
+                f"<input name='dynload' class='hidden-input' "
+                f"value='{bool_to_str(self.get_dynload())}'>"
+            )
 
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
@@ -526,7 +563,7 @@ class BaseRequestHandler(RequestHandler):
                 "url": self.request.full_url(),
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
-                "dynload": str_to_bool(self.get_cookie("dynload", "n"), False),
+                "dynload": self.get_dynload(),
             }
         )
         return namespace

@@ -1,4 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
+window.lastLocation = window.location;
+
 function post(
     url,
     params = {},
@@ -27,16 +29,22 @@ function get(
         .then(ondata).catch(onerror);
 }
 
-window.PopStateHandlers = {};
+window.PopStateHandlers = {
+    "replaceURL": (state) => {
+        // reload if the last location was not the one that got replaced
+        window.lastLocation === state["origin"] || window.location.reload();
+    }
+};
 
 window.onpopstate = (event) => {
     if (event.state
         && event.state["stateType"]
         && window.PopStateHandlers[event.state["stateType"]]) {
         window.PopStateHandlers[event.state["stateType"]](event);
+        window.lastLocation = window.location;
     } else {
         console.error("Couldn't handle state. ", event.state);
         window.location.reload();
     }
-};
+}
 // @license-end

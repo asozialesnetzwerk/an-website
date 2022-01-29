@@ -3,14 +3,14 @@
 
 {% block body %}
 
-<form>
-    {% if no_3rd_party_default is True %}
+<form method="post">
+    {% if no_3rd_party_default %}
     <label class="form-element">
         Erlaube Inhalte von Drittanbietern
         <input type="checkbox"
            name="no_3rd_party"
            value="nope"
-{% if no_3rd_party is False %}
+{% if not no_3rd_party %}
            checked
 {% end %}
         >
@@ -28,6 +28,17 @@
     </label>
     {% end %}
 
+    <label class="form-element">
+        Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
+        <input type="checkbox"
+           name="dynload"
+           value="sure"
+{% if dynload %}
+           checked
+{% end %}
+        >
+    </label>
+
 
     <label class="form-element">
         Theme
@@ -42,7 +53,7 @@
 
 
     <label class="form-element">
-       Speicher in Cookie
+       Speicher in Cookies (empfohlen)
         <input type="checkbox"
             name="save_in_cookie"
             value="sure"
