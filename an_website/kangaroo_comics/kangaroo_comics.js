@@ -6,6 +6,38 @@ function removeAllPopups() {
 }
 
 function startLoadingComics() {
+    // date with special link format:
+    const wrongLinks = [
+        [
+            getDateBy(2021, 5, 25),
+            "https://img.zeit.de/administratives/kaenguru-comics/25/original/"
+        ],
+        [
+            getDateBy(2021, 9, 6),
+            "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/"
+        ],
+        [
+            getDateBy(2021, 10, 4),
+            "https://img.zeit.de/administratives/kaenguru-comics/2021-10/4/original"
+        ],
+        [
+            getDateBy(2021, 10, 29),
+            "https://img.zeit.de/administratives/kaenguru-comics/29/original"
+        ],
+        [
+            getDateBy(2021, 11, 3),
+            "https://img.zeit.de/administratives/kaenguru-comics/2021-11/03-11-21/original"
+        ],
+        [
+            getDateBy(2021, 12, 6),
+            "https://img.zeit.de/administratives/kaenguru-comics/2021-12/6/original"
+        ],
+        [
+            getDateBy(2022, 1, 29),
+            "https://img.zeit.de/administratives/kaenguru-comics/2022-01/29-3/original"
+        ]
+    ];
+
     const comics = [];
 
     const links = `/static/img/2020-11-03.jpg
@@ -106,16 +138,6 @@ https://img.zeit.de/administratives/kaenguru-comics/kaenguru-045/original
     const newLinkRegex = /https?:\/\/img\.zeit\.de\/administratives\/kaenguru-comics\/(\d{4})-(\d{2})\/(\d{2})\/original\/?/;
 
     const relativeLinkRegex = /img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;
-
-    // date with special link format:
-    const wrongLinks = [
-        [getDateBy(2021, 5, 25), "https://img.zeit.de/administratives/kaenguru-comics/25/original/"],
-        [getDateBy(2021, 9, 6), "https://img.zeit.de/administratives/kaenguru-comics/2021-09/6/original/"],
-        [getDateBy(2021, 10, 4), "https://img.zeit.de/administratives/kaenguru-comics/2021-10/4/original"],
-        [getDateBy(2021, 10, 29), "https://img.zeit.de/administratives/kaenguru-comics/29/original"],
-        [getDateBy(2021, 11, 3), "https://img.zeit.de/administratives/kaenguru-comics/2021-11/03-11-21/original"],
-        [getDateBy(2021, 12, 6), "https://img.zeit.de/administratives/kaenguru-comics/2021-12/6/original"]
-    ]
 
     function getDateFromLink(link) {
         for (const reg of [newLinkRegex, relativeLinkRegex]) {
