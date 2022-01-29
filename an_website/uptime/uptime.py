@@ -167,7 +167,6 @@ async def get_availability_data(
             f"{up}|{down}",
         )
     else:
-        # get the data from redis
         data = await redis.get(f"{redis_prefix}:availability")
         if not data:
             return None

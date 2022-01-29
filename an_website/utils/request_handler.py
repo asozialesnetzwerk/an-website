@@ -87,12 +87,13 @@ class BaseRequestHandler(RequestHandler):
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
-    # info about page, can be overridden in module_info
     module_info: ModuleInfo
+    # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
     short_title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
-    _geoip: dict[str, dict[str, Any]]
+
+    _geoip: dict[str, dict[str, dict[str, Any]]] = {}
 
     def initialize(
         self,
@@ -119,7 +120,6 @@ class BaseRequestHandler(RequestHandler):
             self.description = self.module_info.get_page_info(
                 self.request.path
             ).description
-        self._geoip = {}
 
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
@@ -565,18 +565,22 @@ class BaseRequestHandler(RequestHandler):
         return bool(
             api_secrets  # api_secrets has to be truthy
             and (
-                # check authorization header
                 self.request.headers.get("Authorization") in api_secrets
-                # check the auth_key cookie
-                or self.get_cookie("auth_key", default=None) in api_secrets
+                or self.get_argument("key", default=None) in api_secrets
+                or self.get_cookie("key", default=None) in api_secrets
             )
         )
 
+    # pylint: disable=invalid-name
     async def geoip(
-        self, database: str = "GeoLite2-City.mmdb"
+        self, database: str = "GeoLite2-City.mmdb", ip: None | str = None
     ) -> None | dict[str, Any]:
         """Get GeoIP information."""
-        if database not in self._geoip:
+        if not ip:
+            ip = str(self.request.remote_ip)
+        if ip not in self._geoip:
+            self._geoip[ip] = {}
+        if database not in self._geoip[ip]:
             if not self.elasticsearch:
                 return None
 
@@ -602,7 +606,7 @@ class BaseRequestHandler(RequestHandler):
             else:
                 properties = None
 
-            self._geoip[database] = (
+            self._geoip[ip][database] = (
                 await self.elasticsearch.ingest.simulate(
                     body={
                         "pipeline": {
@@ -616,11 +620,11 @@ class BaseRequestHandler(RequestHandler):
                                 }
                             ]
                         },
-                        "docs": [{"_source": {"ip": self.request.remote_ip}}],
+                        "docs": [{"_source": {"ip": ip}}],
                     }
                 )
             )["docs"][0]["doc"]["_source"].get("geoip", {})
-        return self._geoip[database]
+        return self._geoip[ip][database]
 
 
 class APIRequestHandler(BaseRequestHandler):
