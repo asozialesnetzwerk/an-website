@@ -57,6 +57,7 @@ def send(
             method="POST",
             headers=headers,
             body=code,
+            request_timeout=60,
         )
     except HTTPClientError as exc:
         if exc.response and exc.response.body:

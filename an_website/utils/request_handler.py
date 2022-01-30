@@ -656,7 +656,8 @@ class BaseRequestHandler(RequestHandler):
                             ]
                         },
                         "docs": [{"_source": {"ip": ip}}],
-                    }
+                    },
+                    params={"filter_path": "docs.doc._source"},
                 )
             )["docs"][0]["doc"]["_source"].get("geoip", {})
         return self._geoip[ip][database]

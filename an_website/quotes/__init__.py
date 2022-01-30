@@ -505,8 +505,8 @@ async def update_cache(
             )
 
     except Exception as exc:  # pylint: disable=broad-except
-        logger.error("Updating quotes cache failed.")
         logger.exception(exc)
+        logger.error("Updating quotes cache failed.")
     else:
         logger.info("Updated quotes cache successfully.")
 

@@ -23,7 +23,6 @@ import os
 import signal
 import ssl
 import sys
-import traceback
 from typing import Any
 
 import hy  # type: ignore
@@ -437,11 +436,7 @@ async def setup_redis(app: Application) -> None:
     try:
         await redis.ping()
     except RedisError as exc:
-        logger.error(
-            "".join(
-                traceback.format_exception_only(exc)  # type: ignore
-            ).strip()
-        )
+        logger.exception(exc)
         logger.error("Redis is unavailable!")
         app.settings["REDIS"] = None
     else:
@@ -488,11 +483,7 @@ async def setup_elasticsearch(app: Application) -> None:
     try:
         await elasticsearch.info()
     except ElasticsearchException as exc:
-        logger.error(
-            "".join(
-                traceback.format_exception_only(exc)  # type: ignore
-            ).strip()
-        )
+        logger.exception(exc)
         logger.error("Elasticsearch is unavailable!")
         app.settings["ELASTICSEARCH"] = None
     else:
@@ -583,15 +574,15 @@ def main() -> None:
 
     # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
-    from .uptime.uptime import get_availability_data_periodically
+    from .uptime.uptime import update_availability_data_periodically
 
     # pylint: disable=unused-variable
     cache_update_task = loop.create_task(  # noqa: F841
         update_cache_periodically(app, setup_redis_task)
     )
     # pylint: disable=unused-variable
-    uptime_perc_task = loop.create_task(  # noqa: F841
-        get_availability_data_periodically(
+    availability_data_update_task = loop.create_task(  # noqa: F841
+        update_availability_data_periodically(
             app, setup_redis_task, setup_es_task
         )
     )

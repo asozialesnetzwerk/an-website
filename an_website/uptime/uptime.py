@@ -74,48 +74,35 @@ def uptime_to_str(uptime: None | float = None) -> str:
     )
 
 
-async def get_availability_data_periodically(
+async def update_availability_data_periodically(
     app: tornado.web.Application,
     setup_redis_awaitable: None | Awaitable[Any] = None,
     setup_es_awaitable: None | Awaitable[Any] = None,
 ) -> None:
-    """Get the availability data periodically."""
+    """Update the availability data periodically."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
     if setup_es_awaitable:
         await setup_es_awaitable
     # pylint: disable=while-used
     while True:
-        redis: None | Redis = app.settings.get("REDIS")
-        prefix: str = app.settings.get("REDIS_PREFIX", "")
-        elasticsearch: None | AsyncElasticsearch = app.settings.get(
-            "ELASTICSEARCH"
-        )
-        if redis and elasticsearch:
-            logger.info("Updating availability data cache...")
-            try:
-                await get_availability_data(
-                    elasticsearch=elasticsearch,
-                    redis=redis,
-                    redis_prefix=prefix,
-                    update_cache=True,
-                )
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.error("Updating availability data cache failed.")
-                logger.exception(exc)
-            else:
-                logger.info("Updated availability data cache successfully.")
+        await update_availability_data(app)
         await asyncio.sleep(60)
 
 
-async def get_availability_data(
-    elasticsearch: AsyncElasticsearch,
-    redis: Redis,
-    redis_prefix: str,
-    update_cache: bool = False,
-) -> None | tuple[int, int]:  # (up, down)
-    """Get the availability data."""
-    if update_cache:
+async def update_availability_data(app: tornado.web.Application) -> None:
+    """Update the availability data."""
+    redis: None | Redis = app.settings.get("REDIS")
+    redis_prefix: str = app.settings.get("REDIS_PREFIX", "")
+    elasticsearch: None | AsyncElasticsearch = app.settings.get(
+        "ELASTICSEARCH"
+    )
+
+    if not (redis and elasticsearch):
+        return
+
+    logger.info("Updating availability data...")
+    try:
         up_down_counter: Counter[str] = Counter(
             [
                 doc["_source"]["monitor"]["status"]  # type: ignore[index]
@@ -151,11 +138,9 @@ async def get_availability_data(
                             }
                         }
                     },
-                    scroll="30s",
                     size=10_000,
-                    _source=[
-                        "monitor.status",
-                    ],
+                    scroll="10s",
+                    _source=["monitor.status"],
                 )
             ]
         )
@@ -166,12 +151,22 @@ async def get_availability_data(
             90,  # TTL
             f"{up}|{down}",
         )
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception(exc)
+        logger.error("Updating availability data failed.")
     else:
-        data = await redis.get(f"{redis_prefix}:availability")
-        if not data:
-            return None
-        # pylint: disable=invalid-name
-        up, down = data.split("|")
+        logger.info("Updated availability data successfully.")
+
+
+async def get_availability_data(
+    redis: Redis, redis_prefix: str
+) -> None | tuple[int, int]:  # (up, down)
+    """Get the availability data."""
+    data = await redis.get(f"{redis_prefix}:availability")
+    if not data:
+        return None
+    # pylint: disable=invalid-name
+    up, down = data.split("|")
     return int(up), int(down)
 
 
@@ -207,7 +202,6 @@ class UptimeAPIHandler(APIRequestHandler):
         self.set_header("Cache-Control", "no-cache")
         availability_data = (
             await get_availability_data(
-                self.elasticsearch,
                 self.redis,
                 self.redis_prefix,
             )
