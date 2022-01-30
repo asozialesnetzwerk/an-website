@@ -51,9 +51,7 @@ def dumps(  # type: ignore
         )
         default = lambda o: _.default(o)  # noqa
     option = (
-        orjson.OPT_SERIALIZE_NUMPY
-        | orjson.OPT_NAIVE_UTC
-        | orjson.OPT_UTC_Z
+        orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
     )
     if sort_keys:
         option |= orjson.OPT_SORT_KEYS
