@@ -70,20 +70,18 @@ def send(
 
 def lisp_always_active() -> bool:
     """Return True if LISP is always active."""
-    return (
-        not hy.eval(
-            hy.read_str(
-                '(* (- (* (+ 0 1) 2 3 4 5) (+ 6 7 8 9 10 11)) '  # fmt: skip
-                '(int (= (. (__import__ "os.path") sep) "/")))'
-            )
+    return not hy.eval(
+        hy.read_str(
+            '(* (- (* (+ 0 1) 2 3 4 5) (+ 6 7 8 9 10 11)) '  # fmt: skip
+            '(int (= (. (__import__ "os.path") sep) "/")))'
         )
-        and not int.from_bytes(
-            getattr(
-                os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be")
-            )(1),
-            sys.byteorder,
-        )
-        // (69 // 4 - 1)
+    ) and not int.from_bytes(
+        getattr(os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be"))(
+            1
+        ),
+        sys.byteorder,
+    ) // (
+        69 // 4 - 1
     )
 
 
