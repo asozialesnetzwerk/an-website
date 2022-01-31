@@ -49,7 +49,7 @@ def dumps(  # type: ignore
             sort_keys=sort_keys,
             **kw,
         )
-        default = lambda o: _.default(o)  # noqa
+        default = _.default
     option = (
         orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
     )
