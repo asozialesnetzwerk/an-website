@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import orjson as json
 
+from .. import ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo, name_to_id
 
@@ -78,4 +79,6 @@ class EndpointsAPI(Endpoints, APIRequestHandler):
 
     async def get(self) -> None:
         """Handle a GET request."""
-        return await self.finish(json.dumps(self.get_endpoints()))
+        return await self.finish(
+            json.dumps(self.get_endpoints(), option=ORJSON_OPTIONS)
+        )

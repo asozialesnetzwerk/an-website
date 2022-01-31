@@ -21,6 +21,7 @@ from collections import Counter
 from collections.abc import Awaitable
 from typing import Any
 
+import elasticapm  # type: ignore
 import tornado.web
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
@@ -154,6 +155,9 @@ async def update_availability_data(app: tornado.web.Application) -> None:
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Updating availability data failed.")
+        apm: None | elasticapm.Client = app.settings.get("ELASTIC_APM_CLIENT")
+        if apm:
+            apm.capture_exception()
     else:
         logger.info("Updated availability data successfully.")
 

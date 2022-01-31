@@ -299,7 +299,7 @@ def apply_config_to_app(
     app.settings["TRUSTED_API_SECRETS"] = tuple(
         secret.strip()
         for secret in config.get(
-            "GENERAL", "TRUSTED_API_SECRETS", fallback="hunter2"
+            "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
         ).split(",")
     )
 
@@ -353,7 +353,16 @@ def setup_logging(config: configparser.ConfigParser) -> None:
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
     stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(LogFormatter())
+    stream_handler.setFormatter(
+        logging.Formatter(
+            LogFormatter.DEFAULT_FORMAT.replace("%(color)s", "").replace(
+                "%(end_color)s", ""
+            ),
+            LogFormatter.DEFAULT_DATE_FORMAT,
+        )
+        if sys.flags.dev_mode
+        else LogFormatter()
+    )
     root_logger.addHandler(stream_handler)
 
     path = config.get(
@@ -403,10 +412,9 @@ def setup_apm(app: Application) -> None:
         "DEBUG": True,
         "CAPTURE_BODY": "errors",
         "TRANSACTION_IGNORE_URLS": [
+            "/api/ping/",
             "/favicon.ico",
             "/static/*",
-            "/.well-known/*",
-            "/api/ping/",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [
@@ -418,7 +426,7 @@ def setup_apm(app: Application) -> None:
             "elasticapm.processors.sanitize_http_request_body",
         ],
     }
-    app.settings["ELASTIC_APM_AGENT"] = ElasticAPM(app)
+    app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app)
 
 
 async def setup_redis(app: Application) -> None:

@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Minify all css files in style and move them to an_website/static/style/."""
+"""Minify all CSS files in style and move them to an_website/static/style."""
 from __future__ import annotations
 
 import os
@@ -30,7 +30,7 @@ if "--clean" in sys.argv:
     shutil.rmtree(STATIC_DIR)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
-FILE_COUNTER, MINIFIED_COUNTER = 0, 0
+file_counter, minified_counter = 0, 0
 
 for folder, _, files in os.walk(
     STYLE_DIR,
@@ -47,7 +47,7 @@ for folder, _, files in os.walk(
     for file in files:
         if not file.endswith(".css"):
             continue
-        FILE_COUNTER += 1
+        file_counter += 1
         with open(os.path.join(folder, file), "r", encoding="UTF-8") as _f1:
             orig = _f1.read()
             small = rcssmin.cssmin(orig) + "\n"
@@ -60,9 +60,9 @@ for folder, _, files in os.walk(
                 f"{file}: {len(orig)} -> {len(small)} chars "
                 f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
             )
-            MINIFIED_COUNTER += 1
+            minified_counter += 1
             with open(new_file_path, "w", encoding="UTF-8") as _f2:
                 _f2.write(small)
                 _f2.flush()
 
-print(f"Minified {MINIFIED_COUNTER} of {FILE_COUNTER} files.")
+print(f"Minified {minified_counter} of {file_counter} files.")

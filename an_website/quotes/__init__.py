@@ -25,11 +25,14 @@ from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass
 from typing import Any, Literal
 
+import elasticapm  # type: ignore
 import orjson as json
 import tornado.web
+from aioredis import Redis
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
+from .. import ORJSON_OPTIONS
 from ..utils.request_handler import BaseRequestHandler
 
 DIR = os.path.dirname(__file__)
@@ -411,8 +414,8 @@ async def update_cache_periodically(
     """Start updating the cache every hour."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
-    redis = app.settings.get("REDIS")
-    prefix = app.settings.get("REDIS_PREFIX", "")
+    redis: None | Redis = app.settings.get("REDIS")
+    prefix: str = app.settings.get("REDIS_PREFIX", "")
     if redis:
         parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),
@@ -453,7 +456,7 @@ async def update_cache_periodically(
         await asyncio.sleep(60 * 60)
 
 
-async def update_cache(
+async def update_cache(  # noqa: C901
     app: tornado.web.Application,
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,
@@ -461,8 +464,8 @@ async def update_cache(
 ) -> None:
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
-    redis = app.settings.get("REDIS")
-    prefix = app.settings.get("REDIS_PREFIX", "")
+    redis: None | Redis = app.settings.get("REDIS")
+    prefix: str = app.settings.get("REDIS_PREFIX", "")
     try:  # pylint: disable=too-many-try-statements
 
         if update_wrong_quotes:
@@ -473,7 +476,7 @@ async def update_cache(
             if wq_data and redis:
                 await redis.set(
                     f"{prefix}:cached-quote-data:wrongquotes",
-                    json.dumps(wq_data),
+                    json.dumps(wq_data, option=ORJSON_OPTIONS),
                 )
 
         if update_quotes:
@@ -484,7 +487,7 @@ async def update_cache(
             if quotes_data and redis:
                 await redis.set(
                     f"{prefix}:cached-quote-data:quotes",
-                    json.dumps(quotes_data),
+                    json.dumps(quotes_data, option=ORJSON_OPTIONS),
                 )
 
         if update_authors:
@@ -495,7 +498,7 @@ async def update_cache(
             if authors_data and redis:
                 await redis.set(
                     f"{prefix}:cached-quote-data:authors",
-                    json.dumps(authors_data),
+                    json.dumps(authors_data, option=ORJSON_OPTIONS),
                 )
 
         if redis and update_wrong_quotes and update_quotes and update_authors:
@@ -507,6 +510,9 @@ async def update_cache(
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Updating quotes cache failed.")
+        apm: None | elasticapm.Client = app.settings.get("ELASTIC_APM_CLIENT")
+        if apm:
+            apm.capture_exception()
     else:
         logger.info("Updated quotes cache successfully.")
 

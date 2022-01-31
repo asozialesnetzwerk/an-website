@@ -21,6 +21,8 @@ from json.encoder import JSONEncoder  # noqa: F401
 
 import orjson
 
+from .. import ORJSON_OPTIONS
+
 
 # pylint: disable=unused-argument,invalid-name,missing-function-docstring
 def dumps(  # type: ignore
@@ -50,9 +52,7 @@ def dumps(  # type: ignore
             **kw,
         )
         default = _.default
-    option = (
-        orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
-    )
+    option = ORJSON_OPTIONS
     if sort_keys:
         option |= orjson.OPT_SORT_KEYS
     if indent is not None:

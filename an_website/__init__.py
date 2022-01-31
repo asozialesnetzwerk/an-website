@@ -16,6 +16,11 @@ from __future__ import annotations
 
 import os
 
+import orjson
+
 DIR = os.path.dirname(__file__)
 
 NAME = "an-website"
+ORJSON_OPTIONS = (
+    orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
+)
