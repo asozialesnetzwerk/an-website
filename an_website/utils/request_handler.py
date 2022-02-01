@@ -734,7 +734,7 @@ class NotFound(BaseRequestHandler):
 
         distances: list[tuple[int, str]] = []
 
-        max_dist = max(1, min(4, len(this_path) - 3))
+        max_dist = max(1, min(4, len(this_path) - 1))
 
         for _mi in self.get_module_infos():
             if _mi.path is not None:
