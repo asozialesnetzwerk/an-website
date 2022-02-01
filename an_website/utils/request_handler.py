@@ -33,12 +33,14 @@ from urllib.parse import quote, unquote, urlparse, urlunparse
 
 import elasticapm  # type: ignore
 import orjson as json
-from abydos.distance import Levenshtein  # type: ignore
 from aioredis import Redis
 from ansi2html import Ansi2HTMLConverter  # type: ignore
+
+# pylint: disable=no-name-in-module
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
+from Levenshtein import distance  # type: ignore
 from tornado import web
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
@@ -730,25 +732,24 @@ class NotFound(BaseRequestHandler):
         # "%20" → " "
         this_path = unquote(self.request.path).strip("/")
 
-        distances: list[tuple[float, str]] = []
+        distances: list[tuple[int, str]] = []
+
+        max_dist = max(1, min(4, len(this_path) - 3))
 
         for _mi in self.get_module_infos():
             if _mi.path is not None:
                 # get the smallest distance possible with the aliases
                 dist = min(
-                    Levenshtein().dist(this_path, path.strip("/"))
+                    distance(this_path, path.strip("/"))
                     for path in (*_mi.aliases, _mi.path)
-                    if path != "/z/"
+                    if path != "/z/"  # do not redirect to /z/
                 )
-                if dist <= 0.5:
-                    # only if the distance is less than or equal 0.5
+                if dist <= max_dist:
+                    # only if the distance is less or equal then {max_dist}
                     distances.append((dist, _mi.path))
             if len(_mi.sub_pages) > 0:
                 distances.extend(
-                    (
-                        Levenshtein().dist(this_path, _sp.path.strip("/")),
-                        _sp.path,
-                    )
+                    (distance(this_path, _sp.path), _sp.path)
                     for _sp in _mi.sub_pages
                     if _sp.path is not None
                 )
@@ -757,8 +758,8 @@ class NotFound(BaseRequestHandler):
             # sort to get the one with the smallest distance in index 0
             distances.sort()
             dist, path = distances[0]
-            if dist <= 0.5:
-                # only if the distance is less than or equal 0.5
+            if dist <= max_dist:
+                # only if the distance is less or equal then {max_dist}
                 return self.redirect(
                     self.get_protocol_and_host() + path + self.get_query(),
                     False,

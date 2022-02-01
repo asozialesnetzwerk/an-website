@@ -16,7 +16,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from abydos.distance import Levenshtein  # type: ignore
+# pylint: disable=no-name-in-module
+from Levenshtein import distance  # type: ignore
 
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
@@ -64,8 +65,7 @@ async def find_solutions(
         solutions.update(
             test_word
             for test_word in get_words(file_name)
-            if test_word not in ignore
-            and Levenshtein().dist_abs(word, test_word) == 1
+            if test_word not in ignore and distance(word, test_word) == 1
         )
 
     return solutions
