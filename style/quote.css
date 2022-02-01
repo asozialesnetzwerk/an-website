@@ -143,6 +143,10 @@
     background-color: transparent !important;
 }
 
+#real-author-name {
+    display: inline !important;
+}
+
 @media (orientation:landscape) {
     #quote-container {
         background: transparent url("/static/img/ZitateBackground.svg") no-repeat right top 5px;

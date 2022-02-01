@@ -47,4 +47,12 @@ window.onpopstate = (event) => {
         window.location.reload();
     }
 }
+
+function updatedAnchors(/* anchors as arguments */) {
+    if (window.dynLoadReplaceHrefOnAnchor) {
+        for (let anchor of arguments) {
+            dynLoadReplaceHrefOnAnchor(anchor);
+        }
+    }
+}
 // @license-end

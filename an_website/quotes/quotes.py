@@ -420,6 +420,8 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
                 "id": wrong_quote.get_id_as_str(),
                 "quote": wrong_quote.quote.quote,
                 "author": wrong_quote.author.name,
+                "real_author": wrong_quote.quote.author.name,
+                "real_author_id": wrong_quote.quote.author.id,
                 "rating": await self.get_rating_str(wrong_quote),
                 "vote": vote,
                 "next": f"{next_q}-{next_a}",

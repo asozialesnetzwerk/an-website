@@ -462,9 +462,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
-        theme = self.get_theme()
-
-        if "random" not in theme:
+        if "random" not in (theme := self.get_theme()):
             return theme
 
         # theme names to ignore:
@@ -681,6 +679,7 @@ class NotFound(BaseRequestHandler):
             "/root.php",
             "/settings/aws.yml",
             "/uploads/",
+            "/vendor/phpunit/phpunit/src/util/php/eval-stdin.php",
             "/wordpress/",
             "/wp/",
             "/wp-admin",

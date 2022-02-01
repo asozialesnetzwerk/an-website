@@ -20,8 +20,8 @@ function startQuotes(currId, nextId) {
         }
     })();  // currently only letter keys are supported
     document.getElementById("wasd").innerText = (
-        `${keys[0]} (Upvote), ${keys[2]} (Downvote), `
-        + `${keys[1]} (Previous) and ${keys[3]} (Next)`
+        `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), `
+        + `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`
     );
 
     document.addEventListener("keydown", function (event) {
@@ -41,6 +41,7 @@ function startQuotes(currId, nextId) {
 
     const author = document.getElementById("author");
     const quote = document.getElementById("quote");
+    const realAuthor = document.getElementById("real-author-name");
 
     const ratingText = document.getElementById("rating-text");
     const ratingImageContainer = document.getElementById(
@@ -56,10 +57,7 @@ function startQuotes(currId, nextId) {
         quote.href = `/zitate/info/z/${q_id}/${params}`;
         author.href = `/zitate/info/a/${a_id}/${params}`;
         thisQuoteId[0] = quoteId;
-        if (window.dynLoadReplaceHrefOnAnchor) {
-            for (const anchor of [shareButton, quote, author])
-                dynLoadReplaceHrefOnAnchor(anchor);
-        }
+        updatedAnchors(shareButton, quote, author);
     }
 
     function updateRating(rating) {
@@ -109,6 +107,9 @@ function startQuotes(currId, nextId) {
             nextQuoteId[0] = data["next"];
             quote.innerText = `»${data["quote"]}«`;
             author.innerText = `- ${data["author"]}`;
+            realAuthor.innerText = data["real_author"];
+            realAuthor.href = `/zitate/info/a/${data["real_author_id"]}/${params}`;
+            updatedAnchors(realAuthor);
             updateRating(data["rating"]);
             updateVote(Number.parseInt(data["vote"]));
             return true;
