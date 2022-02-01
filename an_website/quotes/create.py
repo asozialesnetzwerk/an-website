@@ -16,8 +16,7 @@ from __future__ import annotations
 
 import logging
 
-# pylint: disable=no-name-in-module
-from Levenshtein import distance  # type: ignore
+from abydos.distance import Levenshtein  # type: ignore
 from tornado.web import HTTPError
 
 from ..utils.utils import ModuleInfo
@@ -125,7 +124,8 @@ async def get_authors(author_name: str) -> list[Author | str]:
         *(
             _a
             for _a in AUTHORS_CACHE.values()
-            if distance(_a.name.lower(), author_name_lower) <= max_distance
+            if Levenshtein().dist_abs(_a.name.lower(), author_name_lower)
+            <= max_distance
         ),
         author_name,
     ]
@@ -173,7 +173,8 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
         *(
             _q
             for _q in QUOTES_CACHE.values()
-            if distance(_q.quote.lower(), lower_quote_str) <= max_distance
+            if Levenshtein().dist_abs(_q.quote.lower(), lower_quote_str)
+            <= max_distance
         ),
         fix_quote_str(quote_str),
     ]
