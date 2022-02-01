@@ -31,21 +31,20 @@ from http.client import responses
 from typing import Any
 from urllib.parse import quote, unquote, urlparse, urlunparse
 
+import elasticapm  # type: ignore
 import orjson as json
+from abydos.distance import Levenshtein  # type: ignore
 from aioredis import Redis
 from ansi2html import Ansi2HTMLConverter  # type: ignore
-
-# pylint: disable=no-name-in-module
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
-from Levenshtein import distance  # type: ignore
 from tornado import web
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
-from an_website.utils.utils import (
-    REPO_URL,
+from .. import REPO_URL
+from .utils import (
     THEMES,
     ModuleInfo,
     add_args_to_url,
@@ -92,8 +91,6 @@ class BaseRequestHandler(RequestHandler):
     title = "Das Asoziale Netzwerk"
     short_title = "Das Asoziale Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
-
-    _geoip: dict[str, dict[str, dict[str, Any]]] = {}
 
     def initialize(
         self,
@@ -143,6 +140,11 @@ class BaseRequestHandler(RequestHandler):
     def elasticsearch_prefix(self) -> str:
         """Get the Elasticsearch prefix from the settings."""
         return self.settings.get("ELASTICSEARCH_PREFIX", "")
+
+    @property
+    def elastic_apm_client(self) -> None | elasticapm.Client:
+        """Get the Elastic APM client from the settings."""
+        return self.settings.get("ELASTIC_APM_CLIENT")
 
     def set_default_headers(self) -> None:
         """Set default headers."""
@@ -307,19 +309,6 @@ class BaseRequestHandler(RequestHandler):
         ):
             return kwargs["exc_info"][1].log_message  # type: ignore
         return str(self._reason)
-
-    def get_hashed_remote_ip(self) -> str:
-        """Hash the remote IP and return it."""
-        # pylint: disable=not-callable
-        return str(
-            blake3(
-                str(self.request.remote_ip).encode("ascii")
-                # pylint: disable=not-callable
-                + blake3(
-                    datetime.utcnow().date().isoformat().encode("ascii")
-                ).digest()
-            ).hexdigest()
-        )
 
     @cache
     def get_user_id(self) -> str:
@@ -606,62 +595,6 @@ class BaseRequestHandler(RequestHandler):
             )
         )
 
-    # pylint: disable=invalid-name
-    async def geoip(
-        self, database: str = "GeoLite2-City.mmdb", ip: None | str = None
-    ) -> None | dict[str, Any]:
-        """Get GeoIP information."""
-        if not ip:
-            ip = str(self.request.remote_ip)
-        if ip not in self._geoip:
-            self._geoip[ip] = {}
-        if database not in self._geoip[ip]:
-            if not self.elasticsearch:
-                return None
-
-            if database == "GeoLite2-City.mmdb":
-                properties = [
-                    "continent_name",
-                    "country_iso_code",
-                    "country_name",
-                    "region_iso_code",
-                    "region_name",
-                    "city_name",
-                    "location",
-                    "timezone",
-                ]
-            elif database == "GeoLite2-Country.mmdb":
-                properties = [
-                    "continent_name",
-                    "country_iso_code",
-                    "country_name",
-                ]
-            elif database == "GeoLite2-ASN.mmdb":
-                properties = ["asn", "network", "organization_name"]
-            else:
-                properties = None
-
-            self._geoip[ip][database] = (
-                await self.elasticsearch.ingest.simulate(
-                    body={
-                        "pipeline": {
-                            "processors": [
-                                {
-                                    "geoip": {
-                                        "field": "ip",
-                                        "database_file": database,
-                                        "properties": properties,
-                                    }
-                                }
-                            ]
-                        },
-                        "docs": [{"_source": {"ip": ip}}],
-                    },
-                    params={"filter_path": "docs.doc._source"},
-                )
-            )["docs"][0]["doc"]["_source"].get("geoip", {})
-        return self._geoip[ip][database]
-
 
 class APIRequestHandler(BaseRequestHandler):
     """
@@ -796,32 +729,27 @@ class NotFound(BaseRequestHandler):
                 True,
             )
         # "%20" → " "
-        this_path = unquote(self.request.path)
+        this_path = unquote(self.request.path).strip("/")
 
-        distances: list[tuple[int, str]] = []
-
-        if len(this_path) < 4:
-            # if /a/ redirect to / instead of /z/
-            return self.redirect(
-                self.get_protocol_and_host() + "/" + self.get_query()
-            )
-
-        # prevent redirecting from /aa/ to /z/
-        max_dist = min(4, len(this_path) - 3)
+        distances: list[tuple[float, str]] = []
 
         for _mi in self.get_module_infos():
             if _mi.path is not None:
                 # get the smallest distance possible with the aliases
                 dist = min(
-                    distance(this_path, path)
+                    Levenshtein().dist(this_path, path.strip("/"))
                     for path in (*_mi.aliases, _mi.path)
+                    if path != "/z/"
                 )
-                if dist <= max_dist:
-                    # only if the distance is less or equal then {max_dist}
+                if dist <= 0.5:
+                    # only if the distance is less than or equal 0.5
                     distances.append((dist, _mi.path))
             if len(_mi.sub_pages) > 0:
                 distances.extend(
-                    (distance(this_path, _sp.path), _sp.path)
+                    (
+                        Levenshtein().dist(this_path, _sp.path.strip("/")),
+                        _sp.path,
+                    )
                     for _sp in _mi.sub_pages
                     if _sp.path is not None
                 )
@@ -830,8 +758,8 @@ class NotFound(BaseRequestHandler):
             # sort to get the one with the smallest distance in index 0
             distances.sort()
             dist, path = distances[0]
-            if dist <= max_dist:
-                # only if the distance is less or equal then {max_dist}
+            if dist <= 0.5:
+                # only if the distance is less than or equal 0.5
                 return self.redirect(
                     self.get_protocol_and_host() + path + self.get_query(),
                     False,

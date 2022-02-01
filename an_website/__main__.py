@@ -34,20 +34,13 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 
-from . import DIR, NAME, patches
+from . import DIR, NAME, STATIC_DIR, TEMPLATES_DIR, patches
 from .utils.request_handler import (
     BaseRequestHandler,
     JSONRequestHandler,
     NotFound,
 )
-from .utils.utils import (
-    STATIC_DIR,
-    TEMPLATES_DIR,
-    Handler,
-    ModuleInfo,
-    Timer,
-    time_function,
-)
+from .utils.utils import Handler, ModuleInfo, Timer, time_function
 from .version import version
 
 # list of blocked modules
@@ -426,7 +419,7 @@ def setup_apm(app: Application) -> None:
             "elasticapm.processors.sanitize_http_request_body",
         ],
     }
-    app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app)
+    app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
 
 
 async def setup_redis(app: Application) -> None:

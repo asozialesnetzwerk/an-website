@@ -23,20 +23,19 @@ import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from functools import cache
 from typing import IO, Any, TypeVar, Union
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 import elasticapm  # type: ignore
+from blake3 import blake3  # type: ignore
+from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RequestHandler
 
-from an_website import DIR as SITE_BASE_DIR
+from .. import STATIC_DIR
 
-GIT_URL: str = "https://github.com/asozialesnetzwerk"
-REPO_URL: str = f"{GIT_URL}/an-website"
-
-STATIC_DIR: str = os.path.join(SITE_BASE_DIR, "static")
-TEMPLATES_DIR: str = os.path.join(SITE_BASE_DIR, "templates")
+GEOIP_CACHE: dict[str, dict[str, dict[str, Any]]] = {}
 
 # pylint: disable=consider-alternative-union-syntax
 Handler = Union[
@@ -282,6 +281,61 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
+# pylint: disable=invalid-name
+async def geoip(
+    elasticsearch: AsyncElasticsearch,
+    ip: str,
+    database: str = "GeoLite2-City.mmdb",
+) -> None | dict[str, Any]:
+    """Get GeoIP information."""
+    if ip not in GEOIP_CACHE:
+        GEOIP_CACHE[ip] = {}
+    if database not in GEOIP_CACHE[ip]:
+
+        if database == "GeoLite2-City.mmdb":
+            properties = [
+                "continent_name",
+                "country_iso_code",
+                "country_name",
+                "region_iso_code",
+                "region_name",
+                "city_name",
+                "location",
+                "timezone",
+            ]
+        elif database == "GeoLite2-Country.mmdb":
+            properties = [
+                "continent_name",
+                "country_iso_code",
+                "country_name",
+            ]
+        elif database == "GeoLite2-ASN.mmdb":
+            properties = ["asn", "network", "organization_name"]
+        else:
+            properties = None
+
+        GEOIP_CACHE[ip][database] = (
+            await elasticsearch.ingest.simulate(
+                body={
+                    "pipeline": {
+                        "processors": [
+                            {
+                                "geoip": {
+                                    "field": "ip",
+                                    "database_file": database,
+                                    "properties": properties,
+                                }
+                            }
+                        ]
+                    },
+                    "docs": [{"_source": {"ip": ip}}],
+                },
+                params={"filter_path": "docs.doc._source"},
+            )
+        )["docs"][0]["doc"]["_source"].get("geoip", {})
+    return GEOIP_CACHE[ip][database]
+
+
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
     files = os.listdir(os.path.join(STATIC_DIR, "style/themes"))
@@ -290,6 +344,20 @@ def get_themes() -> tuple[str, ...]:
         *(file[:-4] for file in files if file.endswith(".css")),
         "random",  # add random to the list of themes
         "random-dark",
+    )
+
+
+def hash_ip(ip: str) -> str:
+    """Hash an IP address."""
+    # pylint: disable=not-callable
+    return str(
+        blake3(
+            ip.encode("ascii")
+            # pylint: disable=not-callable
+            + blake3(
+                datetime.utcnow().date().isoformat().encode("ascii")
+            ).digest()
+        ).hexdigest()
     )
 
 

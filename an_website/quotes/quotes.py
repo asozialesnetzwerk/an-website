@@ -29,7 +29,7 @@ from typing import Any, Literal
 from tornado.web import HTTPError, RedirectHandler
 
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, str_to_bool
+from ..utils.utils import ModuleInfo, hash_ip, str_to_bool
 from . import (
     WRONG_QUOTES_CACHE,
     QuoteReadyCheckRequestHandler,
@@ -272,7 +272,9 @@ class QuoteById(QuoteBaseHandler):
         if contributed_by:
             contributed_by = contributed_by.strip()
         if not contributed_by or len(contributed_by) < 2:
-            contributed_by = f"an-website_{self.get_hashed_remote_ip()}"
+            contributed_by = (
+                f"an-website_{hash_ip(str(self.request.remote_ip))}"
+            )
         # do the voting:
         if vote > old_vote:
             wrong_quote = await create_wq_and_vote(

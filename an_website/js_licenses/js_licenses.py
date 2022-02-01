@@ -27,8 +27,9 @@ import logging
 import os.path
 from functools import cache
 
+from .. import STATIC_DIR
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import STATIC_DIR, ModuleInfo
+from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)
 

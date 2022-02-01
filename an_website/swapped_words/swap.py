@@ -18,8 +18,9 @@ import base64
 
 from tornado.web import HTTPError
 
+from .. import GIT_URL
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
-from ..utils.utils import GIT_URL, ModuleInfo, PageInfo, str_to_bool
+from ..utils.utils import ModuleInfo, PageInfo, str_to_bool
 from . import DIR
 from .sw_config_file import InvalidConfigException, SwappedWordsConfig
 

@@ -21,6 +21,12 @@ import orjson
 DIR = os.path.dirname(__file__)
 
 NAME = "an-website"
+GIT_URL: str = "https://github.com/asozialesnetzwerk"
+REPO_URL: str = f"{GIT_URL}/{NAME}"
+
+STATIC_DIR: str = os.path.join(DIR, "static")
+TEMPLATES_DIR: str = os.path.join(DIR, "templates")
+
 ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
