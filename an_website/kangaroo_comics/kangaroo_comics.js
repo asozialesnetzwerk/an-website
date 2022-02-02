@@ -106,10 +106,6 @@ administratives/kaenguru-comics/kaenguru-045/original
         currentImg.src = link;
         currentImgHeader.innerText = "Neuster " + getDateString(date) + ":";
         currentImgHeader.href = link;
-        //TODO:
-        //currentImg.onclick = () => {
-        //    createImgPopup(currentImg, currentImgContainer);
-        //}
     }
 
     function getDateString(date) {

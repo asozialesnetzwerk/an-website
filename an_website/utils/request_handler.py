@@ -315,8 +315,11 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def get_user_id(self) -> str:
         """Get the user id saved in the cookie or create one."""
-        _user_id = self.get_secure_cookie("user_id", max_age_days=90)
-        # TODO: ask for cookie consent
+        _user_id = self.get_secure_cookie(
+            "user_id",
+            max_age_days=90,
+            min_version=2,
+        )
         user_id = (
             str(uuid.uuid4()) if _user_id is None else _user_id.decode("ascii")
         )
@@ -856,7 +859,6 @@ class JSONRequestHandler(APIRequestHandler):
                 always_add_params=True,
             ),
         )
-
         response = await AsyncHTTPClient().fetch(
             url, raise_error=False, headers=self.request.headers
         )
