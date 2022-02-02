@@ -55,7 +55,7 @@
 <body>
     <a href="#body" id="skip-to-content" data-elastic-exclude>Skip to content.</a>
     {% include "header.html" %}
-    <div id="body" data-elastic-include="sure">{% block body %}{{ content }}{% end %}</div>
+    <main id="body" data-elastic-include>{% block body %}{{ content }}{% end %}</main>
     {% include "footer.html" %}
 </body>
 </html>
