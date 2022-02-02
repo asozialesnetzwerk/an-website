@@ -22,7 +22,6 @@ from typing import Any
 
 import elasticapm  # type: ignore
 import tornado.web
-from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
 
 from .. import NAME
@@ -30,6 +29,7 @@ from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
 START_TIME = time.monotonic()
+AVAILABILITY_DATA = {"up": 0, "down": 0, "last_updated_at": 0}
 
 
 logger = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ def get_module_info() -> ModuleInfo:
         name="Betriebszeit",
         description="Die Dauer, die die Webseite am Stück in Betrieb ist",
         path="/uptime/",
-        keywords=("uptime", "Betriebszeit", "Zeit"),
+        keywords=("Uptime", "Betriebszeit", "Zeit"),
     )
 
 
@@ -75,12 +75,9 @@ def uptime_to_str(uptime: None | float = None) -> str:
 
 async def update_availability_data_periodically(
     app: tornado.web.Application,
-    setup_redis_awaitable: None | Awaitable[Any] = None,
     setup_es_awaitable: None | Awaitable[Any] = None,
 ) -> None:
     """Update the availability data periodically."""
-    if setup_redis_awaitable:
-        await setup_redis_awaitable
     if setup_es_awaitable:
         await setup_es_awaitable
     # pylint: disable=while-used
@@ -91,13 +88,11 @@ async def update_availability_data_periodically(
 
 async def update_availability_data(app: tornado.web.Application) -> None:
     """Update the availability data."""
-    redis: None | Redis = app.settings.get("REDIS")
-    redis_prefix: str = app.settings.get("REDIS_PREFIX", "")
     elasticsearch: None | AsyncElasticsearch = app.settings.get(
         "ELASTICSEARCH"
     )
 
-    if not (redis and elasticsearch):
+    if not elasticsearch:
         return
 
     logger.info("Updating availability data...")
@@ -137,16 +132,11 @@ async def update_availability_data(app: tornado.web.Application) -> None:
                 "down": {"sum": {"field": "summary.down"}},
             },
         )
-        # pylint: disable=invalid-name
-        up, down = (
+        AVAILABILITY_DATA["up"], AVAILABILITY_DATA["down"] = (
             int(data["aggregations"]["up"]["value"]),
             int(data["aggregations"]["down"]["value"]),
         )
-        await redis.setex(
-            f"{redis_prefix}:availability",
-            30,  # TTL
-            f"{up}|{down}",
-        )
+        AVAILABILITY_DATA["last_updated_at"] = time.monotonic()  # type: ignore[assignment]
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Updating availability data failed.")
@@ -157,16 +147,11 @@ async def update_availability_data(app: tornado.web.Application) -> None:
         logger.info("Updated availability data successfully.")
 
 
-async def get_availability_data(
-    redis: Redis, redis_prefix: str
-) -> None | tuple[int, int]:  # (up, down)
+def get_availability_data() -> None | tuple[int, int]:  # (up, down)
     """Get the availability data."""
-    data = await redis.get(f"{redis_prefix}:availability")
-    if not data:
+    if time.monotonic() - AVAILABILITY_DATA["last_updated_at"] > 20:
         return None
-    # pylint: disable=invalid-name
-    up, down = data.split("|")
-    return int(up), int(down)
+    return AVAILABILITY_DATA["up"], AVAILABILITY_DATA["down"]
 
 
 def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
@@ -199,14 +184,7 @@ class UptimeAPIHandler(APIRequestHandler):
     async def get(self) -> None:
         """Handle the GET request to the API."""
         self.set_header("Cache-Control", "no-cache")
-        availability_data = (
-            await get_availability_data(
-                self.redis,
-                self.redis_prefix,
-            )
-            if self.elasticsearch and self.redis
-            else None
-        )
+        availability_data = get_availability_data()
         return await self.finish(
             {
                 "uptime": (uptime := calculate_uptime()),

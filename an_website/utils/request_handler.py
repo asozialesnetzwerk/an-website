@@ -31,12 +31,11 @@ from http.client import responses
 from typing import Any
 from urllib.parse import quote, unquote, urlparse, urlunparse
 
+# pylint: disable=no-name-in-module
 import elasticapm  # type: ignore
 import orjson as json
 from aioredis import Redis
 from ansi2html import Ansi2HTMLConverter  # type: ignore
-
-# pylint: disable=no-name-in-module
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch

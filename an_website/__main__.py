@@ -583,9 +583,7 @@ def main() -> None:
     )
     # pylint: disable=unused-variable
     availability_data_update_task = loop.create_task(  # noqa: F841
-        update_availability_data_periodically(
-            app, setup_redis_task, setup_es_task
-        )
+        update_availability_data_periodically(app, setup_es_task)
     )
 
     try:
