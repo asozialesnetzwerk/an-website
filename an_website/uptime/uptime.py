@@ -17,7 +17,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from collections import Counter
 from collections.abc import Awaitable
 from typing import Any
 
@@ -25,7 +24,6 @@ import elasticapm  # type: ignore
 import tornado.web
 from aioredis import Redis
 from elasticsearch import AsyncElasticsearch
-from elasticsearch.helpers import async_scan
 
 from .. import NAME
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
@@ -88,7 +86,7 @@ async def update_availability_data_periodically(
     # pylint: disable=while-used
     while True:
         await update_availability_data(app)
-        await asyncio.sleep(60)
+        await asyncio.sleep(5)
 
 
 async def update_availability_data(app: tornado.web.Application) -> None:
@@ -104,52 +102,49 @@ async def update_availability_data(app: tornado.web.Application) -> None:
 
     logger.info("Updating availability data...")
     try:
-        up_down_counter: Counter[str] = Counter(
-            [
-                doc["_source"]["monitor"]["status"]  # type: ignore[index]
-                async for doc in async_scan(
-                    client=elasticsearch,
-                    index="heartbeat-*,synthetics-*",
-                    query={
-                        "query": {
-                            "bool": {
-                                "must": [
-                                    {
-                                        "range": {
-                                            "@timestamp": {
-                                                "gte": "now-1M",
-                                            },
-                                        },
-                                    },
-                                    {
-                                        "term": {
-                                            "service.name": {
-                                                "value": NAME,
-                                            }
-                                        },
-                                    },
-                                    {
-                                        "term": {
-                                            "monitor.type": {
-                                                "value": "http",
-                                            }
-                                        },
-                                    },
-                                ]
-                            }
-                        }
-                    },
-                    size=10_000,
-                    scroll="10s",
-                    _source=["monitor.status"],
-                )
-            ]
+        data = await elasticsearch.search(
+            index="heartbeat-*,synthetics-*",
+            query={
+                "bool": {
+                    "filter": [
+                        {
+                            "range": {
+                                "@timestamp": {
+                                    "gte": "now-1M",
+                                },
+                            },
+                        },
+                        {
+                            "term": {
+                                "service.name": {
+                                    "value": NAME,
+                                }
+                            },
+                        },
+                        {
+                            "term": {
+                                "monitor.type": {
+                                    "value": "http",
+                                }
+                            },
+                        },
+                    ]
+                }
+            },
+            size=0,
+            aggs={
+                "up": {"sum": {"field": "summary.up"}},
+                "down": {"sum": {"field": "summary.down"}},
+            },
         )
         # pylint: disable=invalid-name
-        up, down = up_down_counter["up"], up_down_counter["down"]
+        up, down = (
+            int(data["aggregations"]["up"]["value"]),
+            int(data["aggregations"]["down"]["value"]),
+        )
         await redis.setex(
             f"{redis_prefix}:availability",
-            90,  # TTL
+            30,  # TTL
             f"{up}|{down}",
         )
     except Exception as exc:  # pylint: disable=broad-except
