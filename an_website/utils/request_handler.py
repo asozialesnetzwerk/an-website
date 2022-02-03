@@ -879,7 +879,7 @@ class JSONRequestHandler(APIRequestHandler):
                 }
             )
 
-        soup = BeautifulSoup(response.body.decode("utf-8"), "html.parser")
+        soup = BeautifulSoup(response.body.decode("utf-8"), features="lxml")
         await self.finish(
             {
                 "url": self.fix_url(
@@ -893,8 +893,11 @@ class JSONRequestHandler(APIRequestHandler):
                 ),
                 "title": (soup.title.string if soup.title else ""),
                 "body": "".join(
-                    str(_el) for _el in soup.find_all(id="body")[0].contents
-                ).strip(),  # ids are unique
+                    str(_el)
+                    for _el in soup.find_all(name="main", id="body")[
+                        0
+                    ].contents
+                ).strip(),
                 "scripts": [
                     {
                         "src": _s.get("src"),
