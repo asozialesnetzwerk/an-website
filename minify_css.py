@@ -48,12 +48,12 @@ for folder, _, files in os.walk(
         if not file.endswith(".css"):
             continue
         file_counter += 1
-        with open(os.path.join(folder, file), "r", encoding="UTF-8") as _f1:
+        with open(os.path.join(folder, file), encoding="UTF-8") as _f1:
             orig = _f1.read()
             small = rcssmin.cssmin(orig) + "\n"
             new_file_path = os.path.join(new_dir, file)
             if os.path.isfile(new_file_path):
-                with open(new_file_path, "r", encoding="UTF-8") as _f2_r_:
+                with open(new_file_path, encoding="UTF-8") as _f2_r_:
                     if _f2_r_.read() == small:
                         continue
             print(

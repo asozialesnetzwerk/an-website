@@ -51,9 +51,10 @@ class LOLWUT(BaseRequestHandler):
             command = "LOLWUT"
         if not self.redis:
             raise HTTPError(503)
+        # pylint: disable=line-too-long
         await self.render(
             "pages/ansi2html.html",
-            ansi=await self.redis.execute_command(command),  # type: ignore
+            ansi=await self.redis.execute_command(command),  # type: ignore[no-untyped-call]  # noqa: B950
             powered_by="https://redis.io",
             powered_by_name="Redis",
         )

@@ -19,16 +19,11 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import quote as quote_url
 
 import orjson as json
+from tornado.httpclient import AsyncHTTPClient
 
 from ..utils.request_handler import BaseRequestHandler
 from ..utils.utils import ModuleInfo
-from . import (
-    HTTP_CLIENT,
-    get_author_by_id,
-    get_quote_by_id,
-    get_wrong_quotes,
-    logger,
-)
+from . import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
 
 
 def get_module_info() -> ModuleInfo:
@@ -79,7 +74,7 @@ async def search_wikipedia(
     if not query:
         return None
     # try to get the info from wikipedia
-    response = await HTTP_CLIENT.fetch(
+    response = await AsyncHTTPClient().fetch(
         f"{api}?action=opensearch&namespace=0&profile=normal&"
         f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
     )
@@ -103,7 +98,7 @@ async def get_wikipedia_page_content(
     page_name: str, api: str = WIKI_API_DE
 ) -> None | str:
     """Get content from a wikipedia page and return it."""
-    response = await HTTP_CLIENT.fetch(
+    response = await AsyncHTTPClient().fetch(
         f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
         f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5"
     )

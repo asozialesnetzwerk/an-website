@@ -189,6 +189,7 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 
 @cache
 def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
+    # pylint: disable=confusing-consecutive-elif
     """Add query arguments to a URL."""
     if not kwargs:
         return url

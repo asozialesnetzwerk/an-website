@@ -23,7 +23,12 @@ from tornado.web import HTTPError
 from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
 from ..utils.utils import ModuleInfo
 
-GUILD_ID: int = 367648314184826880
+GUILD_ID = "367648314184826880"
+
+INVITE_CACHE: dict[
+    str,
+    tuple[float, str, str] | tuple[float, HTTPError],
+] = {}
 
 
 def get_module_info() -> ModuleInfo:
@@ -41,6 +46,7 @@ def get_module_info() -> ModuleInfo:
         keywords=(
             "Discord",
             "Server",
+            "Guild",
             "Gilde",
             "Invite",
             "Einladung",
@@ -57,7 +63,7 @@ async def url_returns_200(url: str) -> bool:
     return response.code == 200
 
 
-async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
+async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
     """
     Get the invite to a Discord guild and return it with the source.
 
@@ -105,31 +111,24 @@ async def get_invite(guild_id: int = GUILD_ID) -> tuple[str, str]:
     raise HTTPError(404, reason=reason)
 
 
-invite_cache: dict[
-    int,
-    tuple[float, str, str] | tuple[float, HTTPError],
-] = {}
-
-
 async def get_invite_with_cache(
-    guild_id: int = int(GUILD_ID),
+    guild_id: str = GUILD_ID,
 ) -> tuple[str, str]:
     """Get an invite from cache or from get_invite()."""
-    if guild_id in invite_cache:
-        _t = invite_cache[guild_id]
-        if _t[0] > time.time() - 30 * 60:  # if in last 30 min
-            if isinstance(_t[1], HTTPError):
-                raise _t[1]
-            if len(_t) == 3:
-                return _t[1], _t[2]
+    if guild_id in INVITE_CACHE:
+        cache_entry = INVITE_CACHE[guild_id]
+        if cache_entry[0] > time.monotonic() - 300:
+            if isinstance(cache_entry[1], HTTPError):
+                raise cache_entry[1]
+            return cache_entry[1], cache_entry[2]
 
     try:
         invite, source = await get_invite(guild_id)
-    except HTTPError as _e:
-        invite_cache.__setitem__(guild_id, (time.time(), _e))
-        raise _e
+    except HTTPError as exc:
+        INVITE_CACHE[guild_id] = (time.monotonic(), exc)
+        raise exc
 
-    invite_cache.__setitem__(guild_id, (time.time(), invite, source))
+    INVITE_CACHE[guild_id] = (time.monotonic(), invite, source)
 
     return invite, source
 
@@ -154,11 +153,11 @@ class DiscordAPI(APIRequestHandler):
     """The API request handler that gets the Discord invite and returns it."""
 
     RATELIMIT_NAME = "discord"
-    RATELIMIT_TOKENS = 9
+    RATELIMIT_TOKENS = 10
 
-    async def get(self, guild_id: str = str(GUILD_ID)) -> None:
+    async def get(self, guild_id: str = GUILD_ID) -> None:
         """Get the Discord invite and render it as JSON."""
-        invite, source_url = await get_invite_with_cache(int(guild_id))
+        invite, source_url = await get_invite_with_cache(guild_id)
         return await self.finish({"invite": invite, "source": source_url})
 
 
@@ -166,4 +165,4 @@ class ANDiscordAPI(DiscordAPI):
     """The API request handler only for the AN Discord guild."""
 
     RATELIMIT_NAME = "discord-an"
-    RATELIMIT_TOKENS = 4
+    RATELIMIT_TOKENS = 5

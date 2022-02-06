@@ -7,7 +7,7 @@ load-plugins=
     pylint.extensions.bad_builtin,
     pylint.extensions.overlapping_exceptions,
     pylint.extensions.emptystring,
-    #pylint.extensions.confusing_elif,
+    pylint.extensions.confusing_elif,
     pylint.extensions.redefined_variable_type,
     #pylint.extensions.docstyle,
     pylint.extensions.docparams,

@@ -255,6 +255,7 @@ class QuoteById(QuoteBaseHandler):
 
         This is used to vote the quote, without changing the URL.
         """
+        # pylint: disable=confusing-consecutive-elif
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)
         new_vote_str = self.get_argument("vote", default=None)

@@ -3,15 +3,14 @@ aioredis[hiredis]~=2.0
 ansi2html~=1.7
 beautifulsoup4~=4.10
 blake3>=0.3,<2
-certifi
+certifi>=2016.08.08
 defusedxml>=0.7.1,<2
 ecs-logging~=1.1
 elastic-apm~=6.7
-elasticsearch[async]~=7.16.3
+elasticsearch[async]~=7.17.0
 funcparserlib>=1.0.0a0,<2
 git+https://github.com/blueyed/pyrepl.git@release-0.10.0
 #git+https://github.com/chrislit/abydos.git@344346a5fceb6acc631b3d24e16b73a303cece2c
-hy~=1.0a4
 hyrule>=0.1,<2
 jxlpy~=0.9
 lxml~=4.7
@@ -20,6 +19,7 @@ lxml~=4.7
 numpy~=1.22
 orjson~=3.6
 Pillow~=9.0
+pip>=22.0
 pycurl>=7.44.1,<8
 python-Levenshtein>=0.12.2,<2
 #PyYAML~=6.0

@@ -217,9 +217,13 @@ class BaseRequestHandler(RequestHandler):
                 self, f"RATELIMIT_{self.request.method}_PERIOD", 1
             )
             tokens = 1
-        # self.redis could be None
-        # but it's better to complain loudly than to fail silently
-        result = await self.redis.execute_command(  # type: ignore
+        if self.redis is None:
+            raise HTTPError(
+                503,
+                "Ratelimits are enabled, but Redis is not available. "
+                "This can happen shortly after starting the website.",
+            )
+        result = await self.redis.execute_command(  # type: ignore[no-untyped-call]
             "CL.THROTTLE",
             key,
             max_burst,

@@ -8,7 +8,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install required library
-        run: python3 -m pip install --prefer-binary "emoji>=1.6.1"
+        run: python3 -m pip install --prefer-binary "emoji>=1.6.3"
       - name: Run the check
         shell: python
         run: |

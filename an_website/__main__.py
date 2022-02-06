@@ -515,7 +515,7 @@ def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
             )
 
 
-def signal_handler(signalnum: Any, frame: Any) -> None:
+def signal_handler(signalnum: Any, frame: Any) -> None:  # noqa: D103
     # pylint: disable=unused-argument, missing-function-docstring
     if signalnum == signal.SIGHUP:
         raise KeyboardInterrupt
@@ -528,8 +528,8 @@ def main() -> None:
     This is the main function that is called when running this file.
     """
     try:
-        if os.nice(hy.eval(hy.read_str("(+ (* 3 4 5) (* 3 3))"))) == 69:
-            print("Nice!")
+        if os.nice(hy.eval(hy.read_str("(+ -3 (* 6 12))"))) == 69:
+            logger.info("Nice!")
     except AttributeError:
         pass
     sys.setrecursionlimit(1_000_000)

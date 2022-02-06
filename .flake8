@@ -3,7 +3,9 @@ exclude = __pycache__
 show-source = True
 statistics = True
 doctests = True
-max-complexity = 10
-inline-quotes = double
+max-line-length = 80
+max-complexity = 12
+ignore = E501,W503
+select = B,B9,C,D,E,F,W,INP
 per-file-ignores =
     an_website/hangman_solver/words/*:INP001

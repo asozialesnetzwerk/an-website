@@ -25,7 +25,7 @@ from .. import ORJSON_OPTIONS
 
 
 # pylint: disable=unused-argument,invalid-name,missing-function-docstring
-def dumps(  # type: ignore
+def dumps(  # type: ignore  # noqa: D103
     obj,
     *,
     skipkeys=False,
@@ -60,7 +60,7 @@ def dumps(  # type: ignore
     return orjson.dumps(obj, default, option).decode("utf-8")
 
 
-def dump(  # type: ignore
+def dump(  # type: ignore  # noqa: D103
     obj,
     fp,
     *,
@@ -92,7 +92,7 @@ def dump(  # type: ignore
     )
 
 
-def loads(  # type: ignore
+def loads(  # type: ignore  # noqa: D103
     s,
     *,
     cls=None,
@@ -106,7 +106,7 @@ def loads(  # type: ignore
     return orjson.loads(s)
 
 
-def load(  # type: ignore
+def load(  # type: ignore  # noqa: D103
     fp,
     *,
     cls=None,

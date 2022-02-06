@@ -59,9 +59,8 @@ class Backdoor(APIRequestHandler):
 
     sessions: dict[str, dict[str, Any]] = {}
 
-    async def post(  # noqa: C901  # pylint: disable=too-many-statements, too-many-branches
-        self, mode: str
-    ) -> None:
+    async def post(self, mode: str) -> None:  # noqa: C901
+        # pylint: disable=too-many-branches,too-many-statements
         """Handle the POST request to the backdoor API."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         try:

@@ -275,9 +275,6 @@ def get_authors(
     return list(authors)
 
 
-HTTP_CLIENT = AsyncHTTPClient()
-
-
 async def make_api_request(
     endpoint: str,
     args: str = "",
@@ -285,7 +282,7 @@ async def make_api_request(
     body: None | str = None,
 ) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
-    response = await HTTP_CLIENT.fetch(
+    response = await AsyncHTTPClient().fetch(
         f"{API_URL}/{endpoint}?{args}",
         raise_error=False,
         method=method,

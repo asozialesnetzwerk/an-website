@@ -136,7 +136,8 @@ async def update_availability_data(app: tornado.web.Application) -> None:
             int(data["aggregations"]["up"]["value"]),
             int(data["aggregations"]["down"]["value"]),
         )
-        AVAILABILITY_DATA["last_updated_at"] = time.monotonic()  # type: ignore[assignment]
+        # pylint: disable=line-too-long
+        AVAILABILITY_DATA["last_updated_at"] = time.monotonic()  # type: ignore[assignment]  # noqa: B950
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Updating availability data failed.")

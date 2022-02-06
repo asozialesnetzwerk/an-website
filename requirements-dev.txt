@@ -1,17 +1,18 @@
 -r requirements.txt
-black==22.1.0
+black~=22.0
 coverage~=6.3
 flake8~=4.0
+flake8-bugbear>=22.1.11
 flake8-docstrings~=1.6
 flake8-no-pep420~=2.2
 isort~=5.10
 mypy>=0.931,<2
 pre-commit~=2.17
 pylint~=2.12
-pytest>=6.2.5,<7
+pytest~=7.0
 pytest-tornasync>=0.6,<2
-rcssmin~=1.1.0
-rjsmin~=1.2.0
+rcssmin~=1.1
+rjsmin~=1.2
 types-beautifulsoup4~=4.10
 #types-Markdown~=3.3
 types-orjson~=3.6
