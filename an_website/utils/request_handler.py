@@ -41,7 +41,7 @@ from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
-from tornado.concurrent import Future
+from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
