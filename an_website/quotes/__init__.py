@@ -453,7 +453,7 @@ async def update_cache_periodically(
         await asyncio.sleep(60 * 60)
 
 
-async def update_cache(  # noqa: C901
+async def update_cache(  # noqa: C901  # pylint: disable=too-complex
     app: tornado.web.Application,
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,

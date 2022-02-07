@@ -60,6 +60,7 @@ class PageInfo:
     short_name: None | str = None  # short name for the page
 
     def search(self, query: str | list[str]) -> float:  # noqa: C901
+        # pylint: disable=too-complex
         """
         Check whether this should be shown on the search page.
 

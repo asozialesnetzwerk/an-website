@@ -85,13 +85,14 @@ def lisp_always_active() -> bool:
     )
 
 
-def run_and_print(  # noqa: C901  # pylint: disable=too-many-branches
+def run_and_print(  # noqa: C901
     url: str,
     key: str,
     code: str,
     session: None | str = None,
     lisp: bool = False,
 ) -> None:
+    # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read_str(code), True)
@@ -153,8 +154,8 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-branches
         print(response)
 
 
-def startup() -> None:  # noqa: C901
-    # pylint: disable=too-many-branches, too-many-statements
+def start() -> None:  # noqa: C901
+    # pylint: disable=too-complex, too-many-branches, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
     url = None
     key = None
@@ -260,8 +261,8 @@ if __name__ == "__main__":
             "-h",
         ):
             print(f"Unknown argument: {arg}")
-            sys.exit(64)
+            sys.exit(64 + 4 + 1)
     try:
-        startup()
+        start()
     except (EOFError, KeyboardInterrupt):
         print("Exiting.")

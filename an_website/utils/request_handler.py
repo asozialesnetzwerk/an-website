@@ -732,9 +732,8 @@ class NotFound(HTMLRequestHandler):
             return ""  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query
 
-    async def prepare(  # pylint: disable=too-many-branches  # noqa: C901
-        self,
-    ) -> None:
+    async def prepare(self) -> None:  # noqa: C901
+        # pylint: disable=too-complex, too-many-branches
         """Throw a 404 HTTP error or redirect to another page."""
         await super().prepare()
         new_path = self.request.path.lower()

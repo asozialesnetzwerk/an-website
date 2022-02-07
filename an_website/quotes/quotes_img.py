@@ -124,7 +124,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
     return y_start
 
 
-def create_image(  # noqa: C901
+def create_image(  # noqa: C901  # pylint: disable=too-complex
     # pylint: disable=too-many-arguments, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     quote: str,

@@ -209,7 +209,7 @@ LINE_REGEX: Pattern[str] = re.compile(
 
 
 @functools.lru_cache(maxsize=20)
-def parse_config_line(  # noqa: C901
+def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
     line: str, line_num: int = -1
 ) -> ConfigLine:
     """Parse one config line to one ConfigLine instance."""

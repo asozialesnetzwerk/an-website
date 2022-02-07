@@ -163,7 +163,7 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
             break
 
 
-def get_all_handlers(  # noqa: C901
+def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
     module_infos: tuple[ModuleInfo, ...],
 ) -> list[Handler]:
     """
@@ -514,6 +514,7 @@ def signal_handler(signalnum: Any, frame: Any) -> None:  # noqa: D103
 
 
 def main() -> None:
+    # pylint: disable=import-outside-toplevel, unused-variable
     """
     Start everything.
 
@@ -565,17 +566,10 @@ def main() -> None:
     setup_redis_task = loop.create_task(setup_redis(app))
     setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
 
-    # pylint: disable=import-outside-toplevel
     from .quotes import update_cache_periodically
-    from .uptime.uptime import update_availability_data_periodically
 
-    # pylint: disable=unused-variable
-    cache_update_task = loop.create_task(  # noqa: F841
+    quotes_cache_update_task = loop.create_task(  # noqa: F841
         update_cache_periodically(app, setup_redis_task)
-    )
-    # pylint: disable=unused-variable
-    availability_data_update_task = loop.create_task(  # noqa: F841
-        update_availability_data_periodically(app, setup_es_task)
     )
 
     try:

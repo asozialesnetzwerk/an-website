@@ -14,14 +14,9 @@
 """The uptime page that shows the time the website is running."""
 from __future__ import annotations
 
-import asyncio
 import logging
 import time
-from collections.abc import Awaitable
-from typing import Any
 
-import elasticapm  # type: ignore
-import tornado.web
 from elasticsearch import AsyncElasticsearch
 
 from .. import NAME
@@ -29,7 +24,6 @@ from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 START_TIME = time.monotonic()
-AVAILABILITY_DATA = {"up": 0, "down": 0, "last_updated_at": 0}
 
 
 logger = logging.getLogger(__name__)
@@ -73,91 +67,57 @@ def uptime_to_str(uptime: None | float = None) -> str:
     )
 
 
-async def update_availability_data_periodically(
-    app: tornado.web.Application,
-    setup_es_awaitable: None | Awaitable[Any] = None,
-) -> None:
-    """Update the availability data periodically."""
-    if setup_es_awaitable:
-        await setup_es_awaitable
-    # pylint: disable=while-used
-    while True:
-        await update_availability_data(app)
-        await asyncio.sleep(5)
-
-
-async def update_availability_data(app: tornado.web.Application) -> None:
-    """Update the availability data."""
-    elasticsearch: None | AsyncElasticsearch = app.settings.get(
-        "ELASTICSEARCH"
-    )
-
-    if not elasticsearch:
-        return
-
-    logger.info("Updating availability data...")
-    try:
-        data = await elasticsearch.search(
-            index="heartbeat-*,synthetics-*",
-            query={
-                "bool": {
-                    "filter": [
-                        {
-                            "range": {
-                                "@timestamp": {
-                                    "gte": "now-1M",
-                                },
-                            },
-                        },
-                        {
-                            "term": {
-                                "service.name": {
-                                    "value": NAME,
-                                }
-                            },
-                        },
-                        {
-                            "term": {
-                                "monitor.type": {
-                                    "value": "http",
-                                }
-                            },
-                        },
-                    ]
-                }
-            },
-            size=0,
-            aggs={
-                "up": {"sum": {"field": "summary.up"}},
-                "down": {"sum": {"field": "summary.down"}},
-            },
-        )
-        AVAILABILITY_DATA["up"], AVAILABILITY_DATA["down"] = (
-            int(data["aggregations"]["up"]["value"]),
-            int(data["aggregations"]["down"]["value"]),
-        )
-        # pylint: disable=line-too-long
-        AVAILABILITY_DATA["last_updated_at"] = time.monotonic()  # type: ignore[assignment]  # noqa: B950
-    except Exception as exc:  # pylint: disable=broad-except
-        logger.exception(exc)
-        logger.error("Updating availability data failed.")
-        apm: None | elasticapm.Client = app.settings.get("ELASTIC_APM_CLIENT")
-        if apm:
-            apm.capture_exception()
-    else:
-        logger.info("Updated availability data successfully.")
-
-
-def get_availability_data() -> None | tuple[int, int]:  # (up, down)
+async def get_availability_data(
+    elasticsearch: None | AsyncElasticsearch,
+) -> None | tuple[int, int]:  # (up, down)
     """Get the availability data."""
-    if time.monotonic() - AVAILABILITY_DATA["last_updated_at"] > 20:
+    if not elasticsearch:
         return None
-    return AVAILABILITY_DATA["up"], AVAILABILITY_DATA["down"]
+
+    data = await elasticsearch.search(
+        index="heartbeat-*,synthetics-*",
+        query={
+            "bool": {
+                "filter": [
+                    {
+                        "range": {
+                            "@timestamp": {
+                                "gte": "now-1M",
+                            },
+                        },
+                    },
+                    {
+                        "term": {
+                            "service.name": {
+                                "value": NAME,
+                            }
+                        },
+                    },
+                    {
+                        "term": {
+                            "monitor.type": {
+                                "value": "http",
+                            }
+                        },
+                    },
+                ]
+            }
+        },
+        size=0,
+        aggs={
+            "up": {"sum": {"field": "summary.up"}},
+            "down": {"sum": {"field": "summary.down"}},
+        },
+    )
+    return (
+        int(data["aggregations"]["up"]["value"]),
+        int(data["aggregations"]["down"]["value"]),
+    )
 
 
 def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
-    # pylint: disable=invalid-name
     """Get the availability data as a dict."""
+    # pylint: disable=invalid-name
     return {
         "up": up,
         "down": down,
@@ -185,7 +145,7 @@ class UptimeAPIHandler(APIRequestHandler):
     async def get(self) -> None:
         """Handle the GET request to the API."""
         self.set_header("Cache-Control", "no-cache")
-        availability_data = get_availability_data()
+        availability_data = await get_availability_data(self.elasticsearch)
         return await self.finish(
             {
                 "uptime": (uptime := calculate_uptime()),

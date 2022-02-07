@@ -156,7 +156,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         return self.fix_url(url)
 
     @cache
-    def get_next_id(  # noqa: C901
+    def get_next_id(  # noqa: C901  # pylint: disable=too-complex
         self, rating_filter: None | str = None
     ) -> tuple[int, int]:
         """Get the id of the next quote."""
