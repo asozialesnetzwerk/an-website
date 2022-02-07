@@ -5,12 +5,14 @@ function getJSONURLWithParams(originalUrl) {
     if (originalUrl.includes("#")) {
         originalUrl = originalUrl.split("#")[0];
     }
-    let [url, params] = (
+    let [url, query] = (
         originalUrl.includes("?")
             ? originalUrl.split("?")
             : [originalUrl, ""]
     );
-    return [url + (url.endsWith("/") ? "" : "/") + "json/", params];
+    let params = new URLSearchParams(query);
+    params.set("as_json", "sure");
+    return [url + (url.endsWith("/") ? "" : "/"), params.toString()];
 }
 
 const lastLoaded = [];

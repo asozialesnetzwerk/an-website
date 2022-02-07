@@ -21,7 +21,7 @@ from functools import lru_cache
 
 from tornado.web import HTTPError, RequestHandler
 
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
@@ -277,7 +277,7 @@ async def handle_request(request_handler: RequestHandler) -> Hangman:
     )
 
 
-class HangmanSolver(BaseRequestHandler):
+class HangmanSolver(HTMLRequestHandler):
     """Request handler for the hangman solver page."""
 
     RATELIMIT_TOKENS = 3

@@ -19,7 +19,7 @@ from functools import cache
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from . import (
     ALL_SOUNDS,
@@ -115,7 +115,7 @@ def get_rss_str(path: str, protocol_and_host: str) -> None | str:
     )
 
 
-class SoundboardRSSHandler(BaseRequestHandler):
+class SoundboardRSSHandler(HTMLRequestHandler):
     """The Tornado handler that handles requests to the RSS feeds."""
 
     async def get(self, path: str = "/") -> None:
@@ -167,7 +167,7 @@ async def search_main_page_info(
     return found
 
 
-class SoundboardHTMLHandler(BaseRequestHandler):
+class SoundboardHTMLHandler(HTMLRequestHandler):
     """The Tornado handler that handles requests to the HTML pages."""
 
     async def get(self, path: str = "/") -> None:

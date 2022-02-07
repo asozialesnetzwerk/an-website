@@ -28,7 +28,7 @@ import os.path
 from functools import cache
 
 from .. import STATIC_DIR
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def get_js_file_names() -> list[str]:
     return os.listdir(js_files_dir)
 
 
-class JSLicenses(BaseRequestHandler):
+class JSLicenses(HTMLRequestHandler):
     """The request handler for the JS-licenses page."""
 
     RATELIMIT_TOKENS = 0

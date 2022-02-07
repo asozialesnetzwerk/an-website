@@ -14,7 +14,7 @@
 """The search page used to search the website."""
 from __future__ import annotations
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 
 
@@ -31,7 +31,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class Search(BaseRequestHandler):
+class Search(HTMLRequestHandler):
     """The Tornado request handler for the search page."""
 
     async def get(self) -> None:

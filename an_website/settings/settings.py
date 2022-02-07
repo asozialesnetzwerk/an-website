@@ -17,7 +17,7 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
 
 
@@ -37,7 +37,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class SettingsPage(BaseRequestHandler):
+class SettingsPage(HTMLRequestHandler):
     """The request handler for the settings page."""
 
     def set_cookie(  # pylint: disable=too-many-arguments

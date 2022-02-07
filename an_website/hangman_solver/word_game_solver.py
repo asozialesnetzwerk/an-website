@@ -19,7 +19,7 @@ from collections.abc import Iterable
 # pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
 
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 from . import FILE_NAMES, get_words
 
@@ -92,7 +92,7 @@ async def get_ranked_solutions(
     return ranked_sols
 
 
-class WordGameHelper(BaseRequestHandler):
+class WordGameHelper(HTMLRequestHandler):
     """The request handler for the word game helper page."""
 
     RATELIMIT_TOKENS = 4

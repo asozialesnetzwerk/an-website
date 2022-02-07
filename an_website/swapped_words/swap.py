@@ -19,7 +19,7 @@ import base64
 from tornado.web import HTTPError
 
 from .. import GIT_URL
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, str_to_bool
 from . import DIR
 from .sw_config_file import InvalidConfigException, SwappedWordsConfig
@@ -73,7 +73,7 @@ def check_text_too_long(text: str) -> None:
         )
 
 
-class SwappedWords(BaseRequestHandler):
+class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
     def handle_text(

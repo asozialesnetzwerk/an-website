@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from tornado.web import HTTPError
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -34,7 +34,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class LOLWUT(BaseRequestHandler):
+class LOLWUT(HTMLRequestHandler):
     """The request handler for the LOLWUT page."""
 
     async def get(self, args: str = "") -> None:

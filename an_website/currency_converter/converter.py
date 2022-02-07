@@ -17,7 +17,7 @@ from __future__ import annotations
 import random
 import re
 
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 keys = ["euro", "mark", "ost", "schwarz"]
@@ -196,7 +196,7 @@ async def get_value_dict(
     return value_dict
 
 
-class CurrencyConverter(BaseRequestHandler):
+class CurrencyConverter(HTMLRequestHandler):
     """Request handler for the currency converter page."""
 
     async def get(self) -> None:

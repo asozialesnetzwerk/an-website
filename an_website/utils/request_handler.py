@@ -41,6 +41,7 @@ from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from tornado import web
+from tornado.concurrent import Future
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
@@ -279,15 +280,6 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} is not a valid HTTP response status code."
         )
 
-    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
-        """Render the error page with the status_code as a HTML page."""
-        self.render(
-            "error.html",
-            status=status_code,
-            reason=self.get_error_message(**kwargs),
-            description=self.get_error_page_description(status_code),
-        )
-
     def get_error_message(self, **kwargs: dict[str, Any]) -> str:
         """
         Get the error message and return it.
@@ -476,6 +468,63 @@ class BaseRequestHandler(RequestHandler):
             tuple(_t for _t in THEMES if _t not in ignore_themes)
         )
 
+    def get_contact_email(self) -> None | str:
+        """Get the contact email from the settings."""
+        email = self.settings.get("CONTACT_EMAIL")
+        if not email:
+            return None
+        email_str = str(email)
+        if not email_str.startswith("@"):
+            return email_str
+        # if mail starts with @ it is a catch-all email
+        return name_to_id(self.request.path) + "_contact" + email_str
+
+    def get_argument(  # type: ignore[override]
+        self,
+        name: str,
+        default: (
+            None | str | web._ArgDefaultMarker
+        ) = web._ARG_DEFAULT,  # pylint: disable=protected-access
+        strip: bool = True,
+    ) -> None | str:
+        """Get an argument based on body or query."""
+        arg = super().get_argument(name, default=None, strip=strip)
+        if arg is not None:
+            return arg
+
+        try:
+            body = json.loads(self.request.body)
+        except json.JSONDecodeError:
+            pass
+        else:
+            if name in body:
+                val = str(body[name])
+                return val.strip() if strip else val
+
+        # pylint: disable=protected-access
+        if isinstance(default, web._ArgDefaultMarker):
+            raise web.MissingArgumentError(name)
+
+        return default
+
+    def is_authorized(self) -> bool:
+        """Check whether the request is authorized."""
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
+        return bool(
+            api_secrets  # api_secrets has to be truthy
+            and (
+                self.request.headers.get("Authorization") in api_secrets
+                or self.get_argument("key", default=None) in api_secrets
+                or self.get_cookie("key", default=None) in api_secrets
+            )
+        )
+
+
+class HTMLRequestHandler(BaseRequestHandler):
+    """A request handler that serves HTML files."""
+
+    used_render = False
+
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
         form_appendix: str
@@ -501,16 +550,14 @@ class BaseRequestHandler(RequestHandler):
 
         return form_appendix
 
-    def get_contact_email(self) -> None | str:
-        """Get the contact email from the settings."""
-        email = self.settings.get("CONTACT_EMAIL")
-        if not email:
-            return None
-        email_str = str(email)
-        if not email_str.startswith("@"):
-            return email_str
-        # if mail starts with @ it is a catch-all email
-        return name_to_id(self.request.path) + "_contact" + email_str
+    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
+        """Render the error page with the status_code as a HTML page."""
+        self.render(
+            "error.html",
+            status=status_code,
+            reason=self.get_error_message(**kwargs),
+            description=self.get_error_page_description(status_code),
+        )
 
     def get_template_namespace(self) -> dict[str, Any]:
         """
@@ -554,44 +601,71 @@ class BaseRequestHandler(RequestHandler):
         )
         return namespace
 
-    def get_argument(  # type: ignore[override]
-        self,
-        name: str,
-        default: (
-            None | str | web._ArgDefaultMarker
-        ) = web._ARG_DEFAULT,  # pylint: disable=protected-access
-        strip: bool = True,
-    ) -> None | str:
-        """Get an argument based on body or query."""
-        arg = super().get_argument(name, default=None, strip=strip)
-        if arg is not None:
-            return arg
+    def render(self, template_name: str, **kwargs: Any) -> "Future[None]":
+        """Render a template."""
+        self.used_render = True
+        return super().render(template_name, **kwargs)
 
-        try:
-            body = json.loads(self.request.body)
-        except json.JSONDecodeError:
-            pass
-        else:
-            if name in body:
-                val = str(body[name])
-                return val.strip() if strip else val
-
-        # pylint: disable=protected-access
-        if isinstance(default, web._ArgDefaultMarker):
-            raise web.MissingArgumentError(name)
-
-        return default
-
-    def is_authorized(self) -> bool:
-        """Check whether the request is authorized."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
-        return bool(
-            api_secrets  # api_secrets has to be truthy
-            and (
-                self.request.headers.get("Authorization") in api_secrets
-                or self.get_argument("key", default=None) in api_secrets
-                or self.get_cookie("key", default=None) in api_secrets
-            )
+    def finish(
+        self, chunk: None | str | bytes | dict[Any, Any] = None
+    ) -> "Future[None]":
+        """Finish the request."""
+        if (
+            isinstance(chunk, dict)
+            or chunk is None
+            or not self.used_render
+            or not str_to_bool(self.get_query_argument("as_json", "n"), False)
+        ):
+            return super().finish(chunk)
+        self.set_header("Content-Type", "application/json; charset=UTF-8")
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "*")
+        self.set_header("Access-Control-Allow-Methods", "GET,OPTIONS")
+        soup = BeautifulSoup(
+            chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
+            features="lxml",
+        )
+        return super().finish(
+            {
+                "url": self.fix_url(self.request.full_url(), as_json=None),
+                "title": (soup.title.string if soup.title else ""),
+                "body": "".join(
+                    str(_el)
+                    for _el in soup.find_all(name="main", id="body")[
+                        0
+                    ].contents
+                ).strip(),
+                "scripts": [
+                    {
+                        "src": _s.get("src"),
+                        "script": _s.string,
+                        "onload": _s.get("onload"),
+                    }
+                    for _s in soup.find_all("script")
+                    if "class" not in _s.attrs
+                    or "on-every-page" not in _s["class"]
+                ]
+                if soup.head
+                else [],
+                "stylesheets": (
+                    [
+                        str(_s.get("href")).strip()
+                        for _s in soup.find_all("link", rel="stylesheet")
+                        if "class" not in _s.attrs
+                        or "on-every-page" not in _s["class"]
+                    ]
+                )
+                if soup.head
+                else [],
+                "css": "\n".join(
+                    str(_s.string or "")
+                    for _s in soup.find_all("style")
+                    if "class" not in _s.attrs
+                    or "on-every-page" not in _s["class"]
+                ).strip()
+                if soup.head
+                else "",
+            }
         )
 
 
@@ -641,7 +715,7 @@ class APIRequestHandler(BaseRequestHandler):
         self.finish()
 
 
-class NotFound(BaseRequestHandler):
+class NotFound(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
     def initialize(  # type: ignore
@@ -767,7 +841,7 @@ class NotFound(BaseRequestHandler):
         raise HTTPError(404)
 
 
-class ErrorPage(BaseRequestHandler):
+class ErrorPage(HTMLRequestHandler):
     """A request handler that throws an error."""
 
     async def get(self, code: str) -> None:
@@ -837,93 +911,3 @@ class ElasticRUM(BaseRequestHandler):
             "Cache-Control", f"min-fresh={365 * 60 * 60 * 24}, immutable"
         )
         return await self.finish(self.SCRIPTS[key][0])
-
-
-class JSONRequestHandler(APIRequestHandler):
-    """A request handler that returns the page wrapped in JSON."""
-
-    async def get(self, path: str) -> None:  # TODO: Improve this
-        """Get the page wrapped in JSON and send it."""
-        if path.startswith("/api/"):
-            raise HTTPError(403)
-        url = re.sub(
-            r"^https?://[^/]+\.onion/",  # TODO: do this properly
-            f"http://localhost:{self.settings.get('PORT')}/",
-            self.fix_url(
-                path
-                + ("?" + self.request.query if self.request.query else ""),
-                always_add_params=True,
-            ),
-        )
-        response = await AsyncHTTPClient().fetch(
-            url, raise_error=False, headers=self.request.headers
-        )
-        if response.code != 200:
-            raise HTTPError(response.code, reason=response.reason)
-
-        parsed_response_url = urlparse(response.effective_url)
-
-        if parsed_response_url.netloc not in {
-            "127.0.0.1",
-            f"127.0.0.1:{self.settings.get('PORT')}" "localhost",
-            f"localhost:{self.settings.get('PORT')}",
-            self.request.host,
-            self.request.host_name,
-        }:
-            return await self.finish(
-                {  # TODO: Don't do the request for /chat/ or other known redir
-                    "redirect": response.effective_url,
-                }
-            )
-
-        soup = BeautifulSoup(response.body.decode("utf-8"), features="lxml")
-        await self.finish(
-            {
-                "url": self.fix_url(
-                    urlunparse(
-                        (
-                            self.request.protocol,
-                            self.request.host,
-                            *parsed_response_url[2:],
-                        )
-                    )
-                ),
-                "title": (soup.title.string if soup.title else ""),
-                "body": "".join(
-                    str(_el)
-                    for _el in soup.find_all(name="main", id="body")[
-                        0
-                    ].contents
-                ).strip(),
-                "scripts": [
-                    {
-                        "src": _s.get("src"),
-                        "script": _s.string,
-                        "onload": _s.get("onload"),
-                    }
-                    for _s in soup.find_all("script")
-                    if "class" not in _s.attrs
-                    or "on-every-page" not in _s["class"]
-                ]
-                if soup.head
-                else [],
-                "stylesheets": (
-                    [
-                        str(_s.get("href")).strip()
-                        for _s in soup.find_all("link", rel="stylesheet")
-                        if "class" not in _s.attrs
-                        or "on-every-page" not in _s["class"]
-                    ]
-                )
-                if soup.head
-                else [],
-                "css": "\n".join(
-                    str(_s.string or "")
-                    for _s in soup.find_all("style")
-                    if "class" not in _s.attrs
-                    or "on-every-page" not in _s["class"]
-                ).strip()
-                if soup.head
-                else "",
-            }
-        )

@@ -33,7 +33,7 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
 from .. import ORJSON_OPTIONS
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 
 DIR = os.path.dirname(__file__)
 
@@ -613,7 +613,7 @@ async def create_wq_and_vote(
     return await wrong_quote.vote(vote, fast=True)
 
 
-class QuoteReadyCheckRequestHandler(BaseRequestHandler):
+class QuoteReadyCheckRequestHandler(HTMLRequestHandler):
     """Class that checks if quotes have been loaded."""
 
     RATELIMIT_NAME = "quotes"

@@ -25,7 +25,7 @@ import tornado.web
 from elasticsearch import AsyncElasticsearch
 
 from .. import NAME
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 START_TIME = time.monotonic()
@@ -166,7 +166,7 @@ def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
     }
 
 
-class UptimeHandler(BaseRequestHandler):
+class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
     async def get(self) -> None:

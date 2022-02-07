@@ -17,7 +17,7 @@ from __future__ import annotations
 import dataclasses
 from urllib.parse import quote
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -111,7 +111,7 @@ HTML_LIST: str = "\n".join(service.to_html() for service in SERVICES)
 del SERVICES
 
 
-class ServicesHandler(BaseRequestHandler):
+class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
 
     RATELIMIT_TOKENS = 0

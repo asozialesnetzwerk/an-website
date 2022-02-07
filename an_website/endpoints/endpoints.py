@@ -17,7 +17,7 @@ from __future__ import annotations
 import orjson as json
 
 from .. import ORJSON_OPTIONS
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, name_to_id
 
 
@@ -35,7 +35,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class Endpoints(BaseRequestHandler):
+class Endpoints(HTMLRequestHandler):
     """Endpoint page request handler."""
 
     async def get(self) -> None:

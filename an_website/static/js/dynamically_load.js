@@ -1,6 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 const bodyDiv=document.getElementById("body");function getJSONURLWithParams(originalUrl){if(originalUrl.includes("#")){originalUrl=originalUrl.split("#")[0];}
-let[url,params]=(originalUrl.includes("?")?originalUrl.split("?"):[originalUrl,""]);return[url+(url.endsWith("/")?"":"/")+"json/",params];}
+let[url,query]=(originalUrl.includes("?")?originalUrl.split("?"):[originalUrl,""]);let params=new URLSearchParams(query);params.set("as_json","sure");return[url+(url.endsWith("/")?"":"/"),params.toString()];}
 const lastLoaded=[];function dynLoadOnData(data,onpopstate){if(!data){console.error("No data received");return;}
 if(data["redirect"]){window.location.href=data["redirect"];return;}
 const url=data["url"];if(!url){console.error("No URL in data ",data);return;}

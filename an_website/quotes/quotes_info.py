@@ -21,7 +21,7 @@ from urllib.parse import quote as quote_url
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 from . import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
 
@@ -40,7 +40,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class QuotesInfoPage(BaseRequestHandler):
+class QuotesInfoPage(HTMLRequestHandler):
     """The request handler used for the info page."""
 
     RATELIMIT_NAME = "quotes-info"
@@ -133,7 +133,7 @@ def fix_author_for_wikipedia_search(author: str) -> str:
 AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
 
 
-class AuthorsInfoPage(BaseRequestHandler):
+class AuthorsInfoPage(HTMLRequestHandler):
     """The request handler used for the info page."""
 
     RATELIMIT_NAME = "quotes-info"

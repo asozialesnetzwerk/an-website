@@ -14,7 +14,7 @@
 """A redirect to an external wiki about the AN."""
 from __future__ import annotations
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -37,7 +37,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class WikiHandler(BaseRequestHandler):
+class WikiHandler(HTMLRequestHandler):
     """The request handler for the wiki page."""
 
     def get(self) -> None:

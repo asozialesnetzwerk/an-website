@@ -24,7 +24,7 @@ import sys
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import DIR
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run, str_to_bool
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class HostInfo(BaseRequestHandler):
+class HostInfo(HTMLRequestHandler):
     """The request handler for the host info page."""
 
     async def get(self) -> None:
@@ -72,7 +72,7 @@ class HostInfo(BaseRequestHandler):
         )
 
 
-class UwuHostInfo(BaseRequestHandler):
+class UwuHostInfo(HTMLRequestHandler):
     """The wequest handwew fow the coowew host info page."""
 
     async def get(self) -> None:

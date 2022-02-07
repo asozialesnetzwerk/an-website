@@ -14,8 +14,8 @@
 """The page with the kangaroo comics by Zeit Online.."""
 from __future__ import annotations
 
-from an_website.utils.request_handler import BaseRequestHandler
-from an_website.utils.utils import ModuleInfo
+from ..utils.request_handler import HTMLRequestHandler
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -36,7 +36,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class KangarooComics(BaseRequestHandler):
+class KangarooComics(HTMLRequestHandler):
     """Request handler for the kangaroo comics page."""
 
     RATELIMIT_TOKENS = 0

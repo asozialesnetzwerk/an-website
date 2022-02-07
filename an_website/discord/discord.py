@@ -20,7 +20,7 @@ import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 GUILD_ID = "367648314184826880"
@@ -133,7 +133,7 @@ async def get_invite_with_cache(
     return invite, source
 
 
-class ANDiscord(BaseRequestHandler):
+class ANDiscord(HTMLRequestHandler):
     """The request handler that gets the Discord invite and redirects to it."""
 
     RATELIMIT_NAME = "discord-an"

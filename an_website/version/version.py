@@ -18,7 +18,7 @@ import hashlib
 import subprocess
 
 from .. import DIR
-from ..utils.request_handler import APIRequestHandler, BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -71,7 +71,7 @@ class VersionAPI(APIRequestHandler):
         )
 
 
-class Version(BaseRequestHandler):
+class Version(HTMLRequestHandler):
     """The Tornado request handler for the version page."""
 
     async def get(self) -> None:

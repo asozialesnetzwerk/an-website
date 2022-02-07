@@ -19,7 +19,7 @@ This page will ask users if they want to leave this website.
 """
 from __future__ import annotations
 
-from ..utils.request_handler import BaseRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -35,7 +35,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class RedirectPage(BaseRequestHandler):
+class RedirectPage(HTMLRequestHandler):
     """The redirect page that redirects you to another page."""
 
     RATELIMIT_TOKENS = 0
