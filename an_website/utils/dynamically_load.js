@@ -88,11 +88,15 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
             : anchor.href;
     if (
         // already dealt with
-        href === "javascript:void(0);"
+        href.startsWith("javascript:")
         // link is to different domain
         || !href.startsWith(window.location.origin)
         // link is to file, not html page
-        || href.split("/").pop().includes(".")
+        || (
+            href.split("/").pop().includes(".")
+            // urls to redirect page are html pages
+            && !href.startsWith(window.location.origin + "/redirect/")
+        )
     ) return;
 
     if (
@@ -116,26 +120,27 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
         )
     ) return;
 
-    anchor.href = "javascript:void(0);";
-    anchor.onclick = () => {
-        console.log("Processing anchor", href);
-        history.replaceState(
-            {
-                "data": window.urlData,
-                "url": window.location.href,
-                "scrollPos": [
-                    document.documentElement.scrollLeft
-                    || document.body.scrollLeft,
-                    document.documentElement.scrollTop
-                    || document.body.scrollTop
-                ],
-                "stateType": "dynLoad"
-            },
-            document.title,
-            window.location.href
-        );
-        dynLoadSwitchToURL(href);
-    };
+    anchor.href = `javascript:dynLoad("${href.replace('"', '%22')}");`;
+}
+
+function dynLoad(url) {
+    console.log("Loading url", url);
+    history.replaceState( // save current scrollPos
+        {
+            "data": window.urlData,
+            "url": window.location.href,
+            "scrollPos": [
+                document.documentElement.scrollLeft
+                || document.body.scrollLeft,
+                document.documentElement.scrollTop
+                || document.body.scrollTop
+            ],
+            "stateType": "dynLoad"
+        },
+        document.title,
+        window.location.href
+    );
+    dynLoadSwitchToURL(url);
 }
 
 function dynLoadSwitchToURL(url, allowSameUrl = false) {
