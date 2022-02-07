@@ -336,7 +336,7 @@ class BaseRequestHandler(RequestHandler):
         if self.settings.get("LINK_TO_HTTPS"):
             # always use HTTPS if the config is set
             return "https"
-        # otherwise use the protocol of the request
+        # otherwise, use the protocol of the request
         return self.request.protocol
 
     def get_protocol_and_host(self) -> str:
@@ -379,6 +379,10 @@ class BaseRequestHandler(RequestHandler):
             query_args["theme"] = self.get_theme()
         if "dynload" not in query_args:
             query_args["dynload"] = self.get_dynload()
+        if "as_json" not in query_args and str_to_bool(
+            self.get_query_argument("as_json", default="nope"), False
+        ):
+            query_args["as_json"] = True
 
         if not always_add_params:
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
@@ -628,7 +632,8 @@ class HTMLRequestHandler(BaseRequestHandler):
         return super().finish(
             {
                 "url": self.fix_url(self.request.full_url(), as_json=None),
-                "title": (soup.title.string if soup.title else ""),
+                "title": self.title,
+                "short_title": self.short_title,
                 "body": "".join(
                     str(_el)
                     for _el in soup.find_all(name="main", id="body")[
@@ -642,8 +647,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                         "onload": _s.get("onload"),
                     }
                     for _s in soup.find_all("script")
-                    if "class" not in _s.attrs
-                    or "on-every-page" not in _s["class"]
+                    if "on-every-page" not in _s.attrs
                 ]
                 if soup.head
                 else [],
@@ -651,8 +655,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                     [
                         str(_s.get("href")).strip()
                         for _s in soup.find_all("link", rel="stylesheet")
-                        if "class" not in _s.attrs
-                        or "on-every-page" not in _s["class"]
+                        if "on-every-page" not in _s.attrs
                     ]
                 )
                 if soup.head
@@ -660,8 +663,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "css": "\n".join(
                     str(_s.string or "")
                     for _s in soup.find_all("style")
-                    if "class" not in _s.attrs
-                    or "on-every-page" not in _s["class"]
+                    if "on-every-page" not in _s.attrs
                 ).strip()
                 if soup.head
                 else "",

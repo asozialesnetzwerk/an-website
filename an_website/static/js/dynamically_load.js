@@ -11,7 +11,8 @@ bodyDiv.innerHTML=data["body"];if(data["css"]){const style=document.createElemen
 if(data["stylesheets"]){for(const scriptURL of data["stylesheets"]){const link=document.createElement("link");link.rel="stylesheet";link.type="text/css"
 link.href=scriptURL;bodyDiv.appendChild(link);}}
 if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=document.createElement("script");if(script["src"])scriptElement.src=script["src"];if(script["script"])scriptElement.innerHTML=script["script"];if(script["onload"])scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
-document.title=data["title"];dynLoadReplaceAnchors();window.urlData=data;return true}
+document.title=data["title"];let titleStyleText=`#title:after{content:"${data["short_title"]}"}`;if(data["short_title"]!==data["title"]){titleStyleText+=(`@media(min-width:500px){#title:after{content:"${data["title"]}"}}`);}
+document.getElementById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();window.urlData=data;return true}
 function dynLoadReplaceAnchors(){for(const anchor of document.getElementsByTagName("A")){dynLoadReplaceHrefOnAnchor(anchor);}}
 function dynLoadReplaceHrefOnAnchor(anchor){const href=anchor.href.startsWith("/")?(window.location.origin+anchor.href):anchor.href;if(href.startsWith("javascript:")||!href.startsWith(window.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(window.location.origin+"/redirect/")))return;if(href.includes("#")&&(href.startsWith("#")||((!window.location.hash&&href.startsWith(window.location.href+"#"))||href.startsWith(window.location.origin
 +window.location.pathname

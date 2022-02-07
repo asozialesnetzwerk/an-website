@@ -46,7 +46,6 @@ function dynLoadOnData(data, onpopstate) {
         window.location.reload();
         return
     }
-    // lastLoaded[0] = url;
     bodyDiv.innerHTML = data["body"];
     if (data["css"]) {
         const style = document.createElement("style");
@@ -72,7 +71,13 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
     document.title = data["title"];
-    //document.getElementById("title").;
+    let titleStyleText = `#title:after{content:"${data["short_title"]}"}`;
+    if (data["short_title"] !== data["title"]) {
+        titleStyleText += (
+            `@media(min-width:500px){#title:after{content:"${data["title"]}"}}`
+        );
+    }
+    document.getElementById("title-style").innerText = titleStyleText;
     dynLoadReplaceAnchors();
     window.urlData = data;
     return true
