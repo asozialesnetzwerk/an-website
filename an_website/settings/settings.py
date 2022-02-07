@@ -18,13 +18,7 @@ import datetime
 from typing import Any
 
 from ..utils.request_handler import BaseRequestHandler
-from ..utils.utils import (
-    THEMES,
-    ModuleInfo,
-    add_args_to_url,
-    bool_to_str,
-    str_to_bool,
-)
+from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
 
 
 def get_module_info() -> ModuleInfo:
@@ -104,12 +98,12 @@ class SettingsPage(BaseRequestHandler):
             self.set_cookie("theme", theme)
             self.set_cookie("no_3rd_party", no_3rd_party)
             self.set_cookie("dynload", dynload)
-            replace_url_with = add_args_to_url(
+            replace_url_with = self.fix_url(
                 self.request.full_url(),
                 dynload=None,
                 no_3rd_party=None,
                 theme=None,
-                save_in_cookie=True,
+                save_in_cookie=None,
             )
         else:
             replace_url_with = self.fix_url(
@@ -117,7 +111,10 @@ class SettingsPage(BaseRequestHandler):
                 dynload=dynload,
                 no_3rd_party=no_3rd_party,
                 theme=theme,
+                save_in_cookie=False,
             )
+            if replace_url_with != self.request.full_url():
+                self.redirect(replace_url_with)
 
         self.render(
             "pages/settings.html",

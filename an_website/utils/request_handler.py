@@ -356,16 +356,13 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("MODULE_INFOS") or tuple()
 
     @cache
-    def fix_url(  # pylint: disable=too-many-arguments
+    def fix_url(
         self,
         url: str,
         this_url: None | str = None,
         always_add_params: bool = False,
         force_absolute: bool = True,
-        # to override them (used in the settings)
-        theme: None | str = None,
-        no_3rd_party: None | bool = None,
-        dynload: None | bool = None,
+        **query_args: None | str | bool | float,
     ) -> str:
         """
         Fix a URL and return it.
@@ -384,12 +381,20 @@ class BaseRequestHandler(RequestHandler):
         host = parsed_url.netloc or self.request.host
         add_protocol_and_host = force_absolute or host != self.request.host
 
-        if no_3rd_party is None:
-            no_3rd_party = self.get_no_3rd_party()
-        if theme is None:
-            theme = self.get_theme()
-        if dynload is None:
-            dynload = self.get_dynload()
+        if "no_3rd_party" not in query_args:
+            query_args["no_3rd_party"] = self.get_no_3rd_party()
+        if "theme" not in query_args:
+            query_args["theme"] = self.get_theme()
+        if "dynload" not in query_args:
+            query_args["dynload"] = self.get_dynload()
+
+        if not always_add_params:
+            if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
+                query_args["no_3rd_party"] = None
+            if query_args["theme"] == self.get_saved_theme():
+                query_args["theme"] = None
+            if query_args["dynload"] == self.get_saved_dynload():
+                query_args["dynload"] = None
 
         return add_args_to_url(
             urlunparse(
@@ -402,19 +407,7 @@ class BaseRequestHandler(RequestHandler):
                     parsed_url.fragment,
                 )
             ),
-            # the no_3rd_party param:
-            no_3rd_party=no_3rd_party
-            if always_add_params
-            or no_3rd_party != self.get_saved_no_3rd_party()
-            else None,
-            # the theme param:
-            theme=theme
-            if always_add_params or theme != self.get_saved_theme()
-            else None,
-            # the dynload param:
-            dynload=dynload
-            if always_add_params or dynload != self.get_saved_dynload()
-            else None,
+            **query_args,
         )
 
     def get_no_3rd_party_default(self) -> bool:
