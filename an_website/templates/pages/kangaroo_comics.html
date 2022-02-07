@@ -5,7 +5,7 @@
 <noscript>
 Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(
 </noscript>
-<main>
+<div id="comic-content-container">
   <h1><a id="current-comic-header" rel="noreferrer" class="comic-header">Aktueller Comic:</a></h1>
   <div id="current-img-container">
     <img id="current-img" class="normal-img" alt="Aktueller Comic" src="" onmouseover="removeAllPopups()">
@@ -13,18 +13,18 @@ Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sor
   <h1>Alte Comics:</h1>
   <ul id="old-comics-list">
   </ul>
-  <input id="load-button" type="button" value="Lade mehr Comics!" onclick="alert('You should never see this.')">
-</main>
+  <input id="load-button" type="button" value="Lade mehr Comics!" onclick="alert('Try again.')">
+</div>
     {% if no_3rd_party %}
 <button onclick="removeButtonAndLoad()" id="start-button-no_3rd_party">
     Lade Inhalte von zeit.de
 </button>
 <script>
-    document.getElementsByTagName("main")[0].style.display = "none";
+    document.getElementById("comic-content-container").style.display = "none";
 
     function removeButtonAndLoad() {
         document.getElementById("start-button-no_3rd_party").remove();
-        document.getElementsByTagName("main")[0].style.display = "inherit";
+        document.getElementById("comic-content-container").style.display = "inherit";
         startLoadingComics();
     }
 </script>
