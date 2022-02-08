@@ -212,9 +212,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
         if path in PERSON_SHORTS:
             person = Person[path]
             return (
-                await search_main_page_info(
-                    lambda info: info.person == person
-                ),
+                await search_main_page_info(lambda info: info.person == person),
                 None,
             )
 

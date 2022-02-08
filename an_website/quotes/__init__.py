@@ -427,9 +427,7 @@ async def update_cache_periodically(
             parse_author,
         )
     if redis and QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
-        last_update = await redis.get(
-            f"{prefix}:cached-quote-data:last-update"
-        )
+        last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")
         if last_update:
             last_update_int = int(last_update)
             since_last_update = int(time.time()) - last_update_int

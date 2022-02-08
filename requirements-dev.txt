@@ -8,6 +8,7 @@ flake8-no-pep420~=2.2
 isort~=5.10
 mypy>=0.931,<2
 pre-commit~=2.17
+pep8-naming>=0.12.1,<2
 pylint~=2.12
 pytest~=7.0
 pytest-tornasync>=0.6,<2

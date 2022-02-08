@@ -22,7 +22,7 @@ from .. import GIT_URL
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, str_to_bool
 from . import DIR
-from .sw_config_file import InvalidConfigException, SwappedWordsConfig
+from .sw_config_file import InvalidConfigError, SwappedWordsConfig
 
 
 def get_module_info() -> ModuleInfo:
@@ -121,14 +121,14 @@ class SwappedWords(HTMLRequestHandler):
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
-        except InvalidConfigException as _e:
+        except InvalidConfigError as exc:
             self.render(
                 "pages/swapped_words.html",
                 text=text,
                 output="",
                 config=config_str,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
-                error_msg=str(_e),
+                error_msg=str(exc),
             )
 
     def get(self) -> None:
@@ -192,13 +192,13 @@ class SwappedWordsAPI(APIRequestHandler):
                     "replaced_text": sw_config.swap_words(text),
                 }
             )
-        except InvalidConfigException as _e:
+        except InvalidConfigError as exc:
             self.set_status(400)
             return await self.finish(
                 {
-                    "error": _e.reason,
-                    "line": _e.line,
-                    "line_num": _e.line_num,
+                    "error": exc.reason,
+                    "line": exc.line,
+                    "line_num": exc.line_num,
                 }
             )
 

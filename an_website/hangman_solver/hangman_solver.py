@@ -100,9 +100,7 @@ async def generate_pattern_str(
     wild_card_replacement = "[^" + invalid_chars + "]"
 
     return WILDCARDS_REGEX.sub(
-        lambda m: (
-            wild_card_replacement + "{" + str(length_of_match(m)) + "}"
-        ),
+        lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"),
         input_str,
     )
 

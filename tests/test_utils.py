@@ -75,9 +75,7 @@ def test_adding_stuff_to_url() -> None:
 
     assert (
         f"a={utils.bool_to_str(True)}"
-        == urlparse(
-            utils.add_args_to_url("https://example.com/", a=True)
-        ).query
+        == urlparse(utils.add_args_to_url("https://example.com/", a=True)).query
     )
 
 

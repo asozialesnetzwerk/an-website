@@ -233,9 +233,7 @@ def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
     # redirect handler, to make finding APIs easier
     handlers.append((r"(?i)/(.+)/api/", RedirectHandler, {"url": "/api/{0}/"}))
     # redirect from /api/ to /api/endpoints/ (not with alias, because it fails)
-    handlers.append(
-        (r"(?i)/api/", RedirectHandler, {"url": "/api/endpoints/"})
-    )
+    handlers.append((r"(?i)/api/", RedirectHandler, {"url": "/api/endpoints/"}))
 
     if sys.flags.dev_mode:
         logger.debug(

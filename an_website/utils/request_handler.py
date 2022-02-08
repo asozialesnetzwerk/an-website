@@ -214,9 +214,7 @@ class BaseRequestHandler(RequestHandler):
                 f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
                 1,
             )
-            period = getattr(
-                self, f"RATELIMIT_{self.request.method}_PERIOD", 1
-            )
+            period = getattr(self, f"RATELIMIT_{self.request.method}_PERIOD", 1)
             tokens = 1
         if self.redis is None:
             raise HTTPError(
@@ -642,9 +640,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "short_title": self.short_title,
                 "body": "".join(
                     str(_el)
-                    for _el in soup.find_all(name="main", id="body")[
-                        0
-                    ].contents
+                    for _el in soup.find_all(name="main", id="body")[0].contents
                 ).strip(),
                 "scripts": [
                     {

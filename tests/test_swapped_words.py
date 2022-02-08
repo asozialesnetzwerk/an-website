@@ -34,9 +34,7 @@ def test_copying_case_of_letters() -> None:
         assert sw_config.copy_case_letter(_c1, _c2) == _c1
 
     for char in ("a", "B", "c", "D", "e", "F", "g", "H"):
-        assert (
-            sw_config.copy_case_letter(char, "a").isupper() == char.isupper()
-        )
+        assert sw_config.copy_case_letter(char, "a").isupper() == char.isupper()
         assert sw_config.copy_case_letter(char, char.lower()) == char
 
 
@@ -98,28 +96,28 @@ def test_parsing_config() -> None:
     assert sw_config.minify(beautified) == minified
 
     # test invalid configs:
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig(" <=> b")
 
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig("a <=> ")
 
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig("a <> b")
 
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig("a <= b")
 
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig("a( => b")
 
-    with pytest.raises(sw_config.InvalidConfigException):
+    with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig("a <=> (b")
 
     try:
         sw_config.SwappedWordsConfig("a <=> (b")
-    except sw_config.InvalidConfigException as _e:
-        assert _e.reason in str(_e)
+    except sw_config.InvalidConfigError as exc:
+        assert exc.reason in str(exc)
 
 
 if __name__ == "__main__":

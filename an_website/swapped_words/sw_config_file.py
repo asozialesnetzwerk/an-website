@@ -226,27 +226,23 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
     _m = re.fullmatch(LINE_REGEX, line)
     if _m is None:
-        raise InvalidConfigException(line_num, line, "Line is invalid.")
+        raise InvalidConfigError(line_num, line, "Line is invalid.")
 
     left, separator, right = _m.group(1), _m.group(2), _m.group(3)
     if not left:
-        raise InvalidConfigException(
-            line_num, line, "Left of separator is empty."
-        )
+        raise InvalidConfigError(line_num, line, "Left of separator is empty.")
     if separator not in ("<=>", "=>"):
-        raise InvalidConfigException(
+        raise InvalidConfigError(
             line_num, line, "No separator ('<=>' or '=>') present."
         )
     if not right:
-        raise InvalidConfigException(
-            line_num, line, "Right of separator is empty."
-        )
+        raise InvalidConfigError(line_num, line, "Right of separator is empty.")
 
     try:
         # compile to make sure it doesn't break later
         left_re = re.compile(left)
     except re.error as _e:
-        raise InvalidConfigException(
+        raise InvalidConfigError(
             line_num, line, f"Left is invalid regex: {_e}"
         ) from _e
 
@@ -255,18 +251,18 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
             # compile to make sure it doesn't break later
             right_re = re.compile(right)
         except re.error as _e:
-            raise InvalidConfigException(
+            raise InvalidConfigError(
                 line_num, line, f"Right is invalid regex: {_e}"
             ) from _e
         return TwoWayPair(left_re.pattern, right_re.pattern)
     if separator == "=>":
         return OneWayPair(left_re.pattern, right)
 
-    raise InvalidConfigException(line_num, line, "Something went wrong.")
+    raise InvalidConfigError(line_num, line, "Something went wrong.")
 
 
 @dataclass(frozen=True)
-class InvalidConfigException(Exception):
+class InvalidConfigError(Exception):
     """Exception thrown if the config is invalid."""
 
     line_num: int

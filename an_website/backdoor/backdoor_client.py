@@ -76,9 +76,7 @@ def lisp_always_active() -> bool:
             '(int (= (. (__import__ "os.path") sep) "/")))'
         )
     ) and not int.from_bytes(
-        getattr(os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be"))(
-            1
-        ),
+        getattr(os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be"))(1),
         sys.byteorder,
     ) // (
         69 // 4 - 1

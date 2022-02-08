@@ -79,9 +79,7 @@ async def get_ranked_solutions(
 
     ranked_sols: list[tuple[int, str]] = [
         (
-            len(
-                tuple(_s for _s in await find_solutions(sol, (*before, word)))
-            ),
+            len(tuple(_s for _s in await find_solutions(sol, (*before, word)))),
             sol,
         )
         for sol in sols
