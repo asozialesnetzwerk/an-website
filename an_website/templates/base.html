@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{lang}}">
 <head>
+{% if not as_json %}
     <title>{{title}}</title>
     <meta charset="UTF-8">
     <meta name="theme-color" content="#8B0000">
@@ -17,7 +18,7 @@
     <meta name="referrer" content="no-referrer" />
     {% if c %}<style>@import url("/static/style/comic.css");</style>{% end %}
     {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
-        <script on-every-page>
+        <script>
             ;(function(d, s, c) {
               var j = d.createElement(s),
                 t = d.getElementsByTagName(s)[0]
@@ -33,29 +34,33 @@
         </script>
     {% end %}
     <link rel="canonical" href="{{url.split('?')[0]}}">
-    <link on-every-page rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
-    <link on-every-page rel="stylesheet" type="text/css" href="/static/style/base.css">
-    <style id="title-style" on-every-page>
+    <link rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
+    <link rel="stylesheet" type="text/css" href="/static/style/base.css">
+    <style id="title-style">
     #title:after{content:"{{short_title}}"}
     {% if title != short_title %}
         @media(min-width:500px){ #title:after{content:"{{title}}"}}
     {% end %}
     </style>
 
-    <script on-every-page defer src="/static/js/request_utils.js"></script>
+    <script defer src="/static/js/request_utils.js"></script>
     {% if dynload %}
-    <script on-every-page defer
+    <script defer
             src="/static/js/dynamically_load.js"
             onload="dynLoadReplaceAnchors()"
     ></script>
     {% end %}
-
+{% end %}
     {% block head %} {% end %}
 </head>
 <body>
+{% if not as_json %}
     <a href="#body" id="skip-to-content" data-elastic-exclude>Skip to content.</a>
     {% include "header.html" %}
+{% end %}
     <main id="body" data-elastic-include>{% block body %}{{ content }}{% end %}</main>
+{% if not as_json %}
     {% include "footer.html" %}
+{% end %}
 </body>
 </html>

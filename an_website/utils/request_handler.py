@@ -379,10 +379,6 @@ class BaseRequestHandler(RequestHandler):
             query_args["theme"] = self.get_theme()
         if "dynload" not in query_args:
             query_args["dynload"] = self.get_dynload()
-        if "as_json" not in query_args and str_to_bool(
-            self.get_query_argument("as_json", default="nope"), False
-        ):
-            query_args["as_json"] = True
 
         if not always_add_params:
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
@@ -404,6 +400,12 @@ class BaseRequestHandler(RequestHandler):
                 )
             ),
             **query_args,
+        )
+
+    def get_as_json(self) -> bool:
+        """Get the value of the as_json query parameter."""
+        return str_to_bool(
+            self.get_query_argument("as_json", default="nope"), False
         )
 
     def get_no_3rd_party_default(self) -> bool:
@@ -601,6 +603,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
                 "dynload": self.get_dynload(),
+                "as_json": self.get_as_json(),
             }
         )
         return namespace
@@ -618,7 +621,8 @@ class HTMLRequestHandler(BaseRequestHandler):
             isinstance(chunk, dict)
             or chunk is None
             or not self.used_render
-            or not str_to_bool(self.get_query_argument("as_json", "n"), False)
+            or getattr(self, "IS_NOT_HTML", False)
+            or not self.get_as_json()
         ):
             return super().finish(chunk)
         self.set_header("Content-Type", "application/json; charset=UTF-8")
@@ -631,7 +635,9 @@ class HTMLRequestHandler(BaseRequestHandler):
         )
         return super().finish(
             {
-                "url": self.fix_url(self.request.full_url(), as_json=None),
+                "url": self.fix_url(  # request url without as_json param
+                    self.request.full_url(), as_json=None
+                ),
                 "title": self.title,
                 "short_title": self.short_title,
                 "body": "".join(
@@ -647,7 +653,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                         "onload": _s.get("onload"),
                     }
                     for _s in soup.find_all("script")
-                    if "on-every-page" not in _s.attrs
+                    # if "on-every-page" not in _s.attrs # (curr not used)
                 ]
                 if soup.head
                 else [],
@@ -655,7 +661,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                     [
                         str(_s.get("href")).strip()
                         for _s in soup.find_all("link", rel="stylesheet")
-                        if "on-every-page" not in _s.attrs
+                        # if "on-every-page" not in _s.attrs # (curr not used)
                     ]
                 )
                 if soup.head
@@ -663,7 +669,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "css": "\n".join(
                     str(_s.string or "")
                     for _s in soup.find_all("style")
-                    if "on-every-page" not in _s.attrs
+                    # if "on-every-page" not in _s.attrs # (curr not used)
                 ).strip()
                 if soup.head
                 else "",

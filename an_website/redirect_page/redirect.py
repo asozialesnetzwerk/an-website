@@ -47,12 +47,14 @@ class RedirectPage(HTMLRequestHandler):
         if not redirect_url or redirect_url in {"", "/"}:
             # empty arg so redirect to main page
             # use fix_url to maybe add no_3rd_party
-            return self.redirect(self.fix_url("/"))
+            return self.redirect(self.fix_url("/", as_json=self.get_as_json()))
 
         if not redirect_url.startswith("http"):
             # it is a local URL, so just redirect
             # use fix_url to maybe add no_3rd_party
-            return self.redirect(self.fix_url(redirect_url))
+            return self.redirect(
+                self.fix_url(redirect_url, as_json=self.get_as_json())
+            )
 
         if redirect_url.startswith("https://chat.asozial.org/"):
             return self.redirect(redirect_url)

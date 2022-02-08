@@ -221,7 +221,8 @@ class QuoteMainPage(QuoteBaseHandler):
         quote_id, author_id = self.get_next_id(rating_filter="w")
         return self.redirect(
             self.fix_url(
-                f"{self.URL_PREFIX}/zitate/{quote_id}-{author_id}/{suffix}"
+                f"{self.URL_PREFIX}/zitate/{quote_id}-{author_id}/{suffix}",
+                as_json=self.get_as_json(),
             )
         )
 
@@ -244,7 +245,8 @@ class QuoteById(QuoteBaseHandler):
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
                 self.fix_url(
-                    f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/"
+                    f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/",
+                    as_json=self.get_as_json(),
                 )
             )
         await self.render_quote(int_quote_id, int(author_id))

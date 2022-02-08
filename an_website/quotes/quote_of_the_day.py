@@ -265,7 +265,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
 
         if _wq:
             return self.redirect(
-                self.fix_url(_wq.get_quote_url()),
+                self.fix_url(_wq.get_quote_url(), as_json=self.get_as_json()),
                 False,
             )
         raise HTTPError(404)

@@ -217,7 +217,10 @@ class CreatePage(QuoteReadyCheckRequestHandler):
             # if selected existing quote and existing
             # fake author just redirect to the page of this quote
             return self.redirect(
-                self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
+                self.fix_url(
+                    f"/zitate/{quote.id}-{fake_author.id}",
+                    as_json=self.get_as_json(),
+                ),
             )
 
         # TODO: Search for real author, to reduce work for users
@@ -245,7 +248,9 @@ class CreatePage(QuoteReadyCheckRequestHandler):
                 fake_authors[0],
                 quotes[0],
             )
-            return self.redirect(self.fix_url(f"/zitate/{_id}/"))
+            return self.redirect(
+                self.fix_url(f"/zitate/{_id}/", as_json=self.get_as_json())
+            )
 
         await self.render(
             "pages/quotes/create2.html",
@@ -280,7 +285,10 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
             # if selected existing quote and existing
             # fake author just redirect to the page of this quote
             return self.redirect(
-                self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
+                self.fix_url(
+                    f"/zitate/{quote.id}-{fake_author.id}",
+                    as_json=self.get_as_json(),
+                ),
             )
 
         real_author = self.get_argument("real-author-2", default=None)
@@ -296,4 +304,6 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
             fake_author_str,
             quote_str,
         )
-        return self.redirect(self.fix_url(f"/zitate/{_id}"))
+        return self.redirect(
+            self.fix_url(f"/zitate/{_id}", as_json=self.get_as_json())
+        )
