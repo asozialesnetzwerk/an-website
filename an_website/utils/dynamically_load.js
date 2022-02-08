@@ -70,11 +70,13 @@ function dynLoadOnData(data, onpopstate) {
             bodyDiv.appendChild(scriptElement);
         }
     }
-    document.title = data["title"];
-    let titleStyleText = `#title:after{content:"${data["short_title"]}"}`;
-    if (data["short_title"] !== data["title"]) {
+    const title = data["title"];
+    document.title = title;
+    const shortTitle = data["short_title"] || title;
+    let titleStyleText = `#title:after{content:"${shortTitle}"}`;
+    if (shortTitle !== title) {
         titleStyleText += (
-            `@media(min-width:500px){#title:after{content:"${data["title"]}"}}`
+            `@media(min-width:500px){#title:after{content:"${title}"}}`
         );
     }
     document.getElementById("title-style").innerText = titleStyleText;
@@ -104,6 +106,8 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
             // urls to redirect page are html pages
             && !href.startsWith(window.location.origin + "/redirect/")
         )
+        // link is to /chat/, which redirects to another page
+        || href.startsWith(window.location.origin + "/chat/")
     ) return;
 
     if (
@@ -155,8 +159,10 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
         console.error("URL is the same as current, ignoring");
         return;
     }
+    bodyDiv.prepend(
+        "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu."
+    );
     const [requestUrl, params] = getJSONURLWithParams(url);
-    bodyDiv.innerHTML = "Loading... If this takes too long (over a few seconds), just refresh the page.";
     get(
         requestUrl,
         params,
