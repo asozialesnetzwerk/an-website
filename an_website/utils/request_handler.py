@@ -637,7 +637,9 @@ class HTMLRequestHandler(BaseRequestHandler):
                     self.request.full_url(), as_json=None
                 ),
                 "title": self.title,
-                "short_title": self.short_title if self.title != self.short_title else None,
+                "short_title": self.short_title
+                if self.title != self.short_title
+                else None,
                 "body": "".join(
                     str(_el)
                     for _el in soup.find_all(name="main", id="body")[0].contents
