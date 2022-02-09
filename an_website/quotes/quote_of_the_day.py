@@ -196,6 +196,8 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
     """The request handler for the quote of the day RSS feed."""
 
+    IS_NOT_HTML = True
+
     async def get(self) -> None:
         """Handle GET requests."""
         today = dt.datetime.now(tz=dt.timezone.utc).date()

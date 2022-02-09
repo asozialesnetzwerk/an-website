@@ -140,7 +140,7 @@ async def search_main_page_info(
     info_list: Iterable[Info] = MAIN_PAGE_INFO,
 ) -> list[Info]:
     # pylint: disable=confusing-consecutive-elif
-    """Get a info list based on the query and the check_func and return it."""
+    """Get an info list based on the query and the check_func and return it."""
     found: list[Info] = []
     for info in info_list:
         if isinstance(info, SoundInfo):
