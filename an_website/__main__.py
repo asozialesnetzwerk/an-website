@@ -20,12 +20,14 @@ import gc
 import importlib
 import logging
 import os
+import pathlib
 import signal
 import ssl
 import sys
 from typing import Any
 
 import hy  # type: ignore
+import orjson
 from aioredis import BlockingConnectionPool, Redis, RedisError
 from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
@@ -473,12 +475,40 @@ async def setup_elasticsearch(app: Application) -> None:
     )
     try:
         await elasticsearch.info()
+        await setup_elasticsearch_configs(elasticsearch)
     except ElasticsearchException as exc:
         logger.exception(exc)
         logger.error("Elasticsearch is unavailable!")
         app.settings["ELASTICSEARCH"] = None
     else:
         app.settings["ELASTICSEARCH"] = elasticsearch
+
+
+async def setup_elasticsearch_configs(
+    elasticsearch: AsyncElasticsearch,
+) -> None:
+    """Setup Elasticsearch configs."""  # noqa: D401
+    for path in pathlib.Path(f"{DIR}/es/ingest_pipelines").glob("**/*.json"):
+        if not path.is_file():
+            logger.warning("%s is not a file!", path)
+        await elasticsearch.ingest.put_pipeline(
+            id=path.stem,
+            body=orjson.loads(path.open(encoding="utf-8").read()),
+        )
+    for path in pathlib.Path(f"{DIR}/es/component_templates").glob("**/*.json"):
+        if not path.is_file():
+            logger.warning("%s is not a file!", path)
+        await elasticsearch.cluster.put_component_template(
+            name=path.stem,
+            body=orjson.loads(path.open(encoding="utf-8").read()),
+        )
+    for path in pathlib.Path(f"{DIR}/es/index_templates").glob("**/*.json"):
+        if not path.is_file():
+            logger.warning("%s is not a file!", path)
+        await elasticsearch.indices.put_index_template(
+            name=path.stem,
+            body=orjson.loads(path.open(encoding="utf-8").read()),
+        )
 
 
 def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
