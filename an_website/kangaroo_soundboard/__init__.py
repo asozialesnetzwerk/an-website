@@ -122,7 +122,7 @@ class HeaderInfo(Info):
                 if self.type == Book
                 else mark_query(self.text, query)
             )
-            + "</{self.tag}>"
+            + f"</{self.tag}>"
         )
 
 
