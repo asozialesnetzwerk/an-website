@@ -126,7 +126,11 @@ class SoundboardRSSHandler(BaseRequestHandler):
 
         if rss_str is not None:
             self.set_header("Content-Type", "application/rss+xml")
-            return await self.render("rss/soundboard.xml", rss_str=rss_str)
+            return await self.render(
+                "rss/soundboard.xml",
+                rss_str=rss_str,
+                url=self.request.full_url(),
+            )
 
         raise HTTPError(404, reason="Feed not found.")
 
