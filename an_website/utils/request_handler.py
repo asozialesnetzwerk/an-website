@@ -378,7 +378,7 @@ class BaseRequestHandler(RequestHandler):
         if "dynload" not in query_args:
             query_args["dynload"] = self.get_dynload()
 
-        # don't add as_json=nope to url only if as_json is False
+        # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
             del query_args["as_json"]

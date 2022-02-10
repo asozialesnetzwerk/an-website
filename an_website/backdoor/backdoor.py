@@ -136,7 +136,7 @@ class Backdoor(APIRequestHandler):
                 "".join(
                     traceback.format_exception(exception)  # type: ignore
                 ).strip()
-                if exception
+                if exception is not None
                 else None,
                 exception or result,
             )
