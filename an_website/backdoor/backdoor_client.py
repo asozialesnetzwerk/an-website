@@ -15,19 +15,51 @@
 from __future__ import annotations, barry_as_FLUFL
 
 import ast
+import asyncio
+import http.client
 import os
 import pickle
 import pydoc
 import re
 import sys
 import traceback
+import urllib.parse
 import uuid
 from typing import Any
 
-import hy  # type: ignore
-from tornado.httpclient import HTTPClient, HTTPClientError
+try:
+    import hy  # type: ignore
+except ImportError:
+    hy = None
 
-HTTP_CLIENT = HTTPClient()
+
+S = lambda *A: re.match(*A, 24).groups()  # type: ignore[call-overload]  # noqa: E731
+
+
+async def request(m, u, h, b):  # type: ignore[no-untyped-def]  # noqa: D103
+    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-many-locals, while-used
+    s, _, a, _, q, _ = z = urllib.parse.urlparse(u)
+    t, e, d, n = s != b"http", ..., b"", z.hostname
+    r, w = await asyncio.open_connection(
+        n, int(z.port or 80 + 363 * t), ssl=t, server_hostname=[None, n][t]
+    )
+    w.write(
+        m
+        + b" "
+        + (a or b"/")
+        + [b"?" + q, b""][q == b""]
+        + b" HTTP/1.0"
+        + b"\r\n"
+        + b"\r\n".join([b"%b:%b" % w for w in h] + [b"", b])
+    )
+    await w.drain()
+    while c := await r.read():
+        if b"\r\n\r\n" in (d := d + c) * (e is ...):
+            e, d = d.split(b"\r\n\r\n", 1)  # type: ignore[assignment]
+            t, o = S(rb"HTTP/.+? (\d+).*?%b(.*)" % b"\r\n", e)  # type: ignore[no-untyped-call]
+            o = [S(rb"([^\s]+):\s*(.+?)\s*$", x) for x in o.split(b"\r\n")]  # type: ignore[no-untyped-call]
+    w.close()
+    return int(t), o, d
 
 
 def detect_mode(code: str) -> str:
@@ -48,38 +80,43 @@ def send(
     session: None | str = None,
 ) -> Any:
     """Send code to the backdoor API."""
-    headers = {"Authorization": key}
+    parsed_url = urllib.parse.urlparse(url)
+    body = code.encode("utf-8")
+    headers = [
+        (b"Host", parsed_url.hostname.encode("latin-1")),  # type: ignore[union-attr]
+        (b"Content-Length", str(len(body)).encode("latin-1")),
+        (b"Authorization", key.encode("latin-1")),
+    ]
     if session:
-        headers["X-Backdoor-Session"] = session
-    try:
-        response = HTTP_CLIENT.fetch(
-            f"{url}/api/backdoor/{mode}/",
-            method="POST",
-            headers=headers,
-            body=code,
-            request_timeout=60,
+        headers.append((b"X-Backdoor-Session", session.encode("latin-1")))
+    response = asyncio.run(
+        request(  # type: ignore[no-untyped-call]
+            b"POST",
+            f"{url}/api/backdoor/{mode}/".encode("latin-1"),
+            tuple(headers),
+            body,
         )
-    except HTTPClientError as exc:
-        if exc.response and exc.response.body:
-            exc.response._body = (  # pylint: disable=protected-access
-                pickle.loads(exc.response.body) or ...  # type: ignore
-            )
-        raise
-    return pickle.loads(response.body)
+    )
+    return response[0], response[1], pickle.loads(response[2])
 
 
 def lisp_always_active() -> bool:
     """Return True if LISP is always active."""
-    return not hy.eval(
-        hy.read_str(
-            '(* (- (* (+ 0 1) 2 3 4 5) (+ 6 7 8 9 10 11)) '  # fmt: skip
-            '(int (= (. (__import__ "os.path") sep) "/")))'
+    return (
+        hy
+        and not hy.eval(
+            hy.read_str(
+                '(* (- (* (+ 0 1) 2 3 4 5) (+ 6 7 8 9 10 11)) '  # fmt: skip
+                '(int (= (. (__import__ "os.path") sep) "/")))'
+            )
         )
-    ) and not int.from_bytes(
-        getattr(os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be"))(1),
-        sys.byteorder,
-    ) // (
-        69 // 4 - 1
+        and not int.from_bytes(
+            getattr(
+                os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be")
+            )(1),
+            sys.byteorder,
+        )
+        // (69 // 4 - 1)
     )
 
 
@@ -103,28 +140,24 @@ def run_and_print(  # noqa: C901
             ).strip()
         )
         return
-    except HTTPClientError as exc:
-        print("\033[91m" + str(exc) + "\033[0m")
-        if exc.response and exc.response.body:
-            response = exc.response.body
-        else:
-            return
-    if response is ...:
+    if response[0] >= 400:
+        print("\033[91m" + http.client.responses[response[0]] + "\033[0m")
+    if response[2] is None:
         return
-    if isinstance(response, str):
-        print("\033[91m" + response + "\033[0m")
+    if isinstance(response[2], str):
+        print("\033[91m" + response[2] + "\033[0m")
         return
-    if isinstance(response, SystemExit):
-        raise response
-    if isinstance(response, dict):
-        if response["success"]:
-            if response["output"]:
+    if isinstance(response[2], SystemExit):
+        raise response[2]
+    if isinstance(response[2], dict):
+        if response[2]["success"]:
+            if response[2]["output"]:
                 print("Output:")
-                print(response["output"].strip())
+                print(response[2]["output"].strip())
             result_obj = None
-            if response["result"][1]:
+            if response[2]["result"][1]:
                 try:
-                    result_obj = pickle.loads(response["result"][1])
+                    result_obj = pickle.loads(response[2]["result"][1])
                 except (
                     pickle.UnpicklingError,
                     AttributeError,
@@ -142,14 +175,14 @@ def run_and_print(  # noqa: C901
                 and isinstance(result_obj[1], str)
             ):
                 pydoc.pager(result_obj[1])
-            elif response["result"][0] != "None":
+            elif response[2]["result"][0] != "None":
                 print("Result:")
-                print(response["result"][0])
+                print(response[2]["result"][0])
         else:
-            print(response["result"][0])
+            print(response[2]["result"][0])
     else:
         print("Response has unknown type!")
-        print(response)
+        print(response[2])
 
 
 def start() -> None:  # noqa: C901
@@ -216,12 +249,15 @@ def start() -> None:  # noqa: C901
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'HelperTuple', helper_output.getvalue()"
         )
-        send(url, key, code, "exec", session)
+        response = send(url, key, code, "exec", session)
+        if response[0] >= 400 or not response[2]["success"]:
+            print("\033[91mPatching help() failed!\033[0m")
 
     if "--lisp" in sys.argv:
-        try:
-            send(url, key, "import hy", "exec", session)
-        except HTTPClientError:
+        if not hy:
+            sys.exit("Hy is not installed!")
+        response = send(url, key, "import hy", "exec", session)
+        if response[0] >= 400 or not response[2]["success"]:
             print("\033[91mImporting Hy failed!\033[0m")
 
     # pylint: disable=import-outside-toplevel

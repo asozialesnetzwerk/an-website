@@ -15,49 +15,14 @@
 
 from __future__ import annotations
 
-# pylint: disable=unused-import
-from json.decoder import JSONDecodeError, JSONDecoder  # noqa: F401
-from json.encoder import JSONEncoder  # noqa: F401
+import inspect
 
 import orjson
 
 from .. import ORJSON_OPTIONS
 
-
-# pylint: disable=unused-argument,invalid-name,missing-function-docstring
-def dumps(  # type: ignore  # noqa: D103
-    obj,
-    *,
-    skipkeys=False,
-    ensure_ascii=True,
-    check_circular=True,
-    allow_nan=True,
-    cls=None,
-    indent=None,
-    separators=None,
-    default=None,
-    sort_keys=False,
-    **kw,
-):
-    if cls is not None:
-        _ = cls(
-            skipkeys=skipkeys,
-            ensure_ascii=ensure_ascii,
-            check_circular=check_circular,
-            allow_nan=allow_nan,
-            indent=indent,
-            separators=separators,
-            default=default,
-            sort_keys=sort_keys,
-            **kw,
-        )
-        default = _.default
-    option = ORJSON_OPTIONS
-    if sort_keys:
-        option |= orjson.OPT_SORT_KEYS
-    if indent is not None:
-        option |= orjson.OPT_INDENT_2
-    return orjson.dumps(obj, default, option).decode("utf-8")
+# pylint: disable=invalid-name, missing-function-docstring
+# pylint: disable=too-many-locals, unused-argument
 
 
 def dump(  # type: ignore  # noqa: D103
@@ -92,18 +57,47 @@ def dump(  # type: ignore  # noqa: D103
     )
 
 
-def loads(  # type: ignore  # noqa: D103
-    s,
+def dumps(  # type: ignore  # noqa: D103
+    obj,
     *,
+    skipkeys=False,
+    ensure_ascii=True,
+    check_circular=True,
+    allow_nan=True,
     cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
+    indent=None,
+    separators=None,
+    default=None,
+    sort_keys=False,
     **kw,
 ):
-    return orjson.loads(s)
+    if cls is not None:
+        _ = cls(
+            skipkeys=skipkeys,
+            ensure_ascii=ensure_ascii,
+            check_circular=check_circular,
+            allow_nan=allow_nan,
+            indent=indent,
+            separators=separators,
+            default=default,
+            sort_keys=sort_keys,
+            **kw,
+        )
+        default = _.default
+    option = ORJSON_OPTIONS
+    decode = True
+    caller = inspect.currentframe().f_back.f_globals["__name__"]  # type: ignore[union-attr]
+    if caller == "elasticsearch.serializer":
+        option = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_PASSTHROUGH_DATETIME
+        decode = False
+    if sort_keys:
+        option |= orjson.OPT_SORT_KEYS
+    if indent is not None:
+        option |= orjson.OPT_INDENT_2
+    json = orjson.dumps(obj, default, option)
+    if decode:
+        return json.decode("utf-8")
+    return json
 
 
 def load(  # type: ignore  # noqa: D103
@@ -127,3 +121,17 @@ def load(  # type: ignore  # noqa: D103
         object_pairs_hook=object_pairs_hook,
         **kw,
     )
+
+
+def loads(  # type: ignore  # noqa: D103
+    s,
+    *,
+    cls=None,
+    object_hook=None,
+    parse_float=None,
+    parse_int=None,
+    parse_constant=None,
+    object_pairs_hook=None,
+    **kw,
+):
+    return orjson.loads(s)

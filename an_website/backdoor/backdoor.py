@@ -64,8 +64,8 @@ class Backdoor(APIRequestHandler):
         """Handle the POST request to the backdoor API."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         try:
-            exception: None | BaseException = None
             result: Any = None
+            exception: None | BaseException = None
             source, output = self.request.body, io.StringIO()
             try:
                 parsed = compile(
@@ -128,16 +128,15 @@ class Backdoor(APIRequestHandler):
                         result = help
                     if result is not None:
                         session["_"] = result
-                finally:
-                    output_str = (
-                        output.getvalue() if not output.closed else None
-                    )
-                    output.close()
+            output_str: None | str = (
+                output.getvalue() if not output.closed else None
+            )
+            output.close()
             result_tuple: tuple[None | str, Any] = (
                 "".join(
                     traceback.format_exception(exception)  # type: ignore
                 ).strip()
-                if exception
+                if exception is not None
                 else None,
                 exception or result,
             )
@@ -153,11 +152,6 @@ class Backdoor(APIRequestHandler):
                     result_tuple[0] or repr(result_tuple[1]),
                     None,
                 )
-            # except Exception as exc:
-            #     response["result"] = (
-            #         response["result"][0] or repr(response["result"][1]),
-            #         "".join(traceback.format_exception(exc)).strip(),
-            #     )
         except SystemExit as exc:
             new_args = []
             for arg in exc.args:
@@ -174,7 +168,7 @@ class Backdoor(APIRequestHandler):
         return await self.finish(
             pickle.dumps(
                 {
-                    "success": not exception,
+                    "success": exception is not None,
                     "result": result_tuple,
                     "output": output_str,
                 },

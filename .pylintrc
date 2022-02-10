@@ -44,4 +44,4 @@ ignore-docstrings=yes
 ignore-imports=yes
 
 [BROAD_TRY_CLAUSE]
-max-try-statements=6
+max-try-statements=8

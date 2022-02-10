@@ -456,8 +456,8 @@ async def setup_elasticsearch(app: Application) -> None:
             config.get("ELASTICSEARCH", "USERNAME"),
             config.get("ELASTICSEARCH", "PASSWORD"),
         )
-        if config.get("ELASTICSEARCH", "USERNAME", fallback=None)
-        and config.get("ELASTICSEARCH", "PASSWORD", fallback=None)
+        if config.has_option("ELASTICSEARCH", "USERNAME")
+        and config.has_option("ELASTICSEARCH", "PASSWORD")
         else None,
         api_key=config.get("ELASTICSEARCH", "API_KEY", fallback=None),
         client_cert=config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None),
@@ -465,10 +465,6 @@ async def setup_elasticsearch(app: Application) -> None:
         retry_on_timeout=config.get(
             "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
         ),
-        http_compress=True,
-        # sniff_on_start=True,
-        # sniff_on_connection_fail=True,
-        # sniffer_timeout=60,
         headers={
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },

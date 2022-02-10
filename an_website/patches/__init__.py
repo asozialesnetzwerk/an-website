@@ -18,21 +18,9 @@ import asyncio
 import configparser
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
-import logging
 import os
-from json import dumps as stdlib_json_dumps  # pylint: disable=preferred-module
-from json import loads as stdlib_json_loads  # pylint: disable=preferred-module
 
 import defusedxml  # type: ignore
-import ecs_logging._utils
-import elasticapm.contrib.tornado.utils  # type: ignore
-import elasticapm.utils  # type: ignore
-import elasticapm.utils.cloud  # type: ignore
-import elasticapm.utils.json_encoder  # type: ignore
-import elasticsearch.connection.base
-import elasticsearch.serializer
-import numpy._version
-import tornado.escape
 import tornado.httputil
 import tornado.platform.asyncio
 import tornado.web
@@ -43,7 +31,7 @@ from . import json  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 
-# pylint: disable=protected-access, invalid-name
+# pylint: disable=protected-access
 
 
 def apply() -> None:
@@ -98,41 +86,7 @@ def anonymize_logs() -> None:
 
 def patch_json() -> None:
     """Replace json with orjson."""
-    logger = logging.getLogger(json.__name__)
-
-    def dump(obj, fp, **kwargs):  # type: ignore
-        logger.warning(
-            "json.dump() has been called!", stack_info=True, stacklevel=2
-        )
-        fp.write(stdlib_json_dumps(obj, **kwargs))
-
-    def dumps(obj, **kwargs):  # type: ignore
-        logger.warning(
-            "json.dumps() has been called!", stack_info=True, stacklevel=2
-        )
-        return stdlib_json_dumps(obj, **kwargs)
-
-    def load(fp, **kwargs):  # type: ignore
-        logger.warning(
-            "json.load() has been called!", stack_info=True, stacklevel=2
-        )
-        return stdlib_json_loads(fp.read(), **kwargs)
-
-    def loads(s, **kwargs):  # type: ignore
-        logger.warning(
-            "json.loads() has been called!", stack_info=True, stacklevel=2
-        )
-        return stdlib_json_loads(s, **kwargs)
-
-    stdlib_json.dump = dump
-    stdlib_json.dumps = dumps
-    stdlib_json.load = load
-    stdlib_json.loads = loads
-
-    ecs_logging._utils.json = json  # type: ignore
-    elasticapm.utils.cloud.json = json
-    elasticapm.utils.json_encoder.json = json
-    elasticsearch.connection.base.json = json  # type: ignore
-    elasticsearch.serializer.json = json  # type: ignore
-    numpy._version.json = json  # type: ignore
-    tornado.escape.json = json  # type: ignore
+    stdlib_json.dump = json.dump
+    stdlib_json.dumps = json.dumps
+    stdlib_json.load = json.load
+    stdlib_json.loads = json.loads
