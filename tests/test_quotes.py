@@ -118,6 +118,8 @@ async def test_quote_request_handlers(
     http_server_client: tornado.simple_httpclient.SimpleAsyncHTTPClient,
 ) -> None:
     """Test the request handlers for the quotes page."""
+    response = await http_server_client.fetch("/zitate/")
+    assert response.code == 200
     response = await http_server_client.fetch("/zitate/1-1/")
     assert response.code == 200
     response = await http_server_client.fetch("/api/zitate/1-2/")
