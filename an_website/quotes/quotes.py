@@ -226,9 +226,9 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             ),
             random_quote_url=self.id_to_url(*self.get_next_id()),
             quote_of_the_day=await self.get_quote_of_today(),
-            one_stone_id=get_authors(
-                lambda _a: _a.name == "Albert Einstein"
-            )[0].id,
+            one_stone_id=get_authors(lambda _a: _a.name == "Albert Einstein")[
+                0
+            ].id,
         )
 
     def id_to_url(
