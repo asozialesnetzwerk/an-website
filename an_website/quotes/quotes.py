@@ -35,10 +35,12 @@ from . import (
     QuoteReadyCheckRequestHandler,
     WrongQuote,
     create_wq_and_vote,
+    get_authors,
     get_random_id,
     get_wrong_quote,
     get_wrong_quotes,
 )
+from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .quotes_img import QuoteAsImg
 from .share_page import ShareQuote
 
@@ -211,26 +213,45 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
                 self.TASK_REFERENCES.remove(task)
 
 
-class QuoteMainPage(QuoteBaseHandler):
+class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
     """The main quote page that should render a random quote."""
 
-    URL_PREFIX = ""
+    async def get(self) -> None:
+        """Render the main quote page, with a few links."""
+        await self.render(
+            "pages/quotes/quotes_main_page.html",
+            funny_quote_url=self.id_to_url(
+                *get_wrong_quotes(lambda _wq: _wq.rating > 0)[0].get_id(),
+                "w",
+            ),
+            random_quote_url=self.id_to_url(*self.get_next_id()),
+            quote_of_the_day=await self.get_quote_of_today(),
+            one_stone_id=get_authors(
+                lambda _a: _a.name == "Albert Einstein"
+            )[0].id,
+        )
+
+    def id_to_url(
+        self, quote_id: int, author_id: int, rating_param: None | str = None
+    ) -> str:
+        """Get the URL of a quote."""
+        return self.fix_url(f"/zitate/{quote_id}-{author_id}/", r=rating_param)
+
+
+class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
+    """Redirect to the api for a random quote."""
+
+    IS_NOT_HTML = True
 
     async def get(self, suffix: str = "") -> None:
-        """Handle the GET request to the main quote page and render a quote."""
+        """Redirect to a random funny quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
         return self.redirect(
             self.fix_url(
-                f"{self.URL_PREFIX}/zitate/{quote_id}-{author_id}/{suffix}",
+                f"/api/zitate/{quote_id}-{author_id}/{suffix}",
                 as_json=self.get_as_json(),
             )
         )
-
-
-class QuoteRedirectAPI(QuoteMainPage, APIRequestHandler):
-    """Redirect to the api for a random quote."""
-
-    URL_PREFIX = "/api"
 
 
 class QuoteById(QuoteBaseHandler):

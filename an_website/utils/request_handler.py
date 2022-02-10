@@ -378,6 +378,11 @@ class BaseRequestHandler(RequestHandler):
         if "dynload" not in query_args:
             query_args["dynload"] = self.get_dynload()
 
+        # don't add as_json=nope to url only if as_json is False
+        # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
+        if "as_json" in query_args and query_args["as_json"] is False:
+            del query_args["as_json"]
+
         if not always_add_params:
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
@@ -744,7 +749,6 @@ class NotFound(HTMLRequestHandler):
         await super().prepare()
         new_path = self.request.path.lower()
         if new_path in {
-            "/3.php",
             "/admin/controller/extension/extension/",
             "/assets/filemanager/dialog.php",
             "/assets/vendor/server/php/index.php",

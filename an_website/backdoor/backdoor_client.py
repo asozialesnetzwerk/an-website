@@ -285,7 +285,7 @@ if __name__ == "__main__":
         )
         sys.exit()
     for arg in sys.argv[1:]:
-        if arg not in (
+        if arg not in {
             "--no-patch-help",
             "--no-cache",
             "--clear-cache",
@@ -293,7 +293,7 @@ if __name__ == "__main__":
             "--lisp",
             "--help",
             "-h",
-        ):
+        }:
             print(f"Unknown argument: {arg}")
             sys.exit(64 + 4 + 1)
     try:

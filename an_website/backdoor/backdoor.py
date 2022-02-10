@@ -136,7 +136,7 @@ class Backdoor(APIRequestHandler):
                 "".join(
                     traceback.format_exception(exception)  # type: ignore
                 ).strip()
-                if exception is not None
+                if exception is None
                 else None,
                 exception or result,
             )
@@ -168,7 +168,7 @@ class Backdoor(APIRequestHandler):
         return await self.finish(
             pickle.dumps(
                 {
-                    "success": exception is not None,
+                    "success": exception is None,
                     "result": result_tuple,
                     "output": output_str,
                 },
