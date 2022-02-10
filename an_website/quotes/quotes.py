@@ -222,7 +222,10 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         await self.render(
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(
-                *get_wrong_quotes(lambda _wq: _wq.rating > 0)[0].get_id(),
+                *get_wrong_quotes(
+                    lambda _wq: _wq.rating > 0,
+                    shuffle=True,
+                )[0].get_id(),
                 "w",
             ),
             random_quote_url=self.id_to_url(*self.get_next_id()),
