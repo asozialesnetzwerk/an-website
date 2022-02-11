@@ -2,30 +2,45 @@
 {% extends "../../base.html" %}
 
 {% block body %}
-    Hier gibt es ganz viele bewertbare falsch zugeordnete Zitate, die per
-    Algorithmus oder per Hand falsch zugeordnet werden. Falls Du Dich nach dem
-    Sinn des Ganzen fragst, dann lass mich
-    {% if one_stone_id is not None %}
-        <a class="no-style-a"
-           href="{{fix_url(f'/zitate/info/a/{one_stone_id}/')}}"
-           style="display: inline;"
-        >Albert Einstein</a> zitieren:
+    Hier gibt es ganz viele bewertbare falsch zugeordnete Zitate.
+    Die Idee hinter diesen stammt aus dem
+    <a class="no-style-a-in" href="{{fix_url('https://marcuwekling.reimkultur-shop.de/marc-uwe-kling-das-kaenguru-manifest-live-und-ungekuerzt-download-album-6400139.html')}}"
+    >Känguru-Manifest</a>, in welchem
+    {% if kangaroo_url %}
+        <a class="no-style-a-in" href="{{kangaroo_url}}">das Känguru</a>
     {% else %}
-        Albert Einstein zitieren:
+        das Känguru
     {% end %}
+    sich diese ausdenkt und
+    {% if muk_url %}
+        <a class="no-style-a-in" href="{{muk_url}}">Marc-Uwe Kling</a>
+    {% else %}
+        Marc-Uwe Kling
+    {% end %}
+    davon berichtet.
+    Falls Du Dich nach dem Sinn hinter diesen fragst, dann lass mich
+    {% if one_stone_url %}
+        <a class="no-style-a-in" href="{{one_stone_url}}">Albert Einstein</a>
+    {% else %}
+        Albert Einstein
+    {% end %}
+    zitieren:
     <blockquote>
-Falsch zugeordnete Zitate sind wie Physik, unnötig aber halt einfach witzig.
+        Falsch zugeordnete Zitate sind wie Physik, unnötig aber einfach witzig.
     </blockquote>
-    Teilweise kommen da echt amüsante Zitate bei herum, die Du dann mit Deinen
-    Freunden Teilen kannst. Schau dich doch halt mal um. Viel Spaß!
+    Teilweise kommen da echt
+    <a href="{{fix_url('/vertauschte-woerter/?text=relevant')}}"
+       class="no-style-a-in">relevante</a> Zitate bei herum,
+    die Du dann mit Deinen Freunden Teilen kannst.
+    Schau Dich gerne mal um. Viel Spaß!
 
     {% if quote_of_the_day %}
         <h2>Das Zitat des Tages
             <a href="{{fix_url('/zitat-des-tages/feed/')}}" no-dynload
+               class="no-style-a-in"
             ><img src="/static/img/rss.svg" alt="RSS-Feed" width="16"
             ></a></h2>
         <a class="no-style-a"
-           style="display: inline-block;"
            href="{{fix_url(quote_of_the_day.get_quote_url())}}">
             {{quote_of_the_day.wrong_quote.quote}}
             <br>
@@ -53,4 +68,6 @@ Falsch zugeordnete Zitate sind wie Physik, unnötig aber halt einfach witzig.
             </a>
         </li>
     </ul>
+
+    <br>
 {% end %}

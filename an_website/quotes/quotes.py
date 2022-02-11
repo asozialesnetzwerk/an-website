@@ -218,7 +218,6 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
 
     async def get(self) -> None:
         """Render the main quote page, with a few links."""
-        stones = get_authors(lambda _a: _a.name == "Albert Einstein")
         await self.render(
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(
@@ -230,7 +229,18 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             ),
             random_quote_url=self.id_to_url(*self.get_next_id()),
             quote_of_the_day=await self.get_quote_of_today(),
-            one_stone_id=stones[0].id if stones else None,
+            one_stone_url=self.get_author_url("Albert Einstein"),
+            kangaroo_url=self.get_author_url("Das Känguru"),
+            muk_url=self.get_author_url("Marc-Uwe Kling"),
+        )
+
+    def get_author_url(self, author_name: str) -> None | str:
+        """Get the info URL of an author."""
+        authors = get_authors(lambda _a: _a.name.lower() == author_name.lower())
+        if not authors:
+            return None
+        return self.fix_url(
+            f"/zitate/info/a/{authors[0].id}/"
         )
 
     def id_to_url(

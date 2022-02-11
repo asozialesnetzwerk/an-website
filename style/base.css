@@ -47,16 +47,19 @@ body {
     hyphens: auto;
 }
 
-a:not(.no-style-a) {
+a:not(.no-style-a, .no-style-a-in) {
     color: var(--main)
 }
 
-.no-style-a {
+.no-style-a, .no-style-a-in {
     text-decoration: none;
+}
+
+.no-style-a {
     display: block;
 }
 
-.no-style-a:hover {
+.no-style-a:hover, .no-style-a-in:hover {
     text-decoration: underline;
 }
 
