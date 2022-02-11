@@ -43,25 +43,45 @@ class Search(HTMLRequestHandler):
         """Handle GET requests to the search page."""
         query = str(self.get_query_argument("q", strip=True, default=""))
 
+        if not query:
+            return await self.old_fallback_search(query)
+
         try:
             results = [
                 {
                     "url": self.fix_url(result["url_path"]["raw"]),
-                    "title": result["title"].get("snippet")
-                    or result["title"]["raw"],
-                    "description": result["meta_description"].get("snippet")
-                    or result["meta_description"]["raw"],
+                    "title": result["title"]["snippet"],
+                    "description": result["meta_description"]["snippet"],
                     "score": result["_meta"]["score"],
                 }
                 for result in (
                     await asyncio.to_thread(
                         self.settings["APP_SEARCH"].search,
                         self.settings["APP_SEARCH_ENGINE_NAME"],
-                        body={"query": query},  # TODO: try to filter response
+                        body={
+                            "query": query,
+                            "result_fields": {
+                                "title": {
+                                    "snippet": {
+                                        "size": 42,
+                                        "fallback": True,
+                                    }
+                                },
+                                "meta_description": {
+                                    "snippet": {
+                                        "size": 200,
+                                        "fallback": True,
+                                    }
+                                },
+                                "url_path": {
+                                    "raw": {},
+                                },
+                            },
+                        },
                     )
                 )["results"]
             ]
-        except Exception as exc:  # pylint: disable=broad-except  # TODO: Fix
+        except Exception as exc:  # pylint: disable=broad-except
             logger.exception(exc)
             return await self.old_fallback_search(query)
 
