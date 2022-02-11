@@ -11,7 +11,7 @@ bodyDiv.innerHTML=data["body"];if(data["css"]){const style=document.createElemen
 if(data["stylesheets"]){for(const scriptURL of data["stylesheets"]){const link=document.createElement("link");link.rel="stylesheet";link.type="text/css"
 link.href=scriptURL;bodyDiv.appendChild(link);}}
 if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=document.createElement("script");if(script["src"])scriptElement.src=script["src"];if(script["script"])scriptElement.innerHTML=script["script"];if(script["onload"])scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
-const title=data["title"];document.title=title;const shortTitle=data["short_title"]||title;let titleStyleText=`#title:before{content:"${shortTitle}"}`;if(shortTitle!==title){titleStyleText+=(`@media(min-width:500px){#title:after{content:"${title}"}}`);}
+const title=data["title"];document.title=title;const shortTitle=data["short_title"]||title;let titleStyleText=`#title:before{content:"${shortTitle}"}`;if(shortTitle!==title){titleStyleText+=(`@media(min-width:500px){#title:before{content:"${title}"}}`);}
 document.getElementById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();window.urlData=data;return true}
 function dynLoadReplaceAnchors(){for(const anchor of document.getElementsByTagName("A")){dynLoadReplaceHrefOnAnchor(anchor);}}
 function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload")){return;}

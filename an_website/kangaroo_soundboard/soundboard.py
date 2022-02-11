@@ -188,13 +188,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             sound_info_list=parsed_info[0],
             query=parsed_info[1],
             feed_url=self.fix_url(
-                "/".join(
-                    (
-                        "/kaenguru-soundboard",
-                        path.strip("/"),
-                        "feed/"
-                    )
-                )
+                "/".join(("/kaenguru-soundboard", path.strip("/"), "feed/"))
                 if path and path != "/"
                 else "/kaenguru-soundboard/feed/",
             ),
