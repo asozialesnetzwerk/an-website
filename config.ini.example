@@ -39,6 +39,11 @@
 #client_key = ...
 #retry_on_timeout = nope
 
+#[APP_SEARCH]
+#host = http://localhost:3002
+#engine_name = ...
+#search_key = ...
+
 #[ELASTIC_APM]
 #enabled = nope
 #server_url = http://localhost:8200

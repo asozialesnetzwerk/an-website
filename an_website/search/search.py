@@ -14,8 +14,13 @@
 """The search page used to search the website."""
 from __future__ import annotations
 
+import asyncio
+import logging
+
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -38,6 +43,36 @@ class Search(HTMLRequestHandler):
         """Handle GET requests to the search page."""
         query = str(self.get_query_argument("q", strip=True, default=""))
 
+        try:
+            results = [
+                {
+                    "url": self.fix_url(result["url_path"]["raw"]),
+                    "title": result["title"].get("snippet")
+                    or result["title"]["raw"],
+                    "description": result["meta_description"].get("snippet")
+                    or result["meta_description"]["raw"],
+                    "score": result["_meta"]["score"],
+                }
+                for result in (
+                    await asyncio.to_thread(
+                        self.settings["APP_SEARCH"].search,
+                        self.settings["APP_SEARCH_ENGINE_NAME"],
+                        body={"query": query},  # TODO: try to filter response
+                    )
+                )["results"]
+            ]
+        except Exception as exc:  # pylint: disable=broad-except  # TODO: Fix
+            logger.exception(exc)
+            return await self.old_fallback_search(query)
+
+        await self.render(
+            "pages/search.html",
+            query=query,
+            results=results,
+        )
+
+    async def old_fallback_search(self, query: str) -> None:
+        """Search the website using the old search engine."""
         module_infos: list[
             tuple[float, ModuleInfo, list[tuple[float, PageInfo]]]
         ] = []
@@ -55,6 +90,19 @@ class Search(HTMLRequestHandler):
 
         module_infos.sort(reverse=True)
 
+        results = [
+            {
+                "url": self.fix_url(info.path),
+                "title": info.name,
+                "description": info.description,
+                "score": score,
+                "sub_pages": sub_pages,
+            }
+            for score, info, sub_pages in module_infos
+        ]
+
         await self.render(
-            "pages/search.html", query=query, module_infos=module_infos
+            "pages/search.html",
+            query=query,
+            results=results,
         )

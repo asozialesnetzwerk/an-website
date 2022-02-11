@@ -8,27 +8,26 @@
             <input type="text" value="{{query}}" name="q">
         </label>
     </form>
-    {% if len(module_infos) > 0 %}
+    {% if results %}
         <h2>
             Gefundene Seiten:
         </h2>
         <ul>
-            {% for score, info, sub_pages in module_infos %}
-                {% if not info.path is None %}
-            <li score="{{score}}" class="menu-list">
-                <a href="{{ fix_url(info.path) }}" rel="noreferrer">{{info.name}}</a>:
-                {{info.description}}
-            </li>
-                    {% if len(sub_pages) > 0 %}
-            <ul class="menu-sub-list">
-                        {% for sp_score, page_info in sub_pages %}
-                <li score="{{sp_score}}" class="tooltip">
-                    <a href="{{ fix_url(page_info.path) }}" rel="noreferrer">{{page_info.name}}</a>:
-                    {{page_info.description}}
+            {% for result in results %}
+                <li score="{{result['score']}}" class="menu-list">
+                    <a href="{{result['url']}}" rel="noreferrer">{% raw result["title"]%}</a>:
+                    {% raw result["description"]%}
                 </li>
+                {% if "sub_pages" in result and result["sub_pages"] %}
+                    <ul class="menu-sub-list">
+                        {% for sp_score, page_info in result["sub_pages"] %}
+                            <li score="{{sp_score}}" class="tooltip">
+                                <a href="{{ fix_url(page_info.path) }}"
+                                   rel="noreferrer">{{page_info.name}}</a>:
+                                {{page_info.description}}
+                            </li>
                         {% end %}
-            </ul>
-                    {% end %}
+                    </ul>
                 {% end %}
             {% end %}
         </ul>
@@ -39,4 +38,5 @@
 
 {% block head %}
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
+    <style>em {color: var(--contrast-2);}</style>
 {% end %}

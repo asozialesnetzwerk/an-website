@@ -30,6 +30,7 @@ import hy  # type: ignore
 import orjson
 from aioredis import BlockingConnectionPool, Redis, RedisError
 from ecs_logging import StdlibFormatter
+from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch, ElasticsearchException
 from tornado.httpclient import AsyncHTTPClient
@@ -439,6 +440,18 @@ async def setup_redis(app: Application) -> None:
         app.settings["REDIS"] = redis
 
 
+def setup_app_search(app: Application) -> None:
+    """Setup app search."""  # noqa: D401
+    config = app.settings["CONFIG"]
+    app.settings["APP_SEARCH"] = AppSearch(
+        config.get("APP_SEARCH", "HOST", fallback=None),
+        http_auth=config.get("APP_SEARCH", "SEARCH_KEY", fallback=None),
+    )
+    app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
+        "APP_SEARCH", "ENGINE_NAME", fallback=NAME
+    )
+
+
 async def setup_elasticsearch(app: Application) -> None:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
@@ -591,6 +604,9 @@ def main() -> None:
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
     setup_redis_task = loop.create_task(setup_redis(app))
+    # setup_app_search_task = loop.create_task(
+    setup_app_search(app)
+    # )  # noqa: F841
     setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
 
     from .quotes import update_cache_periodically
