@@ -32,34 +32,47 @@ try:
 except ImportError:
     hy = None
 
+try:
+    import uvloop
 
-S = lambda *A: re.match(*A, 24).groups()  # type: ignore[call-overload]  # noqa: E731
+    uvloop.install()
+except ImportError:
+    pass
 
 
-async def request(m, u, h, b):  # type: ignore[no-untyped-def]  # noqa: D103
-    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-many-locals, while-used
-    s, _, a, _, q, _ = z = urllib.parse.urlparse(u)
-    t, e, d, n = s != b"http", ..., b"", z.hostname
+E = eval(  # pylint: disable=eval-used
+    "eval(repr((_:=[],_.append(_))[0]))[0][0]"
+)
+
+
+async def request(method: bytes, url: str | bytes, headers, body: bytes):  # type: ignore[no-untyped-def]  # pylint: disable=line-too-long  # noqa: D103
+    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
+    parsed_url = urllib.parse.urlparse(url)
+    if isinstance(parsed_url, urllib.parse.ParseResult):
+        parsed_url = parsed_url.encode()  # type: ignore[assignment]
+    tls = parsed_url.scheme != b"http"
+    e, d = E, b""
     r, w = await asyncio.open_connection(
-        n, int(z.port or 80 + 363 * t), ssl=t, server_hostname=[None, n][t]
+        parsed_url.hostname.decode("ascii"),  # type: ignore[union-attr]
+        parsed_url.port or 443 if tls else 80,
+        ssl=tls,
     )
     w.write(
-        m
+        method  # type: ignore[operator]
         + b" "
-        + (a or b"/")
-        + [b"?" + q, b""][q == b""]
-        + b" HTTP/1.0"
-        + b"\r\n"
-        + b"\r\n".join([b"%b:%b" % w for w in h] + [b"", b])
+        + (parsed_url.path or b"/")
+        + (b"?" + parsed_url.query if parsed_url.query else b"")  # type: ignore[operator]
+        + b" HTTP/1.0\r\n"
+        + b"\r\n".join([b"%b:%b" % w for w in headers] + [b"", body])
     )
     await w.drain()
     while c := await r.read():
-        if b"\r\n\r\n" in (d := d + c) * (e is ...):
-            e, d = d.split(b"\r\n\r\n", 1)  # type: ignore[assignment]
-            t, o = S(rb"HTTP/.+? (\d+).*?%b(.*)" % b"\r\n", e)  # type: ignore[no-untyped-call]
-            o = [S(rb"([^\s]+):\s*(.+?)\s*$", x) for x in o.split(b"\r\n")]  # type: ignore[no-untyped-call]
+        if b"\r\n\r\n" in (d := d + c) and e is E:
+            e, d = d.split(b"\r\n\r\n", 1)
+            status, o = re.match(rb"HTTP/.+? (\d+).*?%b(.*)" % b"\r\n", e, 24).groups()  # type: ignore[union-attr]
+            o = [re.match(rb"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split(b"\r\n")]  # type: ignore[union-attr]
     w.close()
-    return int(t), o, d
+    return int(status), o, d
 
 
 def detect_mode(code: str) -> str:
@@ -83,17 +96,17 @@ def send(
     parsed_url = urllib.parse.urlparse(url)
     body = code.encode("utf-8")
     headers = [
-        (b"Host", parsed_url.hostname.encode("latin-1")),  # type: ignore[union-attr]
-        (b"Content-Length", str(len(body)).encode("latin-1")),
+        (b"Host", parsed_url.netloc.encode("ascii")),
+        (b"Content-Length", str(len(body)).encode("ascii")),
         (b"Authorization", key.encode("latin-1")),
     ]
     if session:
         headers.append((b"X-Backdoor-Session", session.encode("latin-1")))
     response = asyncio.run(
-        request(  # type: ignore[no-untyped-call]
+        request(
             b"POST",
-            f"{url}/api/backdoor/{mode}/".encode("latin-1"),
-            tuple(headers),
+            f"{url}/api/backdoor/{mode}/",
+            headers,
             body,
         )
     )
