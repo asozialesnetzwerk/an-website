@@ -196,6 +196,9 @@ def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
 
     # static files in /static/, add it here, so it is after the JS handlers
     handlers.append((r"/static/(.*)", StaticFileHandler, {"path": STATIC_DIR}))
+    handlers.append(
+        (r"/(robots.txt|favicon.ico)", StaticFileHandler, {"path": STATIC_DIR})
+    )
     # add all the normal handlers
     for module_info in module_infos:
         for handler in module_info.handlers:
