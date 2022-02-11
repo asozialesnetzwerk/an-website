@@ -73,10 +73,10 @@ function dynLoadOnData(data, onpopstate) {
     const title = data["title"];
     document.title = title;
     const shortTitle = data["short_title"] || title;
-    let titleStyleText = `#title:after{content:"${shortTitle}"}`;
+    let titleStyleText = `#title:before{content:"${shortTitle}"}`;
     if (shortTitle !== title) {
         titleStyleText += (
-            `@media(min-width:500px){#title:after{content:"${title}"}}`
+            `@media(min-width:500px){#title:before{content:"${title}"}}`
         );
     }
     document.getElementById("title-style").innerText = titleStyleText;
@@ -92,6 +92,9 @@ function dynLoadReplaceAnchors() {
 }
 
 function dynLoadReplaceHrefOnAnchor(anchor) {
+    if (anchor.hasAttribute("no-dynload")){
+        return;
+    }
     const href = anchor.href.startsWith("/")
             ? (window.location.origin + anchor.href)
             : anchor.href;

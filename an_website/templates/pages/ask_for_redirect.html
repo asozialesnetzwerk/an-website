@@ -8,10 +8,11 @@
     {% if discord %}
     <br>
     Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen,
-    da bei uns alle Nachrichten gebridget werden. Dies kannst du zum
-    Beispiel über <a href="{{fix_url('/chat/')}}">chat.asozial.org</a> tun.
+    da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel
+    über <a no-dynload href="{{fix_url('/chat/')}}">chat.asozial.org</a> tun.
     {% end %}
-    <a class="leave form-button no-style-a" href="{{redirect_url}}" rel="noreferrer">
+    <a class="leave form-button no-style-a" no-dynload
+       href="{{redirect_url}}" rel="noreferrer">
         Ja, ich bin mir sicher
     </a>
     {% if from_url is not None %}

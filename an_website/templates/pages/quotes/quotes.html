@@ -81,7 +81,7 @@
     </a>
 
     {% if contact_email is not None %}
-        <a class="report tooltip" rel="noreferrer"
+        <a class="report tooltip" rel="noreferrer" no-dynload
            href="mailto:{{contact_email}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
         >
             <img class="button-img report-img button-img-no-rotation"

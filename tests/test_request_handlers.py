@@ -97,6 +97,14 @@ async def test_request_handlers(
     response = await fetch("/redirect/?from=/&to=https://example.org")
     assert response.code == 200
     assert b"https://example.org" in response.body
+    response = await fetch("/robots.txt")
+    assert response.code == 200
+    response = await fetch("/favicon.ico")
+    assert response.code == 200
+    response = await fetch("/static/robots.txt")
+    assert response.code == 200
+    response = await fetch("/static/favicon.ico")
+    assert response.code == 200
     response = await fetch("/uptime/")
     assert response.code == 200
     response = await fetch("/api/discord/")

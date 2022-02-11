@@ -5,14 +5,14 @@
 
 {% block body %}
 <pre>
-Version: <a href="https://github.com/asozialesnetzwerk/an-website/commit/{{ version }}" rel="noreferrer">{{ version }}</a><br><br>
+Version: <a no-dynload href="https://github.com/asozialesnetzwerk/an-website/commit/{{ version }}" rel="noreferrer">{{ version }}</a><br><br>
     {% if no_3rd_party %}
-<a href="https://asozialesnetzwerk.github.io/an-website/coverage/" rel="noreferrer">Code-Coverage</a><br><br>
+<a no-dynload href="https://asozialesnetzwerk.github.io/an-website/coverage/" rel="noreferrer">Code-Coverage</a><br><br>
     {% else %}
-Code-Coverage: <a href="https://asozialesnetzwerk.github.io/an-website/coverage/" rel="noreferrer"><img src="https://github.asozial.org/an-website/coverage/badge.svg"></a><br><br>
+Code-Coverage: <a href="https://asozialesnetzwerk.github.io/an-website/coverage/" rel="noreferrer"><img no-dynload src="https://github.asozial.org/an-website/coverage/badge.svg"></a><br><br>
     {% end %}
-<a href="https://github.com/asozialesnetzwerk/an-website/blob/{{ gh_pages_commit_hash }}/version.txt" rel="noreferrer">Hashes der aktuellen Version</a><br>
-<a href="https://asozialesnetzwerk.github.io/an-website/version.txt" rel="noreferrer">Hashes der neuesten Version</a><br>
+<a no-dynload href="https://github.com/asozialesnetzwerk/an-website/blob/{{ gh_pages_commit_hash }}/version.txt" rel="noreferrer">Hashes der aktuellen Version</a><br>
+<a no-dynload href="https://asozialesnetzwerk.github.io/an-website/version.txt" rel="noreferrer">Hashes der neuesten Version</a><br>
 
 Hash der Datei-Hashes: {{ hash_of_file_hashes }}
 

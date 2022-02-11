@@ -17,3 +17,16 @@ h1:hover .header-id-link:before,
   h2:focus-within .header-id-link:before {
     content: "🔗";
 }
+
+#soundboard-rss {
+    position: absolute;
+    top: var(--header-height);
+    margin-top: 10px;
+    right: 10px;
+    z-index: 0;
+}
+
+#soundboard-rss img {
+    width: 20px;
+    height: 20px;
+}

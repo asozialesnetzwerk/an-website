@@ -36,7 +36,9 @@
 </ul>
 
 {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
-    Wir sind übrigens auch über das Tor-Netzwerk erreichbar: <a href="{{settings.get('ONION_ADDRESS')}}" rel="noreferrer">{{settings.get('ONION_ADDRESS')}}</a>
+    Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
+    <a no-dynload href="{{settings.get('ONION_ADDRESS')}}"
+       rel="noreferrer">{{settings.get('ONION_ADDRESS')}}</a>
 {% end %}
 
 {% end %}

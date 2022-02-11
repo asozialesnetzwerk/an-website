@@ -2,25 +2,29 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    {% if query is not None %}
-<form>
-    <input type="text" value="{{query}}" name="q">
-    {% raw form_appendix %}
-    <input type="submit" value="Suche!">
-</form>
+    {% if query is None %}
+        {% if feed_url %}
+            <a href="{{feed_url}}" no-dynload id="soundboard-rss"
+                ><img src="/static/img/rss.svg" alt="RSS-Feed"></a>
+        {% end %}
+    {% else %}
+        <form>
+            <input type="text" value="{{query}}" name="q">
+            {% raw form_appendix %}
+            <input type="submit" value="Suche!">
+        </form>
 
         {% if len(sound_info_list) == 0 %}
-Nichts gefunden. :( <br>
-Bitte überprüfe die Rechtschreibung oder nutze eine kürzere Suche.
+            Nichts gefunden. :( <br>
+            Bitte überprüfe die Rechtschreibung oder nutze eine kürzere Suche.
         {% end %}
     {% end %}
 
     {% for sound_info in sound_info_list %}
-{% raw sound_info.to_html(fix_url, query) %}
+        {% raw sound_info.to_html(fix_url, query) %}
     {% end %}
 
 {% end %}
-
 
 {% block head %}
     <link rel="stylesheet" type="text/css" href="/static/style/soundboard.css">

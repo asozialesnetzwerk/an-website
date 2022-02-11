@@ -11,10 +11,11 @@ bodyDiv.innerHTML=data["body"];if(data["css"]){const style=document.createElemen
 if(data["stylesheets"]){for(const scriptURL of data["stylesheets"]){const link=document.createElement("link");link.rel="stylesheet";link.type="text/css"
 link.href=scriptURL;bodyDiv.appendChild(link);}}
 if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=document.createElement("script");if(script["src"])scriptElement.src=script["src"];if(script["script"])scriptElement.innerHTML=script["script"];if(script["onload"])scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
-const title=data["title"];document.title=title;const shortTitle=data["short_title"]||title;let titleStyleText=`#title:after{content:"${shortTitle}"}`;if(shortTitle!==title){titleStyleText+=(`@media(min-width:500px){#title:after{content:"${title}"}}`);}
+const title=data["title"];document.title=title;const shortTitle=data["short_title"]||title;let titleStyleText=`#title:before{content:"${shortTitle}"}`;if(shortTitle!==title){titleStyleText+=(`@media(min-width:500px){#title:after{content:"${title}"}}`);}
 document.getElementById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();window.urlData=data;return true}
 function dynLoadReplaceAnchors(){for(const anchor of document.getElementsByTagName("A")){dynLoadReplaceHrefOnAnchor(anchor);}}
-function dynLoadReplaceHrefOnAnchor(anchor){const href=anchor.href.startsWith("/")?(window.location.origin+anchor.href):anchor.href;if(href.startsWith("javascript:")||!href.startsWith(window.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(window.location.origin+"/redirect/"))||href.startsWith(window.location.origin+"/chat/"))return;if(href.includes("#")&&(href.startsWith("#")||((!window.location.hash&&href.startsWith(window.location.href+"#"))||href.startsWith(window.location.origin
+function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload")){return;}
+const href=anchor.href.startsWith("/")?(window.location.origin+anchor.href):anchor.href;if(href.startsWith("javascript:")||!href.startsWith(window.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(window.location.origin+"/redirect/"))||href.startsWith(window.location.origin+"/chat/"))return;if(href.includes("#")&&(href.startsWith("#")||((!window.location.hash&&href.startsWith(window.location.href+"#"))||href.startsWith(window.location.origin
 +window.location.pathname
 +window.location.search
 +"#"))))return;anchor.href=`javascript:dynLoad("${href.replace('"', '%22')}");`;}

@@ -114,8 +114,8 @@ class HeaderInfo(Info):
         """
         _id = name_to_id(self.text)
         return (
-            f'<{self.tag} id="{_id}">'
-            f'<a href="#{_id}" rel="noreferrer" class="header-id-link"></a>'
+            f'<{self.tag} id="{_id}"><a no-dynload href="#{_id}" '
+            'rel="noreferrer" class="header-id-link"></a>'
             + (
                 self.text  # no need to mark query if type
                 # is  book as the book title is excluded from the search
@@ -171,7 +171,7 @@ class SoundInfo(Info):
         return (
             f'<li><a href="{href}" rel="noreferrer"'
             f'class="a_hover">{mark_query(self.person.value, query)}</a>'
-            f': »<a href="/kaenguru-soundboard/files/{file}.mp3" '
+            f': »<a no-dynload href="/kaenguru-soundboard/files/{file}.mp3" '
             f'class="quote-a" rel="noreferrer">'
             f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
             f'<source src="/kaenguru-soundboard/files/{file}.mp3" '
