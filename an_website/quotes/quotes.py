@@ -239,9 +239,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         authors = get_authors(lambda _a: _a.name.lower() == author_name.lower())
         if not authors:
             return None
-        return self.fix_url(
-            f"/zitate/info/a/{authors[0].id}/"
-        )
+        return self.fix_url(f"/zitate/info/a/{authors[0].id}/")
 
     def id_to_url(
         self, quote_id: int, author_id: int, rating_param: None | str = None
