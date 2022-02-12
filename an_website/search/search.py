@@ -17,6 +17,8 @@ from __future__ import annotations
 import asyncio
 import logging
 
+import elasticapm  # type: ignore
+
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 
@@ -63,7 +65,7 @@ class Search(HTMLRequestHandler):
                             "result_fields": {
                                 "title": {
                                     "snippet": {
-                                        "size": 42,
+                                        "size": 50,
                                         "fallback": True,
                                     }
                                 },
@@ -83,13 +85,18 @@ class Search(HTMLRequestHandler):
             ]
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception(exc)
-            return await self.old_fallback_search(query)
-
-        await self.render(
-            "pages/search.html",
-            query=query,
-            results=results,
-        )
+            apm: None | elasticapm.Client = self.settings.get(
+                "ELASTIC_APM_CLIENT"
+            )
+            if apm:
+                apm.capture_exception()
+            await self.old_fallback_search(query)
+        else:
+            await self.render(
+                "pages/search.html",
+                query=query,
+                results=results,
+            )
 
     async def old_fallback_search(self, query: str) -> None:
         """Search the website using the old search engine."""

@@ -45,34 +45,44 @@ E = eval(  # pylint: disable=eval-used
 )
 
 
-async def request(method: bytes, url: str | bytes, headers, body: bytes):  # type: ignore[no-untyped-def]  # pylint: disable=line-too-long  # noqa: D103
+async def request(  # noqa: D103
+    method: str, url: str, headers: dict[str, str], body: str | bytes
+) -> tuple[int, Any, bytes]:
     # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
+    if isinstance(body, str):
+        body = body.encode("utf-8")
     parsed_url = urllib.parse.urlparse(url)
-    if isinstance(parsed_url, urllib.parse.ParseResult):
-        parsed_url = parsed_url.encode()  # type: ignore[assignment]
-    tls = parsed_url.scheme != b"http"
-    e, d = E, b""
-    r, w = await asyncio.open_connection(
-        parsed_url.hostname.decode("ascii"),  # type: ignore[union-attr]
-        parsed_url.port or 443 if tls else 80,
-        ssl=tls,
+    https = parsed_url.scheme == "https"
+    e, data = E, b""
+    reader, writer = await asyncio.open_connection(
+        parsed_url.hostname,
+        parsed_url.port or 443 if https else 80,
+        ssl=https,
     )
-    w.write(
-        method  # type: ignore[operator]
-        + b" "
-        + (parsed_url.path or b"/")
-        + (b"?" + parsed_url.query if parsed_url.query else b"")  # type: ignore[operator]
-        + b" HTTP/1.0\r\n"
-        + b"\r\n".join([b"%b:%b" % w for w in headers] + [b"", body])
+    writer.write(
+        (
+            method
+            + " "
+            + (parsed_url.path or "/")
+            + ("?" + parsed_url.query if parsed_url.query else "")
+            + " HTTP/1.0\r\n"
+        ).encode("ascii")
+        + b"\r\n".join(
+            [
+                b"%b:%b" % (key.encode("latin-1"), value.encode("latin-1"))
+                for key, value in headers.items()
+            ]
+            + [b"", body]
+        )
     )
-    await w.drain()
-    while c := await r.read():
-        if b"\r\n\r\n" in (d := d + c) and e is E:
-            e, d = d.split(b"\r\n\r\n", 1)
+    await writer.drain()
+    while chunk := await reader.read():
+        if b"\r\n\r\n" in (data := data + chunk) and e is E:
+            e, data = data.split(b"\r\n\r\n", 1)
             status, o = re.match(rb"HTTP/.+? (\d+).*?%b(.*)" % b"\r\n", e, 24).groups()  # type: ignore[union-attr]
             o = [re.match(rb"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split(b"\r\n")]  # type: ignore[union-attr]
-    w.close()
-    return int(status), o, d
+    writer.close()
+    return int(status), o, data
 
 
 def detect_mode(code: str) -> str:
@@ -95,16 +105,16 @@ def send(
     """Send code to the backdoor API."""
     parsed_url = urllib.parse.urlparse(url)
     body = code.encode("utf-8")
-    headers = [
-        (b"Host", parsed_url.netloc.encode("ascii")),
-        (b"Content-Length", str(len(body)).encode("ascii")),
-        (b"Authorization", key.encode("latin-1")),
-    ]
+    headers = {
+        "Host": parsed_url.netloc,
+        "Content-Length": str(len(body)),
+        "Authorization": key,
+    }
     if session:
-        headers.append((b"X-Backdoor-Session", session.encode("latin-1")))
+        headers["X-Backdoor-Session"] = session
     response = asyncio.run(
         request(
-            b"POST",
+            "POST",
             f"{url}/api/backdoor/{mode}/",
             headers,
             body,

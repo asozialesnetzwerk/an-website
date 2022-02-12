@@ -418,30 +418,8 @@ def setup_apm(app: Application) -> None:
     app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
 
 
-async def setup_redis(app: Application) -> None:
-    """Setup Redis."""  # noqa: D401
-    config = app.settings["CONFIG"]
-    redis = Redis(
-        connection_pool=BlockingConnectionPool.from_url(
-            config.get("REDIS", "URL", fallback="redis://localhost"),
-            db=config.getint("REDIS", "DB", fallback=None),
-            username=config.get("REDIS", "USERNAME", fallback=None),
-            password=config.get("REDIS", "PASSWORD", fallback=None),
-            decode_responses=True,
-        )
-    )
-    try:
-        await redis.ping()
-    except RedisError as exc:
-        logger.exception(exc)
-        logger.error("Redis is unavailable!")
-        app.settings["REDIS"] = None
-    else:
-        app.settings["REDIS"] = redis
-
-
 def setup_app_search(app: Application) -> None:
-    """Setup app search."""  # noqa: D401
+    """Setup App Search."""  # noqa: D401
     config = app.settings["CONFIG"]
     app.settings["APP_SEARCH"] = AppSearch(
         config.get("APP_SEARCH", "HOST", fallback=None),
@@ -523,6 +501,28 @@ async def setup_elasticsearch_configs(
         )
 
 
+async def setup_redis(app: Application) -> None:
+    """Setup Redis."""  # noqa: D401
+    config = app.settings["CONFIG"]
+    redis = Redis(
+        connection_pool=BlockingConnectionPool.from_url(
+            config.get("REDIS", "URL", fallback="redis://localhost"),
+            db=config.getint("REDIS", "DB", fallback=None),
+            username=config.get("REDIS", "USERNAME", fallback=None),
+            password=config.get("REDIS", "PASSWORD", fallback=None),
+            decode_responses=True,
+        )
+    )
+    try:
+        await redis.ping()
+    except RedisError as exc:
+        logger.exception(exc)
+        logger.error("Redis is unavailable!")
+        app.settings["REDIS"] = None
+    else:
+        app.settings["REDIS"] = redis
+
+
 def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
     """Cancel all tasks."""
     tasks = asyncio.all_tasks(loop)
@@ -600,14 +600,12 @@ def main() -> None:
     app.settings["PORT"] = port
 
     setup_apm(app)
+    setup_app_search(app)
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
-    setup_redis_task = loop.create_task(setup_redis(app))
-    # setup_app_search_task = loop.create_task(
-    setup_app_search(app)
-    # )  # noqa: F841
     setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
+    setup_redis_task = loop.create_task(setup_redis(app))
 
     from .quotes import update_cache_periodically
 
