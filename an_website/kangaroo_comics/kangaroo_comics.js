@@ -39,6 +39,10 @@ function startLoadingComics() {
         [
             getDateBy(2022, 2, 7),
             "administratives/kaenguru-comics/08-02-22/original"
+        ],
+        [
+            getDateBy(2022, 2, 12),
+            "administratives/kaenguru-comics/12/original"
         ]
     ];
 
