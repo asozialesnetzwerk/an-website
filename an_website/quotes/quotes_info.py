@@ -33,7 +33,8 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/info/a/([0-9]{1,10})/", AuthorsInfoPage),
             (r"/zitate/info/z/([0-9]{1,10})/", QuotesInfoPage),
         ),
-        name="Falsche Zitate",
+        name="Falsch zugeordnete Zitate",
+        short_name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
         path="/zitate/info/a/1/",
         hidden=True,
@@ -55,7 +56,10 @@ class QuotesInfoPage(HTMLRequestHandler):
             quote=quote,
             wrong_quotes=wqs,
             title="Zitat-Informationen",
-            description=f"Falsche Zitate mit „{quote.quote}“ als Zitat.",
+            short_title="Zitat-Info",
+            description=(
+                f"Falsch zugeordnete Zitate mit „{quote.quote}“ als Zitat."
+            ),
         )
 
 
@@ -190,5 +194,8 @@ class AuthorsInfoPage(HTMLRequestHandler):
             author=author,
             wrong_quotes=wqs,
             title="Autor-Informationen",
-            description=f"Falsche Zitate mit „{author.name}“ als Autor.",
+            short_title="Autor-Info",
+            description=(
+                f"Falsch zugeordnete Zitate mit „{author.name}“ als Autor.",
+            ),
         )

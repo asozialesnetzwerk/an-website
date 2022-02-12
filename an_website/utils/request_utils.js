@@ -21,7 +21,7 @@ function get(
     ondata = (data) => console.log(data),
     onerror = (data) => console.error(data)
 ) {
-    console.log("GET", url, params);
+    // console.log("GET", url, params);
     fetch(url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()), {
         method: "GET",
         headers: {"Accept": "application/json"}
@@ -33,8 +33,32 @@ window.PopStateHandlers = {
     "replaceURL": (state) => {
         // reload if the last location was not the one that got replaced
         window.lastLocation === state["origin"] || window.location.reload();
+    },
+    "URLParamChange": (state) => {
+        window.location.reload();
     }
 };
+
+function setURLParam(
+    param,
+    value,
+    state,
+    stateType = "URLParamChange",
+    push = true
+) {
+    console.log("setURLParam", param, value, state, onpopstate);
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(param, value);
+    const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+    console.log("newUrl", newUrl);
+    state["stateType"] = stateType;
+    if (push) {
+        history.pushState(state, newUrl, newUrl);
+    } else {
+        history.replaceState(state, newUrl, newUrl)
+    }
+    return newUrl;
+}
 
 window.onpopstate = (event) => {
     if (event.state
@@ -48,11 +72,10 @@ window.onpopstate = (event) => {
     }
 }
 
-function updatedAnchors(/* anchors as arguments */) {
-    if (window.dynLoadReplaceHrefOnAnchor) {
-        for (let anchor of arguments) {
-            dynLoadReplaceHrefOnAnchor(anchor);
-        }
+function fixHref(href) {
+    if (window.dynLoadGetFixedHref) {
+        return window.dynLoadGetFixedHref(href);
     }
+    return href;
 }
 // @license-end

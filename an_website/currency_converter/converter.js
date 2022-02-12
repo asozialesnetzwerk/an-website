@@ -1,7 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 (() => {
     const output = document.getElementById("output");
-    const submitButton = document.getElementById("submit");
 
     const fields = [
         document.getElementById("euro"),
@@ -63,21 +62,25 @@
         return BigInt(preComma + postComma);
     }
 
-    function setURLParam(param, value, state, push = false) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set(param, value);
-        const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-        state["stateType"] = "currencyConverter";
-        if (push) {
-            history.pushState(state, newUrl, newUrl);
-        } else {
-            history.replaceState(state, newUrl, newUrl)
+    window.PopStateHandlers["currencyConverter"] = function (state) {
+        if (state.input) {
+            fields.forEach((field, i) => {
+                field.value = getDisplayValue(state.input[i]);
+            });
         }
-        return newUrl;
-    }
+    };
 
-    function setEuroParam(euroVal) {
-        setURLParam("euro", euroVal, euroVal, false);
+    window.PopStateHandlers["currencyConverter"] = (event) => {
+        setAllFields(strToBigInt(event.state["euro"]));
+    };
+    function setEuroParam(euroVal, push) {
+        setURLParam(
+            "euro",
+            euroVal,
+            {"euro": euroVal},
+            "currencyConverter",
+            push
+        );
     }
 
     function updateOutput() {
@@ -90,7 +93,7 @@
     }
 
     function setAllFields(euroValue, ignored) {
-        setEuroParam(getDisplayValue(euroValue));
+        setEuroParam(getDisplayValue(euroValue), false);
         for (let i = 0; i < 4; i++) {
             const value = getDisplayValue(euroValue * factors[i]);
             fields[i].placeholder = value;
@@ -102,7 +105,7 @@
 
     function onSubmit() {
         for (const feld of fields) feld.value = getDisplayValue(feld.value);
-        setEuroParam(fields[0].value);
+        setEuroParam(fields[0].value, true);
         updateOutput();
     }
 

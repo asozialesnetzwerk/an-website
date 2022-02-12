@@ -15,10 +15,11 @@ const title=data["title"];document.title=title;const shortTitle=data["short_titl
 document.getElementById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();window.urlData=data;return true}
 function dynLoadReplaceAnchors(){for(const anchor of document.getElementsByTagName("A")){dynLoadReplaceHrefOnAnchor(anchor);}}
 function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload")){return;}
-const href=anchor.href.startsWith("/")?(window.location.origin+anchor.href):anchor.href;if(href.startsWith("javascript:")||!href.startsWith(window.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(window.location.origin+"/redirect/"))||href.startsWith(window.location.origin+"/chat/"))return;if(href.includes("#")&&(href.startsWith("#")||((!window.location.hash&&href.startsWith(window.location.href+"#"))||href.startsWith(window.location.origin
+anchor.href=dynLoadGetFixedHref(anchor.href);}
+function dynLoadGetFixedHref(url){const href=url.startsWith("/")?(window.location.origin+url):url;if(href.startsWith("javascript:")||!href.startsWith(window.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(window.location.origin+"/redirect/"))||href.startsWith(window.location.origin+"/chat/"))return href;if(href.includes("#")&&(href.startsWith("#")||((!window.location.hash&&href.startsWith(window.location.href+"#"))||href.startsWith(window.location.origin
 +window.location.pathname
 +window.location.search
-+"#"))))return;anchor.href=`javascript:dynLoad("${href.replace('"', '%22')}");`;}
++"#"))))return href;return`javascript:dynLoad("${href.replace('"', '%22')}");`;}
 function dynLoad(url){console.log("Loading url",url);history.replaceState({"data":window.urlData,"url":window.location.href,"scrollPos":[document.documentElement.scrollLeft||document.body.scrollLeft,document.documentElement.scrollTop||document.body.scrollTop],"stateType":"dynLoad"},document.title,window.location.href);dynLoadSwitchToURL(url);}
 function dynLoadSwitchToURL(url,allowSameUrl=false){if(!allowSameUrl&&url===window.location.href){console.error("URL is the same as current, ignoring");return;}
 bodyDiv.prepend("Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.");const[requestUrl,params]=getJSONURLWithParams(url);get(requestUrl,params,(data)=>dynLoadOnData(data,false),(error)=>{console.log(error);if(url===window.location.href){window.location.href=url;}else{window.location.reload();}});}

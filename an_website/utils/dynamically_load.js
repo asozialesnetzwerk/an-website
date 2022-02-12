@@ -95,9 +95,13 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
     if (anchor.hasAttribute("no-dynload")){
         return;
     }
-    const href = anchor.href.startsWith("/")
-            ? (window.location.origin + anchor.href)
-            : anchor.href;
+    anchor.href = dynLoadGetFixedHref(anchor.href);
+}
+
+function dynLoadGetFixedHref(url) {
+    const href = url.startsWith("/")
+            ? (window.location.origin + url)
+            : url;
     if (
         // already dealt with
         href.startsWith("javascript:")
@@ -111,7 +115,7 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
         )
         // link is to /chat/, which redirects to another page
         || href.startsWith(window.location.origin + "/chat/")
-    ) return;
+    ) return href;
 
     if (
         href.includes("#")  // if has hash
@@ -132,9 +136,9 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
                 )
             )
         )
-    ) return;
+    ) return href;
 
-    anchor.href = `javascript:dynLoad("${href.replace('"', '%22')}");`;
+    return `javascript:dynLoad("${href.replace('"', '%22')}");`;
 }
 
 function dynLoad(url) {

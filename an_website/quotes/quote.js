@@ -51,13 +51,12 @@ function startQuotes(currId, nextId) {
     nextButton.removeAttribute("href");
 
     function updateQuoteId(quoteId) {
-        shareButton.href = `/zitate/share/${quoteId}/${params}`;
-        downloadButton.href = `/zitate/${quoteId}/image.gif${params}`;
+        shareButton.href = fixHref(`/zitate/share/${quoteId}/${params}`);
+        downloadButton.href = fixHref(`/zitate/${quoteId}/image.gif${params}`);
         const [q_id, a_id] = quoteId.split("-", 2);
-        quote.href = `/zitate/info/z/${q_id}/${params}`;
-        author.href = `/zitate/info/a/${a_id}/${params}`;
+        quote.href = fixHref(`/zitate/info/z/${q_id}/${params}`);
+        author.href = fixHref(`/zitate/info/a/${a_id}/${params}`);
         thisQuoteId[0] = quoteId;
-        updatedAnchors(shareButton, quote, author);
     }
 
     function updateRating(rating) {
@@ -108,8 +107,9 @@ function startQuotes(currId, nextId) {
             quote.innerText = `»${data["quote"]}«`;
             author.innerText = `- ${data["author"]}`;
             realAuthor.innerText = data["real_author"];
-            realAuthor.href = `/zitate/info/a/${data["real_author_id"]}/${params}`;
-            updatedAnchors(realAuthor);
+            realAuthor.href = fixHref(
+                `/zitate/info/a/${data["real_author_id"]}/${params}`
+            );
             updateRating(data["rating"]);
             updateVote(Number.parseInt(data["vote"]));
             return true;

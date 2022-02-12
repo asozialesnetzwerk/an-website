@@ -18,9 +18,10 @@ import asyncio
 import logging
 
 import elasticapm  # type: ignore
+import orjson as json
 
-from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo, PageInfo
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
+from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +29,15 @@ logger = logging.getLogger(__name__)
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/suche/", Search),),
+        handlers=(
+            (r"/suche/", Search),
+            (r"/api/suche/", SearchAPIHandler),
+        ),
         name="Suche",
         description="Seite zum Durchsuchen der Webseite",
         aliases=("/search/",),
         keywords=("Suche",),
         path="/suche/",
-        hidden=True,
     )
 
 
@@ -43,93 +46,112 @@ class Search(HTMLRequestHandler):
 
     async def get(self) -> None:
         """Handle GET requests to the search page."""
-        query = str(self.get_query_argument("q", strip=True, default=""))
+        await self.render(
+            "pages/search.html",
+            query=self.get_query(),
+            results=await self.search(),
+        )
 
-        if not query:
-            return await self.old_fallback_search(query)
+    def get_query(self) -> str:
+        """Return the query."""
+        return str(self.get_query_argument("q", strip=True, default=""))
 
-        try:
-            results = [
-                {
-                    "url": self.fix_url(result["url_path"]["raw"]),
-                    "title": result["title"]["snippet"],
-                    "description": result["meta_description"]["snippet"],
-                    "score": result["_meta"]["score"],
-                }
-                for result in (
-                    await asyncio.to_thread(
-                        self.settings["APP_SEARCH"].search,
-                        self.settings["APP_SEARCH_ENGINE_NAME"],
-                        body={
-                            "query": query,
-                            "result_fields": {
-                                "title": {
-                                    "snippet": {
-                                        "size": 50,
-                                        "fallback": True,
-                                    }
-                                },
-                                "meta_description": {
-                                    "snippet": {
-                                        "size": 200,
-                                        "fallback": True,
-                                    }
-                                },
-                                "url_path": {
-                                    "raw": {},
-                                },
+    async def search(self) -> list[dict[str, float | str]]:
+        """Search the website."""
+        if query := self.get_query():
+            try:
+                return await self.app_search(query)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(exc)
+                apm: None | elasticapm.Client = self.settings.get(
+                    "ELASTIC_APM_CLIENT"
+                )
+                if apm:
+                    apm.capture_exception()
+        return await self.old_fallback_search(query)
+
+    async def app_search(self, query: str) -> list[dict[str, float | str]]:
+        """Search the website using app search."""
+        return [
+            {
+                "url": self.fix_url(result["url_path"]["raw"]),
+                "title": result["title"]["snippet"],
+                "description": result["meta_description"]["snippet"],
+                "score": result["_meta"]["score"],
+            }
+            for result in (
+                await asyncio.to_thread(
+                    self.settings["APP_SEARCH"].search,
+                    self.settings["APP_SEARCH_ENGINE_NAME"],
+                    body={
+                        "query": query,
+                        "result_fields": {
+                            "title": {
+                                "snippet": {
+                                    "size": 69,
+                                    "fallback": True,
+                                }
+                            },
+                            "meta_description": {
+                                "snippet": {
+                                    "size": 200,
+                                    "fallback": True,
+                                }
+                            },
+                            "url_path": {
+                                "raw": {},
                             },
                         },
-                    )
-                )["results"]
-            ]
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.exception(exc)
-            apm: None | elasticapm.Client = self.settings.get(
-                "ELASTIC_APM_CLIENT"
-            )
-            if apm:
-                apm.capture_exception()
-            await self.old_fallback_search(query)
-        else:
-            await self.render(
-                "pages/search.html",
-                query=query,
-                results=results,
-            )
+                    },
+                )
+            )["results"]
+        ]
 
-    async def old_fallback_search(self, query: str) -> None:
+    async def old_fallback_search(
+        self, query: str
+    ) -> list[dict[str, float | str]]:
         """Search the website using the old search engine."""
-        module_infos: list[
-            tuple[float, ModuleInfo, list[tuple[float, PageInfo]]]
-        ] = []
+        page_infos: list[tuple[float, list[tuple[str, float | str]]]] = []
 
         for module_info in self.get_module_infos():
             score = module_info.search(query)
             if score > 0:
-                sub_pages = [
-                    (score, sub_page)
-                    for sub_page in module_info.sub_pages
-                    if (score := sub_page.search(query)) > 0
-                ]
-                sub_pages.sort(reverse=True)
-                module_infos.append((score, module_info, sub_pages))
+                page_infos.append(
+                    (
+                        score,
+                        [
+                            ("url", self.fix_url(module_info.path)),
+                            ("title", module_info.name),
+                            ("description", module_info.description),
+                            ("score", score),
+                        ],
+                    )
+                )
+            for sub_page in module_info.sub_pages:
+                score = sub_page.search(query)
+                if score > 0:
+                    page_infos.append(
+                        (
+                            score,
+                            [
+                                ("url", self.fix_url(sub_page.path)),
+                                ("title", sub_page.name),
+                                ("description", sub_page.description),
+                                ("score", score),
+                            ],
+                        )
+                    )
 
-        module_infos.sort(reverse=True)
+        page_infos.sort(reverse=True)
 
-        results = [
-            {
-                "url": self.fix_url(info.path),
-                "title": info.name,
-                "description": info.description,
-                "score": score,
-                "sub_pages": sub_pages,
-            }
-            for score, info, sub_pages in module_infos
-        ]
+        return [dict(info) for _, info in page_infos]
 
-        await self.render(
-            "pages/search.html",
-            query=query,
-            results=results,
-        )
+
+class SearchAPIHandler(Search, APIRequestHandler):
+    """The Tornado request handler for the search API."""
+
+    IS_NOT_HTML = True
+
+    async def get(self) -> None:
+        """Handle GET requests to the search page."""
+        await self.finish(json.dumps(await self.search()))
