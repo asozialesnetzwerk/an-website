@@ -2,8 +2,8 @@
 {% whitespace oneline %}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Kaenguru-Soundboard</title>
-    <description>Ein Soundboard zu den Känguru Chroniken mit coolen Sprüchen/Sounds</description>
+    <title>{{title}}</title>
+    <description>{{description}}</description>
     <language>de-de</language>
     <link>{{url}}</link>
     <atom:link href="{{url}}" rel="self" type="application/rss+xml" />

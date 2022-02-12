@@ -167,14 +167,14 @@ class SoundInfo(Info):
     ) -> str:
         """Parse the info to a list element with a audio element."""
         file = self.get_file_name()
-        href = fix_url_func(f"/kaenguru-soundboard/{self.person.name}")
+        href = fix_url_func(f"/soundboard/{self.person.name}")
         return (
             f'<li><a href="{href}" rel="noreferrer"'
             f'class="a_hover">{mark_query(self.person.value, query)}</a>'
-            f': »<a no-dynload href="/kaenguru-soundboard/files/{file}.mp3" '
+            f': »<a no-dynload href="/soundboard/files/{file}.mp3" '
             f'class="quote-a" rel="noreferrer">'
             f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
-            f'<source src="/kaenguru-soundboard/files/{file}.mp3" '
+            f'<source src="/soundboard/files/{file}.mp3" '
             f'type="audio/mpeg"></source></audio></li>'
         )
 
@@ -187,7 +187,7 @@ class SoundInfo(Info):
         mod_time_since_epoch = os.path.getmtime(DIR + path)
         # Convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)
-        link = f"/kaenguru-soundboard{path}"
+        link = f"/soundboard{path}"
         text = self.get_text()
         if url is not None:
             link = url + link

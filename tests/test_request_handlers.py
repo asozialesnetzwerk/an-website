@@ -145,21 +145,21 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/js-lizenzen/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/personen/")
+    response = await fetch("/soundboard/personen/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/suche/")
+    response = await fetch("/soundboard/suche/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/feed/")
+    response = await fetch("/soundboard/feed/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/")
+    response = await fetch("/soundboard/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/muk/feed/")
+    response = await fetch("/soundboard/muk/feed/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/muk/")
+    response = await fetch("/soundboard/muk/")
     assert response.code == 200
-    response = await fetch("/kaenguru-soundboard/qwertzuiop/feed/")
+    response = await fetch("/soundboard/qwertzuiop/feed/")
     assert response.code == 404
-    response = await fetch("/kaenguru-soundboard/qwertzuiop/")
+    response = await fetch("/soundboard/qwertzuiop/")
     assert response.code == 404
     response = await fetch("/api/restart/")
     assert response.code == 401  # Unauthorized

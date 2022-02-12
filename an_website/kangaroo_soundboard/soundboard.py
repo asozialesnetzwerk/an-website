@@ -19,7 +19,7 @@ from functools import cache
 
 from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
 
-from ..utils.request_handler import BaseRequestHandler, HTMLRequestHandler
+from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from . import (
     ALL_SOUNDS,
@@ -37,61 +37,60 @@ from . import (
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        name="Känguru-Soundboard",
+        name="Soundboard",
         description="Ein Soundboard mit coolen Sprüchen und Sounds aus den "
         "Känguru-Chroniken",
-        path="/kaenguru-soundboard/",
+        path="/soundboard/",
         keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
         handlers=(
             (
-                r"/kaenguru-soundboard/files/(.*mp3)",
+                r"/soundboard/files/(.*mp3)",
                 StaticFileHandler,
                 {"path": f"{DIR}/files/"},
             ),
             (
-                r"/kaenguru-soundboard/feed/",
+                r"/soundboard/feed/",
                 SoundboardRSSHandler,
             ),
             (
-                r"/kaenguru-soundboard/feed\.(rss|xml)",
+                r"/soundboard/feed\.(rss|xml)",
                 RedirectHandler,
-                {"url": "/kaenguru-soundboard/feed/"},
+                {"url": "/soundboard/feed/"},
             ),
             (
-                r"/kaenguru-soundboard/([^./]+)/feed/",
+                r"/soundboard/([^./]+)/feed/",
                 SoundboardRSSHandler,
             ),
             (
-                r"/kaenguru-soundboard/([^/]+)(\.(rss|xml)|/feed\.(rss|xml))",
+                r"/soundboard/([^/]+)(\.(rss|xml)|/feed\.(rss|xml))",
                 RedirectHandler,
-                {"url": "/kaenguru-soundboard/{0}/feed/"},
+                {"url": "/soundboard/{0}/feed/"},
             ),
             (
-                r"/kaenguru-soundboard/",
+                r"/soundboard/",
                 SoundboardHTMLHandler,
             ),
             (
-                r"/kaenguru-soundboard/([^./]*)/",
+                r"/soundboard/([^./]*)/",
                 SoundboardHTMLHandler,
             ),
         ),
         sub_pages=(
             PageInfo(
                 name="Soundboard-Suche",
-                description="Durchsuche das Känguru-Soundboard",
-                path="/kaenguru-soundboard/suche/",
+                description="Durchsuche das Soundboard",
+                path="/soundboard/suche/",
                 keywords=("Suche",),
             ),
             PageInfo(
                 name="Soundboard-Personen",
-                description="Das Känguru-Soundboard mit Sortierung nach "
-                "Personen",
-                path="/kaenguru-soundboard/personen/",
+                description="Das Soundboard mit Sortierung nach Personen",
+                path="/soundboard/personen/",
                 keywords=("Personen",),
             ),
         ),
         aliases=(
-            "/soundboard/",
+            "/kaenguru-soundboard/",
             "/känguru-soundboard/",
             "/k%C3%A4nguru-soundboard/",
         ),
@@ -113,26 +112,6 @@ def get_rss_str(path: str, protocol_and_host: str) -> None | str:
     return "\n".join(
         sound_info.to_rss(protocol_and_host) for sound_info in _infos
     )
-
-
-class SoundboardRSSHandler(BaseRequestHandler):
-    """The Tornado handler that handles requests to the RSS feeds."""
-
-    async def get(self, path: str = "/") -> None:
-        """Handle the GET request and generate the feed content."""
-        rss_str = get_rss_str(
-            path, f"{self.request.protocol}://{self.request.host}"
-        )
-
-        if rss_str is not None:
-            self.set_header("Content-Type", "application/rss+xml")
-            return await self.render(
-                "rss/soundboard.xml",
-                rss_str=rss_str,
-                url=self.request.full_url(),
-            )
-
-        raise HTTPError(404, reason="Feed not found.")
 
 
 async def search_main_page_info(
@@ -174,6 +153,28 @@ async def search_main_page_info(
 class SoundboardHTMLHandler(HTMLRequestHandler):
     """The Tornado handler that handles requests to the HTML pages."""
 
+    def update_title_and_desc(self, path: str) -> None:
+        """Update the title and description of the page."""
+        if path not in PERSON_SHORTS:
+            return
+        name = Person[path].value
+        if name.startswith("Das ") or name.startswith("Der "):
+            von_name = f"dem{name[3:]}"
+            no_article_name = name[4:]
+        elif name.startswith("Die "):
+            von_name = f"der{name[3:]}"
+            no_article_name = name[4:]
+        else:
+            von_name = name
+            no_article_name = name
+
+        self.short_title = f"Soundboard ({path.upper()})"
+        self.title = f"{no_article_name.replace(' ', '-')}-Soundboard"
+        self.description = (
+            "Ein Soundboard mit coolen Sprüchen und Sounds von "
+            f"{von_name} aus den Känguru-Chroniken"
+        )
+
     async def get(self, path: str = "/") -> None:
         """Handle the GET request and generate the page content."""
         if path is not None:
@@ -183,21 +184,23 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
         if parsed_info is None:
             raise HTTPError(404, reason="Page not found")
 
+        self.update_title_and_desc(path)
+
         await self.render(
             "pages/soundboard.html",
             sound_info_list=parsed_info[0],
             query=parsed_info[1],
             feed_url=self.fix_url(
-                "/".join(("/kaenguru-soundboard", path.strip("/"), "feed/"))
+                f"/soundboard/{path.strip('/')}/feed/"
                 if path and path != "/"
-                else "/kaenguru-soundboard/feed/",
+                else "/soundboard/feed/",
             ),
         )
 
     async def parse_path(
         self, path: None | str
     ) -> None | tuple[Iterable[Info], None | str]:
-        """Get a info list based on the path and return it with the query."""
+        """Get an info list based on the path and return it with the query."""
         if path in {None, "", "index", "/"}:
             return MAIN_PAGE_INFO, None
 
@@ -226,3 +229,25 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             )
 
         return None
+
+
+class SoundboardRSSHandler(SoundboardHTMLHandler):
+    """The Tornado handler that handles requests to the RSS feeds."""
+
+    IS_NOT_HTML = True
+
+    async def get(self, path: str = "/") -> None:
+        """Handle the GET request and generate the feed content."""
+        rss_str = get_rss_str(
+            path, f"{self.request.protocol}://{self.request.host}"
+        )
+
+        if rss_str is not None:
+            self.update_title_and_desc(path)
+            self.set_header("Content-Type", "application/rss+xml")
+            return await self.render(
+                "rss/soundboard.xml",
+                rss_str=rss_str,
+            )
+
+        raise HTTPError(404, reason="Feed not found.")
