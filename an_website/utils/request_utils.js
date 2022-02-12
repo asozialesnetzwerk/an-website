@@ -46,11 +46,11 @@ function setURLParam(
     stateType = "URLParamChange",
     push = true
 ) {
-    console.log("setURLParam", param, value, state, onpopstate);
+    //console.log("setURLParam", param, value, state, onpopstate);
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set(param, value);
     const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-    console.log("newUrl", newUrl);
+    //console.log("newUrl", newUrl);
     state["stateType"] = stateType;
     if (push) {
         history.pushState(state, newUrl, newUrl);

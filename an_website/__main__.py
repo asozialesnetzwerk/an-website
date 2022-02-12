@@ -177,7 +177,16 @@ def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
     """
     handlers: list[Handler] = []
 
-    if sys.flags.dev_mode:  # add handlers for the not minified JS files
+    if sys.flags.dev_mode:
+        # add handlers for the not minified CSS files
+        handlers.append(
+            (
+                "/static/style/(.+.css)",
+                StaticFileHandler,
+                {"path": os.path.join(os.path.dirname(DIR), "style")},
+            )
+        )
+        # add handlers for the not minified JS files
         for folder, _, files in os.walk(
             DIR,
             topdown=True,
