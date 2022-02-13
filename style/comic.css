@@ -5,7 +5,7 @@
     src: url("/static/fonts/comic.woff2") format("woff2");
 }
 
-*:not(pre) {
+* {
     font-family: "comic", "Comic Sans MS", serif;
 }
 
@@ -16,6 +16,6 @@
     src: url("/static/fonts/ComicMono.woff2") format("woff2");
 }
 
-pre * {
+pre *, .pre * {
     font-family: "comic-mono", monospace, monospace;
 }
