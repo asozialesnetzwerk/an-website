@@ -57,16 +57,25 @@ def get_module_info() -> ModuleInfo:
 class HostInfo(HTMLRequestHandler):
     """The request handler for the host info page."""
 
+    SCREENFETCH_CACHE: dict[str, str] = {}
+
     async def get(self) -> None:
         """
         Handle the GET requests to the host info page.
 
         Use screenfetch to generate the page.
         """
-        screenfetch = (await run(f"{DIR}/screenfetch"))[1].decode("utf-8")
+        if "LOGO" not in self.SCREENFETCH_CACHE:
+            self.SCREENFETCH_CACHE["LOGO"] = (
+                await run(f"{DIR}/screenfetch", "-L")
+            )[1].decode("utf-8")
+
         await self.render(
             "pages/ansi2html.html",
-            ansi=screenfetch,
+            ansi=[
+                self.SCREENFETCH_CACHE["LOGO"],
+                (await run(f"{DIR}/screenfetch", "-n"))[1].decode("utf-8"),
+            ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
         )
