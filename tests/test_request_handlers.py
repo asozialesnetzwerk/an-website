@@ -52,8 +52,8 @@ async def test_json_apis(
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
-        "/api/endpoints/",
-        "/api/uptime/",
+        "/api/endpunkte/",
+        "/api/betriebszeit/",
         "/api/discord/",
         # "/api/discord/367648314184826880/",  # needs network access
         # "/api/discord/",  # needs network access
@@ -105,7 +105,7 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/static/favicon.ico")
     assert response.code == 200
-    response = await fetch("/uptime/")
+    response = await fetch("/betriebszeit/")
     assert response.code == 200
     response = await fetch("/api/discord/")
     assert response.code == 200
@@ -125,7 +125,7 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/api/wortspiel-helfer/")
     assert response.code == 200
-    response = await fetch("/services-list/")
+    response = await fetch("/services/")
     assert response.code == 200
     response = await fetch("/vertauschte-woerter/")
     assert response.code == 200
@@ -139,7 +139,7 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/host-info/uwu/")
     assert response.code in {200, 501}
-    response = await fetch("/settings/")
+    response = await fetch("/einstellungen/")
     assert response.code == 200
     response = await fetch("/wiki/")
     assert response.code == 200
@@ -167,9 +167,9 @@ async def test_request_handlers(
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/exec/")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/endpoints/")
+    response = await fetch("/endpunkte/")
     assert response.code == 200
-    response = await fetch("/api/endpoints/")
+    response = await fetch("/api/endpunkte/")
     assert response.code == 200
     response = await fetch("/api/ping/")
     assert response.code == 200
