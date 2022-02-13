@@ -35,6 +35,10 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/api/backdoor/(eval|exec)/", Backdoor),),
         name="Backdoor",
         description="🚪",
+        aliases=(
+            "/api/hintertür/",
+            "/api/hintertuer/",
+        ),
         hidden=True,
     )
 
