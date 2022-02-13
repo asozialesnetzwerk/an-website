@@ -71,7 +71,7 @@ class Search(HTMLRequestHandler):
         return await self.old_fallback_search(query)
 
     async def app_search(self, query: str) -> list[dict[str, float | str]]:
-        """Search the website using app search."""
+        """Search the website using Elastic App Search."""
         return [
             {
                 "url": self.fix_url(result["url_path"]["raw"]),
@@ -88,7 +88,7 @@ class Search(HTMLRequestHandler):
                         "result_fields": {
                             "title": {
                                 "snippet": {
-                                    "size": 69,
+                                    "size": 50,
                                     "fallback": True,
                                 }
                             },

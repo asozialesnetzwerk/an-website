@@ -428,7 +428,7 @@ def setup_apm(app: Application) -> None:
 
 
 def setup_app_search(app: Application) -> None:
-    """Setup App Search."""  # noqa: D401
+    """Setup Elastic App Search."""  # noqa: D401
     config = app.settings["CONFIG"]
     app.settings["APP_SEARCH"] = AppSearch(
         config.get("APP_SEARCH", "HOST", fallback=None),

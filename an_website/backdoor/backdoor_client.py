@@ -34,10 +34,10 @@ except ImportError:
 
 try:
     import uvloop
-
-    uvloop.install()
 except ImportError:
     pass
+else:
+    uvloop.install()
 
 
 E = eval(  # pylint: disable=eval-used
@@ -46,43 +46,50 @@ E = eval(  # pylint: disable=eval-used
 
 
 async def request(  # noqa: D103
-    method: str, url: str, headers: dict[str, str], body: str | bytes
-) -> tuple[int, Any, bytes]:
+    method: str,
+    url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
+    headers: dict[Any, Any],
+    body: str | bytes,
+) -> tuple[int, dict[str, str], bytes]:
     # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
     if isinstance(body, str):
         body = body.encode("utf-8")
-    parsed_url = urllib.parse.urlparse(url)
-    https = parsed_url.scheme == "https"
+    if isinstance(url, str):
+        url = urllib.parse.urlsplit(url)
+    if url.scheme not in {"", "http", "https"}:
+        raise ValueError(f"Unsupported scheme: {url.scheme}")
+    https = url.scheme == "https"
     e, data = E, b""
     reader, writer = await asyncio.open_connection(
-        parsed_url.hostname,
-        parsed_url.port or 443 if https else 80,
+        url.hostname,
+        url.port or 443 if https else 80,
         ssl=https,
     )
     writer.write(
         (
             method
             + " "
-            + (parsed_url.path or "/")
-            + ("?" + parsed_url.query if parsed_url.query else "")
+            + (url.path or "/")
+            + ("?" + url.query if url.query else "")
             + " HTTP/1.0\r\n"
         ).encode("ascii")
-        + b"\r\n".join(
-            [
-                b"%b:%b" % (key.encode("latin-1"), value.encode("latin-1"))
-                for key, value in headers.items()
-            ]
-            + [b"", body]
-        )
+        + "\r\n".join(
+            [f"{key}:{value}" for key, value in headers.items()] + [""]
+        ).encode("latin-1")
+        + b"\r\n"
+        + body
     )
+    if writer.can_write_eof():
+        writer.write_eof()
     await writer.drain()
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
-            status, o = re.match(rb"HTTP/.+? (\d+).*?%b(.*)" % b"\r\n", e, 24).groups()  # type: ignore[union-attr]
-            o = [re.match(rb"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split(b"\r\n")]  # type: ignore[union-attr]
+            status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]
+            headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]
     writer.close()
-    return int(status), o, data
+    await writer.wait_closed()
+    return int(status), headers, data
 
 
 def detect_mode(code: str) -> str:
@@ -96,18 +103,19 @@ def detect_mode(code: str) -> str:
 
 
 def send(
-    url: str,
+    url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
     key: str,
     code: str,
     mode: str = "exec",
     session: None | str = None,
 ) -> Any:
     """Send code to the backdoor API."""
-    parsed_url = urllib.parse.urlparse(url)
     body = code.encode("utf-8")
+    if isinstance(url, str):
+        url = urllib.parse.urlsplit(url)
     headers = {
-        "Host": parsed_url.netloc,
-        "Content-Length": str(len(body)),
+        "Host": url.netloc,
+        "Content-Length": len(body),
         "Authorization": key,
     }
     if session:
@@ -115,7 +123,7 @@ def send(
     response = asyncio.run(
         request(
             "POST",
-            f"{url}/api/backdoor/{mode}/",
+            url._replace(path=f"{url.path}/api/backdoor/{mode}/"),
             headers,
             body,
         )
