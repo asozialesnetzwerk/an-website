@@ -38,7 +38,7 @@
 
     function onSubmit() {
         post(
-            "/api/vertauschte-woerter/",
+            "/api/vertauschte-woerter",
             {
                 text: textInput.value || "",
                 config: configInput.value || "",
@@ -52,7 +52,7 @@
 
     function onReset() {
         post(
-            "/api/vertauschte-woerter/",
+            "/api/vertauschte-woerter",
             {
                 text: textInput.value,
                 minify_config: false,

@@ -2,5 +2,5 @@
 (()=>{const resultsList=document.getElementById("search-results");const searchForm=document.getElementById("search-form");const searchInput=document.getElementById("search-input");function displayResults(results){resultsList.innerHTML="";for(const result of results){const resultElement=document.createElement("li");resultElement.setAttribute("score",String(result["score"]));resultElement.innerHTML=(`<a rel="noreferrer" href='${fixHref(result.url)}'>`
 +`${result.title}</a> ${result.description}`);resultsList.appendChild(resultElement);}}
 window.PopStateHandlers["search"]=(event)=>{searchInput.value=event.state["query"];displayResults(event.state["results"]);}
-searchForm.action="javascript:void(0)";searchForm.onsubmit=()=>{get("/api/suche/","q="+searchInput.value,(data)=>{displayResults(data);setURLParam("q",searchInput.value,{"query":searchInput.value,"results":data},"search",true);})}})();
+searchForm.action="javascript:void(0)";searchForm.onsubmit=()=>{get("/api/suche","q="+searchInput.value,(data)=>{displayResults(data);setURLParam("q",searchInput.value,{"query":searchInput.value,"results":data},"search",true);})}})();
 // @license-end

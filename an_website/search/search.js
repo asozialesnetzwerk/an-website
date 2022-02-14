@@ -25,7 +25,7 @@
     searchForm.action = "javascript:void(0)";
     searchForm.onsubmit = () => {
         get(
-            "/api/suche/",
+            "/api/suche",
             "q=" + searchInput.value,
             (data) => {
                 displayResults(data);
