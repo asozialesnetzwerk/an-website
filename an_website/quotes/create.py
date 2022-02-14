@@ -40,13 +40,13 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/erstellen/", CreatePage),
-            (r"/zitate/create-wrong-quote/", CreatePage2),
+            (r"/zitate/erstellen/?", CreatePage),
+            (r"/zitate/create-wrong-quote/?", CreatePage2),
         ),
         name="Falsche-Zitate-Ersteller",
         description="Erstelle witzige falsch zugeordnete Zitate",
-        aliases=("/zitate/create/",),
-        path="/zitate/erstellen/",
+        aliases=("/zitate/create",),
+        path="/zitate/erstellen",
         hidden=True,
     )
 
@@ -241,13 +241,13 @@ class CreatePage(QuoteReadyCheckRequestHandler):
         )
 
         if 1 == len(quotes) == len(real_authors) == len(fake_authors):
-            _id = await create_wrong_quote(
+            wq_id = await create_wrong_quote(
                 real_authors[0],
                 fake_authors[0],
                 quotes[0],
             )
             return self.redirect(
-                self.fix_url(f"/zitate/{_id}/", as_json=self.get_as_json())
+                self.fix_url(f"/zitate/{wq_id}", as_json=self.get_as_json())
             )
 
         await self.render(
@@ -297,11 +297,11 @@ class CreatePage2(QuoteReadyCheckRequestHandler):
                 reason="Missing argument. real-author-2 is required.",
             )
 
-        _id = await create_wrong_quote(
+        wq_id = await create_wrong_quote(
             real_author,
             fake_author_str,
             quote_str,
         )
         return self.redirect(
-            self.fix_url(f"/zitate/{_id}", as_json=self.get_as_json())
+            self.fix_url(f"/zitate/{wq_id}", as_json=self.get_as_json())
         )

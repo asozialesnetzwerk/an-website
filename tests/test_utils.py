@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -59,10 +59,10 @@ def test_adding_stuff_to_url() -> None:
         "https://example.com/?x=z",
     ):
         assert url == utils.add_args_to_url(url)
-        assert "x=y" in urlparse(utils.add_args_to_url(url, x="y")).query
+        assert "x=y" in urlsplit(utils.add_args_to_url(url, x="y")).query
 
     assert (
-        urlparse(
+        urlsplit(
             utils.add_args_to_url("https://example.com/", a="b", c="d", e="f")
         ).query
         == "a=b&c=d&e=f"
@@ -75,7 +75,7 @@ def test_adding_stuff_to_url() -> None:
 
     assert (
         f"a={utils.bool_to_str(True)}"
-        == urlparse(utils.add_args_to_url("https://example.com/", a=True)).query
+        == urlsplit(utils.add_args_to_url("https://example.com/", a=True)).query
     )
 
 

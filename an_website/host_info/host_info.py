@@ -34,18 +34,18 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/host-info/", HostInfo),
-            (r"/host-info/uwu/", UwuHostInfo),
+            (r"/host-info/?", HostInfo),
+            (r"/host-info/uwu/?", UwuHostInfo),
         ),
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Webseite",
-        path="/host-info/",
+        path="/host-info",
         sub_pages=(
             PageInfo(
                 name="Howost-Infowmationyen",
                 description="Infowmationyen übew den Howost-Sewvew "
                 "diesew W-Webseite",
-                path="/host-info/uwu/",
+                path="/host-info/uwu",
                 keywords=("UWU",),
                 hidden=True,
             ),

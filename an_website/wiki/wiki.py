@@ -23,13 +23,13 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (
-                r"/wiki/",
+                r"/wiki/?",
                 WikiHandler,
             ),
         ),
         name="Asoziales Wiki",
         description="Ein Wiki mit Sachen des Asozialen Netzwerkes",
-        path="/wiki/",
+        path="/wiki",
         keywords=(
             "Wiki",
             "asozial",
@@ -44,7 +44,7 @@ class WikiHandler(HTMLRequestHandler):
         """Handle the GET requests to the wiki page."""
         self.render(
             "pages/ask_for_redirect.html",
-            redirect_url="https://asoziales-wiki.de/",
+            redirect_url="https://asoziales-wiki.de",
             from_url=None,
             discord=False,
         )

@@ -24,12 +24,12 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=(("/services/", ServicesHandler),),
+        handlers=(("/services/?", ServicesHandler),),
         name="Service-Liste",
         description="Liste von coolen Services des Asozialen Netzwerks",
-        path="/services/",
+        path="/services",
         keywords=("Service", "Liste"),
-        aliases=("/services-list/",),
+        aliases=("/services-list",),
     )
 
 

@@ -36,26 +36,26 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitat-des-tages/feed/", QuoteOfTheDayRss),
-            (r"/zitat-des-tages/", QuoteOfTheDayRedirect),
+            (r"/zitat-des-tages/feed/?", QuoteOfTheDayRss),
+            (r"/zitat-des-tages/?", QuoteOfTheDayRedirect),
             (
-                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
+                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/?",
                 QuoteOfTheDayRedirect,
             ),
-            (r"/api/zitat-des-tages/", QuoteOfTheDayAPI),
+            (r"/api/zitat-des-tages/?", QuoteOfTheDayAPI),
             (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/",
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/?",
                 QuoteOfTheDayAPI,
             ),
-            (r"/api/zitat-des-tages/full/", QuoteOfTheDayAPI),
+            (r"/api/zitat-des-tages/full/?", QuoteOfTheDayAPI),
             (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full/",
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full/?",
                 QuoteOfTheDayAPI,
             ),
         ),
         name="Das Zitat des Tages",
         description="Jeden Tag ein anderes Zitat.",
-        path="/zitat-des-tages/",
+        path="/zitat-des-tages",
         keywords=(
             "Zitate",
             "Witzig",
@@ -84,7 +84,7 @@ class QuoteOfTheDayData:
         """Get the URL of the quote."""
         return (
             f"{self.url_without_path}/zitate/"
-            f"{self.wrong_quote.get_id_as_str()}/"
+            f"{self.wrong_quote.get_id_as_str()}"
         )
 
     def get_quote_image_url(self) -> str:
@@ -120,9 +120,9 @@ class QuoteOfTheDayData:
 class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
     """The base request handler for the quote of the day."""
 
-    def get_redis_used_key(self, _wq_id: str) -> str:
+    def get_redis_used_key(self, wq_id: str) -> str:
         """Get the Redis used key."""
-        return f"{self.redis_prefix}:quote-of-the-day:used:{_wq_id}"
+        return f"{self.redis_prefix}:quote-of-the-day:used:{wq_id}"
 
     def get_redis_quote_date_key(self, date: dt.date) -> str:
         """Get the Redis key for getting quotes by date."""
@@ -130,18 +130,18 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
             f"{self.redis_prefix}:quote-of-the-day:by-date:{date.isoformat()}"
         )
 
-    async def has_been_used(self, _wq_id: str) -> None | bool:
+    async def has_been_used(self, wq_id: str) -> None | bool:
         """Check with Redis here."""
         if not self.redis:
             return None
-        return bool(await self.redis.get(self.get_redis_used_key(_wq_id)))
+        return bool(await self.redis.get(self.get_redis_used_key(wq_id)))
 
-    async def set_used(self, _wq_id: str) -> None:
+    async def set_used(self, wq_id: str) -> None:
         """Set Redis key with used state and TTL here."""
         if not self.redis:
             return
         await self.redis.setex(
-            self.get_redis_used_key(_wq_id),
+            self.get_redis_used_key(wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
             420 * 24 * 60 * 60,  # TTL
             1,  # True
@@ -153,14 +153,16 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
         """Get the quote of the date if one was saved."""
         if not self.redis:
             return None
-        _wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
-        if not _wq_id:
+        wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
+        if not wq_id:
             return None
-        _q, _a = tuple(int(_i) for _i in _wq_id.split("-"))
-        _wq = WRONG_QUOTES_CACHE.get((_q, _a))
-        if not _wq:
+        quote, author = tuple(int(_) for _ in wq_id.split("-"))
+        wrong_quote = WRONG_QUOTES_CACHE.get((quote, author))
+        if not wrong_quote:
             return None
-        return QuoteOfTheDayData(date, _wq, self.get_protocol_and_host())
+        return QuoteOfTheDayData(
+            date, wrong_quote, self.get_protocol_and_host()
+        )
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
@@ -171,7 +173,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
         if quote_data:  # if was saved already
             return quote_data
         quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
-            lambda _wq: _wq.rating > 1
+            lambda wq: wq.rating > 1
         )
         count = len(quotes)
         index = random.randrange(0, count)
@@ -180,12 +182,12 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
             if await self.has_been_used(quote.get_id_as_str()):
                 index = (index + 1) % count
             else:
-                _wq_id = quote.get_id_as_str()
-                await self.set_used(_wq_id)
+                wq_id = quote.get_id_as_str()
+                await self.set_used(wq_id)
                 await self.redis.setex(
                     self.get_redis_quote_date_key(today),
                     420 * 24 * 60 * 60,  # TTL
-                    _wq_id,
+                    wq_id,
                 )
                 return QuoteOfTheDayData(
                     today, quote, self.get_protocol_and_host()
@@ -238,15 +240,15 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
         if quote_data:
             if self.request.path.endswith("/full/"):
                 return await self.finish(quote_data.to_json())
-            _wq = quote_data.wrong_quote
+            wrong_quote = quote_data.wrong_quote
             return await self.finish(
                 {
                     "date": quote_data.date.isoformat(),
                     "url": quote_data.get_quote_url(),
-                    "id": _wq.get_id_as_str(),
-                    "quote": _wq.quote.quote,
-                    "author": _wq.author.name,
-                    "rating": _wq.rating,
+                    "id": wrong_quote.get_id_as_str(),
+                    "quote": wrong_quote.quote.quote,
+                    "author": wrong_quote.author.name,
+                    "rating": wrong_quote.rating,
                 }
             )
         raise HTTPError(404)
@@ -255,19 +257,21 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
 class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
     """Redirect to the quote of the day."""
 
-    async def get(self, _date_str: None | str = None) -> None:
+    async def get(self, date_str: None | str = None) -> None:
         """Handle GET requests."""
-        if _date_str:
-            _y, _m, _d = tuple(int(_i) for _i in _date_str.split("-"))
-            _wq = await self.get_quote_by_date(
-                dt.date(year=_y, month=_m, day=_d)
+        if date_str:
+            year, month, day = tuple(int(_) for _ in date_str.split("-"))
+            wrong_quote = await self.get_quote_by_date(
+                dt.date(year=year, month=month, day=day)
             )
         else:
-            _wq = await self.get_quote_of_today()
+            wrong_quote = await self.get_quote_of_today()
 
-        if _wq:
+        if wrong_quote:
             return self.redirect(
-                self.fix_url(_wq.get_quote_url(), as_json=self.get_as_json()),
+                self.fix_url(
+                    wrong_quote.get_quote_url(), as_json=self.get_as_json()
+                ),
                 False,
             )
         raise HTTPError(404)

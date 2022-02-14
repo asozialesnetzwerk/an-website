@@ -14,6 +14,7 @@
 """Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
+import os.path
 from collections.abc import Callable, Iterable
 from functools import cache
 
@@ -40,38 +41,38 @@ def get_module_info() -> ModuleInfo:
         name="Soundboard",
         description="Ein Soundboard mit coolen Sprüchen und Sounds aus den "
         "Känguru-Chroniken",
-        path="/soundboard/",
+        path="/soundboard",
         keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
         handlers=(
             (
                 r"/soundboard/files/(.*mp3)",
                 StaticFileHandler,
-                {"path": f"{DIR}/files/"},
+                {"path": os.path.join(DIR, "files")},
             ),
             (
-                r"/soundboard/feed/",
+                r"/soundboard/feed/?",
                 SoundboardRSSHandler,
             ),
             (
                 r"/soundboard/feed\.(rss|xml)",
                 RedirectHandler,
-                {"url": "/soundboard/feed/"},
+                {"url": "/soundboard/feed"},
             ),
             (
-                r"/soundboard/([^./]+)/feed/",
+                r"/soundboard/([^./]+)/feed/?",
                 SoundboardRSSHandler,
             ),
             (
                 r"/soundboard/([^/]+)(\.(rss|xml)|/feed\.(rss|xml))",
                 RedirectHandler,
-                {"url": "/soundboard/{0}/feed/"},
+                {"url": "/soundboard/{0}/feed"},
             ),
             (
-                r"/soundboard/",
+                r"/soundboard/?",
                 SoundboardHTMLHandler,
             ),
             (
-                r"/soundboard/([^./]*)/",
+                r"/soundboard/([^./]*)/?",
                 SoundboardHTMLHandler,
             ),
         ),
@@ -79,20 +80,20 @@ def get_module_info() -> ModuleInfo:
             PageInfo(
                 name="Soundboard-Suche",
                 description="Durchsuche das Soundboard",
-                path="/soundboard/suche/",
+                path="/soundboard/suche",
                 keywords=("Suche",),
             ),
             PageInfo(
                 name="Soundboard-Personen",
                 description="Das Soundboard mit Sortierung nach Personen",
-                path="/soundboard/personen/",
+                path="/soundboard/personen",
                 keywords=("Personen",),
             ),
         ),
         aliases=(
-            "/kaenguru-soundboard/",
-            "/känguru-soundboard/",
-            "/k%C3%A4nguru-soundboard/",
+            "/kaenguru-soundboard",
+            "/känguru-soundboard",
+            "/k%C3%A4nguru-soundboard",
         ),
     )
 
@@ -191,9 +192,9 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             sound_info_list=parsed_info[0],
             query=parsed_info[1],
             feed_url=self.fix_url(
-                f"/soundboard/{path.strip('/')}/feed/"
+                f"/soundboard/{path.strip('/')}/feed"
                 if path and path != "/"
-                else "/soundboard/feed/",
+                else "/soundboard/feed",
             ),
         )
 

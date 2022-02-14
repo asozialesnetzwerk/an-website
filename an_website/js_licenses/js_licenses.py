@@ -37,12 +37,12 @@ logger = logging.getLogger(__name__)
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/js-lizenzen/", JSLicenses),),
+        handlers=((r"/js-lizenzen/?", JSLicenses),),
         name="JavaScript-Lizenzen",
         description="Informationen über die Lizenzen der JavaScript-Dateien "
         "auf dieser Seite",
-        path="/js-lizenzen/",
-        aliases=("/js-licenses/",),
+        path="/js-lizenzen",
+        aliases=("/js-licenses",),
         keywords=("JavaScript", "License", "Lizenz"),
     )
 

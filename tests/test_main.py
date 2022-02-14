@@ -49,11 +49,11 @@ def test_parsing_module_infos() -> None:
     for module_info in module_infos:
         if module_info.path is not None:
             assert module_info.path.lower() == module_info.path
-            assert module_info.path.endswith("/")
+            assert not module_info.path.endswith("/") or module_info.path == "/"
 
             for alias in module_info.aliases:
                 assert alias.startswith("/")
-                assert alias.endswith("/")
+                assert not alias.endswith("/")
 
             # check if at least one handler matches the path
             handler_matches_path = False

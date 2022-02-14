@@ -21,17 +21,17 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/kaenguru-comics/", KangarooComics),),
+        handlers=((r"/kaenguru-comics/?", KangarooComics),),
         name="Känguru-Comics",
         description="Känguru-Comics von Zeit Online, Marc-Uwe Kling und "
         "Bernd Kissel",
-        path="/kaenguru-comics/",
+        path="/kaenguru-comics",
         keywords=("Känguru", "Comics", "Zeit", "Marc-Uwe Kling"),
         aliases=(
-            "/kangaroo-comics/",
-            "/comics/",
-            "/känguru-comics/",
-            "/k%C3%A4nguru-comics/",
+            "/kangaroo-comics",
+            "/comics",
+            "/känguru-comics",
+            "/k%C3%A4nguru-comics",
         ),
     )
 

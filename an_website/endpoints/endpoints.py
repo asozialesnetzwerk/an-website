@@ -25,13 +25,13 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            ("/endpunkte/", Endpoints),
-            ("/api/endpunkte/", EndpointsAPI),
+            ("/endpunkte/?", Endpoints),
+            ("/api/endpunkte/?", EndpointsAPI),
         ),
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite",
-        path="/endpunkte/",
-        aliases=("/endpoints/",),
+        path="/endpunkte",
+        aliases=("/endpoints",),
         keywords=("API", "Endpoints", "Endpunkte"),
     )
 

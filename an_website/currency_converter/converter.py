@@ -28,13 +28,13 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/waehrungs-rechner/", CurrencyConverter),
-            (r"/api/waehrungs-rechner/", CurrencyConverterAPI),
+            (r"/waehrungs-rechner/?", CurrencyConverter),
+            (r"/api/waehrungs-rechner/?", CurrencyConverterAPI),
         ),
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "
         "Währungen",
-        path="/waehrungs-rechner/",
+        path="/waehrungs-rechner",
         keywords=(
             "Währungsrechner",
             "converter",
@@ -44,10 +44,10 @@ def get_module_info() -> ModuleInfo:
             "Känguru",
         ),
         aliases=(
-            "/rechner/",
-            "/w%C3%A4hrungs-rechner/",
-            "/währungs-rechner/",
-            "/currency-converter/",
+            "/rechner",
+            "/w%C3%A4hrungs-rechner",
+            "/währungs-rechner",
+            "/currency-converter",
         ),
     )
 

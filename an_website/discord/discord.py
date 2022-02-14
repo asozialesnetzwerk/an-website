@@ -35,14 +35,14 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/discord/", ANDiscord),
-            (r"/api/discord/", ANDiscordAPI),
-            (f"/api/discord/({GUILD_ID})/", ANDiscordAPI),
-            (r"/api/discord/(\d+)/", DiscordAPI),
+            (r"/discord/?", ANDiscord),
+            (r"/api/discord/?", ANDiscordAPI),
+            (f"/api/discord/({GUILD_ID})/?", ANDiscordAPI),
+            (r"/api/discord/(\d+)/?", DiscordAPI),
         ),
         name="Discord-Einladung",
         description="Eine permanente Einladung zu unserer Discord-Gilde",
-        path="/discord/",
+        path="/discord",
         keywords=(
             "Discord",
             "Server",

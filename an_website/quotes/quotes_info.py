@@ -30,13 +30,13 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/info/a/([0-9]{1,10})/", AuthorsInfoPage),
-            (r"/zitate/info/z/([0-9]{1,10})/", QuotesInfoPage),
+            (r"/zitate/info/a/([0-9]{1,10})/?", AuthorsInfoPage),
+            (r"/zitate/info/z/([0-9]{1,10})/?", QuotesInfoPage),
         ),
         name="Falsch zugeordnete Zitate",
         short_name="Falsche Zitate",
         description="Eine Webseite mit falsch zugeordneten Zitaten",
-        path="/zitate/info/a/1/",
+        path="/zitate/info/a/1",
         hidden=True,
     )
 
@@ -46,11 +46,11 @@ class QuotesInfoPage(HTMLRequestHandler):
 
     RATELIMIT_NAME = "quotes-info"
 
-    async def get(self, _id_str: str) -> None:
+    async def get(self, id_str: str) -> None:
         """Handle GET requests to the quote info page."""
-        _id: int = int(_id_str)
-        quote = await get_quote_by_id(_id)
-        wqs = get_wrong_quotes(lambda _wq: _wq.quote.id == _id, sort=True)
+        quote_id: int = int(id_str)
+        quote = await get_quote_by_id(quote_id)
+        wqs = get_wrong_quotes(lambda wq: wq.quote.id == quote_id, sort=True)
         await self.render(
             "pages/quotes/quote_info.html",
             quote=quote,
@@ -147,10 +147,10 @@ class AuthorsInfoPage(HTMLRequestHandler):
         """Get the key to save the author info with Redis."""
         return f"{self.redis_prefix}:quote-author-info:{author_name}"
 
-    async def get(self, _id_str: str) -> None:
+    async def get(self, id_str: str) -> None:
         """Handle GET requests to the author info page."""
-        _id: int = int(_id_str)
-        author = await get_author_by_id(_id)
+        author_id: int = int(id_str)
+        author = await get_author_by_id(author_id)
         if author.info is None:
             result = None
             fixed_author_name = fix_author_for_wikipedia_search(author.name)
@@ -185,7 +185,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                     )
 
         wqs = get_wrong_quotes(
-            lambda _wq: _wq.author.id == _id,
+            lambda wq: wq.author.id == author_id,
             sort=True,
         )
 

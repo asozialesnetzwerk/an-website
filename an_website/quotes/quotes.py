@@ -51,31 +51,31 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/", QuoteMainPage),
+            (r"/zitate/?", QuoteMainPage),
             # {1,10} is too much, but better too much than not enough
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/", QuoteById),
-            (r"/zitate/([0-9]{1,10})/", QuoteById),
+            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/?", QuoteById),
+            (r"/zitate/([0-9]{1,10})/?", QuoteById),
             (
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
                 QuoteAsImg,
             ),
             (  # redirect to the new URL (changed because of robots.txt)
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/?",
                 RedirectHandler,
-                {"url": "/zitate/share/{0}-{1}/"},
+                {"url": "/zitate/share/{0}-{1}"},
             ),
-            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})/", ShareQuote),
-            (r"/api/zitate/(full/|)", QuoteRedirectAPI),
+            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})/?", ShareQuote),
+            (r"/api/zitate(/full|)/?", QuoteRedirectAPI),
             (
-                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})/(?:full/)?",
+                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)/?",
                 QuoteAPIHandler,
             ),
         ),
         name="Falsch zugeordnete Zitate",
         short_name="Falsche Zitate",
         description="Witzige, aber falsch zugeordnete Zitate",
-        path="/zitate/",
-        aliases=("/z/",),
+        path="/zitate",
+        aliases=("/z",),
         keywords=(
             "falsch",
             "zugeordnet",
@@ -151,7 +151,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
         next_q, next_a = self.get_next_id()
-        url = f"/zitate/{next_q}-{next_a}/"
+        url = f"/zitate/{next_q}-{next_a}"
         if (rating_filter := self.rating_filter()) != "smart":
             url = f"{url}?r={rating_filter}"
 
@@ -180,9 +180,9 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
             return get_random_id()
 
         if rating_filter == "w":
-            wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating > 0)
+            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating > 0)
         elif rating_filter == "n":
-            wrong_quotes = get_wrong_quotes(lambda _wq: _wq.rating < 0)
+            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
         elif rating_filter == "rated":
             wrong_quotes = get_wrong_quotes()
         else:
@@ -222,7 +222,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(
                 *get_wrong_quotes(
-                    lambda _wq: _wq.rating > 0,
+                    lambda wq: wq.rating > 0,
                     shuffle=True,
                 )[0].get_id(),
                 "w",
@@ -239,13 +239,13 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         authors = get_authors(lambda _a: _a.name.lower() == author_name.lower())
         if not authors:
             return None
-        return self.fix_url(f"/zitate/info/a/{authors[0].id}/")
+        return self.fix_url(f"/zitate/info/a/{authors[0].id}")
 
     def id_to_url(
         self, quote_id: int, author_id: int, rating_param: None | str = None
     ) -> str:
         """Get the URL of a quote."""
-        return self.fix_url(f"/zitate/{quote_id}-{author_id}/", r=rating_param)
+        return self.fix_url(f"/zitate/{quote_id}-{author_id}", r=rating_param)
 
 
 class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
@@ -271,12 +271,12 @@ class QuoteById(QuoteBaseHandler):
         """Handle the GET request to this page and render the quote."""
         int_quote_id = int(quote_id)
         if author_id is None:
-            _wqs = get_wrong_quotes(lambda _wq: _wq.id == int_quote_id)
-            if not _wqs:
+            wqs = get_wrong_quotes(lambda wq: wq.id == int_quote_id)
+            if not wqs:
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
                 self.fix_url(
-                    f"/zitate/{_wqs[0].quote.id}-{_wqs[0].author.id}/",
+                    f"/zitate/{wqs[0].quote.id}-{wqs[0].author.id}",
                     as_json=self.get_as_json(),
                 )
             )
@@ -441,7 +441,7 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
     ) -> None:
         """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
-        if self.request.path.endswith("/full/"):
+        if self.request.path.endswith("/full"):
             return await self.finish(
                 {
                     "wrong_quote": wrong_quote.to_json(),

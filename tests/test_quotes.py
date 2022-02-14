@@ -118,23 +118,23 @@ async def test_quote_request_handlers(
     http_server_client: tornado.simple_httpclient.SimpleAsyncHTTPClient,
 ) -> None:
     """Test the request handlers for the quotes page."""
-    response = await http_server_client.fetch("/zitate/")
+    response = await http_server_client.fetch("/zitate")
     assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1/")
+    response = await http_server_client.fetch("/zitate/1-1")
     assert response.code == 200
-    response = await http_server_client.fetch("/api/zitate/1-2/")
+    response = await http_server_client.fetch("/api/zitate/1-2")
     assert response.code == 200
     for _i in (1, 2):
         # twice the same because we cache the author info from wikipedia
-        response1 = await http_server_client.fetch(f"/zitate/info/a/{_i}/")
+        response1 = await http_server_client.fetch(f"/zitate/info/a/{_i}")
         assert response.code == 200
-        response2 = await http_server_client.fetch(f"/zitate/info/a/{_i}/")
+        response2 = await http_server_client.fetch(f"/zitate/info/a/{_i}")
         assert response.code == 200
         assert response1.body.decode() == response2.body.decode()
-    response = await http_server_client.fetch("/zitate/info/z/1/")
+    response = await http_server_client.fetch("/zitate/info/z/1")
     assert response.code == 200
 
-    response = await http_server_client.fetch("/zitate/share/1-1/")
+    response = await http_server_client.fetch("/zitate/share/1-1")
     assert response.code == 200
 
     response = await http_server_client.fetch("/zitate/1-1/image.gif")

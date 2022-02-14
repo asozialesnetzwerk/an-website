@@ -30,7 +30,7 @@ class ShareQuote(QuoteReadyCheckRequestHandler):
             text=quote(str(wrong_quote)),
             # title=quote("Witziges falsch zugeordnetes Zitat!"),
             quote_url=quote(
-                self.fix_url(f"/zitate/{quote_id}-{author_id}/"), safe=""
+                self.fix_url(f"/zitate/{quote_id}-{author_id}"), safe=""
             ),
             wrong_quote=str(wrong_quote),
         )

@@ -238,14 +238,14 @@ def get_wrong_quotes(
         wqs = filter(filter_fun, wqs)
     if filter_real_quotes:
         # pylint: disable=bad-builtin
-        wqs = filter(lambda _wq: _wq.quote.author.id != _wq.author.id, wqs)
+        wqs = filter(lambda wq: wq.quote.author.id != wq.author.id, wqs)
     if not (shuffle or sort):
         return tuple(wqs)
     wqs_list = list(wqs)  # shuffle or sort is True
     if shuffle:
         random.shuffle(wqs_list)
     if sort:
-        wqs_list.sort(key=lambda _wq: _wq.rating, reverse=True)
+        wqs_list.sort(key=lambda wq: wq.rating, reverse=True)
     return tuple(wqs_list)
 
 
@@ -624,5 +624,9 @@ class QuoteReadyCheckRequestHandler(HTMLRequestHandler):
             raise HTTPError(503, reason="Service available in a few seconds.")
 
     async def prepare(self) -> None:
-        await super().prepare()
-        await self.check_ready()
+        if not (super_prepare := super().prepare()):
+            return
+        await super_prepare
+
+        if self.request.method != "OPTIONS":
+            await self.check_ready()

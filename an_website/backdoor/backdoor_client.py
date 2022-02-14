@@ -123,7 +123,7 @@ def send(
     response = asyncio.run(
         request(
             "POST",
-            url._replace(path=f"{url.path}/api/backdoor/{mode}/"),
+            url._replace(path=f"{url.path}/api/backdoor/{mode}"),
             headers,
             body,
         )

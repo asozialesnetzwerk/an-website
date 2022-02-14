@@ -33,13 +33,13 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/betriebszeit/", UptimeHandler),
-            (r"/api/betriebszeit/", UptimeAPIHandler),
+            (r"/betriebszeit/?", UptimeHandler),
+            (r"/api/betriebszeit/?", UptimeAPIHandler),
         ),
         name="Betriebszeit",
         description="Die Dauer, die die Webseite am Stück in Betrieb ist",
-        path="/betriebszeit/",
-        aliases=("/uptime/",),
+        path="/betriebszeit",
+        aliases=("/uptime",),
         keywords=("Uptime", "Betriebszeit", "Zeit"),
     )
 

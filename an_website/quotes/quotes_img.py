@@ -300,12 +300,12 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
                 default=False,
             )
         ):
-            _id = (
+            wq_id = (
                 wrong_quote.id
                 if wrong_quote.id != -1
                 else f"{quote_id}-{author_id}"
             )
-            source: None | str = f"{self.request.host_name}/z/{_id}"
+            source: None | str = f"{self.request.host_name}/z/{wq_id}"
         else:
             source = None
         self.set_header("Content-Type", f"image/{file_type}")

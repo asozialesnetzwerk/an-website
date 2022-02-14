@@ -44,12 +44,12 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/version/", Version),
-            (r"/api/version/", VersionAPI),
+            (r"/version/?", Version),
+            (r"/api/version/?", VersionAPI),
         ),
         name="Versions-Informationen",
         description="Die aktuelle Version der Webseite",
-        path="/version/",
+        path="/version",
         keywords=(
             "Version",
             "aktuell",

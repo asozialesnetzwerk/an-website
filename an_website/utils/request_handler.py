@@ -29,7 +29,7 @@ from datetime import datetime
 from functools import cache
 from http.client import responses
 from typing import Any
-from urllib.parse import quote, unquote, urlparse, urlunparse
+from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
 
 # pylint: disable=no-name-in-module
 import elasticapm  # type: ignore
@@ -43,7 +43,12 @@ from Levenshtein import distance  # type: ignore
 from tornado import web
 from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
-from tornado.web import HTTPError, MissingArgumentError, RequestHandler
+from tornado.web import (
+    HTTPError,
+    MissingArgumentError,
+    RequestHandler,
+    removeslash,
+)
 
 from .. import REPO_URL
 from .utils import (
@@ -64,7 +69,7 @@ def get_module_info() -> ModuleInfo:
         name="Utilities",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
-            (r"/error/", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
+            (r"/error/?", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
                 r"/@elastic/apm-rum@(.+)/dist/bundles"
@@ -163,19 +168,24 @@ class BaseRequestHandler(RequestHandler):
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
 
+    @removeslash
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
-        if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
-            # TODO: self.set_header("WWW-Authenticate")
-            raise HTTPError(401)
+        if self.request.method != "OPTIONS":
 
-        if (_d := random.randint(0, 1337)) in {69, 420}:
-            self.set_cookie("c", "s", expires_days=_d / 24, path="/")
+            if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
+                # TODO: self.set_header("WWW-Authenticate")
+                raise HTTPError(401)
 
-        if not await self.ratelimit(True):
-            await self.ratelimit()
+            if not await self.ratelimit(True):
+                await self.ratelimit()
+
+        if self.request.method == "GET":
+
+            if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
+                self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
@@ -346,9 +356,9 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("MODULE_INFOS") or tuple()
 
     @cache
-    def fix_url(
+    def fix_url(  # pylint: disable=too-complex
         self,
-        url: str,
+        url: str | SplitResult,
         this_url: None | str = None,
         always_add_params: bool = False,
         force_absolute: bool = True,
@@ -360,15 +370,16 @@ class BaseRequestHandler(RequestHandler):
         If the URL is from another website, link to it with the redirect page.
         Otherwise just return the URL with no_3rd_party appended.
         """
-        parsed_url = urlparse(url)
+        if isinstance(url, str):
+            url = urlsplit(url)
 
-        if parsed_url.netloc and parsed_url.netloc != self.request.host:
+        if url.netloc and url.netloc != self.request.host:
             # URL is to other website:
-            parsed_url = urlparse(
-                f"/redirect/?to={quote(url)}"
+            url = urlsplit(
+                f"/redirect?to={quote(url.geturl())}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
-        host = parsed_url.netloc or self.request.host
+        host = url.netloc or self.request.host
         add_protocol_and_host = force_absolute or host != self.request.host
 
         if "no_3rd_party" not in query_args:
@@ -392,14 +403,13 @@ class BaseRequestHandler(RequestHandler):
                 query_args["dynload"] = None
 
         return add_args_to_url(
-            urlunparse(
+            urlunsplit(
                 (
                     self.get_protocol() if add_protocol_and_host else "",
                     host if add_protocol_and_host else "",
-                    parsed_url.path,
-                    parsed_url.params,
-                    parsed_url.query,
-                    parsed_url.fragment,
+                    url.path.rstrip("/"),
+                    url.query,
+                    url.fragment,
                 )
             ),
             **query_args,
@@ -746,36 +756,35 @@ class NotFound(HTMLRequestHandler):
     async def prepare(self) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
         """Throw a 404 HTTP error or redirect to another page."""
-        await super().prepare()
+        if not (super_prepare := super().prepare()):
+            return
+        await super_prepare
+
         new_path = self.request.path.lower()
-        if new_path in {
-            "/admin/controller/extension/extension/",
+        if new_path.rstrip("/") in {
+            "/admin/controller/extension/extension",
             "/assets/filemanager/dialog.php",
             "/assets/vendor/server/php/index.php",
-            "/.aws/credentials/",
+            "/.aws/credentials",
             "/aws.yml",
             "/.env",
             "/.env.bak",
             "/.ftpconfig",
             "/phpinfo.php",
-            "/-profiler/phpinfo/",
+            "/-profiler/phpinfo",
             "/public/assets/jquery-file-upload/server/php/index.php",
             "/root.php",
             "/settings/aws.yml",
-            "/uploads/",
+            "/uploads",
             "/vendor/phpunit/phpunit/src/util/php/eval-stdin.php",
-            "/wordpress/",
-            "/wp/",
+            "/wordpress",
+            "/wp",
             "/wp-admin",
-            "/wp-admin/",
-            "/wp-admin/css/",
+            "/wp-admin/css",
             "/wp-includes",
-            "/wp-includes/",
             "/wp-login",
-            "/wp-login/",
             "/wp-login.php",
             "/wp-upload",
-            "/wp-upload/",
             "/wp-upload.php",
         }:
             raise HTTPError(469)
@@ -787,17 +796,10 @@ class NotFound(HTMLRequestHandler):
             new_path = new_path[:-9]
         elif new_path.endswith(".html"):
             # len(".html") = 5
-            new_path = new_path[:-5] + "/"
+            new_path = new_path[:-5]
         elif new_path.endswith(".htm"):
             # len(".htm") = 4
-            new_path = new_path[:-4] + "/"
-        elif (
-            # path already ends with a slash
-            not new_path.endswith("/")
-            # path is a file (has a "." in the last part like "favicon.ico")
-            and "." not in new_path.split("/")[-1]
-        ):
-            new_path += "/"
+            new_path = new_path[:-4]
 
         if "//" in new_path:
             # replace multiple / with only one
@@ -824,7 +826,7 @@ class NotFound(HTMLRequestHandler):
                 dist = min(
                     distance(this_path, path.strip("/"))
                     for path in (*_mi.aliases, _mi.path)
-                    if path != "/z/"  # do not redirect to /z/
+                    if path != "/z"  # do not redirect to /z
                 )
                 if dist <= max_dist:
                     # only if the distance is less or equal then {max_dist}
@@ -876,6 +878,7 @@ class ErrorPage(HTMLRequestHandler):
 class ZeroDivision(BaseRequestHandler):
     """A fun request handler that throws an error."""
 
+    @removeslash
     async def prepare(self) -> None:
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
@@ -904,7 +907,7 @@ class ElasticRUM(BaseRequestHandler):
                 response.body.decode(),
                 time.monotonic() + 365 * 60 * 60 * 24,
             )
-            new_path = urlparse(response.effective_url).path
+            new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
                 BaseRequestHandler.ELASTIC_RUM_JS_URL = new_path
             logger.info("RUM script %s updated", new_path)

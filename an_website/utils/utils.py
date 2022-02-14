@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from functools import cache
 from typing import IO, Any, TypeVar, Union
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
 from blake3 import blake3  # type: ignore
@@ -189,15 +189,17 @@ T = TypeVar("T")  # pylint: disable=invalid-name
 
 
 @cache
-def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
+def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
     # pylint: disable=confusing-consecutive-elif
     """Add query arguments to a URL."""
-    if not kwargs:
-        return url
+    if isinstance(url, str):
+        url = urlsplit(url)
 
-    parsed_url = urlparse(url)
+    if not kwargs:
+        return url.geturl()
+
     url_args: dict[str, str] = dict(
-        parse_qsl(parsed_url.query, keep_blank_values=True)
+        parse_qsl(url.query, keep_blank_values=True)
     )
 
     for key, value in kwargs.items():  # type: str, Any
@@ -209,14 +211,13 @@ def add_args_to_url(url: str, **kwargs: dict[str, Any]) -> str:
         else:
             url_args[key] = str(value)
 
-    return urlunparse(
+    return urlunsplit(
         (
-            parsed_url[0],
-            parsed_url[1],
-            parsed_url[2],
-            parsed_url[3],
+            url.scheme,
+            url.netloc,
+            url.path,
             urlencode(url_args),
-            parsed_url[5],
+            url.fragment,
         )
     )
 

@@ -52,22 +52,22 @@ async def test_json_apis(
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
-        "/api/endpunkte/",
-        "/api/betriebszeit/",
-        "/api/discord/",
-        # "/api/discord/367648314184826880/",  # needs network access
-        # "/api/discord/",  # needs network access
-        # "/api/zitate/1-1/",  # gets tested with quotes
-        "/api/hangman-loeser/",
-        # "/api/ping/",  # (not JSON)
-        # "/api/restart/",  # (not 200)
-        "/api/vertauschte-woerter/",
-        "/api/wortspiel-helfer/",
-        "/api/waehrungs-rechner/",
+        "/api/endpunkte",
+        "/api/betriebszeit",
+        "/api/discord",
+        # "/api/discord/367648314184826880",  # needs network access
+        # "/api/discord",  # needs network access
+        # "/api/zitate/1-1",  # gets tested with quotes
+        "/api/hangman-loeser",
+        # "/api/ping",  # (not JSON)
+        # "/api/restart",  # (not 200)
+        "/api/vertauschte-woerter",
+        "/api/wortspiel-helfer",
+        "/api/waehrungs-rechner",
     )
     for api in json_apis:
-        response = await fetch(api)
-        assert response.code == 200  # 69
+        response = await fetch(api)  # 69
+        assert response.code == 200
         assert response.headers["Content-Type"] == (
             "application/json; charset=UTF-8"
         )
@@ -94,7 +94,7 @@ async def test_request_handlers(
         assert response.code == 200
         assert response.body.decode().replace(_b2, _b1) == body
 
-    response = await fetch("/redirect/?from=/&to=https://example.org")
+    response = await fetch("/redirect?from=/&to=https://example.org")
     assert response.code == 200
     assert b"https://example.org" in response.body
     response = await fetch("/robots.txt")
@@ -105,78 +105,78 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/static/favicon.ico")
     assert response.code == 200
-    response = await fetch("/betriebszeit/")
+    response = await fetch("/betriebszeit")
     assert response.code == 200
-    response = await fetch("/api/discord/")
+    response = await fetch("/api/discord")
     assert response.code == 200
-    response = await fetch("/version/")
+    response = await fetch("/version")
     assert response.code == 200
-    response = await fetch("/api/version/")
+    response = await fetch("/api/version")
     assert response.code == 200
-    response = await fetch("/suche/")
+    response = await fetch("/suche")
     assert response.code == 200
-    response = await fetch("/kaenguru-comics/")
+    response = await fetch("/kaenguru-comics")
     assert response.code == 200
-    response = await fetch("/hangman-loeser/")
+    response = await fetch("/hangman-loeser")
     assert response.code == 200
-    response = await fetch("/api/hangman-loeser/")
+    response = await fetch("/api/hangman-loeser")
     assert response.code == 200
-    response = await fetch("/wortspiel-helfer/")
+    response = await fetch("/wortspiel-helfer")
     assert response.code == 200
-    response = await fetch("/api/wortspiel-helfer/")
+    response = await fetch("/api/wortspiel-helfer")
     assert response.code == 200
-    response = await fetch("/services/")
+    response = await fetch("/services")
     assert response.code == 200
-    response = await fetch("/vertauschte-woerter/")
+    response = await fetch("/vertauschte-woerter")
     assert response.code == 200
-    response = await fetch("/api/vertauschte-woerter/")
+    response = await fetch("/api/vertauschte-woerter")
     assert response.code == 200
-    response = await fetch("/waehrungs-rechner/")
+    response = await fetch("/waehrungs-rechner")
     assert response.code == 200
-    response = await fetch("/api/waehrungs-rechner/")
+    response = await fetch("/api/waehrungs-rechner")
     assert response.code == 200
-    response = await fetch("/host-info/")
+    response = await fetch("/host-info")
     assert response.code == 200
-    response = await fetch("/host-info/uwu/")
+    response = await fetch("/host-info/uwu")
     assert response.code in {200, 501}
-    response = await fetch("/einstellungen/")
+    response = await fetch("/einstellungen")
     assert response.code == 200
-    response = await fetch("/wiki/")
+    response = await fetch("/wiki")
     assert response.code == 200
-    response = await fetch("/js-lizenzen/")
+    response = await fetch("/js-lizenzen")
     assert response.code == 200
-    response = await fetch("/soundboard/personen/")
+    response = await fetch("/soundboard/personen")
     assert response.code == 200
-    response = await fetch("/soundboard/suche/")
+    response = await fetch("/soundboard/suche")
     assert response.code == 200
-    response = await fetch("/soundboard/feed/")
+    response = await fetch("/soundboard/feed")
     assert response.code == 200
-    response = await fetch("/soundboard/")
+    response = await fetch("/soundboard")
     assert response.code == 200
-    response = await fetch("/soundboard/muk/feed/")
+    response = await fetch("/soundboard/muk/feed")
     assert response.code == 200
-    response = await fetch("/soundboard/muk/")
+    response = await fetch("/soundboard/muk")
     assert response.code == 200
-    response = await fetch("/soundboard/qwertzuiop/feed/")
+    response = await fetch("/soundboard/qwertzuiop/feed")
     assert response.code == 404
-    response = await fetch("/soundboard/qwertzuiop/")
+    response = await fetch("/soundboard/qwertzuiop")
     assert response.code == 404
-    response = await fetch("/api/restart/")
+    response = await fetch("/api/restart")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/api/backdoor/eval/")
+    response = await fetch("/api/backdoor/eval")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/api/backdoor/exec/")
+    response = await fetch("/api/backdoor/exec")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/endpunkte/")
+    response = await fetch("/endpunkte")
     assert response.code == 200
-    response = await fetch("/api/endpunkte/")
+    response = await fetch("/api/endpunkte")
     assert response.code == 200
-    response = await fetch("/api/ping/")
+    response = await fetch("/api/ping")
     assert response.code == 200
     assert response.body.decode() == "🏓"
     for code in range(200, 599):
         if code not in (204, 304):
             response = await fetch(f"/{code}.html")
             assert response.code == code
-    response = await fetch("/qwertzuiop/")
+    response = await fetch("/qwertzuiop")
     assert response.code == 404
