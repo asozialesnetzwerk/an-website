@@ -2,10 +2,10 @@
 function startQuotes(currId, nextId) {
     const thisQuoteId = [currId];
     const nextQuoteId = [nextId];
-    const params = window.location.search;
-    const nextButton = document.getElementById("next");
-    const upvoteButton = document.getElementById("upvote");
-    const downvoteButton = document.getElementById("downvote");
+    const params = w.location.search;
+    const nextButton = elById("next");
+    const upvoteButton = elById("upvote");
+    const downvoteButton = elById("downvote");
 
     const keys = (() => {
         let k = new URLSearchParams(params).get("keys");
@@ -19,16 +19,16 @@ function startQuotes(currId, nextId) {
             return "WASD";
         }
     })();  // currently only letter keys are supported
-    document.getElementById("wasd").innerText = (
+    elById("wasd").innerText = (
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), `
         + `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`
     );
 
-    document.addEventListener("keydown", function (event) {
+    d.addEventListener("keydown", function (event) {
         if (event.code === `Key${keys[0]}`) {
             upvoteButton.click();
         } else if (event.code === `Key${keys[1]}`) {
-            window.history.back();
+            w.history.back();
         } else if (event.code === `Key${keys[2]}`) {
             downvoteButton.click();
         } else if (event.code === `Key${keys[3]}`) {
@@ -36,15 +36,15 @@ function startQuotes(currId, nextId) {
         }
     });
 
-    const shareButton = document.getElementById("share");
-    const downloadButton = document.getElementById("download");
+    const shareButton = elById("share");
+    const downloadButton = elById("download");
 
-    const author = document.getElementById("author");
-    const quote = document.getElementById("quote");
-    const realAuthor = document.getElementById("real-author-name");
+    const author = elById("author");
+    const quote = elById("quote");
+    const realAuthor = elById("real-author-name");
 
-    const ratingText = document.getElementById("rating-text");
-    const ratingImageContainer = document.getElementById(
+    const ratingText = elById("rating-text");
+    const ratingImageContainer = elById(
         "rating-img-container"
     );
 
@@ -66,7 +66,7 @@ function startQuotes(currId, nextId) {
             ratingImageContainer.innerHTML = "";
         } else {
             const ratingNum = Number.parseInt(rating);
-            const ratingImg = document.createElement("div")
+            const ratingImg = d.createElement("div")
             ratingImg.className = "rating-img" + (
                 ratingNum > 0 ? " witzig" : " nicht-witzig"
             );
@@ -97,7 +97,7 @@ function startQuotes(currId, nextId) {
 
     function handleData(data) {
         if (data["status"]) {
-            console.error(data)
+            error(data)
             if (data["status"] in [429, 420]) {
                 alert(data["reason"]);
             }
@@ -116,7 +116,7 @@ function startQuotes(currId, nextId) {
         }
     }
 
-    window.PopStateHandlers["quotes"] = (event) => (
+    w.PopStateHandlers["quotes"] = (event) => (
         event.state && handleData(event.state)
     )
 
@@ -126,7 +126,7 @@ function startQuotes(currId, nextId) {
         (data) => {
             if (handleData(data)) {
                 data["stateType"] = "quotes";
-                window.history.pushState(
+                w.history.pushState(
                     data,
                     "Falsche Zitate",
                     `/zitate/${data["id"]}${params}`

@@ -4,11 +4,11 @@
     /* replace the url, without loading the website again */
     (()=>{
         const url = "{% raw replace_url_with.replace('"', "%22") %}";
-        if (url !== window.location.href) {
-            window.history.replaceState(
+        if (url !== w.location.href) {
+            w.history.replaceState(
                 {
                     "stateType": "replaceURL",
-                    "origin": window.location.toString(),
+                    "origin": w.location.toString(),
                 }, "{{title}}", url
             );
         }

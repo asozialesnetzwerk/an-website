@@ -1,6 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 function removeAllPopups() {
-    for (let node of document.getElementsByClassName("popup-container")) {
+    for (let node of d.getElementsByClassName("popup-container")) {
         node.remove();
     }
 }
@@ -108,10 +108,10 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
-    const currentImgHeader = document.getElementById("current-comic-header");
-    const currentImg = document.getElementById("current-img");
+    const currentImgHeader = elById("current-comic-header");
+    const currentImg = elById("current-img");
 
-    //const currentImgContainer = document.getElementById("current-img-container");
+    //const currentImgContainer = elById("current-img-container");
     function setCurrentComic(date) {
         let link = generateComicLink(date);
         link = link.startsWith("/") ? link : "https://img.zeit.de/" + link
@@ -237,8 +237,8 @@ administratives/kaenguru-comics/kaenguru-045/original
     }
 
     const comicCountToLoadOnCLick = 7;
-    const loadButton = document.getElementById("load-button");
-    const list = document.getElementById("old-comics-list");
+    const loadButton = elById("load-button");
+    const list = elById("old-comics-list");
     let loaded = 0;
 
     function loadMoreComics() {
@@ -251,16 +251,16 @@ administratives/kaenguru-comics/kaenguru-045/original
             const date = getDateFromLink(link);
             link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
 
-            const listItem = document.createElement("li");
-            const header = document.createElement("a");
+            const listItem = d.createElement("li");
+            const header = d.createElement("a");
             header.rel = "noreferrer";
             header.classList.add("comic-header");
             header.innerText = getDateString(date) + ":";
             header.href = link;
             header.style.fontSize = "25px";
             listItem.appendChild(header);
-            listItem.appendChild(document.createElement("br"));
-            const image = document.createElement("img");
+            listItem.appendChild(d.createElement("br"));
+            const image = d.createElement("img");
             image.classList.add("normal-img")
             image.src = link;
             image.alt = getDateString(date);
@@ -284,13 +284,13 @@ administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.visibility = "invisible";
         }
     }
-    document.getElementById("load-button").onclick = loadMoreComics;
-    console.log(document.getElementById("load-button").onclick)
+    elById("load-button").onclick = loadMoreComics;
+    log(elById("load-button").onclick)
 
     function createImgPopup(image) {
         removeAllPopups();
 
-        const popupContainer = document.createElement("div");
+        const popupContainer = d.createElement("div");
         popupContainer.classList.add("popup-container");
         popupContainer.onmouseleave = () => {
             popupContainer.remove();
@@ -304,7 +304,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         clone.classList.add("popup-img");
 
 
-        const closeButton = document.createElement("img");
+        const closeButton = d.createElement("img");
         closeButton.classList.add("close-button");
         closeButton.src = "/static/img/close.svg";
 

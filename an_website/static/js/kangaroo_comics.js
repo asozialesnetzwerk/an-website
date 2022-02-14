@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
-function removeAllPopups(){for(let node of document.getElementsByClassName("popup-container")){node.remove();}}
+function removeAllPopups(){for(let node of d.getElementsByClassName("popup-container")){node.remove();}}
 function startLoadingComics(){const wrongLinks=[[getDateBy(2021,5,25),"administratives/kaenguru-comics/25/original/"],[getDateBy(2021,9,6),"administratives/kaenguru-comics/2021-09/6/original/"],[getDateBy(2021,10,4),"administratives/kaenguru-comics/2021-10/4/original"],[getDateBy(2021,10,29),"administratives/kaenguru-comics/29/original"],[getDateBy(2021,11,3),"administratives/kaenguru-comics/2021-11/03-11-21/original"],[getDateBy(2021,12,6),"administratives/kaenguru-comics/2021-12/6/original"],[getDateBy(2022,1,29),"administratives/kaenguru-comics/2022-01/29-3/original"],[getDateBy(2022,2,7),"administratives/kaenguru-comics/08-02-22/original"],[getDateBy(2022,2,12),"administratives/kaenguru-comics/12/original"],[getDateBy(2022,2,14),"administratives/kaenguru-comics/14/original"]];const comics=[];const links=`/static/img/2020-11-03.jpg
 administratives/kaenguru-comics/pilot-kaenguru/original
 administratives/kaenguru-comics/pow-kaenguru/original
@@ -47,7 +47,7 @@ administratives/kaenguru-comics/kaenguru-43/original
 administratives/kaenguru-comics/kaenguru-44/original
 administratives/kaenguru-comics/kaenguru-045/original
 `;function addLinksToComics(){const today=getToday();const date=copyDate(firstDateWithNewLink);while(date.getTime()<=today.getTime()){comics.push(generateComicLink(date));dateIncreaseByDays(date,1);}}
-const currentImgHeader=document.getElementById("current-comic-header");const currentImg=document.getElementById("current-img");function setCurrentComic(date){let link=generateComicLink(date);link=link.startsWith("/")?link:"https://img.zeit.de/"+link
+const currentImgHeader=elById("current-comic-header");const currentImg=elById("current-img");function setCurrentComic(date){let link=generateComicLink(date);link=link.startsWith("/")?link:"https://img.zeit.de/"+link
 currentImg.src=link;currentImgHeader.innerText="Neuster "+getDateString(date)+":";currentImgHeader.href=link;}
 function getDateString(date){return"Comic von "
 +getDayName(date)+", dem "
@@ -72,14 +72,14 @@ const millisOfOneDay=1000*60*60*24;function dateIncreaseByDays(date,days){date.s
 function copyDate(date){return getDateBy(date.getFullYear(),date.getMonth()+1,date.getDate());}
 function getDateBy(year,month,dayOfMonth){return new Date(year,month-1,dayOfMonth,6,0,0,0);}
 function getToday(){return copyDate(new Date());}
-const comicCountToLoadOnCLick=7;const loadButton=document.getElementById("load-button");const list=document.getElementById("old-comics-list");let loaded=0;function loadMoreComics(){for(let i=0;i<comicCountToLoadOnCLick;i++){loaded++;const c=comics.length-loaded;if(c<0)break;let link=comics[c];const date=getDateFromLink(link);link=link.startsWith("/")?link:"https://img.zeit.de/"+link;const listItem=document.createElement("li");const header=document.createElement("a");header.rel="noreferrer";header.classList.add("comic-header");header.innerText=getDateString(date)+":";header.href=link;header.style.fontSize="25px";listItem.appendChild(header);listItem.appendChild(document.createElement("br"));const image=document.createElement("img");image.classList.add("normal-img")
+const comicCountToLoadOnCLick=7;const loadButton=elById("load-button");const list=elById("old-comics-list");let loaded=0;function loadMoreComics(){for(let i=0;i<comicCountToLoadOnCLick;i++){loaded++;const c=comics.length-loaded;if(c<0)break;let link=comics[c];const date=getDateFromLink(link);link=link.startsWith("/")?link:"https://img.zeit.de/"+link;const listItem=d.createElement("li");const header=d.createElement("a");header.rel="noreferrer";header.classList.add("comic-header");header.innerText=getDateString(date)+":";header.href=link;header.style.fontSize="25px";listItem.appendChild(header);listItem.appendChild(d.createElement("br"));const image=d.createElement("img");image.classList.add("normal-img")
 image.src=link;image.alt=getDateString(date);image.onclick=()=>createImgPopup(image);image.onerror=()=>{if(isSunday(date)){list.removeChild(listItem);}else{listItem.append(" konnte nicht geladen werden.");}}
 listItem.appendChild(image);list.appendChild(listItem);}
 if(loaded>=comics.length){loadButton.style.opacity="0";loadButton.style.visibility="invisible";}}
-document.getElementById("load-button").onclick=loadMoreComics;console.log(document.getElementById("load-button").onclick)
-function createImgPopup(image){removeAllPopups();const popupContainer=document.createElement("div");popupContainer.classList.add("popup-container");popupContainer.onmouseleave=()=>{popupContainer.remove();}
+elById("load-button").onclick=loadMoreComics;log(elById("load-button").onclick)
+function createImgPopup(image){removeAllPopups();const popupContainer=d.createElement("div");popupContainer.classList.add("popup-container");popupContainer.onmouseleave=()=>{popupContainer.remove();}
 popupContainer.onclick=()=>{removeAllPopups();}
-const clone=image.cloneNode(true);clone.classList.remove("normal-img");clone.classList.add("popup-img");const closeButton=document.createElement("img");closeButton.classList.add("close-button");closeButton.src="/static/img/close.svg";popupContainer.appendChild(clone);popupContainer.appendChild(closeButton);image.parentNode.appendChild(popupContainer);}
+const clone=image.cloneNode(true);clone.classList.remove("normal-img");clone.classList.add("popup-img");const closeButton=d.createElement("img");closeButton.classList.add("close-button");closeButton.src="/static/img/close.svg";popupContainer.appendChild(clone);popupContainer.appendChild(closeButton);image.parentNode.appendChild(popupContainer);}
 comics.push.apply(comics,links.split("\n"));addLinksToComics();const today=dateIncreaseByDays(getToday(),1);setCurrentComic(today)
 currentImg.onerror=(event)=>{dateIncreaseByDays(today,-1);setCurrentComic(today);if(loaded<comicCountToLoadOnCLick)loaded++;};}
 // @license-end

@@ -1,11 +1,17 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
-window.lastLocation = window.location;
+const w = window;
+const d = document;
+const elById = (id) => d.getElementById(id);
+const log = console.log;
+const error = console.error;
+
+w.lastLocation = w.location;
 
 function post(
     url,
     params = {},
-    ondata = (data) => console.log(data),
-    onerror = (data) => console.error(data)
+    ondata = log,
+    onerror = error
 ) {
     fetch(url, {
         method: "POST",
@@ -18,10 +24,10 @@ function post(
 function get(
     url,
     params = {},
-    ondata = (data) => console.log(data),
-    onerror = (data) => console.error(data)
+    ondata = log,
+    onerror = error
 ) {
-    // console.log("GET", url, params);
+    // log("GET", url, params);
     fetch(url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()), {
         method: "GET",
         headers: {"Accept": "application/json"}
@@ -29,13 +35,13 @@ function get(
         .then(ondata).catch(onerror);
 }
 
-window.PopStateHandlers = {
+w.PopStateHandlers = {
     "replaceURL": (state) => {
         // reload if the last location was not the one that got replaced
-        window.lastLocation === state["origin"] || window.location.reload();
+        w.lastLocation === state["origin"] || w.location.reload();
     },
     "URLParamChange": (state) => {
-        window.location.reload();
+        w.location.reload();
     }
 };
 
@@ -46,11 +52,11 @@ function setURLParam(
     stateType = "URLParamChange",
     push = true
 ) {
-    //console.log("setURLParam", param, value, state, onpopstate);
-    const urlParams = new URLSearchParams(window.location.search);
+    //log("setURLParam", param, value, state, onpopstate);
+    const urlParams = new URLSearchParams(w.location.search);
     urlParams.set(param, value);
-    const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-    //console.log("newUrl", newUrl);
+    const newUrl = `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
+    //log("newUrl", newUrl);
     state["stateType"] = stateType;
     if (push) {
         history.pushState(state, newUrl, newUrl);
@@ -60,21 +66,21 @@ function setURLParam(
     return newUrl;
 }
 
-window.onpopstate = (event) => {
+w.onpopstate = (event) => {
     if (event.state
         && event.state["stateType"]
-        && window.PopStateHandlers[event.state["stateType"]]) {
-        window.PopStateHandlers[event.state["stateType"]](event);
-        window.lastLocation = window.location;
+        && w.PopStateHandlers[event.state["stateType"]]) {
+        w.PopStateHandlers[event.state["stateType"]](event);
+        w.lastLocation = w.location;
     } else {
-        console.error("Couldn't handle state. ", event.state);
-        window.location.reload();
+        error("Couldn't handle state. ", event.state);
+        w.location.reload();
     }
 }
 
 function fixHref(href) {
-    if (window.dynLoadGetFixedHref) {
-        return window.dynLoadGetFixedHref(href);
+    if (w.dynLoadGetFixedHref) {
+        return w.dynLoadGetFixedHref(href);
     }
     return href;
 }

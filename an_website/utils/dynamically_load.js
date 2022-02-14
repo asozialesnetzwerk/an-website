@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
-const bodyDiv = document.getElementById("body");
+const bodyDiv = elById("body");
 
 function getJSONURLWithParams(originalUrl) {
     if (originalUrl.includes("#")) {
@@ -18,22 +18,22 @@ function getJSONURLWithParams(originalUrl) {
 const lastLoaded = [];
 function dynLoadOnData(data, onpopstate) {
     if (!data){
-        console.error("No data received");
+        error("No data received");
         return;
     }
     if (data["redirect"]) {
-        window.location.href = data["redirect"];
+        w.location.href = data["redirect"];
         return;
     }
     const url = data["url"];
     if (!url) {
-        console.error("No URL in data ", data);
+        error("No URL in data ", data);
         return;
     }
-    console.log("Handling data", data);
+    log("Handling data", data);
     if (!onpopstate) {
         if (lastLoaded.length === 1 && lastLoaded[0] === url) {
-            console.log("Data url is the same as last loaded, ignoring");
+            log("Data url is the same as last loaded, ignoring");
             return;
         }
         history.pushState(
@@ -43,18 +43,18 @@ function dynLoadOnData(data, onpopstate) {
         );
     }
     if (!data["body"]) {
-        window.location.reload();
+        w.location.reload();
         return
     }
     bodyDiv.innerHTML = data["body"];
     if (data["css"]) {
-        const style = document.createElement("style");
+        const style = d.createElement("style");
         style.innerHTML = data["css"];
         bodyDiv.appendChild(style)
     }
     if (data["stylesheets"]) {
         for (const scriptURL of data["stylesheets"]) {
-            const link = document.createElement("link");
+            const link = d.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css"
             link.href = scriptURL;
@@ -63,7 +63,7 @@ function dynLoadOnData(data, onpopstate) {
     }
     if (data["scripts"]) {
         for (const script of data["scripts"]) {
-            const scriptElement = document.createElement("script");
+            const scriptElement = d.createElement("script");
             if (script["src"]) scriptElement.src = script["src"];
             if (script["script"]) scriptElement.innerHTML = script["script"];
             if (script["onload"]) scriptElement.onload = () => eval(script["onload"]);
@@ -71,7 +71,7 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
     const title = data["title"];
-    document.title = title;
+    d.title = title;
     const shortTitle = data["short_title"] || title;
     let titleStyleText = `#title:before{content:"${shortTitle}"}`;
     if (shortTitle !== title) {
@@ -79,14 +79,14 @@ function dynLoadOnData(data, onpopstate) {
             `@media(min-width:500px){#title:before{content:"${title}"}}`
         );
     }
-    document.getElementById("title-style").innerText = titleStyleText;
+    elById("title-style").innerText = titleStyleText;
     dynLoadReplaceAnchors();
-    window.urlData = data;
+    w.urlData = data;
     return true
 }
 
 function dynLoadReplaceAnchors() {
-    for (const anchor of document.getElementsByTagName("A")) {
+    for (const anchor of d.getElementsByTagName("A")) {
         dynLoadReplaceHrefOnAnchor(anchor);
     }
 }
@@ -100,21 +100,21 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
 
 function dynLoadGetFixedHref(url) {
     const href = url.startsWith("/")
-            ? (window.location.origin + url)
+            ? (w.location.origin + url)
             : url;
     if (
         // already dealt with
         href.startsWith("javascript:")
         // link is to different domain
-        || !href.startsWith(window.location.origin)
+        || !href.startsWith(w.location.origin)
         // link is to file, not html page
         || (
             href.split("/").pop().includes(".")
             // urls to redirect page are html pages
-            && !href.startsWith(window.location.origin + "/redirect/")
+            && !href.startsWith(w.location.origin + "/redirect/")
         )
         // link is to /chat/, which redirects to another page
-        || href.startsWith(window.location.origin + "/chat/")
+        || href.startsWith(w.location.origin + "/chat/")
     ) return href;
 
     if (
@@ -125,13 +125,13 @@ function dynLoadGetFixedHref(url) {
             ||
             (
                 (
-                    !window.location.hash // current url has no hash
-                    && href.startsWith(window.location.href + "#")
+                    !w.location.hash // current url has no hash
+                    && href.startsWith(w.location.href + "#")
                 )
                 || href.startsWith(  // is url to the same page
-                    window.location.origin
-                    + window.location.pathname
-                    + window.location.search
+                    w.location.origin
+                    + w.location.pathname
+                    + w.location.search
                     + "#"
                 )
             )
@@ -142,28 +142,28 @@ function dynLoadGetFixedHref(url) {
 }
 
 function dynLoad(url) {
-    console.log("Loading url", url);
+    log("Loading url", url);
     history.replaceState( // save current scrollPos
         {
-            "data": window.urlData,
-            "url": window.location.href,
+            "data": w.urlData,
+            "url": w.location.href,
             "scrollPos": [
-                document.documentElement.scrollLeft
-                || document.body.scrollLeft,
-                document.documentElement.scrollTop
-                || document.body.scrollTop
+                d.documentElement.scrollLeft
+                || d.body.scrollLeft,
+                d.documentElement.scrollTop
+                || d.body.scrollTop
             ],
             "stateType": "dynLoad"
         },
-        document.title,
-        window.location.href
+        d.title,
+        w.location.href
     );
     dynLoadSwitchToURL(url);
 }
 
 function dynLoadSwitchToURL(url, allowSameUrl = false) {
-    if (!allowSameUrl && url === window.location.href) {
-        console.error("URL is the same as current, ignoring");
+    if (!allowSameUrl && url === w.location.href) {
+        error("URL is the same as current, ignoring");
         return;
     }
     bodyDiv.prepend(
@@ -175,11 +175,11 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
         params,
         (data) => dynLoadOnData(data, false),
         (error) => {
-            console.log(error);
-            if (url === window.location.href) {
-                window.location.href = url;
+            log(error);
+            if (url === w.location.href) {
+                w.location.href = url;
             } else {
-                window.location.reload();
+                w.location.reload();
             }
         }
     );
@@ -187,24 +187,24 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
 
 function dynLoadOnPopState(event) {
     if (event.state) {
-        console.log("Popstate", event.state);
+        log("Popstate", event.state);
         if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
             // when the data did not get handled properly
             dynLoadSwitchToURL(
-                event.state["url"] || window.location.href, true
+                event.state["url"] || w.location.href, true
             );
         }
         if (event.state["scrollPos"]) {
-            window.scrollTo(
+            w.scrollTo(
                 event.state["scrollPos"][0],
                 event.state["scrollPos"][1]
             );
             return;
         }
     }
-    console.error("Couldn't handle state. ", event.state);
-    window.location.reload();
+    error("Couldn't handle state. ", event.state);
+    w.location.reload();
 }
 
-window.PopStateHandlers["dynLoad"] = dynLoadOnPopState;
+w.PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 // @license-end

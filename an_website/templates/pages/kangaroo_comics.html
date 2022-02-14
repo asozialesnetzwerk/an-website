@@ -20,11 +20,11 @@ Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sor
     Lade Inhalte von zeit.de
 </button>
 <script>
-    document.getElementById("comic-content-container").style.display = "none";
+    elById("comic-content-container").style.display = "none";
 
     function removeButtonAndLoad() {
-        document.getElementById("start-button-no_3rd_party").remove();
-        document.getElementById("comic-content-container").style.display = "inherit";
+        elById("start-button-no_3rd_party").remove();
+        elById("comic-content-container").style.display = "inherit";
         startLoadingComics();
     }
 </script>

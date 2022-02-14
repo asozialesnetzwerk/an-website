@@ -1,12 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 (() => {
-    const textInput = document.getElementById("text");
-    const configInput = document.getElementById("config-textarea");
-    const outputText = document.getElementById("output");
-    const errorText = document.getElementById("error_msg");
+    const textInput = elById("text");
+    const configInput = elById("config-textarea");
+    const outputText = elById("output");
+    const errorText = elById("error_msg");
 
     function onerror(error) {
-        console.error(error);
+        error(error);
         if (error.error) {
             alert(error.error);
             errorText.innerText = `${error.error} In line ${error.line_num}: "${error.line}"`;
@@ -18,16 +18,16 @@
 
     function ondata(data, onpopstate = false) {
         if (!data) {
-            console.log("data is falsy!")
+            log("data is falsy!")
             return;
         }
         if (data.error) return onerror(data);
         if (!onpopstate) {
             data["stateType"] = "swappedWords";
-            window.history.pushState(
+            w.history.pushState(
                 data,
                 "Vertauschte Wörter",
-                window.location.href
+                w.location.href
             );
         }
         textInput.value = data["text"] || "";
@@ -63,11 +63,11 @@
         )
     }
 
-    document.getElementById("form").action = "javascript:void(0)";
-    document.getElementById("reset").onclick = onReset;
-    document.getElementById("submit").onclick = onSubmit;
+    elById("form").action = "javascript:void(0)";
+    elById("reset").onclick = onReset;
+    elById("submit").onclick = onSubmit;
 
-    window.PopStateHandlers["swappedWords"] = (event) => (
+    w.PopStateHandlers["swappedWords"] = (event) => (
         event.state && ondata(event.state, true)
     );
 

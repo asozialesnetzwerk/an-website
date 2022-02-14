@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
-(()=>{const output=document.getElementById("output");const fields=[document.getElementById("euro"),document.getElementById("mark"),document.getElementById("ost"),document.getElementById("schwarz")];const factors=[1n,2n,4n,20n];const numberRegex=/^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;function getDisplayValue(wert){if(typeof wert==="string"){wert=strToBigInt(wert);}
+(()=>{const output=elById("output");const fields=[elById("euro"),elById("mark"),elById("ost"),elById("schwarz")];const factors=[1n,2n,4n,20n];const numberRegex=/^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;function getDisplayValue(wert){if(typeof wert==="string"){wert=strToBigInt(wert);}
 if(typeof wert!=="bigint"){alert(`Ungültiger Wert ${wert} mit type ${typeof wert}`);}
 let str=wert.toString();if(str.length===1){if(str==="0"){return"0";}
 str="0"+str;}
@@ -9,7 +9,7 @@ function strToBigInt(str){if(!str){return 0n;}
 let preComma,postComma;if(str.includes(",")){[preComma,postComma]=str.split(",");}else if(str.includes(".")){[preComma,postComma]=str.split(".");}else{preComma=str;postComma="00";}
 if(postComma.length!==2){postComma=(postComma+"00").substr(0,2);}
 return BigInt(preComma+postComma);}
-window.PopStateHandlers["currencyConverter"]=function(state){if(state.input){fields.forEach((field,i)=>{field.value=getDisplayValue(state.input[i]);});}};window.PopStateHandlers["currencyConverter"]=(event)=>{setAllFields(strToBigInt(event.state["euro"]));};function setEuroParam(euroVal,push){setURLParam("euro",euroVal,{"euro":euroVal},"currencyConverter",push);}
+w.PopStateHandlers["currencyConverter"]=function(state){if(state.input){fields.forEach((field,i)=>{field.value=getDisplayValue(state.input[i]);});}};w.PopStateHandlers["currencyConverter"]=(event)=>{setAllFields(strToBigInt(event.state["euro"]));};function setEuroParam(euroVal,push){setURLParam("euro",euroVal,{"euro":euroVal},"currencyConverter",push);}
 function updateOutput(){output.value=(fields[0].value+" Euro, das sind ja "
 +fields[1].value+" Mark; "
 +fields[2].value+" Ostmark und "
@@ -18,5 +18,5 @@ function setAllFields(euroValue,ignored){setEuroParam(getDisplayValue(euroValue)
 function onSubmit(){for(const feld of fields)feld.value=getDisplayValue(feld.value);setEuroParam(fields[0].value,true);updateOutput();}
 for(let i=0;i<4;i++){fields[i].oninput=function(){for(const field of fields)field.className="";if(!numberRegex.test(fields[i].value)){fields[i].className="invalid";return;}
 setAllFields(strToBigInt(fields[i].value)/factors[i],i);updateOutput();}}
-for(const field of fields)field.value=field.placeholder;const form=document.getElementById("form");form.action="javascript:void(0)";form.onsubmit=()=>onSubmit();})();
+for(const field of fields)field.value=field.placeholder;const form=elById("form");form.action="javascript:void(0)";form.onsubmit=()=>onSubmit();})();
 // @license-end

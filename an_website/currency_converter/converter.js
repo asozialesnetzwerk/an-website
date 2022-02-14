@@ -1,12 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 (() => {
-    const output = document.getElementById("output");
+    const output = elById("output");
 
     const fields = [
-        document.getElementById("euro"),
-        document.getElementById("mark"),
-        document.getElementById("ost"),
-        document.getElementById("schwarz")
+        elById("euro"),
+        elById("mark"),
+        elById("ost"),
+        elById("schwarz")
     ];
     const factors = [
         1n, //Euro
@@ -62,7 +62,7 @@
         return BigInt(preComma + postComma);
     }
 
-    window.PopStateHandlers["currencyConverter"] = function (state) {
+    w.PopStateHandlers["currencyConverter"] = function (state) {
         if (state.input) {
             fields.forEach((field, i) => {
                 field.value = getDisplayValue(state.input[i]);
@@ -70,7 +70,7 @@
         }
     };
 
-    window.PopStateHandlers["currencyConverter"] = (event) => {
+    w.PopStateHandlers["currencyConverter"] = (event) => {
         setAllFields(strToBigInt(event.state["euro"]));
     };
     function setEuroParam(euroVal, push) {
@@ -127,7 +127,7 @@
     // set the value of the fields to the placeholder set by tornado
     for (const field of fields) field.value = field.placeholder;
     // fix form submit
-    const form = document.getElementById("form");
+    const form = elById("form");
     form.action = "javascript:void(0)";
     form.onsubmit = () => onSubmit();
 })();
