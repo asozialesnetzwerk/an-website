@@ -760,8 +760,13 @@ class NotFound(HTMLRequestHandler):
             return
         await super_prepare
 
-        new_path = self.request.path.lower()
-        if new_path.rstrip("/") in {
+        new_path = self.request.path.lower().rstrip("/")
+
+        if "//" in new_path:
+            # replace multiple / with only one
+            new_path = re.sub(r"/+", "/", new_path)
+
+        if new_path in {
             "/admin/controller/extension/extension",
             "/assets/filemanager/dialog.php",
             "/assets/vendor/server/php/index.php",
@@ -789,21 +794,18 @@ class NotFound(HTMLRequestHandler):
         }:
             raise HTTPError(469)
         if new_path.endswith("/index.html"):
-            # len("index.html") = 10
+            # len("/index.html") = 11
+            new_path = new_path[:-11]
+        elif new_path.endswith("/index.htm") or new_path.endswith("/index.php"):
+            # len("/index.htm") = 10
             new_path = new_path[:-10]
-        elif new_path.endswith("/index.htm"):
-            # len("index.htm") = 9
-            new_path = new_path[:-9]
         elif new_path.endswith(".html"):
             # len(".html") = 5
             new_path = new_path[:-5]
-        elif new_path.endswith(".htm"):
+        elif new_path.endswith(".htm") or new_path.endswith(".php"):
             # len(".htm") = 4
             new_path = new_path[:-4]
 
-        if "//" in new_path:
-            # replace multiple / with only one
-            new_path = re.sub(r"/+", "/", new_path)
         if "_" in new_path:
             # replace underscore with minus
             new_path = new_path.replace("_", "-")
@@ -813,18 +815,18 @@ class NotFound(HTMLRequestHandler):
                 self.get_protocol_and_host() + new_path + self.get_query(),
                 True,
             )
-        # "%20" → " "
-        this_path = unquote(self.request.path).strip("/")
+        # "/%20/" → " "
+        this_path_stripped = unquote(new_path).strip("/")
 
         distances: list[tuple[int, str]] = []
 
-        max_dist = max(1, min(4, len(this_path) - 1))
+        max_dist = max(1, min(4, len(this_path_stripped) - 1))
 
         for _mi in self.get_module_infos():
             if _mi.path is not None:
                 # get the smallest distance possible with the aliases
                 dist = min(
-                    distance(this_path, path.strip("/"))
+                    distance(this_path_stripped, path.strip("/"))
                     for path in (*_mi.aliases, _mi.path)
                     if path != "/z"  # do not redirect to /z
                 )
@@ -833,7 +835,7 @@ class NotFound(HTMLRequestHandler):
                     distances.append((dist, _mi.path))
             if len(_mi.sub_pages) > 0:
                 distances.extend(
-                    (distance(this_path, _sp.path), _sp.path)
+                    (distance(this_path_stripped, _sp.path.strip("/")), _sp.path)
                     for _sp in _mi.sub_pages
                     if _sp.path is not None
                 )
