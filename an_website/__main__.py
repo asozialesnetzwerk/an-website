@@ -238,9 +238,9 @@ def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
                     (
                         # (?i) -> ignore case
                         # (.*) -> add group that matches anything
-                        "(?i)" + alias + "(.*)",
+                        "(?i)" + alias + "(/.*|)",
                         RedirectHandler,
-                        # {0} -> the part after the alias (.*)
+                        # {0} -> the part after the alias (/.*) or ""
                         {"url": module_info.path + "{0}"},
                     )
                 )
