@@ -16,7 +16,7 @@ git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
 
 # sort imports
 echo isort:
-python3 -m isort an_website tests
+python3 -m isort .
 
 # check formatting
 echo Black:

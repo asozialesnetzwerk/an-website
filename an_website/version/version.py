@@ -24,14 +24,17 @@ from ..utils.utils import ModuleInfo
 
 def run_cmd(cmd: str) -> str:
     """Run a command in a subprocess."""
-    return subprocess.run(
-        cmd,
-        cwd=DIR,
-        shell=True,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout
+    try:
+        return subprocess.run(
+            cmd,
+            cwd=DIR,
+            shell=True,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except subprocess.CalledProcessError:
+        return ""
 
 
 VERSION = run_cmd("git rev-parse HEAD").strip()
@@ -66,7 +69,7 @@ class VersionAPI(APIRequestHandler):
         return await self.finish(
             {
                 "version": VERSION,
-                "hash_of_file_hashes": HASH_OF_FILE_HASHES,
+                "hash": HASH_OF_FILE_HASHES,
             }
         )
 

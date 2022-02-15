@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import os
+import sys
 
 import orjson
 
@@ -30,3 +31,6 @@ TEMPLATES_DIR: str = os.path.join(DIR, "templates")
 ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
+
+if sys.flags.dev_mode:
+    NAME += "-dev"

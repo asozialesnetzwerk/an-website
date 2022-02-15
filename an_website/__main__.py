@@ -20,19 +20,19 @@ import gc
 import importlib
 import logging
 import os
-import pathlib
 import signal
 import ssl
 import sys
+from pathlib import Path
 from typing import Any
 
 import hy  # type: ignore
 import orjson
-from aioredis import BlockingConnectionPool, Redis, RedisError
+from aioredis import BlockingConnectionPool, Redis
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
-from elasticsearch import AsyncElasticsearch, ElasticsearchException
+from elasticsearch import AsyncElasticsearch
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
@@ -402,7 +402,7 @@ def setup_apm(app: Application) -> None:
         "USE_CERTIFI": config.getboolean(
             "ELASTIC_APM", "USE_CERTIFI", fallback=True
         ),
-        "SERVICE_NAME": NAME,
+        "SERVICE_NAME": NAME.removesuffix("-dev"),
         "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
         if not sys.flags.dev_mode
@@ -475,7 +475,7 @@ async def setup_elasticsearch(app: Application) -> None:
     try:
         await elasticsearch.info()
         await setup_elasticsearch_configs(elasticsearch)
-    except ElasticsearchException as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Elasticsearch is unavailable!")
         app.settings["ELASTICSEARCH"] = None
@@ -487,27 +487,44 @@ async def setup_elasticsearch_configs(
     elasticsearch: AsyncElasticsearch,
 ) -> None:
     """Setup Elasticsearch configs."""  # noqa: D401
-    for path in pathlib.Path(f"{DIR}/es/ingest_pipelines").glob("**/*.json"):
-        if not path.is_file():
-            logger.warning("%s is not a file!", path)
-        await elasticsearch.ingest.put_pipeline(
-            id=path.stem,
-            body=orjson.loads(path.open(encoding="utf-8").read()),
-        )
-    for path in pathlib.Path(f"{DIR}/es/component_templates").glob("**/*.json"):
-        if not path.is_file():
-            logger.warning("%s is not a file!", path)
-        await elasticsearch.cluster.put_component_template(
-            name=path.stem,
-            body=orjson.loads(path.open(encoding="utf-8").read()),
-        )
-    for path in pathlib.Path(f"{DIR}/es/index_templates").glob("**/*.json"):
-        if not path.is_file():
-            logger.warning("%s is not a file!", path)
-        await elasticsearch.indices.put_index_template(
-            name=path.stem,
-            body=orjson.loads(path.open(encoding="utf-8").read()),
-        )
+    for i in range(3):
+
+        if i == 0:  # pylint: disable=compare-to-zero
+            base_path = Path(f"{DIR}/elasticsearch/ingest_pipelines")
+        elif i == 1:
+            base_path = Path(f"{DIR}/elasticsearch/component_templates")
+        elif i == 2:
+            base_path = Path(f"{DIR}/elasticsearch/index_templates")
+
+        for path in base_path.glob("**/*.json"):
+
+            if not path.is_file():
+                logger.warning("%s is not a file!", path)
+                continue
+
+            try:
+                file = path.open(encoding="utf-8")
+                body = orjson.loads(file.read().replace("{NAME}", NAME))
+            finally:
+                file.close()
+
+            name = f"{NAME}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
+
+            if i == 0:  # pylint: disable=compare-to-zero
+                await elasticsearch.ingest.put_pipeline(
+                    id=name,
+                    body=body,
+                )
+            elif i == 1:
+                await elasticsearch.cluster.put_component_template(
+                    name=name,
+                    body=body,
+                )
+            elif i == 2:
+                await elasticsearch.indices.put_index_template(
+                    name=name,
+                    body=body,
+                )
 
 
 async def setup_redis(app: Application) -> None:
@@ -524,7 +541,7 @@ async def setup_redis(app: Application) -> None:
     )
     try:
         await redis.ping()
-    except RedisError as exc:
+    except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Redis is unavailable!")
         app.settings["REDIS"] = None
@@ -581,7 +598,7 @@ def main() -> None:
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini", encoding="utf-8")
     setup_logging(config)
-    logger.warning("Starting %s with version %s", NAME, version.VERSION)
+    logger.warning("Starting %s %s", NAME, version.VERSION)
 
     # read ignored modules from the config
     for module_name in config.get(

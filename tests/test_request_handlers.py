@@ -52,8 +52,9 @@ async def test_json_apis(
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
-        "/api/endpunkte",
-        "/api/betriebszeit",
+        "/api/endpoints",
+        "/api/version",
+        "/api/uptime",
         "/api/discord",
         # "/api/discord/367648314184826880",  # needs network access
         # "/api/discord",  # needs network access
@@ -107,11 +108,7 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/betriebszeit")
     assert response.code == 200
-    response = await fetch("/api/discord")
-    assert response.code == 200
     response = await fetch("/version")
-    assert response.code == 200
-    response = await fetch("/api/version")
     assert response.code == 200
     response = await fetch("/suche")
     assert response.code == 200
@@ -119,21 +116,13 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/hangman-loeser")
     assert response.code == 200
-    response = await fetch("/api/hangman-loeser")
-    assert response.code == 200
     response = await fetch("/wortspiel-helfer")
-    assert response.code == 200
-    response = await fetch("/api/wortspiel-helfer")
     assert response.code == 200
     response = await fetch("/services")
     assert response.code == 200
     response = await fetch("/vertauschte-woerter")
     assert response.code == 200
-    response = await fetch("/api/vertauschte-woerter")
-    assert response.code == 200
     response = await fetch("/waehrungs-rechner")
-    assert response.code == 200
-    response = await fetch("/api/waehrungs-rechner")
     assert response.code == 200
     response = await fetch("/host-info")
     assert response.code == 200
@@ -168,8 +157,6 @@ async def test_request_handlers(
     response = await fetch("/api/backdoor/exec")
     assert response.code == 401  # Unauthorized
     response = await fetch("/endpunkte")
-    assert response.code == 200
-    response = await fetch("/api/endpunkte")
     assert response.code == 200
     response = await fetch("/api/ping")
     assert response.code == 200

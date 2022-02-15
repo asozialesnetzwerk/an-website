@@ -1,1 +1,3 @@
+an_website/static/** linguist-generated
 an_website/screenfetch linguist-vendored
+an_website/elasticsearch/component_templates/ecs/** linguist-vendored

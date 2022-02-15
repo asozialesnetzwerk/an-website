@@ -36,7 +36,7 @@ jobs:
       - name: Install pytest and coverage
         run: grep -E "^(pytest|coverage)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
-        run: coverage run --source=an_website -m py.test tests/
+        run: coverage run --source=an_website -m py.test tests
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:

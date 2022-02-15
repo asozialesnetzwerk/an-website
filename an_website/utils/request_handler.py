@@ -822,25 +822,25 @@ class NotFound(HTMLRequestHandler):
 
         max_dist = max(1, min(4, len(this_path_stripped) - 1))
 
-        for _mi in self.get_module_infos():
-            if _mi.path is not None:
+        for module_info in self.get_module_infos():
+            if module_info.path is not None:
                 # get the smallest distance possible with the aliases
                 dist = min(
                     distance(this_path_stripped, path.strip("/"))
-                    for path in (*_mi.aliases, _mi.path)
+                    for path in (*module_info.aliases, module_info.path)
                     if path != "/z"  # do not redirect to /z
                 )
                 if dist <= max_dist:
-                    # only if the distance is less or equal then {max_dist}
-                    distances.append((dist, _mi.path))
-            if len(_mi.sub_pages) > 0:
+                    # only if the distance is less than or equal {max_dist}
+                    distances.append((dist, module_info.path))
+            if len(module_info.sub_pages) > 0:
                 distances.extend(
                     (
-                        distance(this_path_stripped, _sp.path.strip("/")),
-                        _sp.path,
+                        distance(this_path_stripped, sub_page.path.strip("/")),
+                        sub_page.path,
                     )
-                    for _sp in _mi.sub_pages
-                    if _sp.path is not None
+                    for sub_page in module_info.sub_pages
+                    if sub_page.path is not None
                 )
 
         if len(distances) > 0:
@@ -848,7 +848,7 @@ class NotFound(HTMLRequestHandler):
             distances.sort()
             dist, path = distances[0]
             if dist <= max_dist:
-                # only if the distance is less or equal then {max_dist}
+                # only if the distance is less than or equal {max_dist}
                 return self.redirect(
                     self.get_protocol_and_host() + path + self.get_query(),
                     False,

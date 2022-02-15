@@ -26,7 +26,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             ("/endpunkte/?", Endpoints),
-            ("/api/endpunkte/?", EndpointsAPI),
+            ("/api/endpoints/?", EndpointsAPI),
         ),
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite",

@@ -11,15 +11,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A very awesome JSON en-/decoder implementation."""
+"""A very fast JSON implementation."""
 
 from __future__ import annotations
 
 import inspect
 
 import orjson
-
-from .. import ORJSON_OPTIONS
 
 # pylint: disable=invalid-name, missing-function-docstring
 # pylint: disable=too-many-locals, unused-argument
@@ -84,11 +82,10 @@ def dumps(  # type: ignore  # noqa: D103
             **kw,
         )
         default = _.default
-    option = ORJSON_OPTIONS
     decode = True
+    option = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z  # fmt: skip
     caller = inspect.currentframe().f_back.f_globals["__name__"]  # type: ignore[union-attr]
     if caller == "elasticsearch.serializer":
-        option = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_PASSTHROUGH_DATETIME
         decode = False
     if sort_keys:
         option |= orjson.OPT_SORT_KEYS

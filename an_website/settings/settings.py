@@ -115,6 +115,7 @@ class SettingsPage(HTMLRequestHandler):
             )
             if replace_url_with != self.request.full_url():
                 self.redirect(replace_url_with)
+                return
 
         self.render(
             "pages/settings.html",
