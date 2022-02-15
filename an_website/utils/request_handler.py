@@ -835,7 +835,10 @@ class NotFound(HTMLRequestHandler):
                     distances.append((dist, _mi.path))
             if len(_mi.sub_pages) > 0:
                 distances.extend(
-                    (distance(this_path_stripped, _sp.path.strip("/")), _sp.path)
+                    (
+                        distance(this_path_stripped, _sp.path.strip("/")),
+                        _sp.path,
+                    )
                     for _sp in _mi.sub_pages
                     if _sp.path is not None
                 )
