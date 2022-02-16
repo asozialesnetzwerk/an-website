@@ -36,20 +36,20 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitat-des-tages/feed/?", QuoteOfTheDayRss),
-            (r"/zitat-des-tages/?", QuoteOfTheDayRedirect),
+            (r"/zitat-des-tages/feed", QuoteOfTheDayRss),
+            (r"/zitat-des-tages", QuoteOfTheDayRedirect),
             (
-                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/?",
+                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})",
                 QuoteOfTheDayRedirect,
             ),
-            (r"/api/zitat-des-tages/?", QuoteOfTheDayAPI),
+            (r"/api/zitat-des-tages", QuoteOfTheDayAPI),
             (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/?",
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})",
                 QuoteOfTheDayAPI,
             ),
-            (r"/api/zitat-des-tages/full/?", QuoteOfTheDayAPI),
+            (r"/api/zitat-des-tages/full", QuoteOfTheDayAPI),
             (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full/?",
+                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full",
                 QuoteOfTheDayAPI,
             ),
         ),

@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import orjson as json
+from tornado.web import RedirectHandler
 
 from .. import ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
@@ -25,8 +26,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            ("/endpunkte/?", Endpoints),
-            ("/api/endpoints/?", EndpointsAPI),
+            ("/endpunkte", Endpoints),
+            ("/api/endpunkte", EndpointsAPI),
+            ("/api/endpoints/?", RedirectHandler, {"url": "/api/endpunkte"}),
         ),
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite",
@@ -62,7 +64,12 @@ class Endpoints(HTMLRequestHandler):
                 }
                 for _h in _mi.handlers
                 if _h[0].startswith("/api/")
-                if self.is_authorized() or not _h[1].REQUIRES_AUTHORIZATION
+                if (
+                    issubclass(_h[1], APIRequestHandler)
+                    and (
+                        self.is_authorized() or not _h[1].REQUIRES_AUTHORIZATION
+                    )
+                )
             ]
             if len(api_paths) > 0:
                 endpoints.append(

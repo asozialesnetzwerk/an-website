@@ -40,8 +40,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/erstellen/?", CreatePage),
-            (r"/zitate/create-wrong-quote/?", CreatePage2),
+            (r"/zitate/erstellen", CreatePage),
+            (r"/zitate/create-wrong-quote", CreatePage2),
         ),
         name="Falsche-Zitate-Ersteller",
         description="Erstelle witzige falsch zugeordnete Zitate",

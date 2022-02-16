@@ -33,8 +33,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/hangman-loeser/?", HangmanSolver),
-            (r"/api/hangman-loeser/?", HangmanSolverAPI),
+            (r"/hangman-loeser", HangmanSolver),
+            (r"/api/hangman-loeser", HangmanSolverAPI),
         ),
         name="Hangman-Löser",
         description="Ein Website, die Lösungen für Galgenmännchen findet",

@@ -30,8 +30,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/suche/?", Search),
-            (r"/api/suche/?", SearchAPIHandler),
+            (r"/suche", Search),
+            (r"/api/suche", SearchAPIHandler),
         ),
         name="Suche",
         description="Seite zum Durchsuchen der Webseite",

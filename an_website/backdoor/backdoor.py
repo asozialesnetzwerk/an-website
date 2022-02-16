@@ -32,7 +32,7 @@ from ..utils.utils import ModuleInfo, geoip
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/api/backdoor/(eval|exec)/?", Backdoor),),
+        handlers=((r"/api/backdoor/(eval|exec)", Backdoor),),
         name="Backdoor",
         description="🚪",
         aliases=(

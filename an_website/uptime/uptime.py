@@ -18,6 +18,7 @@ import logging
 import time
 
 from elasticsearch import AsyncElasticsearch
+from tornado.web import RedirectHandler
 
 from .. import NAME
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
@@ -33,8 +34,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/betriebszeit/?", UptimeHandler),
-            (r"/api/uptime/?", UptimeAPIHandler),
+            (r"/betriebszeit", UptimeHandler),
+            (r"/api/betriebszeit", UptimeAPIHandler),
+            (r"/api/uptime/?", RedirectHandler, {"url": "/api/betriebszeit"}),
         ),
         name="Betriebszeit",
         description="Die Dauer, die die Webseite am Stück in Betrieb ist",

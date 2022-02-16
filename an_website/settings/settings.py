@@ -24,7 +24,7 @@ from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/einstellungen/?", SettingsPage),),
+        handlers=((r"/einstellungen", SettingsPage),),
         name="Einstellungen",
         description="Stelle wichtige Sachen ein",
         path="/einstellungen",

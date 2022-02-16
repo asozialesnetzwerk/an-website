@@ -30,8 +30,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/info/a/([0-9]{1,10})/?", AuthorsInfoPage),
-            (r"/zitate/info/z/([0-9]{1,10})/?", QuotesInfoPage),
+            (r"/zitate/info/a/([0-9]{1,10})", AuthorsInfoPage),
+            (r"/zitate/info/z/([0-9]{1,10})", QuotesInfoPage),
         ),
         name="Falsch zugeordnete Zitate",
         short_name="Falsche Zitate",

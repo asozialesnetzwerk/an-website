@@ -23,7 +23,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (
-                r"/wiki/?",
+                r"/wiki",
                 WikiHandler,
             ),
         ),

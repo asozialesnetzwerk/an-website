@@ -28,8 +28,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/waehrungs-rechner/?", CurrencyConverter),
-            (r"/api/waehrungs-rechner/?", CurrencyConverterAPI),
+            (r"/waehrungs-rechner", CurrencyConverter),
+            (r"/api/waehrungs-rechner", CurrencyConverterAPI),
         ),
         name="Währungsrechner",
         description="Ein Währungsrechner für teilweise veraltete deutsche "

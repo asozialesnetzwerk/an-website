@@ -43,12 +43,7 @@ from Levenshtein import distance  # type: ignore
 from tornado import web
 from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
-from tornado.web import (
-    HTTPError,
-    MissingArgumentError,
-    RequestHandler,
-    removeslash,
-)
+from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from .. import REPO_URL
 from .utils import (
@@ -69,7 +64,7 @@ def get_module_info() -> ModuleInfo:
         name="Utilities",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
-            (r"/error/?", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
+            (r"/error", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
                 r"/@elastic/apm-rum@(.+)/dist/bundles"
@@ -168,7 +163,6 @@ class BaseRequestHandler(RequestHandler):
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
 
-    @removeslash
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
     ) -> None:
@@ -756,9 +750,8 @@ class NotFound(HTMLRequestHandler):
     async def prepare(self) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
         """Throw a 404 HTTP error or redirect to another page."""
-        if not (super_prepare := super().prepare()):
-            return
-        await super_prepare
+        if self.request.method not in ("GET", "HEAD"):
+            raise HTTPError(404)
 
         new_path = self.request.path.lower().rstrip("/")
 
@@ -883,7 +876,6 @@ class ErrorPage(HTMLRequestHandler):
 class ZeroDivision(BaseRequestHandler):
     """A fun request handler that throws an error."""
 
-    @removeslash
     async def prepare(self) -> None:
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":

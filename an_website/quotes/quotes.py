@@ -51,23 +51,23 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/?", QuoteMainPage),
+            (r"/zitate", QuoteMainPage),
             # {1,10} is too much, but better too much than not enough
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})/?", QuoteById),
-            (r"/zitate/([0-9]{1,10})/?", QuoteById),
+            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})", QuoteById),
+            (r"/zitate/([0-9]{1,10})", QuoteById),
             (
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
                 QuoteAsImg,
             ),
             (  # redirect to the new URL (changed because of robots.txt)
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share/?",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share",
                 RedirectHandler,
                 {"url": "/zitate/share/{0}-{1}"},
             ),
-            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})/?", ShareQuote),
-            (r"/api/zitate(/full|)/?", QuoteRedirectAPI),
+            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})", ShareQuote),
+            (r"/api/zitate(/full|)", QuoteRedirectAPI),
             (
-                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)/?",
+                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)",
                 QuoteAPIHandler,
             ),
         ),

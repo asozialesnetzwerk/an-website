@@ -28,8 +28,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            ("/wortspiel-helfer/?", WordGameHelper),
-            ("/api/wortspiel-helfer/?", WordGameHelperAPI),
+            ("/wortspiel-helfer", WordGameHelper),
+            ("/api/wortspiel-helfer", WordGameHelperAPI),
         ),
         name="Wortspiel-Helfer",
         description="Findet Worte, die nur eine Änderung "

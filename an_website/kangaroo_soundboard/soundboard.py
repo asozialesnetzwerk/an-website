@@ -50,7 +50,7 @@ def get_module_info() -> ModuleInfo:
                 {"path": os.path.join(DIR, "files")},
             ),
             (
-                r"/soundboard/feed/?",
+                r"/soundboard/feed",
                 SoundboardRSSHandler,
             ),
             (
@@ -59,7 +59,7 @@ def get_module_info() -> ModuleInfo:
                 {"url": "/soundboard/feed"},
             ),
             (
-                r"/soundboard/([^./]+)/feed/?",
+                r"/soundboard/([^./]+)/feed",
                 SoundboardRSSHandler,
             ),
             (
@@ -68,11 +68,11 @@ def get_module_info() -> ModuleInfo:
                 {"url": "/soundboard/{0}/feed"},
             ),
             (
-                r"/soundboard/?",
+                r"/soundboard",
                 SoundboardHTMLHandler,
             ),
             (
-                r"/soundboard/([^./]*)/?",
+                r"/soundboard/([^./]*)",
                 SoundboardHTMLHandler,
             ),
         ),

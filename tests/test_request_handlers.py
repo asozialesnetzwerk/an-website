@@ -52,9 +52,9 @@ async def test_json_apis(
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
-        "/api/endpoints",
+        "/api/endpunkte",
         "/api/version",
-        "/api/uptime",
+        "/api/betriebszeit",
         "/api/discord",
         # "/api/discord/367648314184826880",  # needs network access
         # "/api/discord",  # needs network access
