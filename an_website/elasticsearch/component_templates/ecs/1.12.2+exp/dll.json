@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-dll.html",
+    "documentation": "https://www.elastic.co/guide/en/ecs/1.12/ecs-dll.html",
     "ecs_version": "1.12.2+exp"
   },
   "template": {

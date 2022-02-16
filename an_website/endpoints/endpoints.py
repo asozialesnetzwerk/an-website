@@ -56,26 +56,27 @@ class Endpoints(HTMLRequestHandler):
         endpoints: list[
             dict[str, str | list[dict[str, str | int | list[str]]]]
         ] = []
-        for _mi in self.settings["MODULE_INFOS"]:
+        for module_info in self.settings["MODULE_INFOS"]:
             api_paths: list[dict[str, str | int | list[str]]] = [
                 {
-                    "path": _h[0],
-                    "methods": ["OPTIONS", *_h[1].ALLOWED_METHODS],
+                    "path": handler[0],
+                    "methods": ["OPTIONS", *handler[1].ALLOWED_METHODS],
                 }
-                for _h in _mi.handlers
-                if _h[0].startswith("/api/")
+                for handler in module_info.handlers
+                if handler[0].startswith("/api/")
                 if (
-                    issubclass(_h[1], APIRequestHandler)
+                    issubclass(handler[1], APIRequestHandler)
                     and (
-                        self.is_authorized() or not _h[1].REQUIRES_AUTHORIZATION
+                        self.is_authorized()
+                        or not handler[1].REQUIRES_AUTHORIZATION
                     )
                 )
             ]
             if len(api_paths) > 0:
                 endpoints.append(
                     {
-                        "name": _mi.name,
-                        "description": _mi.description,
+                        "name": module_info.name,
+                        "description": module_info.description,
                         "endpoints": api_paths,
                     }
                 )

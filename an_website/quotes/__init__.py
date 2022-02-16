@@ -624,5 +624,6 @@ class QuoteReadyCheckRequestHandler(HTMLRequestHandler):
             raise HTTPError(503, reason="Service available in a few seconds.")
 
     async def prepare(self) -> None:
+        await super().prepare()
         if self.request.method != "OPTIONS":
             await self.check_ready()

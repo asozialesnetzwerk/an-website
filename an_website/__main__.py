@@ -23,6 +23,7 @@ import os
 import signal
 import ssl
 import sys
+from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any
 
@@ -32,7 +33,7 @@ from aioredis import BlockingConnectionPool, Redis
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import AsyncElasticsearch, NotFoundError
 from tornado.httpclient import AsyncHTTPClient
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
@@ -474,7 +475,9 @@ async def setup_elasticsearch(app: Application) -> None:
     )
     try:
         await elasticsearch.info()
-        await setup_elasticsearch_configs(elasticsearch)
+        await setup_elasticsearch_configs(
+            elasticsearch, config.get("ELASTICSEARCH", "PREFIX", fallback=NAME)
+        )
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Elasticsearch is unavailable!")
@@ -483,18 +486,30 @@ async def setup_elasticsearch(app: Application) -> None:
         app.settings["ELASTICSEARCH"] = elasticsearch
 
 
-async def setup_elasticsearch_configs(
+async def setup_elasticsearch_configs(  # noqa: C901
     elasticsearch: AsyncElasticsearch,
+    prefix: str,
 ) -> None:
+    # pylint: disable=too-complex, too-many-branches
     """Setup Elasticsearch configs."""  # noqa: D401
+    get: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
+    put: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
     for i in range(3):
 
         if i == 0:  # pylint: disable=compare-to-zero
-            base_path = Path(f"{DIR}/elasticsearch/ingest_pipelines")
+            what = "ingest_pipelines"
+            get = elasticsearch.ingest.get_pipeline
+            put = elasticsearch.ingest.put_pipeline
         elif i == 1:
-            base_path = Path(f"{DIR}/elasticsearch/component_templates")
+            what = "component_templates"
+            get = elasticsearch.cluster.get_component_template
+            put = elasticsearch.cluster.put_component_template
         elif i == 2:
-            base_path = Path(f"{DIR}/elasticsearch/index_templates")
+            what = "index_templates"
+            get = elasticsearch.indices.get_index_template
+            put = elasticsearch.indices.put_index_template
+
+        base_path = Path(f"{DIR}/elasticsearch/{what}")
 
         for path in base_path.glob("**/*.json"):
 
@@ -504,26 +519,36 @@ async def setup_elasticsearch_configs(
 
             try:
                 file = path.open(encoding="utf-8")
-                body = orjson.loads(file.read().replace("{NAME}", NAME))
+                body = orjson.loads(file.read().replace("{prefix}", prefix))
             finally:
                 file.close()
 
-            name = f"{NAME}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
+            name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
-            if i == 0:  # pylint: disable=compare-to-zero
-                await elasticsearch.ingest.put_pipeline(
-                    id=name,
-                    body=body,
-                )
-            elif i == 1:
-                await elasticsearch.cluster.put_component_template(
-                    name=name,
-                    body=body,
-                )
-            elif i == 2:
-                await elasticsearch.indices.put_index_template(
-                    name=name,
-                    body=body,
+            try:
+                if i == 0:  # pylint: disable=compare-to-zero
+                    current = await get(id=name)
+                    current_version = current[name].get("version", 0)
+                else:
+                    current = await get(
+                        name=name,
+                        params={"filter_path": f"{what}.name,{what}.version"},
+                    )
+                    current_version = current[what][0].get("version", 0)
+            except NotFoundError:
+                current_version = -1
+
+            if current_version < body.get("version", 0):
+                if i == 0:  # pylint: disable=compare-to-zero
+                    await put(id=name, body=body)
+                else:
+                    await put(name=name, body=body)
+            elif current_version > body.get("version", 0):
+                logger.warning(
+                    "%s has older version %s. Current version is %s!",
+                    path,
+                    body.get("version", 0),
+                    current_version,
                 )
 
 

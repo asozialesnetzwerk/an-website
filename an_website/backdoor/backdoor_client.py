@@ -21,11 +21,17 @@ import os
 import pickle
 import pydoc
 import re
+import socket
 import sys
 import traceback
 import urllib.parse
 import uuid
 from typing import Any
+
+try:
+    import socks  # type: ignore
+except ImportError:
+    socks = None
 
 try:
     import hy  # type: ignore
@@ -50,8 +56,9 @@ async def request(  # noqa: D103
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
     headers: dict[Any, Any],
     body: str | bytes,
+    proxy: None | tuple[int, str] | tuple[int, str, int] = None,
 ) -> tuple[int, dict[str, str], bytes]:
-    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
+    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-complex, while-used
     if isinstance(body, str):
         body = body.encode("utf-8")
     if isinstance(url, str):
@@ -59,11 +66,22 @@ async def request(  # noqa: D103
     if url.scheme not in {"", "http", "https"}:
         raise ValueError(f"Unsupported scheme: {url.scheme}")
     https = url.scheme == "https"
+    header_names = [x.strip().title() for x in headers.keys()]
+    if "Host" not in header_names:
+        headers["Host"] = url.netloc
+    if body and "Content-Length" not in header_names:
+        headers["Content-Length"] = len(body)
     e, data = E, b""
+    sock = socks.socksocket() if socks else socket.socket()
+    if proxy:
+        if not socks:
+            raise ValueError("PySocks is required for proxy support.")
+        sock.set_proxy(*proxy)
+    sock.connect((url.hostname, url.port or (443 if https else 80)))
     reader, writer = await asyncio.open_connection(
-        url.hostname,
-        url.port or 443 if https else 80,
+        sock=sock,
         ssl=https,
+        server_hostname=url.hostname if https else None,
     )
     writer.write(
         (
@@ -114,8 +132,6 @@ def send(
     if isinstance(url, str):
         url = urllib.parse.urlsplit(url)
     headers = {
-        "Host": url.netloc,
-        "Content-Length": len(body),
         "Authorization": key,
     }
     if session:

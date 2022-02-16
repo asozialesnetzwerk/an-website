@@ -92,7 +92,7 @@ async def get_availability_data(
                     {
                         "term": {
                             "service.name": {
-                                "value": NAME,
+                                "value": NAME.removesuffix("-dev"),
                             }
                         },
                     },

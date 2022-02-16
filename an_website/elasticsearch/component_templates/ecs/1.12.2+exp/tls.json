@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-tls.html",
+    "documentation": "https://www.elastic.co/guide/en/ecs/1.12/ecs-tls.html",
     "ecs_version": "1.12.2+exp"
   },
   "template": {

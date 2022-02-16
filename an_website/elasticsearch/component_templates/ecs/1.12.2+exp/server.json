@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-server.html",
+    "documentation": "https://www.elastic.co/guide/en/ecs/1.12/ecs-server.html",
     "ecs_version": "1.12.2+exp"
   },
   "template": {
