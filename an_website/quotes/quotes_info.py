@@ -196,6 +196,6 @@ class AuthorsInfoPage(HTMLRequestHandler):
             title="Autor-Informationen",
             short_title="Autor-Info",
             description=(
-                f"Falsch zugeordnete Zitate mit „{author.name}“ als Autor.",
+                f"Falsch zugeordnete Zitate mit „{author.name}“ als Autor."
             ),
         )
