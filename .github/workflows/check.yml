@@ -69,11 +69,11 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: grep -v -P "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
+        run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
       - name: Install mypy
-        run: grep -E "^mypy" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep "^mypy" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Install types in check-requrements.txt
-        run: grep -E "^types-" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep "^types-" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run mypy
         run: mypy --no-warn-unused-ignores --no-warn-redundant-casts -p an_website
 
@@ -96,7 +96,7 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: grep -v -P "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
+        run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
       - name: Install Flake8 and Pylint
         run: grep -E "^(flake8|pep8-naming|pylint|pytest)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Flake8

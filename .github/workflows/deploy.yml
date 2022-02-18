@@ -32,11 +32,11 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: grep -v -P "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
+        run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
       - name: Install pytest and coverage
         run: grep -E "^(pytest|coverage)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
-        run: coverage run --source=an_website -m py.test tests
+        run: pytest --cov=an_website tests
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -86,7 +86,7 @@ jobs:
           mv version.txt public/
       - name: Create coverage files
         run: |
-          grep -E "^coverage" requirements-dev.txt | xargs pip install --prefer-binary
+          grep "^coverage" requirements-dev.txt | xargs pip install --prefer-binary
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x

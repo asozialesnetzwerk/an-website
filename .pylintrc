@@ -26,7 +26,7 @@ py-version=3.10
 enable=all
 disable=file-ignored,
         locally-disabled,
-        suppressed-message
+        suppressed-message,
 
 [BASIC]
 include-naming-hint=yes

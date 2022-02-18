@@ -442,6 +442,7 @@ def setup_app_search(app: Application) -> None:
 
 async def setup_elasticsearch(app: Application) -> None:
     """Setup Elasticsearch."""  # noqa: D401
+    app.settings["ELASTICSEARCH"] = None
     config = app.settings["CONFIG"]
     elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
@@ -481,7 +482,6 @@ async def setup_elasticsearch(app: Application) -> None:
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Elasticsearch is unavailable!")
-        app.settings["ELASTICSEARCH"] = None
     else:
         app.settings["ELASTICSEARCH"] = elasticsearch
 
@@ -554,6 +554,9 @@ async def setup_elasticsearch_configs(  # noqa: C901
 
 async def setup_redis(app: Application) -> None:
     """Setup Redis."""  # noqa: D401
+    if "REDIS" in app.settings and (redis := app.settings["REDIS"]):
+        await redis.close(close_connection_pool=True)
+    app.settings["REDIS"] = None
     config = app.settings["CONFIG"]
     redis = Redis(
         connection_pool=BlockingConnectionPool.from_url(
@@ -569,7 +572,6 @@ async def setup_redis(app: Application) -> None:
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)
         logger.error("Redis is unavailable!")
-        app.settings["REDIS"] = None
     else:
         app.settings["REDIS"] = redis
 
@@ -672,6 +674,8 @@ def main() -> None:
         try:
             server.stop()
             loop.run_until_complete(server.close_all_connections())
+            if "REDIS" in app.settings and (redis := app.settings["REDIS"]):
+                loop.run_until_complete(redis.close(close_connection_pool=True))
         finally:
             try:
                 cancel_all_tasks(loop)

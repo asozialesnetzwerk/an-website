@@ -19,8 +19,10 @@ import configparser
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
+import sys
 
 import defusedxml  # type: ignore
+import namedthreads  # type: ignore
 import tornado.httputil
 import tornado.platform.asyncio
 import tornado.web
@@ -53,7 +55,10 @@ def apply() -> None:
     http.client.responses[420] = "Enhance Your Calm"
     http.client.responses[469] = "Nice Try"
     anonymize_logs()
-    patch_json()
+    if not getattr(stdlib_json, "_omegajson", False):
+        patch_json()
+    if sys.flags.dev_mode:
+        namedthreads.patch()
 
 
 def anonymize_logs() -> None:
