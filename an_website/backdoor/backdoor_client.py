@@ -27,7 +27,7 @@ import sys
 import traceback
 import urllib.parse
 import uuid
-from typing import Any
+from typing import Any, TypedDict
 
 try:
     import socks  # type: ignore
@@ -52,12 +52,23 @@ E = eval(  # pylint: disable=eval-used
 )
 
 
+class Proxy(TypedDict):
+    """The proxy dictionary."""
+
+    proxy_type: None | int
+    addr: None | str
+    port: None | int
+    rdns: None | bool
+    username: None | str
+    password: None | str
+
+
 async def request(  # noqa: D103
     method: str,
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
     headers: dict[Any, Any],
     body: str | bytes,
-    proxy: None | tuple[int, str] | tuple[int, str, int] = None,
+    proxy: None | Proxy = None,
 ) -> tuple[int, dict[str, str], bytes]:
     # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-complex, while-used
     if isinstance(body, str):
@@ -77,7 +88,7 @@ async def request(  # noqa: D103
     if proxy:
         if not socks:
             raise ValueError("PySocks is required for proxy support.")
-        sock.set_proxy(*proxy)
+        sock.set_proxy(**proxy)
     sock.connect((url.hostname, url.port or (443 if https else 80)))
     reader, writer = await asyncio.open_connection(
         sock=sock,
@@ -99,8 +110,10 @@ async def request(  # noqa: D103
         + body
     )
     if writer.can_write_eof():
-        writer.write_eof()
-    await writer.drain()
+        # this caused requests to localhost or .onion to not get any data
+        # the server reported a stream closed error (local connection)
+        # when connecting to asozial.org this wasn't called, so it worked
+        pass  # writer.write_eof()
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
@@ -121,12 +134,13 @@ def detect_mode(code: str) -> str:
         return "exec"
 
 
-def send(
+def send(  # pylint: disable=too-many-arguments
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
     key: str,
     code: str,
     mode: str = "exec",
     session: None | str = None,
+    proxy: None | Proxy = None,
 ) -> Any:
     """Send code to the backdoor API."""
     body = code.encode("utf-8")
@@ -143,9 +157,14 @@ def send(
             url._replace(path=f"{url.path}/api/backdoor/{mode}"),
             headers,
             body,
+            proxy,
         )
     )
-    return response[0], response[1], pickle.loads(response[2])
+    return (
+        response[0],  # status
+        response[1],  # header
+        pickle.loads(response[2]),  # data
+    )
 
 
 def lisp_always_active() -> bool:
@@ -168,19 +187,20 @@ def lisp_always_active() -> bool:
     )
 
 
-def run_and_print(  # noqa: C901
+def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
     url: str,
     key: str,
     code: str,
     session: None | str = None,
     lisp: bool = False,
+    proxy: None | Proxy = None,
 ) -> None:
     # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read_str(code), True)
     try:
-        response = send(url, key, code, detect_mode(code), session)
+        response = send(url, key, code, detect_mode(code), session, proxy)
     except SyntaxError as exc:
         print(
             "".join(
@@ -236,9 +256,7 @@ def run_and_print(  # noqa: C901
 def start() -> None:  # noqa: C901
     # pylint: disable=too-complex, too-many-branches, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
-    url = None
-    key = None
-    session = None
+    url, key, session, proxy = None, None, None, None
     session_pickle = os.path.join(
         os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
         "an-backdoor-client/session.pickle",
@@ -250,13 +268,22 @@ def start() -> None:  # noqa: C901
     if "--no-cache" not in sys.argv:
         try:
             with open(session_pickle, "rb") as file:
-                url, key, session = pickle.load(file)
-                if "--new-session" in sys.argv:
-                    print(f"Using URL {url}")
-                else:
-                    print(f"Using URL {url} with existing session {session}")
+                saved_stuff = pickle.load(file)
         except FileNotFoundError:
             pass
+        else:
+            if "url" in saved_stuff:
+                url = saved_stuff["url"]
+            if "key" in saved_stuff:
+                key = saved_stuff["key"]
+            if "session" in saved_stuff:
+                session = saved_stuff["session"]
+            if "proxy" in saved_stuff:
+                proxy = saved_stuff["proxy"]
+            if "--new-session" in sys.argv:
+                print(f"Using URL {url}")
+            else:
+                print(f"Using URL {url} with existing session {session}")
     while not url:  # pylint: disable=while-used
         url = input("URL: ").strip().rstrip("/")
         if not url:
@@ -276,6 +303,38 @@ def start() -> None:  # noqa: C901
         if not key:
             print("No key given!")
 
+    if proxy is None or "--new-proxy" in sys.argv:
+        proxy_url_str = input("Proxy (leave empty for none): ").strip()
+        if proxy_url_str:
+            if "://" not in proxy_url_str:
+                proxy_url_str = "socks5://" + proxy_url_str
+            proxy_url = urllib.parse.urlsplit(proxy_url_str)
+            proxy = {
+                "proxy_type": socks.PROXY_TYPES[proxy_url.scheme.upper()]
+                if proxy_url.scheme
+                else socks.SOCKS5,
+                "addr": proxy_url.hostname,
+                "port": proxy_url.port,
+                "username": proxy_url.username,
+                "password": proxy_url.password,
+            }
+        else:
+            print("No proxy given!")
+    if proxy:
+        port = proxy["port"]
+        print(
+            f"Using {socks.PRINTABLE_PROXY_TYPES[proxy['proxy_type']]} proxy"
+            f"{proxy['addr']}{f':{port}' if port else ''}"
+            + (
+                f" with username {proxy['username']}"
+                if proxy["username"]
+                else ""
+            )
+        )
+    else:
+        proxy = None
+        print("Using no proxy. (use --new-proxy to be able to set one)")
+
     if not session or "--new-session" in sys.argv:
         session = input("Session (enter nothing for random session): ")
         if not session:
@@ -285,7 +344,15 @@ def start() -> None:  # noqa: C901
     if "--no-cache" not in sys.argv:
         os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
         with open(session_pickle, "wb") as file:
-            pickle.dump((url, key, session), file)
+            pickle.dump(
+                {
+                    "url": url,
+                    "key": key,
+                    "session": session,
+                    "proxy": proxy or "",  # falsy not None value
+                },
+                file,
+            )
         print("Saved session to cache")
 
     if "--no-patch-help" not in sys.argv:
@@ -297,14 +364,14 @@ def start() -> None:  # noqa: C901
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'HelperTuple', helper_output.getvalue()"
         )
-        response = send(url, key, code, "exec", session)
+        response = send(url, key, code, "exec", session, proxy)
         if response[0] >= 400 or not response[2]["success"]:
             print("\033[91mPatching help() failed!\033[0m")
 
     if "--lisp" in sys.argv:
         if not hy:
             sys.exit("Hy is not installed!")
-        response = send(url, key, "import hy", "exec", session)
+        response = send(url, key, "import hy", "exec", session, proxy)
         if response[0] >= 400 or not response[2]["success"]:
             print("\033[91mImporting Hy failed!\033[0m")
 
@@ -313,7 +380,7 @@ def start() -> None:  # noqa: C901
 
     # patch the reader console to use our run function
     ReaderConsole.execute = lambda self, code: run_and_print(
-        url, key, code, session, "--lisp" in sys.argv
+        url, key, code, session, "--lisp" in sys.argv, proxy
     )
 
     # run the reader
@@ -329,6 +396,7 @@ if __name__ == "__main__":
     - "--clear-cache" to clear the whole cache
     - "--new-session" to start a new session with cached URL and key
     - "--lisp" to enable Lots of Irritating Superfluous Parentheses
+    - "--new-proxy" to not use the cached proxy
     - "--help" to show this help message"""
         )
         sys.exit()
@@ -339,6 +407,7 @@ if __name__ == "__main__":
             "--clear-cache",
             "--new-session",
             "--lisp",
+            "--new-proxy",
             "--help",
             "-h",
         }:

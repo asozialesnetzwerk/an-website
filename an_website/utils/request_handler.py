@@ -50,6 +50,7 @@ from .utils import (
     THEMES,
     ModuleInfo,
     add_args_to_url,
+    anonymize_ip,
     bool_to_str,
     name_to_id,
     str_to_bool,
@@ -171,6 +172,11 @@ class BaseRequestHandler(RequestHandler):
 
             if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
                 # TODO: self.set_header("WWW-Authenticate")
+                logger.info(
+                    "Unauthorized access to %s from %s",
+                    self.request.path,
+                    anonymize_ip(str(self.request.remote_ip)),
+                )
                 raise HTTPError(401)
 
             if not await self.ratelimit(True):
@@ -721,7 +727,7 @@ class APIRequestHandler(BaseRequestHandler):
         )
 
     def options(  # pylint: disable=unused-argument
-        self, *args: list[Any]
+        self, *args: list[str]
     ) -> None:
         """Handle OPTIONS requests."""
         # no body; only the default headers get used
@@ -879,7 +885,7 @@ class ZeroDivision(BaseRequestHandler):
     async def prepare(self) -> None:
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
-            0 / 0  # pylint: disable=pointless-statement
+            69 / 0  # pylint: disable=pointless-statement
 
 
 class ElasticRUM(BaseRequestHandler):
