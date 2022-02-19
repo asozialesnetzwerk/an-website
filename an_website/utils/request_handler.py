@@ -880,12 +880,12 @@ class ErrorPage(HTMLRequestHandler):
 
 
 class ZeroDivision(BaseRequestHandler):
-    """A fun request handler that throws an error."""
+    """A request handler that throws an error."""
 
     async def prepare(self) -> None:
         """Divide by zero and throw an error."""
         if not self.request.method == "OPTIONS":
-            69 / 0  # pylint: disable=pointless-statement
+            420 / 0  # pylint: disable=pointless-statement
 
 
 class ElasticRUM(BaseRequestHandler):

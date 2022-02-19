@@ -186,8 +186,10 @@ class Backdoor(APIRequestHandler):
             "__builtins__": __builtins__,
             "__name__": "this",
             "app": self.application,
-            "geoip": lambda ip, db=None, es=self.elasticsearch: (
-                geoip(es, ip, db) if db else geoip(es, ip)
+            "geoip": lambda ip, db=None, es=None: (
+                geoip(es or self.elasticsearch, ip, db)  # type: ignore[arg-type]
+                if db
+                else geoip(es or self.elasticsearch, ip)  # type: ignore[arg-type]
             ),
             "get_authors": get_authors,
             "get_quotes": get_quotes,

@@ -66,9 +66,10 @@ async def request(  # noqa: D103
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
     headers: dict[Any, Any],
     body: str | bytes,
+    *,
     proxy: None | Proxy = None,
 ) -> tuple[int, dict[str, str], bytes]:
-    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-complex, while-used
+    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
     if isinstance(body, str):
         body = body.encode("utf-8")
     if isinstance(url, str):
@@ -107,11 +108,7 @@ async def request(  # noqa: D103
         + b"\r\n"
         + body
     )
-    if writer.can_write_eof():
-        # this caused requests to localhost or .onion to not get any data
-        # the server reported a stream closed error (local connection)
-        # when connecting to asozial.org this wasn't called, so it worked
-        pass  # writer.write_eof()
+    await writer.drain()
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
@@ -158,7 +155,7 @@ def send(  # pylint: disable=too-many-arguments
             url._replace(path=f"{url.path}/api/backdoor/{mode}"),
             headers,
             body,
-            proxy,
+            proxy=proxy,
         )
     )
     return (
@@ -270,48 +267,46 @@ def start() -> None:  # noqa: C901
     """Parse arguments, load the cache and start the backdoor client."""
     url: None | str = None
     key: None | str = None
-    proxy: None | Proxy | tuple[()] = None
     session: None | str = None
-    session_pickle = os.path.join(
+    proxy: None | Proxy | tuple[()] = None
+    cache_pickle = os.path.join(
         os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
         "an-backdoor-client/session.pickle",
     )
     if "--clear-cache" in sys.argv:
-        if os.path.exists(session_pickle):
-            os.remove(session_pickle)
+        if os.path.exists(cache_pickle):
+            os.remove(cache_pickle)
         print("Cache cleared")
     if "--no-cache" not in sys.argv:
         try:
-            with open(session_pickle, "rb") as file:
-                saved_stuff = pickle.load(file)
+            with open(cache_pickle, "rb") as file:
+                cache = pickle.load(file)
         except FileNotFoundError:
             pass
         else:
-            if "url" in saved_stuff:
-                url = saved_stuff["url"]
-            if "key" in saved_stuff:
-                key = saved_stuff["key"]
-            if "session" in saved_stuff:
-                session = saved_stuff["session"]
-            if "proxy" in saved_stuff:
-                proxy = saved_stuff["proxy"]
+            url = cache.get("url")
+            key = cache.get("key")
+            session = cache.get("session")
+            proxy = cache.get("proxy")
             if "--new-session" in sys.argv:
                 print(f"Using URL {url}")
             else:
                 print(f"Using URL {url} with existing session {session}")
     while not url:  # pylint: disable=while-used
         url = input("URL: ").strip().rstrip("/")
-        if not url:
+        parsed_url = urllib.parse.urlsplit(url)
+        if not parsed_url.geturl():
             print("No URL given!")
-        elif not url.startswith("http"):
-            banana = url.split("/", maxsplit=1)
+        elif not parsed_url.scheme:
             if re.fullmatch(
-                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]
+                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?",
+                parsed_url.netloc,
             ):
-                url = "http://" + url
+                parsed_url = parsed_url._replace(scheme="http")
             else:
-                url = "https://" + url
-            print(f"Using URL {url}")
+                parsed_url = parsed_url._replace(scheme="https")
+            print(f"Using URL {parsed_url.geturl()}")
+        url = parsed_url.geturl()
 
     while not key:  # pylint: disable=while-used
         key = input("Key: ").strip()
@@ -319,11 +314,10 @@ def start() -> None:  # noqa: C901
             print("No key given!")
 
     if proxy is None or "--new-proxy" in sys.argv:
-        proxy_url_str = input("Proxy (leave empty for none): ").strip()
-        if proxy_url_str:
-            if "://" not in proxy_url_str:
-                proxy_url_str = "socks5://" + proxy_url_str
-            proxy_url = urllib.parse.urlsplit(proxy_url_str)
+        proxy_url = urllib.parse.urlsplit(
+            input("Proxy (leave empty for none): ").strip()
+        )
+        if proxy_url.geturl():
             if proxy_url.hostname:
                 proxy = (
                     int(socks.PROXY_TYPES[proxy_url.scheme.upper()])
@@ -364,14 +358,14 @@ def start() -> None:  # noqa: C901
         print(f"Using session {session}")
 
     if "--no-cache" not in sys.argv:
-        os.makedirs(os.path.dirname(session_pickle), exist_ok=True)
-        with open(session_pickle, "wb") as file:
+        os.makedirs(os.path.dirname(cache_pickle), exist_ok=True)
+        with open(cache_pickle, "wb") as file:
             pickle.dump(
                 {
                     "url": url,
                     "key": key,
                     "session": session,
-                    "proxy": proxy or (),  # falsy not None value
+                    "proxy": proxy or (),  # not None (None == ask)
                 },
                 file,
             )

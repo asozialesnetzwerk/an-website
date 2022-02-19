@@ -3,9 +3,11 @@
 if [ -d venv ];
 then
     . venv/bin/activate
-    python3 -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet
+    python -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet
 else
-    python3 -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet --user
+    echo 'Please create a Python 3.10+ virtual environment (venv) first'
+    echo 'Running "python3.10 -m venv venv" usually works (assuming Python 3.10 is installed)'
+    exit 1
 fi
 
 # install pre-commit hooks
@@ -16,24 +18,24 @@ git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
 
 # sort imports
 echo isort:
-python3 -m isort .
+isort .
 
 # check formatting
 echo Black:
-python3 -m black --check --diff --color . || echo 'Run "python3 -m black ." to reformat.'
+black --check --diff --color . || echo 'Run "black ." to reformat'
 
 # check types
 echo mypy:
-python3 -m mypy --pretty --warn-unused-ignores --warn-redundant-casts -p an_website -p tests
+mypy --pretty --warn-unused-ignores --warn-redundant-casts -p an_website -p tests
 
 # lint
 echo Flake8:
-python3 -m flake8 --extend-ignore=D100,D102 an_website tests
+flake8 --extend-ignore=D100,D102 an_website tests
 echo Pylint:
-python3 -m pylint --output-format=colorized an_website tests
+pylint --output-format=colorized an_website tests
 
 # run tests
 echo Tests:
-python3 -m pytest --cov-report= --cov=an_website tests
+pytest --cov-report= --cov=an_website tests
 
-echo 'Run "python3 -m coverage report" to show the coverage'
+echo 'Run "coverage report" to show the coverage'

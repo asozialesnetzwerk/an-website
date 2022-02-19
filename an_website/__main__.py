@@ -554,7 +554,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
 
 async def setup_redis(app: Application) -> None:
     """Setup Redis."""  # noqa: D401
-    if "REDIS" in app.settings and (redis := app.settings["REDIS"]):
+    if redis := app.settings.get("REDIS"):
         await redis.close(close_connection_pool=True)
     app.settings["REDIS"] = None
     config = app.settings["CONFIG"]
@@ -674,7 +674,7 @@ def main() -> None:
         try:
             server.stop()
             loop.run_until_complete(server.close_all_connections())
-            if "REDIS" in app.settings and (redis := app.settings["REDIS"]):
+            if redis := app.settings.get("REDIS"):
                 loop.run_until_complete(redis.close(close_connection_pool=True))
         finally:
             try:
