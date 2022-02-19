@@ -27,7 +27,7 @@ import sys
 import traceback
 import urllib.parse
 import uuid
-from typing import Any, TypedDict
+from typing import Any, Union
 
 try:
     import socks  # type: ignore
@@ -51,16 +51,13 @@ E = eval(  # pylint: disable=eval-used
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
 
-
-class Proxy(TypedDict):
-    """The proxy dictionary."""
-
-    proxy_type: None | int
-    addr: None | str
-    port: None | int
-    rdns: None | bool
-    username: None | str
-    password: None | str
+# proxy_type, addr, port, rdns, username, password
+Proxy = Union[  # pylint: disable=consider-alternative-union-syntax
+    tuple[int, str],
+    tuple[int, str, None | int],
+    tuple[int, str, None | int, None | bool],
+    tuple[int, str, None | int, None | bool, None | str, None | str],
+]
 
 
 async def request(  # noqa: D103
@@ -88,7 +85,7 @@ async def request(  # noqa: D103
     if proxy:
         if not socks:
             raise ValueError("PySocks is required for proxy support.")
-        sock.set_proxy(**proxy)
+        sock.set_proxy(*proxy)
     sock.connect((url.hostname, url.port or (443 if https else 80)))
     reader, writer = await asyncio.open_connection(
         sock=sock,
@@ -121,6 +118,9 @@ async def request(  # noqa: D103
             headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]
     writer.close()
     await writer.wait_closed()
+    assert "status" in locals() or print(
+        f"{method} request to {url.geturl()} failed."
+    )
     return int(status), headers, data
 
 
@@ -256,7 +256,10 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
 def start() -> None:  # noqa: C901
     # pylint: disable=too-complex, too-many-branches, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
-    url, key, session, proxy = None, None, None, None
+    url: None | str = None
+    key: None | str = None
+    proxy: None | Proxy | tuple[()] = None
+    session: None | str = None
     session_pickle = os.path.join(
         os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
         "an-backdoor-client/session.pickle",
@@ -309,25 +312,32 @@ def start() -> None:  # noqa: C901
             if "://" not in proxy_url_str:
                 proxy_url_str = "socks5://" + proxy_url_str
             proxy_url = urllib.parse.urlsplit(proxy_url_str)
-            proxy = {
-                "proxy_type": socks.PROXY_TYPES[proxy_url.scheme.upper()]
-                if proxy_url.scheme
-                else socks.SOCKS5,
-                "addr": proxy_url.hostname,
-                "port": proxy_url.port,
-                "username": proxy_url.username,
-                "password": proxy_url.password,
-            }
+            if proxy_url.hostname:
+                proxy = (
+                    int(socks.PROXY_TYPES[proxy_url.scheme.upper()])
+                    if proxy_url.scheme
+                    else socks.SOCKS5,
+                    proxy_url.hostname,
+                    proxy_url.port,
+                    True,
+                    proxy_url.username or None,
+                    proxy_url.password or None,
+                )
+            else:
+                print("Invalid proxy URL!")
+                proxy = None
         else:
             print("No proxy given!")
     if proxy:
-        port = proxy["port"]
+        port: None | int = (
+            proxy[2] if len(proxy) > 2 else None  # type: ignore[misc]
+        )
         print(
-            f"Using {socks.PRINTABLE_PROXY_TYPES[proxy['proxy_type']]} proxy"
-            f"{proxy['addr']}{f':{port}' if port else ''}"
+            f"Using {socks.PRINTABLE_PROXY_TYPES[proxy[0]]} proxy "
+            f"{proxy[1]}{f':{port}' if port else ''}"
             + (
-                f" with username {proxy['username']}"
-                if proxy["username"]
+                f" with username {proxy[4]}"  # type: ignore[misc]
+                if len(proxy) > 4 and proxy[4]  # type: ignore[misc]
                 else ""
             )
         )
@@ -349,11 +359,11 @@ def start() -> None:  # noqa: C901
                     "url": url,
                     "key": key,
                     "session": session,
-                    "proxy": proxy or "",  # falsy not None value
+                    "proxy": proxy or (),  # falsy not None value
                 },
                 file,
             )
-        print("Saved session to cache")
+        print("Saved information to cache")
 
     if "--no-patch-help" not in sys.argv:
         code = (
