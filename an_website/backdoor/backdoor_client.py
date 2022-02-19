@@ -24,6 +24,7 @@ import pydoc
 import re
 import socket
 import sys
+import time
 import traceback
 import urllib.parse
 import uuid
@@ -194,9 +195,11 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
     session: None | str = None,
     lisp: bool = False,
     proxy: None | Proxy = None,
+    time_requests: bool = False,
 ) -> None:
     # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""
+    start_time = time.monotonic()
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read_str(code), True)
     try:
@@ -251,6 +254,15 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
     else:
         print("Response has unknown type!")
         print(response[2])
+    if time_requests:
+        took = time.monotonic() - start_time
+        if took > 1:
+            color = "91"  # red
+        elif took > 0.3:
+            color = "93"  # yellow
+        else:
+            color = "92"  # green
+        print(f"\033[{color}mTook: {took:.3f}s\033[0m")
 
 
 def start() -> None:  # noqa: C901
@@ -390,7 +402,13 @@ def start() -> None:  # noqa: C901
 
     # patch the reader console to use our run function
     ReaderConsole.execute = lambda self, code: run_and_print(
-        url, key, code, session, "--lisp" in sys.argv, proxy
+        url,
+        key,
+        code,
+        session,
+        "--lisp" in sys.argv,
+        proxy,
+        "--timing" in sys.argv,
     )
 
     # run the reader
@@ -407,6 +425,7 @@ if __name__ == "__main__":
     - "--new-session" to start a new session with cached URL and key
     - "--lisp" to enable Lots of Irritating Superfluous Parentheses
     - "--new-proxy" to not use the cached proxy
+    - "--timing" to print the time it took to execute each command
     - "--help" to show this help message"""
         )
         sys.exit()
@@ -418,6 +437,7 @@ if __name__ == "__main__":
             "--new-session",
             "--lisp",
             "--new-proxy",
+            "--timing",
             "--help",
             "-h",
         }:
