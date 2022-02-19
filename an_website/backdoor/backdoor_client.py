@@ -294,19 +294,17 @@ def start() -> None:  # noqa: C901
                 print(f"Using URL {url} with existing session {session}")
     while not url:  # pylint: disable=while-used
         url = input("URL: ").strip().rstrip("/")
-        parsed_url = urllib.parse.urlsplit(url)
-        if not parsed_url.geturl():
+        if not url:
             print("No URL given!")
-        elif not parsed_url.scheme:
+        elif "://" not in url:
+            banana = url.split("/", maxsplit=1)
             if re.fullmatch(
-                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?",
-                parsed_url.netloc,
+                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]
             ):
-                parsed_url = parsed_url._replace(scheme="http")
+                url = "http://" + url
             else:
-                parsed_url = parsed_url._replace(scheme="https")
-            print(f"Using URL {parsed_url.geturl()}")
-        url = parsed_url.geturl()
+                url = "https://" + url
+            print(f"Using URL {url}")
 
     while not key:  # pylint: disable=while-used
         key = input("Key: ").strip()
@@ -314,15 +312,14 @@ def start() -> None:  # noqa: C901
             print("No key given!")
 
     if proxy is None or "--new-proxy" in sys.argv:
-        proxy_url = urllib.parse.urlsplit(
-            input("Proxy (leave empty for none): ").strip()
-        )
+        proxy_url_str = input("Proxy (leave empty for none): ").strip()
+        if "://" not in proxy_url_str:
+            proxy_url_str = "socks5://" + proxy_url_str
+        proxy_url = urllib.parse.urlsplit(proxy_url_str)
         if proxy_url.geturl():
             if proxy_url.hostname:
                 proxy = (
-                    int(socks.PROXY_TYPES[proxy_url.scheme.upper()])
-                    if proxy_url.scheme
-                    else socks.SOCKS5,
+                    int(socks.PROXY_TYPES[proxy_url.scheme.upper()]),
                     proxy_url.hostname,
                     proxy_url.port,
                     True,
