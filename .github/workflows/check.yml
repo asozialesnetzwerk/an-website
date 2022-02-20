@@ -64,8 +64,8 @@ jobs:
         uses: pat-s/always-upload-cache@v2
         with:
           path: .mypy_cache
-          key: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: mypy-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
+          key: mypy-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: mypy-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
@@ -91,8 +91,8 @@ jobs:
         uses: pat-s/always-upload-cache@v2
         with:
           path: ~/.cache/pylint
-          key: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
-          restore-keys: pylint-${{ matrix.python-version }}-${{ github.repository }}-${{ github.ref }}-
+          key: pylint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: pylint-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements

@@ -20,12 +20,9 @@ import time
 from elasticsearch import AsyncElasticsearch
 from tornado.web import RedirectHandler
 
-from .. import NAME
+from .. import NAME, START_TIME
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
-
-START_TIME = time.monotonic()
-
 
 logger = logging.getLogger(__name__)
 

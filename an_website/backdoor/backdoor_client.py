@@ -255,7 +255,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
         took = time.monotonic() - start_time
         if took > 1:
             color = "91"  # red
-        elif took > 0.3:
+        elif took > 0.5:
             color = "93"  # yellow
         else:
             color = "92"  # green
@@ -316,7 +316,7 @@ def start() -> None:  # noqa: C901
         if "://" not in proxy_url_str:
             proxy_url_str = "socks5://" + proxy_url_str
         proxy_url = urllib.parse.urlsplit(proxy_url_str)
-        if proxy_url.geturl():
+        if proxy_url_str:
             if proxy_url.hostname:
                 proxy = (
                     int(socks.PROXY_TYPES[proxy_url.scheme.upper()]),
@@ -409,25 +409,31 @@ def start() -> None:  # noqa: C901
 if __name__ == "__main__":
     if "--help" in sys.argv or "-h" in sys.argv:
         print(
-            """Accepted arguments:
-    - "--no-patch-help" to not patch help()
-    - "--no-cache" to start without a cache
-    - "--clear-cache" to clear the whole cache
-    - "--new-session" to start a new session with cached URL and key
-    - "--lisp" to enable Lots of Irritating Superfluous Parentheses
-    - "--new-proxy" to not use the cached proxy
-    - "--timing" to print the time it took to execute each command
-    - "--help" to show this help message"""
+            """
+
+Accepted arguments:
+
+    --clear-cache      clear the whole cache
+    --lisp             enable Lots of Irritating Superfluous Parentheses
+    --new-proxy        don't use the cached proxy
+    --new-session      start a new session with cached URL and key
+    --no-cache         start without a cache
+    --no-patch-help    don't patch help()
+    --timing           print the time it took to execute each command
+
+    --help or -h       show this help message
+
+""".strip()
         )
         sys.exit()
     for arg in sys.argv[1:]:
         if arg not in {
-            "--no-patch-help",
-            "--no-cache",
             "--clear-cache",
-            "--new-session",
             "--lisp",
             "--new-proxy",
+            "--new-session",
+            "--no-cache",
+            "--no-patch-help",
             "--timing",
             "--help",
             "-h",

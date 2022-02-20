@@ -16,10 +16,13 @@ from __future__ import annotations
 
 import os
 import sys
+import time
 
 import orjson
 
 DIR = os.path.dirname(__file__)
+
+START_TIME = time.monotonic()
 
 NAME = "an-website"
 GIT_URL: str = "https://github.com/asozialesnetzwerk"

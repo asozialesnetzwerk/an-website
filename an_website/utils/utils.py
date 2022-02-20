@@ -35,8 +35,6 @@ from tornado.web import HTTPError, RequestHandler
 
 from .. import STATIC_DIR
 
-GEOIP_CACHE: dict[str, dict[str, dict[str, Any]]] = {}
-
 # pylint: disable=consider-alternative-union-syntax
 Handler = Union[
     tuple[str, type[RequestHandler]],
@@ -249,7 +247,7 @@ def anonymize_ip(ip_address: str, *, ignore_invalid: bool = False) -> str:
 def apm_anonymization_processor(  # pylint: disable=unused-argument
     client: elasticapm.Client, event: dict[str, Any]
 ) -> dict[str, Any]:
-    """Anonymize the APM events."""
+    """Anonymize an APM event."""
     if "context" in event and "request" in event["context"]:
         request = event["context"]["request"]
         if "url" in request and "pathname" in request["url"]:
@@ -286,14 +284,22 @@ def bool_to_str(val: bool) -> str:
 
 # pylint: disable=invalid-name
 async def geoip(
-    elasticsearch: AsyncElasticsearch,
     ip: str,
-    database: str = "GeoLite2-City.mmdb",
+    database: None | str = "GeoLite2-City.mmdb",
+    elasticsearch: None | AsyncElasticsearch = None,
+    *,
+    geoip_cache: dict[str, dict[str, dict[str, Any]]] = {},  # noqa: B006
 ) -> None | dict[str, Any]:
     """Get GeoIP information."""
-    if ip not in GEOIP_CACHE:
-        GEOIP_CACHE[ip] = {}
-    if database not in GEOIP_CACHE[ip]:
+    if ip not in geoip_cache:
+        geoip_cache[ip] = {}
+
+    database = database or geoip.__defaults__[0]  # type: ignore[attr-defined]
+
+    if database not in geoip_cache[ip]:
+
+        if not elasticsearch:
+            return None
 
         if database == "GeoLite2-City.mmdb":
             properties = [
@@ -317,7 +323,7 @@ async def geoip(
         else:
             properties = None
 
-        GEOIP_CACHE[ip][database] = (
+        geoip_cache[ip][database] = (
             await elasticsearch.ingest.simulate(
                 body={
                     "pipeline": {
@@ -336,7 +342,7 @@ async def geoip(
                 params={"filter_path": "docs.doc._source"},
             )
         )["docs"][0]["doc"]["_source"].get("geoip", {})
-    return GEOIP_CACHE[ip][database]
+    return geoip_cache[ip][database]
 
 
 def get_themes() -> tuple[str, ...]:
