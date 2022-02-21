@@ -282,10 +282,9 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
-# pylint: disable=invalid-name
 async def geoip(
-    ip: str,
-    database: None | str = "GeoLite2-City.mmdb",
+    ip: str,  # pylint: disable=invalid-name
+    database: str = "GeoLite2-City.mmdb",
     elasticsearch: None | AsyncElasticsearch = None,
     *,
     geoip_cache: dict[str, dict[str, dict[str, Any]]] = {},  # noqa: B006
@@ -293,8 +292,6 @@ async def geoip(
     """Get GeoIP information."""
     if ip not in geoip_cache:
         geoip_cache[ip] = {}
-
-    database = database or geoip.__defaults__[0]  # type: ignore[attr-defined]
 
     if database not in geoip_cache[ip]:
 
@@ -356,14 +353,12 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def hash_ip(ip: str) -> str:
+def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
     """Hash an IP address."""
-    # pylint: disable=not-callable
     return str(
-        blake3(
+        blake3(  # pylint: disable=not-callable
             ip.encode("ascii")
-            # pylint: disable=not-callable
-            + blake3(
+            + blake3(  # pylint: disable=not-callable
                 datetime.utcnow().date().isoformat().encode("ascii")
             ).digest()
         ).hexdigest()

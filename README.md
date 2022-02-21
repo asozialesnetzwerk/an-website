@@ -25,7 +25,7 @@ You need:
 - Python 3.10+
 - Packages from requirements.txt (`pip install -r requirements.txt`)
 - Supervisord
-- Redis
+- Redis 6.2+
 - redis-cell (for ratelimits)
 - UwUFetch
 - Git

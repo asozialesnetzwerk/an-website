@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Tests for __main__.py in the an_website module."""
+"""Tests for main.py in the an_website package."""
 
 from __future__ import annotations
 
@@ -19,19 +19,18 @@ import asyncio
 import configparser
 import re
 
-import an_website.__main__ as main
-from an_website import patches
+from an_website import main, patches
 from an_website.utils.request_handler import BaseRequestHandler
 from an_website.utils.utils import ModuleInfo
 
 
 async def get_module_infos() -> tuple[ModuleInfo, ...]:
-    """Wrap main.get_module_infos in an async functions."""
+    """Wrap main.get_module_infos in an async function."""
     return main.get_module_infos()
 
 
 def test_parsing_module_infos() -> None:
-    """Tests about the module infos in an_website __main__."""
+    """Tests about the module infos in main."""
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     module_infos = loop.run_until_complete(get_module_infos())
@@ -76,12 +75,12 @@ def test_parsing_module_infos() -> None:
 
 
 def test_making_app() -> None:
-    """Run the making app functions, to make sure they don't fail."""
+    """Run the app making functions, to make sure they don't fail."""
     patches.apply()
 
     app = main.make_app()
 
-    # read the example config, cuz it is always the same and should always work
+    # read the example config, because it is always the same and should always work
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini.example")
 

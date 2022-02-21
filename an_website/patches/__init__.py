@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import gc
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
@@ -23,6 +24,7 @@ import sys
 
 import defusedxml  # type: ignore
 import namedthreads  # type: ignore
+import tornado.httpclient
 import tornado.httputil
 import tornado.platform.asyncio
 import tornado.web
@@ -38,12 +40,19 @@ DIR = os.path.dirname(__file__)
 
 def apply() -> None:
     """Apply the patches."""
+    sys.setrecursionlimit(1_000_000)
+    if sys.flags.dev_mode:
+        gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+        namedthreads.patch()
     defusedxml.defuse_stdlib()
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
         {"sure": True, "nope": False}
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     tornado.platform.asyncio.AsyncIOMainLoop().install()
+    tornado.httpclient.AsyncHTTPClient.configure(
+        "tornado.curl_httpclient.CurlAsyncHTTPClient"
+    )
     tornado.web.RequestHandler.SUPPORTED_METHODS = (
         tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore
         + (
@@ -53,12 +62,9 @@ def apply() -> None:
         )
     )
     http.client.responses[420] = "Enhance Your Calm"
-    http.client.responses[469] = "Nice Try"
     anonymize_logs()
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
-    if sys.flags.dev_mode:
-        namedthreads.patch()
 
 
 def anonymize_logs() -> None:

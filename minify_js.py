@@ -25,44 +25,50 @@ DIR = os.path.dirname(__file__)
 
 STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
-if "--clean" in sys.argv:
-    shutil.rmtree(STATIC_DIR)
-os.makedirs(STATIC_DIR, exist_ok=True)
 
-file_counter, minified_counter = 0, 0
+def main() -> None:
+    if "--clean" in sys.argv:
+        shutil.rmtree(STATIC_DIR)
+    os.makedirs(STATIC_DIR, exist_ok=True)
 
-for folder, _, files in os.walk(
-    os.path.join(DIR, "an_website"),
-    topdown=True,
-    onerror=None,
-    followlinks=False,
-):
-    if folder == STATIC_DIR:
-        continue
-    for file in files:
-        if not file.endswith(".js"):
+    file_counter, minified_counter = 0, 0
+
+    for folder, _, files in os.walk(
+        os.path.join(DIR, "an_website"),
+        topdown=True,
+        onerror=None,
+        followlinks=False,
+    ):
+        if folder == STATIC_DIR:
             continue
-        file_counter += 1
-        with open(os.path.join(folder, file), encoding="UTF-8") as _f1:
-            orig = _f1.read()
-            small = (
+        for file in files:
+            if not file.endswith(".js"):
+                continue
+            file_counter += 1
+            with open(os.path.join(folder, file), encoding="UTF-8") as f:
+                original = f.read()
+            minified = (
                 "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
                 + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
-                + rjsmin.jsmin(orig)
+                + rjsmin.jsmin(original)
                 + "\n// @license-end\n"
             )
-            new_file_path = os.path.join(STATIC_DIR, file)
-            if os.path.isfile(new_file_path):
-                with open(new_file_path, encoding="UTF-8") as _f2_r:
-                    if _f2_r.read() == small:
+            new_file = os.path.join(STATIC_DIR, file)
+            if os.path.isfile(new_file):
+                with open(new_file, encoding="UTF-8") as f:
+                    if f.read() == minified:
                         continue
             print(
-                f"{file}: {len(orig)} -> {len(small)} chars "
-                f"({(len(small) - len(orig)) / len(orig) * 100:.2f} %)"
+                f"{file}: {len(original)} -> {len(minified)} characters "
+                f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1
-            with open(new_file_path, "w", encoding="UTF-8") as _f2:
-                _f2.write(small)
-                _f2.flush()
+            with open(new_file, "w", encoding="UTF-8") as f:
+                f.write(minified)
+                f.flush()
 
-print(f"Minified {minified_counter} of {file_counter} files.")
+    print(f"Minified {minified_counter} of {file_counter} files.")
+
+
+if __name__ == "__main__":
+    main()

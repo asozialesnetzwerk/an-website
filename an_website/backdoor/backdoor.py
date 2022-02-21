@@ -26,7 +26,7 @@ from tornado.web import HTTPError
 
 from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, geoip
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -186,9 +186,6 @@ class Backdoor(APIRequestHandler):
             "__builtins__": __builtins__,
             "__name__": "this",
             "app": self.application,
-            "geoip": lambda ip, db=None, es=None: (
-                geoip(ip, db, es or self.elasticsearch)
-            ),
             "get_authors": get_authors,
             "get_quotes": get_quotes,
             "get_wq": get_wrong_quote,

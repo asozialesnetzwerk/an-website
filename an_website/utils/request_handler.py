@@ -25,6 +25,7 @@ import sys
 import time
 import traceback
 import uuid
+from collections.abc import Coroutine
 from datetime import datetime
 from functools import cache
 from http.client import responses
@@ -52,6 +53,7 @@ from .utils import (
     add_args_to_url,
     anonymize_ip,
     bool_to_str,
+    geoip,
     name_to_id,
     str_to_bool,
 )
@@ -528,15 +530,20 @@ class BaseRequestHandler(RequestHandler):
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS")
-        return bool(
-            api_secrets  # api_secrets has to be truthy
-            and (
-                self.request.headers.get("Authorization") in api_secrets
-                or self.get_argument("key", default=None) in api_secrets
-                or self.get_cookie("key", default=None) in api_secrets
-            )
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
+        return (
+            self.request.headers.get("Authorization") in api_secrets
+            or self.get_argument("key", default=None) in api_secrets
+            or self.get_cookie("key", default=None) in api_secrets
         )
+
+    def geoip(
+        self,
+        ip: str,  # pylint: disable=invalid-name
+        database: str = geoip.__defaults__[0],  # type: ignore[attr-defined]
+    ) -> Coroutine[Any, Any, None | dict[str, Any]]:
+        """Get GeoIP information."""
+        return geoip(ip, database, self.elasticsearch)
 
 
 class HTMLRequestHandler(BaseRequestHandler):
@@ -791,7 +798,7 @@ class NotFound(HTMLRequestHandler):
             "/wp-upload",
             "/wp-upload.php",
         }:
-            raise HTTPError(469)
+            raise HTTPError(469, reason="Nice Try")
         if new_path.endswith("/index.html"):
             # len("/index.html") = 11
             new_path = new_path[:-11]

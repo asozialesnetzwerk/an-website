@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import importlib
 from collections.abc import Awaitable, Callable
 
 import orjson as json
@@ -24,13 +23,13 @@ import pytest
 import tornado.httpclient
 import tornado.web
 
+from an_website import main
+
 
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
-    return importlib.import_module(  # type: ignore
-        "an_website.__main__"
-    ).make_app()
+    return main.make_app()
 
 
 @pytest.fixture
@@ -66,8 +65,8 @@ async def test_json_apis(
         "/api/wortspiel-helfer",
         "/api/waehrungs-rechner",
     )
-    for api in json_apis:
-        response = await fetch(api)  # 69
+    for api in json_apis:  # 69
+        response = await fetch(api)
         assert response.code == 200
         assert response.headers["Content-Type"] == (
             "application/json; charset=UTF-8"
@@ -76,9 +75,8 @@ async def test_json_apis(
         assert json.loads(response.body)
 
 
-# pylint: disable=too-many-statements
 async def test_request_handlers(
-    # pylint: disable=redefined-outer-name
+    # pylint: disable=redefined-outer-name, too-many-statements
     fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
 ) -> None:
     """Check if the request handlers return 200 codes."""

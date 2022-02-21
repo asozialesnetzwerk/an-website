@@ -20,8 +20,7 @@ import tornado.simple_httpclient
 import tornado.web
 
 import an_website.quotes.quotes as main_page
-from an_website import __main__ as main
-from an_website import quotes
+from an_website import main, quotes
 
 
 @pytest.fixture

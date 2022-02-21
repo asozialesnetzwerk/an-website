@@ -31,14 +31,14 @@ import uuid
 from typing import Any, Union
 
 try:
-    import socks  # type: ignore
-except ImportError:
-    socks = None
-
-try:
     import hy  # type: ignore
 except ImportError:
     hy = None
+
+try:
+    import socks  # type: ignore
+except ImportError:
+    socks = None
 
 try:
     import uvloop
@@ -61,6 +61,62 @@ Proxy = Union[  # pylint: disable=consider-alternative-union-syntax
 ]
 
 
+async def create_socket(
+    hostname: str,
+    port: int | str,
+    proxy: None | Proxy = None,
+) -> None | socket.socket | socks.socksocket:
+    """Create a socket (optionally with a proxy)."""
+    # pylint: disable=too-complex
+    loop = asyncio.get_running_loop()
+    address_infos = await loop.getaddrinfo(
+        hostname,
+        port,
+        type=socket.SOCK_STREAM,
+    )
+    if not address_infos:
+        raise OSError("getaddrinfo() returned empty list")
+    exceptions = []
+    for address_info in address_infos:
+        sock = None
+        try:
+            sock = (
+                socks.socksocket(
+                    address_info[0], address_info[1], address_info[2]
+                )
+                if socks and proxy
+                else socket.socket(
+                    address_info[0], address_info[1], address_info[2]
+                )
+            )
+            sock.setblocking(False)
+            if proxy:
+                if not socks:
+                    raise ValueError("PySocks is required for proxy support")
+                sock.set_proxy(*proxy)  # pylint: disable=no-member
+            await loop.sock_connect(sock, address_info[4])
+        except OSError as exc:
+            if sock is not None:
+                sock.close()
+            exceptions.append(exc)
+            continue
+        except BaseException:
+            if sock is not None:
+                sock.close()
+            raise
+        return sock
+    if len(exceptions) == 1:
+        raise exceptions[0]
+    # If they all have the same str(), raise one.
+    model = str(exceptions[0])
+    if all(str(exc) == model for exc in exceptions):
+        raise exceptions[0]
+    # Raise a combined exception so the user can see all the various error messages.
+    raise OSError(
+        f"Multiple exceptions: {', '.join(str(exc) for exc in exceptions)}"
+    )
+
+
 async def request(  # noqa: D103
     method: str,
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
@@ -76,6 +132,8 @@ async def request(  # noqa: D103
         url = urllib.parse.urlsplit(url)
     if url.scheme not in {"", "http", "https"}:
         raise ValueError(f"Unsupported scheme: {url.scheme}")
+    if not url.hostname:
+        raise ValueError("URL has no hostname")
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
@@ -83,12 +141,11 @@ async def request(  # noqa: D103
     if body and "Content-Length" not in header_names:
         headers["Content-Length"] = len(body)
     e, data = E, b""
-    sock = socks.socksocket() if socks else socket.socket()
-    if proxy:
-        if not socks:
-            raise ValueError("PySocks is required for proxy support.")
-        sock.set_proxy(*proxy)
-    sock.connect((url.hostname, url.port or (443 if https else 80)))
+    sock = await create_socket(
+        url.hostname,
+        url.port or ("https" if https else "http"),
+        proxy,
+    )
     reader, writer = await asyncio.open_connection(
         sock=sock,
         ssl=https,
@@ -116,9 +173,8 @@ async def request(  # noqa: D103
             headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]
     writer.close()
     await writer.wait_closed()
-    assert "status" in locals() or print(
-        f"{method} request to {url.geturl()} failed."
-    )
+    if "status" not in locals():
+        raise AssertionError("No HTTP response received")
     return int(status), headers, data
 
 
@@ -158,11 +214,18 @@ def send(  # pylint: disable=too-many-arguments
             proxy=proxy,
         )
     )
-    return (
-        response[0],  # status
-        response[1],  # header
-        pickle.loads(response[2]),  # data
-    )
+    try:
+        return (
+            response[0],  # status
+            response[1],  # header
+            pickle.loads(response[2]),  # data
+        )
+    except pickle.UnpicklingError:
+        return (
+            response[0],
+            response[1],
+            None,
+        )
 
 
 def lisp_always_active() -> bool:
@@ -216,7 +279,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
         print("\033[91m" + response[2] + "\033[0m")
         return
     if isinstance(response[2], SystemExit):
-        raise response[2]
+        raise response[2]  # pylint: disable=raising-bad-type
     if isinstance(response[2], dict):
         if response[2]["success"]:
             if response[2]["output"]:
@@ -262,9 +325,41 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
         print(f"\033[{color}mTook: {took:.3f}s\033[0m")
 
 
-def start() -> None:  # noqa: C901
-    # pylint: disable=too-complex, too-many-branches, too-many-statements
+def main() -> None:  # noqa: C901
+    # pylint: disable=too-complex, too-many-branches, too-many-locals, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
+    if "--help" in sys.argv or "-h" in sys.argv:
+        sys.exit(
+            """
+
+Accepted arguments:
+
+    --clear-cache      clear the whole cache
+    --lisp             enable Lots of Irritating Superfluous Parentheses
+    --new-proxy        don't use the cached proxy
+    --new-session      start a new session with cached URL and key
+    --no-cache         start without a cache
+    --no-patch-help    don't patch help()
+    --timing           print the time it took to execute each command
+
+    --help or -h       show this help message
+
+""".strip()
+        )
+    for arg in sys.argv[1:]:
+        if arg not in {
+            "--clear-cache",
+            "--lisp",
+            "--new-proxy",
+            "--new-session",
+            "--no-cache",
+            "--no-patch-help",
+            "--timing",
+            "--help",
+            "-h",
+        }:
+            print(f"Unknown argument: {arg}")
+            sys.exit(64 + 4 + 1)
     url: None | str = None
     key: None | str = None
     session: None | str = None
@@ -389,7 +484,8 @@ def start() -> None:  # noqa: C901
             print("\033[91mImporting Hy failed!\033[0m")
 
     # pylint: disable=import-outside-toplevel
-    from pyrepl.python_reader import ReaderConsole, main  # type: ignore
+    from pyrepl.python_reader import ReaderConsole  # type: ignore
+    from pyrepl.python_reader import main as _main
 
     # patch the reader console to use our run function
     ReaderConsole.execute = lambda self, code: run_and_print(
@@ -403,44 +499,11 @@ def start() -> None:  # noqa: C901
     )
 
     # run the reader
-    main()
+    try:
+        _main()
+    except EOFError:
+        pass
 
 
 if __name__ == "__main__":
-    if "--help" in sys.argv or "-h" in sys.argv:
-        print(
-            """
-
-Accepted arguments:
-
-    --clear-cache      clear the whole cache
-    --lisp             enable Lots of Irritating Superfluous Parentheses
-    --new-proxy        don't use the cached proxy
-    --new-session      start a new session with cached URL and key
-    --no-cache         start without a cache
-    --no-patch-help    don't patch help()
-    --timing           print the time it took to execute each command
-
-    --help or -h       show this help message
-
-""".strip()
-        )
-        sys.exit()
-    for arg in sys.argv[1:]:
-        if arg not in {
-            "--clear-cache",
-            "--lisp",
-            "--new-proxy",
-            "--new-session",
-            "--no-cache",
-            "--no-patch-help",
-            "--timing",
-            "--help",
-            "-h",
-        }:
-            print(f"Unknown argument: {arg}")
-            sys.exit(64 + 4 + 1)
-    try:
-        start()
-    except (EOFError, KeyboardInterrupt):
-        print("Exiting.")
+    main()
