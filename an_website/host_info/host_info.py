@@ -19,6 +19,7 @@ Only to inform, not to brag.
 from __future__ import annotations
 
 import logging
+import re
 import sys
 
 from tornado.web import HTTPError as HTTPEwwow
@@ -54,6 +55,13 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+def minify_ascii_art(text: str) -> str:
+    """Minify an ascii art string."""
+    return "\n".join(  # for arch: 1059 → 898
+        re.sub(r"\s+\[0m$", "[0m", line) for line in text.split("\n")
+    )
+
+
 class HostInfo(HTMLRequestHandler):
     """The request handler for the host info page."""
 
@@ -66,9 +74,9 @@ class HostInfo(HTMLRequestHandler):
         Use screenfetch to generate the page.
         """
         if "LOGO" not in self.SCREENFETCH_CACHE:
-            self.SCREENFETCH_CACHE["LOGO"] = (
+            self.SCREENFETCH_CACHE["LOGO"] = minify_ascii_art((
                 await run(f"{DIR}/screenfetch", "-L")
-            )[1].decode("utf-8")
+            )[1].decode("utf-8"))
 
         await self.render(
             "pages/ansi2html.html",
