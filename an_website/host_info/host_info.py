@@ -74,9 +74,9 @@ class HostInfo(HTMLRequestHandler):
         Use screenfetch to generate the page.
         """
         if "LOGO" not in self.SCREENFETCH_CACHE:
-            self.SCREENFETCH_CACHE["LOGO"] = minify_ascii_art((
-                await run(f"{DIR}/screenfetch", "-L")
-            )[1].decode("utf-8"))
+            self.SCREENFETCH_CACHE["LOGO"] = minify_ascii_art(
+                (await run(f"{DIR}/screenfetch", "-L"))[1].decode("utf-8")
+            )
 
         await self.render(
             "pages/ansi2html.html",
