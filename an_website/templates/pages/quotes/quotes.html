@@ -44,7 +44,7 @@
             <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
             <div class="tooltip-text">Downloade das Zitat als Bild.</div>
         </a>
-        <a class="share tooltip" id="share" rel="noreferrer"
+        <a class="share tooltip" id="share" rel="nofollow"
            href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
         >
             <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
@@ -145,6 +145,7 @@ JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.
 {% end %}
 
 {% block head %}
+    <meta class="elastic" name="quote-rating" content="{{wrong_quote.rating}}">
     <link rel="stylesheet" type="text/css" href="/static/style/form.css">
     <link rel="stylesheet" type="text/css" href="/static/style/quote.css">
     <script defer src="/static/js/quote.js"

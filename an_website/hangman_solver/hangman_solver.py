@@ -19,7 +19,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
 
-from tornado.web import HTTPError, RequestHandler
+from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
@@ -237,63 +237,55 @@ async def solve_hangman(
     )
 
 
-async def handle_request(request_handler: RequestHandler) -> Hangman:
-    """Get the info from the request handler and return the Hangman object."""
-    max_words = max(
-        0,
-        min(
-            100,
-            int(
-                str(
-                    request_handler.get_query_argument(
-                        "max_words", default="20"
-                    )
-                )
-            ),
-        ),
-    )
-
-    crossword_mode_str = str(
-        request_handler.get_query_argument("crossword_mode", default="False")
-    )
-    crossword_mode = str_to_bool(crossword_mode_str)  # if crossword mode
-
-    language = str(
-        request_handler.get_query_argument("lang", default="de_only_a-z")
-    )
-
-    input_str = str(request_handler.get_query_argument("input", default=""))
-
-    invalid = str(request_handler.get_query_argument("invalid", default=""))
-
-    return await solve_hangman(
-        max_words=max_words,
-        crossword_mode=crossword_mode,
-        language=language,
-        input_str=input_str,
-        invalid=invalid,
-    )
-
-
 class HangmanSolver(HTMLRequestHandler):
     """Request handler for the hangman solver page."""
 
     RATELIMIT_TOKENS = 3
 
+    async def get_hangman_obj(self) -> Hangman:
+        """Get the information and return the Hangman object."""
+        max_words = max(
+            0,
+            min(
+                100,
+                int(str(self.get_query_argument("max_words", default="20"))),
+            ),
+        )
+
+        crossword_mode_str = str(
+            self.get_query_argument("crossword_mode", default="False")
+        )
+        crossword_mode = str_to_bool(crossword_mode_str)  # if crossword mode
+
+        language = str(self.get_query_argument("lang", default="de_only_a-z"))
+
+        input_str = str(self.get_query_argument("input", default=""))
+
+        invalid = str(self.get_query_argument("invalid", default=""))
+
+        return await solve_hangman(
+            max_words=max_words,
+            crossword_mode=crossword_mode,
+            language=language,
+            input_str=input_str,
+            invalid=invalid,
+        )
+
     async def get(self) -> None:
         """Handle the GET request and render the page."""
-        hangman = await handle_request(self)
+        hangman = await self.get_hangman_obj()
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
-class HangmanSolverAPI(APIRequestHandler):
+class HangmanSolverAPI(HangmanSolver, APIRequestHandler):
     """Request handler for the hangman solver JSON API."""
 
     RATELIMIT_TOKENS = 3
+    IS_NOT_HTML = True
 
     async def get(self) -> None:
         """Handle the GET request and write the Hangman object as JSON."""
-        hangman = await handle_request(self)
+        hangman = await self.get_hangman_obj()
         hangman_dict = asdict(hangman)
         # convert set to list, because the set can't be converted to JSON.
         hangman_dict["words"] = list(hangman_dict["words"])
