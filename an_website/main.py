@@ -26,7 +26,6 @@ from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import Any
 
-import hy  # type: ignore
 import orjson
 from aioredis import BlockingConnectionPool, Redis
 from ecs_logging import StdlibFormatter
@@ -611,11 +610,6 @@ def main() -> None:
 
     This is the main function that is called when running this file.
     """
-    try:
-        if os.nice(hy.eval(hy.read_str("(+ -3 (* 6 12))"))) == 69:
-            logger.info("Nice!")
-    except AttributeError:
-        pass
     signal.signal(signal.SIGHUP, signal_handler)
     patches.apply()
     config = configparser.ConfigParser(interpolation=None)
