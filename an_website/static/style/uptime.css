@@ -1,1 +1,1 @@
-.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font-size:xx-large}@font-face{font-family:"clock-face";font-style:normal;src:url("/static/fonts/CursedTimerUlil-Aznm.woff2") format("woff2")}#uptime{font-style:normal;font-family:monospace}
+.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font-size:xx-large}@font-face{font-family:"clock-face";font-style:normal;src:url("/static/fonts/CursedTimerUlil-Aznm.woff2?v=0") format("woff2")}#uptime{font-style:normal;font-family:monospace}
