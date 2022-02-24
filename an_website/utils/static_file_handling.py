@@ -117,10 +117,6 @@ class CachedStaticFileHandler(StaticFileHandler):
         """Set the default headers for this handler."""
         super().set_headers()
         if not sys.flags.dev_mode and "v" in self.request.arguments:
-            self.set_header(
-                "Expires",
-                "Thu, 15 Apr 2020 20:00:00 GMT",
-            )
             self.set_header(  # never changes
                 "Cache-Control",
                 f"public, immutable, min-fresh={10 * 365 * 24 * 60 * 60}",
