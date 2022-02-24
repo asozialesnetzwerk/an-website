@@ -41,17 +41,17 @@
            href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.gif')}}"
            download="zitat-{{ wrong_quote.get_id_as_str() }}.gif"
         >
-            <img class="download-img button-img" src="/static/img/arrow.svg" alt="Zitat downloaden.">
+            <img class="download-img button-img" src="{{fix_static('img/arrow.svg')}}" alt="Zitat downloaden.">
             <div class="tooltip-text">Downloade das Zitat als Bild.</div>
         </a>
         <a class="share tooltip" id="share" rel="nofollow"
            href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
         >
-            <img class="share-img button-img" src="/static/img/arrow.svg" alt="Zitat teilen.">
+            <img class="share-img button-img" src="{{fix_static('img/arrow.svg')}}" alt="Zitat teilen.">
             <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
         </a>
         <a class="get-quote tooltip" id="next" href="{{next_href}}" rel="noreferrer">
-            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="/static/img/arrow.svg">
+            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="{{fix_static('img/arrow.svg')}}">
             <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
         </a>
     </div>
@@ -62,13 +62,13 @@
     <button type="submit" id="upvote" name="vote"
             class="tooltip form-button vote {% if vote == 1 %} voted {% end %}"
             value={% if vote == 1 %}"0"{% else %}"1"{% end %} >
-        <img src="/static/img/StempelWitzigKlein.svg" alt="WITZIG!">
+        <img src="{{fix_static('img/StempelWitzigKlein.svg')}}" alt="WITZIG!">
         <div class="tooltip-text">Bewerte das Zitat als witzig!</div>
     </button>
     <button type="submit" id="downvote" name="vote"
             class="tooltip form-button vote {% if vote == -1 %} voted {% end %}"
             value={% if vote == -1 %}"0"{% else %}"-1"{% end %} >
-        <img src="/static/img/StempelNichtWitzigKlein.svg" alt="NICHT WITZIG!">
+        <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}" alt="NICHT WITZIG!">
         <div class="tooltip-text">Bewerte das Zitat als nicht witzig!</div>
     </button>
 </form>
@@ -76,7 +76,7 @@
 <div id="bottom-buttons-container">
     <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}" rel="noreferrer">
         <img class="button-img button-img-no-rotation"
-             src="/static/img/plus.svg" alt="Zitat hinzufügen.">
+             src="{{fix_static('img/plus.svg')}}" alt="Zitat hinzufügen.">
         <div class="tooltip-text">Neues Zitat hinzufügen</div>
     </a>
 
@@ -86,7 +86,7 @@
         >
             <img class="button-img report-img button-img-no-rotation"
                  alt="Zitat melden."
-                 src="/static/img/report.svg">
+                 src="{{fix_static('img/report.svg')}}">
             <div class="tooltip-text">Melde das Zitat.</div>
         </a>
     {% end %}
@@ -146,8 +146,8 @@ JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.
 
 {% block head %}
     <meta class="elastic" name="quote_rating" content="{{wrong_quote.rating}}">
-    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
-    <link rel="stylesheet" type="text/css" href="/static/style/quote.css">
-    <script defer src="/static/js/quote.js"
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/quote.css')}}">
+    <script defer src="{{fix_static('js/quote.js')}}"
             onload="startQuotes('{{wrong_quote.get_id_as_str()}}', '{{next_id}}')"></script>
 {% end %}

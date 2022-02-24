@@ -9,7 +9,7 @@
     </tr>
     {% for file_name in js_files %}
     <tr>
-        <td><a no-dynload href="/static/js/{{ file_name }}" rel="noreferrer">{{ file_name }}</a></td>
+        <td><a no-dynload href="{{fix_static(f'js/file_name')}}" rel="noreferrer">{{ file_name }}</a></td>
         <td><a no-dynload href="http://www.gnu.org/licenses/agpl-3.0.html" rel="noreferrer">GNU-AGPL-3.0-or-later</a></td>
     </tr>
     {% end %}

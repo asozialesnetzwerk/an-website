@@ -47,6 +47,7 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from .. import REPO_URL
+from .static_file_handling import fix_static_url
 from .utils import (
     THEMES,
     ModuleInfo,
@@ -615,6 +616,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "lang": "de",  # can change in future
                 "form_appendix": self.get_form_appendix(),
                 "fix_url": self.fix_url,
+                "fix_static": lambda url: self.fix_url(fix_static_url(url)),
                 "REPO_URL": self.fix_url(REPO_URL),
                 "theme": self.get_display_theme(),
                 "contact_email": self.get_contact_email(),

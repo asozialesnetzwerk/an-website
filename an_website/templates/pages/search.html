@@ -26,7 +26,7 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="/static/style/form.css">
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
     <style>em {color: var(--contrast-2);}</style>
-    <script defer src="/static/js/search.js"></script>
+    <script defer src="{{fix_static('js/search.js')}}"></script>
 {% end %}

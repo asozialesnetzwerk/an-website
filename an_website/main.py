@@ -33,9 +33,10 @@ from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from tornado.log import LogFormatter
-from tornado.web import Application, RedirectHandler, StaticFileHandler
+from tornado.web import Application, RedirectHandler
 
-from . import DIR, NAME, STATIC_DIR, TEMPLATES_DIR, patches
+from . import DIR, NAME, TEMPLATES_DIR, patches
+from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFound
 from .utils.utils import Handler, ModuleInfo, Timer, time_function
 from .version import version
@@ -46,6 +47,7 @@ IGNORED_MODULES = [
     "static.*",
     "templates.*",
     "utils.utils",
+    "utils.static_file_handling",
     "swapped_words.sw_config_file",
     "quotes.quotes_img",
     "quotes.share_page",
@@ -164,7 +166,7 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
             break
 
 
-def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
+def get_all_handlers(
     module_infos: tuple[ModuleInfo, ...],
 ) -> list[Handler]:
     """
@@ -173,40 +175,8 @@ def get_all_handlers(  # noqa: C901  # pylint: disable=too-complex
     If a handler has only 2 elements a dict with title and description gets
     added. This information is gotten from the module info.
     """
-    handlers: list[Handler] = []
+    handlers: list[Handler] = static_file_handling.get_handlers()
 
-    if sys.flags.dev_mode:
-        # add handlers for the not minified CSS files
-        handlers.append(
-            (
-                "/static/style/(.+.css)",
-                StaticFileHandler,
-                {"path": os.path.join(os.path.dirname(DIR), "style")},
-            )
-        )
-        # add handlers for the not minified JS files
-        for folder, _, files in os.walk(
-            DIR,
-            topdown=True,
-            onerror=None,
-            followlinks=False,
-        ):
-            if folder != os.path.join(STATIC_DIR, "js"):
-                handlers.extend(
-                    (
-                        f"/static/js/({file})",
-                        StaticFileHandler,
-                        {"path": folder},
-                    )
-                    for file in files
-                    if file.endswith(".js")
-                )
-
-    # static files in /static/, add it here, so it is after the JS handlers
-    handlers.append((r"/static/(.*)", StaticFileHandler, {"path": STATIC_DIR}))
-    handlers.append(
-        (r"/(robots.txt|favicon.ico)", StaticFileHandler, {"path": STATIC_DIR})
-    )
     # add all the normal handlers
     for module_info in module_infos:
         for handler in module_info.handlers:

@@ -10,7 +10,7 @@
     <div id="status">{{status}}</div>
     <div id="reason">{{reason}}</div>
     {% if status == 469 %}
-        <img id="🐈" alt="🐈" src="{{fix_url('/static/img/469.jpg')}}">
+        <img id="🐈" alt="🐈" src="{{fix_static('img/469.jpg')}}">
     {% elif not no_3rd_party %}
         <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
     {% end %}
@@ -19,5 +19,5 @@
 
 {% block head %}
 <meta name="robots" content="noindex">
-<link rel="stylesheet" type="text/css" href="{{fix_url('/static/style/error.css')}}">
+<link rel="stylesheet" type="text/css" href="{{fix_static('style/error.css')}}">
 {% end %}

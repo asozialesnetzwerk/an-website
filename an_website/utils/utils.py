@@ -20,6 +20,7 @@ import ipaddress
 import os
 import random
 import re
+import subprocess
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -33,6 +34,7 @@ from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RequestHandler
 
+from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
 
 # pylint: disable=consider-alternative-union-syntax
@@ -363,6 +365,21 @@ def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
             ).digest()
         ).hexdigest()
     )
+
+
+def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
+    """Run a command in a subprocess."""
+    try:
+        return subprocess.run(
+            cmd,
+            cwd=directory,
+            shell=True,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except subprocess.CalledProcessError:
+        return ""
 
 
 def length_of_match(_m: re.Match[str]) -> int:

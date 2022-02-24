@@ -32,19 +32,18 @@
             })
         </script>
     {% end %}
-    {% if c %}<link rel="stylesheet" type="text/css" href="/static/style/comic.css">{% end %}
+    {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
     <link rel="canonical" href="{{url.split('?')[0]}}">
-    <link rel="stylesheet" type="text/css" href="/static/style/themes/{{theme}}.css">
-    <link rel="stylesheet" type="text/css" href="/static/style/base.css">
-    {% if c %}<style>@import url("/static/style/comic.css");</style>{% end %}
+    <link rel="stylesheet" type="text/css" href="{{fix_static(f'style/themes/{theme}.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/base.css')}}">
     <style id="title-style">
     #title:before{content:"{{short_title}}"}
 {% if title != short_title %}@media(min-width:500px){ #title:before{content:"{{title}}"}}{% end %}
     </style>
-    <script defer src="/static/js/utils.js"></script>
+    <script defer src="{{fix_static('js/utils.js')}}"></script>
     {% if dynload %}
     <script defer
-            src="/static/js/dynamically_load.js"
+            src="{{fix_static('js/dynamically_load.js')}}"
             onload="dynLoadReplaceAnchors()"
     ></script>
     {% end %}

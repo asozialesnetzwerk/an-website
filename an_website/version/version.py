@@ -15,32 +15,14 @@
 from __future__ import annotations
 
 import hashlib
-import subprocess
 
-from .. import DIR
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, run_shell_cmd
 
-
-def run_cmd(cmd: str) -> str:
-    """Run a command in a subprocess."""
-    try:
-        return subprocess.run(
-            cmd,
-            cwd=DIR,
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    except subprocess.CalledProcessError:
-        return ""
-
-
-VERSION = run_cmd("git rev-parse HEAD").strip()
-FILE_HASHES = run_cmd("git ls-files | xargs sha1sum")
+VERSION = run_shell_cmd("git rev-parse HEAD").strip()
+FILE_HASHES = run_shell_cmd("git ls-files | xargs sha1sum")
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = run_cmd("git rev-parse origin/gh-pages")
+GH_PAGES_COMMIT_HASH = run_shell_cmd("git rev-parse origin/gh-pages")
 
 
 def get_module_info() -> ModuleInfo:

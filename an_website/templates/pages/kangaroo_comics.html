@@ -32,6 +32,6 @@ Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sor
 {% end %}
 
 {% block head %}
-<link rel="stylesheet" href="/static/style/kangaroo_comics.css">
-<script defer {% if not no_3rd_party %}onload="startLoadingComics()"{%end%} src="/static/js/kangaroo_comics.js"></script>
+<link rel="stylesheet" href="{{fix_static('style/kangaroo_comics.css')}}">
+<script defer {% if not no_3rd_party %}onload="startLoadingComics()"{%end%} src="{{fix_static('js/kangaroo_comics.js')}}"></script>
 {% end %}

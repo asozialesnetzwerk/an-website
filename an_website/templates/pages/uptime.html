@@ -10,6 +10,6 @@
 {% end %}
 
 {% block head %}
-<link rel="stylesheet" type="text/css" href="{{fix_url('/static/style/uptime.css')}}">
-<script defer src="{{fix_url('/static/js/uptime.js')}}" onload="startDisplayingUptime({{uptime}})"></script>
+<link rel="stylesheet" type="text/css" href="{{fix_static('style/uptime.css')}}">
+<script defer src="{{fix_static('js/uptime.js')}}" onload="startDisplayingUptime({{uptime}})"></script>
 {% end %}
