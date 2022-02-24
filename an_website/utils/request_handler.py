@@ -26,7 +26,7 @@ import time
 import traceback
 import uuid
 from collections.abc import Coroutine
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import cache
 from http.client import responses
 from typing import Any
@@ -905,6 +905,7 @@ class ElasticRUM(BaseRequestHandler):
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
     SCRIPTS: dict[str, tuple[str, float]] = {}
+    CACHE_TIME = 365 * 60 * 60 * 24
 
     async def get(self, version: str, spam: str = "", eggs: str = "") -> None:
         """Serve the RUM script."""
@@ -932,6 +933,9 @@ class ElasticRUM(BaseRequestHandler):
             if spam:
                 self.set_header("SourceMap", self.URL + ".map")
         self.set_header(
-            "Cache-Control", f"min-fresh={365 * 60 * 60 * 24}, immutable"
+            "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)
+        )
+        self.set_header(
+            "Cache-Control", f"public, min-fresh={self.CACHE_TIME}, immutable"
         )
         return await self.finish(self.SCRIPTS[key][0])

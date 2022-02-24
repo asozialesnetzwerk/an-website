@@ -68,11 +68,11 @@
 }
 
 .nicht-witzig::after {
-    content: url(/static/img/StempelNichtWitzigKlein.svg);
+    content: url(/static/img/StempelNichtWitzigKlein.svg?v=0);
 }
 
 .witzig::after {
-    content: url(/static/img/StempelWitzigKlein.svg);
+    content: url(/static/img/StempelWitzigKlein.svg?v=0);
 }
 
 .invisible {
@@ -145,7 +145,7 @@
 
 @media (orientation:landscape) {
     #quote-container {
-        background: transparent url("/static/img/ZitateBackground.svg") no-repeat right top 5px;
+        background: transparent url("/static/img/ZitateBackground.svg?v=0") no-repeat right top 5px;
         /*background-position: right 10px top 5px;*/
         width: 50rem;
         min-height: 380px;
