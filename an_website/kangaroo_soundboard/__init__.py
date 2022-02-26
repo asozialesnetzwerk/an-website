@@ -24,7 +24,7 @@ from functools import cache, lru_cache
 
 import orjson as json
 
-from ..utils.utils import name_to_id, replace_umlauts
+from ..utils.utils import hash_file, name_to_id, replace_umlauts
 
 DIR = os.path.dirname(__file__)
 
@@ -165,17 +165,18 @@ class SoundInfo(Info):
         fix_url_func: Callable[[str], str] = lambda url: url,
         query: None | str = None,
     ) -> str:
-        """Parse the info to a list element with a audio element."""
+        """Parse the info to a list element with an audio element."""
         file = self.get_file_name()
         href = fix_url_func(f"/soundboard/{self.person.name}")
+        path = f"/files/{file}.mp3"
+        file_url = f"/soundboard{path}?v={hash_file(DIR + path)[:8]}"
         return (
             f'<li><a href="{href}" rel="noreferrer"'
             f'class="a_hover">{mark_query(self.person.value, query)}</a>'
-            f': »<a no-dynload href="/soundboard/files/{file}.mp3" '
+            f': »<a no-dynload href="{file_url}" '
             f'class="quote-a" rel="noreferrer">'
             f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
-            f'<source src="/soundboard/files/{file}.mp3" '
-            f'type="audio/mpeg"></source></audio></li>'
+            f'<source src="{file_url}" type="audio/mpeg"></source></audio></li>'
         )
 
     @cache

@@ -18,9 +18,10 @@ import os.path
 from collections.abc import Callable, Iterable
 from functools import cache
 
-from tornado.web import HTTPError, RedirectHandler, StaticFileHandler
+from tornado.web import HTTPError, RedirectHandler
 
 from ..utils.request_handler import HTMLRequestHandler
+from ..utils.static_file_handling import CachedStaticFileHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from . import (
     ALL_SOUNDS,
@@ -46,7 +47,7 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (
                 r"/soundboard/files/(.*mp3)",
-                StaticFileHandler,
+                CachedStaticFileHandler,
                 {"path": os.path.join(DIR, "files")},
             ),
             (

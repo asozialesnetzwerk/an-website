@@ -22,12 +22,11 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
-from blake3 import blake3  # type: ignore[import]
 from tornado.web import StaticFileHandler
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
-from .utils import Handler
+from .utils import Handler, hash_file
 
 logger = logging.getLogger(__name__)
 
@@ -37,15 +36,10 @@ def create_file_hashes_dict() -> dict[str, str]:
     return dict(
         (
             str(file).removeprefix(ROOT_DIR),
-            blake3(content).hexdigest()[:8],  # pylint: disable=not-callable
+            hash_file(file)[:8],
         )
         for file in Path(STATIC_DIR).rglob("*")
-        if (
-            file.is_file()  # pylint: disable=simplifiable-condition
-            and (open_file := file.open(mode="rb"))
-            and (content := open_file.read())
-            and (open_file.close() or 69)
-        )
+        if file.is_file()
     )
 
 

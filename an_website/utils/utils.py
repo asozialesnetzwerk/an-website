@@ -26,6 +26,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import cache
+from pathlib import Path
 from typing import IO, Any, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -365,6 +366,14 @@ def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
             ).digest()
         ).hexdigest()
     )
+
+
+def hash_file(file: Path | str) -> str:
+    """Hash a file with blake3."""
+    with open(file, mode="rb") as opened:
+        return str(
+            blake3(opened.read()).hexdigest()  # pylint: disable=not-callable
+        )
 
 
 def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
