@@ -84,7 +84,14 @@ class Search(HTMLRequestHandler):
                     self.settings["APP_SEARCH"].search,
                     self.settings["APP_SEARCH_ENGINE_NAME"],
                     body={
-                        "query": query,  # TODO: filter unfunny quotes
+                        "query": query,
+                        "filters": {
+                            "none": {
+                                "quote_rating": {
+                                    "to": 1,
+                                },
+                            },
+                        },
                         "result_fields": {
                             "title": {
                                 "snippet": {
