@@ -14,10 +14,12 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 import sys
 from collections.abc import Awaitable
+from functools import cache
 from typing import Any
 
 from tornado.web import StaticFileHandler
@@ -25,6 +27,8 @@ from tornado.web import StaticFileHandler
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
 from .utils import Handler, add_args_to_url, run_shell_cmd
+
+logger = logging.getLogger(__name__)
 
 
 def create_file_hashes_dict() -> dict[str, str]:
@@ -34,7 +38,7 @@ def create_file_hashes_dict() -> dict[str, str]:
         for line in run_shell_cmd(
             "find -readable -type f | xargs sha1sum", STATIC_DIR
         ).split("\n")
-        if (stripped := line.strip()) and (split := stripped.split("  "))
+        if (stripped := line.strip()) and len(split := stripped.split("  ")) > 1
     )
 
 
@@ -80,12 +84,14 @@ def get_handlers() -> list[Handler]:
     return handlers
 
 
+@cache
 def fix_static_url(url: str) -> str:
     """Fix the URL for static files."""
     if not url.startswith("/static/"):
         url = f"/static/{url.lstrip('/')}"
     if url in FILE_HASHES_DICT:
         return add_args_to_url(url, v=FILE_HASHES_DICT[url])
+    logger.warning("%s not in FILE_HASHES_DICT", url)
     return url
 
 
