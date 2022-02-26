@@ -306,7 +306,7 @@ administratives/kaenguru-comics/kaenguru-045/original
 
         const closeButton = d.createElement("img");
         closeButton.classList.add("close-button");
-        closeButton.src = "/static/img/close.svg";
+        closeButton.src = "/static/img/close.svg?v=0";
 
         popupContainer.appendChild(clone);
         popupContainer.appendChild(closeButton);

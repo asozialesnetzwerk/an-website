@@ -26,7 +26,7 @@ from tornado.web import StaticFileHandler
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
-from .utils import Handler, add_args_to_url, run_shell_cmd
+from .utils import Handler, run_shell_cmd
 
 logger = logging.getLogger(__name__)
 
@@ -89,25 +89,16 @@ def fix_static_url(url: str) -> str:
     """Fix the URL for static files."""
     if not url.startswith("/static/"):
         url = f"/static/{url.lstrip('/')}"
+    if "?" in url:
+        url = url.split("?")[0]
     if url in FILE_HASHES_DICT:
-        return add_args_to_url(url, v=FILE_HASHES_DICT[url])
+        return f"{url}?v={FILE_HASHES_DICT[url]}"
     logger.warning("%s not in FILE_HASHES_DICT", url)
     return url
 
 
 class CachedStaticFileHandler(StaticFileHandler):
-    """
-    A static file handler that caches the files it serves.
-
-    To change the way static urls are generated (e.g. to match the behavior
-    of another server or CDN), override `make_static_url`, `parse_url_path`,
-    `get_cache_time`, and/or `get_version`.
-
-    To replace all interaction with the filesystem (e.g. to serve
-    static content from a database), override `get_content`,
-    `get_content_size`, `get_modified_time`, `get_absolute_path`, and
-    `validate_absolute_path`
-    """
+    """A static file handler that sets a smarter Cache-Control header."""
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass

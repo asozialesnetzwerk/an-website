@@ -56,6 +56,16 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/([0-9]{1,10})-([0-9]{1,10})", QuoteById),
             (r"/zitate/([0-9]{1,10})", QuoteById),
             (
+                r"/zitate/-([0-9]{1,10})",
+                RedirectHandler,
+                {"url": "/zitate/info/a/{0}"},
+            ),
+            (
+                r"/zitate/([0-9]{1,10})-",
+                RedirectHandler,
+                {"url": "/zitate/info/z/{0}"},
+            ),
+            (
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
                 QuoteAsImg,
             ),

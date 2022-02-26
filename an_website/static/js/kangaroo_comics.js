@@ -79,7 +79,7 @@ if(loaded>=comics.length){loadButton.style.opacity="0";loadButton.style.visibili
 elById("load-button").onclick=loadMoreComics;log(elById("load-button").onclick)
 function createImgPopup(image){removeAllPopups();const popupContainer=d.createElement("div");popupContainer.classList.add("popup-container");popupContainer.onmouseleave=()=>{popupContainer.remove();}
 popupContainer.onclick=()=>{removeAllPopups();}
-const clone=image.cloneNode(true);clone.classList.remove("normal-img");clone.classList.add("popup-img");const closeButton=d.createElement("img");closeButton.classList.add("close-button");closeButton.src="/static/img/close.svg";popupContainer.appendChild(clone);popupContainer.appendChild(closeButton);image.parentNode.appendChild(popupContainer);}
+const clone=image.cloneNode(true);clone.classList.remove("normal-img");clone.classList.add("popup-img");const closeButton=d.createElement("img");closeButton.classList.add("close-button");closeButton.src="/static/img/close.svg?v=0";popupContainer.appendChild(clone);popupContainer.appendChild(closeButton);image.parentNode.appendChild(popupContainer);}
 comics.push.apply(comics,links.split("\n"));addLinksToComics();const today=dateIncreaseByDays(getToday(),1);setCurrentComic(today)
 currentImg.onerror=(event)=>{dateIncreaseByDays(today,-1);setCurrentComic(today);if(loaded<comicCountToLoadOnCLick)loaded++;};}
 // @license-end
