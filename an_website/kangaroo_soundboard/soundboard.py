@@ -73,7 +73,7 @@ def get_module_info() -> ModuleInfo:
                 SoundboardHTMLHandler,
             ),
             (
-                r"/soundboard/([^./]*)",
+                r"/soundboard/([^./]+)",
                 SoundboardHTMLHandler,
             ),
         ),
