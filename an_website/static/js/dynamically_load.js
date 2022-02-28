@@ -1,6 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 const bodyDiv=elById("body");function getJSONURLWithParams(originalUrl){if(originalUrl.includes("#")){originalUrl=originalUrl.split("#")[0];}
-let[url,query]=(originalUrl.includes("?")?originalUrl.split("?"):[originalUrl,""]);let params=new URLSearchParams(query);params.set("as_json","sure");return[url+(url.endsWith("/")?"":"/"),params.toString()];}
+let[url,query]=(originalUrl.includes("?")?originalUrl.split("?"):[originalUrl,""]);let params=new URLSearchParams(query);params.set("as_json","sure");return[url,params.toString()];}
 const lastLoaded=[];function dynLoadOnData(data,onpopstate){if(!data){error("No data received");return;}
 if(data["redirect"]){w.location.href=data["redirect"];return;}
 const url=data["url"];if(!url){error("No URL in data ",data);return;}
@@ -16,10 +16,7 @@ elById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();w.urlData
 function dynLoadReplaceAnchors(){for(const anchor of d.getElementsByTagName("A")){dynLoadReplaceHrefOnAnchor(anchor);}}
 function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload")){return;}
 anchor.href=dynLoadGetFixedHref(anchor.href);}
-function dynLoadGetFixedHref(url){const href=url.startsWith("/")?(w.location.origin+url):url;if(href.startsWith("javascript:")||!href.startsWith(w.location.origin)||(href.split("/").pop().includes(".")&&!href.startsWith(w.location.origin+"/redirect/"))||href.startsWith(w.location.origin+"/chat/"))return href;if(href.includes("#")&&(href.startsWith("#")||((!w.location.hash&&href.startsWith(w.location.href+"#"))||href.startsWith(w.location.origin
-+w.location.pathname
-+w.location.search
-+"#"))))return href;return`javascript:dynLoad("${href.replace('"', '%22')}");`;}
+function dynLoadGetFixedHref(url){const href=url.startsWith("/")?(w.location.origin+url):url;const hrefWithoutQuery=href.split("?")[0];if(href.startsWith("javascript:")||!href.startsWith(w.location.origin)||(hrefWithoutQuery.split("/").pop().includes(".")&&hrefWithoutQuery!==(w.location.origin+"/redirect"))||hrefWithoutQuery===(w.location.origin+"/chat"))return href;if(href.startsWith("#")||href.startsWith(w.location.href.split("#")[0]+"#"))return href;return`javascript:dynLoad("${href.replace('"', '%22')}");`;}
 function dynLoad(url){log("Loading url",url);history.replaceState({"data":w.urlData,"url":w.location.href,"scrollPos":[d.documentElement.scrollLeft||d.body.scrollLeft,d.documentElement.scrollTop||d.body.scrollTop],"stateType":"dynLoad"},d.title,w.location.href);dynLoadSwitchToURL(url);}
 function dynLoadSwitchToURL(url,allowSameUrl=false){if(!allowSameUrl&&url===w.location.href){error("URL is the same as current, ignoring");return;}
 bodyDiv.prepend("Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.");const[requestUrl,params]=getJSONURLWithParams(url);get(requestUrl,params,(data)=>dynLoadOnData(data,false),(error)=>{log(error);if(url===w.location.href){w.location.href=url;}else{w.location.reload();}});}

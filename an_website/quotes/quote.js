@@ -121,7 +121,7 @@ function startQuotes(currId, nextId) {
     )
 
     nextButton.onclick = () => get(
-        `/api/zitate/${nextQuoteId[0]}/`,
+        `/api/zitate/${nextQuoteId[0]}`,
         params,
         (data) => {
             if (handleData(data)) {

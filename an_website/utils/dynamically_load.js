@@ -12,7 +12,7 @@ function getJSONURLWithParams(originalUrl) {
     );
     let params = new URLSearchParams(query);
     params.set("as_json", "sure");
-    return [url + (url.endsWith("/") ? "" : "/"), params.toString()];
+    return [url, params.toString()];
 }
 
 const lastLoaded = [];
@@ -92,7 +92,7 @@ function dynLoadReplaceAnchors() {
 }
 
 function dynLoadReplaceHrefOnAnchor(anchor) {
-    if (anchor.hasAttribute("no-dynload")){
+    if (anchor.hasAttribute("no-dynload")) {
         return;
     }
     anchor.href = dynLoadGetFixedHref(anchor.href);
@@ -102,6 +102,7 @@ function dynLoadGetFixedHref(url) {
     const href = url.startsWith("/")
             ? (w.location.origin + url)
             : url;
+    const hrefWithoutQuery = href.split("?")[0];
     if (
         // already dealt with
         href.startsWith("javascript:")
@@ -109,33 +110,17 @@ function dynLoadGetFixedHref(url) {
         || !href.startsWith(w.location.origin)
         // link is to file, not html page
         || (
-            href.split("/").pop().includes(".")
+            hrefWithoutQuery.split("/").pop().includes(".")
             // urls to redirect page are html pages
-            && !href.startsWith(w.location.origin + "/redirect/")
+            && hrefWithoutQuery !== (w.location.origin + "/redirect")
         )
-        // link is to /chat/, which redirects to another page
-        || href.startsWith(w.location.origin + "/chat/")
+        // link is to /chat, which redirects to another page
+        || hrefWithoutQuery === (w.location.origin + "/chat")
     ) return href;
 
-    if (
-        href.includes("#")  // if has hash
-        &&
-        (
-            href.startsWith("#") // starts with hash -> to the same page
-            ||
-            (
-                (
-                    !w.location.hash // current url has no hash
-                    && href.startsWith(w.location.href + "#")
-                )
-                || href.startsWith(  // is url to the same page
-                    w.location.origin
-                    + w.location.pathname
-                    + w.location.search
-                    + "#"
-                )
-            )
-        )
+    if ( // is url to the same page, but with hash
+        href.startsWith("#")
+        || href.startsWith(w.location.href.split("#")[0] + "#")
     ) return href;
 
     return `javascript:dynLoad("${href.replace('"', '%22')}");`;

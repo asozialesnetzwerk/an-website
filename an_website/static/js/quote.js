@@ -10,7 +10,7 @@ if(vote===-1){downvoteButton.classList.add("voted");downvoteButton.value="0";}el
 function handleData(data){if(data["status"]){error(data)
 if(data["status"]in[429,420]){alert(data["reason"]);}}else if(data&&data["id"]){updateQuoteId(data["id"]);nextQuoteId[0]=data["next"];quote.innerText=`»${data["quote"]}«`;author.innerText=`- ${data["author"]}`;realAuthor.innerText=data["real_author"];realAuthor.href=fixHref(`/zitate/info/a/${data["real_author_id"]}${params}`);updateRating(data["rating"]);updateVote(Number.parseInt(data["vote"]));return true;}}
 w.PopStateHandlers["quotes"]=(event)=>(event.state&&handleData(event.state))
-nextButton.onclick=()=>get(`/api/zitate/${nextQuoteId[0]}/`,params,(data)=>{if(handleData(data)){data["stateType"]="quotes";w.history.pushState(data,"Falsche Zitate",`/zitate/${data["id"]}${params}`)}});function vote(vote){post(`/api/zitate/${thisQuoteId[0]}`,{"vote":vote},(data)=>handleData(data));}
+nextButton.onclick=()=>get(`/api/zitate/${nextQuoteId[0]}`,params,(data)=>{if(handleData(data)){data["stateType"]="quotes";w.history.pushState(data,"Falsche Zitate",`/zitate/${data["id"]}${params}`)}});function vote(vote){post(`/api/zitate/${thisQuoteId[0]}`,{"vote":vote},(data)=>handleData(data));}
 function setDisabledOfVoteButtons(disabled){upvoteButton.disabled=disabled;downvoteButton.disabled=disabled;}
 for(const voteButton of[upvoteButton,downvoteButton]){voteButton.type="button";voteButton.onclick=()=>{setDisabledOfVoteButtons(true);vote(voteButton.value);setDisabledOfVoteButtons(false);}}}
 // @license-end
