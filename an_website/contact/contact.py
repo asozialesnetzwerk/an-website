@@ -125,7 +125,8 @@ def send_mail(  # pylint: disable=too-many-arguments
             datetime.now(tz=timezone.utc)
         )
         server.send_message(
-            message, from_addr=sender_email, to_addrs=receiver_email
+            message, from_addr=sender_email,
+            to_addrs=[addr.strip() for addr in receiver_email.split(",")],
         )
 
 
