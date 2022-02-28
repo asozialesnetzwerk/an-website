@@ -36,6 +36,7 @@ from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
 from . import DIR, NAME, TEMPLATES_DIR, patches
+from .contact.contact import apply_contact_stuff_to_app
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFound
 from .utils.utils import Handler, ModuleInfo, Timer, time_function
@@ -258,6 +259,8 @@ def apply_config_to_app(
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
+    apply_contact_stuff_to_app(app, config)
+
     app.settings["cookie_secret"] = config.get(
         "GENERAL", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
     )
@@ -271,11 +274,6 @@ def apply_config_to_app(
 
     app.settings["LINK_TO_HTTPS"] = config.getboolean(
         "GENERAL", "LINK_TO_HTTPS", fallback=False
-    )
-
-    # used in the header template
-    app.settings["CONTACT_EMAIL"] = config.get(
-        "GENERAL", "CONTACT_EMAIL", fallback=None
     )
 
     # the onion address of this website

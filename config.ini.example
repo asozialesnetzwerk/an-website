@@ -2,7 +2,6 @@
 #ignored_modules = spam, eggs
 #trusted_api_secrets = xyzzy, correct_horse_battery_staple
 #cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
-#contact_email = asozial@example.com
 #link_to_https = nope
 #onion_address = ...
 #behind_proxy = nope
@@ -13,6 +12,15 @@
 #[LOGGING]
 #debug = nope
 #path = logs
+
+#[CONTACT]
+#sender_smtp_use_tls = sure
+#sender_smtp_server = ...
+#sender_account_name = ...
+#sender_account_password = ...
+#sender_email_address = ...
+# -- contact_email is shown to users, if the rest isn't given, else it is the recieving address
+#contact_email = asozial@example.com
 
 #[SSL]
 #enabled = nope

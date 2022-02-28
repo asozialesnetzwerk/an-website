@@ -1,0 +1,28 @@
+{% whitespace oneline %}
+{% extends "../base.html" %}
+
+{% block body %}
+    <form method="post">
+        <label>
+            Name
+            <input type="text" name="name">
+        </label>
+        <label>
+            E-Mail
+            <input type="email" name="email">
+        </label>
+        <label>
+            Betreff
+            <input type="text" name="subject">
+        </label>
+        <label>
+            Text
+            <textarea name="text"></textarea>
+        </label>
+        <button type="submit">Absenden</button>
+    </form>
+{% end %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+{% end %}
