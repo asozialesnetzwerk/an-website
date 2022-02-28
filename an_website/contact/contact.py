@@ -159,7 +159,8 @@ class ContactPage(HTMLRequestHandler):
 
 ---
 name: {name}
-email: {email}"""
+email: {email}""",
+            "utf-8",
         )
         send_mail(
             message=message,
