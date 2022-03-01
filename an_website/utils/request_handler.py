@@ -256,7 +256,7 @@ class BaseRequestHandler(RequestHandler):
             reset_after = result[4] + 1  # redis-cell stupidly rounds down
             self.set_header("X-RateLimit-Limit", result[1])
             self.set_header("X-RateLimit-Remaining", result[2])
-            self.set_header("X-RateLimit-Reset", time.time() + reset_after)
+            self.set_header("X-RateLimit-Reset", int(time.time() + reset_after))
             self.set_header("X-RateLimit-Reset-After", reset_after)
             self.set_header(
                 "X-RateLimit-Bucket",

@@ -287,7 +287,6 @@ class QuoteById(QuoteBaseHandler):
 
     async def get(self, quote_id: str, author_id: None | str = None) -> None:
         """Handle the GET request to this page and render the quote."""
-
         int_quote_id = int(quote_id)
         if author_id is None:
             wqs = get_wrong_quotes(lambda wq: wq.id == int_quote_id)
