@@ -189,6 +189,9 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
 class CreatePage(QuoteReadyCheckRequestHandler):
     """The request handler for the create page."""
 
+    RATELIMIT_POST_LIMIT = 5
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
+
     async def get(self) -> None:
         """Handle GET requests to the create page."""
         await self.render(
@@ -261,8 +264,8 @@ class CreatePage(QuoteReadyCheckRequestHandler):
 class CreatePage2(QuoteReadyCheckRequestHandler):
     """The request handler for the second part of the create page."""
 
-    RATELIMIT_TOKENS = 4
-    RATELIMIT_NAME = "quotes-create"
+    RATELIMIT_POST_LIMIT = 5
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""

@@ -44,7 +44,7 @@ def get_module_info() -> ModuleInfo:
 class QuotesInfoPage(HTMLRequestHandler):
     """The request handler used for the info page."""
 
-    RATELIMIT_NAME = "quotes-info"
+    RATELIMIT_GET_LIMIT = 30
 
     async def get(self, id_str: str) -> None:
         """Handle GET requests to the quote info page."""
@@ -140,8 +140,7 @@ AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
 class AuthorsInfoPage(HTMLRequestHandler):
     """The request handler used for the info page."""
 
-    RATELIMIT_NAME = "quotes-info"
-    RATELIMIT_TOKENS = 5
+    RATELIMIT_GET_LIMIT = 5
 
     def get_redis_info_key(self, author_name: str) -> str:
         """Get the key to save the author info with Redis."""

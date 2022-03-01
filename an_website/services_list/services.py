@@ -114,8 +114,6 @@ del SERVICES
 class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
 
-    RATELIMIT_TOKENS = 0
-
     def get(self) -> None:
         """Handle GET requests to the service list page."""
         self.render(

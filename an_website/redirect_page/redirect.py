@@ -38,8 +38,6 @@ def get_module_info() -> ModuleInfo:
 class RedirectPage(HTMLRequestHandler):
     """The redirect page that redirects you to another page."""
 
-    RATELIMIT_TOKENS = 0
-
     async def get(self) -> None:
         """Handle the GET request to the request page and render it."""
         redirect_url = self.get_query_argument("to", default="")

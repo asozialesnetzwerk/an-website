@@ -93,7 +93,7 @@ async def get_ranked_solutions(
 class WordGameHelper(HTMLRequestHandler):
     """The request handler for the word game helper page."""
 
-    RATELIMIT_TOKENS = 4
+    RATELIMIT_GET_LIMIT = 10
 
     async def get(self) -> None:
         """Handle GET requests to the word game helper page."""
@@ -122,7 +122,7 @@ class WordGameHelper(HTMLRequestHandler):
 class WordGameHelperAPI(APIRequestHandler):
     """The request handler for the word game helper API."""
 
-    RATELIMIT_TOKENS = 3
+    RATELIMIT_GET_LIMIT = 10
     ALLOWED_METHODS = ("GET",)
 
     async def get(self) -> None:

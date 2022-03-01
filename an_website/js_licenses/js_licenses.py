@@ -57,8 +57,6 @@ def get_js_file_names() -> list[str]:
 class JSLicenses(HTMLRequestHandler):
     """The request handler for the JS-licenses page."""
 
-    RATELIMIT_TOKENS = 0
-
     async def get(self) -> None:
         """Handle the GET requests to the JS-licenses page."""
         await self.render(

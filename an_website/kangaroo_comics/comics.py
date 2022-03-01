@@ -39,8 +39,6 @@ def get_module_info() -> ModuleInfo:
 class KangarooComics(HTMLRequestHandler):
     """Request handler for the kangaroo comics page."""
 
-    RATELIMIT_TOKENS = 0
-
     def get(self) -> None:
         """Handle GET requests to the kangaroo comics page."""
         self.render("pages/kangaroo_comics.html")

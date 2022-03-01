@@ -277,8 +277,17 @@ class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
+    RATELIMIT_GET_LIMIT = 10
+    RATELIMIT_GET_COUNT_PER_PERIOD = 15  # 15 requests per 10s
+    RATELIMIT_GET_PERIOD = 10
+
+    RATELIMIT_POST_LIMIT = 5
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per 30s
+    RATELIMIT_POST_PERIOD = 30
+
     async def get(self, quote_id: str, author_id: None | str = None) -> None:
         """Handle the GET request to this page and render the quote."""
+
         int_quote_id = int(quote_id)
         if author_id is None:
             wqs = get_wrong_quotes(lambda wq: wq.id == int_quote_id)
@@ -442,8 +451,9 @@ class QuoteById(QuoteBaseHandler):
 class QuoteAPIHandler(QuoteById, APIRequestHandler):
     """API request handler for the quotes page."""
 
-    RATELIMIT_TOKENS = 1
-    RATELIMIT_NAME = "quotes-api"
+    RATELIMIT_GET_PERIOD = 10
+    RATELIMIT_GET_COUNT_PER_PERIOD = 20  # 20 requests per 10s
+
     ALLOWED_METHODS = ("GET", "POST")
 
     async def render_wrong_quote(

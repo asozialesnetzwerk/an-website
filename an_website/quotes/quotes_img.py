@@ -277,9 +277,7 @@ FILE_EXTENSIONS = {
 class QuoteAsImg(QuoteReadyCheckRequestHandler):
     """Quote as img request handler."""
 
-    RATELIMIT_NAME = "quotes-img"
-
-    RATELIMIT_TOKENS = 4
+    RATELIMIT_GET_LIMIT = 15
 
     async def get(
         self, quote_id: str, author_id: str, file_extension: str = "png"

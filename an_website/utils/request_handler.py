@@ -204,13 +204,15 @@ class BaseRequestHandler(RequestHandler):
         ).hexdigest()
         if global_ratelimit:
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
-            max_burst = 99
-            count_per_period = 20
+            max_burst = 99  # limit = 100
+            count_per_period = 20  # 20 requests per 1 second
             period = 1
             tokens = 10 if self.settings.get("UNDER_ATTACK") else 1
         else:
             bucket = getattr(
-                self, f"RATELIMIT_{self.request.method}_BUCKET", ""
+                self,
+                f"RATELIMIT_{self.request.method}_BUCKET",
+                self.__class__.__name__.lower(),
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
             if not (bucket and limit):
@@ -222,12 +224,14 @@ class BaseRequestHandler(RequestHandler):
                 return False
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
             max_burst = limit - 1
-            count_per_period = getattr(
+            count_per_period = getattr(  # request count per period
                 self,
                 f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
-                1,
+                30,
             )
-            period = getattr(self, f"RATELIMIT_{self.request.method}_PERIOD", 1)
+            period = getattr(
+                self, f"RATELIMIT_{self.request.method}_PERIOD", 60  # 1 minute
+            )
             tokens = 1
         if self.redis is None:
             raise HTTPError(
@@ -531,7 +535,7 @@ class BaseRequestHandler(RequestHandler):
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS", tuple())
         return (
             self.request.headers.get("Authorization") in api_secrets
             or self.get_argument("key", default=None) in api_secrets

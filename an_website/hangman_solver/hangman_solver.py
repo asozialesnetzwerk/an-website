@@ -240,7 +240,7 @@ async def solve_hangman(
 class HangmanSolver(HTMLRequestHandler):
     """Request handler for the hangman solver page."""
 
-    RATELIMIT_TOKENS = 3
+    RATELIMIT_GET_LIMIT = 10
 
     async def get_hangman_obj(self) -> Hangman:
         """Get the information and return the Hangman object."""
@@ -280,7 +280,7 @@ class HangmanSolver(HTMLRequestHandler):
 class HangmanSolverAPI(HangmanSolver, APIRequestHandler):
     """Request handler for the hangman solver JSON API."""
 
-    RATELIMIT_TOKENS = 3
+    RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 
     async def get(self) -> None:

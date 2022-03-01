@@ -134,6 +134,9 @@ def send_mail(  # pylint: disable=too-many-arguments
 class ContactPage(HTMLRequestHandler):
     """The request handler for the contact page."""
 
+    RATELIMIT_POST_LIMIT: int = 1
+    RATELIMIT_POST_COUNT_PER_PERIOD: int = 1  # one request per minute
+
     def get(self) -> None:
         """Handle get requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
