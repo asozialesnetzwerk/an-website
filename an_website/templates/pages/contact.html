@@ -13,7 +13,11 @@
         </label>
         <label>
             Betreff
+            {% if subject %}
+            <input type="text" name="subject" value="{{subject}}">
+            {% else %}
             <input type="text" name="subject">
+            {% end %}
         </label>
         <label>
             Text

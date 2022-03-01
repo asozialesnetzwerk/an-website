@@ -113,7 +113,9 @@ class ContactPage(HTMLRequestHandler):
         """Handle GET requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
-        self.render("pages/contact.html")
+        self.render(
+            "pages/contact.html", subject=self.get_argument("subject", "")
+        )
 
     async def post(self) -> None:
         """Handle POST requests to the contact page."""

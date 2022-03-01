@@ -62,14 +62,17 @@
         <li>
             <a href="{{fix_url('/zitate/erstellen/')}}">Zitate erstellen</a>
         </li>
-        {% if contact_address is not None %}
+            {% if settings.get("CONTACT_USE_FORM") %}
         <li>
-            <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate">
-                Per E-Mail beschweren
-            </a>
+            <a href="{{fix_url('/kontakt?subject=Falsch zugeordnete Zitate')}}"
+               rel="noreferrer">Per E-Mail beschweren</a>
         </li>
-        {% end %}
+            {% elif contact_address is not None %}
+        <li>
+            <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate"
+               rel="noreferrer">Per E-Mail beschweren</a>
+        </li>
+            {% end %}
     </ul>
-
     <br>
 {% end %}
