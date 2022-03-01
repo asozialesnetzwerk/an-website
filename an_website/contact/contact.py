@@ -11,13 +11,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The contact page, that allows users to contact the website owner."""
+"""The contact page that allows users to contact the website operator."""
 from __future__ import annotations
 
+import asyncio
 import configparser
 import smtplib
 import ssl
-import sys
 from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
@@ -33,7 +33,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/kontakt", ContactPage),),
         name="Kontakt-Formular",
-        description="Nehme mit dem Besitzer der Webseite kontakt auf.",
+        description="Nehme mit dem Betreiber der Webseite Kontakt auf.",
         path="/kontakt",
         keywords=("Kontakt", "Formular"),
         aliases=("/contact",),
@@ -45,108 +45,80 @@ def apply_contact_stuff_to_app(
     app: Application, config: configparser.ConfigParser
 ) -> None:
     """Apply contact stuff to the app."""
-    contact_email = config.get("CONTACT", "CONTACT_EMAIL", fallback=None)
-    sender_email_address = config.get(
-        "CONTACT", "SENDER_EMAIL_ADDRESS", fallback=None
+    contact_address = config.get("CONTACT", "CONTACT_ADDRESS", fallback=None)
+    smtp_server = config.get("CONTACT", "SMTP_SERVER", fallback="localhost")
+    smtp_starttls = config.getboolean(
+        "CONTACT",
+        "SMTP_STARTTLS",
+        fallback=None,
     )
-    sender_account_name = config.get(
-        "CONTACT", "SENDER_ACCOUNT_NAME", fallback=None
-    )
-    if not (sender_email_address or sender_account_name):
-        app.settings["CONTACT_EMAIL"] = contact_email
-        return  # no email for form is given, so just use contact_email
-    app.settings["CONTACT_EMAIL"] = None
-
-    if not (
-        sender_email_address and sender_account_name
-    ):  # only one of them is truthy
-        # if one of them isn't present fallback to the other
-        sender_email_address = sender_email_address or sender_account_name
-        sender_account_name = sender_email_address
-
-    receiver_address = contact_email or sender_email_address
-
-    sender_smtp_server = config.get(
-        "CONTACT", "SENDER_SMTP_SERVER", fallback=None
-    )
-    if not sender_smtp_server:
-        if sys.flags.dev_mode:
-            raise LookupError(
-                "No SENDER_SMTP_SERVER in CONTACT section "
-                "of config.ini given."
-            )
+    sender_address = config.get("CONTACT", "SENDER_ADDRESS", fallback=None)
+    sender_username = config.get("CONTACT", "SENDER_USERNAME", fallback=None)
+    sender_password = config.get("CONTACT", "SENDER_PASSWORD", fallback=None)
+    if not (sender_address or sender_username):
+        # no email address is set for the contact form, so just use contact_address
+        app.settings["CONTACT_ADDRESS"] = contact_address
         return
-
-    sender_account_password = config.get(
-        "CONTACT", "SENDER_ACCOUNT_PASSWORD", fallback=None
-    )
-    if not sender_smtp_server:
-        if sys.flags.dev_mode:
-            raise LookupError(
-                "No SENDER_ACCOUNT_PASSWORD in CONTACT section "
-                "of config.ini given."
-            )
+    app.settings["CONTACT_ADDRESS"] = None
+    if not (contact_address and sender_address):
         return
-
+    recipients = [address.strip() for address in contact_address.split(",")]
     app.settings.update(
         CONTACT_USE_FORM=True,
-        CONTACT_SENDER_EMAIL=sender_email_address,
-        CONTACT_SENDER_ACCOUNT=sender_account_name,
-        CONTACT_RECEIVER=receiver_address,
-        CONTACT_ACC_PASSWORD=sender_account_password,
-        CONTACT_SMTP_SERVER=sender_smtp_server,
-        CONTACT_SMTP_TLS=config.getboolean(
-            "CONTACT",
-            "SENDER_SMTP_USE_TLS",
-            fallback=True,
-        ),
+        CONTACT_RECIPIENTS=recipients,
+        CONTACT_SMTP_SERVER=smtp_server,
+        CONTACT_SMTP_STARTTLS=smtp_starttls,
+        CONTACT_SENDER_ADDRESS=sender_address,
+        CONTACT_SENDER_USERNAME=sender_username,
+        CONTACT_SENDER_PASSWORD=sender_password,
     )
 
 
 def send_mail(  # pylint: disable=too-many-arguments
     message: Message,
-    receiver_email: str,
-    sender_account_name: str,
-    sender_email: str,
-    sender_password: str,
-    smtp_server: str,
-    use_tls: bool = True,
+    sender: str,
+    recipients: list[str],
+    server: str = "localhost",
+    username: None | str = None,
+    password: None | str = None,
+    starttls: None | bool = None,
 ) -> None:
     """Send an email."""
-    if receiver_email.startswith("@"):
-        receiver_email = "contact" + receiver_email
-    with smtplib.SMTP(smtp_server, 587 if use_tls else 25) as server:
-        if use_tls:
-            server.starttls(context=ssl.create_default_context())
-        server.login(sender_account_name, sender_password)
-        message["From"] = sender_email
-        message["To"] = receiver_email
+    for spam, eggs in enumerate(recipients):
+        if eggs.startswith("@"):
+            recipients[spam] = "contact" + eggs
+    with smtplib.SMTP(server, 587) as smtp:
+        smtp.ehlo_or_helo_if_needed()
+        if starttls is None:
+            starttls = smtp.has_extn("starttls")
+        if starttls:
+            smtp.starttls(context=ssl.create_default_context())
+        if username and password:
+            smtp.login(username, password)
+        message["From"] = sender
+        message["To"] = ", ".join(recipients)
         message["Date"] = email_utils.format_datetime(
             datetime.now(tz=timezone.utc)
         )
-        server.send_message(
-            message,
-            from_addr=sender_email,
-            to_addrs=[addr.strip() for addr in receiver_email.split(",")],
-        )
+        smtp.send_message(message)
 
 
 class ContactPage(HTMLRequestHandler):
     """The request handler for the contact page."""
 
-    RATELIMIT_POST_LIMIT: int = 1
-    RATELIMIT_POST_COUNT_PER_PERIOD: int = 1  # one request per minute
+    RATELIMIT_POST_LIMIT = 1
+    RATELIMIT_POST_COUNT_PER_PERIOD = 1  # one request per minute
 
     def get(self) -> None:
-        """Handle get requests to the contact page."""
+        """Handle GET requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
-            raise HTTPError(501)
+            raise HTTPError(503)
         self.render("pages/contact.html")
 
     async def post(self) -> None:
-        """Handle post requests to the contact page."""
+        """Handle POST requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
-            raise HTTPError(501)
+            raise HTTPError(503)
         text: None | str = self.get_argument("text", None)
         if not text:
             raise MissingArgumentError("text")  # necessary (throw on "")
@@ -167,16 +139,15 @@ name: {name}
 email: {email}""",
             "utf-8",
         )
-        send_mail(
+        await asyncio.to_thread(
+            send_mail,
             message=message,
-            receiver_email=self.settings.get("CONTACT_RECEIVER"),  # type: ignore
-            sender_account_name=self.settings.get(  # type: ignore
-                "CONTACT_SENDER_ACCOUNT"
-            ),
-            sender_email=self.settings.get("CONTACT_SENDER_EMAIL"),  # type: ignore
-            sender_password=self.settings.get("CONTACT_ACC_PASSWORD"),  # type: ignore
-            smtp_server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore
-            use_tls=self.settings.get("CONTACT_SMTP_TLS"),  # type: ignore
+            server=self.settings.get("CONTACT_SMTP_SERVER"),
+            sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
+            recipients=self.settings.get("CONTACT_RECIPIENTS"),
+            username=self.settings.get("CONTACT_SENDER_USERNAME"),
+            password=self.settings.get("CONTACT_SENDER_PASSWORD"),
+            starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
         )
 
         await self.render("pages/empty.html", text="Erfolgreich gesendet.")

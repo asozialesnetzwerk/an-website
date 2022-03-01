@@ -36,7 +36,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/host-info", HostInfo),
-            (r"/host-info/uwu", UwuHostInfo),
+            (r"/host-info/uwu", UwUHostInfo),
         ),
         name="Host-Informationen",
         description="Informationen über den Host-Server dieser Webseite",
@@ -55,11 +55,11 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def minify_ascii_art(text: str) -> str:
+def minify_ascii_art(string: str) -> str:
     """Minify an ascii art string."""
-    return "\n".join(  # for arch: 1059 → 898
-        re.sub(r"\s+\[0m$", "[0m", line) for line in text.split("\n")
-    )
+    return re.sub(
+        r"(?m)\s+\x1B\[0m$", "\x1B[0m", string
+    )  # for arch: 1059 → 898
 
 
 class HostInfo(HTMLRequestHandler):
@@ -71,7 +71,7 @@ class HostInfo(HTMLRequestHandler):
         """
         Handle the GET requests to the host info page.
 
-        Use screenfetch to generate the page.
+        Use screenFetch to generate the page.
         """
         if "LOGO" not in self.SCREENFETCH_CACHE:
             self.SCREENFETCH_CACHE["LOGO"] = minify_ascii_art(
@@ -89,14 +89,14 @@ class HostInfo(HTMLRequestHandler):
         )
 
 
-class UwuHostInfo(HTMLRequestHandler):
+class UwUHostInfo(HTMLRequestHandler):
     """The wequest handwew fow the coowew host info page."""
 
     async def get(self) -> None:
         """
         Handwe the GET wequests to coowew the host info page.
 
-        Use uwufetch to genyewate the page.
+        Use UwUFetch to genyewate the page.
         """
         cache_disabwed = self.get_query_argument("cache_disabled", default="")
         cache_enabwed = 0 if str_to_bool(cache_disabwed, default=False) else 1

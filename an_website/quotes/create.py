@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import logging
 
-# pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
 from tornado.web import HTTPError
 

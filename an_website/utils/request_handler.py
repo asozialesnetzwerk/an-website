@@ -32,7 +32,6 @@ from http.client import responses
 from typing import Any
 from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
 
-# pylint: disable=no-name-in-module
 import elasticapm  # type: ignore
 import orjson as json
 from aioredis import Redis
@@ -198,7 +197,6 @@ class BaseRequestHandler(RequestHandler):
             or self.is_authorized()
         ):
             return False
-        # pylint: disable=not-callable
         remote_ip = blake3(
             str(self.request.remote_ip).encode("ascii")
         ).hexdigest()
@@ -215,12 +213,7 @@ class BaseRequestHandler(RequestHandler):
                 self.__class__.__name__.lower(),
             )
             limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
-            if not (bucket and limit):
-                logger.debug(
-                    "No ratelimit for path %s with method %s",
-                    self.request.path,
-                    self.request.method,
-                )
+            if not limit:
                 return False
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
             max_burst = limit - 1
@@ -254,13 +247,12 @@ class BaseRequestHandler(RequestHandler):
                 self.set_header("X-RateLimit-Global", "true")
         if not global_ratelimit:
             reset_after = result[4] + 1  # redis-cell stupidly rounds down
-            self.set_header("X-RateLimit-Limit", result[1])
-            self.set_header("X-RateLimit-Remaining", result[2])
-            self.set_header("X-RateLimit-Reset", int(time.time() + reset_after))
-            self.set_header("X-RateLimit-Reset-After", reset_after)
+            self.set_header("X-RateLimit-Limit", str(result[1]))
+            self.set_header("X-RateLimit-Remaining", str(result[2]))
+            self.set_header("X-RateLimit-Reset", str(time.time() + reset_after))
+            self.set_header("X-RateLimit-Reset-After", str(reset_after))
             self.set_header(
                 "X-RateLimit-Bucket",
-                # pylint: disable=not-callable
                 blake3(bucket.encode("ascii")).hexdigest(),
             )
         if result[0]:
@@ -494,16 +486,15 @@ class BaseRequestHandler(RequestHandler):
             tuple(_t for _t in THEMES if _t not in ignore_themes)
         )
 
-    def get_contact_email(self) -> None | str:
-        """Get the contact email from the settings."""
-        email = self.settings.get("CONTACT_EMAIL")
-        if not email:
+    def get_contact_address(self) -> None | str:
+        """Get the contact address from the settings."""
+        address: None | str = self.settings.get("CONTACT_ADDRESS")
+        if not address:
             return None
-        email_str = str(email)
-        if not email_str.startswith("@"):
-            return email_str
-        # if mail starts with @ it is a catch-all email
-        return name_to_id(self.request.path) + "_contact" + email_str
+        if not address.startswith("@"):
+            return address
+        # if address starts with @ it's a catch-all address
+        return name_to_id(self.request.path) + "_contact" + address
 
     def get_argument(  # type: ignore[override]
         self,
@@ -535,7 +526,7 @@ class BaseRequestHandler(RequestHandler):
 
     def is_authorized(self) -> bool:
         """Check whether the request is authorized."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS", tuple())
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS", set())
         return (
             self.request.headers.get("Authorization") in api_secrets
             or self.get_argument("key", default=None) in api_secrets
@@ -623,7 +614,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "fix_static": lambda url: self.fix_url(fix_static_url(url)),
                 "REPO_URL": self.fix_url(REPO_URL),
                 "theme": self.get_display_theme(),
-                "contact_email": self.get_contact_email(),
+                "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
                 "url": self.request.full_url(),
                 "settings": self.settings,
@@ -870,7 +861,7 @@ class NotFound(HTMLRequestHandler):
 
 
 class ErrorPage(HTMLRequestHandler):
-    """A request handler that throws an error."""
+    """A request handler that raises an error."""
 
     async def get(self, code: str) -> None:
         """Raise the error_code."""
@@ -879,7 +870,7 @@ class ErrorPage(HTMLRequestHandler):
         # get the reason
         reason: str = responses.get(status_code, "")
 
-        # set the status code if Tornado doesn't throw an error if it is set
+        # set the status code if Tornado doesn't raise an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
             # set the status code
             self.set_status(status_code)
@@ -893,10 +884,10 @@ class ErrorPage(HTMLRequestHandler):
 
 
 class ZeroDivision(BaseRequestHandler):
-    """A request handler that throws an error."""
+    """A request handler that raises an error."""
 
     async def prepare(self) -> None:
-        """Divide by zero and throw an error."""
+        """Divide by zero and raise an error."""
         if not self.request.method == "OPTIONS":
             420 / 0  # pylint: disable=pointless-statement
 

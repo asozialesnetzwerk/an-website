@@ -7,7 +7,7 @@ config.ini
 .coverage
 
 # nano backup files:
-*.save
+*.save*
 *~
 
 # Jetbrains

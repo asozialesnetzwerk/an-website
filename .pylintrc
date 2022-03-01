@@ -19,7 +19,10 @@ load-plugins=
     pylint.extensions.set_membership,
     pylint.extensions.typing,
     pylint.extensions.while_used,
-extension-pkg-allow-list=orjson
+extension-pkg-allow-list=
+    blake3,
+    orjson,
+    Levenshtein,
 py-version=3.10
 
 [MESSAGES_CONTROL]

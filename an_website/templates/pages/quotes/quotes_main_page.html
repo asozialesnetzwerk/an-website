@@ -62,11 +62,13 @@
         <li>
             <a href="{{fix_url('/zitate/erstellen/')}}">Zitate erstellen</a>
         </li>
+        {% if contact_address is not None %}
         <li>
-            <a href="mailto:{{contact_email}}?subject=Falsch zugeordnete Zitate">
-                Per Mail beschweren
+            <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate">
+                Per E-Mail beschweren
             </a>
         </li>
+        {% end %}
     </ul>
 
     <br>

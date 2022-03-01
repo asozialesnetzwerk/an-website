@@ -26,7 +26,7 @@ black --check --diff --color . || echo 'Run "black ." to reformat'
 
 # check types
 echo mypy:
-mypy --pretty --warn-unused-ignores --warn-redundant-casts -p an_website -p tests
+mypy --pretty -p an_website -p tests
 
 # lint
 echo Flake8:
@@ -37,5 +37,4 @@ pylint --output-format=colorized an_website tests
 # run tests
 echo Tests:
 pytest --cov-report= --cov=an_website tests
-
 echo 'Run "coverage report" to show the coverage'

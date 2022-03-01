@@ -301,8 +301,10 @@ async def geoip(
         if not elasticsearch:
             return None
 
+        properties: None | tuple[str, ...]
+
         if database == "GeoLite2-City.mmdb":
-            properties = [
+            properties = (
                 "continent_name",
                 "country_iso_code",
                 "country_name",
@@ -311,15 +313,15 @@ async def geoip(
                 "city_name",
                 "location",
                 "timezone",
-            ]
+            )
         elif database == "GeoLite2-Country.mmdb":
-            properties = [
+            properties = (
                 "continent_name",
                 "country_iso_code",
                 "country_name",
-            ]
+            )
         elif database == "GeoLite2-ASN.mmdb":
-            properties = ["asn", "network", "organization_name"]
+            properties = ("asn", "network", "organization_name")
         else:
             properties = None
 
@@ -356,39 +358,22 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
+def hash_file(path: str | Path) -> str:
+    """Hash a file with BLAKE3."""
+    with open(path, "rb") as file:
+        return str(blake3(file.read()).hexdigest())
+
+
 def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
     """Hash an IP address."""
     return str(
-        blake3(  # pylint: disable=not-callable
+        blake3(
             ip.encode("ascii")
-            + blake3(  # pylint: disable=not-callable
+            + blake3(
                 datetime.utcnow().date().isoformat().encode("ascii")
             ).digest()
         ).hexdigest()
     )
-
-
-def hash_file(file: Path | str) -> str:
-    """Hash a file with blake3."""
-    with open(file, mode="rb") as opened:
-        return str(
-            blake3(opened.read()).hexdigest()  # pylint: disable=not-callable
-        )
-
-
-def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
-    """Run a command in a subprocess."""
-    try:
-        return subprocess.run(
-            cmd,
-            cwd=directory,
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    except subprocess.CalledProcessError:
-        return ""
 
 
 def length_of_match(_m: re.Match[str]) -> int:
@@ -458,6 +443,24 @@ async def run(
 
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout, stderr
+
+
+def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
+    """Run a command in a subprocess.
+
+    WARNING: This is blocking and should therefore ONLY be used during startup!
+    """
+    try:
+        return subprocess.run(
+            cmd,
+            cwd=directory,
+            shell=True,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    except subprocess.CalledProcessError:
+        return ""
 
 
 def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:

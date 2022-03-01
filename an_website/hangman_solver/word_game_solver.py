@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-# pylint: disable=no-name-in-module
 from Levenshtein import distance  # type: ignore
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler

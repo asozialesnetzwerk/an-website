@@ -263,7 +263,7 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
 @dataclass(frozen=True)
 class InvalidConfigError(Exception):
-    """Exception thrown if the config is invalid."""
+    """Exception raised if the config is invalid."""
 
     line_num: int
     line: str

@@ -28,7 +28,7 @@ import time
 import traceback
 import urllib.parse
 import uuid
-from typing import Any, Union
+from typing import Any, Union, overload
 
 try:
     import hy  # type: ignore
@@ -61,13 +61,33 @@ Proxy = Union[  # pylint: disable=consider-alternative-union-syntax
 ]
 
 
+@overload
+async def create_socket(  # noqa: D103
+    hostname: str,
+    port: int | str,
+    proxy: None,
+) -> socket.socket:
+    ...
+
+
+@overload
+async def create_socket(  # noqa: D103
+    hostname: str,
+    port: int | str,
+    proxy: Proxy,
+) -> socks.socksocket:
+    ...
+
+
 async def create_socket(
     hostname: str,
     port: int | str,
     proxy: None | Proxy = None,
-) -> None | socket.socket | socks.socksocket:
+) -> socket.socket | socks.socksocket:
     """Create a socket (optionally with a proxy)."""
     # pylint: disable=too-complex
+    if proxy and not socks:
+        raise ValueError("PySocks is required for proxy support")
     loop = asyncio.get_running_loop()
     address_infos = await loop.getaddrinfo(
         hostname,
@@ -84,17 +104,16 @@ async def create_socket(
                 socks.socksocket(
                     address_info[0], address_info[1], address_info[2]
                 )
-                if socks and proxy
+                if proxy
                 else socket.socket(
                     address_info[0], address_info[1], address_info[2]
                 )
             )
             sock.setblocking(False)
             if proxy:
-                if not socks:
-                    raise ValueError("PySocks is required for proxy support")
                 sock.set_proxy(*proxy)  # pylint: disable=no-member
             await loop.sock_connect(sock, address_info[4])
+            return sock
         except OSError as exc:
             if sock is not None:
                 sock.close()
@@ -104,7 +123,6 @@ async def create_socket(
             if sock is not None:
                 sock.close()
             raise
-        return sock
     if len(exceptions) == 1:
         raise exceptions[0]
     # If they all have the same str(), raise one.
@@ -391,14 +409,16 @@ Accepted arguments:
         url = input("URL: ").strip().rstrip("/")
         if not url:
             print("No URL given!")
-        elif "://" not in url:
+        elif not url.startswith(("http:", "https:")):
+            if not url.startswith("//"):
+                url = "//" + url
             banana = url.split("/", maxsplit=1)
             if re.fullmatch(
-                r"(?:localhost|127\.0\.0\.1|\[::1\])(?:\:\d+)?", banana[0]
+                r"^(\/\/)(localhost|127\.0\.0\.1|\[::1\])(\:\d+)?", banana[0]
             ):
-                url = "http://" + url
+                url = "http:" + url
             else:
-                url = "https://" + url
+                url = "https:" + url
             print(f"Using URL {url}")
 
     while not key:  # pylint: disable=while-used

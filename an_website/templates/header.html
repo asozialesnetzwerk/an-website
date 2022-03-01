@@ -33,12 +33,11 @@
       {% end %}
     {% end %}
     </ul>
-
-    {% if contact_email is not None %}
-    <a href="mailto:{{contact_email}}?subject=AN-Webseite: {{title}}"
+    {% if settings.get("CONTACT_USE_FORM") %}
+    <a href="{{fix_url('/kontakt')}}" class="contact-anchor" rel="noreferrer">KONTAKT</a>
+    {% elif contact_address is not None %}
+    <a href="mailto:{{contact_address}}?subject=AN-Webseite: {{title}}"
       class="contact-anchor" rel="noreferrer">KONTAKT</a>
-    {% elif settings.get("CONTACT_USE_FORM") %}
-      <a href="{{fix_url('/kontakt')}}" class="contact-anchor" rel="noreferrer">KONTAKT</a>
     {% end %}
   </div>
   {% end %}

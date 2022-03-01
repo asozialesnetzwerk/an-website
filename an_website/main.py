@@ -482,11 +482,8 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 logger.warning("%s is not a file!", path)
                 continue
 
-            try:
-                file = path.open(encoding="utf-8")
+            with path.open(encoding="utf-8") as file:
                 body = orjson.loads(file.read().replace("{prefix}", prefix))
-            finally:
-                file.close()
 
             name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
