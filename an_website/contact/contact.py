@@ -18,12 +18,15 @@ import asyncio
 import configparser
 import smtplib
 import ssl
+import sys
+from collections.abc import Iterable
 from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
 
 from tornado.web import Application, HTTPError, MissingArgumentError
 
+from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -45,24 +48,47 @@ def apply_contact_stuff_to_app(
     app: Application, config: configparser.ConfigParser
 ) -> None:
     """Apply contact stuff to the app."""
-    contact_address = config.get("CONTACT", "CONTACT_ADDRESS", fallback=None)
-    smtp_server = config.get("CONTACT", "SMTP_SERVER", fallback="localhost")
+    contact_address = config.get(
+        "CONTACT",
+        "CONTACT_ADDRESS",
+        fallback=f"{NAME.removesuffix('-dev')}@restmail.net"
+        if sys.flags.dev_mode
+        else "",
+    )
+    sender_address = config.get(
+        "CONTACT",
+        "SENDER_ADDRESS",
+        fallback="Marcell D'Avis <davis@1und1.de>"
+        if contact_address.endswith("@restmail.net")
+        else None,
+    )
+    sender_username = config.get("CONTACT", "SENDER_USERNAME", fallback=None)
+    sender_password = config.get("CONTACT", "SENDER_PASSWORD", fallback=None)
+    smtp_server = config.get(
+        "CONTACT",
+        "SMTP_SERVER",
+        fallback="restmail.net"
+        if contact_address.endswith("@restmail.net")
+        else "localhost",
+    )
+    smtp_port = config.getint(
+        "CONTACT",
+        "SMTP_PORT",
+        fallback=25 if contact_address.endswith("@restmail.net") else 587,
+    )
     smtp_starttls = config.getboolean(
         "CONTACT",
         "SMTP_STARTTLS",
         fallback=None,
     )
-    sender_address = config.get("CONTACT", "SENDER_ADDRESS", fallback=None)
-    sender_username = config.get("CONTACT", "SENDER_USERNAME", fallback=None)
-    sender_password = config.get("CONTACT", "SENDER_PASSWORD", fallback=None)
-    if not (sender_address or sender_username):
-        # no email address is set for the contact form, so just use contact_address
+    if not sender_address:
+        # the contact form is disabled if no sender address is set
         app.settings["CONTACT_ADDRESS"] = contact_address
         return
     app.settings["CONTACT_ADDRESS"] = None
     if not (contact_address and sender_address):
         return
-    recipients = [address.strip() for address in contact_address.split(",")]
+    recipients = {address.strip() for address in contact_address.split(",")}
     app.settings.update(
         CONTACT_USE_FORM=True,
         CONTACT_RECIPIENTS=recipients,
@@ -71,23 +97,26 @@ def apply_contact_stuff_to_app(
         CONTACT_SENDER_ADDRESS=sender_address,
         CONTACT_SENDER_USERNAME=sender_username,
         CONTACT_SENDER_PASSWORD=sender_password,
+        CONTACT_SMTP_PORT=smtp_port,
     )
 
 
 def send_mail(  # pylint: disable=too-many-arguments
     message: Message,
     sender: str,
-    recipients: list[str],
+    recipients: Iterable[str],
     server: str = "localhost",
     username: None | str = None,
     password: None | str = None,
     starttls: None | bool = None,
+    port: int = 587,
 ) -> None:
     """Send an email."""
+    recipients = list(recipients)
     for spam, eggs in enumerate(recipients):
         if eggs.startswith("@"):
             recipients[spam] = "contact" + eggs
-    with smtplib.SMTP(server, 587) as smtp:
+    with smtplib.SMTP(server, port) as smtp:
         smtp.ehlo_or_helo_if_needed()
         if starttls is None:
             starttls = smtp.has_extn("starttls")
@@ -106,8 +135,9 @@ def send_mail(  # pylint: disable=too-many-arguments
 class ContactPage(HTMLRequestHandler):
     """The request handler for the contact page."""
 
-    RATELIMIT_POST_LIMIT = 1
-    RATELIMIT_POST_COUNT_PER_PERIOD = 1  # one request per minute
+    RATELIMIT_POST_LIMIT = 5
+    RATELIMIT_POST_COUNT_PER_PERIOD = 1
+    RATELIMIT_POST_PERIOD = 120
 
     def get(self) -> None:
         """Handle GET requests to the contact page."""
@@ -150,6 +180,7 @@ email: {email}""",
             username=self.settings.get("CONTACT_SENDER_USERNAME"),
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
+            port=self.settings.get("CONTACT_SMTP_PORT"),
         )
 
         await self.render("pages/empty.html", text="Erfolgreich gesendet.")

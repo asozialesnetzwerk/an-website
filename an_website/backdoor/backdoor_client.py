@@ -138,12 +138,14 @@ async def create_socket(
 async def request(  # noqa: D103
     method: str,
     url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
-    headers: dict[Any, Any],
-    body: str | bytes,
+    headers: None | dict[Any, Any] = None,
+    body: None | bytes | str = None,
     *,
     proxy: None | Proxy = None,
 ) -> tuple[int, dict[str, str], bytes]:
-    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, while-used
+    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-complex, while-used
+    if headers is None:
+        headers = {}
     if isinstance(body, str):
         body = body.encode("utf-8")
     if isinstance(url, str):
@@ -181,8 +183,9 @@ async def request(  # noqa: D103
             [f"{key}:{value}" for key, value in headers.items()] + [""]
         ).encode("latin-1")
         + b"\r\n"
-        + body
     )
+    if body:
+        writer.write(body)
     await writer.drain()
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
