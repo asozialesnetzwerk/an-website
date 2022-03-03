@@ -15,13 +15,18 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 
 from elasticsearch import AsyncElasticsearch
-from tornado.web import RedirectHandler
+from tornado.web import HTTPError, RedirectHandler
 
 from .. import NAME, START_TIME
-from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
+from ..utils.request_handler import (
+    APIRequestHandler,
+    BaseRequestHandler,
+    HTMLRequestHandler,
+)
 from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)
@@ -32,6 +37,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/betriebszeit", UptimeHandler),
+            (r"/betriebszeit/verfuegbarkeit.svg", AvailabilityChartHandler),
             (r"/api/betriebszeit", UptimeAPIHandler),
             (r"/api/uptime/?", RedirectHandler, {"url": "/api/betriebszeit"}),
         ),
@@ -126,17 +132,73 @@ def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
     }
 
 
+AVAILABILITY_CHART = re.sub(
+    r"\s+",
+    " ",
+    """
+<svg height="20"
+     width="20"
+     viewBox="0 0 20 20"
+     xmlns="http://www.w3.org/2000/svg"
+>
+    <circle r="10" cx="10" cy="10" fill="red" />
+    <circle r="5" cx="10" cy="10" fill="transparent"
+        stroke="green"
+        stroke-width="10"
+        stroke-dasharray="%2.2f 31.4159"
+        transform="rotate(-90) translate(-20)" />
+</svg>
+""".strip(),
+)
+
+
 class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
     async def get(self) -> None:
         """Handle the GET request and render the page."""
         self.set_header("Cache-Control", "no-cache")
+        availability_data = await get_availability_data(self.elasticsearch)
+        availability = (
+            get_availability_dict(*availability_data)["percentage"]
+            if availability_data
+            else None
+        )
         await self.render(
             "pages/uptime.html",
             uptime=(uptime := calculate_uptime()),
             uptime_str=uptime_to_str(uptime),
+            availability=availability,
         )
+
+
+class AvailabilityChartHandler(BaseRequestHandler):
+    """The request handler for the availability chart."""
+
+    async def get(self) -> None:
+        """Handle GET requests."""
+        availability = self.get_argument("a", default=None)
+        if not availability:
+            availability_data = await get_availability_data(self.elasticsearch)
+            if not availability_data:
+                raise HTTPError(503)
+            self.redirect(
+                self.fix_url(
+                    self.request.full_url(),
+                    a=int(
+                        get_availability_dict(*availability_data)["percentage"]
+                        * 100
+                    )
+                    / (100 * 100),
+                ),
+                permanent=False,
+            )
+            return
+        self.set_header("Content-Type", "image/svg+xml")
+        self.set_header(
+            "Cache-Control", f"public, min-fresh={14 * 24 * 60 * 60}, immutable"
+        )
+        await self.finish(AVAILABILITY_CHART % (31.4159 * float(availability)))
 
 
 class UptimeAPIHandler(APIRequestHandler):

@@ -153,7 +153,7 @@ class ContactPage(HTMLRequestHandler):
             raise HTTPError(503)
         text: None | str = self.get_argument("text", None)
         if not text:
-            raise MissingArgumentError("text")  # necessary (throw on "")
+            raise MissingArgumentError("text")  # necessary (raise on "")
         name: str = str(self.get_argument("name") or "__None__")
         email: str = str(self.get_argument("email") or "__None__")
 
