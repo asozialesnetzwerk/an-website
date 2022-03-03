@@ -84,6 +84,11 @@ def apply_contact_stuff_to_app(
             if contact_address.endswith("@restmail.net")
             else "localhost",
         ),
+        CONTACT_SMTP_PORT=config.getint(
+            "CONTACT",
+            "SMTP_PORT",
+            fallback=25 if contact_address.endswith("@restmail.net") else 587,
+        ),
         CONTACT_SMTP_STARTTLS=config.getboolean(
             "CONTACT",
             "SMTP_STARTTLS",
@@ -95,11 +100,6 @@ def apply_contact_stuff_to_app(
         ),
         CONTACT_SENDER_PASSWORD=config.get(
             "CONTACT", "SENDER_PASSWORD", fallback=None
-        ),
-        CONTACT_SMTP_PORT=config.getint(
-            "CONTACT",
-            "SMTP_PORT",
-            fallback=25 if contact_address.endswith("@restmail.net") else 587,
         ),
     )
 

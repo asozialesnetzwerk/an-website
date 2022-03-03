@@ -183,6 +183,7 @@ def get_all_handlers(
     for module_info in module_infos:
         for handler in module_info.handlers:
             handler = list(handler)
+            handler[0] = "(?i)" + handler[0]
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler & RedirectHandler
             if issubclass(handler[1], BaseRequestHandler):

@@ -616,7 +616,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "theme": self.get_display_theme(),
                 "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
-                "url": self.request.full_url(),
+                "url": self.request.full_url().lower(),
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
                 "dynload": self.get_dynload(),
@@ -763,7 +763,7 @@ class NotFound(HTMLRequestHandler):
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 
-        new_path = self.request.path.lower().rstrip("/")
+        new_path = self.request.path.rstrip("/")
 
         if "//" in new_path:
             # replace multiple / with only one
