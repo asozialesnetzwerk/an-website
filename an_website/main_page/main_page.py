@@ -22,7 +22,7 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         # the empty dict prevents the header from being changed
-        handlers=((r"/", MainPage, {}), ("/index.html", MainPage, {})),
+        handlers=((r"/", MainPage, {}), (r"/index.html", MainPage, {})),
         name="Hauptseite",
         description="Die Hauptseite der Webseite",
         path="/",

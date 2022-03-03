@@ -103,9 +103,10 @@ def apply_contact_stuff_to_app(
 
 def send_mail(  # pylint: disable=too-many-arguments
     message: Message,
-    sender: str,
+    from_address: str,
     recipients: Iterable[str],
     server: str = "localhost",
+    sender: None | str = None,
     username: None | str = None,
     password: None | str = None,
     starttls: None | bool = None,
@@ -116,7 +117,15 @@ def send_mail(  # pylint: disable=too-many-arguments
     for spam, eggs in enumerate(recipients):
         if eggs.startswith("@"):
             recipients[spam] = "contact" + eggs
+
+    message["Date"] = email_utils.format_datetime(datetime.now(tz=timezone.utc))
+    if sender:
+        message["Sender"] = sender
+    message["From"] = from_address
+    message["To"] = ", ".join(recipients)
+
     with smtplib.SMTP(server, port) as smtp:
+        smtp.set_debuglevel(sys.flags.dev_mode * 2)
         smtp.ehlo_or_helo_if_needed()
         if starttls is None:
             starttls = smtp.has_extn("starttls")
@@ -124,11 +133,6 @@ def send_mail(  # pylint: disable=too-many-arguments
             smtp.starttls(context=ssl.create_default_context())
         if username and password:
             smtp.login(username, password)
-        message["From"] = sender
-        message["To"] = ", ".join(recipients)
-        message["Date"] = email_utils.format_datetime(
-            datetime.now(tz=timezone.utc)
-        )
         smtp.send_message(message)
 
 
@@ -151,29 +155,25 @@ class ContactPage(HTMLRequestHandler):
         """Handle POST requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
-        text: None | str = self.get_argument("text", None)
+        text = self.get_argument("message")
         if not text:
-            raise MissingArgumentError("text")  # necessary (raise on "")
-        name: str = str(self.get_argument("name") or "__None__")
-        email: str = str(self.get_argument("email") or "__None__")
+            raise MissingArgumentError("message")  # raise on empty message
+        name = self.get_argument("name", None)
+        address = self.get_argument("address", None) or "anonymous@foo.bar"
+        from_address = f"{name} <{address}>" if name else address
 
         message = Message()
 
-        message["subject"] = str(
+        message["Subject"] = str(
             self.get_argument("subject", None)
-            or f"{name} will was über {self.request.host} schreiben."
+            or f"{name or address or 'Jemand'} "
+            "will was über {self.request.host} schreiben."
         )
-        message.set_payload(
-            f"""{text}
-
----
-name: {name}
-email: {email}""",
-            "utf-8",
-        )
+        message.set_payload(text, "utf-8")
         await asyncio.to_thread(
             send_mail,
             message=message,
+            from_address=from_address,
             server=self.settings.get("CONTACT_SMTP_SERVER"),
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
             recipients=self.settings.get("CONTACT_RECIPIENTS"),

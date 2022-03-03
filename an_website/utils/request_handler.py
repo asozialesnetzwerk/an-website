@@ -763,23 +763,24 @@ class NotFound(HTMLRequestHandler):
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 
-        new_path = self.request.path.lower().rstrip("/")
+        new_path = self.request.path.rstrip("/")
 
         if "//" in new_path:
             # replace multiple / with only one
             new_path = re.sub(r"/+", "/", new_path)
 
-        if new_path in {
-            "/admin/controller/extension/extension",
-            "/assets/filemanager/dialog.php",
-            "/assets/vendor/server/php/index.php",
+        if new_path.lower() in {
+            "/-profiler/phpinfo",
             "/.aws/credentials",
-            "/aws.yml",
             "/.env",
             "/.env.bak",
             "/.ftpconfig",
+            "/admin/controller/extension/extension",
+            "/assets/filemanager/dialog.php",
+            "/assets/vendor/server/php/index.php",
+            "/aws.yml",
+            "/boaform/admin/formlogin",
             "/phpinfo.php",
-            "/-profiler/phpinfo",
             "/public/assets/jquery-file-upload/server/php/index.php",
             "/root.php",
             "/settings/aws.yml",

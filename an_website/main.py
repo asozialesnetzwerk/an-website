@@ -115,8 +115,8 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
 
                 if import_timer.stop() > 0.1:
                     logger.warning(
-                        "Import of %s took %ss that's affecting the startup "
-                        "time.",
+                        "Import of %s took %ss. "
+                        "That's affecting the startup time.",
                         module_name,
                         import_timer.execution_time,
                     )
@@ -176,31 +176,30 @@ def get_all_handlers(
     If a handler has only 2 elements a dict with title and description gets
     added. This information is gotten from the module info.
     """
+    handler: Handler | list[Any]
     handlers: list[Handler] = static_file_handling.get_handlers()
 
     # add all the normal handlers
     for module_info in module_infos:
         for handler in module_info.handlers:
+            handler = list(handler)
+            handler[0] = "(?i)" + handler[0]
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler & RedirectHandler
             if issubclass(handler[1], BaseRequestHandler):
                 if len(handler) == 2:
                     # set "default_title" or "default_description" to False so
                     # that module_info.name & module_info.description get used
-                    handler = (
-                        handler[0],
-                        handler[1],
+                    handler.append(
                         {
                             "default_title": False,
                             "default_description": False,
                             "module_info": module_info,
-                        },
+                        }
                     )
-                elif len(handler) >= 3:
-                    # mypy doesn't like this
-                    _args_dict = handler[2]  # type: ignore
-                    _args_dict["module_info"] = module_info
-            handlers.append(handler)
+                else:
+                    handler[2]["module_info"] = module_info
+            handlers.append(tuple(handler))  # type: ignore[arg-type]
         if module_info.path is not None:
             for alias in module_info.aliases:
                 handlers.append(
