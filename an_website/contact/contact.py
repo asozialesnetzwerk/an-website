@@ -62,42 +62,45 @@ def apply_contact_stuff_to_app(
         if contact_address.endswith("@restmail.net")
         else None,
     )
-    sender_username = config.get("CONTACT", "SENDER_USERNAME", fallback=None)
-    sender_password = config.get("CONTACT", "SENDER_PASSWORD", fallback=None)
-    smtp_server = config.get(
-        "CONTACT",
-        "SMTP_SERVER",
-        fallback="restmail.net"
-        if contact_address.endswith("@restmail.net")
-        else "localhost",
-    )
-    smtp_port = config.getint(
-        "CONTACT",
-        "SMTP_PORT",
-        fallback=25 if contact_address.endswith("@restmail.net") else 587,
-    )
-    smtp_starttls = config.getboolean(
-        "CONTACT",
-        "SMTP_STARTTLS",
-        fallback=None,
-    )
+
     if not sender_address:
         # the contact form is disabled if no sender address is set
         app.settings["CONTACT_ADDRESS"] = contact_address
         return
     app.settings["CONTACT_ADDRESS"] = None
+
     if not (contact_address and sender_address):
         return
-    recipients = {address.strip() for address in contact_address.split(",")}
+
     app.settings.update(
         CONTACT_USE_FORM=True,
-        CONTACT_RECIPIENTS=recipients,
-        CONTACT_SMTP_SERVER=smtp_server,
-        CONTACT_SMTP_STARTTLS=smtp_starttls,
+        CONTACT_RECIPIENTS={
+            address.strip() for address in contact_address.split(",")
+        },
+        CONTACT_SMTP_SERVER=config.get(
+            "CONTACT",
+            "SMTP_SERVER",
+            fallback="restmail.net"
+            if contact_address.endswith("@restmail.net")
+            else "localhost",
+        ),
+        CONTACT_SMTP_STARTTLS=config.getboolean(
+            "CONTACT",
+            "SMTP_STARTTLS",
+            fallback=None,
+        ),
         CONTACT_SENDER_ADDRESS=sender_address,
-        CONTACT_SENDER_USERNAME=sender_username,
-        CONTACT_SENDER_PASSWORD=sender_password,
-        CONTACT_SMTP_PORT=smtp_port,
+        CONTACT_SENDER_USERNAME=config.get(
+            "CONTACT", "SENDER_USERNAME", fallback=None
+        ),
+        CONTACT_SENDER_PASSWORD=config.get(
+            "CONTACT", "SENDER_PASSWORD", fallback=None
+        ),
+        CONTACT_SMTP_PORT=config.getint(
+            "CONTACT",
+            "SMTP_PORT",
+            fallback=25 if contact_address.endswith("@restmail.net") else 587,
+        ),
     )
 
 
