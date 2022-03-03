@@ -763,7 +763,7 @@ class NotFound(HTMLRequestHandler):
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 
-        new_path = self.request.path.rstrip("/")
+        new_path = self.request.path.lower().rstrip("/")
 
         if "//" in new_path:
             # replace multiple / with only one

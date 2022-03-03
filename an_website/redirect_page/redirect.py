@@ -47,7 +47,7 @@ class RedirectPage(HTMLRequestHandler):
             # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url("/", as_json=self.get_as_json()))
 
-        if not redirect_url.startswith("http"):
+        if redirect_url.startswith("/"):
             # it is a local URL, so just redirect
             # use fix_url to maybe add no_3rd_party
             return self.redirect(
