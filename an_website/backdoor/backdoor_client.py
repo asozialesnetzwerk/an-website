@@ -26,9 +26,11 @@ import socket
 import sys
 import time
 import traceback
-import urllib.parse
 import uuid
-from typing import Any, Union, overload
+from collections.abc import Iterable
+from types import EllipsisType
+from typing import Any
+from urllib.parse import SplitResult, urlsplit
 
 try:
     import hy  # type: ignore
@@ -52,45 +54,32 @@ E = eval(  # pylint: disable=eval-used
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
 
-# proxy_type, addr, port, rdns, username, password
-Proxy = Union[  # pylint: disable=consider-alternative-union-syntax
-    tuple[int, str],
-    tuple[int, str, None | int],
-    tuple[int, str, None | int, None | bool],
-    tuple[int, str, None | int, None | bool, None | str, None | str],
-]
 
-
-@overload
-async def create_socket(  # noqa: D103
-    hostname: str,
+async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
+    addr: str,
     port: int | str,
-    proxy: None,
-) -> socket.socket:
-    ...
-
-
-@overload
-async def create_socket(  # noqa: D103
-    hostname: str,
-    port: int | str,
-    proxy: Proxy,
-) -> socks.socksocket:
-    ...
-
-
-async def create_socket(
-    hostname: str,
-    port: int | str,
-    proxy: None | Proxy = None,
+    proxy_type: None | int = None,
+    proxy_addr: None | str = None,
+    proxy_port: None | int = None,
+    proxy_rdns: None | bool = True,
+    proxy_username: None | str = None,
+    proxy_password: None | str = None,
 ) -> socket.socket | socks.socksocket:
     """Create a socket (optionally with a proxy)."""
     # pylint: disable=too-complex
-    if proxy and not socks:
-        raise ValueError("PySocks is required for proxy support")
+    if proxy_type is not None and proxy_addr is None:
+        raise TypeError(
+            "proxy_addr should not be None if proxy_type is not None"
+        )
+    if proxy_type is not None and proxy_rdns is None:
+        raise TypeError(
+            "proxy_rdns should not be None if proxy_type is not None"
+        )
+    if proxy_type is not None and not socks:
+        raise NotImplementedError("PySocks is required for proxy support")
     loop = asyncio.get_running_loop()
     address_infos = await loop.getaddrinfo(
-        hostname,
+        addr,
         port,
         type=socket.SOCK_STREAM,
     )
@@ -104,14 +93,21 @@ async def create_socket(
                 socks.socksocket(
                     address_info[0], address_info[1], address_info[2]
                 )
-                if proxy
+                if proxy_type is not None
                 else socket.socket(
                     address_info[0], address_info[1], address_info[2]
                 )
             )
             sock.setblocking(False)
-            if proxy:
-                sock.set_proxy(*proxy)  # pylint: disable=no-member
+            if proxy_type is not None:
+                sock.set_proxy(
+                    proxy_type,
+                    proxy_addr,
+                    proxy_port,
+                    proxy_rdns,
+                    proxy_username,
+                    proxy_password,
+                )
             await loop.sock_connect(sock, address_info[4])
             return sock
         except OSError as exc:
@@ -125,35 +121,45 @@ async def create_socket(
             raise
     if len(exceptions) == 1:
         raise exceptions[0]
-    # If they all have the same str(), raise one.
+    # If they all have the same str(), raise one
     model = str(exceptions[0])
     if all(str(exc) == model for exc in exceptions):
         raise exceptions[0]
-    # Raise a combined exception so the user can see all the various error messages.
+    # Raise a combined exception so the user can see all the various error messages
     raise OSError(
         f"Multiple exceptions: {', '.join(str(exc) for exc in exceptions)}"
     )
 
 
-async def request(  # noqa: D103
+async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa: C901
     method: str,
-    url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
+    url: str | SplitResult,
     headers: None | dict[Any, Any] = None,
-    body: None | bytes | str = None,
+    body: None | bytes | Iterable[bytes] | str = None,
     *,
-    proxy: None | Proxy = None,
+    proxy_type: None | int = None,
+    proxy_addr: None | str = None,
+    proxy_port: None | int = None,
+    proxy_rdns: None | bool = True,
+    proxy_username: None | str = None,
+    proxy_password: None | str = None,
 ) -> tuple[int, dict[str, str], bytes]:
-    # pylint: disable=invalid-name, line-too-long, missing-function-docstring, too-complex, while-used
-    if headers is None:
-        headers = {}
-    if isinstance(body, str):
-        body = body.encode("utf-8")
+    """Insanely awesome HTTP client."""
+    # pylint: disable=invalid-name, line-too-long, too-complex, while-used
     if isinstance(url, str):
-        url = urllib.parse.urlsplit(url)
+        url = urlsplit(url)
     if url.scheme not in {"", "http", "https"}:
         raise ValueError(f"Unsupported scheme: {url.scheme}")
     if not url.hostname:
         raise ValueError("URL has no hostname")
+    if headers is None:
+        headers = {}
+    if isinstance(body, str):
+        body = body.encode("utf-8")
+    if isinstance(body, memoryview):
+        body = body.tobytes()
+    if isinstance(body, Iterable) and not isinstance(body, (bytes, bytearray)):
+        body = b"".join(body)  # type: ignore[arg-type]
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
@@ -164,7 +170,12 @@ async def request(  # noqa: D103
     sock = await create_socket(
         url.hostname,
         url.port or ("https" if https else "http"),
-        proxy,
+        proxy_type,
+        proxy_addr,
+        proxy_port,
+        proxy_rdns,
+        proxy_username,
+        proxy_password,
     )
     reader, writer = await asyncio.open_connection(
         sock=sock,
@@ -190,8 +201,8 @@ async def request(  # noqa: D103
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
-            status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]
-            headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]
+            status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
+            headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]  # noqa: B950
     writer.close()
     await writer.wait_closed()
     if "status" not in locals():
@@ -209,18 +220,24 @@ def detect_mode(code: str) -> str:
         return "exec"
 
 
-def send(  # pylint: disable=too-many-arguments
-    url: str | urllib.parse.SplitResult | urllib.parse.ParseResult,
+def send(
+    url: str | SplitResult,
     key: str,
     code: str,
     mode: str = "exec",
     session: None | str = None,
-    proxy: None | Proxy = None,
+    *,
+    proxy_type: None | int = None,
+    proxy_addr: None | str = None,
+    proxy_port: None | int = None,
+    proxy_rdns: None | bool = True,
+    proxy_username: None | str = None,
+    proxy_password: None | str = None,
 ) -> Any:
     """Send code to the backdoor API."""
     body = code.encode("utf-8")
     if isinstance(url, str):
-        url = urllib.parse.urlsplit(url)
+        url = urlsplit(url)
     headers = {
         "Authorization": key,
     }
@@ -232,7 +249,12 @@ def send(  # pylint: disable=too-many-arguments
             url._replace(path=f"{url.path}/api/backdoor/{mode}"),
             headers,
             body,
-            proxy=proxy,
+            proxy_type=proxy_type,
+            proxy_addr=proxy_addr,
+            proxy_port=proxy_port,
+            proxy_rdns=proxy_rdns,
+            proxy_username=proxy_username,
+            proxy_password=proxy_password,
         )
     )
     try:
@@ -269,14 +291,20 @@ def lisp_always_active() -> bool:
     )
 
 
-def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
+def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many-locals
     url: str,
     key: str,
     code: str,
-    session: None | str = None,
     lisp: bool = False,
-    proxy: None | Proxy = None,
+    session: None | str = None,
     time_requests: bool = False,
+    *,
+    proxy_type: None | int = None,
+    proxy_addr: None | str = None,
+    proxy_port: None | int = None,
+    proxy_rdns: None | bool = True,
+    proxy_username: None | str = None,
+    proxy_password: None | str = None,
 ) -> None:
     # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""
@@ -284,7 +312,19 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read_str(code), True)
     try:
-        response = send(url, key, code, detect_mode(code), session, proxy)
+        response = send(
+            url,
+            key,
+            code,
+            detect_mode(code),
+            session,
+            proxy_type=proxy_type,
+            proxy_addr=proxy_addr,
+            proxy_port=proxy_port,
+            proxy_rdns=proxy_rdns,
+            proxy_username=proxy_username,
+            proxy_password=proxy_password,
+        )
     except SyntaxError as exc:
         print(
             "".join(
@@ -347,7 +387,8 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments
 
 
 def main() -> None:  # noqa: C901
-    # pylint: disable=too-complex, too-many-branches, too-many-locals, too-many-statements
+    # pylint: disable=too-complex, too-many-branches
+    # pylint: disable=too-many-locals, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
     if "--help" in sys.argv or "-h" in sys.argv:
         sys.exit(
@@ -384,7 +425,12 @@ Accepted arguments:
     url: None | str = None
     key: None | str = None
     session: None | str = None
-    proxy: None | Proxy | tuple[()] = None
+    proxy_type: None | int | EllipsisType = None
+    proxy_addr: None | str = None
+    proxy_port: None | int = None
+    proxy_rdns: None | bool = True
+    proxy_username: None | str = None
+    proxy_password: None | str = None
     cache_pickle = os.path.join(
         os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
         "an-backdoor-client/session.pickle",
@@ -403,7 +449,12 @@ Accepted arguments:
             url = cache.get("url")
             key = cache.get("key")
             session = cache.get("session")
-            proxy = cache.get("proxy")
+            proxy_type = cache.get("proxy_type")
+            proxy_addr = cache.get("proxy_addr")
+            proxy_port = cache.get("proxy_port")
+            proxy_rdns = cache.get("proxy_rdns")
+            proxy_username = cache.get("proxy_username")
+            proxy_password = cache.get("proxy_password")
             if "--new-session" in sys.argv:
                 print(f"Using URL {url}")
             else:
@@ -429,42 +480,33 @@ Accepted arguments:
         if not key:
             print("No key given!")
 
-    if proxy is None or "--new-proxy" in sys.argv:
+    if proxy_type is None or "--new-proxy" in sys.argv:
         proxy_url_str = input("Proxy (leave empty for none): ").strip()
-        if "://" not in proxy_url_str:
-            proxy_url_str = "socks5://" + proxy_url_str
-        proxy_url = urllib.parse.urlsplit(proxy_url_str)
         if proxy_url_str:
+            if "://" not in proxy_url_str:
+                proxy_url_str = "socks5://" + proxy_url_str
+            proxy_url = urlsplit(proxy_url_str)
             if proxy_url.hostname:
-                proxy = (
-                    int(socks.PROXY_TYPES[proxy_url.scheme.upper()]),
-                    proxy_url.hostname,
-                    proxy_url.port,
-                    True,
-                    proxy_url.username or None,
-                    proxy_url.password or None,
-                )
+                proxy_type = int(socks.PROXY_TYPES[proxy_url.scheme.upper()])
+                proxy_addr = proxy_url.hostname
+                proxy_port = proxy_url.port
+                proxy_rdns = True
+                proxy_username = proxy_url.username or None
+                proxy_password = proxy_url.password or None
             else:
                 print("Invalid proxy URL!")
-                proxy = None
         else:
             print("No proxy given!")
-    if proxy:
-        port: None | int = (
-            proxy[2] if len(proxy) > 2 else None  # type: ignore[misc]
-        )
+    if isinstance(proxy_type, EllipsisType):
+        proxy_type = None
+    if proxy_type is not None:
         print(
-            f"Using {socks.PRINTABLE_PROXY_TYPES[proxy[0]]} proxy "
-            f"{proxy[1]}{f':{port}' if port else ''}"
-            + (
-                f" with username {proxy[4]}"  # type: ignore[misc]
-                if len(proxy) > 4 and proxy[4]  # type: ignore[misc]
-                else ""
-            )
+            f"Using {socks.PRINTABLE_PROXY_TYPES[proxy_type]} proxy "
+            f"{proxy_addr}{f':{proxy_port}' if proxy_port else ''}"
+            + (f" with username {proxy_username}" if proxy_username else "")
         )
     else:
-        proxy = None
-        print("Using no proxy. (use --new-proxy to be able to set one)")
+        print("Using no proxy (use --new-proxy to be able to set one)")
 
     if not session or "--new-session" in sys.argv:
         session = input("Session (enter nothing for random session): ")
@@ -480,7 +522,12 @@ Accepted arguments:
                     "url": url,
                     "key": key,
                     "session": session,
-                    "proxy": proxy or (),  # not None (None == ask)
+                    "proxy_type": proxy_type or ...,  # not None (None == ask)
+                    "proxy_addr": proxy_addr,
+                    "proxy_port": proxy_port,
+                    "proxy_rdns": proxy_rdns,
+                    "proxy_username": proxy_username,
+                    "proxy_password": proxy_password,
                 },
                 file,
             )
@@ -495,16 +542,40 @@ Accepted arguments:
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'HelperTuple', helper_output.getvalue()"
         )
-        response = send(url, key, code, "exec", session, proxy)
+        response = send(
+            url,
+            key,
+            code,
+            "exec",
+            session,
+            proxy_type=proxy_type,
+            proxy_addr=proxy_addr,
+            proxy_port=proxy_port,
+            proxy_rdns=proxy_rdns,
+            proxy_username=proxy_username,
+            proxy_password=proxy_password,
+        )
         if response[0] >= 400 or not response[2]["success"]:
             print("\033[91mPatching help() failed!\033[0m")
 
     if "--lisp" in sys.argv:
         if not hy:
             sys.exit("Hy is not installed!")
-        response = send(url, key, "import hy", "exec", session, proxy)
+        response = send(
+            url,
+            key,
+            "__import__('hy')",
+            "eval",
+            session,
+            proxy_type=proxy_type,
+            proxy_addr=proxy_addr,
+            proxy_port=proxy_port,
+            proxy_rdns=proxy_rdns,
+            proxy_username=proxy_username,
+            proxy_password=proxy_password,
+        )
         if response[0] >= 400 or not response[2]["success"]:
-            print("\033[91mImporting Hy failed!\033[0m")
+            print("\033[91mImporting Hy builtins failed!\033[0m")
 
     # pylint: disable=import-outside-toplevel
     from pyrepl.python_reader import ReaderConsole  # type: ignore
@@ -515,10 +586,15 @@ Accepted arguments:
         url,
         key,
         code,
-        session,
         "--lisp" in sys.argv,
-        proxy,
+        session,
         "--timing" in sys.argv,
+        proxy_type=proxy_type,
+        proxy_addr=proxy_addr,
+        proxy_port=proxy_port,
+        proxy_rdns=proxy_rdns,
+        proxy_username=proxy_username,
+        proxy_password=proxy_password,
     )
 
     # run the reader
