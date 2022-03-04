@@ -616,7 +616,9 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "theme": self.get_display_theme(),
                 "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
-                "url": self.request.full_url().lower(),
+                "url": self.request.full_url().lower()
+                if not self.request.path.upper().startswith("/LOLWUT")
+                else self.request.full_url().upper(),
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
                 "dynload": self.get_dynload(),
