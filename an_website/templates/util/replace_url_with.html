@@ -1,14 +1,14 @@
 {% whitespace oneline %}
-    {% if replace_url_with is not None and replace_url_with != url %}
+    {% if replace_url_with is not None and replace_url_with != request.full_url() %}
 <script>
     /* replace the url, without loading the website again */
     (()=>{
         const url = "{% raw replace_url_with.replace('"', "%22") %}";
-        if (url !== w.location.href) {
-            w.history.replaceState(
+        if (url !== window.location.href) {
+            window.history.replaceState(
                 {
                     "stateType": "replaceURL",
-                    "origin": w.location.toString(),
+                    "origin": window.location.toString(),
                 }, "{{title}}", url
             );
         }

@@ -211,9 +211,15 @@ class CurrencyConverter(HTMLRequestHandler):
         replace_url_with = None
 
         if value_dict.get("too_many_params", False):
-            key = value_dict.get("key_used")
+            used_key = value_dict.get("key_used")
             replace_url_with = self.fix_url(
-                f"{self.request.path}?{key}={value_dict.get(f'{key}_str')}"
+                self.request.full_url(),
+                **{
+                    key: value_dict.get(f"{used_key}_str")
+                    if key == used_key
+                    else None
+                    for key in keys
+                },
             )
 
         await self.render(

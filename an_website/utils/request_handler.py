@@ -357,7 +357,7 @@ class BaseRequestHandler(RequestHandler):
     @cache
     def fix_url(  # pylint: disable=too-complex
         self,
-        url: str | SplitResult,
+        url: None | str | SplitResult = None,
         this_url: None | str = None,
         always_add_params: bool = False,
         force_absolute: bool = True,
@@ -369,6 +369,9 @@ class BaseRequestHandler(RequestHandler):
         If the URL is from another website, link to it with the redirect page.
         Otherwise just return the URL with no_3rd_party appended.
         """
+        if url is None:
+            url = self.request.full_url()
+
         if isinstance(url, str):
             url = urlsplit(url)
 
@@ -378,6 +381,7 @@ class BaseRequestHandler(RequestHandler):
                 f"/redirect?to={quote(url.geturl())}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
+
         host = url.netloc or self.request.host
         add_protocol_and_host = force_absolute or host != self.request.host
 
@@ -616,9 +620,11 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "theme": self.get_display_theme(),
                 "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
-                "url": self.request.full_url().lower()
-                if not self.request.path.upper().startswith("/LOLWUT")
-                else self.request.full_url().upper(),
+                "canonical_url": self.fix_url(
+                    self.request.full_url().upper()
+                    if self.request.path.upper().startswith("/LOLWUT")
+                    else self.request.full_url().lower()
+                ).split("?")[0],
                 "settings": self.settings,
                 "c": str_to_bool(self.get_cookie("c", "n"), False),
                 "dynload": self.get_dynload(),

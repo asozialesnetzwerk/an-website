@@ -2,61 +2,59 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<body>
+    <form action="{{canonical_url}}" method="get" id="form">
+        <label class="form-element">
+            Euro:
+            <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
+                   type="text"
+                   id="euro"
+                   name="euro"
+                   placeholder="{{ euro_str }}">
+        </label>
 
-<form action="{{url}}" method="get" id="form">
-    <label class="form-element">
-        Euro:
-        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
-               type="text"
-               id="euro"
-               name="euro"
-               placeholder="{{ euro_str }}">
-    </label>
+        <label class="form-element">
+            D-Mark:
+            <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
+                   type="text"
+                   id="mark"
+                   name="mark"
+                   placeholder="{{ mark_str }}">
+        </label>
 
-    <label class="form-element">
-        D-Mark:
-        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
-               type="text"
-               id="mark"
-               name="mark"
-               placeholder="{{ mark_str }}">
-    </label>
+        <label class="form-element">
+            Ostmark:
+            <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
+                   type="text"
+                   id="ost"
+                   name="ost"
+                   placeholder="{{ ost_str }}">
+        </label>
 
-    <label class="form-element">
-        Ostmark:
-        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
-               type="text"
-               id="ost"
-               name="ost"
-               placeholder="{{ ost_str }}">
-    </label>
-
-    <label class="form-element">
-        Ostmark auf dem Schwarzmarkt:
-        <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
-               type="text"
-               id="schwarz"
-               name="schwarz"
-               placeholder="{{ schwarz_str }}">
-    </label>
+        <label class="form-element">
+            Ostmark auf dem Schwarzmarkt:
+            <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
+                   type="text"
+                   id="schwarz"
+                   name="schwarz"
+                   placeholder="{{ schwarz_str }}">
+        </label>
 
 
-{% raw form_appendix %}
+    {% raw form_appendix %}
 
-    <input type="submit" id="submit" value="Eingabe!">
-</form>
-<br>
+        <input type="submit" id="submit" value="Eingabe!">
+    </form>
+    <br>
 
-<div class="container" id="container">
-    <label for="output" class="output float-left">Als Text:</label>
-    <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
-</div>
-
-{% include "../util/replace_url_with.html" %} {% end %}
+    <div class="container" id="container">
+        <label for="output" class="output float-left">Als Text:</label>
+        <input type="text" readonly class="output output-text float-left" value="{{ text }}" id="output">
+    </div>
+{% end %}
 
 {% block head %}
     <style>.invalid {color: var(--contrast-2)}</style>
     <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
     <script defer src="{{fix_static('js/converter.js')}}"></script>
+    {% include "../util/replace_url_with.html" %}
 {% end %}

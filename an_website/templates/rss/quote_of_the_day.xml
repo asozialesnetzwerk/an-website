@@ -4,8 +4,8 @@
     <title>Zitat des Tages</title>
     <description>Jeden Tag wird hier ein witziges falsches Zitat hinzugefügt.</description>
     <language>de-de</language>
-    <link>{{url}}</link>
-    <atom:link href="{{url}}" rel="self" type="application/rss+xml" />
+    <link>{{canonical_url}}</link>
+    <atom:link href="{{canonical_url}}" rel="self" type="application/rss+xml" />
 
     {% for data in quotes %}
     <item>
