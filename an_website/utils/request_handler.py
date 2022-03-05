@@ -375,15 +375,17 @@ class BaseRequestHandler(RequestHandler):
         if isinstance(url, str):
             url = urlsplit(url)
 
-        if url.netloc and url.netloc != self.request.host:
+        if url.netloc and url.netloc.lower() != self.request.host.lower():
             # URL is to other website:
             url = urlsplit(
                 f"/redirect?to={quote(url.geturl())}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
 
-        host = url.netloc or self.request.host
-        add_protocol_and_host = force_absolute or host != self.request.host
+        host = (url.netloc or self.request.host).lower()
+        add_protocol_and_host = (
+            force_absolute or host != self.request.host.lower()
+        )
 
         if "no_3rd_party" not in query_args:
             query_args["no_3rd_party"] = self.get_no_3rd_party()

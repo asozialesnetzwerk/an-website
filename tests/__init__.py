@@ -40,9 +40,15 @@ def assert_valid_html_response(
     assert response.headers["Content-Type"] == "text/html; charset=UTF-8"
     body = response.body.decode("utf-8")
     assert body
-    parsed_html: etree.ElementTree = HTMLParser(strict=True).parse(body)
-    assert parsed_html
-    return parsed_html
+    root: etree.ElementTree = HTMLParser(
+        strict=True, namespaceHTMLElements=False
+    ).parse(body)
+    assert root
+    print(root.find("./head/link[@rel='canonical']").get("href"))
+    assert root.find("./head/link[@rel='canonical']").get("href").rstrip(
+        "/"
+    ) == response.request.url.split("?")[0].rstrip("/")
+    return root
 
 
 def assert_valid_rss_response(
@@ -55,7 +61,7 @@ def assert_valid_rss_response(
     assert body
     parsed_xml: etree.ElementTree = etree.fromstring(
         body,
-        parser=etree.XMLParser(recover=False),
+        parser=etree.XMLParser(recover=False, resolve_entities=False),
         base_url=response.request.url,
     )
     assert parsed_xml
