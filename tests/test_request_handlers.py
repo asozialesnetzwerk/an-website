@@ -18,34 +18,18 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 
-import orjson as json
 import pytest
 import tornado.escape
 import tornado.httpclient
 import tornado.web
-from lxml import etree  # type: ignore
 
 from an_website import main
 
-
-def assert_valid_html_response(
-    response: tornado.httpclient.HTTPResponse, code: int = 200
-) -> None:
-    """Assert a valid html response with the given code."""
-    assert response.code == code or not response.request.url
-    body = (
-        response.body.decode("utf-8")
-        .replace("header", "div")
-        .replace("main", "div")
-        .replace("footer", "div")
-        .replace("audio", "div")
-        .replace("source", "div")
-    )
-    assert etree.fromstring(
-        body,
-        etree.HTMLParser(recover=False),
-        base_url=response.request.url,
-    )
+from . import (
+    assert_valid_html_response,
+    assert_valid_json_response,
+    assert_valid_rss_response,
+)
 
 
 @pytest.fixture
@@ -88,13 +72,7 @@ async def test_json_apis(
         "/api/waehrungs-rechner",
     )
     for api in json_apis:
-        response = await fetch(api)
-        assert response.code == 200
-        assert response.headers["Content-Type"] == (
-            "application/json; charset=UTF-8"
-        )
-        print(api)
-        assert json.loads(response.body)
+        assert_valid_json_response(await fetch(api))
 
 
 async def test_request_handlers(
@@ -149,16 +127,14 @@ async def test_request_handlers(
     assert response.code in {200, 501}
     # assert_valid_html_response(response, response.code)
 
-    response = await fetch("/soundboard/feed")
-    assert response.code == 200
-    response = await fetch("/soundboard/muk/feed")
-    assert response.code == 200
+    assert_valid_rss_response(await fetch("/soundboard/feed"))
+    assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
+
     assert_valid_html_response(await fetch("/soundboard/muk"))
     assert_valid_html_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
     assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), 404)
 
-    response = await fetch("/api/restart")
-    assert response.code == 401  # Unauthorized
+    assert_valid_json_response(await fetch("/api/restart"), 401)
     response = await fetch("/api/backdoor/eval")
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/exec")
@@ -166,8 +142,8 @@ async def test_request_handlers(
 
     response = await fetch("/api/ping")
     assert response.code == 200
-
     assert response.body.decode() == "🏓"
+
     for code in range(200, 599):
         if code not in (204, 304):
             assert_valid_html_response(await fetch(f"/{code}.html"), code)

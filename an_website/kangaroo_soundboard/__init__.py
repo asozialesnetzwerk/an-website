@@ -113,17 +113,18 @@ class HeaderInfo(Info):
         itself based on the text content.
         """
         _id = name_to_id(self.text)
-        return (
-            f'<{self.tag} id="{_id}"><a no-dynload href="#{_id}" '
-            'rel="noreferrer" class="header-id-link"></a>'
-            + (
-                self.text  # no need to mark query if type
-                # is  book as the book title is excluded from the search
-                if self.type == Book
-                else mark_query(self.text, query)
-            )
-            + f"</{self.tag}>"
+        text = (
+            self.text  # no need to mark query if type
+            # is  book as the book title is excluded from the search
+            if self.type == Book
+            else mark_query(self.text, query)
         )
+        return f"""
+<{self.tag} id="{_id}">
+    <a no-dynload href="#{_id}" rel="noreferrer" class="header-id-link"></a>
+    {text}
+</{self.tag}>
+        """.strip()
 
 
 @dataclass(frozen=True)
@@ -171,12 +172,19 @@ class SoundInfo(Info):
         path = f"/files/{file}.mp3"
         file_url = f"/soundboard{path}?v={hash_file(DIR + path)[:8]}"
         return (
-            f'<li><a href="{href}" rel="noreferrer" class="a_hover">'
-            f"{mark_query(self.person.value, query)}</a>: »"
-            f'<a no-dynload href="{file_url}" class="quote-a" rel="noreferrer">'
-            f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
-            f'<source src="{file_url}" type="audio/mpeg"></source></audio></li>'
-        )
+            f"""
+<li>
+    <a href="{href}" rel="noreferrer" class="a_hover">
+        {mark_query(self.person.value, query)}
+    </a>: »<a no-dynload href="{file_url}" class="quote-a" rel="noreferrer">
+        {mark_query(self.get_text(), query)}
+    </a>«
+    <br>
+    <audio controls>
+        <source src="{file_url}" type="audio/mpeg">
+    </audio>
+</li>"""
+        ).lstrip()
 
     @cache
     def to_rss(self, url: None | str) -> str:
@@ -191,21 +199,21 @@ class SoundInfo(Info):
         text = self.get_text()
         if url is not None:
             link = url + link
-        return (
-            f"<item>\n"
-            f"<title>[{self.book.name} - {self.chapter.name}] "
-            f"{self.person.value}: »{text}«</title>\n"
-            f"<quote>{text}</quote>\n"
-            f"<book>{self.book.name}</book>\n"
-            f"<chapter>{self.chapter.name}</chapter>\n"
-            f"<person>{self.person.value}</person>\n"
-            f"<link>{link}</link>\n"
-            f"<enclosure url='{link}' type='audio/mpeg' "
-            f"length='{file_size}'></enclosure>\n"
-            f"<guid>{link}</guid>\n"
-            f"<pubDate>{modification_time}</pubDate>\n"
-            f"</item>"
-        )
+        return f"""
+<item>
+    <title>
+        [{self.book.name} - {self.chapter.name}] {self.person.value}: »{text}«
+    </title>
+    <quote>{text}</quote>
+    <book>{self.book.name}</book>
+    <chapter>{self.chapter.name}</chapter>
+    <person>{self.person.value}</person>
+    <link>{link}</link>
+    <enclosure url='{link}' type='audio/mpeg' length='{file_size}'></enclosure>
+    <guid>{link}</guid>
+    <pubDate>{modification_time}</pubDate>
+    </item>
+""".strip()
 
 
 all_sounds: list[SoundInfo] = []

@@ -22,6 +22,8 @@ import tornado.web
 import an_website.quotes.quotes as main_page
 from an_website import main, quotes
 
+from . import assert_valid_html_response, assert_valid_json_response
+
 
 @pytest.fixture
 def app() -> tornado.web.Application:
@@ -43,7 +45,7 @@ WRONG_QUOTE_DATA = {
             "author": "Abraham Lincoln",
         },
         "quote": "Frage nicht, was dein Land für dich tun kann, "
-        "frage was du für dein Land tun kannst.",
+        "frage, was du für dein Land tun kannst.",
     },
     "rating": 4,
     "showed": 216,
@@ -99,7 +101,7 @@ async def test_quote_updating() -> None:
 
     assert quote.quote == (
         "Frage nicht, was dein Land für dich tun kann, "
-        "frage was du für dein Land tun kannst."
+        "frage, was du für dein Land tun kannst."
     )
     quote.quote = "test"
 
@@ -109,7 +111,7 @@ async def test_quote_updating() -> None:
 
     assert quote.quote == (
         "Frage nicht, was dein Land für dich tun kann, "
-        "frage was du für dein Land tun kannst."
+        "frage, was du für dein Land tun kannst."
     )
 
 
@@ -117,38 +119,30 @@ async def test_quote_request_handlers(
     http_server_client: tornado.simple_httpclient.SimpleAsyncHTTPClient,
 ) -> None:
     """Test the request handlers for the quotes page."""
-    response = await http_server_client.fetch("/zitate")
-    assert response.code == 200
-    response = await http_server_client.fetch("/zitate/1-1")
-    assert response.code == 200
-    response = await http_server_client.fetch("/api/zitate/1-2")
-    assert response.code == 200
+    fetch = http_server_client.fetch
+
+    assert_valid_html_response(await fetch("/zitate"))
+    assert_valid_html_response(await fetch("/zitate/1-1"))
+    assert_valid_json_response(await fetch("/api/zitate/1-2"))
     for i in (1, 2):
-        # twice the same because we cache the author info from wikipedia
-        response1 = await http_server_client.fetch(f"/zitate/info/a/{i}")
-        assert response.code == 200
-        response2 = await http_server_client.fetch(f"/zitate/info/a/{i}")
-        assert response.code == 200
-        assert response1.body.decode() == response2.body.decode()
-    response = await http_server_client.fetch("/zitate/info/z/1")
-    assert response.code == 200
+        # twice because we cache the author info from wikipedia
+        assert_valid_html_response(await fetch(f"/zitate/info/a/{i}"))
+        assert_valid_html_response(await fetch(f"/zitate/info/a/{i}"))
 
-    response = await http_server_client.fetch("/zitate/share/1-1")
-    assert response.code == 200
+    assert_valid_html_response(await fetch("/zitate/info/z/1"))
+    assert_valid_html_response(await fetch("/zitate/share/1-1"))
 
-    response = await http_server_client.fetch("/zitate/1-1/image.gif")
+    response = await fetch("/zitate/1-1/image.gif")
     assert response.code == 200
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_img import FILE_EXTENSIONS
 
     for _e in FILE_EXTENSIONS:
-        response = await http_server_client.fetch(f"/zitate/1-1/image.{_e}")
+        response = await fetch(f"/zitate/1-1/image.{_e}")
         assert response.code == 200
-        response = await http_server_client.fetch(
-            f"/zitate/1-1/image.{_e.upper()}"
-        )
+        response = await fetch(f"/zitate/1-1/image.{_e.upper()}")
         assert response.code == 200
-        response = await http_server_client.fetch(f"/zitate/1-2/image.{_e}")
+        response = await fetch(f"/zitate/1-2/image.{_e}")
         assert response.code == 200
 
 

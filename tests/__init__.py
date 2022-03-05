@@ -17,6 +17,12 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Any
+
+import orjson as json
+import tornado.httpclient
+from lxml import etree  # type: ignore[import]
+from lxml.html.html5parser import HTMLParser  # type: ignore[import]
 
 DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
@@ -24,3 +30,44 @@ PARENT_DIR = os.path.dirname(DIR)
 # add parent dir to sys.path
 # this makes importing an_website possible
 sys.path.append(f"{PARENT_DIR}")
+
+
+def assert_valid_html_response(
+    response: tornado.httpclient.HTTPResponse, code: int = 200
+) -> etree.ElementTree:
+    """Assert a valid html response with the given code."""
+    assert response.code == code or not response.request.url
+    assert response.headers["Content-Type"] == "text/html; charset=UTF-8"
+    body = response.body.decode("utf-8")
+    assert body
+    parsed_html: etree.ElementTree = HTMLParser(strict=True).parse(body)
+    assert parsed_html
+    return parsed_html
+
+
+def assert_valid_rss_response(
+    response: tornado.httpclient.HTTPResponse, code: int = 200
+) -> etree.ElementTree:
+    """Assert a valid html response with the given code."""
+    assert response.code == code or not response.request.url
+    assert response.headers["Content-Type"] == "application/rss+xml"
+    body = response.body
+    assert body
+    parsed_xml: etree.ElementTree = etree.fromstring(
+        body,
+        parser=etree.XMLParser(recover=False),
+        base_url=response.request.url,
+    )
+    assert parsed_xml
+    return parsed_xml
+
+
+def assert_valid_json_response(
+    response: tornado.httpclient.HTTPResponse, code: int = 200
+) -> Any:
+    """Assert a valid html response with the given code."""
+    assert response.code == code or not response.request.url
+    assert response.headers["Content-Type"] == "application/json; charset=UTF-8"
+    parsed_json = json.loads(response.body)
+    assert parsed_json
+    return parsed_json
