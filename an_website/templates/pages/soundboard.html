@@ -4,8 +4,8 @@
 {% block body %}
     {% if query is None %}
         {% if feed_url %}
-            <a href="{{feed_url}}" no-dynload id="soundboard-rss"
-                ><img src="{{fix_static('img/rss.svg')}}" alt="RSS-Feed"></a>
+            <a href="{{feed_url}}" id="soundboard-rss"
+               no-dynload><img src="{{fix_static('img/rss.svg')}}" alt="RSS-Feed"></a>
         {% end %}
     {% else %}
         <form>

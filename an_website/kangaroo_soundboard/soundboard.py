@@ -59,6 +59,11 @@ def get_module_info() -> ModuleInfo:
                 RedirectHandler,
                 {"url": "/soundboard/feed"},
             ),
+            (  # redirect handler for legacy reasons
+                r"/soundboard/k(ä|%C3%A4)nguru(/.+|)",
+                RedirectHandler,
+                {"url": "/soundboard/kaenguru{1}"},
+            ),
             (
                 r"/soundboard/([^./]+)/feed",
                 SoundboardRSSHandler,

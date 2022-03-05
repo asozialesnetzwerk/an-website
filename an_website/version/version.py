@@ -22,7 +22,7 @@ from ..utils.utils import ModuleInfo, run_shell_cmd
 VERSION = run_shell_cmd("git rev-parse HEAD").strip()
 FILE_HASHES = run_shell_cmd("git ls-files | xargs sha1sum")
 HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = run_shell_cmd("git rev-parse origin/gh-pages")
+GH_PAGES_COMMIT_HASH = run_shell_cmd("git rev-parse origin/gh-pages").strip()
 
 
 def get_module_info() -> ModuleInfo:

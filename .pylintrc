@@ -23,6 +23,7 @@ extension-pkg-allow-list=
     blake3,
     orjson,
     Levenshtein,
+    lxml,
 py-version=3.10
 
 [MESSAGES_CONTROL]

@@ -16,18 +16,57 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Awaitable, Callable
 
 import orjson as json
 import pytest
+import tornado.escape
 import tornado.httpclient
 import tornado.web
+from lxml import etree  # type: ignore
 
 from an_website import main
 
 
+def assert_valid_html_response(
+    response: tornado.httpclient.HTTPResponse, code: int = 200
+) -> None:
+    """Assert a valid html response with the given code."""
+    assert response.code == code or not response.request.url
+    # TODO: improve the following bs
+    body_string = re.sub(r"\s+", " ", response.body.decode("utf-8").strip())
+    assert body_string
+    parsed_string = tornado.escape.xhtml_unescape(
+        re.sub(
+            r"\s+",  # 42
+            " ",
+            etree.tostring(
+                etree.fromstring(
+                    body_string,
+                    parser=etree.HTMLParser(remove_pis=False),
+                    base_url=response.request.url,
+                ),
+                doctype="<!DOCTYPE html>",
+                method="html",
+                encoding="utf-8",
+            )
+            .decode("utf-8")
+            .strip(),
+        )
+    )
+    body_string = tornado.escape.xhtml_unescape(body_string)
+    equal = parsed_string == body_string
+    if not equal:
+        for _i, (org_line, new_line) in enumerate(
+            zip(body_string.split(" "), parsed_string.split(" "))
+        ):
+            assert f"{_i} in {response.request.url}" and org_line == new_line
+    assert equal
+
+
 @pytest.fixture
-def app() -> tornado.web.Application:
+def app() -> tornado.web.Application:  # 69
     """Create the application."""
     return main.make_app()
 
@@ -38,7 +77,7 @@ def fetch(
 ) -> Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]:
     """Fetch a URL."""
 
-    async def fetch_url(url: str) -> tornado.httpclient.HTTPResponse:  # 42
+    async def fetch_url(url: str) -> tornado.httpclient.HTTPResponse:
         """Fetch a URL."""
         return await http_server_client.fetch(url, raise_error=False)
 
@@ -65,7 +104,7 @@ async def test_json_apis(
         "/api/wortspiel-helfer",
         "/api/waehrungs-rechner",
     )
-    for api in json_apis:  # 69
+    for api in json_apis:
         response = await fetch(api)
         assert response.code == 200
         assert response.headers["Content-Type"] == (
@@ -83,19 +122,19 @@ async def test_request_handlers(
     response = await fetch("/")
     assert response.code == 200
     for theme in ("default", "blue", "random", "random-dark"):
-        response = await fetch(f"/?theme={theme}")
-        assert response.code == 200
+        assert_valid_html_response(await fetch(f"/?theme={theme}"))
     for _b1, _b2 in (("sure", "true"), ("nope", "false")):
         response = await fetch(f"/?no_3rd_party={_b1}")
         body = response.body.decode()
-        assert response.code == 200
+        assert_valid_html_response(response)
         response = await fetch(f"/?no_3rd_party={_b2}")
-        assert response.code == 200
+        assert_valid_html_response(response)
         assert response.body.decode().replace(_b2, _b1) == body
-
+    assert_valid_html_response(await fetch("/?c=s"))
     response = await fetch("/redirect?from=/&to=https://example.org")
-    assert response.code == 200
+    assert_valid_html_response(response)
     assert b"https://example.org" in response.body
+
     response = await fetch("/robots.txt")
     assert response.code == 200
     response = await fetch("/favicon.ico")
@@ -104,64 +143,49 @@ async def test_request_handlers(
     assert response.code == 200
     response = await fetch("/static/favicon.ico")
     assert response.code == 200
-    response = await fetch("/betriebszeit")
-    assert response.code == 200
-    response = await fetch("/version")
-    assert response.code == 200
-    response = await fetch("/suche")
-    assert response.code == 200
-    response = await fetch("/kaenguru-comics")
-    assert response.code == 200
-    response = await fetch("/hangman-loeser")
-    assert response.code == 200
-    response = await fetch("/wortspiel-helfer")
-    assert response.code == 200
-    response = await fetch("/services")
-    assert response.code == 200
-    response = await fetch("/vertauschte-woerter")
-    assert response.code == 200
-    response = await fetch("/waehrungs-rechner")
-    assert response.code == 200
-    response = await fetch("/host-info")
-    assert response.code == 200
-    response = await fetch("/host-info/uwu")
+
+    assert_valid_html_response(await fetch("/betriebszeit"))
+    assert_valid_html_response(await fetch("/version"))
+    assert_valid_html_response(await fetch("/suche"))
+    assert_valid_html_response(await fetch("/kaenguru-comics"))
+    assert_valid_html_response(await fetch("/hangman-loeser"))
+    assert_valid_html_response(await fetch("/wortspiel-helfer"))
+    assert_valid_html_response(await fetch("/services"))
+    assert_valid_html_response(await fetch("/vertauschte-woerter"))
+    assert_valid_html_response(await fetch("/waehrungs-rechner"))
+    assert_valid_html_response(await fetch("/host-info"))
+    assert_valid_html_response(await fetch("/einstellungen"))
+    assert_valid_html_response(await fetch("/wiki"))
+    assert_valid_html_response(await fetch("/js-lizenzen"))
+    assert_valid_html_response(await fetch("/endpunkte"))
+    assert_valid_html_response(await fetch("/soundboard"))
+    assert_valid_html_response(await fetch("/soundboard/personen"))
+    assert_valid_html_response(await fetch("/soundboard/suche"))
+
+    await fetch("/host-info/uwu")
     assert response.code in {200, 501}
-    response = await fetch("/einstellungen")
-    assert response.code == 200
-    response = await fetch("/wiki")
-    assert response.code == 200
-    response = await fetch("/js-lizenzen")
-    assert response.code == 200
-    response = await fetch("/soundboard/personen")
-    assert response.code == 200
-    response = await fetch("/soundboard/suche")
-    assert response.code == 200
+    # assert_valid_html_response(response, response.code)
+
     response = await fetch("/soundboard/feed")
-    assert response.code == 200
-    response = await fetch("/soundboard")
     assert response.code == 200
     response = await fetch("/soundboard/muk/feed")
     assert response.code == 200
-    response = await fetch("/soundboard/muk")
-    assert response.code == 200
-    response = await fetch("/soundboard/qwertzuiop/feed")
-    assert response.code == 404
-    response = await fetch("/soundboard/qwertzuiop")
-    assert response.code == 404
+    assert_valid_html_response(await fetch("/soundboard/muk"))
+    assert_valid_html_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
+    assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), 404)
+
     response = await fetch("/api/restart")
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/eval")
     assert response.code == 401  # Unauthorized
     response = await fetch("/api/backdoor/exec")
     assert response.code == 401  # Unauthorized
-    response = await fetch("/endpunkte")
-    assert response.code == 200
+
     response = await fetch("/api/ping")
     assert response.code == 200
+
     assert response.body.decode() == "🏓"
     for code in range(200, 599):
         if code not in (204, 304):
-            response = await fetch(f"/{code}.html")
-            assert response.code == code
-    response = await fetch("/qwertzuiop")
-    assert response.code == 404
+            assert_valid_html_response(await fetch(f"/{code}.html"), code)
+    assert_valid_html_response(await fetch("/qwertzuiop"), 404)

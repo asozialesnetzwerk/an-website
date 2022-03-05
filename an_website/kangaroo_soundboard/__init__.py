@@ -171,10 +171,9 @@ class SoundInfo(Info):
         path = f"/files/{file}.mp3"
         file_url = f"/soundboard{path}?v={hash_file(DIR + path)[:8]}"
         return (
-            f'<li><a href="{href}" rel="noreferrer"'
-            f'class="a_hover">{mark_query(self.person.value, query)}</a>'
-            f': »<a no-dynload href="{file_url}" '
-            f'class="quote-a" rel="noreferrer">'
+            f'<li><a href="{href}" rel="noreferrer" class="a_hover">'
+            f"{mark_query(self.person.value, query)}</a>: »"
+            f'<a no-dynload href="{file_url}" class="quote-a" rel="noreferrer">'
             f"{mark_query(self.get_text(), query)}</a>«<br><audio controls>"
             f'<source src="{file_url}" type="audio/mpeg"></source></audio></li>'
         )

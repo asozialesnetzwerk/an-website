@@ -4,15 +4,14 @@
 {% block body %}
 <form method="post" id="form">
   <label class="form-element">
-    Der Text dessen Wörter vertauscht werden sollen
+    Der Text, dessen Wörter vertauscht werden sollen
     <textarea
-          id = "text"
+          id="text"
           name="text"
           placeholder="Gebe witzigen Text ein."
           rows="10"
           maxlength="{{MAX_CHAR_COUNT}}"
-          spellcheck="true"
-    >{{text}}</textarea>
+          spellcheck="true">{{text}}</textarea>
   </label>
 
   <label class="form-element">
@@ -20,21 +19,16 @@
     <button
       name="reset"
       value="sure"
-      id="reset"
-    >
-      Reset
-    </button>
+      id="reset">Reset</button>
     <textarea
           name="config"
           id="config-textarea"
           placeholder="# Vertauschungen eingeben, zum Beispiel:
           amüsant <=> relevant
-          Björn Höcke => Bernd Höcke
-          "
+          Björn Höcke => Bernd Höcke"
           rows="10"
           maxlength="{{MAX_CHAR_COUNT}}"
-          spellcheck="true"
-    >{{config}}</textarea>
+          spellcheck="true">{{config}}</textarea>
   </label>
 
   <div id="error_msg">
@@ -46,26 +40,20 @@
   {% raw form_appendix %}
 
   <div class="tooltip no-select button-container form-element">
-    <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
+    <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe">
     <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
   </div>
 </form>
 
 {% if error_msg is not None %}
-<script>
-  alert("{% raw error_msg %}");
-</script>
+<script>alert("{% raw error_msg %}");</script>
 {% end %}
 
 <br>
 
 <label for="output">Ausgabe:</label>
 <br>
-<textarea
-        rows=10
-        id="output"
-        readonly
->{{output}}</textarea>
+<textarea rows="10" id="output" readonly>{{output}}</textarea>
 {% end %}
 
 {% block head %}

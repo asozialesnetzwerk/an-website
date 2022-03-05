@@ -9,22 +9,20 @@
         Erlaube Inhalte von Drittanbietern
         <input type="checkbox"
            name="no_3rd_party"
-           value="nope"
-{% if not no_3rd_party %}
+        {% if not no_3rd_party %}
            checked
-{% end %}
-        >
+        {% end %}
+           value="nope">
     </label>
     {% else %}
     <label class="form-element">
         Deaktiviere Inhalte von Drittanbietern
         <input type="checkbox"
            name="no_3rd_party"
-           value="sure"
-{% if no_3rd_party %}
+        {% if no_3rd_party %}
            checked
-{% end %}
-        >
+        {% end %}
+           value="sure">
     </label>
     {% end %}
 
@@ -32,11 +30,10 @@
         Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
         <input type="checkbox"
            name="dynload"
-           value="sure"
-{% if dynload %}
+        {% if dynload %}
            checked
-{% end %}
-        >
+        {% end %}
+           value="sure">
     </label>
 
 
@@ -44,9 +41,8 @@
         Theme
         <select name="theme">
 {% for _t in themes %}
-            <option value="{{_t}}" {% if _t == theme_name %} selected {% end %}>
-                {{_t}}
-            </option>
+            <option  {% if _t == theme_name %} selected {% end %}
+                     value="{{_t}}">{{_t}}</option>
 {% end %}
         </select>
     </label>
@@ -56,13 +52,11 @@
        Speicher in Cookies 🍪 (empfohlen)
         <input type="checkbox"
             name="save_in_cookie"
-            value="sure"
-{% if save_in_cookie %}
+        {% if save_in_cookie %}
            checked
-{% end %}
-        >
+        {% end %}
+            value="sure">
     </label>
-
 
     <input type="submit" value="Speichern">
 </form>

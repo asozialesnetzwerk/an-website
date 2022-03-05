@@ -26,7 +26,7 @@
             </label>
             <span class="tooltip-text no-select">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
         </div>
-        <input type="checkbox" class="cb no-select" id="crossword-mode" name="crossword_mode" {% if crossword_mode %} checked {% end %}>
+        <input type="checkbox" class="cb no-select" id="crossword-mode" {% if crossword_mode %} checked {% end %} name="crossword_mode">
         <span class="checkmark no-select"></span>
     </div>
 
@@ -43,18 +43,18 @@
     <label class="form-element">
         Sprache der Wörter:
         <select class="small-input" name="lang">
-            <option value="de_only_a-z" {% if lang == "de_only_a-z" %} selected {% end %}>Deutsch ohne Umlaute</option>
-            <option value="de" {% if lang == "de" %} selected {% end %}>Deutsch</option>
-            <option value="de_basic_only_a-z" {% if lang == "de_basic_only_a-z" %} selected {% end %}>Deutsch (Grundformen) ohne Umlaute</option>
-            <option value="de_basic" {% if lang == "de_basic" %} selected {% end %}>Deutsch (Grundformen)</option>
-            <option value="en" {% if lang == "en" %} selected {% end %}>Englisch</option>
+            <option {% if lang == "de_only_a-z" %} selected {% end %} value="de_only_a-z">Deutsch ohne Umlaute</option>
+            <option {% if lang == "de" %} selected {% end %} value="de">Deutsch</option>
+            <option {% if lang == "de_basic_only_a-z" %} selected {% end %} value="de_basic_only_a-z">Deutsch (Grundformen) ohne Umlaute</option>
+            <option {% if lang == "de_basic" %} selected {% end %} value="de_basic">Deutsch (Grundformen)</option>
+            <option {% if lang == "en" %} selected {% end %} value="en">Englisch</option>
         </select>
     </label>
 
 {% raw form_appendix %}
 
     <div class="tooltip no-select button-container form-element">
-        <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe"/>
+        <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe">
         <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
     </div>
 </form>
