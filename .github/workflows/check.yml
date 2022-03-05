@@ -98,7 +98,7 @@ jobs:
       - name: Install requirements
         run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
       - name: Install Flake8 and Pylint
-        run: grep -E "^(flake8|pep8-naming|pylint|pytest)" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^(flake8|pep8-naming|pylint|pytest|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Flake8
         run: flake8 --extend-ignore=D100,D102 an_website tests
       - name: Run Pylint
