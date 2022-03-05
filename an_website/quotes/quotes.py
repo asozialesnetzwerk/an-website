@@ -117,17 +117,11 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     return 0
 
 
-def get_random_rating_filter() -> str:
-    """Get a random rating filter with smart probabilities."""
-    rand_int = random.randint(0, 27)
-    if rand_int < 2:  # 0 - 1 → 2 → ~7.14%
-        return "n"
-    if rand_int < 9:  # 2 - 8 → 7 → 25%
-        return "unrated"
-    if rand_int < 15:  # 9 - 14 → 6 → ~21.43%
-        return "all"
-    # 15 - 27 → 13 → 46.43%
-    return "w"
+SMART_RATING_FILTERS = (
+    *(("n",) * 1),
+    *(("all",) * 3),
+    *(("w",) * 4),
+)
 
 
 class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
@@ -158,14 +152,23 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
             return "all"
         return "smart"
 
+    def get_show_rating(self) -> bool:
+        """Return whether the user wants to see the rating."""
+        return str_to_bool(
+            self.get_query_argument("show-rating", default=None), default=False
+        )
+
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
         next_q, next_a = self.get_next_id()
-        url = f"/zitate/{next_q}-{next_a}"
-        if (rating_filter := self.rating_filter()) != "smart":
-            url = f"{url}?r={rating_filter}"
 
-        return self.fix_url(url)
+        return self.fix_url(
+            f"/zitate/{next_q}-{next_a}",
+            r=None
+            if (rating_filter := self.rating_filter()) == "smart"
+            else rating_filter,
+            **{"show-rating": self.get_show_rating() or None},
+        )
 
     @cache
     def get_next_id(  # noqa: C901  # pylint: disable=too-complex
@@ -175,7 +178,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
         if rating_filter is None:
             rating_filter = self.rating_filter()
         if rating_filter == "smart":
-            rating_filter = get_random_rating_filter()
+            rating_filter = random.choice(SMART_RATING_FILTERS)
 
         if rating_filter == "unrated":
             # get a random quote, but filter out already rated quotes
@@ -186,6 +189,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
                     # the cache. They don't have a real wrong_quotes_id
                     return ids
             return ids
+
         if rating_filter == "all":
             return get_random_id()
 
@@ -197,11 +201,12 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
             wrong_quotes = get_wrong_quotes()
         else:
             wrong_quotes = None
-        if wrong_quotes:
-            return random.choice(wrong_quotes).get_id()
 
-        # invalid rating filter or no wrong quotes with that filter
-        return get_random_id()
+        if not wrong_quotes:
+            # invalid rating filter or no wrong quotes with that filter
+            return get_random_id()
+
+        return random.choice(wrong_quotes).get_id()
 
     def on_finish(self) -> None:
         """
@@ -361,12 +366,6 @@ class QuoteById(QuoteBaseHandler):
             rating=await self.get_rating_str(wrong_quote),
             show_rating=self.get_show_rating(),
             vote=vote,
-        )
-
-    def get_show_rating(self) -> bool:
-        """Return whether the user wants to see the rating."""
-        return str_to_bool(
-            self.get_query_argument("show-rating", default=None), default=False
         )
 
     async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
