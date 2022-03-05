@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import re
 from collections.abc import Awaitable, Callable
 
 import orjson as json
@@ -34,39 +33,23 @@ def assert_valid_html_response(
 ) -> None:
     """Assert a valid html response with the given code."""
     assert response.code == code or not response.request.url
-    # TODO: improve the following bs
-    body_string = re.sub(r"\s+", " ", response.body.decode("utf-8").strip())
-    assert body_string
-    parsed_string = tornado.escape.xhtml_unescape(
-        re.sub(
-            r"\s+",  # 42
-            " ",
-            etree.tostring(
-                etree.fromstring(
-                    body_string,
-                    parser=etree.HTMLParser(remove_pis=False),
-                    base_url=response.request.url,
-                ),
-                doctype="<!DOCTYPE html>",
-                method="html",
-                encoding="utf-8",
-            )
-            .decode("utf-8")
-            .strip(),
-        )
+    body = (
+        response.body.decode("utf-8")
+        .replace("header", "div")
+        .replace("main", "div")
+        .replace("footer", "div")
+        .replace("audio", "div")
+        .replace("source", "div")
     )
-    body_string = tornado.escape.xhtml_unescape(body_string)
-    equal = parsed_string == body_string
-    if not equal:
-        for _i, (org_line, new_line) in enumerate(
-            zip(body_string.split(" "), parsed_string.split(" "))
-        ):
-            assert f"{_i} in {response.request.url}" and org_line == new_line
-    assert equal
+    assert etree.fromstring(
+        body,
+        etree.HTMLParser(recover=False),
+        base_url=response.request.url,
+    )
 
 
 @pytest.fixture
-def app() -> tornado.web.Application:  # 69
+def app() -> tornado.web.Application:
     """Create the application."""
     return main.make_app()
 

@@ -51,7 +51,7 @@ class Service:
                 if value.startswith("http") and "://" in value:
                     value = (
                         f'<a href="/redirect?to={quote(value)}'
-                        f'&from=/services" rel="noreferrer">{value}</a>'
+                        f'&amp;from=/services" rel="noreferrer">{value}</a>'
                     )
                 html.append(f"<tr><td>{key}</td><td>{value}</td></tr>")
 
