@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy stuff
 on:
   push:
     branches: [main]

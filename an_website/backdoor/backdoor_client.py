@@ -466,9 +466,8 @@ Accepted arguments:
         elif not url.startswith(("http:", "https:")):
             if not url.startswith("//"):
                 url = "//" + url
-            banana = url.split("/", maxsplit=1)
-            if re.fullmatch(
-                r"^(\/\/)(localhost|127\.0\.0\.1|\[::1\])(\:\d+)?", banana[0]
+            if re.match(
+                r"^(\/\/)(localhost|127\.0\.0\.1|\[::1\])(\:\d+)?(/\S*)?$", url
             ):
                 url = "http:" + url
             else:

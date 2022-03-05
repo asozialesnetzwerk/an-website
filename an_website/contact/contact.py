@@ -114,7 +114,7 @@ def send_mail(  # pylint: disable=too-many-arguments
     password: None | str = None,
     starttls: None | bool = None,
     port: int = 587,
-) -> None:
+) -> dict[str, tuple[int, bytes]]:
     """Send an email."""
     recipients = list(recipients)
     for spam, eggs in enumerate(recipients):
@@ -136,7 +136,7 @@ def send_mail(  # pylint: disable=too-many-arguments
             smtp.starttls(context=ssl.create_default_context())
         if username and password:
             smtp.login(username, password)
-        smtp.send_message(message)
+        return smtp.send_message(message)
 
 
 class ContactPage(HTMLRequestHandler):
