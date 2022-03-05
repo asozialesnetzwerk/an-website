@@ -33,8 +33,8 @@ jobs:
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
-      - name: Install pytest and coverage
-        run: grep -E "^(pytest|coverage)" requirements-dev.txt | xargs pip install --prefer-binary
+      - name: Install pytest, coverage and html5lib (needed for the tests)
+        run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
         run: pytest --cov=an_website tests
       - name: Upload coverage as Build Artifact
