@@ -2,25 +2,30 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<table id="jslicense-labels1">
-    <tr>
-        <th>Skript</th>
-        <th>Lizenz</th>
-    </tr>
-    {% for file_name in js_files %}
-    <tr>
-        <td><a no-dynload href="{{fix_static(f'js/file_name')}}" rel="noreferrer">{{ file_name }}</a></td>
-        <td><a no-dynload href="http://www.gnu.org/licenses/agpl-3.0.html" rel="noreferrer">GNU-AGPL-3.0-or-later</a></td>
-    </tr>
-    {% end %}
+<table id="jslicense-labels1"  class="table">
+    <thead>
+        <tr>
+            <th>Skript</th>
+            <th>Lizenz</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for file_name in js_files %}
+        <tr>
+            <td>
+                <a no-dynload href="{{fix_static(f'js/file_name')}}"
+                   rel="noreferrer">{{ file_name }}</a>
+            </td>
+            <td>
+                <a no-dynload href="https://www.gnu.org/licenses/agpl-3.0.html"
+                   rel="noreferrer">GNU-AGPL-3.0-or-later</a>
+            </td>
+        </tr>
+        {% end %}
+    </tbody>
 </table>
 {% end %}
 
 {% block head %}
-<style>
-    #jslicense-labels1 {
-        margin-left: auto;
-        margin-right: auto;
-    }
-</style>
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/table.css')}}">
 {% end %}

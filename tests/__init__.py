@@ -39,12 +39,9 @@ def assert_valid_html_response(
     assert response.code == code or not response.request.url
     assert response.headers["Content-Type"] == "text/html; charset=UTF-8"
     body = response.body.decode("utf-8")
-    assert body
     root: etree.ElementTree = HTMLParser(
         strict=True, namespaceHTMLElements=False
     ).parse(body)
-    assert root
-    print(root.find("./head/link[@rel='canonical']").get("href"))
     assert root.find("./head/link[@rel='canonical']").get("href").rstrip(
         "/"
     ) == response.request.url.split("?")[0].rstrip("/")
@@ -58,13 +55,11 @@ def assert_valid_rss_response(
     assert response.code == code or not response.request.url
     assert response.headers["Content-Type"] == "application/rss+xml"
     body = response.body
-    assert body
     parsed_xml: etree.ElementTree = etree.fromstring(
         body,
         parser=etree.XMLParser(recover=False, resolve_entities=False),
         base_url=response.request.url,
     )
-    assert parsed_xml
     return parsed_xml
 
 
@@ -75,5 +70,5 @@ def assert_valid_json_response(
     assert response.code == code or not response.request.url
     assert response.headers["Content-Type"] == "application/json; charset=UTF-8"
     parsed_json = json.loads(response.body)
-    assert parsed_json
+    assert parsed_json is not None and len(parsed_json)
     return parsed_json

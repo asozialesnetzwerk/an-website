@@ -1,3 +1,7 @@
+#share-button-container {
+  min-width: 42%;
+}
+
 /*Generated using https://sharingbuttons.io/*/
 .resp-sharing-button__link,
 .resp-sharing-button__icon {

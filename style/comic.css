@@ -12,7 +12,7 @@
 @font-face {
     font-family: "comic-mono";
     font-style: normal;
-    /* https://dtinth.github.io/comic-mono-font/ */
+    /* font stolen from: https://dtinth.github.io/comic-mono-font/ */
     src: url("/static/fonts/ComicMono.woff2?v=0") format("woff2");
 }
 

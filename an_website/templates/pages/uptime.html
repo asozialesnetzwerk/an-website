@@ -4,18 +4,18 @@
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}
 
 {% block body %}
-    <div class="center">
+    <div>
         Diese Webseite läuft bereits <div id="uptime">{{uptime_str}}</div>
-
-        {% if availability is not None %}
-            <br>
+    </div>
+    {% if availability is not None %}
+        <div>
             <br>Verfügbarkeit: {{f"{availability:.2f}".replace(".", ",")}} %<br>
             <img src="{{fix_url('/betriebszeit/verfuegbarkeit.svg', a=int(availability * 100) / (100.0 * 100))}}"
                  alt="Verfügbarkeits-Tortendiagramm"
                  width="100"
                  height="100">
-        {% end %}
-    </div>
+        </div>
+    {% end %}
 {% end %}
 
 {% block head %}

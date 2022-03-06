@@ -131,6 +131,7 @@ async def test_quote_request_handlers(
 
     assert_valid_html_response(await fetch("/zitate/info/z/1"))
     assert_valid_html_response(await fetch("/zitate/share/1-1"))
+    assert_valid_html_response(await fetch("/zitate/erstellen"))
 
     response = await fetch("/zitate/1-1/image.gif")
     assert response.code == 200

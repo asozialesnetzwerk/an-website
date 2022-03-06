@@ -1,17 +1,16 @@
-.center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
+#body {
     font-size: xx-large;
+    text-align: center;
 }
 
-/* latin */
 @font-face { /* used in js */
     font-family: "clock-face";
     font-style: normal;
-    /* https://www.fontspace.com/cursed-timer-ulil-font-f29411 */
+    /*
+        Font is stolen from: https://www.fontspace.com/cursed-timer-ulil-font-f29411
+        ?v=0 means, that it gets cached forever. If we changed the file, we have
+        to change the v query parameter as well.
+    */
     src: url("/static/fonts/CursedTimerUlil-Aznm.woff2?v=0") format("woff2");
 }
 

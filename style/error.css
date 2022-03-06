@@ -18,6 +18,6 @@
     width: 600px;
     max-width: 95%;
     object-fit: fill;
-    /* Is not good for portrait images like 422 & 300 */
+    /* Is not perfect for portrait images like 422 & 300 */
     clip-path: inset(7.37% 9.1% 24% 9.1%);
 }

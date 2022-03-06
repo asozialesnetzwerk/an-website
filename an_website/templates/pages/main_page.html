@@ -2,43 +2,44 @@
 {% extends "../base.html" %}
 
 {% block body %}
-{% if quote_data %}
-    <a class="no-style-a"
-       href="{{fix_url(quote_data.get_quote_url())}}"
-       style="text-align: center" >
-        {{quote_data.wrong_quote.quote}}
-        <br>
-        - {{quote_data.wrong_quote.author}}
-    </a>
-{% end %}
-<h2>Liste der Seiten:</h2>
-<ul>
-{% for info in handler.settings.get("MODULE_INFOS") %}
-    {% if not info.hidden and not info.path is None and not info.path == "/" %}
-<li class="menu-list">
-    <a href="{{ fix_url(info.path) }}" rel="noreferrer">{{info.name}}</a>:
-    {{info.description}}
-</li>
-        {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
-<ul class="menu-sub-list">
-            {% for page_info in info.sub_pages %}
-                {% if not page_info.hidden and page_info.path is not None %}
-    <li class="tooltip">
-        <a href="{{ fix_url(page_info.path) }}" rel="noreferrer">{{page_info.name}}</a>:
-        {{page_info.description}}
-    </li>
+    {% if quote_data %}
+        <a class="no-style-a"
+           href="{{fix_url(quote_data.get_quote_url())}}"
+           style="text-align: center" >
+            {{quote_data.wrong_quote.quote}}
+            <br>
+            - {{quote_data.wrong_quote.author}}
+        </a>
+    {% end %}
+    <h2>Liste der Seiten:</h2>
+    <ul>
+        {% for info in handler.settings.get("MODULE_INFOS") %}
+            {% if not info.hidden and not info.path is None and not info.path == "/" %}
+                <li class="menu-list">
+                    <a href="{{ fix_url(info.path) }}"
+                       rel="noreferrer">{{info.name}}</a>:
+                    {{info.description}}
+                </li>
+                {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
+                    <ul class="menu-sub-list">
+                        {% for page_info in info.sub_pages %}
+                            {% if not page_info.hidden and page_info.path is not None %}
+                                <li class="tooltip">
+                                    <a href="{{ fix_url(page_info.path) }}"
+                                       rel="noreferrer">{{page_info.name}}</a>:
+                                    {{page_info.description}}
+                                </li>
+                            {% end %}
+                        {% end %}
+                    </ul>
                 {% end %}
             {% end %}
-</ul>
         {% end %}
+    </ul>
+
+    {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
+        Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
+        <a no-dynload href="{{settings.get('ONION_ADDRESS')}}"
+           rel="noreferrer">{{settings.get('ONION_ADDRESS')}}</a>
     {% end %}
-{% end %}
-</ul>
-
-{% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
-    Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
-    <a no-dynload href="{{settings.get('ONION_ADDRESS')}}"
-       rel="noreferrer">{{settings.get('ONION_ADDRESS')}}</a>
-{% end %}
-
 {% end %}

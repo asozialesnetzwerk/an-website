@@ -1,4 +1,4 @@
-@import url("/static/style/comic.css");
+@import url("/static/style/comic.css?v=0");
 :root {
     /* colors: */
     --main: hsl(48, 100%, 50%);

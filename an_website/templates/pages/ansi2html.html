@@ -2,24 +2,24 @@
 {% extends "../base.html" %}
 
 {% block body %}
+    {% whitespace all %}
 
-{% whitespace all %}
-
-{% if isinstance(ansi, list) %}
-    {% for _a in ansi %}
-<div class="pre">
-{% raw ansi2html.convert(_a, full=False) %}
-</div>
+    {% if isinstance(ansi, list) %}
+        <div>
+            {% for _a in ansi %}
+                <div class="pre">{% raw ansi2html.convert(_a, full=False) %}</div>
+            {% end %}
+        </div>
+    {% else %}
+        <div class="pre">{% raw ansi2html.convert(ansi, full=False) %}</div>
     {% end %}
-{% else %}
-<div class="pre">
-{% raw ansi2html.convert(ansi, full=False) %}
-</div>
-{% end %}
 
-<div style="display: block">
-Powered by: <a href="{{fix_url(powered_by)}}" rel="noreferrer">{{powered_by_name}}</a>
-</div>
+    {% whitespace oneline %}
+
+    <div style="display: block">
+        Powered by: <a href="{{fix_url(powered_by)}}"
+                       rel="noreferrer">{{powered_by_name}}</a>
+    </div>
 {% end %}
 
 {% block head %}

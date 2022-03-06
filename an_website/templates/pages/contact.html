@@ -3,14 +3,10 @@
 
 {% block body %}
     <form method="post">
-        <label>
-            Name
-            <input type="text" name="name">
-        </label>
-        <label>
-            E-Mail-Adresse
-            <input type="email" name="address">
-        </label>
+        <label>Name<input type="text" name="name"></label>
+
+        <label>E-Mail-Adresse<input type="email" name="address"></label>
+
         <label>
             Betreff
             {% if subject %}
@@ -19,10 +15,12 @@
             <input type="text" name="subject">
             {% end %}
         </label>
+
         <label>
             Nachricht (erforderlich)
             <textarea name="message"></textarea>
         </label>
+
         <button type="submit">Absenden</button>
     </form>
 {% end %}

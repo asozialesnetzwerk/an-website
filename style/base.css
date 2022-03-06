@@ -2,7 +2,6 @@
 :root {
     /* other useful stuff: */
     --header-height: 69px;
-    --footer-height: 50px;
 }
 
 #skip-to-content {
@@ -16,6 +15,7 @@
     border-color: var(--main);
     padding: 0.5rem;
 }
+
 #skip-to-content:focus {
     top: var(--header-height);
     transform: translateY(0%);
@@ -36,15 +36,23 @@ body {
 }
 
 #body {
-    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
     /* top, right, bottom, left */
-    padding: var(--header-height) 0 var(--footer-height) 0;
+    padding: var(--header-height) 0 0 0;
 }
 /* .text is for version page */
 #body, .text {
     white-space: normal;
     line-break: auto;
     hyphens: auto;
+}
+
+.center-text {
+    text-align: center;
 }
 
 a:not(.no-style-a, .no-style-a-in) {
@@ -115,11 +123,10 @@ a:not(.no-style-a, .no-style-a-in) {
 
 /* footer */
 #github-footer {
+    display: block;
     width: 100%;
-    max-height: var(--footer-height);
-
-    position: page;
     text-align: center;
+    margin-top: 42px;
 
     color: var(--text-color);
     background-color: transparent;

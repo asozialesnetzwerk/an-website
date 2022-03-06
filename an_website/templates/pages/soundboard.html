@@ -19,10 +19,11 @@
             Bitte überprüfe die Rechtschreibung oder nutze eine kürzere Suche.
         {% end %}
     {% end %}
-
-    {% for sound_info in sound_info_list %}
-        {% raw sound_info.to_html(fix_url, query) %}
-    {% end %}
+    <div>
+        {% for sound_info in sound_info_list %}
+            {% raw sound_info.to_html(fix_url, query) %}
+        {% end %}
+    </div>
 {% end %}
 
 {% block head %}

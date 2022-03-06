@@ -2,138 +2,156 @@
 {% extends "../../base.html" %}
 
 {% block body %}
-<div id="quote-container">
-    <div id="top">
-        <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
-           class="no-style-a quote-text"
-           rel="noreferrer"
-           id="quote">»{{wrong_quote.quote}}«</a>
-        <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
-           class="no-style-a quote-author"
-           rel="noreferrer"
-           id="author">- {{wrong_quote.author}}</a>
-    </div>
-    <div id="rating-container" class="tooltip">
-        <table>
-            <tr>
-                <th>
-                    <div id="rating-text">{{rating}}</div>
-                </th>
-                <th id="rating-img-container">
+    <div id="quote-container">
+        <div id="top">
+            <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
+               class="no-style-a quote-text"
+               rel="noreferrer"
+               id="quote">»{{wrong_quote.quote}}«</a>
+            <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
+               class="no-style-a quote-author"
+               rel="noreferrer"
+               id="author">- {{wrong_quote.author}}</a>
+        </div>
+        <div id="rating-container" class="tooltip">
+            <div class="flex">
+                <div id="rating-text">{{rating}}</div>
                 {% if int(wrong_quote.rating) == 0 or rating in ("???", "---") %}
                     <img class="rating-img invisible" src="" alt="">
                 {% else %}
                     {% for i in range(min(4, abs(int(wrong_quote.rating)))) %}
                         {% if int(wrong_quote.rating) < 0 %}
-                    <div class="rating-img nicht-witzig"></div>
+                            <div class="rating-img nicht-witzig"></div>
                         {% elif int(wrong_quote.rating) > 0 %}
-                    <div class="rating-img witzig"></div>
+                            <div class="rating-img witzig"></div>
                         {% end %}
                     {% end %}
                 {% end %}
-                </th>
-            </tr>
-        </table>
-        <div class="tooltip-text">Die Bewertung des Zitats</div>
-    </div>
-    <div id="buttons">
-        <a class="download tooltip" id="download" rel="noreferrer"
-           href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.gif')}}"
-           download="zitat-{{ wrong_quote.get_id_as_str() }}.gif"
-        >
-            <img class="download-img button-img" src="{{fix_static('img/arrow.svg')}}" alt="Zitat downloaden.">
-            <div class="tooltip-text">Downloade das Zitat als Bild.</div>
-        </a>
-        <a class="share tooltip" id="share" rel="nofollow"
-           href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
-        >
-            <img class="share-img button-img" src="{{fix_static('img/arrow.svg')}}" alt="Zitat teilen.">
-            <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
-        </a>
-        <a class="get-quote tooltip" id="next" href="{{next_href}}" rel="noreferrer">
-            <img class="get-quote-img button-img button-img-no-rotation" alt="Nächstes Zitat" src="{{fix_static('img/arrow.svg')}}">
-            <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
-        </a>
-    </div>
-</div>
-<form method="post" id="vote-container">
-    {% raw form_appendix %}
-    <input name="r" class="hidden-input" value="{{rating_filter}}">
-    <button type="submit" id="upvote" name="vote"
-            class="tooltip form-button vote {% if vote == 1 %} voted {% end %}"
-            value={% if vote == 1 %}"0"{% else %}"1"{% end %} >
-        <img src="{{fix_static('img/StempelWitzigKlein.svg')}}" alt="WITZIG!">
-        <div class="tooltip-text">Bewerte das Zitat als witzig!</div>
-    </button>
-    <button type="submit" id="downvote" name="vote"
-            class="tooltip form-button vote {% if vote == -1 %} voted {% end %}"
-            value={% if vote == -1 %}"0"{% else %}"-1"{% end %} >
-        <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}" alt="NICHT WITZIG!">
-        <div class="tooltip-text">Bewerte das Zitat als nicht witzig!</div>
-    </button>
-</form>
-
-<div id="bottom-buttons-container">
-    <a class="tooltip" href="{{fix_url('/zitate/erstellen/')}}" rel="noreferrer">
-        <img class="button-img button-img-no-rotation"
-             src="{{fix_static('img/plus.svg')}}" alt="Zitat hinzufügen.">
-        <div class="tooltip-text">Neues Zitat hinzufügen</div>
-    </a>
-
-    {% if contact_address is not None %}
-        <a class="report tooltip" rel="noreferrer" no-dynload
-           href="mailto:{{contact_address}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
-        >
-            <img class="button-img report-img button-img-no-rotation"
-                 alt="Zitat melden."
-                 src="{{fix_static('img/report.svg')}}">
-            <div class="tooltip-text">Melde das Zitat.</div>
-        </a>
-    {% end %}
-
-    <form method="get">
-        {% raw form_appendix %}
-        <div class="tooltip rating-form-el">
-            <select name="r" id="rating-filter-select" class="rating-form-el" onchange="this.form.submit()">
-                <option value="smart" {% if rating_filter=="smart"%}selected{%end%}>Smart</option>
-                <option value="w" {% if rating_filter=="w"%}selected{%end%}>Witzig</option>
-                <option value="n" {% if rating_filter=="n"%}selected{%end%}>Nicht witzig</option>
-                <option value="rated" {% if rating_filter=="rated"%}selected{%end%}>Bewertet</option>
-                <option value="unrated" {% if rating_filter=="unrated"%}selected{%end%}>Unbewertet</option>
-                <option value="all" {% if rating_filter=="all"%}selected{%end%}>Alle</option>
-            </select>
-            <label for="rating-filter-select" class="tooltip-text">Filtere nächste Zitate</label>
+            </div>
+            <div class="tooltip-text">Die Bewertung des Zitats</div>
         </div>
-        <label for="show-rating" class="rating-form-el">Zeige Bewertung</label>
-        <input {% if show_rating %}checked{% end %}
-               type="checkbox"
-               id="show-rating"
-               name="show-rating"
-               class="rating-form-el"
-               onchange="this.form.submit()"
-               value="sure">
-
-        <noscript>
-            <button type="submit" class="rating-form-el">Submit</button>
-        </noscript>
+        <div id="buttons">
+            <a class="download tooltip"
+               id="download"
+               rel="noreferrer"
+               href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}/image.gif')}}"
+               download="zitat-{{ wrong_quote.get_id_as_str() }}.gif"
+            >
+                <img class="download-img button-img"
+                     src="{{fix_static('img/arrow.svg')}}"
+                     alt="Zitat downloaden.">
+                <div class="tooltip-text">Downloade das Zitat als Bild.</div>
+            </a>
+            <a class="share tooltip"
+               id="share"
+               href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
+               rel="nofollow">
+                <img class="share-img button-img"
+                     src="{{fix_static('img/arrow.svg')}}"
+                     alt="Zitat teilen.">
+                <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
+            </a>
+            <a class="get-quote tooltip" id="next" href="{{next_href}}" rel="noreferrer">
+                <img class="get-quote-img button-img button-img-no-rotation"
+                     alt="Nächstes Zitat"
+                     src="{{fix_static('img/arrow.svg')}}">
+                <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
+            </a>
+        </div>
+    </div>
+    <form method="post" id="vote-container">
+        {% raw form_appendix %}
+        <input name="r" class="hidden-input" value="{{rating_filter}}">
+        <button class="tooltip form-button vote {% if vote == 1 %} voted {% end %}"
+                value={% if vote == 1 %}"0"{% else %}"1"{% end %}
+                type="submit" id="upvote" name="vote">
+            <img src="{{fix_static('img/StempelWitzigKlein.svg')}}"
+                 alt="WITZIG!">
+            <div class="tooltip-text">Bewerte das Zitat als witzig!</div>
+        </button>
+        <button class="tooltip form-button vote {% if vote == -1 %} voted {% end %}"
+                value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
+                type="submit" id="downvote" name="vote">
+            <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}"
+                 alt="NICHT WITZIG!">
+            <div class="tooltip-text">Bewerte das Zitat als nicht witzig!</div>
+        </button>
     </form>
-</div>
 
-<span data-elastic-exclude>
-Der/die richtige Autor/-in dieses Zitats ist vermutlich
-„<a
-id="real-author-name"
-class="no-style-a-in"
-href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}/')}}"
->{{wrong_quote.quote.author.name.strip()}}</a>“.
-<br><br>
-Wenn dein Browser JavaScript unterstützt (und es aktiviert ist),
-kannst du die Seite mit <span id="wasd">WASD</span> navigieren.
-JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.
-<br><br>
-Diese Seite nutzt übrigens einen Cookie 🍪,
-um zu speichern, welche Zitate du bewertet hast.
-</span>
+    <div id="bottom-buttons-container">
+        <a class="tooltip"
+           href="{{fix_url('/zitate/erstellen/')}}"
+           rel="noreferrer">
+            <img class="button-img button-img-no-rotation"
+                 src="{{fix_static('img/plus.svg')}}"
+                 alt="Zitat hinzufügen.">
+            <div class="tooltip-text">Neues Zitat hinzufügen</div>
+        </a>
+
+        {% if contact_address is not None %}
+            <a class="report tooltip"
+               rel="noreferrer"
+               href="mailto:{{contact_address}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+               no-dynload>
+                <img class="button-img report-img button-img-no-rotation"
+                     alt="Zitat melden."
+                     src="{{fix_static('img/report.svg')}}">
+                <div class="tooltip-text">Melde das Zitat.</div>
+            </a>
+        {% end %}
+
+        <form method="get">
+            {% raw form_appendix %}
+            <div class="tooltip rating-form-el">
+                <select name="r"
+                        id="rating-filter-select"
+                        class="rating-form-el"
+                        onchange="this.form.submit()">
+                    <option {% if rating_filter=="smart"%}selected{%end%}
+                            value="smart">Smart</option>
+                    <option {% if rating_filter=="w"%}selected{%end%}
+                            value="w">Witzig</option>
+                    <option {% if rating_filter=="n"%}selected{%end%}
+                            value="n">Nicht witzig</option>
+                    <option {% if rating_filter=="rated"%}selected{%end%}
+                            value="rated">Bewertet</option>
+                    <option {% if rating_filter=="unrated"%}selected{%end%}
+                            value="unrated">Unbewertet</option>
+                    <option {% if rating_filter=="all"%}selected{%end%}
+                            value="all">Alle</option>
+                </select>
+                <label for="rating-filter-select"
+                       class="tooltip-text">Filtere nächste Zitate</label>
+            </div>
+            <label for="show-rating"
+                   class="rating-form-el">Zeige Bewertung</label>
+            <input {% if show_rating %}checked{% end %}
+                   type="checkbox"
+                   id="show-rating"
+                   name="show-rating"
+                   class="rating-form-el"
+                   onchange="this.form.submit()"
+                   value="sure">
+
+            <noscript>
+                <button type="submit" class="rating-form-el">Submit</button>
+            </noscript>
+        </form>
+    </div>
+
+    <span data-elastic-exclude>
+        Der/die richtige Autor/-in dieses Zitats ist vermutlich
+        „<a class="no-style-a-in"
+            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}/')}}"
+            id="real-author-name">{{wrong_quote.quote.author.name.strip()}}</a>“.
+        <br><br>
+        Wenn dein Browser JavaScript unterstützt (und es aktiviert ist),
+        kannst du die Seite mit <span id="wasd">WASD</span> navigieren.
+        JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.
+        <br><br>
+        Diese Seite nutzt übrigens einen Cookie 🍪,
+        um zu speichern, welche Zitate du bewertet hast.
+    </span>
 {% end %}
 
 {% block head %}

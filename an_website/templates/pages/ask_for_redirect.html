@@ -2,30 +2,32 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<div class="redirect_content">
-    Willst du wirklich {{redirect_url.split("?")[0]}} öffnen? Für die Inhalte auf
-    fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
-    {% if discord %}
-    <br>
-    Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen,
-    da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel
-    über <a no-dynload href="{{fix_url('/chat/')}}">chat.asozial.org</a> tun.
-    {% end %}
-    <a class="leave form-button no-style-a" no-dynload
-       href="{{redirect_url}}" rel="noreferrer">
-        Ja, ich bin mir sicher
-    </a>
-    {% if from_url is not None %}
-    <a class="stay form-button no-style-a" href="{{from_url}}" rel="noreferrer">
-        Nein, ich möchte wieder zurück
-    </a>
-    {% end %}
-</div>
+    <div class="redirect_content">
+        Willst du wirklich {{redirect_url.split("?")[0]}} öffnen? Für die Inhalte auf
+        fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
+        {% if discord %}
+            <br>
+            Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen,
+            da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel
+            über <a no-dynload href="{{fix_url('/chat/')}}">chat.asozial.org</a> tun.
+        {% end %}
+
+        <a class="leave form-button no-style-a" no-dynload
+           href="{{redirect_url}}"
+           rel="noreferrer">Ja, ich bin mir sicher</a>
+
+        {% if from_url is not None %}
+            <a class="stay form-button no-style-a"
+               href="{{from_url}}"
+               rel="noreferrer">Nein, ich möchte wieder zurück</a>
+        {% end %}
+    </div>
 {% end %}
 
-
 {% block head %}
-<meta name="robots" content="noindex">
-<link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
-<link rel="stylesheet" type="text/css" href="{{fix_static('style/redirect.css')}}">
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/redirect.css')}}">
 {% end %}

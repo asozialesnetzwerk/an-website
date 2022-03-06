@@ -46,7 +46,7 @@ class Service:
         html = [f"<h2>{self.title}</h2>", self.text]
 
         if self.infos is not None and len(self.infos) > 0:
-            html.append("<table>")
+            html.append("<table class='table'><tbody>")
             for key, value in self.infos.items():
                 if value.startswith("http") and "://" in value:
                     value = (
@@ -55,7 +55,7 @@ class Service:
                     )
                 html.append(f"<tr><td>{key}</td><td>{value}</td></tr>")
 
-            html.append("</table>")
+            html.append("</tbody></table>")
 
         return "".join(html)
 

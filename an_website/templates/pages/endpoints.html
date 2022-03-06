@@ -8,26 +8,30 @@
        rel="noreferrer" class="header-id-link"></a>{{ep["name"]}}
 </h2>
 <p>{{ep["description"]}}</p>
-<table>
-  <tr>
-    <th>Pfad</th>
-    <th>Methoden</th>
-  </tr>
-{% for path in ep["endpoints"] %}
-  <tr>
-      <td>{{path["path"]}}</td>
-      <td>{{", ".join(path["methods"])}}</td>
-  </tr>
-{% end %}
+<table class="table">
+    <thead>
+        <tr>
+          <th>Pfad</th>
+          <th>Methoden</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for path in ep["endpoints"] %}
+            <tr>
+                <td>{{path["path"]}}</td>
+                <td>{{", ".join(path["methods"])}}</td>
+            </tr>
+        {% end %}
+    </tbody>
 </table>
     {% end %}
 {% end %}
 
 {% block head %}
-<style>
-    th{text-align: left}
-    h2:hover .header-id-link:before, h2:focus-within .header-id-link:before {
-        content: "🔗";
-    }
-</style>
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/table.css')}}">
+    <style>
+        h2:hover .header-id-link:before, h2:focus-within .header-id-link:before {
+            content: "🔗";
+        }
+    </style>
 {% end %}

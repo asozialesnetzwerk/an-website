@@ -6,18 +6,19 @@
 {% block description %}{{description}}{% end %}
 
 {% block body %}
-<div id="container">
-    <div id="status">{{status}}</div>
-    <div id="reason">{{reason}}</div>
-    {% if status == 469 %}
-        <img id="🐈" alt="🐈" src="{{fix_static('img/469.jpg')}}">
-    {% elif not no_3rd_party %}
-        <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
-    {% end %}
-</div>
+    <div id="container">
+        <div id="status">{{status}}</div>
+        <div id="reason">{{reason}}</div>
+        {% if status == 469 %}
+            <img id="🐈" alt="🐈" src="{{fix_static('img/469.jpg')}}">
+        {% elif not no_3rd_party %}
+            <img id="🐈" alt="🐈" src="https://http.cat/{{status}}">
+        {% end %}
+    </div>
 {% end %}
 
 {% block head %}
-<meta name="robots" content="noindex">
-<link rel="stylesheet" type="text/css" href="{{fix_static('style/error.css')}}">
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/error.css')}}">
 {% end %}

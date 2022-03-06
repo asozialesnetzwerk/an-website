@@ -2,53 +2,55 @@
 {% extends "../../base.html" %}
 
 {% block body %}
-<form method="post" action="/zitate/create-wrong-quote">
-    <label class="text-input-label">
-        Zitat:
-         <select name="quote-2">
-             {% for quote in quotes %}
-                {% if isinstance(quote, str) %}
-                    <option value="{{quote}}">{{quote}}</option>
-                {% else %}
-                    <option value="{{quote.quote}}">{{quote.quote}}</option>
-                {% end %}
-             {% end %}
-         </select>
-    </label>
+    <form method="post" action="/zitate/create-wrong-quote">
+        <label>
+            Zitat:
+             <select name="quote-2">
+                 {% for quote in quotes %}
+                    {% if isinstance(quote, str) %}
+                        <option value="{{quote}}">{{quote}}</option>
+                    {% else %}
+                        <option value="{{quote.quote}}">{{quote.quote}}</option>
+                    {% end %}
+                 {% end %}
+             </select>
+        </label>
+
+        <label>
+            Richtiger Autor:
+            <select name="real-author-2">
+                {% for author in real_authors %}
+                    {% if isinstance(author, str) %}
+                <option value="{{author}}">{{author}}</option>
+                    {% else %}
+                <option value="{{author.name}}">{{author.name}}</option>
+                    {% end %}
+                 {% end %}
+            </select>
+        </label>
 
 
-    <label class="text-input-label">
-        Richtiger Autor:
-        <select name="real-author-2">
-            {% for author in real_authors %}
-                {% if isinstance(author, str) %}
-            <option value="{{author}}">{{author}}</option>
-                {% else %}
-            <option value="{{author.name}}">{{author.name}}</option>
-                {% end %}
-             {% end %}
-        </select>
-    </label>
+        <label>
+            Falscher Autor:
+            <select name="fake-author-2">
+                {% for author in fake_authors %}
+                    {% if isinstance(author, str) %}
+                <option value="{{author}}">{{author}}</option>
+                    {% else %}
+                <option value="{{author.name}}">{{author.name}}</option>
+                    {% end %}
+                 {% end %}
+            </select>
+        </label>
 
-
-    <label class="text-input-label">
-        Falscher Autor:
-        <select name="fake-author-2">
-            {% for author in fake_authors %}
-                {% if isinstance(author, str) %}
-            <option value="{{author}}">{{author}}</option>
-                {% else %}
-            <option value="{{author.name}}">{{author.name}}</option>
-                {% end %}
-             {% end %}
-        </select>
-    </label>
-
-    <input id="submit-button" class="button" type="submit" value="Zitat erstellen.">
-</form>
-
+        <input id="submit-button"
+               class="button"
+               type="submit"
+               value="Zitat erstellen.">
+    </form>
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
 {% end %}

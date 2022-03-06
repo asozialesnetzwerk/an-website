@@ -2,70 +2,65 @@
 {% extends "../base.html" %}
 
 {% block body %}
-<form method="post" id="form">
-  <label class="form-element">
-    Der Text, dessen Wörter vertauscht werden sollen
-    <textarea
-          id="text"
-          name="text"
-          placeholder="Gebe witzigen Text ein."
-          rows="10"
-          maxlength="{{MAX_CHAR_COUNT}}"
-          spellcheck="true">{{text}}</textarea>
-  </label>
+    <div>
+        <form method="post" id="form">
+            <label class="form-element">
+                Der Text, dessen Wörter vertauscht werden sollen
+                <textarea
+                        id="text"
+                        name="text"
+                        placeholder="Gebe witzigen Text ein."
+                        rows="10"
+                        maxlength="{{MAX_CHAR_COUNT}}"
+                        spellcheck="true">{{text}}</textarea>
+            </label>
 
-  <label class="form-element">
-    Die Regeln nach denen vertauscht werden sollen
-    <button
-      name="reset"
-      value="sure"
-      id="reset">Reset</button>
-    <textarea
-          name="config"
-          id="config-textarea"
-          placeholder="# Vertauschungen eingeben, zum Beispiel:
-          amüsant <=> relevant
-          Björn Höcke => Bernd Höcke"
-          rows="10"
-          maxlength="{{MAX_CHAR_COUNT}}"
-          spellcheck="true">{{config}}</textarea>
-  </label>
+            <label class="form-element">
+                Die Regeln nach denen vertauscht werden sollen
+                <button
+                        name="reset"
+                        value="sure"
+                        id="reset">Reset</button>
+                <textarea
+                        name="config"
+                        id="config-textarea"
+                        placeholder="# Vertauschungen eingeben, zum Beispiel:
+                amüsant <=> relevant
+                Björn Höcke => Bernd Höcke"
+                        rows="10"
+                        maxlength="{{MAX_CHAR_COUNT}}"
+                        style="font-family: monospace, monospace;"
+                        spellcheck="true">{{config}}</textarea>
+            </label>
 
-  <div id="error_msg">
-  {% if error_msg is not None %}
-    {% raw error_msg %}
-  {% end %}
-  </div>
+            <div id="error_msg" style="color: var(--contrast)">
+                {% if error_msg is not None %}
+                    {% raw error_msg %}
+                {% end %}
+            </div>
 
-  {% raw form_appendix %}
+            {% raw form_appendix %}
 
-  <div class="tooltip no-select button-container form-element">
-    <input type="submit" class="no-select button button-blue" id="submit" value="Eingabe">
-    <span class="tooltip-text no-select">Aktualisiere die Eingabe.</span>
-  </div>
-</form>
+            <div class="tooltip button-container form-element">
+                <input type="submit" id="submit" value="Eingabe">
+                <span class="tooltip-text">Aktualisiere die Eingabe.</span>
+            </div>
+        </form>
 
-{% if error_msg is not None %}
-<script>alert("{% raw error_msg %}");</script>
-{% end %}
+        {% if error_msg is not None %}
+        <script>alert("{% raw error_msg %}");</script>
+        {% end %}
 
-<br>
+        <br>
 
-<label for="output">Ausgabe:</label>
-<br>
-<textarea rows="10" id="output" readonly>{{output}}</textarea>
+        <label>
+            Ausgabe:
+            <textarea rows="10" id="output" readonly>{{output}}</textarea>
+        </label>
+    </div>
 {% end %}
 
 {% block head %}
-<style>
-  #error_msg {
-    color: var(--contrast);
-  }
-  textarea {
-    width: 100%;
-    font-family: monospace, monospace;
-  }
-</style>
-<link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
-<script defer src="{{fix_static('js/swapped_words.js')}}"></script>
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <script defer src="{{fix_static('js/swapped_words.js')}}"></script>
 {% end %}

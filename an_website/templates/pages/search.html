@@ -15,8 +15,9 @@
         <ul id="search-results">
             {% for result in results %}
                 <li score="{{result['score']}}" class="menu-list">
-                    <a href="{{result['url']}}" rel="noreferrer">{% raw result["title"]%}</a>:
-                    {% raw result["description"]%}
+                    <a href="{{result['url']}}"
+                       rel="noreferrer">{% raw result["title"]%}</a>:
+                    {% raw result["description"] %}
                 </li>
             {% end %}
         </ul>
@@ -26,7 +27,8 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
     <style>em {color: var(--contrast-2);}</style>
     <script defer src="{{fix_static('js/search.js')}}"></script>
 {% end %}

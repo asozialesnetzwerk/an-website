@@ -10,9 +10,11 @@ th {
     display: inline;
     color: var(--secondary-text-color);
 }
+
 .positive {
     color: green;
 }
+
 .negative {
     color: red;
 }
@@ -20,6 +22,7 @@ th {
 .wrong-quote-a {
     color: var(--text-color)!important;
 }
+
 /* author info page */
 #author-info {
     background-color: var(--secondary-bg);

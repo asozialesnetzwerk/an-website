@@ -2,69 +2,65 @@
 {% extends "../base.html" %}
 
 {% block body %}
-
-<form method="post">
-    {% if no_3rd_party_default %}
-    <label class="form-element">
-        Erlaube Inhalte von Drittanbietern
-        <input type="checkbox"
-           name="no_3rd_party"
-        {% if not no_3rd_party %}
-           checked
+    <form method="post">
+        {% if no_3rd_party_default %}
+            <label class="form-element">
+                Erlaube Inhalte von Drittanbietern
+                <input type="checkbox"
+                    name="no_3rd_party"
+                    {% if not no_3rd_party %}
+                       checked
+                    {% end %}
+                    value="nope">
+            </label>
+        {% else %}
+            <label class="form-element">
+                Deaktiviere Inhalte von Drittanbietern
+                <input type="checkbox"
+                   name="no_3rd_party"
+                    {% if no_3rd_party %}
+                       checked
+                    {% end %}
+                   value="sure">
+            </label>
         {% end %}
-           value="nope">
-    </label>
-    {% else %}
-    <label class="form-element">
-        Deaktiviere Inhalte von Drittanbietern
-        <input type="checkbox"
-           name="no_3rd_party"
-        {% if no_3rd_party %}
-           checked
-        {% end %}
-           value="sure">
-    </label>
-    {% end %}
 
-    <label class="form-element">
-        Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
-        <input type="checkbox"
-           name="dynload"
-        {% if dynload %}
-           checked
-        {% end %}
-           value="sure">
-    </label>
+        <label class="form-element">
+            Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
+            <input type="checkbox"
+               name="dynload"
+                {% if dynload %}
+                   checked
+                {% end %}
+               value="sure">
+        </label>
 
+        <label class="form-element">
+            Theme
+            <select name="theme">
+                {% for _t in themes %}
+                    <option {% if _t == theme_name %}selected{% end %}
+                            value="{{_t}}">{{_t}}</option>
+                {% end %}
+            </select>
+        </label>
 
-    <label class="form-element">
-        Theme
-        <select name="theme">
-{% for _t in themes %}
-            <option  {% if _t == theme_name %} selected {% end %}
-                     value="{{_t}}">{{_t}}</option>
-{% end %}
-        </select>
-    </label>
+        <label class="form-element">
+           Speicher in Cookies 🍪 (empfohlen)
+            <input type="checkbox"
+                name="save_in_cookie"
+                {% if save_in_cookie %}
+                   checked
+                {% end %}
+                value="sure">
+        </label>
+        <input type="submit" value="Speichern">
+    </form>
 
-
-    <label class="form-element">
-       Speicher in Cookies 🍪 (empfohlen)
-        <input type="checkbox"
-            name="save_in_cookie"
-        {% if save_in_cookie %}
-           checked
-        {% end %}
-            value="sure">
-    </label>
-
-    <input type="submit" value="Speichern">
-</form>
-
-{% include "../util/replace_url_with.html" %}
-
+    {% include "../util/replace_url_with.html" %}
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
 {% end %}
