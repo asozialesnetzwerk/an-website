@@ -115,13 +115,12 @@ a:not(.no-style-a, .no-style-a-in) {
 
 /* footer */
 #github-footer {
-    position: fixed;
+    width: 100%;
     max-height: var(--footer-height);
-    width: 90%;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+
+    position: page;
     text-align: center;
+
     color: var(--text-color);
     background-color: transparent;
 }
