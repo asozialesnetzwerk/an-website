@@ -16,17 +16,19 @@
         <div id="rating-container" class="tooltip">
             <div class="flex">
                 <div id="rating-text">{{rating}}</div>
-                {% if int(wrong_quote.rating) == 0 or rating in ("???", "---") %}
-                    <img class="rating-img invisible" src="" alt="">
-                {% else %}
-                    {% for i in range(min(4, abs(int(wrong_quote.rating)))) %}
-                        {% if int(wrong_quote.rating) < 0 %}
-                            <div class="rating-img nicht-witzig"></div>
-                        {% elif int(wrong_quote.rating) > 0 %}
-                            <div class="rating-img witzig"></div>
+                <div id="rating-img-container">
+                    {% if int(wrong_quote.rating) == 0 or rating in ("???", "---") %}
+                        <img class="rating-img invisible" src="" alt="">
+                    {% else %}
+                        {% for i in range(min(4, abs(int(wrong_quote.rating)))) %}
+                            {% if int(wrong_quote.rating) < 0 %}
+                                <div class="rating-img nicht-witzig"></div>
+                            {% elif int(wrong_quote.rating) > 0 %}
+                                <div class="rating-img witzig"></div>
+                            {% end %}
                         {% end %}
                     {% end %}
-                {% end %}
+                </div>
             </div>
             <div class="tooltip-text">Die Bewertung des Zitats</div>
         </div>
