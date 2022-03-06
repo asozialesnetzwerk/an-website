@@ -386,7 +386,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         print(f"\033[{color}mTook: {took:.3f}s\033[0m")
 
 
-def main() -> None:  # noqa: C901
+def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     """Parse arguments, load the cache and start the backdoor client."""
@@ -601,7 +601,8 @@ Accepted arguments:
         _main()
     except EOFError:
         pass
+    return None
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

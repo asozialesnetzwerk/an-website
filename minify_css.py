@@ -19,7 +19,7 @@ import os
 import shutil
 import sys
 
-import rcssmin
+import rcssmin  # type: ignore[import]
 
 DIR = os.path.dirname(__file__)
 
@@ -27,7 +27,7 @@ STATIC_DIR = os.path.join(DIR, "an_website/static/style")
 STYLE_DIR = os.path.join(DIR, "style")
 
 
-def main() -> None:
+def main() -> None | int | str:  # pylint: disable=useless-return
     if "--clean" in sys.argv:
         shutil.rmtree(STATIC_DIR)
     os.makedirs(STATIC_DIR, exist_ok=True)
@@ -69,6 +69,8 @@ def main() -> None:
 
     print(f"Minified {minified_counter} of {file_counter} files.")
 
+    return None
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

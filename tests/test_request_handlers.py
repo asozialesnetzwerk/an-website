@@ -35,7 +35,7 @@ from . import (
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
-    return main.make_app()
+    return main.make_app()  # type: ignore[return-value]
 
 
 @pytest.fixture

@@ -19,7 +19,6 @@ import configparser
 import importlib
 import logging
 import os
-import signal
 import ssl
 import sys
 from collections.abc import Callable, Coroutine
@@ -35,7 +34,7 @@ from elasticsearch import AsyncElasticsearch, NotFoundError
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
-from . import DIR, NAME, TEMPLATES_DIR, patches
+from . import DIR, NAME, TEMPLATES_DIR
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFound
@@ -61,7 +60,7 @@ logger = logging.getLogger(__name__)
 # add all the information from the packages to a list
 # this calls the get_module_info function in every file
 # files and dirs starting with '_' get ignored
-def get_module_infos() -> tuple[ModuleInfo, ...]:
+def get_module_infos() -> str | tuple[ModuleInfo, ...]:
     """Import the modules and return the loaded module infos in a tuple."""
     module_infos: list[ModuleInfo] = []
     loaded_modules: list[str] = []
@@ -132,11 +131,10 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
 
     if len(errors) > 0:
         if sys.flags.dev_mode:
-            # exit to make sure it gets fixed:
-            sys.exit("\n".join(errors))
-        else:
-            # don't exit in production to keep stuff running:
-            logger.error("\n".join(errors))
+            # exit to make sure it gets fixed
+            return "\n".join(errors)
+        # don't exit in production to keep stuff running
+        logger.error("\n".join(errors))
 
     logger.info(
         "loaded %d modules: '%s'",
@@ -228,9 +226,11 @@ def get_all_handlers(
     return handlers
 
 
-def make_app() -> Application:
+def make_app() -> str | Application:
     """Create the Tornado application and return it."""
     module_infos, duration = time_function(get_module_infos)
+    if isinstance(module_infos, str):
+        return module_infos
     if duration > 1:
         logger.warning(
             "Getting the module infos took %ss. That's probably too long.",
@@ -561,24 +561,18 @@ def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
             )
 
 
-def signal_handler(signalnum: Any, frame: Any) -> None:  # noqa: D103
-    # pylint: disable=unused-argument, missing-function-docstring
-    if signalnum == signal.SIGHUP:
-        raise KeyboardInterrupt
-
-
-def main() -> None:
+def main() -> None | int | str:
     # pylint: disable=import-outside-toplevel, unused-variable
     """
     Start everything.
 
     This is the main function that is called when running this file.
     """
-    signal.signal(signal.SIGHUP, signal_handler)
-    patches.apply()
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini", encoding="utf-8")
+
     setup_logging(config)
+
     logger.warning("Starting %s %s", NAME, version.VERSION)
 
     # read ignored modules from the config
@@ -590,6 +584,8 @@ def main() -> None:
             IGNORED_MODULES.append(module_name)
 
     app = make_app()
+    if isinstance(app, str):
+        return app
 
     apply_config_to_app(app, config)
 
@@ -637,3 +633,4 @@ def main() -> None:
                 loop.run_until_complete(loop.shutdown_default_executor())
             finally:
                 loop.close()
+    return None

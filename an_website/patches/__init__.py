@@ -20,7 +20,9 @@ import gc
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
+import signal
 import sys
+import types
 
 import defusedxml  # type: ignore
 import namedthreads  # type: ignore
@@ -41,6 +43,7 @@ DIR = os.path.dirname(__file__)
 def apply() -> None:
     """Apply the patches."""
     sys.setrecursionlimit(1_000_000)
+    signal.signal(signal.SIGHUP, signal_handler)
     if sys.flags.dev_mode:
         gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
         namedthreads.patch()
@@ -65,6 +68,14 @@ def apply() -> None:
     anonymize_logs()
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
+
+
+def signal_handler(  # noqa: D103
+    signalnum: int, frame: None | types.FrameType
+) -> None:
+    # pylint: disable=unused-argument, missing-function-docstring
+    if signalnum == signal.SIGHUP:
+        raise KeyboardInterrupt
 
 
 def anonymize_logs() -> None:

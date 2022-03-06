@@ -370,7 +370,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
         """Get the rating str to display on the page."""
-        if wrong_quote.id in (None, -1):
+        if wrong_quote.id in {None, -1}:
             return "---"
         if (
             not self.get_show_rating()  # don't hide the rating on wish of user

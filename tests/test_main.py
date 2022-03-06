@@ -26,7 +26,7 @@ from an_website.utils.utils import ModuleInfo
 
 async def get_module_infos() -> tuple[ModuleInfo, ...]:
     """Wrap main.get_module_infos in an async function."""
-    return main.get_module_infos()
+    return main.get_module_infos()  # type: ignore[return-value]
 
 
 def test_parsing_module_infos() -> None:
@@ -87,10 +87,10 @@ def test_making_app() -> None:
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini.example")
 
-    main.apply_config_to_app(app, config)
+    main.apply_config_to_app(app, config)  # type: ignore[arg-type]
 
     # idk why; just to assert something lol
-    assert app.settings["CONFIG"] == config
+    assert app.settings["CONFIG"] == config  # type: ignore[union-attr]
 
 
 if __name__ == "__main__":

@@ -104,7 +104,7 @@ def apply_contact_stuff_to_app(
     )
 
 
-def send_mail(  # pylint: disable=too-many-arguments
+def send_message(  # pylint: disable=too-many-arguments
     message: Message,
     from_address: str,
     recipients: Iterable[str],
@@ -158,23 +158,27 @@ class ContactPage(HTMLRequestHandler):
         """Handle POST requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
-        text = self.get_argument("message")
+        text = self.get_argument("message").strip()  # type: ignore[union-attr]
         if not text:
             raise MissingArgumentError("message")  # raise on empty message
-        name = self.get_argument("name", None)
-        address = self.get_argument("address", None) or "anonymous@foo.bar"
-        from_address = f"{name} <{address}>" if name else address
+        name = self.get_argument("name", "").strip()  # type: ignore[union-attr]
+        address = self.get_argument("address", "").strip()  # type: ignore[union-attr]
+        from_address = (
+            f"{name} <{address or 'anonymous@foo.bar'}>"
+            if name
+            else address or "anonymous@foo.bar"
+        )
 
         message = Message()
 
         message["Subject"] = str(
-            self.get_argument("subject", None)
+            self.get_argument("subject", "").strip()  # type: ignore[union-attr]
             or f"{name or address or 'Jemand'} "
             "will was über {self.request.host} schreiben."
         )
         message.set_payload(text, "utf-8")
         await asyncio.to_thread(
-            send_mail,
+            send_message,
             message=message,
             from_address=from_address,
             server=self.settings.get("CONTACT_SMTP_SERVER"),

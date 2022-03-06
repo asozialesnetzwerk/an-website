@@ -16,7 +16,6 @@ git+https://github.com/urllib3/PySocks.git@f4c3cd9897898de69e136c92fd957fd989ee0
 hyrule>=0.1,<2
 jxlpy>=0.9,<2
 lxml~=4.8
-#markdown>=3.3.6,<4
 namedthreads
 numpy~=1.22
 orjson~=3.6
@@ -24,7 +23,6 @@ Pillow~=9.0
 pip>=22.0
 pycurl>=7.44.1,<8
 python-Levenshtein>=0.12.2,<2
-#PyYAML~=6.0
 #regex>=2022.1.18
 tornado~=6.1
 uvloop>=0.16,<2

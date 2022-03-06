@@ -14,6 +14,13 @@
 
 from __future__ import annotations
 
-from .main import main
+import sys
 
-main()
+from . import patches
+
+patches.apply()
+
+
+from .main import main  # pylint: disable=wrong-import-position  # noqa: E402
+
+sys.exit(main())
