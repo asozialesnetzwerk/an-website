@@ -65,8 +65,18 @@ def get_module_info() -> ModuleInfo:
                 RedirectHandler,
                 {"url": "/zitate/info/z/{0}"},
             ),
-            (
+            (  # /zitate/69-420.html shouldn't say "unsupported file extension"
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10}).html?",
+                RedirectHandler,
+                {"url": "/zitate/{0}-{1}"},
+            ),
+            (  # redirect to the new URL (changed because of robots.txt)
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
+                RedirectHandler,
+                {"url": "/zitate/{0}-{1}.{2}"},
+            ),
+            (
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10}).([a-zA-Z]{3,4})",
                 QuoteAsImg,
             ),
             (  # redirect to the new URL (changed because of robots.txt)

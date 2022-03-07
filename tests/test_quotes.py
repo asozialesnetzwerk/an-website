@@ -133,17 +133,17 @@ async def test_quote_request_handlers(
     assert_valid_html_response(await fetch("/zitate/share/1-1"))
     assert_valid_html_response(await fetch("/zitate/erstellen"))
 
-    response = await fetch("/zitate/1-1/image.gif")
+    response = await fetch("/zitate/1-1.gif")
     assert response.code == 200
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_img import FILE_EXTENSIONS
 
     for _e in FILE_EXTENSIONS:
-        response = await fetch(f"/zitate/1-1/image.{_e}")
+        response = await fetch(f"/zitate/1-1.{_e}")
         assert response.code == 200
-        response = await fetch(f"/zitate/1-1/image.{_e.upper()}")
+        response = await fetch(f"/zitate/1-1.{_e.upper()}")
         assert response.code == 200
-        response = await fetch(f"/zitate/1-2/image.{_e}")
+        response = await fetch(f"/zitate/1-2.{_e}")
         assert response.code == 200
 
 

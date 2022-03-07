@@ -89,7 +89,7 @@ class QuoteOfTheDayData:
 
     def get_quote_image_url(self) -> str:
         """Get the URL of the image of the quote."""
-        return self.get_quote_url() + "/image.gif"
+        return self.get_quote_url() + ".gif"
 
     def get_date_for_rss(self) -> str:
         """Get the date as specified in RFC 2822."""
