@@ -441,7 +441,7 @@ async def setup_elasticsearch(app: Application) -> None:
     try:
         await elasticsearch.info()
         await setup_elasticsearch_configs(
-            elasticsearch, config.get("ELASTICSEARCH", "PREFIX", fallback=NAME)
+            elasticsearch, app.settings["ELASTICSEARCH_PREFIX"]
         )
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception(exc)

@@ -29,7 +29,7 @@ from collections.abc import Coroutine
 from datetime import datetime, timedelta
 from functools import cache
 from http.client import responses
-from typing import Any
+from typing import Any, cast
 from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
@@ -81,10 +81,11 @@ def get_module_info() -> ModuleInfo:
 
 # pylint: disable=too-many-public-methods
 class BaseRequestHandler(RequestHandler):
-    """The base Tornado request handler used by every page."""
+    """The base Tornado request handler used by every page and API."""
 
     # can be overridden in subclasses
     REQUIRES_AUTHORIZATION: bool = False
+    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
     ELASTIC_RUM_JS_URL = (
         "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
@@ -189,8 +190,34 @@ class BaseRequestHandler(RequestHandler):
             if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
+    @classmethod
+    def get_allowed_methods(cls) -> list[str]:
+        """Get allowed methods."""
+        methods = ["OPTIONS"]
+        if "GET" in cls.ALLOWED_METHODS:
+            methods.append("HEAD")
+        methods.extend(cls.ALLOWED_METHODS)
+        return methods
+
+    def options(self, *args: Any, **kwargs: Any) -> None:
+        """Handle OPTIONS requests."""
+        # pylint: disable=unused-argument
+        self.set_header("Allow", ", ".join(self.get_allowed_methods()))
+        self.set_status(204)
+        self.finish()
+
+    def head(self, *args: Any, **kwargs: Any) -> None:
+        """Handle HEAD requests."""
+        # pylint: disable=unused-argument
+        if not hasattr(self, "get"):
+            raise HTTPError(405)
+        raise HTTPError(501)  # TODO: implement HEAD support
+        # kwargs["head"] = True
+        # return self.get(*args, **kwargs)
+
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
+        # pylint: disable=too-complex
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
@@ -200,6 +227,9 @@ class BaseRequestHandler(RequestHandler):
         remote_ip = blake3(
             str(self.request.remote_ip).encode("ascii")
         ).hexdigest()
+        method = self.request.method
+        if method == "HEAD":
+            method = "GET"
         if global_ratelimit:
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
             max_burst = 99  # limit = 100
@@ -209,21 +239,21 @@ class BaseRequestHandler(RequestHandler):
         else:
             bucket = getattr(
                 self,
-                f"RATELIMIT_{self.request.method}_BUCKET",
+                f"RATELIMIT_{method}_BUCKET",
                 self.__class__.__name__.lower(),
             )
-            limit = getattr(self, f"RATELIMIT_{self.request.method}_LIMIT", 0)
+            limit = getattr(self, f"RATELIMIT_{method}_LIMIT", 0)
             if not limit:
                 return False
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
             max_burst = limit - 1
             count_per_period = getattr(  # request count per period
                 self,
-                f"RATELIMIT_{self.request.method}_COUNT_PER_PERIOD",
+                f"RATELIMIT_{method}_COUNT_PER_PERIOD",
                 30,
             )
             period = getattr(
-                self, f"RATELIMIT_{self.request.method}_PERIOD", 60  # 1 minute
+                self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
             )
             tokens = 1
         if self.redis is None:
@@ -238,7 +268,7 @@ class BaseRequestHandler(RequestHandler):
             max_burst,
             count_per_period,
             period,
-            tokens,
+            tokens if self.request.method != "HEAD" else 0,
         )
         if result[0]:
             retry_after = result[3] + 1  # redis-cell stupidly rounds down
@@ -287,31 +317,27 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} is not a valid HTTP response status code."
         )
 
-    def get_error_message(self, **kwargs: dict[str, Any]) -> str:
+    def get_error_message(self, **kwargs: Any) -> str:
         """
         Get the error message and return it.
 
-        If the serve_traceback setting is true (debug mode is activated)
+        If the serve_traceback setting is true (debug mode is activated),
         the traceback gets returned.
         """
         if "exc_info" in kwargs and not issubclass(
-            kwargs["exc_info"][0], HTTPError  # type: ignore
+            kwargs["exc_info"][0], HTTPError
         ):
             if self.settings.get("serve_traceback") or self.is_authorized():
                 return "".join(
-                    traceback.format_exception(
-                        *kwargs["exc_info"]  # type: ignore
-                    )
+                    traceback.format_exception(*kwargs["exc_info"])
                 ).strip()
             return "".join(
-                traceback.format_exception_only(
-                    *kwargs["exc_info"][:2]  # type: ignore
-                )
+                traceback.format_exception_only(*kwargs["exc_info"][:2])
             ).strip()
-        if "exc_info" in kwargs and isinstance(
-            kwargs["exc_info"][1], MissingArgumentError  # type: ignore
+        if "exc_info" in kwargs and issubclass(
+            kwargs["exc_info"][0], MissingArgumentError
         ):
-            return kwargs["exc_info"][1].log_message  # type: ignore
+            return cast(str, kwargs["exc_info"][1].log_message)
         return str(self._reason)
 
     @cache
@@ -578,13 +604,16 @@ class HTMLRequestHandler(BaseRequestHandler):
 
         return form_appendix
 
-    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Render the error page with the status_code as a HTML page."""
         self.render(
             "error.html",
             status=status_code,
             reason=self.get_error_message(**kwargs),
             description=self.get_error_page_description(status_code),
+            is_traceback="exc_info" in kwargs
+            and not issubclass(kwargs["exc_info"][0], HTTPError)
+            and (self.settings.get("serve_traceback") or self.is_authorized()),
         )
 
     def get_template_namespace(self) -> dict[str, Any]:
@@ -655,7 +684,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         self.set_header("Content-Type", "application/json; charset=UTF-8")
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "*")
-        self.set_header("Access-Control-Allow-Methods", "GET,OPTIONS")
+        self.set_header("Access-Control-Allow-Methods", "OPTIONS, HEAD, GET")
         soup = BeautifulSoup(
             chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
             features="lxml",
@@ -711,8 +740,6 @@ class APIRequestHandler(BaseRequestHandler):
     It overrides the write error method to return errors as JSON.
     """
 
-    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
-
     def set_default_headers(self) -> None:
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
@@ -728,7 +755,7 @@ class APIRequestHandler(BaseRequestHandler):
         # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
         self.set_header(
             "Access-Control-Allow-Methods",
-            ", ".join((*self.ALLOWED_METHODS, "OPTIONS")),
+            ", ".join(self.get_allowed_methods()),
         )
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
@@ -739,15 +766,6 @@ class APIRequestHandler(BaseRequestHandler):
                 "reason": self.get_error_message(**kwargs),
             }
         )
-
-    def options(  # pylint: disable=unused-argument
-        self, *args: list[str]
-    ) -> None:
-        """Handle OPTIONS requests."""
-        # no body; only the default headers get used
-        # `*args` is for route with `path arguments` supports
-        self.set_status(204)
-        self.finish()
 
 
 class NotFound(HTMLRequestHandler):
@@ -872,10 +890,10 @@ class NotFound(HTMLRequestHandler):
 
 
 class ErrorPage(HTMLRequestHandler):
-    """A request handler that raises an error."""
+    """A request handler that shows the error page."""
 
     async def get(self, code: str) -> None:
-        """Raise the error_code."""
+        """Show the error page."""
         status_code: int = int(code)
 
         # get the reason
@@ -891,10 +909,11 @@ class ErrorPage(HTMLRequestHandler):
             status=status_code,
             reason=reason,
             description=self.get_error_page_description(status_code),
+            is_traceback=False,
         )
 
 
-class ZeroDivision(BaseRequestHandler):
+class ZeroDivision(HTMLRequestHandler):
     """A request handler that raises an error."""
 
     async def prepare(self) -> None:

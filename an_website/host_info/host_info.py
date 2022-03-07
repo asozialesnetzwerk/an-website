@@ -55,8 +55,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def minify_ascii_art(string: str) -> str:
-    """Minify an ascii art string."""
+def minify_ansi_art(string: str) -> str:
+    """Minify an ANSI art string."""
     return re.sub(
         r"(?m)\s+\x1B\[0m$", "\x1B[0m", string
     )  # for arch: 1059 → 898
@@ -74,7 +74,7 @@ class HostInfo(HTMLRequestHandler):
         Use screenFetch to generate the page.
         """
         if "LOGO" not in self.SCREENFETCH_CACHE:
-            self.SCREENFETCH_CACHE["LOGO"] = minify_ascii_art(
+            self.SCREENFETCH_CACHE["LOGO"] = minify_ansi_art(
                 (await run(f"{DIR}/screenfetch", "-L"))[1].decode("utf-8")
             )
 
@@ -110,7 +110,7 @@ class UwUHostInfo(HTMLRequestHandler):
         )
         if wetuwn_code == 127:
             raise HTTPEwwow(
-                501,
+                503,
                 reason="Sowwy. This sewvew h-hasn't instawwed UwUFetch.",
             )
         if wetuwn_code:

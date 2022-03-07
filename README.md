@@ -8,25 +8,26 @@
 
 ## How to develop
 You need:
-- Python 3.10+
-- Git
+- CPython 3.10+
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
+- Git (obviously)
 
 ### How to check
 - `./check.sh`
 
 ### How to run
-- `python -X dev -m an_website` (`-X dev` enables the development mode)
+- `python -X dev -m an_website` (`-X dev` enables development mode)
 
 
 ## How to run (production)
 ### Linux (tested with Arch Linux):
 You need:
-- Python 3.10+
+- CPython 3.10+
 - Packages from requirements.txt (`pip install -r requirements.txt`)
 - Supervisord
 - Redis 6.2+
 - redis-cell (for ratelimits)
+- Elasticsearch 7.17 or 8.x
 - UwUFetch
 - Git
 

@@ -60,7 +60,7 @@ class Endpoints(HTMLRequestHandler):
             api_paths: list[dict[str, str | int | list[str]]] = [
                 {
                     "path": handler[0],
-                    "methods": ["OPTIONS", *handler[1].ALLOWED_METHODS],
+                    "methods": handler[1].get_allowed_methods(),
                 }
                 for handler in module_info.handlers
                 if handler[0].startswith("/api/")
