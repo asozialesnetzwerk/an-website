@@ -92,7 +92,7 @@ class Author(QuotesObjBase):
         return {
             "id": self.id,
             "name": self.name,
-            "path": f"/zitate/info/a/{self.id}/",
+            "path": f"/zitate/info/a/{self.id}",
             "info": {
                 "source": self.info[0],
                 "text": self.info[1],
@@ -134,11 +134,11 @@ class Quote(QuotesObjBase):
             "id": self.id,
             "quote": self.quote,
             "author": self.author.to_json(),
-            "path": f"/zitate/info/z/{self.id}/",
+            "path": f"/zitate/info/z/{self.id}",
         }
 
     def __str__(self) -> str:
-        """Return the the content of the quote."""
+        """Return the content of the quote."""
         return self.quote.strip()
 
 
@@ -211,7 +211,7 @@ class WrongQuote(QuotesObjBase):
             "quote": self.quote.to_json(),
             "author": self.author.to_json(),
             "rating": self.rating,
-            "path": f"/zitate/{self.get_id_as_str()}/",
+            "path": f"/zitate/{self.get_id_as_str()}",
         }
 
     def __str__(self) -> str:
