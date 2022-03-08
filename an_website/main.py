@@ -159,9 +159,9 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
     module_infos.sort()
 
     # move the main page to the top:
-    for _i, info in enumerate(module_infos):
+    for i, info in enumerate(module_infos):
         if info.path == "/":
-            module_infos.insert(0, module_infos.pop(_i))
+            module_infos.insert(0, module_infos.pop(i))
             break
 
 
@@ -398,9 +398,15 @@ def setup_app_search(app: Application) -> None:
     app.settings["APP_SEARCH"] = AppSearch(
         config.get("APP_SEARCH", "HOST", fallback=None),
         http_auth=config.get("APP_SEARCH", "SEARCH_KEY", fallback=None),
+        verify_cert=config.getboolean(
+            "APP_SEARCH", "VERIFY_CERT", fallback=True
+        ),
     )
     app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
         "APP_SEARCH", "ENGINE_NAME", fallback=NAME
+    )
+    app.settings["APP_SEARCH_SEARCH_KEY"] = config.get(
+        "APP_SEARCH", "SEARCH_KEY", fallback=None
     )
 
 

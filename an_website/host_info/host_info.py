@@ -65,6 +65,8 @@ def minify_ansi_art(string: str) -> str:
 class HostInfo(HTMLRequestHandler):
     """The request handler for the host info page."""
 
+    RATELIMIT_GET_LIMIT = 5
+
     SCREENFETCH_CACHE: dict[str, str] = {}
 
     async def get(self) -> None:
@@ -79,7 +81,7 @@ class HostInfo(HTMLRequestHandler):
             )
 
         await self.render(
-            "pages/ansi2html.html",
+            "ansi2html.html",
             ansi=[
                 self.SCREENFETCH_CACHE["LOGO"],
                 (await run(f"{DIR}/screenfetch", "-n"))[1].decode("utf-8"),
@@ -91,6 +93,8 @@ class HostInfo(HTMLRequestHandler):
 
 class UwUHostInfo(HTMLRequestHandler):
     """The wequest handwew fow the coowew host info page."""
+
+    RATELIMIT_GET_LIMIT = 5
 
     async def get(self) -> None:
         """
@@ -120,7 +124,7 @@ class UwUHostInfo(HTMLRequestHandler):
             )
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         await self.render(
-            "pages/ansi2html.html",
+            "ansi2html.html",
             ansi=uwufetch,
             powered_by="https://github.com/TheDarkBug/uwufetch",
             powered_by_name="UwUFetch",

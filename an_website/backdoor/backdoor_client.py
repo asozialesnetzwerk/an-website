@@ -30,7 +30,7 @@ import uuid
 from collections.abc import Iterable
 from types import EllipsisType
 from typing import Any
-from urllib.parse import SplitResult, urlsplit
+from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 try:
     import hy  # type: ignore
@@ -134,7 +134,7 @@ async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
 async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa: C901
     method: str,
     url: str | SplitResult,
-    headers: None | dict[Any, Any] = None,
+    headers: None | dict[str, str] = None,
     body: None | bytes | Iterable[bytes] | str = None,
     *,
     proxy_type: None | int = None,
@@ -163,9 +163,9 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
-        headers["Host"] = url.netloc
+        headers["Host"] = url.netloc.encode("idna").decode("ascii")
     if body and "Content-Length" not in header_names:
-        headers["Content-Length"] = len(body)
+        headers["Content-Length"] = str(len(body))
     e, data = E, b""
     sock = await create_socket(
         url.hostname,
@@ -186,8 +186,8 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
         (
             method
             + " "
-            + (url.path or "/")
-            + ("?" + url.query if url.query else "")
+            + (quote(url.path) or "/")
+            + ("?" + quote_plus(url.query) if url.query else "")
             + " HTTP/1.0\r\n"
         ).encode("ascii")
         + "\r\n".join(
@@ -463,7 +463,7 @@ Accepted arguments:
         url = input("URL: ").strip().rstrip("/")
         if not url:
             print("No URL given!")
-        elif not url.startswith(("http:", "https:")):
+        elif "://" not in url:
             if not url.startswith("//"):
                 url = "//" + url
             if re.match(
@@ -483,7 +483,9 @@ Accepted arguments:
         proxy_url_str = input("Proxy (leave empty for none): ").strip()
         if proxy_url_str:
             if "://" not in proxy_url_str:
-                proxy_url_str = "socks5://" + proxy_url_str
+                if not proxy_url_str.startswith("//"):
+                    proxy_url_str = "//" + proxy_url_str
+                proxy_url_str = "socks5:" + proxy_url_str
             proxy_url = urlsplit(proxy_url_str)
             if proxy_url.hostname:
                 proxy_type = int(socks.PROXY_TYPES[proxy_url.scheme.upper()])

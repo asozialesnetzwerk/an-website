@@ -1,10 +1,9 @@
 name: "CodeQL"
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ main ]
+    branches: [main]
   schedule:
     - cron: "0 0 * * 1"
 jobs:
@@ -18,13 +17,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ "python", "javascript" ]
-        # CodeQL supports [ "cpp", "csharp", "go", "java", "javascript", "python" ]
+        language: ["python", "javascript"]
+        # CodeQL supports ["cpp", "csharp", "go", "java", "javascript", "python"]
         # Learn more:
         # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install libcurl4-openssl-dev for compiling PycURL
       if: matrix.language == 'python'
       run: sudo apt-get install -y libcurl4-openssl-dev
@@ -36,7 +35,7 @@ jobs:
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
         # queries: ./path/to/local/query, your-org/your-repo/queries@main
-    #- name: Autobuild
-    #  uses: github/codeql-action/autobuild@v1
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

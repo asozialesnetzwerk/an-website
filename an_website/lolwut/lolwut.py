@@ -43,7 +43,8 @@ def get_module_info() -> ModuleInfo:
 async def generate_art(
     redis: None | Redis,
     args: None | str = None,
-) -> str:
+    head: bool = False,
+) -> None | str:
     """Generate art."""
     if not redis:
         raise HTTPError(503)
@@ -57,6 +58,8 @@ async def generate_art(
         command = "LOLWUT VERSION " + " ".join(arguments)
     else:
         command = "LOLWUT"
+    if head:
+        return None
     # pylint: disable=line-too-long
     return await redis.execute_command(command)  # type: ignore[no-untyped-call, no-any-return]  # noqa: B950
 
@@ -64,11 +67,11 @@ async def generate_art(
 class LOLWUT(HTMLRequestHandler):
     """The request handler for the LOLWUT page."""
 
-    async def get(self, args: None | str = None) -> None:
+    async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
         await self.render(
-            "pages/ansi2html.html",
-            ansi=await generate_art(self.redis, args),
+            "ansi2html.html",
+            ansi=await generate_art(self.redis, args, head),
             powered_by="https://redis.io",
             powered_by_name="Redis",
         )
@@ -77,7 +80,7 @@ class LOLWUT(HTMLRequestHandler):
 class LOLWUTAPI(APIRequestHandler):
     """The request handler for the LOLWUT API."""
 
-    async def get(self, args: None | str = None) -> None:
+    async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT API."""
         self.set_header("Content-Type", "text/plain; charset=utf-8")
-        await self.finish(await generate_art(self.redis, args))
+        await self.finish(await generate_art(self.redis, args, head))

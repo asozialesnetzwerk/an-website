@@ -23,6 +23,7 @@ from collections.abc import Iterable
 from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
+from typing import Any
 
 from tornado.web import Application, HTTPError, MissingArgumentError
 
@@ -139,6 +140,20 @@ def send_message(  # pylint: disable=too-many-arguments
         return smtp.send_message(message)
 
 
+def add_geoip_info_to_message(
+    message: Message,
+    geoip_info: dict[str, Any],
+    header_prefix: str = "X-GeoIP",
+) -> None:
+    """Add GeoIP information to the message."""
+    for spam, eggs in geoip_info.items():
+        header = f"{header_prefix}-{spam.replace('_', '-')}"
+        if isinstance(eggs, dict):
+            add_geoip_info_to_message(message, eggs, header)
+        else:
+            message[header] = str(eggs)
+
+
 class ContactPage(HTMLRequestHandler):
     """The request handler for the contact page."""
 
@@ -171,10 +186,14 @@ class ContactPage(HTMLRequestHandler):
 
         message = Message()
 
+        geoip = await self.geoip()
+        if geoip:
+            add_geoip_info_to_message(message, geoip)
+
         message["Subject"] = str(
             self.get_argument("subject", "").strip()  # type: ignore[union-attr]
             or f"{name or address or 'Jemand'} "
-            "will was über {self.request.host} schreiben."
+            f"will was über {self.request.host} schreiben."
         )
         message.set_payload(text, "utf-8")
         await asyncio.to_thread(

@@ -138,12 +138,12 @@ async def test_quote_request_handlers(
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_img import FILE_EXTENSIONS
 
-    for _e in FILE_EXTENSIONS:
-        response = await fetch(f"/zitate/1-1.{_e}")
+    for extension in FILE_EXTENSIONS:
+        response = await fetch(f"/zitate/1-1.{extension}")
         assert response.code == 200
-        response = await fetch(f"/zitate/1-1.{_e.upper()}")
+        response = await fetch(f"/zitate/1-1.{extension.upper()}")
         assert response.code == 200
-        response = await fetch(f"/zitate/1-2.{_e}")
+        response = await fetch(f"/zitate/1-2.{extension}")
         assert response.code == 200
 
 

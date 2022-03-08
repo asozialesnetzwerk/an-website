@@ -212,7 +212,7 @@ class BaseRequestHandler(RequestHandler):
         if not hasattr(self, "get"):
             raise HTTPError(405)
         raise HTTPError(501)  # TODO: implement HEAD support
-        # kwargs["head"] = True
+        # kwargs["_head"] = True
         # return self.get(*args, **kwargs)
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
@@ -567,10 +567,12 @@ class BaseRequestHandler(RequestHandler):
 
     def geoip(
         self,
-        ip: str,  # pylint: disable=invalid-name
+        ip: None | str = None,  # pylint: disable=invalid-name
         database: str = geoip.__defaults__[0],  # type: ignore[attr-defined]
     ) -> Coroutine[Any, Any, None | dict[str, Any]]:
         """Get GeoIP information."""
+        if not ip:
+            ip = str(self.request.remote_ip)
         return geoip(ip, database, self.elasticsearch)
 
 
