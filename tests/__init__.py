@@ -17,9 +17,11 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 import orjson as json
+import pytest
 import tornado.httpclient
 from lxml import etree  # type: ignore[import]
 from lxml.html.html5parser import HTMLParser  # type: ignore[import]
@@ -30,6 +32,29 @@ PARENT_DIR = os.path.dirname(DIR)
 # add parent dir to sys.path
 # this makes importing an_website possible
 sys.path.append(f"{PARENT_DIR}")
+
+from an_website import main  # noqa  # pylint: disable=wrong-import-position
+
+
+@pytest.fixture
+def app() -> tornado.web.Application:
+    """Create the application."""
+    _app = main.make_app()
+    _app.settings["TRUSTED_API_SECRETS"] = ("xyzzy",)  # type: ignore
+    return _app  # type: ignore
+
+
+@pytest.fixture
+def fetch(
+    http_server_client: tornado.httpclient.AsyncHTTPClient,
+) -> Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]:
+    """Fetch a URL."""
+
+    async def fetch_url(url: str) -> tornado.httpclient.HTTPResponse:
+        """Fetch a URL."""
+        return await http_server_client.fetch(url, raise_error=False)
+
+    return fetch_url
 
 
 def assert_valid_html_response(

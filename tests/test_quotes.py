@@ -15,21 +15,15 @@
 
 from __future__ import annotations
 
-import pytest
 import tornado.simple_httpclient
 import tornado.web
 
 import an_website.quotes.quotes as main_page
-from an_website import main, quotes
+from an_website import quotes
 
-from . import assert_valid_html_response, assert_valid_json_response
+from . import app, assert_valid_html_response, assert_valid_json_response
 
-
-@pytest.fixture
-def app() -> tornado.web.Application:
-    """Create the application."""
-    return main.make_app()  # type: ignore[return-value]
-
+assert app
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1

@@ -59,6 +59,15 @@ def test_uptime_to_str() -> None:
     assert uptime.uptime_to_str(24 * 60 * 60 + 69) == "1d 0h 1min 9s"
 
 
+def test_calculate_uptime() -> None:
+    """Test the calculation of the uptime."""
+    assert uptime.calculate_uptime() < uptime.calculate_uptime()
+    assert uptime.calculate_uptime() + 1 > uptime.calculate_uptime()
+
+    assert uptime.uptime_to_str()
+
+
 if __name__ == "__main__":
     test_get_availability_dict()
     test_uptime_to_str()
+    test_calculate_uptime()

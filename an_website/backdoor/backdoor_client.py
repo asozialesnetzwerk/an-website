@@ -27,7 +27,7 @@ import sys
 import time
 import traceback
 import uuid
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from types import EllipsisType
 from typing import Any
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
@@ -305,6 +305,8 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     proxy_rdns: None | bool = True,
     proxy_username: None | str = None,
     proxy_password: None | str = None,
+    # pylint: disable=redefined-builtin
+    print: Callable[..., None] = print,
 ) -> None:
     # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""

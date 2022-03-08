@@ -18,37 +18,17 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable
 
-import pytest
-import tornado.escape
 import tornado.httpclient
-import tornado.web
-
-from an_website import main
 
 from . import (
+    app,
     assert_valid_html_response,
     assert_valid_json_response,
     assert_valid_rss_response,
+    fetch,
 )
 
-
-@pytest.fixture
-def app() -> tornado.web.Application:
-    """Create the application."""
-    return main.make_app()  # type: ignore[return-value]
-
-
-@pytest.fixture
-def fetch(
-    http_server_client: tornado.httpclient.AsyncHTTPClient,
-) -> Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]:
-    """Fetch a URL."""
-
-    async def fetch_url(url: str) -> tornado.httpclient.HTTPResponse:
-        """Fetch a URL."""
-        return await http_server_client.fetch(url, raise_error=False)
-
-    return fetch_url
+assert fetch and app
 
 
 async def test_json_apis(
@@ -61,8 +41,8 @@ async def test_json_apis(
         "/api/version",
         "/api/betriebszeit",
         "/api/discord",
-        # "/api/discord/367648314184826880",  # needs network access
-        # "/api/discord",  # needs network access
+        "/api/discord/367648314184826880",
+        "/api/discord",
         # "/api/zitate/1-1",  # gets tested with quotes
         "/api/hangman-loeser",
         # "/api/ping",  # (not JSON)
@@ -108,6 +88,7 @@ async def test_request_handlers(
     assert_valid_html_response(await fetch("/betriebszeit"))
     assert_valid_html_response(await fetch("/version"))
     assert_valid_html_response(await fetch("/suche"))
+    assert_valid_html_response(await fetch("/discord"))
     assert_valid_html_response(await fetch("/kaenguru-comics"))
     assert_valid_html_response(await fetch("/hangman-loeser"))
     assert_valid_html_response(await fetch("/wortspiel-helfer"))
