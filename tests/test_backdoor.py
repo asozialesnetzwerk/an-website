@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The module with all the tests for the backdoor."""
+"""The tests for the backdoor."""
+
 from __future__ import annotations
 
 import asyncio
@@ -102,7 +103,7 @@ async def test_backdoor(
     http_server_client: tornado.httpclient.AsyncHTTPClient,
 ) -> None:
     """Test the backdoor client."""
-    assert bc.E == Ellipsis
+    assert bc.E == ...
     assert bc.lisp_always_active() in {True, False}
 
     url = http_server_client.get_url("")  # type: ignore

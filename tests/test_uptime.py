@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Test the uptime module."""
+"""The tests for the uptime page."""
+
 from __future__ import annotations
 
 from an_website.uptime import uptime

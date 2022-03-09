@@ -25,7 +25,7 @@ import sys
 import time
 import traceback
 import uuid
-from collections.abc import Coroutine
+from collections.abc import Awaitable, Coroutine
 from datetime import datetime, timedelta
 from functools import cache
 from http.client import responses
@@ -206,14 +206,14 @@ class BaseRequestHandler(RequestHandler):
         self.set_status(204)
         self.finish()
 
-    def head(self, *args: Any, **kwargs: Any) -> None:
+    def head(self, *args: Any, **kwargs: Any) -> None | Awaitable[None]:
         """Handle HEAD requests."""
-        # pylint: disable=unused-argument
         if not hasattr(self, "get"):
             raise HTTPError(405)
-        raise HTTPError(501)  # TODO: implement HEAD support
-        # kwargs["_head"] = True
-        # return self.get(*args, **kwargs)
+        if not getattr(self, "HEAD_IMPLEMENTED", False):
+            raise HTTPError(501)  # TODO: implement HEAD support everywhere
+        kwargs["head"] = True
+        return self.get(*args, **kwargs)
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
@@ -515,7 +515,7 @@ class BaseRequestHandler(RequestHandler):
             ignore_themes.extend(("light", "light-blue", "fun"))
 
         return random.choice(
-            tuple(_t for _t in THEMES if _t not in ignore_themes)
+            tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
 
     def get_contact_address(self) -> None | str:

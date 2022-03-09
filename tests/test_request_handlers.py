@@ -11,8 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Test the request handlers of an_website."""
-
+"""The tests for the request handlers of an_website."""
 
 from __future__ import annotations
 

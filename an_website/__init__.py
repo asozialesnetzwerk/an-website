@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Website for the AN."""
+"""The website of the AN."""
+
 from __future__ import annotations
 
 import os

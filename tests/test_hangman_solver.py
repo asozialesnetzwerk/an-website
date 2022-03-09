@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Tests for the hangman solver module."""
+"""The tests for the hangman solver."""
+
 from __future__ import annotations
 
 import asyncio

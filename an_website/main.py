@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Website of the AN. Loads config and modules and starts Tornado."""
+"""The website of the AN. Loads config and modules and starts Tornado."""
+
 from __future__ import annotations
 
 import asyncio

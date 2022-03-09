@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The module with all the tests for the utils module."""
+"""The tests for the utils module."""
 
 from __future__ import annotations
 

@@ -81,6 +81,8 @@ async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
     address_infos = await loop.getaddrinfo(
         addr,
         port,
+        # PySocks doesn't support AF_INET6
+        family=0 if proxy_type is None else socket.AF_INET,
         type=socket.SOCK_STREAM,
     )
     if not address_infos:
