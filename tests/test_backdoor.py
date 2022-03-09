@@ -40,6 +40,7 @@ def _run_and_get_output(
     output = StringIO()
     fun_out = fun(*args, print=PrintWrapper(output), **kwargs)  # type: ignore
     conn.send((fun_out, output.getvalue()))
+    conn.close()
 
 
 async def run_and_get_output(
@@ -59,8 +60,14 @@ async def run_and_get_output(
     return text  # type: ignore
 
 
+# pylint: disable=too-many-arguments
 async def assert_run_and_print(
-    url: str, command: str, output: str, lisp: bool = False, session: str = "69"
+    url: str,
+    command: str,
+    output: None | str = None,
+    lisp: bool = False,
+    session: str = "69",
+    assertion: None | Callable[[str], bool] = None,
 ) -> None:
     """Test the run_and_print function."""
     real_output = await run_and_get_output(
@@ -71,7 +78,21 @@ async def assert_run_and_print(
         lisp,
         session,
     )
-    assert real_output == (None, output)
+    assert len(real_output) == 2
+    assert real_output[0] is None
+    assert isinstance(real_output[1], str)
+    if assertion:
+        assert assertion(real_output[1])
+    else:
+        assert real_output[1] == output
+
+
+def get_error_assertion(error_line: str) -> Callable[[str], bool]:
+    """Get the assertion lambda needed for asserting errors with the client."""
+    return lambda spam: (
+        spam.startswith("Traceback (most recent call last):\n")
+        and spam.endswith(error_line.removesuffix("\n") + "\n")
+    )
 
 
 async def test_backdoor(
@@ -83,10 +104,23 @@ async def test_backdoor(
 
     url = http_server_client.get_url("")  # type: ignore
 
-    await assert_run_and_print(url, "1 + 1", "Result:\n2\n")
+    await assert_run_and_print(url, "1 & 1", "Result:\n1\n")
     await assert_run_and_print(url, "(+ 1 1)", "Result:\n2\n", True)
     await assert_run_and_print(url, "_", "Result:\n2\n")
     await assert_run_and_print(
         url, "app.settings['TRUSTED_API_SECRETS'][0]", "Result:\n'xyzzy'\n"
     )
     await assert_run_and_print(url, "print('42')", "Output:\n42\n")
+    await assert_run_and_print(
+        url,
+        "1 1",
+        'File "<unknown>", line 1\n    1 1\n      ^\n'
+        "SyntaxError: invalid syntax\n",
+    )
+    await assert_run_and_print(
+        url,
+        "LOLWUT",
+        assertion=get_error_assertion(
+            "NameError: name 'LOLWUT' is not defined"
+        ),
+    )
