@@ -83,8 +83,11 @@ async def assert_run_and_print(
     assert isinstance(real_output[1], str)
     if assertion:
         assert assertion(real_output[1])
+    elif output is not None:
+        assert real_output[1].endswith("\n")
+        assert real_output[1].removesuffix("\n") == output.removesuffix("\n")
     else:
-        assert real_output[1] == output
+        assert output
 
 
 def get_error_assertion(error_line: str) -> Callable[[str], bool]:
@@ -104,18 +107,18 @@ async def test_backdoor(
 
     url = http_server_client.get_url("")  # type: ignore
 
-    await assert_run_and_print(url, "1 & 1", "Result:\n1\n")
-    await assert_run_and_print(url, "(+ 1 1)", "Result:\n2\n", True)
-    await assert_run_and_print(url, "_", "Result:\n2\n")
+    await assert_run_and_print(url, "1 & 1", "Result:\n1")
+    await assert_run_and_print(url, "(+ 1 1)", "Result:\n2", True)
+    await assert_run_and_print(url, "_", "Result:\n2")
     await assert_run_and_print(
-        url, "app.settings['TRUSTED_API_SECRETS'][0]", "Result:\n'xyzzy'\n"
+        url, "app.settings['TRUSTED_API_SECRETS'][0]", "Result:\n'xyzzy'"
     )
     await assert_run_and_print(url, "print('42')", "Output:\n42\n")
     await assert_run_and_print(
         url,
         "1 1",
         'File "<unknown>", line 1\n    1 1\n      ^\n'
-        "SyntaxError: invalid syntax\n",
+        "SyntaxError: invalid syntax",
     )
     await assert_run_and_print(
         url,
@@ -123,4 +126,31 @@ async def test_backdoor(
         assertion=get_error_assertion(
             "NameError: name 'LOLWUT' is not defined"
         ),
+    )
+    await assert_run_and_print(
+        url,
+        "0/0",
+        assertion=get_error_assertion("ZeroDivisionError: division by zero"),
+    )
+    await assert_run_and_print(
+        url,
+        "1 1",
+        'File "<unknown>", line 1\n    1 1\n      ^\n'
+        "SyntaxError: invalid syntax",
+    )
+    await assert_run_and_print(
+        url,
+        "help",
+        "Result:\nType help() for interactive help, "
+        "or help(object) for help about object.",
+    )
+    await assert_run_and_print(
+        url,
+        "print",
+        "Result:\n<built-in function print>",
+    )
+    await assert_run_and_print(
+        "https://example.org",
+        "1 & 1",
+        "\x1b[91mNot Found\x1b[0m",
     )
