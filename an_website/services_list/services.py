@@ -114,8 +114,10 @@ del SERVICES
 class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
 
-    def get(self) -> None:
+    def get(self, head: bool = False) -> None:
         """Handle GET requests to the service list page."""
+        if head:
+            return
         self.render(
             "pages/services.html",
             html=HTML_LIST,

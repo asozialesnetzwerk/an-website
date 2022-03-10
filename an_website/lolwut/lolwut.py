@@ -67,13 +67,14 @@ async def generate_art(
 class LOLWUT(HTMLRequestHandler):
     """The request handler for the LOLWUT page."""
 
-    HEAD_IMPLEMENTED = True
-
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
+        art = await generate_art(self.redis, args, head)
+        if head:
+            return
         await self.render(
             "ansi2html.html",
-            ansi=await generate_art(self.redis, args, head),
+            ansi=art,
             powered_by="https://redis.io",
             powered_by_name="Redis",
         )
@@ -81,8 +82,6 @@ class LOLWUT(HTMLRequestHandler):
 
 class LOLWUTAPI(APIRequestHandler):
     """The request handler for the LOLWUT API."""
-
-    HEAD_IMPLEMENTED = True
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT API."""

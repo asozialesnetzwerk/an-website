@@ -41,8 +41,10 @@ def get_module_info() -> ModuleInfo:
 class Endpoints(HTMLRequestHandler):
     """Endpoint page request handler."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle a GET request."""
+        if head:
+            return
         return await self.render(
             "pages/endpoints.html",
             endpoints=self.get_endpoints(),
@@ -86,7 +88,7 @@ class Endpoints(HTMLRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle a GET request."""
         return await self.finish(
             json.dumps(self.get_endpoints(), option=ORJSON_OPTIONS)

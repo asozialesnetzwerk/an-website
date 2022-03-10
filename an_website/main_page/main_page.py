@@ -36,8 +36,10 @@ class MainPage(QuoteOfTheDayBaseHandler):
     async def check_ready(self) -> None:
         pass
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle the GET requests and display the main page."""
+        if head:
+            return
         await self.render(
             "pages/main_page.html",
             quote_data=await self.get_quote_of_today(),

@@ -161,10 +161,12 @@ class ContactPage(HTMLRequestHandler):
     RATELIMIT_POST_COUNT_PER_PERIOD = 1
     RATELIMIT_POST_PERIOD = 120
 
-    def get(self) -> None:
+    def get(self, head: bool = False) -> None:
         """Handle GET requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
+        if head:
+            return
         self.render(
             "pages/contact.html", subject=self.get_argument("subject", "")
         )

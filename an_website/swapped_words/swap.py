@@ -131,7 +131,9 @@ class SwappedWords(HTMLRequestHandler):
                 error_msg=str(exc),
             )
 
-    def get(self) -> None:
+    def get(
+        self, head: bool = False  # pylint: disable=unused-argument
+    ) -> None:
         """Handle GET requests to the swapped words page."""
         self.handle_text(
             self.get_query_argument("text", default=None) or "",
@@ -153,7 +155,9 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
-    async def get(self) -> None:
+    async def get(
+        self, head: bool = False  # pylint: disable=unused-argument
+    ) -> None:
         """Handle GET requests to the swapped words API."""
         text = self.get_argument("text", default=None, strip=True) or ""
 

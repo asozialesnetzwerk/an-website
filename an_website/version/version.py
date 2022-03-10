@@ -59,8 +59,10 @@ class VersionAPI(APIRequestHandler):
 class Version(HTMLRequestHandler):
     """The Tornado request handler for the version page."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle the GET request to the version page."""
+        if head:
+            return
         await self.render(
             "pages/version.html",
             version=VERSION,

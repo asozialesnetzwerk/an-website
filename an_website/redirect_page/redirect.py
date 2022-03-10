@@ -38,7 +38,7 @@ def get_module_info() -> ModuleInfo:
 class RedirectPage(HTMLRequestHandler):
     """The redirect page that redirects you to another page."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle the GET request to the request page and render it."""
         redirect_url = self.get_query_argument("to", default="")
 
@@ -56,6 +56,9 @@ class RedirectPage(HTMLRequestHandler):
 
         if redirect_url.startswith("https://chat.asozial.org/"):
             return self.redirect(redirect_url)
+
+        if head:
+            return
 
         # get the URL the redirect comes from
         from_url = self.get_query_argument("from", default="/")

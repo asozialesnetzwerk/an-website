@@ -136,13 +136,16 @@ async def get_invite_with_cache(
 class ANDiscord(HTMLRequestHandler):
     """The request handler that gets the Discord invite and redirects to it."""
 
-    RATELIMIT_GET_LIMIT = 5
+    RATELIMIT_GET_LIMIT = 10
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Get the Discord invite."""
+        invite = (await get_invite_with_cache(GUILD_ID))[0]
+        if head:
+            return
         return await self.render(
             "pages/ask_for_redirect.html",
-            redirect_url=(await get_invite_with_cache(GUILD_ID))[0],
+            redirect_url=invite,
             from_url=None,
             discord=True,
         )
@@ -154,8 +157,10 @@ class DiscordAPI(APIRequestHandler):
     RATELIMIT_GET_LIMIT = 5
     RATELIMIT_GET_COUNT_PER_PERIOD = 10  # 10 requests per minute
 
-    async def get(self, guild_id: str = GUILD_ID) -> None:
+    async def get(self, guild_id: str = GUILD_ID, head: bool = False) -> None:
         """Get the Discord invite and render it as JSON."""
+        if head:
+            return
         invite, source_url = await get_invite_with_cache(guild_id)
         return await self.finish({"invite": invite, "source": source_url})
 
@@ -163,4 +168,5 @@ class DiscordAPI(APIRequestHandler):
 class ANDiscordAPI(DiscordAPI):
     """The API request handler only for the AN Discord guild."""
 
+    RATELIMIT_GET_LIMIT = 10
     RATELIMIT_GET_COUNT_PER_PERIOD = 30  # 30 requests per minute

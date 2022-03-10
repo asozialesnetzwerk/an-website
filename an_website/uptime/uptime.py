@@ -155,9 +155,11 @@ AVAILABILITY_CHART = re.sub(
 class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle the GET request and render the page."""
         self.set_header("Cache-Control", "no-cache")
+        if head:
+            return
         availability_data = await get_availability_data(self.elasticsearch)
         availability = (
             get_availability_dict(*availability_data)["percentage"]
@@ -175,7 +177,7 @@ class UptimeHandler(HTMLRequestHandler):
 class AvailabilityChartHandler(BaseRequestHandler):
     """The request handler for the availability chart."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle GET requests."""
         availability = self.get_argument("a", default=None)
         if not availability:
@@ -198,6 +200,8 @@ class AvailabilityChartHandler(BaseRequestHandler):
         self.set_header(
             "Cache-Control", f"public, min-fresh={14 * 24 * 60 * 60}, immutable"
         )
+        if head:
+            return
         await self.finish(AVAILABILITY_CHART % (31.4159 * float(availability)))
 
 

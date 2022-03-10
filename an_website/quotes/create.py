@@ -191,8 +191,10 @@ class CreatePage(QuoteReadyCheckRequestHandler):
     RATELIMIT_POST_LIMIT = 5
     RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle GET requests to the create page."""
+        if head:
+            return
         await self.render(
             "pages/quotes/create1.html",
             quotes=tuple(QUOTES_CACHE.values()),

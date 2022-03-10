@@ -241,8 +241,10 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
     """The main quote page that should render a random quote."""
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Render the main quote page, with a few links."""
+        if head:
+            return
         await self.render(
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(
@@ -278,7 +280,9 @@ class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
 
     IS_NOT_HTML = True
 
-    async def get(self, suffix: str = "") -> None:
+    async def get(  # pylint: disable=unused-argument
+        self, suffix: str = "", head: bool = False
+    ) -> None:
         """Redirect to a random funny quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
         return self.redirect(
@@ -300,7 +304,9 @@ class QuoteById(QuoteBaseHandler):
     RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per 30s
     RATELIMIT_POST_PERIOD = 30
 
-    async def get(self, quote_id: str, author_id: None | str = None) -> None:
+    async def get(
+        self, quote_id: str, author_id: None | str = None, head: bool = False
+    ) -> None:
         """Handle the GET request to this page and render the quote."""
         int_quote_id = int(quote_id)
         if author_id is None:
@@ -313,6 +319,8 @@ class QuoteById(QuoteBaseHandler):
                     as_json=self.get_as_json(),
                 )
             )
+        if head:
+            return
         await self.render_quote(int_quote_id, int(author_id))
 
     async def post(self, quote_id_str: str, author_id_str: str) -> None:

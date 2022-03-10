@@ -280,7 +280,11 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
     RATELIMIT_GET_LIMIT = 15
 
     async def get(
-        self, quote_id: str, author_id: str, file_extension: str = "png"
+        self,
+        quote_id: str,
+        author_id: str,
+        file_extension: str = "png",
+        head: bool = False,
     ) -> None:
         """Handle the GET request to this page and render the quote as img."""
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
@@ -290,7 +294,12 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
                 f"(supported: {', '.join(FILE_EXTENSIONS.keys())}).",
             )
         file_type = FILE_EXTENSIONS[file_extension]
+        self.set_header("Content-Type", f"image/{file_type}")
+
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
+
+        if head:
+            return
 
         if not (
             str_to_bool(
@@ -306,7 +315,6 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
             source: None | str = f"{self.request.host_name}/z/{wq_id}"
         else:
             source = None
-        self.set_header("Content-Type", f"image/{file_type}")
         if file_type == "gif" and str_to_bool(
             self.get_query_argument("small", default="False"),
             default=False,

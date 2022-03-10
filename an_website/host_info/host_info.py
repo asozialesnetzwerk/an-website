@@ -69,12 +69,14 @@ class HostInfo(HTMLRequestHandler):
 
     SCREENFETCH_CACHE: dict[str, str] = {}
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """
         Handle the GET requests to the host info page.
 
         Use screenFetch to generate the page.
         """
+        if head:
+            return
         if "LOGO" not in self.SCREENFETCH_CACHE:
             self.SCREENFETCH_CACHE["LOGO"] = minify_ansi_art(
                 (await run(f"{DIR}/screenfetch", "-L"))[1].decode("utf-8")
@@ -96,14 +98,21 @@ class UwUHostInfo(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 5
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """
         Handwe the GET wequests to coowew the host info page.
 
         Use UwUFetch to genyewate the page.
         """
-        cache_disabwed = self.get_query_argument("cache_disabled", default="")
-        cache_enabwed = 0 if str_to_bool(cache_disabwed, default=False) else 1
+        if head:
+            cache_enabwed = 1
+        else:
+            cache_disabwed = self.get_query_argument(
+                "cache_disabled", default=""
+            )
+            cache_enabwed = (
+                0 if str_to_bool(cache_disabwed, default=False) else 1
+            )
 
         wetuwn_code, uwufetch_bytes, _ = await run(
             "env",
@@ -122,6 +131,8 @@ class UwUHostInfo(HTMLRequestHandler):
                 500,
                 reason=f"UwUFetch has exited with wetuwn code {wetuwn_code}.",
             )
+        if head:
+            return
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         await self.render(
             "ansi2html.html",

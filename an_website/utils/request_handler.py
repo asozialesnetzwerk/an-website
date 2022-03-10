@@ -208,10 +208,10 @@ class BaseRequestHandler(RequestHandler):
 
     def head(self, *args: Any, **kwargs: Any) -> None | Awaitable[None]:
         """Handle HEAD requests."""
-        if not hasattr(self, "get"):
+        if self.get.__module__ == "tornado.web":
             raise HTTPError(405)
-        if not getattr(self, "HEAD_IMPLEMENTED", False):
-            raise HTTPError(501)  # TODO: implement HEAD support everywhere
+        if not self.get.__annotations__.get("head") == "bool":
+            raise HTTPError(501)
         kwargs["head"] = True
         return self.get(*args, **kwargs)
 

@@ -65,8 +65,10 @@ class SettingsPage(HTMLRequestHandler):
             **kwargs,
         )
 
-    def get(self) -> None:
+    def get(self, head: bool = False) -> None:
         """Handle GET requests to the settings page."""
+        if head:
+            return
         self.render(
             "pages/settings.html",
             theme_name=self.get_theme(),

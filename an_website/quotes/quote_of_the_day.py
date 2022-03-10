@@ -200,10 +200,12 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 
     IS_NOT_HTML = True
 
-    async def get(self) -> None:
+    async def get(self, head: bool = False) -> None:
         """Handle GET requests."""
-        today = dt.datetime.now(tz=dt.timezone.utc).date()
         self.set_header("Content-Type", "application/rss+xml")
+        if head:
+            return
+        today = dt.datetime.now(tz=dt.timezone.utc).date()
         await self.render(
             "rss/quote_of_the_day.xml",
             quotes=tuple(
