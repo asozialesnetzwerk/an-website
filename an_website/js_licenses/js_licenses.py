@@ -24,7 +24,7 @@ and https://www.gnu.org/licenses/javascript-labels.html
 from __future__ import annotations
 
 import logging
-import os.path
+import os
 from functools import cache
 
 from .. import STATIC_DIR

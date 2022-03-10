@@ -14,14 +14,27 @@
 """The version page of the website."""
 from __future__ import annotations
 
-import hashlib
+from pathlib import Path
 
+from blake3 import blake3  # type: ignore
+
+from .. import DIR as ROOT_DIR
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, run_shell_cmd
+from ..utils.utils import ModuleInfo, hash_file, run_shell_cmd
+
+
+def hash_files() -> str:
+    """Hash all the files."""
+    return "\n".join(
+        f"{hash_file(path)} {path.relative_to(ROOT_DIR)}"
+        for path in sorted(Path(ROOT_DIR).rglob("*"))
+        if path.is_file() and "__pycache__" not in path.parts
+    )
+
 
 VERSION = run_shell_cmd("git rev-parse HEAD").strip()
-FILE_HASHES = run_shell_cmd("git ls-files | xargs sha1sum")
-HASH_OF_FILE_HASHES = hashlib.sha1(FILE_HASHES.encode("utf-8")).hexdigest()
+FILE_HASHES = hash_files()
+HASH_OF_FILE_HASHES = blake3(FILE_HASHES.encode("utf-8")).hexdigest()
 GH_PAGES_COMMIT_HASH = run_shell_cmd("git rev-parse origin/gh-pages").strip()
 
 
