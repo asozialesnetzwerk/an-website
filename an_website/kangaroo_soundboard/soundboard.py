@@ -11,10 +11,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Handle the requests for the soundboard."""
+"""Handle the requests for the kangaroo soundboard."""
 from __future__ import annotations
 
-import os
+import os.path
 from collections.abc import Callable, Iterable
 from functools import cache
 

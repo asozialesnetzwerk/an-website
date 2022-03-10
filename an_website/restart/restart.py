@@ -19,7 +19,8 @@ import re
 
 from tornado.web import HTTPError
 
-from .. import DIR as ROOT_DIR
+from an_website import DIR as AN_WEBSITE_DIR
+
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, run
 
@@ -53,21 +54,19 @@ class Restart(APIRequestHandler):
         # used to protect against code execution
         if re.search("[^0-9a-f]", commit) is not None:
             raise HTTPError(
-                400, reason="Commit-Hash can only contain letters and numbers."
+                400, reason="Commit can only contain letters and numbers."
             )
 
         # git commits are always 40 chars long
         if len(commit) not in (40, 0):
-            raise HTTPError(
-                400, reason="Commit-Hash has to be 40 characters long."
-            )
+            raise HTTPError(400, reason="Commit has to be 40 chars long.")
 
-        # get the parent dir of the root dir
-        repo_path = os.path.dirname(ROOT_DIR)
+        # get the parent dir of the an_website module dir
+        repo_path = os.path.dirname(AN_WEBSITE_DIR)
 
         # check if restart script exists:
         if not os.path.isfile(os.path.join(repo_path, "restart.sh")):
-            raise HTTPError(503)
+            raise HTTPError(501)
 
         # execute the restarting script
         code, stdout, stderr = await run(

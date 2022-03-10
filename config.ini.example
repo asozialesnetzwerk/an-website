@@ -57,6 +57,8 @@
 #[ELASTIC_APM]
 #enabled = nope
 #server_url = http://localhost:8200
-#secret_token = xyzzy
+#secret_token = ...
 #api_key = ...
 #verify_server_cert = sure
+#server_cert = ...
+#use_certifi = sure

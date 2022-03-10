@@ -10,7 +10,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """Useful stuff for handling static files."""
 
 from __future__ import annotations
@@ -36,11 +35,11 @@ def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
     return dict(
         (
-            str(path).removeprefix(ROOT_DIR),
-            hash_file(path)[:8],
+            str(file).removeprefix(ROOT_DIR),
+            hash_file(file)[:8],
         )
-        for path in Path(STATIC_DIR).rglob("*")
-        if path.is_file()
+        for file in Path(STATIC_DIR).rglob("*")
+        if file.is_file()
     )
 
 

@@ -436,7 +436,7 @@ Accepted arguments:
     proxy_username: None | str = None
     proxy_password: None | str = None
     cache_pickle = os.path.join(
-        os.path.expanduser(os.getenv("XDG_CACHE_HOME") or "~/.cache"),
+        os.getenv("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"),
         "an-backdoor-client/session.pickle",
     )
     if "--clear-cache" in sys.argv:
