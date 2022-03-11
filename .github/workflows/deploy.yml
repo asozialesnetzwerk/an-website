@@ -28,7 +28,7 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: grep -E -v "^(#|pip)" requirements.txt | xargs pip install --prefer-binary
+        run: grep -E -v "^(#|-i|pip)" requirements.txt | xargs pip install --prefer-binary
       - name: Install pytest, coverage and html5lib (needed for the tests)
         run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
