@@ -28,7 +28,7 @@ from pathlib import Path
 from typing import Any
 
 import orjson
-from aioredis import BlockingConnectionPool, Redis
+from aioredis import BlockingConnectionPool, Redis, SSLConnection
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
@@ -400,7 +400,7 @@ def setup_app_search(app: Application) -> None:
         ca_certs=os.path.join(DIR, "ca-bundle.crt"),
     )
     app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
-        "APP_SEARCH", "ENGINE_NAME", fallback=NAME
+        "APP_SEARCH", "ENGINE_NAME", fallback=NAME.removesuffix("-dev")
     )
     app.settings["APP_SEARCH_SEARCH_KEY"] = config.get(
         "APP_SEARCH", "SEARCH_KEY", fallback=None
@@ -524,16 +524,31 @@ async def setup_redis(app: Application) -> None:
         await redis.close(close_connection_pool=True)
     app.settings["REDIS"] = None
     config = app.settings["CONFIG"]
-    redis = Redis(
-        connection_pool=BlockingConnectionPool.from_url(
-            config.get("REDIS", "URL", fallback="redis://localhost"),
-            db=config.getint("REDIS", "DB", fallback=None),
-            username=config.get("REDIS", "USERNAME", fallback=None),
-            password=config.get("REDIS", "PASSWORD", fallback=None),
-            ssl_ca_certs=os.path.join(DIR, "ca-bundle.crt"),
-            decode_responses=True,
+
+    kwargs = {
+        "host": config.get("REDIS", "HOST", fallback="localhost"),
+        "port": config.getint("REDIS", "PORT", fallback=6379),
+        "db": config.getint("REDIS", "DB", fallback=0),
+        "username": config.get("REDIS", "USERNAME", fallback=None),
+        "password": config.get("REDIS", "PASSWORD", fallback=None),
+        "retry_on_timeout": config.getboolean(
+            "REDIS", "RETRY_ON_TIMEOUT", fallback=False
+        ),
+        "health_check_interval": 1,
+        "decode_responses": True,
+        "client_name": NAME,
+    }
+
+    if config.getboolean("REDIS", "SSL", fallback=False):
+        kwargs.update(
+            {
+                "connection_class": SSLConnection,
+                "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
+                "ssl_check_hostname": True,
+            }
         )
-    )
+
+    redis = Redis(connection_pool=BlockingConnectionPool(**kwargs))
     try:
         await redis.ping()
     except Exception as exc:  # pylint: disable=broad-except

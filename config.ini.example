@@ -30,10 +30,13 @@
 #password = hunter2
 
 #[REDIS]
-#url = redis://localhost
+#host = localhost
+#port = 6379
+#ssl = nope
 #db = 0
 #username = default
 #password = hunter2
+#retry_on_timeout = nope
 
 #[ELASTICSEARCH]
 #cloud_id = ...
