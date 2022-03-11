@@ -20,6 +20,7 @@ import configparser
 import importlib
 import logging
 import os
+import re
 import ssl
 import sys
 from collections.abc import Callable, Coroutine
@@ -38,7 +39,7 @@ from tornado.web import Application, RedirectHandler
 from . import DIR, NAME, TEMPLATES_DIR
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import static_file_handling
-from .utils.request_handler import BaseRequestHandler, NotFound
+from .utils.request_handler import BaseRequestHandler, NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Timer, time_function
 from .version import version
 
@@ -241,12 +242,12 @@ def make_app() -> str | Application:
     return Application(
         handlers,  # type: ignore
         MODULE_INFOS=module_infos,
-        HANDLERS=handlers,  # allow getting the handlers in the backdoor
+        HANDLERS=handlers,
         # General settings
         autoreload=False,
         compress_response=True,
         debug=bool(sys.flags.dev_mode),
-        default_handler_class=NotFound,
+        default_handler_class=NotFoundHandler,
         websocket_ping_interval=10,
         # Template settings
         template_path=TEMPLATES_DIR,
@@ -319,9 +320,7 @@ def setup_logging(config: configparser.ConfigParser) -> None:
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
         logging.Formatter(
-            LogFormatter.DEFAULT_FORMAT.replace("%(color)s", "").replace(
-                "%(end_color)s", ""
-            ),
+            re.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT),
             LogFormatter.DEFAULT_DATE_FORMAT,
         )
         if sys.flags.dev_mode
@@ -364,10 +363,7 @@ def setup_apm(app: Application) -> None:
         "VERIFY_SERVER_CERT": config.getboolean(
             "ELASTIC_APM", "VERIFY_SERVER_CERT", fallback=True
         ),
-        "SERVER_CERT": config.get("ELASTIC_APM", "SERVER_CERT", fallback=None),
-        "USE_CERTIFI": config.getboolean(
-            "ELASTIC_APM", "USE_CERTIFI", fallback=True
-        ),
+        "SERVER_CERT": os.path.join(DIR, "ca-bundle.crt"),
         "SERVICE_NAME": NAME.removesuffix("-dev"),
         "SERVICE_VERSION": version.VERSION,
         "ENVIRONMENT": "production"
@@ -376,8 +372,7 @@ def setup_apm(app: Application) -> None:
         "DEBUG": True,
         "CAPTURE_BODY": "errors",
         "TRANSACTION_IGNORE_URLS": [
-            "/api/ping/",
-            "/favicon.ico",
+            "/api/ping",
             "/static/*",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
@@ -402,6 +397,7 @@ def setup_app_search(app: Application) -> None:
         verify_cert=config.getboolean(
             "APP_SEARCH", "VERIFY_CERT", fallback=True
         ),
+        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
     )
     app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
         "APP_SEARCH", "ENGINE_NAME", fallback=NAME
@@ -428,6 +424,7 @@ async def setup_elasticsearch(app: Application) -> None:
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
         ),
+        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
         http_auth=(
             config.get("ELASTICSEARCH", "USERNAME"),
             config.get("ELASTICSEARCH", "PASSWORD"),
@@ -482,14 +479,15 @@ async def setup_elasticsearch_configs(  # noqa: C901
 
         base_path = Path(f"{DIR}/elasticsearch/{what}")
 
-        for path in base_path.glob("**/*.json"):
+        for path in base_path.rglob("*.json"):
 
             if not path.is_file():
                 logger.warning("%s is not a file!", path)
                 continue
 
-            with path.open(encoding="utf-8") as file:
-                body = orjson.loads(file.read().replace("{prefix}", prefix))
+            body = orjson.loads(
+                path.read_text("utf-8").replace("{prefix}", prefix)
+            )
 
             name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
@@ -532,6 +530,7 @@ async def setup_redis(app: Application) -> None:
             db=config.getint("REDIS", "DB", fallback=None),
             username=config.get("REDIS", "USERNAME", fallback=None),
             password=config.get("REDIS", "PASSWORD", fallback=None),
+            ssl_ca_certs=os.path.join(DIR, "ca-bundle.crt"),
             decode_responses=True,
         )
     )

@@ -67,7 +67,11 @@ def get_module_info() -> ModuleInfo:
         name="Utilities",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",
         handlers=(
-            (r"/error", ZeroDivision if sys.flags.dev_mode else NotFound, {}),
+            (
+                r"/error",
+                ZeroDivision if sys.flags.dev_mode else NotFoundHandler,
+                {},
+            ),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
                 r"/@elastic/apm-rum@(.+)/dist/bundles"
@@ -255,7 +259,7 @@ class BaseRequestHandler(RequestHandler):
             period = getattr(
                 self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
             )
-            tokens = 1
+            tokens = 1 if self.request.method != "HEAD" else 0
         if self.redis is None:
             raise HTTPError(
                 503,
@@ -268,7 +272,7 @@ class BaseRequestHandler(RequestHandler):
             max_burst,
             count_per_period,
             period,
-            tokens if self.request.method != "HEAD" else 0,
+            tokens,
         )
         if result[0]:
             retry_after = result[3] + 1  # redis-cell stupidly rounds down
@@ -770,7 +774,7 @@ class APIRequestHandler(BaseRequestHandler):
         )
 
 
-class NotFound(HTMLRequestHandler):
+class NotFoundHandler(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
     def initialize(  # type: ignore

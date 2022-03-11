@@ -45,14 +45,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Install b3sum
+        run: cargo install b3sum
       - name: Hash files
         run: |
           mkdir -p public
           echo "Hash der Datei-Hashes:" > public/version.txt
-          sh -c "cd an_website && git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1" >> public/version.txt
+          sh -c "cd an_website && git ls-files "an_website/**" | xargs b3sum | b3sum | cut -d ' ' -f 1" >> public/version.txt
           echo >> public/version.txt
           echo "Datei-Hashes:" >> public/version.txt
-          sh -c "cd an_website && git ls-files | xargs sha1sum" >> public/version.txt
+          sh -c "cd an_website && git ls-files "an_website/**" | xargs b3sum" >> public/version.txt
       - name: Upload as Build Artifact
         uses: actions/upload-artifact@v3
         with:

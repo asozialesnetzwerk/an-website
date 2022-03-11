@@ -16,7 +16,7 @@ You need:
 - `./check.sh`
 
 ### How to run
-- `python -X dev -m an_website` (`-X dev` enables development mode)
+- `python -Xdev -m an_website` (`-Xdev` enables development mode)
 
 
 ## How to run (production)

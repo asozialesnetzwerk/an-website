@@ -24,7 +24,7 @@ import sys
 
 from tornado.web import HTTPError as HTTPEwwow
 
-from .. import DIR
+from .. import DIR as ROOT_DIR
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run, str_to_bool
 
@@ -79,14 +79,14 @@ class HostInfo(HTMLRequestHandler):
             return
         if "LOGO" not in self.SCREENFETCH_CACHE:
             self.SCREENFETCH_CACHE["LOGO"] = minify_ansi_art(
-                (await run(f"{DIR}/screenfetch", "-L"))[1].decode("utf-8")
+                (await run(f"{ROOT_DIR}/screenfetch", "-L"))[1].decode("utf-8")
             )
 
         await self.render(
             "ansi2html.html",
             ansi=[
                 self.SCREENFETCH_CACHE["LOGO"],
-                (await run(f"{DIR}/screenfetch", "-n"))[1].decode("utf-8"),
+                (await run(f"{ROOT_DIR}/screenfetch", "-n"))[1].decode("utf-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
