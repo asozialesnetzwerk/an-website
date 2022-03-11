@@ -12,12 +12,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Module that generates an image from a wrong quote."""
+
 from __future__ import annotations
 
 import io
 import logging
 import math
+import os
 import textwrap
+from typing import Any
 
 from jxlpy import (  # type: ignore  # noqa  # pylint: disable=unused-import
     JXLImagePlugin,
@@ -26,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
 from ..utils.utils import str_to_bool
-from . import DIR, QuoteReadyCheckRequestHandler, get_wrong_quote
+from . import DIR, QuoteReadyCheckHandler, get_wrong_quote
 
 logger = logging.getLogger(__name__)
 
@@ -34,31 +37,33 @@ AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
 TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
 FONT = ImageFont.truetype(
-    font=f"{DIR}/files/oswald.regular.ttf",
+    font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=50,
 )
 FONT_SMALLER = ImageFont.truetype(
-    font=f"{DIR}/files/oswald.regular.ttf",
+    font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=44,
 )
 HOST_NAME_FONT = ImageFont.truetype(
-    font=f"{DIR}/files/oswald.regular.ttf",
+    font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=23,
 )
 
 
 def load_png(file_name: str) -> Image.Image:
-    """Load a png into memory."""
-    img = Image.open(f"{DIR}/files/{file_name}.png", formats=("PNG",))
-    img_copy = img.copy()
-    img.close()
-    return img_copy
+    """Load a PNG image into memory."""
+    image = Image.open(
+        os.path.join(DIR, "files", f"{file_name}.png"), formats=("PNG",)
+    )
+    image_copy = image.copy()
+    image.close()
+    return image_copy
 
 
-BG_IMG = load_png("bg")
-IMAGE_WIDTH, IMAGE_HEIGHT = BG_IMG.size
-WITZIG_IMG = load_png("StempelWitzig")
-NICHT_WITZIG_IMG = load_png("StempelNichtWitzig")
+BACKGROUND_IMAGE = load_png("bg")
+IMAGE_WIDTH, IMAGE_HEIGHT = BACKGROUND_IMAGE.size
+WITZIG_IMAGE = load_png("StempelWitzig")
+NICHT_WITZIG_IMAGE = load_png("StempelNichtWitzig")
 
 
 def get_lines_and_max_height(
@@ -79,17 +84,17 @@ def get_lines_and_max_height(
     return lines, max(font.getsize(line)[1] for line in lines)
 
 
-def draw_text(
-    img: ImageDraw.ImageDraw,
+def draw_text(  # pylint: disable=too-many-arguments
+    image: ImageDraw.ImageDraw,
     text: str,
-    _x: int,
-    _y: int,
+    x: int,  # pylint: disable=invalid-name
+    y: int,  # pylint: disable=invalid-name
     font: ImageFont.FreeTypeFont,
     stroke_width: int = 0,
 ) -> None:
     """Draw a text on an image."""
-    img.text(
-        (_x, _y),
+    image.text(
+        (x, y),
         text,
         font=font,
         fill=TEXT_COLOR,
@@ -100,7 +105,7 @@ def draw_text(
 
 
 def draw_lines(  # pylint: disable=too-many-arguments
-    img: ImageDraw.ImageDraw,
+    image: ImageDraw.ImageDraw,
     lines: list[str],
     y_start: int,
     max_w: int,
@@ -113,10 +118,10 @@ def draw_lines(  # pylint: disable=too-many-arguments
     for line in lines:
         width = font.getsize(line)[0]
         draw_text(
-            img=img,
+            image=image,
             text=line,
-            _x=padding_left + math.ceil((max_w - width) / 2),
-            _y=y_start,
+            x=padding_left + math.ceil((max_w - width) / 2),
+            y=y_start,
             font=font,
             stroke_width=stroke_width,
         )
@@ -135,8 +140,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     font: ImageFont.FreeTypeFont = FONT,
 ) -> bytes:
     """Create an image with the given quote and author."""
-    img = BG_IMG.copy()
-    draw = ImageDraw.Draw(img, mode="RGB")
+    image = BACKGROUND_IMAGE.copy()
+    draw = ImageDraw.Draw(image, mode="RGB")
 
     # draw quote
     quote_str = f"»{quote}«"
@@ -203,16 +208,16 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         width, height = FONT_SMALLER.getsize(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(
-            img=draw,
+            image=draw,
             text=str(rating),
-            _x=25,
-            _y=y_rating,
+            x=25,
+            y=y_rating,
             font=FONT_SMALLER,  # always use same font for rating
             stroke_width=1,
         )
-        # draw rating img
-        icon = NICHT_WITZIG_IMG if rating < 0 else WITZIG_IMG
-        img.paste(
+        # draw rating image
+        icon = NICHT_WITZIG_IMAGE if rating < 0 else WITZIG_IMAGE
+        image.paste(
             icon,
             box=(
                 25 + 5 + width,
@@ -225,37 +230,36 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     if source:
         width, height = HOST_NAME_FONT.getsize(source)
         draw_text(
-            img=draw,
+            image=draw,
             text=source,
-            _x=IMAGE_WIDTH - 5 - width,
-            _y=IMAGE_HEIGHT - 5 - height,
+            x=IMAGE_WIDTH - 5 - width,
+            y=IMAGE_HEIGHT - 5 - height,
             font=HOST_NAME_FONT,
             stroke_width=0,
         )
 
-    io_buf = io.BytesIO()
-    kwargs = {
+    buffer = io.BytesIO()
+    kwargs: dict[str, Any] = {
         "format": file_type,
         "optimize": True,
         "save_all": False,
     }
     if file_type == "4-color-gif":
-        colors: list[tuple[int, tuple[int, int, int]]] = img.getcolors(  # type: ignore
-            9999
-        )
+        colors: list[tuple[int, tuple[int, int, int]]]
+        colors = image.getcolors()  # type: ignore[assignment]
         colors.sort(reverse=True)
-        _vals: list[int] = []
-        for _, _c in colors[:4]:
-            _vals.extend(_c)
-        kwargs.update(format="gif", palette=bytearray(_vals))
-    elif file_type == "webp":
+        values: list[int] = []
+        for _, color in colors[:4]:
+            values.extend(color)
+        kwargs.update(format="gif", palette=bytearray(values))
+    elif file_type == "jxl":
         kwargs.update(lossless=True)
     elif file_type == "tiff":
         kwargs.update(compression="zlib")
-    elif file_type == "jxl":
-        kwargs.update(lossless=True, effort=7)
-    img.save(io_buf, **kwargs)  # type: ignore
-    return io_buf.getvalue()
+    elif file_type == "webp":
+        kwargs.update(lossless=True)
+    image.save(buffer, **kwargs)
+    return buffer.getvalue()
 
 
 FILE_EXTENSIONS = {
@@ -274,8 +278,8 @@ FILE_EXTENSIONS = {
 }
 
 
-class QuoteAsImg(QuoteReadyCheckRequestHandler):
-    """Quote as img request handler."""
+class QuoteAsImage(QuoteReadyCheckHandler):
+    """Quote as image request handler."""
 
     RATELIMIT_GET_LIMIT = 15
 
@@ -284,9 +288,10 @@ class QuoteAsImg(QuoteReadyCheckRequestHandler):
         quote_id: str,
         author_id: str,
         file_extension: str = "png",
+        *,
         head: bool = False,
     ) -> None:
-        """Handle the GET request to this page and render the quote as img."""
+        """Handle the GET request to this page and render the quote as image."""
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
             raise HTTPError(
                 status_code=400,

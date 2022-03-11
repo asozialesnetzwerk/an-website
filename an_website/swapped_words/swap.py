@@ -11,10 +11,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Page that swaps words."""
+"""A page that swaps words."""
+
 from __future__ import annotations
 
 import base64
+import os
 
 from tornado.web import HTTPError
 
@@ -54,7 +56,7 @@ def get_module_info() -> ModuleInfo:
 # the max char count of the text to process
 MAX_CHAR_COUNT: int = 32768
 
-with open(f"{DIR}/config.sw", encoding="utf-8") as file:
+with open(os.path.join(DIR, "config.sw"), encoding="utf-8") as file:
     DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
 
 
@@ -132,7 +134,7 @@ class SwappedWords(HTMLRequestHandler):
             )
 
     def get(
-        self, head: bool = False  # pylint: disable=unused-argument
+        self, *, head: bool = False  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests to the swapped words page."""
         self.handle_text(
@@ -156,7 +158,7 @@ class SwappedWordsAPI(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
     async def get(
-        self, head: bool = False  # pylint: disable=unused-argument
+        self, *, head: bool = False  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests to the swapped words API."""
         text = self.get_argument("text", default=None, strip=True) or ""

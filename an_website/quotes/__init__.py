@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The quotes page of the website."""
+
 from __future__ import annotations
 
 import asyncio
@@ -611,7 +612,7 @@ async def create_wq_and_vote(
     return await wrong_quote.vote(vote, fast=True)
 
 
-class QuoteReadyCheckRequestHandler(HTMLRequestHandler):
+class QuoteReadyCheckHandler(HTMLRequestHandler):
     """Class that checks if quotes have been loaded."""
 
     async def check_ready(self) -> None:

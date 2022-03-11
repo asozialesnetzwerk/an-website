@@ -46,7 +46,7 @@ class QuotesInfoPage(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 30
 
-    async def get(self, id_str: str, head: bool = False) -> None:
+    async def get(self, id_str: str, *, head: bool = False) -> None:
         """Handle GET requests to the quote info page."""
         quote_id: int = int(id_str)
         quote = await get_quote_by_id(quote_id)
@@ -148,7 +148,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
         """Get the key to save the author info with Redis."""
         return f"{self.redis_prefix}:quote-author-info:{author_name}"
 
-    async def get(self, id_str: str, head: bool = False) -> None:
+    async def get(self, id_str: str, *, head: bool = False) -> None:
         """Handle GET requests to the author info page."""
         author_id: int = int(id_str)
         author = await get_author_by_id(author_id)

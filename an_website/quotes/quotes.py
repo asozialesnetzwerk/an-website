@@ -16,6 +16,7 @@ The quotes page of the website.
 
 It displays funny, but wrong, quotes.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -32,7 +33,7 @@ from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, hash_ip, str_to_bool
 from . import (
     WRONG_QUOTES_CACHE,
-    QuoteReadyCheckRequestHandler,
+    QuoteReadyCheckHandler,
     WrongQuote,
     create_wq_and_vote,
     get_authors,
@@ -41,7 +42,7 @@ from . import (
     get_wrong_quotes,
 )
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
-from .quotes_img import QuoteAsImg
+from .quotes_image import QuoteAsImage
 from .share_page import ShareQuote
 
 logger = logging.getLogger(__name__)
@@ -77,7 +78,7 @@ def get_module_info() -> ModuleInfo:
             ),
             (
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10}).([a-zA-Z]{3,4})",
-                QuoteAsImg,
+                QuoteAsImage,
             ),
             (  # redirect to the new URL (changed because of robots.txt)
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share",
@@ -134,7 +135,7 @@ SMART_RATING_FILTERS = (
 )
 
 
-class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
+class QuoteBaseHandler(QuoteReadyCheckHandler):
     """The base request handler for the quotes package."""
 
     TASK_REFERENCES: list[Task[Any]] = []
@@ -241,7 +242,7 @@ class QuoteBaseHandler(QuoteReadyCheckRequestHandler):
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
     """The main quote page that should render a random quote."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Render the main quote page, with a few links."""
         if head:
             return
@@ -281,7 +282,7 @@ class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
     IS_NOT_HTML = True
 
     async def get(  # pylint: disable=unused-argument
-        self, suffix: str = "", head: bool = False
+        self, suffix: str = "", *, head: bool = False
     ) -> None:
         """Redirect to a random funny quote."""
         quote_id, author_id = self.get_next_id(rating_filter="w")
@@ -305,7 +306,7 @@ class QuoteById(QuoteBaseHandler):
     RATELIMIT_POST_PERIOD = 30
 
     async def get(
-        self, quote_id: str, author_id: None | str = None, head: bool = False
+        self, quote_id: str, author_id: None | str = None, *, head: bool = False
     ) -> None:
         """Handle the GET request to this page and render the quote."""
         int_quote_id = int(quote_id)

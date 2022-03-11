@@ -155,7 +155,7 @@ AVAILABILITY_CHART = re.sub(
 class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request and render the page."""
         self.set_header("Cache-Control", "no-cache")
         if head:
@@ -177,7 +177,7 @@ class UptimeHandler(HTMLRequestHandler):
 class AvailabilityChartHandler(BaseRequestHandler):
     """The request handler for the availability chart."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         availability = self.get_argument("a", default=None)
         if not availability:

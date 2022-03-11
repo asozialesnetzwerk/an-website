@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for an_website.main"""  # noqa: D400
+"""The tests for an_website.main."""
 
 from __future__ import annotations
 

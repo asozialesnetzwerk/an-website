@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The main page of the website."""
+
 from __future__ import annotations
 
 from ..quotes.quote_of_the_day import QuoteOfTheDayBaseHandler
@@ -36,7 +37,7 @@ class MainPage(QuoteOfTheDayBaseHandler):
     async def check_ready(self) -> None:
         pass
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET requests and display the main page."""
         if head:
             return

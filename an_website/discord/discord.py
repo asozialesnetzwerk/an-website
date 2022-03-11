@@ -138,7 +138,7 @@ class ANDiscord(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 10
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Get the Discord invite."""
         invite = (await get_invite_with_cache(GUILD_ID))[0]
         if head:
@@ -157,7 +157,9 @@ class DiscordAPI(APIRequestHandler):
     RATELIMIT_GET_LIMIT = 5
     RATELIMIT_GET_COUNT_PER_PERIOD = 10  # 10 requests per minute
 
-    async def get(self, guild_id: str = GUILD_ID, head: bool = False) -> None:
+    async def get(
+        self, guild_id: str = GUILD_ID, *, head: bool = False
+    ) -> None:
         """Get the Discord invite and render it as JSON."""
         if head:
             return

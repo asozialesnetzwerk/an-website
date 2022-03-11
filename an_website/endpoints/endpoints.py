@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Show a list of all API endpoints."""
+
 from __future__ import annotations
 
 import orjson as json
@@ -41,7 +42,7 @@ def get_module_info() -> ModuleInfo:
 class Endpoints(HTMLRequestHandler):
     """Endpoint page request handler."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""
         if head:
             return
@@ -88,7 +89,9 @@ class Endpoints(HTMLRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(
+        self, *, head: bool = False  # pylint: disable=unused-argument
+    ) -> None:
         """Handle a GET request."""
         return await self.finish(
             json.dumps(self.get_endpoints(), option=ORJSON_OPTIONS)

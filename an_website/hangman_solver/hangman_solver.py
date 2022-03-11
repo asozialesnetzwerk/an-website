@@ -271,7 +271,7 @@ class HangmanSolver(HTMLRequestHandler):
             invalid=invalid,
         )
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request and render the page."""
         if head:
             return
@@ -285,7 +285,7 @@ class HangmanSolverAPI(HangmanSolver, APIRequestHandler):
     RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request and write the Hangman object as JSON."""
         if head:
             return

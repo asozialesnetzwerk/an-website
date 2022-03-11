@@ -1,17 +1,20 @@
 __pycache__
-venv
-logs
-config.ini
+/an_website.egg-info
+/build
+/dist
+
+/venv
+/logs
+/config.ini
 
 # Unit test / coverage reports
-.coverage
+/.coverage
 
-# nano backup files:
-*.save*
+# nano backup files
 *~
 
 # Jetbrains
-.idea
+/.idea
 
 # hangman-solver word lists
 full_wordlist.txt

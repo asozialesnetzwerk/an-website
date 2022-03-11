@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Create page to create new wrong quotes."""
+
 from __future__ import annotations
 
 import logging
@@ -25,7 +26,7 @@ from . import (
     QUOTES_CACHE,
     Author,
     Quote,
-    QuoteReadyCheckRequestHandler,
+    QuoteReadyCheckHandler,
     fix_quote_str,
     make_api_request,
     parse_author,
@@ -39,7 +40,7 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/erstellen", CreatePage),
+            (r"/zitate/erstellen", CreatePage1),
             (r"/zitate/create-wrong-quote", CreatePage2),
         ),
         name="Falsche-Zitate-Ersteller",
@@ -185,13 +186,13 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
     return quotes
 
 
-class CreatePage(QuoteReadyCheckRequestHandler):
+class CreatePage1(QuoteReadyCheckHandler):
     """The request handler for the create page."""
 
     RATELIMIT_POST_LIMIT = 5
     RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the create page."""
         if head:
             return
@@ -262,7 +263,7 @@ class CreatePage(QuoteReadyCheckRequestHandler):
         )
 
 
-class CreatePage2(QuoteReadyCheckRequestHandler):
+class CreatePage2(QuoteReadyCheckHandler):
     """The request handler for the second part of the create page."""
 
     RATELIMIT_POST_LIMIT = 5

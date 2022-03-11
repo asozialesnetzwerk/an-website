@@ -26,15 +26,15 @@ black --check --diff --color . || echo 'Run "black ." to reformat'
 
 # check types
 echo mypy:
-mypy --pretty -p an_website -p tests
+mypy --pretty -p an_website -p test
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D100,D102 an_website tests
+flake8 --extend-ignore=D100,D102 an_website test
 echo Pylint:
-pylint --output-format=colorized an_website tests
+pylint --output-format=colorized an_website test
 
 # run tests
 echo Tests:
-pytest --cov-report= --cov=an_website tests
+pytest --cov-report= --cov=an_website test
 echo 'Run "coverage report" to show the coverage'

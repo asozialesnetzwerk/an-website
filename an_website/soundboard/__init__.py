@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Create the required stuff for the soundboard from the info in info.json."""
+
 from __future__ import annotations
 
 import email.utils
@@ -28,8 +29,8 @@ from ..utils.utils import hash_file, name_to_id, replace_umlauts
 
 DIR = os.path.dirname(__file__)
 
-with open(f"{DIR}/info.json", encoding="utf-8") as f:
-    info = json.loads(f.read())
+with open(os.path.join(DIR, "info.json"), encoding="utf-8") as file:
+    info = json.loads(file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
 person_dict: dict[str, str] = info["personen"]
@@ -167,7 +168,7 @@ class SoundInfo(Info):
         query: None | str = None,
     ) -> str:
         """Parse the info to a list element with an audio element."""
-        file = self.get_file_name()
+        file = self.get_file_name()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"/files/{file}.mp3"
         file_url = f"/soundboard{path}?v={hash_file(DIR + path)[:8]}"

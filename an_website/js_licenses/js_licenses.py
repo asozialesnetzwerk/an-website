@@ -57,7 +57,7 @@ def get_js_file_names() -> list[str]:
 class JSLicenses(HTMLRequestHandler):
     """The request handler for the JS-licenses page."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET requests to the JS-licenses page."""
         if head:
             return

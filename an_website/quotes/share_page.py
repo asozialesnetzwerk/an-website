@@ -11,19 +11,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Share page to share quotes with multiple services."""
+"""Share page to share quotes on multiple services."""
+
 from __future__ import annotations
 
 from urllib.parse import quote
 
-from . import QuoteReadyCheckRequestHandler, get_wrong_quote
+from . import QuoteReadyCheckHandler, get_wrong_quote
 
 
-class ShareQuote(QuoteReadyCheckRequestHandler):
+class ShareQuote(QuoteReadyCheckHandler):
     """Request handler for the share page."""
 
     async def get(
-        self, quote_id: str, author_id: str, head: bool = False
+        self, quote_id: str, author_id: str, *, head: bool = False
     ) -> None:
         """Handle GET requests to the share page."""
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))

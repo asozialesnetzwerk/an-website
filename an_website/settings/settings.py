@@ -65,7 +65,7 @@ class SettingsPage(HTMLRequestHandler):
             **kwargs,
         )
 
-    def get(self, head: bool = False) -> None:
+    def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the settings page."""
         if head:
             return

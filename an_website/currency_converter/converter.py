@@ -199,7 +199,7 @@ async def get_value_dict(
 class CurrencyConverter(HTMLRequestHandler):
     """Request handler for the currency converter page."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request and display the page."""
         value_dict = await self.create_value_dict()
         if value_dict is None:
@@ -267,7 +267,7 @@ class CurrencyConverter(HTMLRequestHandler):
 class CurrencyConverterAPI(CurrencyConverter, APIRequestHandler):
     """Request handler for the currency converter JSON API."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """
         Handle the GET request and return the value dict as JSON.
 

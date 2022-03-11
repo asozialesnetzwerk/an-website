@@ -16,9 +16,11 @@ The host info page of the website.
 
 Only to inform, not to brag.
 """
+
 from __future__ import annotations
 
 import logging
+import os
 import re
 import sys
 
@@ -29,6 +31,8 @@ from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run, str_to_bool
 
 logger = logging.getLogger(__name__)
+
+SCREENFETCH_PATH = os.path.join(ROOT_DIR, "screenfetch")
 
 
 def get_module_info() -> ModuleInfo:
@@ -69,7 +73,7 @@ class HostInfo(HTMLRequestHandler):
 
     SCREENFETCH_CACHE: dict[str, str] = {}
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """
         Handle the GET requests to the host info page.
 
@@ -79,14 +83,14 @@ class HostInfo(HTMLRequestHandler):
             return
         if "LOGO" not in self.SCREENFETCH_CACHE:
             self.SCREENFETCH_CACHE["LOGO"] = minify_ansi_art(
-                (await run(f"{ROOT_DIR}/screenfetch", "-L"))[1].decode("utf-8")
+                (await run(SCREENFETCH_PATH, "-L"))[1].decode("utf-8")
             )
 
         await self.render(
             "ansi2html.html",
             ansi=[
                 self.SCREENFETCH_CACHE["LOGO"],
-                (await run(f"{ROOT_DIR}/screenfetch", "-n"))[1].decode("utf-8"),
+                (await run(SCREENFETCH_PATH, "-n"))[1].decode("utf-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
@@ -98,7 +102,7 @@ class UwUHostInfo(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 5
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """
         Handwe the GET wequests to coowew the host info page.
 

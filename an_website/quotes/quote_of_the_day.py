@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Get a random quote for a given day."""
+
 from __future__ import annotations
 
 import dataclasses
@@ -26,7 +27,7 @@ from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     WRONG_QUOTES_CACHE,
-    QuoteReadyCheckRequestHandler,
+    QuoteReadyCheckHandler,
     WrongQuote,
     get_wrong_quotes,
 )
@@ -117,7 +118,7 @@ class QuoteOfTheDayData:
         }
 
 
-class QuoteOfTheDayBaseHandler(QuoteReadyCheckRequestHandler):
+class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
     """The base request handler for the quote of the day."""
 
     def get_redis_used_key(self, wq_id: str) -> str:
@@ -200,7 +201,7 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 
     IS_NOT_HTML = True
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         self.set_header("Content-Type", "application/rss+xml")
         if head:

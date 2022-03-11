@@ -31,7 +31,7 @@ PARENT_DIR = os.path.dirname(DIR)
 
 # add parent dir to sys.path
 # this makes importing an_website possible
-sys.path.append(f"{PARENT_DIR}")
+sys.path.append(PARENT_DIR)
 
 from an_website import main  # noqa  # pylint: disable=wrong-import-position
 

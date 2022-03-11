@@ -16,8 +16,10 @@ The base request handlers used for other modules.
 
 This should only contain request handlers and the get_module_info function.
 """
+
 from __future__ import annotations
 
+import inspect
 import logging
 import random
 import re
@@ -214,7 +216,12 @@ class BaseRequestHandler(RequestHandler):
         """Handle HEAD requests."""
         if self.get.__module__ == "tornado.web":
             raise HTTPError(405)
-        if not self.get.__annotations__.get("head") == "bool":
+        signature = inspect.signature(self.get)
+        if not (
+            "head" in signature.parameters
+            and signature.parameters["head"].kind
+            == inspect.Parameter.KEYWORD_ONLY
+        ):
             raise HTTPError(501)
         kwargs["head"] = True
         return self.get(*args, **kwargs)

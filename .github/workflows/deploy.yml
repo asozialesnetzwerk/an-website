@@ -3,7 +3,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "tests/**"
+      - "test/**"
       - "an_website/**"
       - ".github/workflows/deploy.yml"
       - "requirements.txt"
@@ -32,7 +32,7 @@ jobs:
       - name: Install pytest, coverage and html5lib (needed for the tests)
         run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run pytest
-        run: pytest --cov=an_website tests
+        run: pytest --cov=an_website test
       - name: Upload coverage as Build Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -51,10 +51,10 @@ jobs:
         run: |
           mkdir -p public
           echo "Hash der Datei-Hashes:" > public/version.txt
-          sh -c "cd an_website && git ls-files "an_website/**" | xargs b3sum | b3sum | cut -d ' ' -f 1" >> public/version.txt
+          sh -c "cd an_website && git ls-files | xargs b3sum | b3sum | cut -d ' ' -f 1" >> public/version.txt
           echo >> public/version.txt
           echo "Datei-Hashes:" >> public/version.txt
-          sh -c "cd an_website && git ls-files "an_website/**" | xargs b3sum" >> public/version.txt
+          sh -c "cd an_website && git ls-files | xargs b3sum" >> public/version.txt
       - name: Upload as Build Artifact
         uses: actions/upload-artifact@v3
         with:

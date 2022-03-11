@@ -182,7 +182,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             f"{von_name} aus den Känguru-Chroniken"
         )
 
-    async def get(self, path: str = "/", head: bool = False) -> None:
+    async def get(self, path: str = "/", *, head: bool = False) -> None:
         """Handle the GET request and generate the page content."""
         if path is not None:
             path = path.lower()
@@ -246,7 +246,7 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
 
     IS_NOT_HTML = True
 
-    async def get(self, path: str = "/", head: bool = False) -> None:
+    async def get(self, path: str = "/", *, head: bool = False) -> None:
         """Handle the GET request and generate the feed content."""
         rss_str = get_rss_str(
             path, f"{self.request.protocol}://{self.request.host}"

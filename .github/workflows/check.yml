@@ -2,7 +2,7 @@ name: Check stuff
 on:
   push:
     paths:
-      - "tests/**"
+      - "test/**"
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
@@ -13,7 +13,7 @@ on:
       - "minify_css.py"
   pull_request:
     paths:
-      - "tests/**"
+      - "test/**"
       - "an_website/**"
       - ".github/workflows/check.yml"
       - "requirements.txt"
@@ -79,7 +79,7 @@ jobs:
       - name: Install types in check-requrements.txt
         run: grep "^types-" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run mypy
-        run: mypy --no-warn-unused-ignores --no-warn-redundant-casts -p an_website -p tests
+        run: mypy --no-warn-unused-ignores --no-warn-redundant-casts -p an_website -p test
 
   flake8:
     name: Flake8
@@ -98,7 +98,7 @@ jobs:
       - name: Install Flake8 + stuff required for checking the tests
         run: grep -E "^(flake8|pep8-naming|pytest|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Flake8
-        run: flake8 --extend-ignore=D100,D102 an_website tests
+        run: flake8 --extend-ignore=D100,D102 an_website test
 
   pylint:
     name: Pylint
@@ -123,4 +123,4 @@ jobs:
       - name: Install Pylint + stuff required for checking the tests
         run: grep -E "^(pylint|pytest|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
       - name: Run Pylint
-        run: pylint -d fixme an_website tests
+        run: pylint -d fixme an_website test

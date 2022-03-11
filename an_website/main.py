@@ -51,7 +51,7 @@ IGNORED_MODULES = [
     "utils.utils",
     "utils.static_file_handling",
     "swapped_words.sw_config_file",
-    "quotes.quotes_img",
+    "quotes.quotes_image",
     "quotes.share_page",
     "backdoor.backdoor_client",
 ]
@@ -72,11 +72,11 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         if (
             potential_module.startswith("_")
             or f"{potential_module}.*" in IGNORED_MODULES
-            or not os.path.isdir(f"{DIR}/{potential_module}")
+            or not os.path.isdir(os.path.join(DIR, potential_module))
         ):
             continue
 
-        for potential_file in os.listdir(f"{DIR}/{potential_module}"):
+        for potential_file in os.listdir(os.path.join(DIR, potential_module)):
             module_name = f"{potential_module}.{potential_file[:-3]}"
             if (
                 not potential_file.endswith(".py")
@@ -92,9 +92,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             )
             if "get_module_info" not in dir(module):
                 errors.append(
-                    f"{DIR}/{potential_module}/{potential_file} has no "
-                    f"'get_module_info' method. Please add the method or add "
-                    f"'{potential_module}.*' or '{module_name}' to "
+                    f"{os.path.join(DIR, potential_module, potential_file)} "
+                    f"has no 'get_module_info' method. Please add the method "
+                    f"or add '{potential_module}.*' or '{module_name}' to "
                     f"IGNORED_MODULES."
                 )
                 continue
@@ -124,8 +124,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 continue
 
             errors.append(
-                f"'get_module_info' in {DIR}/{potential_module}"
-                f"/{potential_file} does not return ModuleInfo. "
+                f"'get_module_info' in "
+                f"{os.path.join(DIR, potential_module, potential_file)} "
+                f"does not return ModuleInfo. "
                 f"Please add/fix the return type or add "
                 f"'{potential_module}.*' or '{module_name}' to "
                 f"IGNORED_MODULES."
@@ -477,7 +478,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
             get = elasticsearch.indices.get_index_template
             put = elasticsearch.indices.put_index_template
 
-        base_path = Path(f"{DIR}/elasticsearch/{what}")
+        base_path = Path(os.path.join(DIR, "elasticsearch", what))
 
         for path in base_path.rglob("*.json"):
 
@@ -534,7 +535,6 @@ async def setup_redis(app: Application) -> None:
         "retry_on_timeout": config.getboolean(
             "REDIS", "RETRY_ON_TIMEOUT", fallback=False
         ),
-        "health_check_interval": 1,
         "decode_responses": True,
         "client_name": NAME,
     }

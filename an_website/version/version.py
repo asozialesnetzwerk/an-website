@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The version page of the website."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -72,7 +73,7 @@ class VersionAPI(APIRequestHandler):
 class Version(HTMLRequestHandler):
     """The Tornado request handler for the version page."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the version page."""
         if head:
             return

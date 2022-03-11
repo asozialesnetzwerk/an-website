@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """A page with a list of services that are cool and hosted by us."""
+
 from __future__ import annotations
 
 import dataclasses
@@ -63,7 +64,7 @@ class Service:
 SERVICES: tuple[Service, ...] = (
     Service(
         "Minceraft-Server",
-        "Der Survival-Minceraft-Server des Asozialen Netzwerkes funktioniert "
+        "Der Survival-Minceraft-Server des Asozialen Netzwerks funktioniert "
         "auch ohne einen Minceraft-Account und hat dafür eine Integration mit "
         "ely.by, damit auch Spieler, die ihren Minceraft-Account nicht "
         "verraten möchten, einen eigenen Skin nutzen können.",
@@ -75,7 +76,7 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "SuperTuxKart-Server",
-        "Der SuperTuxKart-Server des Asozialen Netzwerkes ist durchgehend "
+        "Der SuperTuxKart-Server des Asozialen Netzwerks ist durchgehend "
         "online.",
         {
             "Name": "Das Asoziale Netzwerk",
@@ -85,7 +86,7 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "Matrix-Heimserver",
-        "Der Matrix-Heimserver des Asozialen Netzwerkes ist zuverlässig und "
+        "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und "
         "nutzt im Gegensatz zu den meisten anderen Servern Dendrite anstatt "
         "Synapse. Die Erstellung eines Accounts ist 100 % kostenlos und ohne "
         "E-Mail-Adresse oder Telefonnummer möglich.",
@@ -96,7 +97,7 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "Syncplay-Server",
-        "Mit dem Syncplay-Server des Asozialen Netzwerkes kann man Online "
+        "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
         "zusammen Sachen gucken.",
         {
             "Domain": "syncplay.asozial.org:8999",
@@ -114,7 +115,7 @@ del SERVICES
 class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
 
-    def get(self, head: bool = False) -> None:
+    def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the service list page."""
         if head:
             return

@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The ping pong API of the website."""
+
 from __future__ import annotations
 
 from ..utils.request_handler import APIRequestHandler
@@ -32,7 +33,7 @@ def get_module_info() -> ModuleInfo:
 class Ping(APIRequestHandler):
     """The Tornado request handler for the ping pong API."""
 
-    async def get(self, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the ping pong API."""
         self.set_header("Content-Type", "text/plain; charset=utf-8")
         if head:

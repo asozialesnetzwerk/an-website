@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The pages that helps solving hangman puzzles."""
+
 from __future__ import annotations
 
 import os
@@ -22,7 +23,7 @@ import orjson as json
 DIR = os.path.dirname(__file__)
 
 
-BASE_WORD_DIR = f"{DIR}/words"
+BASE_WORD_DIR = os.path.join(DIR, "words")
 
 
 def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
@@ -40,7 +41,7 @@ def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
             # add the language found in the word dir to LANGUAGES
             languages.add(folder[6:])  # without: "words_"
             # the dir with the words in the current lang
-            words_dir = f"{BASE_WORD_DIR}/{folder}"
+            words_dir = os.path.join(BASE_WORD_DIR, folder)
             for file_name in os.listdir(words_dir):
                 # ignore python files
                 if not file_name.endswith(".py"):
@@ -59,13 +60,17 @@ FILE_NAMES, LANGUAGES = get_file_names_and_languages()
 @lru_cache(maxsize=10)
 def get_words(file_name: str) -> frozenset[str]:
     """Get the words with the file_name and return them."""
-    with open(f"{BASE_WORD_DIR}/{file_name}.txt", encoding="utf-8") as file:
+    with open(
+        os.path.join(BASE_WORD_DIR, f"{file_name}.txt"), encoding="utf-8"
+    ) as file:
         return frozenset(file.read().splitlines())
 
 
 @lru_cache(maxsize=10)
 def get_letters(file_name: str) -> dict[str, int]:
     """Get the letters dict with the file_name and return it."""
-    with open(f"{BASE_WORD_DIR}/{file_name}.json", encoding="utf-8") as file:
+    with open(
+        os.path.join(BASE_WORD_DIR, f"{file_name}.json"), encoding="utf-8"
+    ) as file:
         # we know the files, so we know the type
         return json.loads(file.read())  # type: ignore
