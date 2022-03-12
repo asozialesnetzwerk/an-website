@@ -15,13 +15,19 @@
 
 from __future__ import annotations
 
-import asyncio
 import configparser
 import re
+from collections.abc import Awaitable, Callable
+
+import tornado.httpclient
 
 from an_website import main, patches
 from an_website.utils.request_handler import BaseRequestHandler
 from an_website.utils.utils import ModuleInfo
+
+from . import app, assert_valid_redirect, fetch
+
+assert fetch and app
 
 
 async def get_module_infos() -> tuple[ModuleInfo, ...]:
@@ -32,12 +38,12 @@ async def get_module_infos() -> tuple[ModuleInfo, ...]:
     return module_infos
 
 
-def test_parsing_module_infos() -> None:
+# pylint: disable=redefined-outer-name
+async def test_parsing_module_infos(
+    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+) -> None:
     """Tests about the module infos in main."""
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    module_infos = loop.run_until_complete(get_module_infos())
-    loop.close()
+    module_infos = await get_module_infos()
 
     # should get more than one module_info
     assert len(module_infos) > 0
@@ -59,6 +65,8 @@ def test_parsing_module_infos() -> None:
             for alias in module_info.aliases:
                 assert alias.startswith("/")
                 assert not alias.endswith("/")
+                if module_info.path != "/chat":
+                    assert_valid_redirect(await fetch(alias), module_info.path)
 
             # check if at least one handler matches the path
             handler_matches_path = False
@@ -83,7 +91,6 @@ def test_parsing_module_infos() -> None:
 def test_making_app() -> None:
     """Run the app making functions, to make sure they don't fail."""
     patches.apply()
-
     app = main.make_app()
 
     # read the example config, because it is always the same and should always work
@@ -97,4 +104,5 @@ def test_making_app() -> None:
 
 
 if __name__ == "__main__":
-    test_parsing_module_infos()
+    # test_parsing_module_infos()
+    test_making_app()
