@@ -46,6 +46,10 @@ function dynLoadOnData(data, onpopstate) {
         w.location.reload();
         return
     }
+
+    //d.onkeyup = () => {};
+    d.onkeydown = () => {};
+
     bodyDiv.innerHTML = data["body"];
     if (data["css"]) {
         const style = d.createElement("style");

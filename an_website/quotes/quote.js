@@ -24,7 +24,7 @@ function startQuotes(currId, nextId) {
         + `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`
     );
 
-    d.addEventListener("keydown", function (event) {
+    d.onkeydown = (event) => {
         if (event.code === `Key${keys[0]}`) {
             upvoteButton.click();
         } else if (event.code === `Key${keys[1]}`) {
@@ -34,7 +34,7 @@ function startQuotes(currId, nextId) {
         } else if (event.code === `Key${keys[3]}`) {
             nextButton.click();
         }
-    });
+    };
 
     const shareButton = elById("share");
     const downloadButton = elById("download");

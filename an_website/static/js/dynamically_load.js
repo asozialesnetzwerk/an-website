@@ -7,7 +7,7 @@ const url=data["url"];if(!url){error("No URL in data ",data);return;}
 log("Handling data",data);if(!onpopstate){if(lastLoaded.length===1&&lastLoaded[0]===url){log("Data url is the same as last loaded, ignoring");return;}
 history.pushState({"data":data,"url":url,"stateType":"dynLoad"},data["title"],url);}
 if(!data["body"]){w.location.reload();return}
-bodyDiv.innerHTML=data["body"];if(data["css"]){const style=d.createElement("style");style.innerHTML=data["css"];bodyDiv.appendChild(style)}
+d.onkeydown=()=>{};bodyDiv.innerHTML=data["body"];if(data["css"]){const style=d.createElement("style");style.innerHTML=data["css"];bodyDiv.appendChild(style)}
 if(data["stylesheets"]){for(const scriptURL of data["stylesheets"]){const link=d.createElement("link");link.rel="stylesheet";link.type="text/css"
 link.href=scriptURL;bodyDiv.appendChild(link);}}
 if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=d.createElement("script");if(script["src"])scriptElement.src=script["src"];if(script["script"])scriptElement.innerHTML=script["script"];if(script["onload"])scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
