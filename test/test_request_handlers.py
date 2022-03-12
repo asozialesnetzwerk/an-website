@@ -151,7 +151,7 @@ async def test_request_handlers(
     assert_valid_json_response(await fetch("/soundboard/suche?as_json=sure"))
 
     response = await fetch("/host-info/uwu")
-    assert response.code in {200, 501}
+    assert response.code in {200, 503}
     assert_valid_html_response(response, response.code)
 
     assert_valid_rss_response(await fetch("/soundboard/feed"))
