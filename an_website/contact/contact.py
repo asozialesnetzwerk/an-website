@@ -202,13 +202,13 @@ class ContactPage(HTMLRequestHandler):
             send_message,
             message=message,
             from_address=from_address,
-            server=self.settings.get("CONTACT_SMTP_SERVER"),
+            server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
-            recipients=self.settings.get("CONTACT_RECIPIENTS"),
+            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore
             username=self.settings.get("CONTACT_SENDER_USERNAME"),
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
-            port=self.settings.get("CONTACT_SMTP_PORT"),
+            port=self.settings.get("CONTACT_SMTP_PORT"),  # type: ignore
         )
 
         await self.render("pages/empty.html", text="Erfolgreich gesendet.")

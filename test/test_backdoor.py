@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import asyncio
+import socket
 from collections.abc import Callable
 from io import StringIO
 from multiprocessing import Pipe, Process, connection
@@ -99,14 +100,16 @@ def get_error_assertion(error_line: str) -> Callable[[str], bool]:
     )
 
 
-async def test_backdoor(
-    http_server_client: tornado.httpclient.AsyncHTTPClient,
+async def test_backdoor(  # pylint: disable=unused-argument
+    http_client: tornado.httpclient.AsyncHTTPClient,
+    http_server: Any,
+    http_server_port: tuple[socket.socket, int],
 ) -> None:
     """Test the backdoor client."""
     assert bc.E == ...
     assert bc.lisp_always_active() in {True, False}
 
-    url = http_server_client.get_url("")  # type: ignore
+    url = f"http://127.0.0.1:{http_server_port[1]}"
 
     await assert_run_and_print(url, "1 & 1", "Result:\n1")
     await assert_run_and_print(url, "(+ 1 1)", "Result:\n2", True)

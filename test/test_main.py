@@ -26,7 +26,10 @@ from an_website.utils.utils import ModuleInfo
 
 async def get_module_infos() -> tuple[ModuleInfo, ...]:
     """Wrap main.get_module_infos in an async function."""
-    return main.get_module_infos()  # type: ignore[return-value]
+    module_infos = main.get_module_infos()
+    assert not isinstance(module_infos, str)
+    assert isinstance(module_infos, tuple)
+    return module_infos
 
 
 def test_parsing_module_infos() -> None:

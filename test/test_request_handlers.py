@@ -23,6 +23,8 @@ from . import (
     app,
     assert_valid_html_response,
     assert_valid_json_response,
+    assert_valid_redirect,
+    assert_valid_response,
     assert_valid_rss_response,
     fetch,
 )
@@ -54,6 +56,32 @@ async def test_json_apis(
         assert_valid_json_response(await fetch(api))
 
 
+async def test_not_found_handler(
+    # pylint: disable=redefined-outer-name
+    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+) -> None:
+    """Check if the not found handler works."""
+    assert_valid_html_response(await fetch("/qwertzuiop"), 404)
+
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("serwizes"), "/services")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("services/"), "/services")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("services///////"), "/services")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("servces?x=y"), "/services?x=y")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("service?x=y"), "/services?x=y")
+    )
+
+    assert_valid_redirect(await fetch("a?x=y"), "/?x=y")
+
+
 async def test_request_handlers(
     # pylint: disable=redefined-outer-name, too-many-statements
     fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
@@ -75,14 +103,14 @@ async def test_request_handlers(
     assert_valid_html_response(response)
     assert b"https://example.org" in response.body
 
-    response = await fetch("/robots.txt")
-    assert response.code == 200
-    response = await fetch("/favicon.ico")
-    assert response.code == 200
-    response = await fetch("/static/robots.txt")
-    assert response.code == 200
-    response = await fetch("/static/favicon.ico")
-    assert response.code == 200
+    assert_valid_response(await fetch("/robots.txt"), "text/plain")
+    assert_valid_response(await fetch("/static/robots.txt"), "text/plain")
+    assert_valid_response(
+        await fetch("/favicon.ico"), "image/vnd.microsoft.icon"
+    )
+    assert_valid_response(
+        await fetch("/static/favicon.ico"), "image/vnd.microsoft.icon"
+    )
 
     assert_valid_html_response(await fetch("/betriebszeit"))
     assert_valid_html_response(await fetch("/version"))
@@ -103,9 +131,28 @@ async def test_request_handlers(
     assert_valid_html_response(await fetch("/soundboard/personen"))
     assert_valid_html_response(await fetch("/soundboard/suche"))
 
-    await fetch("/host-info/uwu")
+    assert_valid_json_response(await fetch("/betriebszeit?as_json=sure"))
+    assert_valid_json_response(await fetch("/version?as_json=sure"))
+    assert_valid_json_response(await fetch("/suche?as_json=sure"))
+    assert_valid_json_response(await fetch("/discord?as_json=sure"))
+    assert_valid_json_response(await fetch("/kaenguru-comics?as_json=sure"))
+    assert_valid_json_response(await fetch("/hangman-loeser?as_json=sure"))
+    assert_valid_json_response(await fetch("/wortspiel-helfer?as_json=sure"))
+    assert_valid_json_response(await fetch("/services?as_json=sure"))
+    assert_valid_json_response(await fetch("/vertauschte-woerter?as_json=sure"))
+    assert_valid_json_response(await fetch("/waehrungs-rechner?as_json=sure"))
+    assert_valid_json_response(await fetch("/host-info?as_json=sure"))
+    assert_valid_json_response(await fetch("/einstellungen?as_json=sure"))
+    assert_valid_json_response(await fetch("/wiki?as_json=sure"))
+    assert_valid_json_response(await fetch("/js-lizenzen?as_json=sure"))
+    assert_valid_json_response(await fetch("/endpunkte?as_json=sure"))
+    assert_valid_json_response(await fetch("/soundboard?as_json=sure"))
+    assert_valid_json_response(await fetch("/soundboard/personen?as_json=sure"))
+    assert_valid_json_response(await fetch("/soundboard/suche?as_json=sure"))
+
+    response = await fetch("/host-info/uwu")
     assert response.code in {200, 501}
-    # assert_valid_html_response(response, response.code)
+    assert_valid_html_response(response, response.code)
 
     assert_valid_rss_response(await fetch("/soundboard/feed"))
     assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
@@ -115,16 +162,18 @@ async def test_request_handlers(
     assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), 404)
 
     assert_valid_json_response(await fetch("/api/restart"), 401)
-    response = await fetch("/api/backdoor/eval")
-    assert response.code == 401  # Unauthorized
-    response = await fetch("/api/backdoor/exec")
-    assert response.code == 401  # Unauthorized
+    assert_valid_response(
+        await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 401
+    )
+    assert_valid_response(
+        await fetch("/api/backdoor/exec"), "application/vnd.python.pickle", 401
+    )
 
-    response = await fetch("/api/ping")
-    assert response.code == 200
+    response = assert_valid_response(
+        await fetch("/api/ping"), "text/plain; charset=utf-8"
+    )
     assert response.body.decode() == "🏓"
 
     for code in range(200, 599):
         if code not in (204, 304):
             assert_valid_html_response(await fetch(f"/{code}.html"), code)
-    assert_valid_html_response(await fetch("/qwertzuiop"), 404)

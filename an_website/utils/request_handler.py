@@ -579,7 +579,7 @@ class BaseRequestHandler(RequestHandler):
     def geoip(
         self,
         ip: None | str = None,  # pylint: disable=invalid-name
-        database: str = geoip.__defaults__[0],  # type: ignore[attr-defined]
+        database: str = geoip.__defaults__[0],  # type: ignore
     ) -> Coroutine[Any, Any, None | dict[str, Any]]:
         """Get GeoIP information."""
         if not ip:
@@ -770,6 +770,8 @@ class APIRequestHandler(BaseRequestHandler):
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
+        if sys.flags.dev_mode:
+            self.set_header("X-Dev-Mode", bool_to_str(True))
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""

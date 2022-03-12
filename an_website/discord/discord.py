@@ -54,12 +54,9 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-HTTP_CLIENT = AsyncHTTPClient()
-
-
 async def url_returns_200(url: str) -> bool:
     """Check whether a URL returns a status code of 200."""
-    response = await HTTP_CLIENT.fetch(url, raise_error=False)
+    response = await AsyncHTTPClient().fetch(url, raise_error=False)
     return response.code == 200
 
 
@@ -76,7 +73,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
 
     # try getting the invite from the widget
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
-    response = await HTTP_CLIENT.fetch(url, raise_error=False)
+    response = await AsyncHTTPClient().fetch(url, raise_error=False)
     if response.code == 200:
         response_json = json.loads(response.body)
         invite = response_json["instant_invite"]
@@ -86,7 +83,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
 
     # try getting the invite from DISBOARD
     url = f"https://disboard.org/site/get-invite/{guild_id}"
-    response = await HTTP_CLIENT.fetch(url, raise_error=False)
+    response = await AsyncHTTPClient().fetch(url, raise_error=False)
     if response.code == 200:
         return (
             json.loads(response.body),

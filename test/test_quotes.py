@@ -15,15 +15,23 @@
 
 from __future__ import annotations
 
-import tornado.simple_httpclient
-import tornado.web
+from collections.abc import Awaitable, Callable
+
+import tornado.httpclient
 
 import an_website.quotes.quotes as main_page
 from an_website import quotes
 
-from . import app, assert_valid_html_response, assert_valid_json_response
+from . import (
+    app,
+    assert_valid_html_response,
+    assert_valid_json_response,
+    assert_valid_redirect,
+    assert_valid_response,
+    fetch,
+)
 
-assert app
+assert app and fetch
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -110,14 +118,30 @@ async def test_quote_updating() -> None:
 
 
 async def test_quote_request_handlers(
-    http_server_client: tornado.simple_httpclient.SimpleAsyncHTTPClient,
+    # pylint: disable=redefined-outer-name
+    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
 ) -> None:
     """Test the request handlers for the quotes page."""
-    fetch = http_server_client.fetch
-
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)  # add data to cache
     assert_valid_html_response(await fetch("/zitate"))
     assert_valid_html_response(await fetch("/zitate/1-1"))
+    assert_valid_html_response(await fetch("/zitate/1-2"))
+    assert_valid_json_response(await fetch("/api/zitate/1-1"))
     assert_valid_json_response(await fetch("/api/zitate/1-2"))
+
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("/z/1-1"), "/zitate/1-1")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("/z/1"), "/zitate/1-2")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("/z/-1"), "/zitate/info/a/1")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("/z/1-"), "/zitate/info/z/1")
+    )
+
     for i in (1, 2):
         # twice because we cache the author info from wikipedia
         assert_valid_html_response(await fetch(f"/zitate/info/a/{i}"))
@@ -127,18 +151,21 @@ async def test_quote_request_handlers(
     assert_valid_html_response(await fetch("/zitate/share/1-1"))
     assert_valid_html_response(await fetch("/zitate/erstellen"))
 
-    response = await fetch("/zitate/1-1.gif")
-    assert response.code == 200
+    assert_valid_response(await fetch("/zitate/1-1.gif"), "image/gif")
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_image import FILE_EXTENSIONS
 
-    for extension in FILE_EXTENSIONS:
-        response = await fetch(f"/zitate/1-1.{extension}")
-        assert response.code == 200
-        response = await fetch(f"/zitate/1-1.{extension.upper()}")
-        assert response.code == 200
-        response = await fetch(f"/zitate/1-2.{extension}")
-        assert response.code == 200
+    for extension, name in FILE_EXTENSIONS.items():
+        content_type = f"image/{name}"
+        assert_valid_response(
+            await fetch(f"/zitate/1-1.{extension}"), content_type
+        )
+        assert_valid_response(
+            await fetch(f"/zitate/1-1.{extension.upper()}"), content_type
+        )
+        assert_valid_response(
+            await fetch(f"/zitate/1-2.{extension}"), content_type
+        )
 
 
 def test_parsing_vote_str() -> None:

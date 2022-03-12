@@ -8,7 +8,7 @@ __pycache__
 /config.ini
 
 # Unit test / coverage reports
-/.coverage
+/.coverage*
 
 # nano backup files
 *~

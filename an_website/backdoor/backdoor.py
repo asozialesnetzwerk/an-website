@@ -137,9 +137,7 @@ class Backdoor(APIRequestHandler):
             )
             output.close()
             result_tuple: tuple[None | str, Any] = (
-                "".join(
-                    traceback.format_exception(exception)  # type: ignore
-                ).strip()
+                "".join(traceback.format_exception(exception)).strip()
                 if exception is not None
                 else None,
                 exception or result,
