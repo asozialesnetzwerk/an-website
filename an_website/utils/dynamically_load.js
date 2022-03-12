@@ -103,9 +103,11 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
 }
 
 function dynLoadGetFixedHref(url) {
-    const href = url.startsWith("/")
-            ? (w.location.origin + url)
-            : url;
+    const href = (
+        url.startsWith("/")
+        ? (w.location.origin + url)
+        : url
+    ).trim();
     const hrefWithoutQuery = href.split("?")[0];
     if (
         // already dealt with
@@ -127,7 +129,7 @@ function dynLoadGetFixedHref(url) {
         || href.startsWith(w.location.href.split("#")[0] + "#")
     ) return href;
 
-    return `javascript:dynLoad("${href.replace('"', '%22')}");`;
+    return `javascript:dynLoad("${href.replace(/"/g, '%22')}");`;
 }
 
 function dynLoad(url) {
