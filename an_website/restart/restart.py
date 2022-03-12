@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The restart API used to restart and update the page."""
+
 from __future__ import annotations
 
 import os
@@ -38,7 +39,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class Restart(APIRequestHandler):
-    """The Tornado request handler for the restart API."""
+    """The request handler for the restart API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRES_AUTHORIZATION: bool = True
@@ -63,15 +64,15 @@ class Restart(APIRequestHandler):
         # get the parent dir of the root dir
         repo_path = os.path.dirname(ROOT_DIR)
 
-        # check if restart script exists:
-        if not os.path.isfile(os.path.join(repo_path, "restart.sh")):
+        # check if update script exists:
+        if not os.path.isfile(os.path.join(repo_path, "update.sh")):
             raise HTTPError(503)
 
-        # execute the restarting script
+        # execute the update script
         code, stdout, stderr = await run(
             "sh",
             "-c",
-            f"cd {repo_path} ; ./restart.sh '{commit}' 'no_restart'",
+            f"cd {repo_path} ; ./update.sh '{commit}' 'no_restart'",
         )
 
         if not code:
@@ -82,6 +83,6 @@ class Restart(APIRequestHandler):
 
         raise HTTPError(
             401,
-            reason=f"restart.sh exited with code={code!r}, "
+            reason=f"update.sh exited with code={code!r}, "
             f"stdout='{stdout!r}' and stderr='{stderr!r}'",
         )

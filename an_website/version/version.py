@@ -36,7 +36,6 @@ def hash_files() -> str:
 VERSION = run_shell_cmd("git rev-parse HEAD").strip()
 FILE_HASHES = hash_files()
 HASH_OF_FILE_HASHES = blake3(FILE_HASHES.encode("utf-8")).hexdigest()
-GH_PAGES_COMMIT_HASH = run_shell_cmd("git rev-parse origin/gh-pages").strip()
 
 
 def get_module_info() -> ModuleInfo:
@@ -82,5 +81,4 @@ class Version(HTMLRequestHandler):
             version=VERSION,
             file_hashes=FILE_HASHES,
             hash_of_file_hashes=HASH_OF_FILE_HASHES,
-            gh_pages_commit_hash=GH_PAGES_COMMIT_HASH,
         )

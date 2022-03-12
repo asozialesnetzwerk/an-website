@@ -198,17 +198,18 @@ class ContactPage(HTMLRequestHandler):
             f"will was über {self.request.host} schreiben."
         )
         message.set_payload(text, "utf-8")
+        # pylint: disable=line-too-long
         await asyncio.to_thread(
             send_message,
             message=message,
             from_address=from_address,
-            server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore
+            server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore[arg-type]
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
-            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore
+            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore[arg-type]  # noqa: B950
             username=self.settings.get("CONTACT_SENDER_USERNAME"),
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
-            port=self.settings.get("CONTACT_SMTP_PORT"),  # type: ignore
+            port=self.settings.get("CONTACT_SMTP_PORT"),  # type: ignore[arg-type]
         )
 
         await self.render("pages/empty.html", text="Erfolgreich gesendet.")

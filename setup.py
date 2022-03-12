@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from math import pi
+from pathlib import Path
 
 from setuptools import setup  # type: ignore[import]
 
@@ -20,7 +21,11 @@ setup(
     ],
     packages=["an_website"],
     python_requires=">=3.10",
-    install_requires=[],  # TODO
+    install_requires=[
+        spam
+        for spam in Path("requirements.txt").read_text("utf-8").split("\n")
+        if spam and not (spam.startswith("#") or "://" in spam)
+    ],
     include_package_data=True,
     zip_safe=False,
 )

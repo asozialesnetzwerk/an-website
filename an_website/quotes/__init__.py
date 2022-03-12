@@ -29,7 +29,7 @@ from typing import Any, Literal
 import elasticapm  # type: ignore
 import orjson as json
 import tornado.web
-from aioredis import Redis
+from redis.asyncio import Redis  # type: ignore
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 

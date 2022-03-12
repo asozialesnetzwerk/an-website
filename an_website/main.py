@@ -28,11 +28,15 @@ from pathlib import Path
 from typing import Any
 
 import orjson
-from aioredis import BlockingConnectionPool, Redis, SSLConnection
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch, NotFoundError
+from redis.asyncio import (  # type: ignore
+    BlockingConnectionPool,
+    Redis,
+    SSLConnection,
+)
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
@@ -43,7 +47,6 @@ from .utils.request_handler import BaseRequestHandler, NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Timer, time_function
 from .version import version
 
-# list of blocked modules
 IGNORED_MODULES = [
     "patches.*",
     "static.*",

@@ -39,14 +39,14 @@ How:
   files = /etc/supervisor.d/*.ini
 ```
 - Create /etc/supervisor.d/ (if necessary)
-- Run restart.sh as the user of the home directory
+- Run update.sh as the user of the home directory
 
 ### FreeBSD
 Should work similar to Linux.
 `/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`
 `/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`
 `/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`
-restart.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
+update.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
 
 ### macOS
 Not supported, but should work.

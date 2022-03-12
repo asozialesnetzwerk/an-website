@@ -36,12 +36,12 @@ from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
 import orjson as json
-from aioredis import Redis
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
+from redis.asyncio import Redis  # type: ignore
 from tornado import web
 from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
@@ -273,7 +273,7 @@ class BaseRequestHandler(RequestHandler):
                 "Ratelimits are enabled, but Redis is not available. "
                 "This can happen shortly after starting the website.",
             )
-        result = await self.redis.execute_command(  # type: ignore[no-untyped-call]
+        result = await self.redis.execute_command(
             "CL.THROTTLE",
             key,
             max_burst,
