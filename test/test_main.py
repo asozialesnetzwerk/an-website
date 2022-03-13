@@ -16,34 +16,28 @@
 from __future__ import annotations
 
 import configparser
+import os
 import re
-from collections.abc import Awaitable, Callable
-
-import tornado.httpclient
 
 from an_website import main, patches
 from an_website.utils.request_handler import BaseRequestHandler
-from an_website.utils.utils import ModuleInfo
 
-from . import app, assert_valid_redirect, fetch
+from . import (
+    PARENT_DIR,
+    FetchCallable,
+    app,
+    assert_valid_redirect,
+    fetch,
+    get_module_infos,
+)
 
 assert fetch and app
 
 
-async def get_module_infos() -> tuple[ModuleInfo, ...]:
-    """Wrap main.get_module_infos in an async function."""
-    module_infos = main.get_module_infos()
-    assert not isinstance(module_infos, str)
-    assert isinstance(module_infos, tuple)
-    return module_infos
-
-
 # pylint: disable=redefined-outer-name
-async def test_parsing_module_infos(
-    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
-) -> None:
+async def test_parsing_module_infos(fetch: FetchCallable) -> None:
     """Tests about the module infos in main."""
-    module_infos = await get_module_infos()
+    module_infos = get_module_infos()
 
     # should get more than one module_info
     assert len(module_infos) > 0
@@ -56,16 +50,42 @@ async def test_parsing_module_infos(
     # tests about module infos
     for module_info in module_infos:
         if module_info.path is not None:
+            assert module_info.path.isascii()
+            assert module_info.path.strip() == module_info.path
             assert not module_info.path.endswith("/") or module_info.path == "/"
             assert (
                 module_info.path == module_info.path.lower()
                 or module_info.path == "/LOLWUT"
             )
+            if module_info.hidden and module_info.path not in {
+                "/chat",  # head not supported
+                "/LOLWUT",  # needs Redis
+                "/zitat-des-tages",  # needs Redis
+                "/api/restart",  # needs Authorization, and does stuff
+            }:
+                head_response = await fetch(
+                    module_info.path, method="HEAD", raise_error=True
+                )
+                assert head_response.body == b""
+                get_response = await fetch(
+                    module_info.path, method="GET", raise_error=True
+                )
+                assert get_response.body != b""
+                print(module_info.path)
+                for header in (
+                    "Content-Type",
+                    "Onion-Location",
+                    "Permissions-Policy",
+                ):
+                    assert (
+                        get_response.headers[header]
+                        == head_response.headers[header]
+                    )
 
             for alias in module_info.aliases:
                 assert alias.startswith("/")
                 assert not alias.endswith("/")
-                if module_info.path != "/chat":
+                if module_info.path != "/chat" and alias.isascii():
                     assert_valid_redirect(await fetch(alias), module_info.path)
 
             # check if at least one handler matches the path
@@ -95,7 +115,7 @@ def test_making_app() -> None:
 
     # read the example config, because it is always the same and should always work
     config = configparser.ConfigParser(interpolation=None)
-    config.read("config.ini.example")
+    config.read(os.path.join(PARENT_DIR, "config.ini.example"))
 
     main.apply_config_to_app(app, config)  # type: ignore[arg-type]
 

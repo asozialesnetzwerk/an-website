@@ -197,10 +197,20 @@ class BaseRequestHandler(RequestHandler):
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
     @classmethod
+    def supports_head(cls) -> bool:
+        """Check whether this request handler supports HEAD requests."""
+        signature = inspect.signature(cls.get)
+        return (
+            "head" in signature.parameters
+            and signature.parameters["head"].kind
+            == inspect.Parameter.KEYWORD_ONLY
+        )
+
+    @classmethod
     def get_allowed_methods(cls) -> list[str]:
         """Get allowed methods."""
         methods = ["OPTIONS"]
-        if "GET" in cls.ALLOWED_METHODS:
+        if "GET" in cls.ALLOWED_METHODS and cls.supports_head():
             methods.append("HEAD")
         methods.extend(cls.ALLOWED_METHODS)
         return methods
@@ -216,12 +226,7 @@ class BaseRequestHandler(RequestHandler):
         """Handle HEAD requests."""
         if self.get.__module__ == "tornado.web":
             raise HTTPError(405)
-        signature = inspect.signature(self.get)
-        if not (
-            "head" in signature.parameters
-            and signature.parameters["head"].kind
-            == inspect.Parameter.KEYWORD_ONLY
-        ):
+        if not self.supports_head():
             raise HTTPError(501)
         kwargs["head"] = True
         return self.get(*args, **kwargs)

@@ -94,8 +94,10 @@ class WordGameHelper(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 10
 
-    async def get(self) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the word game helper page."""
+        if head:
+            return
         word: str = str(self.get_query_argument("word", default="")).lower()
 
         before_str: str = str(self.get_query_argument("before", default=""))
@@ -124,8 +126,10 @@ class WordGameHelperAPI(APIRequestHandler):
     RATELIMIT_GET_LIMIT = 10
     ALLOWED_METHODS = ("GET",)
 
-    async def get(self) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the word game helper API."""
+        if head:
+            return
         word: str = str(self.get_query_argument("word", default="")).lower()
 
         before_str: str = str(self.get_query_argument("before", default=""))

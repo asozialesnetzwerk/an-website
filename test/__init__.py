@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import configparser
 import os
 import socket
 import sys
@@ -24,25 +25,72 @@ from typing import Any
 import orjson as json
 import pytest
 import tornado.httpclient
+import tornado.web
 from lxml import etree  # type: ignore[import]
 from lxml.html.html5parser import HTMLParser  # type: ignore[import]
 
 DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
 
+WRONG_QUOTE_DATA = {
+    # https://zitate.prapsschnalinen.de/api/wrongquotes/1
+    "id": 1,
+    "author": {
+        "id": 2,
+        "author": "Kim Jong-il",
+    },
+    "quote": {
+        "id": 1,
+        "author": {
+            "id": 1,
+            "author": "Abraham Lincoln",
+        },
+        "quote": "Frage nicht, was dein Land für dich tun kann, "
+        "frage, was du für dein Land tun kannst.",
+    },
+    "rating": 4,
+    "showed": 216,
+    "voted": 129,
+}
+
 # add parent dir to sys.path
 # this makes importing an_website possible
 sys.path.append(PARENT_DIR)
 
 from an_website import main  # noqa  # pylint: disable=wrong-import-position
+from an_website import quotes  # noqa  # pylint: disable=wrong-import-position
+from an_website.patches import (  # noqa  # pylint: disable=wrong-import-position
+    apply,
+)
+from an_website.utils.utils import (  # noqa  # pylint: disable=wrong-import-position
+    ModuleInfo,
+)
+
+apply()
+
+FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
+
+
+def get_module_infos() -> tuple[ModuleInfo, ...]:
+    """Get module infos and fail if they are a string."""
+    module_infos = main.get_module_infos()
+    assert not isinstance(module_infos, str)
+    assert isinstance(module_infos, tuple)
+    return module_infos
 
 
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
     _app = main.make_app()
-    _app.settings["TRUSTED_API_SECRETS"] = ("xyzzy",)  # type: ignore
-    return _app  # type: ignore
+
+    assert isinstance(_app, tornado.web.Application)
+
+    config = configparser.ConfigParser(interpolation=None)
+    config.read(os.path.join(DIR, "config.ini"))
+    main.apply_config_to_app(_app, config)
+
+    return _app
 
 
 async def make_effective_url_relative(
@@ -61,15 +109,16 @@ async def make_effective_url_relative(
 def fetch(
     http_client: tornado.httpclient.AsyncHTTPClient,
     http_server_port: tuple[socket.socket, int],
-) -> Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]:
+) -> FetchCallable:
     """Fetch a URL."""
+    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
     host = f"http://127.0.0.1:{http_server_port[1]}"
-    return lambda url: make_effective_url_relative(
+    return lambda url, **kwargs: make_effective_url_relative(
         http_client.fetch(
             url
             if url.startswith("http://") or url.startswith("https://")
             else f"{host}/{url.removeprefix('/')}",
-            raise_error=False,
+            **{"raise_error": False, **kwargs},
         ),
         host,
     )
@@ -101,7 +150,9 @@ def assert_valid_response(
 
 
 def assert_valid_html_response(
-    response: tornado.httpclient.HTTPResponse, code: int = 200
+    response: tornado.httpclient.HTTPResponse,
+    code: int = 200,
+    effective_url: None | str = None,
 ) -> etree.ElementTree:
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "text/html; charset=UTF-8", code)
@@ -112,7 +163,7 @@ def assert_valid_html_response(
 
     assert root.find("./head/link[@rel='canonical']").get("href").rstrip(
         "/"
-    ) == response.effective_url.split("?")[0].rstrip("/")
+    ) == (effective_url or response.effective_url).split("?")[0].rstrip("/")
     return root
 
 

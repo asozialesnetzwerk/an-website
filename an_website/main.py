@@ -275,6 +275,7 @@ def apply_config_to_app(
         for secret in config.get(
             "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
         ).split(",")
+        if secret.strip()
     )
 
     app.settings["LINK_TO_HTTPS"] = config.getboolean(

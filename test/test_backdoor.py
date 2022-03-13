@@ -115,7 +115,7 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await assert_run_and_print(url, "(+ 1 1)", "Result:\n2", True)
     await assert_run_and_print(url, "_", "Result:\n2")
     await assert_run_and_print(
-        url, "app.settings['TRUSTED_API_SECRETS'][0]", "Result:\n'xyzzy'"
+        url, "app.settings['TRUSTED_API_SECRETS']", "Result:\n{'xyzzy'}"
     )
     await assert_run_and_print(url, "print('42')", "Output:\n42\n")
     await assert_run_and_print(

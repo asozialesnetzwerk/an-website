@@ -15,14 +15,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-
-import tornado.httpclient
-
 import an_website.quotes.quotes as main_page
 from an_website import quotes
 
 from . import (
+    WRONG_QUOTE_DATA,
+    FetchCallable,
     app,
     assert_valid_html_response,
     assert_valid_json_response,
@@ -32,27 +30,6 @@ from . import (
 )
 
 assert app and fetch
-
-WRONG_QUOTE_DATA = {
-    # https://zitate.prapsschnalinen.de/api/wrongquotes/1
-    "id": 1,
-    "author": {
-        "id": 2,
-        "author": "Kim Jong-il",
-    },
-    "quote": {
-        "id": 1,
-        "author": {
-            "id": 1,
-            "author": "Abraham Lincoln",
-        },
-        "quote": "Frage nicht, was dein Land für dich tun kann, "
-        "frage, was du für dein Land tun kannst.",
-    },
-    "rating": 4,
-    "showed": 216,
-    "voted": 129,
-}
 
 
 async def test_parsing_wrong_quotes() -> None:
@@ -119,7 +96,7 @@ async def test_quote_updating() -> None:
 
 async def test_quote_request_handlers(
     # pylint: disable=redefined-outer-name
-    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+    fetch: FetchCallable,
 ) -> None:
     """Test the request handlers for the quotes page."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)  # add data to cache

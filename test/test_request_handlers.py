@@ -15,11 +15,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
-
-import tornado.httpclient
+import socket
 
 from . import (
+    FetchCallable,
     app,
     assert_valid_html_response,
     assert_valid_json_response,
@@ -34,7 +33,7 @@ assert fetch and app
 
 async def test_json_apis(
     # pylint: disable=redefined-outer-name
-    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+    fetch: FetchCallable,
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
@@ -58,7 +57,7 @@ async def test_json_apis(
 
 async def test_not_found_handler(
     # pylint: disable=redefined-outer-name
-    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+    fetch: FetchCallable,
 ) -> None:
     """Check if the not found handler works."""
     assert_valid_html_response(await fetch("/qwertzuiop"), 404)
@@ -91,9 +90,64 @@ async def test_not_found_handler(
     assert_valid_redirect(await fetch("a?x=y"), "/?x=y")
 
 
+async def test_request_handlers2(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+    http_server_port: tuple[socket.socket, int],
+) -> None:
+    """Test more request handler stuff."""
+    response = await fetch("/", headers={"Host": "example.org"})
+    assert response.headers["Onion-Location"] == "http://test.onion/"
+    assert b"http://test.onion" in response.body
+    assert_valid_html_response(response, effective_url="http://example.org")
+
+    response = await fetch("/", headers={"Host": "test.onion"})
+    assert "Onion-Location" not in response.headers
+    assert_valid_html_response(response, effective_url="http://test.onion")
+
+    localhost = f"localhost:{http_server_port[1]}"
+    localhost_url = f"http://{localhost}/"
+    assert_valid_redirect(
+        await fetch(
+            f"/redirect?url={localhost_url}",
+            headers={"Host": localhost},
+        ),
+        localhost_url,
+    )
+    assert_valid_redirect(
+        await fetch(
+            f"/redirect?url={localhost_url}&theme=blue",
+            headers={"Host": localhost},
+        ),
+        f"{localhost_url}?theme=blue",
+    )
+    assert_valid_redirect(
+        await fetch(
+            f"/redirect?url={localhost_url}&no_3rd_party=sure",
+            headers={"Host": localhost},
+        ),
+        f"{localhost_url}?no_3rd_party=sure",
+    )
+    assert_valid_json_response(
+        assert_valid_redirect(
+            await fetch(
+                f"/redirect?url={localhost_url}&as_json=sure",
+                headers={"Host": localhost},
+            ),
+            f"{localhost_url}?as_json=sure",
+        )
+    )
+    assert (
+        assert_valid_response(
+            await fetch("/", method="HEAD"), "text/html; charset=UTF-8"
+        ).body
+        == b""
+    )
+
+
 async def test_request_handlers(
     # pylint: disable=redefined-outer-name, too-many-statements
-    fetch: Callable[[str], Awaitable[tornado.httpclient.HTTPResponse]]
+    fetch: FetchCallable,
 ) -> None:
     """Check if the request handlers return 200 codes."""
     response = await fetch("/")
