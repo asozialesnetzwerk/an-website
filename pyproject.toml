@@ -11,7 +11,6 @@ profile = "black"
 py_version = "310"
 line_length = 80
 skip_gitignore = true
-add_imports = ["from __future__ import annotations"]
 
 [tool.mypy]
 strict = true

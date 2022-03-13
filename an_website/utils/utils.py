@@ -186,7 +186,7 @@ class Timer:
         return self._execution_time
 
 
-T = TypeVar("T")  # pylint: disable=invalid-name
+T = TypeVar("T")
 
 
 @cache

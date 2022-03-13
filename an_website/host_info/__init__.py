@@ -11,7 +11,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+# pylint: disable=wrong-import-position, ungrouped-imports, useless-suppression
+
 """The host info page of the website."""
+
 from __future__ import annotations
 
 import os

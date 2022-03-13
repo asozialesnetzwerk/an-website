@@ -89,9 +89,7 @@ class Endpoints(HTMLRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
-    async def get(
-        self, *, head: bool = False  # pylint: disable=unused-argument
-    ) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""
         return await self.finish(
             json.dumps(self.get_endpoints(), option=ORJSON_OPTIONS)

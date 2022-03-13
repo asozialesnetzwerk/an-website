@@ -30,9 +30,9 @@ mypy --pretty -p an_website -p test
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D100,D102 an_website test
+flake8 --extend-ignore=D100,D102 *.py an_website test
 echo Pylint:
-pylint --output-format=colorized an_website test
+pylint --output-format=colorized *.py an_website test
 
 # run tests
 echo Tests:

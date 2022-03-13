@@ -1,4 +1,5 @@
-#!/bin/env python3
+#!/usr/bin/env python3
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -26,7 +27,7 @@ DIR = os.path.dirname(__file__)
 STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
 
-def main() -> None | int | str:  # pylint: disable=useless-return
+def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
     if "--clean" in sys.argv:
         shutil.rmtree(STATIC_DIR)
     os.makedirs(STATIC_DIR, exist_ok=True)

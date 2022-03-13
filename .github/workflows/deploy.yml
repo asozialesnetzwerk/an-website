@@ -8,7 +8,7 @@ on:
       - ".github/workflows/deploy.yml"
       - "requirements.txt"
       - "an_website.ini"
-      - "restart.sh"
+      - "update.sh"
 concurrency:
   group: deploy
   cancel-in-progress: true

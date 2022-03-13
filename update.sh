@@ -27,8 +27,8 @@ then
     python3 -m venv venv
 fi
 
-echo "venv/bin/pip install --disable-pip-version-check -U -r requirements.txt"
-venv/bin/pip install --disable-pip-version-check -U -r requirements.txt
+echo "venv/bin/pip install --disable-pip-version-check -r requirements.txt"
+venv/bin/pip install --disable-pip-version-check -r requirements.txt
 
 if [ ! -f $SERVICE_FILE_LOCATION ]
 then

@@ -1,4 +1,5 @@
-#!/bin/env python3
+#!/usr/bin/env python3
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -13,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The client for the backdoor API of the website."""
+
 from __future__ import annotations, barry_as_FLUFL
 
 import ast

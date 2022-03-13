@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+
+# pylint: disable=missing-module-docstring
+
 from __future__ import annotations
 
 from math import pi
@@ -13,9 +17,9 @@ setup(
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
     url="https://github.com/asozialesnetzwerk/an-website",
-    classifiers=[
+    classifiers=[  # pylint: disable=line-too-long
         "Development Status :: 5 - Production/Stable",
-        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+        "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",  # noqa: B950
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],

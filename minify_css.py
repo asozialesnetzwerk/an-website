@@ -1,4 +1,5 @@
-#!/bin/env python3
+#!/usr/bin/env python3
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -27,7 +28,7 @@ STATIC_DIR = os.path.join(DIR, "an_website/static/style")
 STYLE_DIR = os.path.join(DIR, "style")
 
 
-def main() -> None | int | str:  # pylint: disable=useless-return
+def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
     if "--clean" in sys.argv:
         shutil.rmtree(STATIC_DIR)
     os.makedirs(STATIC_DIR, exist_ok=True)
@@ -41,7 +42,9 @@ def main() -> None | int | str:  # pylint: disable=useless-return
         followlinks=False,
     ):
         new_dir = (
-            os.path.join(STATIC_DIR, folder[len(STYLE_DIR + "/") :])
+            os.path.join(
+                STATIC_DIR, folder[len(STYLE_DIR + "/") :]  # noqa: E203
+            )
             if folder.startswith(STYLE_DIR + "/")
             else STATIC_DIR
         )
