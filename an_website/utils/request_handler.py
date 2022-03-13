@@ -101,7 +101,7 @@ class BaseRequestHandler(RequestHandler):
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
     title = "Das Asoziale Netzwerk"
-    short_title = "Das Asoziale Netzwerk"
+    short_title = "Asoziales Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
 
     def initialize(
