@@ -41,6 +41,7 @@ def get_module_info() -> ModuleInfo:
             (r"/api/discord/(\d+)", DiscordAPI),
         ),
         name="Discord-Einladung",
+        short_name="Discord",
         description="Eine permanente Einladung zu unserer Discord-Gilde",
         path="/discord",
         keywords=(
