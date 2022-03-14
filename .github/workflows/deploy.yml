@@ -45,21 +45,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Install b3sum
-        run: cargo install b3sum
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Install required library
+        run: grep "^blake3" requirements.txt | xargs pip install --prefer-binary
       - name: Hash files
-        run: |
-          mkdir -p public
-          echo "Hash der Datei-Hashes:" > public/version.txt
-          sh -c "cd an_website && git ls-files | xargs b3sum | b3sum | cut -d ' ' -f 1" >> public/version.txt
-          echo >> public/version.txt
-          echo "Datei-Hashes:" >> public/version.txt
-          sh -c "cd an_website && git ls-files | xargs b3sum" >> public/version.txt
+        run: ./hash_files.py > hashes
       - name: Upload as Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          path: public/
-          name: version
+          path: hashes
+          name: hashes
 
   gh_pages:
     name: Push version and coverage to GitHub Pages
@@ -78,21 +76,21 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage
-      - name: Download version
+      - name: Download hashes
         uses: actions/download-artifact@v3
         with:
-          name: version
+          name: hashes
       - name: Move files
         run: |
-          mkdir -p public
-          mv version.txt public/
+          mkdir public
+          mv hashes public
       - name: Create coverage files
         run: |
           grep "^coverage" requirements-dev.txt | xargs pip install --prefer-binary
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x
-          # get the total percentage covered and round it to 2 decimals:
+          # get the total coverage percentage and round it to 2 decimals
           total="$(jq '.totals.percent_covered' public/coverage.json | awk '{ printf( "%3.2f\n", $1 ) }')"
           if (( $(echo "$total <= 50" | bc -l) )) ; then
             COLOR=red

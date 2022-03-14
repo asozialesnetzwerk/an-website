@@ -13,9 +13,6 @@ fi
 # install pre-commit hooks
 pre-commit install
 
-# test hashing files (important to see if umlaute are used)
-git ls-files | xargs sha1sum | sha1sum | cut -d ' ' -f 1
-
 # sort imports
 echo isort:
 isort .

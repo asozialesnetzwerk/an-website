@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@ pre = "{http://www.mediawiki.org/xml/export-0.10/}"
 
 titles = set()
 
-for el in xml.iter():  # noqa: C901
+for el in xml.iter():  # noqa: C901  # pylint: disable=too-complex
     if el.tag != f"{pre}text":
         continue
     # == ōrdo ({{Sprache|Latein}}) ==
@@ -55,9 +55,9 @@ for el in xml.iter():  # noqa: C901
     # print("t,i: ", title_line, info_line)
 
     title = None
-    if title_line.endswith("|Deutsch}})"):
+    if title_line.endswith("|Deutsch}})"):  # type: ignore[union-attr]
         # len("({{Sprache|Deutsch}})") == 21
-        title = title_line.split("(")[0].strip()
+        title = title_line.split("(")[0].strip()  # type: ignore[union-attr]
     # elif "Deutsch" in title_line:
     # print(title_line)
 
@@ -65,9 +65,9 @@ for el in xml.iter():  # noqa: C901
         continue
     if title.startswith("[") and title.startswith("]"):
         title = title[1:-1]
-    if "|" not in info_line:
+    if "|" not in info_line:  # type: ignore[operator]
         continue
-    word_type = info_line.split("|")[1]
+    word_type = info_line.split("|")[1]  # type: ignore[union-attr]
     # print("title=", title, "; word_type=", word_type)
     if word_type not in (
         "Abkürzung",
@@ -138,6 +138,6 @@ for el in xml.iter():  # noqa: C901
     title = re.sub(r"\[\[([^]|]+)(?:\|[^]]+)?]]", r"\1", title)
     titles.add(title)
 
-file = open("output.txt", "w")
-file.write("\n".join(titles))
-file.close()
+with open("output.txt", "w", encoding="utf-8") as file:
+    file.write("\n".join(titles))
+    file.close()

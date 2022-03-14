@@ -14,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Minify all CSS files in style and move them to an_website/static/style."""
+
 from __future__ import annotations
 
 import os
@@ -49,26 +50,27 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
             else STATIC_DIR
         )
         os.makedirs(new_dir, exist_ok=True)
-        for file in files:
-            if not file.endswith(".css"):
+        for file_name in files:
+            if not file_name.endswith(".css"):
                 continue
             file_counter += 1
-            with open(os.path.join(folder, file), encoding="UTF-8") as f:
-                original = f.read()
+            with open(
+                os.path.join(folder, file_name), encoding="UTF-8"
+            ) as file:
+                original = file.read()
             minified = rcssmin.cssmin(original) + "\n"
-            new_file = os.path.join(new_dir, file)
+            new_file = os.path.join(new_dir, file_name)
             if os.path.isfile(new_file):
-                with open(new_file, encoding="UTF-8") as f:
-                    if f.read() == minified:
+                with open(new_file, encoding="UTF-8") as file:
+                    if file.read() == minified:
                         continue
             print(
                 f"{file}: {len(original)} -> {len(minified)} characters "
                 f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1
-            with open(new_file, "w", encoding="UTF-8") as f:
-                f.write(minified)
-                f.flush()
+            with open(new_file, "w", encoding="UTF-8") as file:
+                file.write(minified)
 
     print(f"Minified {minified_counter} of {file_counter} files.")
 

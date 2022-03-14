@@ -82,15 +82,15 @@ def get_module_infos() -> tuple[ModuleInfo, ...]:
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
-    _app = main.make_app()
+    app = main.make_app()  # pylint: disable=redefined-outer-name
 
-    assert isinstance(_app, tornado.web.Application)
+    assert isinstance(app, tornado.web.Application)
 
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
-    main.apply_config_to_app(_app, config)
+    main.apply_config_to_app(app, config)
 
-    return _app
+    return app
 
 
 async def make_effective_url_relative(

@@ -65,7 +65,7 @@ lxml==4.8.0
 mccabe==0.6.1
 multidict==6.0.2
 mypy-extensions==0.4.3
-mypy==0.940
+mypy==0.941
 namedthreads==1.0
 nodeenv==1.6.0
 numpy==1.22.3
@@ -90,12 +90,12 @@ pyjwt==2.3.0
 pyparsing==3.0.7
 pytest-cov==3.0.0
 pytest-tornasync==0.6.0.post2
-pytest==7.0.1
+pytest==7.1.0
 python-dateutil==2.8.2
 python-levenshtein==0.12.2
 pyyaml==6.0
 rcssmin==1.1.0
-redis[hiredis]==4.2.0rc2
+redis[hiredis]==4.2.0rc3
 rjsmin==1.2.0
 rply==0.7.8
 setuptools==60.9.3
@@ -109,7 +109,7 @@ types-beautifulsoup4==4.10.14
 types-orjson==3.6.2
 types-pillow==9.0.6
 types-redis==4.1.17
-types-requests==2.27.11
+types-requests==2.27.12
 types-urllib3==1.26.11
 typing-extensions==4.1.1
 urllib3==1.26.8

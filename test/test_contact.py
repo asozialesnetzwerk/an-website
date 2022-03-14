@@ -49,31 +49,31 @@ def test_add_geoip_info_to_message() -> None:
     ]
 
 
-def test_add_geoip_info_to_message_recursive() -> None:
-    """Test infinite recursion."""
-    geoip = {"spam": "eggs"}
-    geoip["GeoIP"] = geoip  # type: ignore[assignment]
-    # message = Message()
-    # with pytest.raises(RecursionError):
-    #     contact.add_geoip_info_to_message(message, geoip)
+# Joshix broke this test:
+
+# def test_add_geoip_info_to_message_recursive() -> None:
+#     """Test infinite recursion."""
+#     geoip = {"spam": "eggs"}
+#     geoip["GeoIP"] = geoip  # type: ignore[assignment]
+#     message = Message()
+#     with pytest.raises(RecursionError):
+#         contact.add_geoip_info_to_message(message, geoip)
 
 
 async def test_sending_email() -> None:
     """Test sending emails."""
-    user = f"an-{random.randbytes(20).hex()}"
-    content = "♋️" + random.randbytes(69).hex()
-    subject = "🗣️" + random.randbytes(42).hex()
+    user = f"{random.randbytes(10).hex()}"
+    subject = random.randbytes(10).hex()
+    content = random.randbytes(80).hex()
     message = Message()
-    message.set_payload(content, "utf-8")
     message["Subject"] = subject
-    contact.send_message(
+    message.set_payload(content, "utf-8")
+    await asyncio.to_thread(
+        contact.send_message,
         message=message,
-        from_address="tests <an-website@restmail.net>",
-        recipients=[f"{user}@restmail.net"],
+        from_address="Marcell D'Avis <davis@1und1.de>",
+        recipients=(f"an-website <{user}@restmail.net>",),
         server="restmail.net",
-        username=None,
-        password=None,
-        starttls=False,
         port=25,
     )
 
@@ -83,23 +83,23 @@ async def test_sending_email() -> None:
         f"https://restmail.net/mail/{user}"
     )
 
-    emails = [
-        email
-        for email in json.loads(response.body)
-        if (
+    for email in json.loads(response.body):
+        if (  # pylint: disable=too-many-boolean-expressions
             email["subject"] == subject
             and email["text"] == content
-            and email["from"][0]["name"] == "tests"
-            and email["from"][0]["address"] == "an-website@restmail.net"
-            and not email["to"][0]["name"]
+            and email["from"][0]["name"] == "Marcell D'Avis"
+            and email["from"][0]["address"] == "davis@1und1.de"
+            and email["to"][0]["name"] == "an-website"
             and email["to"][0]["address"] == f"{user}@restmail.net"
             and email["headers"]["content-type"]
             == 'text/plain; charset="utf-8"'
-        )
-    ]
-    assert len(emails) > 0
+        ):
+            break
+    else:
+        raise AssertionError()
 
 
 if __name__ == "__main__":
     test_add_geoip_info_to_message()
-    test_add_geoip_info_to_message_recursive()
+    # test_add_geoip_info_to_message_recursive()
+    asyncio.run(test_sending_email())

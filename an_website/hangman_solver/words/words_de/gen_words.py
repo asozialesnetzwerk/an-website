@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -14,21 +15,19 @@
 
 from __future__ import annotations
 
-import json
+import json  # pylint: disable=preferred-module
 
-# pylint: disable=invalid-name
+file_name = "full_wordlist.txt"
 
-
-file = "full_wordlist.txt"
-
-text = open(file).read().lower()
+with open(file_name, encoding="utf-8") as file:
+    text = file.read().lower()
 words = text.splitlines()
 words_sorted = sorted(set(words))  # sort words unique
 
-letters = {}
+letters: dict[str, dict[str, int]] = {}
 for word in words_sorted:
     length = str(len(word))
-    with open(length + ".txt", "a") as file:
+    with open(length + ".txt", "a", encoding="utf-8") as file:
         file.write(word)
         file.write("\n")
     print(word)
@@ -49,5 +48,5 @@ for key, value in letters.items():
     sorted_letters_json = json.dumps(dict(sorted_letters))
     print(key, sorted_letters_json)
 
-    with open(key + ".json", "w") as file:
+    with open(key + ".json", "w", encoding="utf-8") as file:
         file.write(sorted_letters_json)

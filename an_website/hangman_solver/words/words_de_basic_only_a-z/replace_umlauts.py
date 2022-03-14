@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -14,20 +15,17 @@
 
 from __future__ import annotations
 
-# pylint: disable=invalid-name
+file_name = "full_wordlist.txt"
 
+with open(file_name, encoding="utf-8") as file:
+    text = (
+        file.read()
+        .lower()
+        .replace("ä", "ae")
+        .replace("ö", "oe")
+        .replace("ü", "ue")
+        .replace("ß", "ss")
+    )
 
-file = "full_wordlist.txt"
-
-text = (
-    open(file)
-    .read()
-    .lower()
-    .replace("ä", "ae")
-    .replace("ö", "oe")
-    .replace("ü", "ue")
-    .replace("ß", "ss")
-)
-
-with open(file, "w") as file:
+with open(file_name, "w", encoding="utf-8") as file:
     file.write(text)

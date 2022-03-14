@@ -25,9 +25,9 @@ from ..utils.utils import ModuleInfo, hash_file, run_shell_cmd
 
 
 def hash_files() -> str:
-    """Hash all the files."""
+    """Hash all files."""
     return "\n".join(
-        f"{hash_file(path)} {path.relative_to(ROOT_DIR)}"
+        f"{hash_file(path)[:16]} {path.relative_to(ROOT_DIR)}"
         for path in sorted(Path(ROOT_DIR).rglob("*"))
         if path.is_file() and "__pycache__" not in path.parts
     )

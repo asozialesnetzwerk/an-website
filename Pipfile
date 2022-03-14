@@ -28,7 +28,7 @@ pycurl = {version=">=7.45.0,<8"}
 pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
 pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="f4c3cd9897898de69e136c92fd957fd989ee08ec"}
 python-Levenshtein = {version=">=0.12.2,<2"}
-redis = {version=">=4.2.0rc2,<5", extras=["hiredis"]}
+redis = {version=">=4.2.0rc3,<5", extras=["hiredis"]}
 #regex = {version=">=2022.1.18"}
 tornado = {version="~=6.1"}
 uvloop = {version=">=0.16,<2"}
@@ -43,12 +43,12 @@ flake8-docstrings = {version="~=1.6"}
 flake8-no-pep420 = {version="~=2.2"}
 html5lib = {version="~=1.1"}
 isort = {version="~=5.10"}
-mypy = {version=">=0.940,<2"}
+mypy = {version=">=0.941,<2"}
 pep8-naming = {version=">=0.12.1,<2"}
 pipenv = {version=">=2022.1.8"}
 pre-commit = {version="~=2.17"}
 pylint = {git="git+https://github.com/PyCQA/pylint.git", ref="7981ec021b84c6f2b216202c1c028da4b0ee995b"}
-pytest = {version="~=7.0"}
+pytest = {version="~=7.1"}
 pytest-cov = {version="~=3.0"}
 pytest-tornasync = {version=">=0.6,<2"}
 rcssmin = {version="~=1.1"}
