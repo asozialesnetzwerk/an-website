@@ -33,6 +33,7 @@ from redis.asyncio import Redis  # type: ignore
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
+from .. import DIR as ROOT_DIR
 from .. import ORJSON_OPTIONS
 from ..utils.request_handler import HTMLRequestHandler
 
@@ -285,10 +286,11 @@ async def make_api_request(
     """Make API request and return the result as dict."""
     response = await AsyncHTTPClient().fetch(
         f"{API_URL}/{endpoint}?{args}",
-        raise_error=False,
         method=method,
-        body=body,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
+        body=body,
+        raise_error=False,
+        ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     if response.code != 200:
         logger.error(

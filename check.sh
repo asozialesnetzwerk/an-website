@@ -1,14 +1,13 @@
 #!/bin/sh
 
-if [ -d venv ];
+if [ -d venv ]
 then
     . venv/bin/activate
-    python -m pip install --disable-pip-version-check -r requirements-dev.txt --quiet
-else
-    echo 'Please create a Python 3.10+ virtual environment (venv) first'
-    echo 'Running "python3.10 -m venv venv" usually works (assuming Python 3.10 is installed)'
-    exit 1
 fi
+
+set -e
+python -m pip install --disable-pip-version-check --require-virtualenv --quiet -r requirements-dev.txt
+set +e
 
 # install pre-commit hooks
 pre-commit install
@@ -31,7 +30,10 @@ flake8 --extend-ignore=D100,D102 *.py an_website test
 echo Pylint:
 pylint --output-format=colorized *.py an_website test
 
-# run tests
-echo Tests:
-pytest --cov-report= --cov=an_website test
-echo 'Run "coverage report" to show the coverage'
+if [ -n $1 ] && [ $1 = "test" ]
+then
+    # run tests
+    echo Tests:
+    pytest --cov-report= --cov=an_website test
+    echo 'Run "coverage report" to show the coverage'
+fi

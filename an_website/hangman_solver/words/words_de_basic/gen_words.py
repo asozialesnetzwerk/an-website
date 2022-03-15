@@ -17,36 +17,36 @@ from __future__ import annotations
 
 import json  # pylint: disable=preferred-module
 
-file_name = "full_wordlist.txt"
+FILE = "full_wordlist.txt"
 
-with open(file_name, encoding="utf-8") as file:
-    text = file.read().lower()
-words = text.splitlines()
-words_sorted = sorted(set(words))  # sort words unique
+if __name__ == "__main__":
+    with open(FILE, encoding="utf-8") as file:
+        text = file.read().lower()
+    words = text.splitlines()
+    words_sorted = sorted(set(words))  # sort words unique
 
-letters: dict[str, dict[str, int]] = {}
-for word in words_sorted:
-    length = str(len(word))
-    with open(length + ".txt", "a", encoding="utf-8") as file:
-        file.write(word)
-        file.write("\n")
-    print(word)
-    m = letters.get(length, {})
-    for index, letter in enumerate(word):
-        if word.index(letter) is index:
-            m[letter] = m.get(letter, 0) + 1
-    letters[length] = m
+    letters: dict[str, dict[str, int]] = {}
+    for word in words_sorted:
+        length = str(len(word))
+        with open(length + ".txt", "a", encoding="utf-8") as file:
+            file.write(word)
+            file.write("\n")
+        print(word)
+        m = letters.get(length, {})
+        for index, letter in enumerate(word):
+            if word.index(letter) is index:
+                m[letter] = m.get(letter, 0) + 1
+        letters[length] = m
 
-print("Generating letters:")
+    print("Generating letters:")
 
+    for key, value in letters.items():
+        letters_items: list[tuple[str, int]] = list(value.items())
+        sorted_letters: list[tuple[str, int]] = sorted(
+            letters_items, key=lambda item: item[1], reverse=True
+        )
+        sorted_letters_json = json.dumps(dict(sorted_letters))
+        print(key, sorted_letters_json)
 
-for key, value in letters.items():
-    letters_items: list[tuple[str, int]] = list(value.items())
-    sorted_letters: list[tuple[str, int]] = sorted(
-        letters_items, key=lambda item: item[1], reverse=True
-    )
-    sorted_letters_json = json.dumps(dict(sorted_letters))
-    print(key, sorted_letters_json)
-
-    with open(key + ".json", "w", encoding="utf-8") as file:
-        file.write(sorted_letters_json)
+        with open(key + ".json", "w", encoding="utf-8") as file:
+            file.write(sorted_letters_json)

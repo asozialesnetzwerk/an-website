@@ -24,7 +24,7 @@ numpy = {version="~=1.22"}
 orjson = {version="~=3.6"}
 Pillow = {version="~=9.0"}
 pip = {version=">=22.0"}
-pycurl = {version=">=7.45.0,<8"}
+pycurl = {version="~=7.45"}
 pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
 pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="f4c3cd9897898de69e136c92fd957fd989ee08ec"}
 python-Levenshtein = {version=">=0.12.2,<2"}

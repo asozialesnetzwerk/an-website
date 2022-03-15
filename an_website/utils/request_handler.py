@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import inspect
 import logging
+import os
 import random
 import re
 import sys
@@ -47,6 +48,7 @@ from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
+from .. import DIR as ROOT_DIR
 from .. import REPO_URL
 from .static_file_handling import fix_static_url
 from .utils import (
@@ -957,7 +959,9 @@ class ElasticRUM(BaseRequestHandler):
         key = version + spam + eggs
         if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
             response = await AsyncHTTPClient().fetch(
-                self.URL.format(version, spam, eggs), raise_error=False
+                self.URL.format(version, spam, eggs),
+                raise_error=False,
+                ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)

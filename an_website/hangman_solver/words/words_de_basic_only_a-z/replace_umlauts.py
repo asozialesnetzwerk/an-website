@@ -15,17 +15,18 @@
 
 from __future__ import annotations
 
-file_name = "full_wordlist.txt"
+FILE = "full_wordlist.txt"
 
-with open(file_name, encoding="utf-8") as file:
-    text = (
-        file.read()
-        .lower()
-        .replace("ä", "ae")
-        .replace("ö", "oe")
-        .replace("ü", "ue")
-        .replace("ß", "ss")
-    )
+if __name__ == "__main__":
+    with open(FILE, encoding="utf-8") as file:
+        text = (
+            file.read()
+            .lower()
+            .replace("ä", "ae")
+            .replace("ö", "oe")
+            .replace("ü", "ue")
+            .replace("ß", "ss")
+        )
 
-with open(file_name, "w", encoding="utf-8") as file:
-    file.write(text)
+    with open(FILE, "w", encoding="utf-8") as file:
+        file.write(text)

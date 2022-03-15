@@ -7,7 +7,7 @@ ADD . /usr/src/an-website
 WORKDIR /usr/src/an-website
 ENV PIPENV_VENV_IN_PROJECT=1
 RUN pip install pipenv
-RUN pipenv sync
+RUN pipenv sync --keep-outdated
 RUN pipenv run pip install --no-deps .
 
 FROM docker.io/library/python:3.10-slim AS runtime
