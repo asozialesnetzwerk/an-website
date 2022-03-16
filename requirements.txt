@@ -31,8 +31,6 @@ elastic-transport==7.16.0
 elasticsearch[async]==7.17.1
 frozenlist==1.3.0
 funcparserlib==1.0.0a0
-git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
-git+https://github.com/urllib3/PySocks.git@f4c3cd9897898de69e136c92fd957fd989ee08ec#egg=pysocks
 hiredis==2.0.0
 hy==1.0a4
 hyrule==0.1
@@ -45,7 +43,6 @@ numpy==1.22.3
 orjson==3.6.7
 packaging==21.3
 pillow==9.0.1
-pip==22.0.4
 pycares==4.1.2
 pycparser==2.21
 pycurl==7.45.1

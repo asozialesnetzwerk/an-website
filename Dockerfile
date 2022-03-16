@@ -5,7 +5,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 ADD . /usr/src/an-website
 WORKDIR /usr/src/an-website
-ENV PIPENV_VENV_IN_PROJECT=1
+ENV PIPENV_VENV_IN_PROJECT=1 PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN pip install pipenv
 RUN pipenv sync --keep-outdated
 RUN pipenv run pip install --no-deps .

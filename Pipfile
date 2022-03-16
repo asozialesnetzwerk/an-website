@@ -23,10 +23,7 @@ namedthreads = {version="*"}
 numpy = {version="~=1.22"}
 orjson = {version="~=3.6"}
 Pillow = {version="~=9.0"}
-pip = {version=">=22.0"}
 pycurl = {version="~=7.45"}
-pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
-pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="f4c3cd9897898de69e136c92fd957fd989ee08ec"}
 python-Levenshtein = {version=">=0.12.2,<2"}
 redis = {version=">=4.2.0rc3,<5", extras=["hiredis"]}
 #regex = {version=">=2022.1.18"}
@@ -47,7 +44,9 @@ mypy = {version=">=0.941,<2"}
 pep8-naming = {version=">=0.12.1,<2"}
 pipenv = {version=">=2022.1.8"}
 pre-commit = {version="~=2.17"}
-pylint = {git="git+https://github.com/PyCQA/pylint.git", ref="7981ec021b84c6f2b216202c1c028da4b0ee995b"}
+pylint = {git="git+https://github.com/PyCQA/pylint.git", ref="65f65e9864dbbb130678f2c45646152d8248c27d"}
+pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
+pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="main"}
 pytest = {version="~=7.1"}
 pytest-cov = {version="~=3.0"}
 pytest-tornasync = {version=">=0.6,<2"}

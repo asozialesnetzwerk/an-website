@@ -6,7 +6,8 @@ then
 fi
 
 set -e
-python -m pip install --disable-pip-version-check --require-virtualenv --quiet -r requirements-dev.txt
+python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet pip>=22.0
+python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet -r requirements-dev.txt
 set +e
 
 # install pre-commit hooks

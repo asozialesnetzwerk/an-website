@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from math import pi
 from pathlib import Path
+from string import ascii_letters
 
 from setuptools import setup  # type: ignore[import]
 
@@ -13,6 +14,7 @@ setup(
     name="an-website",
     license="AGPLv3+",
     version=str(pi)[:4],  # TODO
+    platforms=['OS Independent'],
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
@@ -28,7 +30,7 @@ setup(
     install_requires=[
         spam
         for spam in Path("requirements.txt").read_text("utf-8").split("\n")
-        if spam and not (spam.startswith("#") or "://" in spam)
+        if spam.startswith(tuple(ascii_letters))
     ],
     include_package_data=True,
     zip_safe=False,

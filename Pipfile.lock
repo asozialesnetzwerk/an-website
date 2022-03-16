@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "56553b57cf79c0011480ccf868b660c3c126dfe22ce5b252afd72b885f8036be"
+            "sha256": "e0b2cc6e3f35cfd5a1c6ce088d75c37d3655746ba3130f09cc9ed9eb81220bc8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -885,13 +885,6 @@
             ],
             "version": "==9.0.1"
         },
-        "pip": {
-            "hashes": [
-                "sha256:b3a9de2c6ef801e9247d1527a4b16f92f2cc141cd1489f3fffaf6a9e96729764",
-                "sha256:c6aca0f2f081363f689f041d90dab2a07a9a07fb840284db2218117a52da800b"
-            ],
-            "version": "==22.0.4"
-        },
         "pycares": {
             "hashes": [
                 "sha256:03490be0e7b51a0c8073f877bec347eff31003f64f57d9518d419d9369452837",
@@ -956,14 +949,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.0.7"
-        },
-        "pyrepl": {
-            "git": "https://github.com/blueyed/pyrepl.git",
-            "ref": "dfb7b7dae91957d83f360114ca468f52309ecb7e"
-        },
-        "pysocks": {
-            "git": "https://github.com/urllib3/PySocks.git",
-            "ref": "f4c3cd9897898de69e136c92fd957fd989ee08ec"
         },
         "python-dateutil": {
             "hashes": [
@@ -1578,6 +1563,7 @@
                 "sha256:b3a9de2c6ef801e9247d1527a4b16f92f2cc141cd1489f3fffaf6a9e96729764",
                 "sha256:c6aca0f2f081363f689f041d90dab2a07a9a07fb840284db2218117a52da800b"
             ],
+            "markers": "python_version >= '3.7'",
             "version": "==22.0.4"
         },
         "pipenv": {
@@ -1653,6 +1639,14 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.0.7"
+        },
+        "pyrepl": {
+            "git": "https://github.com/blueyed/pyrepl.git",
+            "ref": "dfb7b7dae91957d83f360114ca468f52309ecb7e"
+        },
+        "pysocks": {
+            "git": "https://github.com/urllib3/PySocks.git",
+            "ref": "f4c3cd9897898de69e136c92fd957fd989ee08ec"
         },
         "pytest": {
             "hashes": [
