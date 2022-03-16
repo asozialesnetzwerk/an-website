@@ -14,7 +14,7 @@ setup(
     name="an-website",
     license="AGPLv3+",
     version=str(pi)[:4],  # TODO
-    platforms=['OS Independent'],
+    platforms=["OS Independent"],
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
