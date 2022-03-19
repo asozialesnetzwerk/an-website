@@ -31,7 +31,7 @@ flake8 --extend-ignore=D100,D102 *.py an_website test
 echo Pylint:
 pylint --output-format=colorized *.py an_website test
 
-if [ -n $1 ] && [ $1 = "test" ]
+if [ -n "$1" ] && [ "$1" = "test" ]
 then
     # run tests
     echo Tests:

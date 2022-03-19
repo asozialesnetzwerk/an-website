@@ -240,7 +240,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
 
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
-    """The main quote page that should render a random quote."""
+    """The main quote page that explains everything and links to stuff."""
 
     async def get(self, *, head: bool = False) -> None:
         """Render the main quote page, with a few links."""

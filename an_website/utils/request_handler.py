@@ -165,6 +165,11 @@ class BaseRequestHandler(RequestHandler):
         # Opt out of all FLoC cohort calculation.
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # community.torproject.org/onion-services/advanced/onion-location/
+        if self.get_protocol() == "https":
+            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
+            self.set_header(
+                "Strict-Transport-Security", "max-age=31536000; preload"
+            )
         if (
             _oa := self.settings.get("ONION_ADDRESS")
         ) and not self.request.host.endswith(".onion"):

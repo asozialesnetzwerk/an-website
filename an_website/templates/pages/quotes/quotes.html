@@ -125,15 +125,16 @@
                 <label for="rating-filter-select"
                        class="tooltip-text">Filtere nächste Zitate</label>
             </div>
-            <label for="show-rating"
-                   class="rating-form-el">Zeige Bewertung</label>
-            <input {% if show_rating %}checked{% end %}
+            <label class="rating-form-el">
+                Zeige Bewertung
+                <input {% if show_rating %}checked{% end %}
                    type="checkbox"
                    id="show-rating"
                    name="show-rating"
                    class="rating-form-el"
                    onchange="this.form.submit()"
                    value="sure">
+            </label>
 
             <noscript>
                 <button type="submit" class="rating-form-el">Submit</button>

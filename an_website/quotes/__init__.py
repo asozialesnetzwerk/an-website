@@ -57,7 +57,8 @@ class QuotesObjBase:
 
     id: int  # pylint: disable=invalid-name
 
-    def get_id_as_str(self) -> str:
+    # pylint: disable=unused-argument
+    def get_id_as_str(self, minify: bool = False) -> str:
         """Get the id of the object as a string."""
         return str(self.id)
 
@@ -160,12 +161,14 @@ class WrongQuote(QuotesObjBase):
         """
         return self.quote.id, self.author.id
 
-    def get_id_as_str(self) -> str:
+    def get_id_as_str(self, minify: bool = False) -> str:
         """
         Get the id of the wrong quote as a string.
 
         Format: quote_id-author_id
         """
+        if minify and self.id != -1:
+            return str(self.id)
         return f"{self.quote.id}-{self.author.id}"
 
     async def fetch_new_data(self) -> WrongQuote:

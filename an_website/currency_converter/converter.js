@@ -1,5 +1,13 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
 (() => {
+    let bigIntType = "bigint";
+    try {
+        BigInt(69);
+    } catch (e) {
+        // fix for cool browsers like Pale Moon that don't support BigInt
+        BigInt = Number;
+        bigIntType = "number";
+    }
     const output = elById("output");
 
     const fields = [
@@ -9,10 +17,10 @@
         elById("schwarz")
     ];
     const factors = [
-        1n, //Euro
-        2n, //Deutsche Mark
-        4n, //Ostmark
-        20n //Ostmark auf dem Schwarzmarkt
+        BigInt(1), //Euro
+        BigInt(2), //Deutsche Mark
+        BigInt(4), //Ostmark
+        BigInt(20) //Ostmark auf dem Schwarzmarkt
     ];
 
     const numberRegex = /^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;
@@ -21,10 +29,27 @@
         if (typeof wert === "string") {
             wert = strToBigInt(wert);
         }
-        if (typeof wert !== "bigint") {
+        if (typeof wert !== bigIntType) {
             alert(`Ungültiger Wert ${wert} mit type ${typeof wert}`);
         }
+        if (bigIntType === "number") {
+            wert = Math.floor(wert);
+        }
         let str = wert.toString();
+        if (bigIntType === "number" && str.includes("e")) {
+            let [num, pow] = str.split("e");
+            if (pow.startsWith("-")) {
+                // too small to be displayed
+                str = "0";
+            } else {
+                let [int, dec] = num.split(".");
+                if (!dec) {
+                    dec = "";
+                }
+                pow = Number(pow);
+                str = int + dec + "0".repeat(pow - dec.length);
+            }
+        }
         if (str.length === 1) {
             if (str === "0") {
                 return "0";
@@ -45,7 +70,7 @@
 
     function strToBigInt(str) {
         if (!str) {
-            return 0n;
+            return BigInt(0);
         }
         let preComma, postComma;
         if (str.includes(",")) {
@@ -57,7 +82,8 @@
             postComma = "00";
         }
         if (postComma.length !== 2) {
-            postComma = (postComma + "00").substr(0, 2);
+            // get the first two digits after the comma, fill with 0 if needed
+            postComma = (postComma + "00").slice(0, 2);
         }
         return BigInt(preComma + postComma);
     }

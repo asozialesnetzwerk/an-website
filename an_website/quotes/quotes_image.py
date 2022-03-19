@@ -303,23 +303,24 @@ class QuoteAsImage(QuoteReadyCheckHandler):
 
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
 
+        self.set_header(
+            "Content-Disposition",
+            f"inline; filename={self.request.host.replace('.', '-')}_z_"
+            f"{wrong_quote.get_id_as_str(True)}.{file_extension.lower()}",
+        )
+
         if head:
             return
 
-        if not (
-            str_to_bool(
+        source: None | str = (
+            None
+            if str_to_bool(
                 str(self.get_query_argument("no_source", default="False")),
                 default=False,
             )
-        ):
-            wq_id = (
-                wrong_quote.id
-                if wrong_quote.id != -1
-                else f"{quote_id}-{author_id}"
-            )
-            source: None | str = f"{self.request.host_name}/z/{wq_id}"
-        else:
-            source = None
+            else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
+        )
+
         if file_type == "gif" and str_to_bool(
             self.get_query_argument("small", default="False"),
             default=False,
