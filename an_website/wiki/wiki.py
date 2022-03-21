@@ -46,7 +46,7 @@ class WikiHandler(HTMLRequestHandler):
             return
         self.render(
             "pages/ask_for_redirect.html",
-            redirect_url="https://asoziales-wiki.de",
+            redirect_url="https://wiki.asozial.org",
             from_url=None,
             discord=False,
         )
