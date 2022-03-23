@@ -420,7 +420,7 @@ class BaseRequestHandler(RequestHandler):
         url: None | str | SplitResult = None,
         this_url: None | str = None,
         always_add_params: bool = False,
-        force_absolute: bool = True,
+        new_path: None | str = None,
         **query_args: None | str | bool | float,
     ) -> str:
         """
@@ -441,11 +441,6 @@ class BaseRequestHandler(RequestHandler):
                 f"/redirect?to={quote(url.geturl())}"
                 f"&from={quote(this_url or self.request.full_url())}"
             )
-
-        host = (url.netloc or self.request.host).lower()
-        add_protocol_and_host = (
-            force_absolute or host != self.request.host.lower()
-        )
 
         if "no_3rd_party" not in query_args:
             query_args["no_3rd_party"] = self.get_no_3rd_party()
@@ -470,9 +465,9 @@ class BaseRequestHandler(RequestHandler):
         return add_args_to_url(
             urlunsplit(
                 (
-                    self.get_protocol() if add_protocol_and_host else "",
-                    host if add_protocol_and_host else "",
-                    url.path.rstrip("/"),
+                    self.get_protocol(),
+                    self.request.host,
+                    (new_path or url.path).rstrip("/"),
                     url.query,
                     url.fragment,
                 )
@@ -823,19 +818,21 @@ class NotFoundHandler(HTMLRequestHandler):
             kwargs["module_info"] = None  # type: ignore
         super().initialize(*args, **kwargs)  # type: ignore
 
-    def get_query(self) -> str:
-        """Get the query how you would add it to the end of the URL."""
-        if not self.request.query:
-            return ""  # if empty without question mark
-        return f"?{self.request.query}"  # only add "?" if there is a query
-
     async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 
-        # replace multiple / with only one
-        new_path = re.sub(r"/+", "/", self.request.path.rstrip("/"))
+        new_path = (
+            re.sub(r"/+", "/", self.request.path.rstrip("/"))
+            .replace("_", "-")
+            .removesuffix("/index.html")
+            .removesuffix("/index.htm")
+            .removesuffix("/index.php")
+            .removesuffix(".html")
+            .removesuffix(".htm")
+            .removesuffix(".php")
+        )
 
         if new_path.lower() in {
             "/-profiler/phpinfo",
@@ -844,53 +841,36 @@ class NotFoundHandler(HTMLRequestHandler):
             "/.env.bak",
             "/.ftpconfig",
             "/admin/controller/extension/extension",
-            "/assets/filemanager/dialog.php",
-            "/assets/vendor/server/php/index.php",
+            "/assets/filemanager/dialog",
+            "/assets/vendor/server/php",
             "/aws.yml",
             "/boaform/admin/formlogin",
-            "/phpinfo.php",
-            "/public/assets/jquery-file-upload/server/php/index.php",
-            "/root.php",
+            "/phpinfo",
+            "/public/assets/jquery-file-upload/server/php",
+            "/root",
             "/settings/aws.yml",
             "/uploads",
-            "/vendor/phpunit/phpunit/src/util/php/eval-stdin.php",
+            "/vendor/phpunit/phpunit/src/util/php/eval-stdin",
             "/wordpress",
             "/wp",
             "/wp-admin",
             "/wp-admin/css",
             "/wp-includes",
             "/wp-login",
-            "/wp-login.php",
             "/wp-upload",
-            "/wp-upload.php",
         }:
             raise HTTPError(469, reason="Nice Try")
 
-        new_path = (
-            new_path.removesuffix("/index.html")
-            .removesuffix("/index.htm")
-            .removesuffix("/index.php")
-            .removesuffix(".html")
-            .removesuffix(".htm")
-            .removesuffix(".php")
-        )
-        # replace underscore with minus
-        new_path = new_path.replace("_", "-")
-
         if new_path != self.request.path:
-            return self.redirect(
-                self.get_protocol_and_host() + new_path + self.get_query(),
-                True,
-            )
-        this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → "/ "
+            return self.redirect(self.fix_url(new_path=new_path), True)
 
+        this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → " "
         distances: list[tuple[int, str]] = []
         max_dist = max(1, min(4, len(this_path_stripped) - 1))
 
         for module_info in self.get_module_infos():
             if module_info.path is not None:
-                # get the smallest distance possible with the aliases
-                dist = min(
+                dist = min(  # get the smallest distance with the aliases
                     distance(this_path_stripped, path.strip("/"))
                     for path in (*module_info.aliases, module_info.path)
                     if path != "/z"  # do not redirect to /z
@@ -912,12 +892,9 @@ class NotFoundHandler(HTMLRequestHandler):
             # sort to get the one with the smallest distance in index 0
             distances.sort()
             dist, path = distances[0]
+            # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:
-                # only if the distance is less than or equal {max_dist}
-                return self.redirect(
-                    self.get_protocol_and_host() + path + self.get_query(),
-                    False,
-                )
+                return self.redirect(self.fix_url(new_path=path), False)
 
         raise HTTPError(404)
 
