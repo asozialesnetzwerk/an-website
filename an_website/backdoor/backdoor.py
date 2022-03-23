@@ -27,7 +27,7 @@ from tornado.web import HTTPError
 
 from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, Permissions
 
 
 def get_module_info() -> ModuleInfo:
@@ -60,7 +60,8 @@ class Backdoor(APIRequestHandler):
     """The Tornado request handler for the backdoor API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
-    REQUIRES_AUTHORIZATION: bool = True
+    REQUIRED_PERMISSION: Permissions = Permissions.BACKDOOR
+    SUPPORTS_COOKIE_AUTHORIZATION: bool = False
 
     sessions: dict[str, dict[str, Any]] = {}
 

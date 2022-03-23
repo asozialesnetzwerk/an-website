@@ -22,7 +22,7 @@ from tornado.web import HTTPError
 
 from .. import DIR as ROOT_DIR
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, run
+from ..utils.utils import ModuleInfo, Permissions, run
 
 
 def get_module_info() -> ModuleInfo:
@@ -42,7 +42,7 @@ class Restart(APIRequestHandler):
     """The request handler for the restart API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
-    REQUIRES_AUTHORIZATION: bool = True
+    REQUIRED_PERMISSION: Permissions = Permissions.RESTART
 
     async def post(self) -> None:
         """Handle the POST request to the restart API."""

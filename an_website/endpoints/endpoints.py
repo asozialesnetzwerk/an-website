@@ -69,10 +69,7 @@ class Endpoints(HTMLRequestHandler):
                 if handler[0].startswith("/api/")
                 if (
                     issubclass(handler[1], APIRequestHandler)
-                    and (
-                        self.is_authorized()
-                        or not handler[1].REQUIRES_AUTHORIZATION
-                    )
+                    and self.is_authorized(handler[1].REQUIRED_PERMISSION)
                 )
             ]
             if len(api_paths) > 0:

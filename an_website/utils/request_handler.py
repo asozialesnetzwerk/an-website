@@ -54,6 +54,7 @@ from .static_file_handling import fix_static_url
 from .utils import (
     THEMES,
     ModuleInfo,
+    Permissions,
     add_args_to_url,
     anonymize_ip,
     bool_to_str,
@@ -91,8 +92,9 @@ def get_module_info() -> ModuleInfo:
 class BaseRequestHandler(RequestHandler):
     """The base Tornado request handler used by every page and API."""
 
-    # can be overridden in subclasses
-    REQUIRES_AUTHORIZATION: bool = False
+    REQUIRED_PERMISSION: Permissions = Permissions(0)
+    # the following should be False on security relevant endpoints
+    SUPPORTS_COOKIE_AUTHORIZATION: bool = True
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
 
     ELASTIC_RUM_JS_URL = (
@@ -162,11 +164,13 @@ class BaseRequestHandler(RequestHandler):
 
     def set_default_headers(self) -> None:
         """Set default headers."""
+        # see: dev.mozilla.org/docs/Web/HTTP/Headers
         # Opt out of all FLoC cohort calculation.
         self.set_header("Permissions-Policy", "interest-cohort=()")
+        # disable Referer header for cross-origin requests
+        self.set_header("Referrer-Policy", "same-origin")
         # community.torproject.org/onion-services/advanced/onion-location/
         if self.get_protocol() == "https":
-            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
             self.set_header(
                 "Strict-Transport-Security", "max-age=31536000; preload"
             )
@@ -179,14 +183,20 @@ class BaseRequestHandler(RequestHandler):
                 + self.request.path
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
+        if sys.flags.dev_mode:
+            self.set_header("X-Dev-Mode", bool_to_str(True))
+            for permission in Permissions:
+                self.set_header(
+                    f"X-Has-{permission.name}-Permission",
+                    bool_to_str(self.is_authorized(permission)),
+                )
 
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
         if self.request.method != "OPTIONS":
-
-            if self.REQUIRES_AUTHORIZATION and not self.is_authorized():
+            if not self.is_authorized(self.REQUIRED_PERMISSION):
                 # TODO: self.set_header("WWW-Authenticate")
                 logger.info(
                     "Unauthorized access to %s from %s",
@@ -199,7 +209,6 @@ class BaseRequestHandler(RequestHandler):
                 await self.ratelimit()
 
         if self.request.method == "GET":
-
             if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
@@ -244,7 +253,7 @@ class BaseRequestHandler(RequestHandler):
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
-            or self.is_authorized()
+            or self.is_authorized(Permissions.NO_RATELIMITS)
         ):
             return False
         remote_ip = blake3(
@@ -350,7 +359,9 @@ class BaseRequestHandler(RequestHandler):
         if "exc_info" in kwargs and not issubclass(
             kwargs["exc_info"][0], HTTPError
         ):
-            if self.settings.get("serve_traceback") or self.is_authorized():
+            if self.settings.get("serve_traceback") or self.is_authorized(
+                Permissions.TRACEBACK
+            ):
                 return "".join(
                     traceback.format_exception(*kwargs["exc_info"])
                 ).strip()
@@ -579,13 +590,22 @@ class BaseRequestHandler(RequestHandler):
 
         return default
 
-    def is_authorized(self) -> bool:
+    def is_authorized(self, permission: Permissions) -> bool:
         """Check whether the request is authorized."""
-        api_secrets = self.settings.get("TRUSTED_API_SECRETS", set())
-        return (
-            self.request.headers.get("Authorization") in api_secrets
-            or self.get_argument("key", default=None) in api_secrets
-            or self.get_cookie("key", default=None) in api_secrets
+        if permission == Permissions(0):  # TODO: test this
+            return True
+        api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
+        return any(
+            permission in api_secrets[key]
+            for key in (
+                self.request.headers.get("Authorization"),
+                self.get_argument("key", default=None),
+                self.get_cookie("key", default=None)
+                if self.SUPPORTS_COOKIE_AUTHORIZATION
+                else None,
+            )
+            if key is not None
+            if key in api_secrets
         )
 
     def geoip(
@@ -638,7 +658,10 @@ class HTMLRequestHandler(BaseRequestHandler):
             description=self.get_error_page_description(status_code),
             is_traceback="exc_info" in kwargs
             and not issubclass(kwargs["exc_info"][0], HTTPError)
-            and (self.settings.get("serve_traceback") or self.is_authorized()),
+            and (
+                self.settings.get("serve_traceback")
+                or self.is_authorized(Permissions.TRACEBACK)
+            ),
         )
 
     def get_template_namespace(self) -> dict[str, Any]:
@@ -668,7 +691,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                     )
                 ),
                 "no_3rd_party": self.get_no_3rd_party(),
-                "lang": "de",  # can change in future
+                "lang": "de",  # TODO: add language support
                 "form_appendix": self.get_form_appendix(),
                 "fix_url": self.fix_url,
                 "fix_static": lambda url: self.fix_url(fix_static_url(url)),
@@ -768,22 +791,16 @@ class APIRequestHandler(BaseRequestHandler):
     def set_default_headers(self) -> None:
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
-        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Max-Age
+        # see header docs at: dev.mozilla.org/docs/Web/HTTP/Headers
         # 7200 = 2h (the chromium max)
         self.set_header("Access-Control-Max-Age", "7200")
-        # dev.mozilla.org/docs/Web/HTTP/Headers/Content-Type
         self.set_header("Content-Type", "application/json; charset=UTF-8")
-        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
         self.set_header("Access-Control-Allow-Origin", "*")
-        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
         self.set_header("Access-Control-Allow-Headers", "*")
-        # dev.mozilla.org/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
         self.set_header(
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
-        if sys.flags.dev_mode:
-            self.set_header("X-Dev-Mode", bool_to_str(True))
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""
@@ -812,17 +829,13 @@ class NotFoundHandler(HTMLRequestHandler):
             return ""  # if empty without question mark
         return f"?{self.request.query}"  # only add "?" if there is a query
 
-    async def prepare(self) -> None:  # noqa: C901
-        # pylint: disable=too-complex, too-many-branches
+    async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 
-        new_path = self.request.path.rstrip("/")
-
-        if "//" in new_path:
-            # replace multiple / with only one
-            new_path = re.sub(r"/+", "/", new_path)
+        # replace multiple / with only one
+        new_path = re.sub(r"/+", "/", self.request.path.rstrip("/"))
 
         if new_path.lower() in {
             "/-profiler/phpinfo",
@@ -852,33 +865,26 @@ class NotFoundHandler(HTMLRequestHandler):
             "/wp-upload.php",
         }:
             raise HTTPError(469, reason="Nice Try")
-        if new_path.endswith("/index.html"):
-            # len("/index.html") = 11
-            new_path = new_path[:-11]
-        elif new_path.endswith("/index.htm") or new_path.endswith("/index.php"):
-            # len("/index.htm") = 10
-            new_path = new_path[:-10]
-        elif new_path.endswith(".html"):
-            # len(".html") = 5
-            new_path = new_path[:-5]
-        elif new_path.endswith(".htm") or new_path.endswith(".php"):
-            # len(".htm") = 4
-            new_path = new_path[:-4]
 
-        if "_" in new_path:
-            # replace underscore with minus
-            new_path = new_path.replace("_", "-")
+        new_path = (
+            new_path.removesuffix("/index.html")
+            .removesuffix("/index.htm")
+            .removesuffix("/index.php")
+            .removesuffix(".html")
+            .removesuffix(".htm")
+            .removesuffix(".php")
+        )
+        # replace underscore with minus
+        new_path = new_path.replace("_", "-")
 
         if new_path != self.request.path:
             return self.redirect(
                 self.get_protocol_and_host() + new_path + self.get_query(),
                 True,
             )
-        # "/%20/" → " "
-        this_path_stripped = unquote(new_path).strip("/")
+        this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → "/ "
 
         distances: list[tuple[int, str]] = []
-
         max_dist = max(1, min(4, len(this_path_stripped) - 1))
 
         for module_info in self.get_module_infos():
@@ -922,15 +928,11 @@ class ErrorPage(HTMLRequestHandler):
     async def get(self, code: str) -> None:
         """Show the error page."""
         status_code: int = int(code)
-
         # get the reason
         reason: str = responses.get(status_code, "")
-
         # set the status code if Tornado doesn't raise an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
-            # set the status code
-            self.set_status(status_code)
-
+            self.set_status(status_code)  # set the status code
         return await self.render(
             "error.html",
             status=status_code,

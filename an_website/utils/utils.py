@@ -25,6 +25,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import IntFlag, auto
 from functools import cache
 from pathlib import Path
 from typing import IO, Any, TypeVar, Union
@@ -461,6 +462,15 @@ def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
         ).stdout
     except subprocess.CalledProcessError:
         return ""
+
+
+class Permissions(IntFlag):
+    """Permissions for accessing the website."""
+
+    NO_RATELIMITS = auto()
+    TRACEBACK = auto()
+    BACKDOOR = auto()
+    RESTART = auto()
 
 
 def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:

@@ -44,7 +44,7 @@ from . import DIR, NAME, TEMPLATES_DIR
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFoundHandler
-from .utils.utils import Handler, ModuleInfo, Timer, time_function
+from .utils.utils import Handler, ModuleInfo, Permissions, Timer, time_function
 from .version import version
 
 IGNORED_MODULES = [
@@ -270,13 +270,18 @@ def apply_config_to_app(
         "GENERAL", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
     )
 
-    app.settings["TRUSTED_API_SECRETS"] = set(
-        secret.strip()
+    app.settings["TRUSTED_API_SECRETS"] = {
+        key_perms[0]: Permissions(
+            int(key_perms[1])
+            if len(key_perms) > 1
+            else (1 << len(Permissions)) - 1  # should be all permissions
+        )
         for secret in config.get(
             "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
         ).split(",")
         if secret.strip()
-    )
+        if (key_perms := [part.strip() for part in secret.split("=")])
+    }
 
     app.settings["LINK_TO_HTTPS"] = config.getboolean(
         "GENERAL", "LINK_TO_HTTPS", fallback=False
