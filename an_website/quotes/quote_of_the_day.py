@@ -148,6 +148,10 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             1,  # True
         )
 
+    def get_protocol_and_host(self) -> str:
+        """Get the beginning of the URL."""
+        return f"{self.get_protocol()}://{self.request.host}"
+
     async def get_quote_by_date(
         self, date: dt.date
     ) -> None | QuoteOfTheDayData:

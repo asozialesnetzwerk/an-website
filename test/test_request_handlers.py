@@ -90,6 +90,76 @@ async def test_not_found_handler(
     assert_valid_redirect(await fetch("a?x=y"), "/?x=y")
 
 
+async def test_permissions(
+    # pylint: disable=redefined-outer-name,unused-argument
+    fetch: FetchCallable,
+    http_server_port: tuple[socket.socket, int],
+) -> None:
+    """Test stuff with permissions."""
+    for key, headers in (
+        (
+            "s0",
+            {
+                "X-Has-Backdoor-Permission": "nope",
+                "X-Has-No-Ratelimits-Permission": "nope",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "nope",
+            },
+        ),
+        (
+            "s1",
+            {
+                "X-Has-Backdoor-Permission": "nope",
+                "X-Has-No-Ratelimits-Permission": "sure",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "nope",
+            },
+        ),
+        (
+            "s2",
+            {
+                "X-Has-Backdoor-Permission": "nope",
+                "X-Has-No-Ratelimits-Permission": "nope",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "sure",
+            },
+        ),
+        (
+            "s3",
+            {
+                "X-Has-Backdoor-Permission": "nope",
+                "X-Has-No-Ratelimits-Permission": "sure",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "sure",
+            },
+        ),
+        (
+            "s4",
+            {
+                "X-Has-Backdoor-Permission": "sure",
+                "X-Has-No-Ratelimits-Permission": "nope",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "nope",
+            },
+        ),
+        (
+            "xyzzy",
+            {
+                "X-Has-Backdoor-Permission": "sure",
+                "X-Has-No-Ratelimits-Permission": "sure",
+                "X-Has-Restart-Permission": "sure",
+                "X-Has-Traceback-Permission": "sure",
+            },
+        ),
+    ):
+        assert_valid_response(
+            await fetch("/api/ping", headers={"Authorization": key}),
+            "text/plain; charset=utf-8",
+            200,
+            headers=headers,
+        )
+
+
 async def test_request_handlers2(
     # pylint: disable=redefined-outer-name
     fetch: FetchCallable,

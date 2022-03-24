@@ -86,6 +86,8 @@ def app() -> tornado.web.Application:
 
     assert isinstance(app, tornado.web.Application)
 
+    app.settings["debug"] = True
+
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
     main.apply_config_to_app(app, config)
@@ -142,10 +144,17 @@ def assert_valid_response(
     response: tornado.httpclient.HTTPResponse,
     content_type: str,
     code: int = 200,
+    headers: None | dict[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
-    assert response.headers["Content-Type"] == content_type
-    assert response.code == code
+    url = response.effective_url
+    assert response.code == code or print(url)
+    assert response.headers["Content-Type"] == content_type or print(url)
+    headers = headers or {}
+    for header, value in headers.items():
+        assert response.headers[header] == value or print(
+            url, response.headers, header, value
+        )
     return response
 
 

@@ -53,7 +53,7 @@ def apply_contact_stuff_to_app(
         "CONTACT",
         "CONTACT_ADDRESS",
         fallback=f"{NAME.removesuffix('-dev')}@restmail.net"
-        if sys.flags.dev_mode
+        if app.settings.get("debug")
         else "",
     )
     sender_address = config.get(

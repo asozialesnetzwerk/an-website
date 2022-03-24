@@ -183,13 +183,14 @@ class BaseRequestHandler(RequestHandler):
                 + self.request.path
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
-        if sys.flags.dev_mode:
+        if self.settings.get("debug"):
             self.set_header("X-Dev-Mode", bool_to_str(True))
             for permission in Permissions:
-                self.set_header(
-                    f"X-Has-{permission.name}-Permission",
-                    bool_to_str(self.is_authorized(permission)),
-                )
+                if permission.name:
+                    self.set_header(
+                        f"X-Has-{permission.name.replace('_', '-')}-Permission",
+                        bool_to_str(self.is_authorized(permission)),
+                    )
 
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
@@ -406,10 +407,6 @@ class BaseRequestHandler(RequestHandler):
         # otherwise, use the protocol of the request
         return self.request.protocol
 
-    def get_protocol_and_host(self) -> str:
-        """Get the beginning of the URL."""
-        return f"{self.get_protocol()}://{self.request.host}"
-
     def get_module_infos(self) -> tuple[ModuleInfo, ...]:
         """Get the module infos."""
         return self.settings.get("MODULE_INFOS") or tuple()
@@ -587,7 +584,7 @@ class BaseRequestHandler(RequestHandler):
 
     def is_authorized(self, permission: Permissions) -> bool:
         """Check whether the request is authorized."""
-        if permission == Permissions(0):  # TODO: test this
+        if permission == Permissions(0):
             return True
         api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
         return any(
