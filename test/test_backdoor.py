@@ -86,7 +86,8 @@ async def assert_run_and_print(
     if assertion:
         assert assertion(real_output[1])
     elif output is not None:
-        assert real_output[1].endswith("\n")
+        if real_output[1]:
+            assert real_output[1].endswith("\n")
         assert real_output[1].removesuffix("\n") == output.removesuffix("\n")
     else:
         assert output
@@ -118,6 +119,11 @@ async def test_backdoor(  # pylint: disable=unused-argument
         url,
         "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
         "Result:\n<Permissions.RESTART|BACKDOOR|TRACEBACK|NO_RATELIMITS: 15>",
+    )
+    await assert_run_and_print(
+        url,
+        "app.settings['TRUSTED_API_SECRETS'].get('')",
+        "",
     )
     await assert_run_and_print(url, "print('42')", "Output:\n42\n")
     await assert_run_and_print(

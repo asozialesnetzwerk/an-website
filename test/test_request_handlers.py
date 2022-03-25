@@ -98,6 +98,15 @@ async def test_permissions(
     """Test stuff with permissions."""
     for key, headers in (
         (
+            "",
+            {
+                "X-Has-Backdoor-Permission": "nope",
+                "X-Has-No-Ratelimits-Permission": "nope",
+                "X-Has-Restart-Permission": "nope",
+                "X-Has-Traceback-Permission": "nope",
+            },
+        ),
+        (
             "s0",
             {
                 "X-Has-Backdoor-Permission": "nope",

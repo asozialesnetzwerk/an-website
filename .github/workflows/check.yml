@@ -44,7 +44,9 @@ jobs:
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-duplicate-keys --remove-unused-variables .
       - name: Run isort
-        run: isort .
+        run: |
+          isort .
+          isort .
       - name: Run Black
         run: black .
       - name: Minify JS files
