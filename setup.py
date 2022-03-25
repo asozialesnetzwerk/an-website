@@ -14,7 +14,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # pylint: disable=missing-module-docstring
-
 from __future__ import annotations
 
 from math import pi
