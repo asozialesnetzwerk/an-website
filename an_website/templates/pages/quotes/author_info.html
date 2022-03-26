@@ -3,15 +3,13 @@
 
 {% block info_column %}
     Autor: {{author.name}}
-
     {% if author.info is not None %}
-    <div>
-        <p id="author-info">{{ author.info[1] }}</p>
-        <br>
-        Quelle: <a href="{{fix_url(author.info[0])}}"
-                   rel="noreferrer">Wikipedia</a> (Stand: {{author.info[2].date()}})
-    </div>
-    {% end $}
-{% end %}
-
+        <div>
+            <p id="author-info">{{ author.info[1] }}</p>
+            <br>
+            Quelle: <a href="{{fix_url(author.info[0])}}"
+                       rel="noreferrer">Wikipedia</a>
+            (Stand: {{author.info[2].date()}})
+        </div>
+    {% end %}
 {% end %}

@@ -128,7 +128,13 @@ async def test_quote_request_handlers(
     assert_valid_html_response(await fetch("/zitate/share/1-1"))
     assert_valid_html_response(await fetch("/zitate/erstellen"))
 
-    assert_valid_response(await fetch("/zitate/1-1.gif"), "image/gif")
+    assert len(
+        assert_valid_response(await fetch("/zitate/1-1.gif"), "image/gif").body
+    ) > len(
+        assert_valid_response(
+            await fetch("/zitate/1-1.gif?small=sure"), "image/gif"
+        ).body
+    )
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_image import FILE_EXTENSIONS
 

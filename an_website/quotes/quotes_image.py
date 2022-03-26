@@ -246,7 +246,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     }
     if file_type == "4-color-gif":
         colors: list[tuple[int, tuple[int, int, int]]]
-        colors = image.getcolors()  # type: ignore[assignment]
+        colors = image.getcolors(69420)  # type: ignore[assignment]
         colors.sort(reverse=True)
         values: list[int] = []
         for _, color in colors[:4]:
