@@ -208,9 +208,11 @@ class AvailabilityChartHandler(BaseRequestHandler):
 class UptimeAPIHandler(APIRequestHandler):
     """The request handler for the uptime API."""
 
-    async def get(self) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the API."""
         self.set_header("Cache-Control", "no-cache")
+        if head:
+            return
         availability_data = await get_availability_data(self.elasticsearch)
         return await self.finish(
             {

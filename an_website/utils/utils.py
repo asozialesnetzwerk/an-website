@@ -286,6 +286,11 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
+def country_code_to_flag(code: str) -> str:
+    """Convert a two-letter iso country code to a flag emoji."""
+    return "".join(chr(ord(ch) + 23 * 29 * 191) for ch in code.upper())
+
+
 async def geoip(
     ip: str,  # pylint: disable=invalid-name
     database: str = "GeoLite2-City.mmdb",
@@ -345,6 +350,10 @@ async def geoip(
                 params={"filter_path": "docs.doc._source"},
             )
         )["docs"][0]["doc"]["_source"].get("geoip", {})
+        if "country_iso_code" in geoip_cache[ip][database]:
+            geoip_cache[ip][database]["country_flag"] = country_code_to_flag(
+                geoip_cache[ip][database]["country_iso_code"]
+            )
     return geoip_cache[ip][database]
 
 

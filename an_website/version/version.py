@@ -59,8 +59,10 @@ def get_module_info() -> ModuleInfo:
 class VersionAPI(APIRequestHandler):
     """The Tornado request handler for the version API."""
 
-    async def get(self) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the version API."""
+        if head:
+            return
         return await self.finish(
             {
                 "version": VERSION,

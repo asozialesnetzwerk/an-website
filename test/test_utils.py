@@ -51,6 +51,14 @@ def test_bool_str_conversion() -> None:
     assert utils.str_to_bool("Invalid bool value", default=True)
 
 
+def test_country_code_to_flag() -> None:
+    """Test the utils.country_code_to_flag function."""
+    assert utils.country_code_to_flag("aq") == "🇦🇶"
+    assert utils.country_code_to_flag("aQ") == "🇦🇶"
+    assert utils.country_code_to_flag("Aq") == "🇦🇶"
+    assert utils.country_code_to_flag("AQ") == "🇦🇶"
+
+
 def test_adding_stuff_to_url() -> None:
     """Test the utils.add_args_to_url function."""
     for url in (

@@ -43,6 +43,7 @@ async def test_json_apis(
         "/api/discord",
         "/api/discord/367648314184826880",
         "/api/discord",
+        "/api/ip",
         # "/api/zitate/1-1",  # gets tested with quotes
         "/api/hangman-loeser",
         # "/api/ping",  # (not JSON)
@@ -260,6 +261,7 @@ async def test_request_handlers(
     assert_valid_html_response(await fetch("/endpunkte"))
     assert_valid_html_response(await fetch("/hangman-loeser"))
     assert_valid_html_response(await fetch("/host-info"))
+    assert_valid_html_response(await fetch("/ip"))
     assert_valid_html_response(await fetch("/js-lizenzen"))
     assert_valid_html_response(await fetch("/kaenguru-comics"))
     # assert_valid_html_response(await fetch("/kontakt"))
@@ -280,6 +282,7 @@ async def test_request_handlers(
     assert_valid_json_response(await fetch("/endpunkte?as_json=sure"))
     assert_valid_json_response(await fetch("/hangman-loeser?as_json=sure"))
     assert_valid_json_response(await fetch("/host-info?as_json=sure"))
+    assert_valid_json_response(await fetch("/ip?as_json=sure"))
     assert_valid_json_response(await fetch("/js-lizenzen?as_json=sure"))
     assert_valid_json_response(await fetch("/kaenguru-comics?as_json=sure"))
     # assert_valid_json_response(await fetch("/kontakt?as_json=sure"))
