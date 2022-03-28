@@ -68,8 +68,14 @@ class IP(HTMLRequestHandler):
             )
         await self.render(
             "pages/empty.html",
-            text="Deine IP-Adresse ist "
-            + self.request.remote_ip
-            + " "
-            + ((await self.geoip() or {}).get("country_flag") or ""),
+            text=(
+                "Deine IP-Adresse ist "
+                + self.request.remote_ip
+                + " "
+                + (
+                    "🏴‍☠️"
+                    if self.request.remote_ip in {"127.0.0.1", "::1"}
+                    else (await self.geoip() or {}).get("country_flag") or ""
+                )
+            ).strip(),
         )
