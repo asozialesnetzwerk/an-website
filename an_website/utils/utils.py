@@ -286,6 +286,26 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
+def emojify(text: str) -> str:
+    """Emojify a given text."""
+    text = re.sub(
+        r"[a-zA-Z]+",
+        lambda match: "\u200b".join(country_code_to_flag(match.group(0))),
+        replace_umlauts(text),
+    )
+    text = re.sub(
+        r"[0-9#*]+", lambda match: f"{'⃣'.join(match.group(0))}⃣", text
+    )
+    return (
+        text.replace("!?", "⁉")
+        .replace("!!", "‼")
+        .replace("?", "❓")
+        .replace("!", "❗")
+        .replace("-", "➖")
+        .replace("+", "➕")
+    )
+
+
 def country_code_to_flag(code: str) -> str:
     """Convert a two-letter iso country code to a flag emoji."""
     return "".join(chr(ord(ch) + 23 * 29 * 191) for ch in code.upper())
@@ -407,8 +427,6 @@ def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
 
 def replace_umlauts(text: str) -> str:
     """Replace Ä, Ö, Ü, ẞ, ä, ö, ü, ß in string."""
-    if " " in text:
-        return " ".join(replace_umlauts(word) for word in text.split(" "))
     if text.isupper():
         return (
             text.replace("Ä", "AE")
@@ -416,6 +434,8 @@ def replace_umlauts(text: str) -> str:
             .replace("Ü", "UE")
             .replace("ẞ", "SS")
         )
+    if " " in text:
+        return " ".join(replace_umlauts(word) for word in text.split(" "))
     return (
         text.replace("ä", "ae")
         .replace("ö", "oe")

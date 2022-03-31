@@ -61,9 +61,7 @@ class QuotesInfoPage(HTMLRequestHandler):
             wrong_quotes=wqs,
             title="Zitat-Informationen",
             short_title="Zitat-Info",
-            description=(
-                f"Falsch zugeordnete Zitate mit „{quote.quote}“ als Zitat."
-            ),
+            description=f"Falsch zugeordnete Zitate mit „{quote}“ als Zitat.",
         )
 
 
@@ -202,7 +200,5 @@ class AuthorsInfoPage(HTMLRequestHandler):
             wrong_quotes=wqs,
             title="Autor-Informationen",
             short_title="Autor-Info",
-            description=(
-                f"Falsch zugeordnete Zitate mit „{author.name}“ als Autor."
-            ),
+            description=f"Falsch zugeordnete Zitate mit „{author}“ als Autor.",
         )

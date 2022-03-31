@@ -29,7 +29,7 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             ("/endpunkte", Endpoints),
             ("/api/endpunkte", EndpointsAPI),
-            ("/api/endpoints/?", RedirectHandler, {"url": "/api/endpunkte"}),
+            ("/api/endpoints/*", RedirectHandler, {"url": "/api/endpunkte"}),
         ),
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite",

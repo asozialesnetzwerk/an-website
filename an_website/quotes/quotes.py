@@ -489,9 +489,9 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
         return await self.finish(
             {
                 "id": wrong_quote.get_id_as_str(),
-                "quote": wrong_quote.quote.quote,
-                "author": wrong_quote.author.name,
-                "real_author": wrong_quote.quote.author.name,
+                "quote": str(wrong_quote.quote),
+                "author": str(wrong_quote.author),
+                "real_author": str(wrong_quote.quote.author),
                 "real_author_id": wrong_quote.quote.author.id,
                 "rating": await self.get_rating_str(wrong_quote),
                 "vote": vote,

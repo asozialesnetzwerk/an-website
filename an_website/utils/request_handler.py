@@ -697,7 +697,9 @@ class HTMLRequestHandler(BaseRequestHandler):
                     else self.request.full_url().lower()
                 ).split("?")[0],
                 "settings": self.settings,
-                "c": str_to_bool(self.get_cookie("c", "n"), False),
+                "c": str_to_bool(self.get_cookie("c", "n"), False)
+                or (now := datetime.utcnow()).day == 1
+                and now.month == 4,
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
             }

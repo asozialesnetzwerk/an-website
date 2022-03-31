@@ -8,9 +8,9 @@
              <select name="quote-2">
                  {% for quote in quotes %}
                     {% if isinstance(quote, str) %}
-                        <option value="{{quote}}">{{quote}}</option>
+                        <option value="{{quote.strip()}}">{{quote.strip()}}</option>
                     {% else %}
-                        <option value="{{quote.quote}}">{{quote.quote}}</option>
+                        <option value="{{quote.quote.strip()}}">{{quote}}</option>
                     {% end %}
                  {% end %}
              </select>
@@ -21,11 +21,11 @@
             <select name="real-author-2">
                 {% for author in real_authors %}
                     {% if isinstance(author, str) %}
-                <option value="{{author}}">{{author}}</option>
+                        <option value="{{author.strip()}}">{{author.strip()}}</option>
                     {% else %}
-                <option value="{{author.name}}">{{author.name}}</option>
+                        <option value="{{author.name.strip()}}">{{author}}</option>
                     {% end %}
-                 {% end %}
+                {% end %}
             </select>
         </label>
 
@@ -35,11 +35,11 @@
             <select name="fake-author-2">
                 {% for author in fake_authors %}
                     {% if isinstance(author, str) %}
-                <option value="{{author}}">{{author}}</option>
+                        <option value="{{author.strip()}}">{{author.strip()}}</option>
                     {% else %}
-                <option value="{{author.name}}">{{author.name}}</option>
+                        <option value="{{author.name.strip()}}">{{author}}</option>
                     {% end %}
-                 {% end %}
+                {% end %}
             </select>
         </label>
 

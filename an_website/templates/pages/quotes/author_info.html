@@ -2,7 +2,7 @@
 {% extends "info.html" %}
 
 {% block info_column %}
-    Autor: {{author.name}}
+    Autor: {{author}}
     {% if author.info is not None %}
         <div>
             <p id="author-info">{{ author.info[1] }}</p>

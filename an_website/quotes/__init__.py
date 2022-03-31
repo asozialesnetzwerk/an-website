@@ -36,6 +36,7 @@ from tornado.web import HTTPError
 from .. import DIR as ROOT_DIR
 from .. import ORJSON_OPTIONS
 from ..utils.request_handler import HTMLRequestHandler
+from ..utils.utils import emojify
 
 DIR = os.path.dirname(__file__)
 
@@ -94,7 +95,7 @@ class Author(QuotesObjBase):
         """Get the author as JSON."""
         return {
             "id": self.id,
-            "name": self.name,
+            "name": str(self),
             "path": f"/zitate/info/a/{self.id}",
             "info": {
                 "source": self.info[0],
@@ -107,7 +108,11 @@ class Author(QuotesObjBase):
 
     def __str__(self) -> str:
         """Return the name of the author."""
-        return self.name.strip()
+        return (
+            emojify(self.name.strip())
+            if (now := datetime.datetime.utcnow()).day == 1 and now.month == 4
+            else self.name.strip()
+        )
 
 
 @dataclass
@@ -135,14 +140,18 @@ class Quote(QuotesObjBase):
         """Get the quote as JSON."""
         return {
             "id": self.id,
-            "quote": self.quote,
+            "quote": str(self),
             "author": self.author.to_json(),
             "path": f"/zitate/info/z/{self.id}",
         }
 
     def __str__(self) -> str:
         """Return the content of the quote."""
-        return self.quote.strip()
+        return (
+            emojify(self.quote.strip())
+            if (now := datetime.datetime.utcnow()).day == 1 and now.month == 4
+            else self.quote.strip()
+        )
 
 
 @dataclass

@@ -37,8 +37,8 @@ def test_n_from_set() -> None:
 def test_bool_str_conversion() -> None:
     """Test the conversion from bool to str and from str to bool."""
     for _b in (False, True):
-        assert _b == utils.str_to_bool(utils.bool_to_str(_b))
-        assert _b == utils.str_to_bool(str(_b))
+        assert _b is utils.str_to_bool(utils.bool_to_str(_b))
+        assert _b is utils.str_to_bool(str(_b))
 
     for _b_str in ("sure", "nope"):
         _b_bool = utils.str_to_bool(_b_str)
@@ -48,7 +48,7 @@ def test_bool_str_conversion() -> None:
     with pytest.raises(ValueError):
         utils.str_to_bool("Invalid bool value")
 
-    assert utils.str_to_bool("Invalid bool value", default=True)
+    assert utils.str_to_bool("Invalid bool value", default=True) is True
 
 
 def test_country_code_to_flag() -> None:
@@ -93,10 +93,9 @@ def test_anonomyze_ip() -> None:
     assert utils.anonymize_ip("127.0.0.1", ignore_invalid=True) == "127.0.0.0"
     assert utils.anonymize_ip("69.69.69.69") == "69.69.69.0"
     assert utils.anonymize_ip("69.6.9.69", ignore_invalid=True) == "69.6.9.0"
-    assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"
-
     with pytest.raises(ValueError):
         utils.anonymize_ip("invalid")
+    assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"
 
 
 def test_replace_umlauts() -> None:
@@ -109,6 +108,7 @@ def test_replace_umlauts() -> None:
     assert utils.replace_umlauts("ẞäöü") == "SSaeoeue"
     assert utils.replace_umlauts("ẞäöü ÄÖÜẞ") == "SSaeoeue AEOEUESS"
     assert utils.replace_umlauts("ẞäöü ÄÖÜß") == "SSaeoeue AeOeUess"
+    assert utils.replace_umlauts("ẞÄÖÜ ÄöÜß") == "SSAEOEUE AeoeUess"
 
 
 def test_name_to_id() -> None:
@@ -123,10 +123,20 @@ def test_name_to_id() -> None:
     assert utils.name_to_id("ẞ Ä Ö Ü-ẞÄÖÜ        ") == "ss-ae-oe-ue-ssaeoeue"
 
 
+def test_emojify() -> None:
+    """Test the emojify function."""
+    assert utils.emojify("aBc 123 #!*") == "🇦\u200b🇧\u200b🇨 1⃣2⃣3⃣ #⃣❗*⃣"
+    assert utils.emojify("!?!?!!") == "⁉⁉‼"
+    assert utils.emojify("Üẞ?!") == "🇺\u200b🇪\u200b🇸\u200b🇸❓❗"
+    assert utils.emojify("2 + 2 - 3 = 0!") == "2⃣ ➕ 2⃣ ➖ 3⃣ = 0⃣❗"
+
+
 if __name__ == "__main__":
     test_n_from_set()
     test_bool_str_conversion()
+    test_country_code_to_flag()
     test_adding_stuff_to_url()
     test_anonomyze_ip()
     test_replace_umlauts()
     test_name_to_id()
+    test_emojify()

@@ -39,7 +39,7 @@ def get_module_info() -> ModuleInfo:
             (r"/betriebszeit", UptimeHandler),
             (r"/betriebszeit/verfuegbarkeit.svg", AvailabilityChartHandler),
             (r"/api/betriebszeit", UptimeAPIHandler),
-            (r"/api/uptime/?", RedirectHandler, {"url": "/api/betriebszeit"}),
+            (r"/api/uptime/*", RedirectHandler, {"url": "/api/betriebszeit"}),
         ),
         name="Betriebszeit",
         description="Die Dauer, die die Webseite am Stück in Betrieb ist",

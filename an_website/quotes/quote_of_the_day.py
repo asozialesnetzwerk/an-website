@@ -253,8 +253,8 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
                     "date": quote_data.date.isoformat(),
                     "url": quote_data.get_quote_url(),
                     "id": wrong_quote.get_id_as_str(),
-                    "quote": wrong_quote.quote.quote,
-                    "author": wrong_quote.author.name,
+                    "quote": str(wrong_quote.quote),
+                    "author": str(wrong_quote.author),
                     "rating": wrong_quote.rating,
                 }
             )
