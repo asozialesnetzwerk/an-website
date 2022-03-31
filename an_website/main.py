@@ -36,16 +36,16 @@ from redis.asyncio import (  # type: ignore
     BlockingConnectionPool,
     Redis,
     SSLConnection,
+    UnixDomainSocketConnection,
 )
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
-from . import DIR, NAME, TEMPLATES_DIR
+from . import DIR, NAME, TEMPLATES_DIR, VERSION
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Permissions, Timer, time_function
-from .version import version
 
 IGNORED_MODULES = [
     "patches.*",
@@ -96,9 +96,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             if "get_module_info" not in dir(module):
                 errors.append(
                     f"{os.path.join(DIR, potential_module, potential_file)} "
-                    f"has no 'get_module_info' method. Please add the method "
+                    "has no 'get_module_info' method. Please add the method "
                     f"or add '{potential_module}.*' or '{module_name}' to "
-                    f"IGNORED_MODULES."
+                    "IGNORED_MODULES."
                 )
                 continue
 
@@ -127,12 +127,12 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 continue
 
             errors.append(
-                f"'get_module_info' in "
+                "'get_module_info' in "
                 f"{os.path.join(DIR, potential_module, potential_file)} "
-                f"does not return ModuleInfo. "
-                f"Please add/fix the return type or add "
+                "does not return ModuleInfo. "
+                "Please add/fix the return type or add "
                 f"'{potential_module}.*' or '{module_name}' to "
-                f"IGNORED_MODULES."
+                "IGNORED_MODULES."
             )
 
     if len(errors) > 0:
@@ -226,7 +226,7 @@ def get_all_handlers(
         logger.debug(
             "loaded %d handlers: %s",
             len(handlers),
-            ("; ".join(str(handler) for handler in handlers)),
+            "; ".join(str(handler) for handler in handlers),
         )
 
     return handlers
@@ -264,10 +264,14 @@ def apply_config_to_app(
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
+    app.settings["DOMAIN"] = config.get("GENERAL", "DOMAIN", fallback=None)
+
+    app.settings["HSTS"] = config.get("TLS", "HSTS", fallback=None)
+
     apply_contact_stuff_to_app(app, config)
 
     app.settings["cookie_secret"] = config.get(
-        "GENERAL", "COOKIE_SECRET", fallback=DIR.encode("utf-8")
+        "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
     )
 
     app.settings["TRUSTED_API_SECRETS"] = {
@@ -282,10 +286,6 @@ def apply_config_to_app(
         if (key_perms := [part.strip() for part in secret.split("=")])
         if key_perms[0]
     }
-
-    app.settings["LINK_TO_HTTPS"] = config.getboolean(
-        "GENERAL", "LINK_TO_HTTPS", fallback=False
-    )
 
     # the onion address of this website
     onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)
@@ -309,13 +309,13 @@ def apply_config_to_app(
 def get_ssl_context(
     config: configparser.ConfigParser,
 ) -> None | ssl.SSLContext:
-    """Create SSL config and configure using the config."""
-    if config.getboolean("SSL", "ENABLED", fallback=False):
+    """Create SSL context and configure using the config."""
+    if config.getboolean("TLS", "ENABLED", fallback=False):
         ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_ctx.load_cert_chain(
-            config.get("SSL", "CERTFILE"),
-            config.get("SSL", "KEYFILE", fallback=None),
-            config.get("SSL", "PASSWORD", fallback=None),
+            config.get("TLS", "CERTFILE"),
+            config.get("TLS", "KEYFILE", fallback=None),
+            config.get("TLS", "PASSWORD", fallback=None),
         )
         return ssl_ctx
 
@@ -375,7 +375,7 @@ def setup_apm(app: Application) -> None:
         ),
         "SERVER_CERT": os.path.join(DIR, "ca-bundle.crt"),
         "SERVICE_NAME": NAME.removesuffix("-dev"),
-        "SERVICE_VERSION": version.VERSION,
+        "SERVICE_VERSION": VERSION,
         "ENVIRONMENT": "production"
         if not sys.flags.dev_mode
         else "development",
@@ -536,8 +536,6 @@ async def setup_redis(app: Application) -> None:
     config = app.settings["CONFIG"]
 
     kwargs = {
-        "host": config.get("REDIS", "HOST", fallback="localhost"),
-        "port": config.getint("REDIS", "PORT", fallback=6379),
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
         "password": config.get("REDIS", "PASSWORD", fallback=None),
@@ -548,14 +546,40 @@ async def setup_redis(app: Application) -> None:
         "client_name": NAME,
     }
 
-    if config.getboolean("REDIS", "SSL", fallback=False):
+    if config.has_option("REDIS", "UNIX_SOCKET_PATH"):
         kwargs.update(
             {
-                "connection_class": SSLConnection,
-                "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
-                "ssl_check_hostname": True,
+                "connection_class": UnixDomainSocketConnection,
+                "path": config.get("REDIS", "UNIX_SOCKET_PATH"),
             }
         )
+    else:
+        kwargs.update(
+            {
+                "host": config.get("REDIS", "HOST", fallback="localhost"),
+                "port": config.getint("REDIS", "PORT", fallback=6379),
+            }
+        )
+
+        if config.getboolean("REDIS", "SSL", fallback=False):
+            kwargs.update(
+                {
+                    "connection_class": SSLConnection,
+                    "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
+                    "ssl_keyfile": config.get(
+                        "REDIS", "SSL_KEYFILE", fallback=None
+                    ),
+                    "ssl_certfile": config.get(
+                        "REDIS", "SSL_CERTFILE", fallback=None
+                    ),
+                    "ssl_cert_reqs": config.get(
+                        "REDIS", "SSL_CERT_REQS", fallback="required"
+                    ),
+                    "ssl_check_hostname": config.getboolean(
+                        "REDIS", "SSL_CHECK_HOSTNAME", fallback=False
+                    ),
+                }
+            )
 
     redis = Redis(connection_pool=BlockingConnectionPool(**kwargs))
     try:
@@ -603,7 +627,7 @@ def main() -> None | int | str:
 
     setup_logging(config)
 
-    logger.warning("Starting %s %s", NAME, version.VERSION)
+    logger.warning("Starting %s %s", NAME, VERSION)
 
     # read ignored modules from the config
     for module_name in config.get(
@@ -625,10 +649,9 @@ def main() -> None | int | str:
     server = app.listen(
         port,
         "localhost" if behind_proxy else "",
-        xheaders=behind_proxy,
         ssl_options=get_ssl_context(config),
-        protocol=config.get("GENERAL", "PROTOCOL", fallback=None),
         decompress_request=True,
+        xheaders=behind_proxy,
     )
     app.settings["PORT"] = port
 
@@ -653,6 +676,7 @@ def main() -> None | int | str:
     finally:
         try:
             server.stop()
+            loop.run_until_complete(asyncio.sleep(1))
             loop.run_until_complete(server.close_all_connections())
             if redis := app.settings.get("REDIS"):
                 loop.run_until_complete(redis.close(close_connection_pool=True))

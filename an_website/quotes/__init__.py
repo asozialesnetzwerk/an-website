@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The quotes page of the website."""
+"""A page with wrong quotes."""
 
 from __future__ import annotations
 
@@ -188,7 +188,7 @@ class WrongQuote(QuotesObjBase):
                     "wrongquotes",
                     f"quote={self.quote.id}"
                     f"&author={self.author.id}"
-                    f"&simulate=true",
+                    "&simulate=true",
                 )
             )[0]
             if self.id == -1
@@ -318,7 +318,10 @@ async def make_api_request(
         )
         raise HTTPError(
             400,
-            reason=f"{API_URL}/{endpoint} returned: {response.code} {response.reason}",
+            reason=(
+                f"{API_URL}/{endpoint} returned: "
+                f"{response.code} {response.reason}"
+            ),
         )
     return json.loads(response.body)
 
@@ -619,8 +622,10 @@ async def create_wq_and_vote(
         await make_api_request(
             "wrongquotes",
             method="POST",
-            body=f"quote={quote_id}&author={author_id}&"
-            f"contributed_by={contributed_by}",
+            body=(
+                f"quote={quote_id}&author={author_id}&"
+                f"contributed_by={contributed_by}"
+            ),
         )
     )
     return await wrong_quote.vote(vote, fast=True)

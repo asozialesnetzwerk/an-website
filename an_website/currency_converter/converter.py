@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The currency converter page that converts german currencies."""
+"""A page that converts german currencies."""
+
 from __future__ import annotations
 
 import random
@@ -32,8 +33,9 @@ def get_module_info() -> ModuleInfo:
             (r"/api/waehrungs-rechner", CurrencyConverterAPI),
         ),
         name="Währungsrechner",
-        description="Ein Währungsrechner für teilweise veraltete deutsche "
-        "Währungen",
+        description=(
+            "Ein Währungsrechner für teilweise veraltete deutsche Währungen"
+        ),
         path="/waehrungs-rechner",
         keywords=(
             "Währungsrechner",
@@ -103,8 +105,7 @@ async def continuation_string(
     _rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
     kino_count: int = int(values[-1] / price_ostmark)
     output = [
-        "Und ich weiß nicht, ob ihr das noch wisst, "
-        "aber man konnte locker für",
+        "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker für",
         "eine" if price_ostmark == 1 else num_to_string(price_ostmark),
         f"Ostmark {ins_kino_gehen}! Das heißt man konnte von "
         f"{num_to_string(values[-1])} Ostmark "
@@ -113,10 +114,8 @@ async def continuation_string(
     while True:  # pylint: disable=while-used
         euro, mark, ost, schwarz = convert(price * kino_count)
         no_time = (
-            (
-                " — dafür habt ihr ja keine Zeit im Kapitalismus, "
-                "aber wenn ihr die Zeit hättet —"
-            )
+            " — dafür habt ihr ja keine Zeit im Kapitalismus, "
+            "aber wenn ihr die Zeit hättet —"
             if mark > 20_300_000_000
             else ""
         )
@@ -217,7 +216,7 @@ class CurrencyConverter(HTMLRequestHandler):
             used_key = value_dict.get("key_used")
             replace_url_with = self.fix_url(
                 self.request.full_url(),
-                **{
+                **{  # type: ignore[arg-type]
                     key: value_dict.get(f"{used_key}_str")
                     if key == used_key
                     else None

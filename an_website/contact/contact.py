@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The contact page that allows users to contact the website operator."""
+"""A page that allows users to contact the website operator."""
+
 from __future__ import annotations
 
 import asyncio
@@ -195,7 +196,7 @@ class ContactPage(HTMLRequestHandler):
         message["Subject"] = str(
             self.get_argument("subject", "").strip()  # type: ignore[union-attr]
             or f"{name or address or 'Jemand'} "
-            f"will was über {self.request.host} schreiben."
+            f"will etwas über {self.request.host_name} schreiben."
         )
         message.set_payload(text, "utf-8")
         # pylint: disable=line-too-long

@@ -21,15 +21,22 @@ import sys
 from collections.abc import Awaitable
 from functools import cache
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
+from blake3 import blake3  # type: ignore
 from tornado.web import StaticFileHandler
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
-from .utils import Handler, hash_file
+from .utils import Handler
 
 logger = logging.getLogger(__name__)
+
+
+def hash_file(path: str | Path) -> str:
+    """Hash a file with BLAKE3."""
+    with open(path, "rb") as file:
+        return cast(str, blake3(file.read()).hexdigest(8))
 
 
 def create_file_hashes_dict() -> dict[str, str]:
@@ -37,7 +44,7 @@ def create_file_hashes_dict() -> dict[str, str]:
     return dict(
         (
             str(path).removeprefix(ROOT_DIR),
-            hash_file(path)[:8],
+            hash_file(path),
         )
         for path in Path(STATIC_DIR).rglob("*")
         if path.is_file()

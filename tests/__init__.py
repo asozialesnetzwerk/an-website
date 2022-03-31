@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Utilities used by the tests of an_website."""
+"""Utilities used by the tests of an-website."""
 
 from __future__ import annotations
 
@@ -45,8 +45,10 @@ WRONG_QUOTE_DATA = {
             "id": 1,
             "author": "Abraham Lincoln",
         },
-        "quote": "Frage nicht, was dein Land für dich tun kann, "
-        "frage, was du für dein Land tun kannst.",
+        "quote": (
+            "Frage nicht, was dein Land für dich tun kann, "
+            "frage, was du für dein Land tun kannst."
+        ),
     },
     "rating": 4,
     "showed": 216,

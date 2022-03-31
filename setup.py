@@ -13,23 +13,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# pylint: disable=missing-module-docstring
+"""Nobody inspects the spammish repetition."""
+
 from __future__ import annotations
 
-from math import pi
 from pathlib import Path
-from string import ascii_letters
 
+from get_version import get_version
 from setuptools import setup  # type: ignore[import]
 
 setup(
     name="an-website",
     license="AGPLv3+",
-    version=str(pi)[:4],  # TODO
     platforms=["OS Independent"],
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
+    long_description_content_type="text/markdown",
+    long_description=Path("README.md").read_text("utf-8"),
+    version=get_version(__file__, vcs="git", dist_name="an-website"),
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -40,11 +42,7 @@ setup(
     ],
     packages=["an_website"],
     python_requires=">=3.10",
-    install_requires=[
-        spam
-        for spam in Path("requirements.txt").read_text("utf-8").split("\n")
-        if spam.startswith(tuple(ascii_letters))
-    ],
+    install_requires=Path("requirements.txt").read_text("utf-8").split("\n"),
     include_package_data=True,
     zip_safe=False,
 )

@@ -2,20 +2,13 @@ name: Deploy stuff
 on:
   push:
     branches: [main]
-    paths:
-      - "test/**"
-      - "an_website/**"
-      - ".github/workflows/deploy.yml"
-      - "requirements.txt"
-      - "an_website.ini"
-      - "update.sh"
 concurrency:
   group: deploy
   cancel-in-progress: true
 
 jobs:
 
-  run_tests:
+  tests:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
@@ -28,18 +21,18 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: grep "^\w" requirements.txt | xargs pip install --prefer-binary
+        run: pip install -r requirements.txt
       - name: Install pytest, coverage and html5lib (needed for the tests)
-        run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install --prefer-binary
+        run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install
       - name: Run pytest
-        run: pytest --cov=an_website test
-      - name: Upload coverage as Build Artifact
+        run: pytest --cov=an_website tests
+      - name: Upload coverage as artifact
         uses: actions/upload-artifact@v3
         with:
           path: .coverage
           name: coverage
 
-  hash_files:
+  hashes:
     name: Hash files
     runs-on: ubuntu-latest
     steps:
@@ -49,11 +42,9 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-      - name: Install required library
-        run: grep "^blake3" requirements.txt | xargs pip install --prefer-binary
       - name: Hash files
         run: ./hash_files.py > hashes
-      - name: Upload as Build Artifact
+      - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
           path: hashes
@@ -63,8 +54,8 @@ jobs:
     name: Push version and coverage to GitHub Pages
     runs-on: ubuntu-latest
     needs:
-      - run_tests
-      - hash_files
+      - tests
+      - hashes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -72,21 +63,15 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-      - name: Download coverage
+      - name: Download artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: coverage
-      - name: Download hashes
-        uses: actions/download-artifact@v3
-        with:
-          name: hashes
       - name: Move files
         run: |
           mkdir public
           mv hashes public
       - name: Create coverage files
         run: |
-          grep "^coverage" requirements-dev.txt | xargs pip install --prefer-binary
+          grep "^coverage" requirements-dev.txt | xargs pip install
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x
@@ -108,11 +93,11 @@ jobs:
           force_orphan: true
           commit_message: ${{ github.event.head_commit.message }}
 
-  deploy_website:
+  deploy:
     name: Deploy website
     runs-on: ubuntu-latest
     needs:
-      - gh_pages
+      - tests
     steps:
       - name: Deploy website
         run: |

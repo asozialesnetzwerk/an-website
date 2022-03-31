@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for an_website.main."""
+"""The tests for the main module of an-website."""
 
 from __future__ import annotations
 
@@ -57,11 +57,28 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                 module_info.path == module_info.path.lower()
                 or module_info.path == "/LOLWUT"
             )
+
+            for alias in module_info.aliases:
+                assert alias.startswith("/")
+                assert not alias.endswith("/")
+                if module_info.path != "/chat" and alias.isascii():
+                    assert_valid_redirect(await fetch(alias), module_info.path)
+
+            if module_info.path != "/api/update":
+                # check if at least one handler matches the path
+                handler_matches_path = False
+                for handler in module_info.handlers:
+                    if re.fullmatch("(?i)" + handler[0], module_info.path):
+                        handler_matches_path = True
+                        break
+                assert handler_matches_path
+
             if module_info.hidden and module_info.path not in {
                 "/chat",  # head not supported
                 "/LOLWUT",  # needs Redis
                 "/zitat-des-tages",  # needs Redis
                 "/api/restart",  # needs Authorization, and does stuff
+                "/api/update",
             }:
                 head_response = await fetch(
                     module_info.path, method="HEAD", raise_error=True
@@ -81,21 +98,6 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                         get_response.headers[header]
                         == head_response.headers[header]
                     )
-
-            for alias in module_info.aliases:
-                assert alias.startswith("/")
-                assert not alias.endswith("/")
-                if module_info.path != "/chat" and alias.isascii():
-                    assert_valid_redirect(await fetch(alias), module_info.path)
-
-            # check if at least one handler matches the path
-            handler_matches_path = False
-            for handler in module_info.handlers:
-                if re.fullmatch("(?i)" + handler[0], module_info.path):
-                    handler_matches_path = True
-                    break
-
-            assert handler_matches_path
 
     # handlers should all be at least 3 long
     assert (

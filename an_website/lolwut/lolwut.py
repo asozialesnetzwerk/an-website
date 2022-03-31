@@ -51,7 +51,7 @@ async def generate_art(
         raise HTTPError(503)
     if args:
         arguments = args.split("/")
-        if not len(arguments) == 1 and not arguments[-1]:
+        if not arguments[-1]:
             arguments = arguments[:-1]
         for argument in arguments:
             if not argument:

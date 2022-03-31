@@ -2,11 +2,10 @@
 #ignored_modules = spam, eggs
 #trusted_api_secrets = correct_horse_battery_staple=2, xyzzy=7,
 #cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
-#link_to_https = nope
 #onion_address = ...
 #behind_proxy = nope
 #ratelimits = nope
-#protocol = ...
+#domain = ...
 #port = 8080
 
 #[LOGGING]
@@ -21,22 +20,28 @@
 #sender_username = ...
 #sender_password = ...
 # -- contact_address is shown to users if the rest isn't given, else it is the receiving address(es)
-#contact_address = asozial@example.com
+#contact_address = asozial@example.org
 
-#[SSL]
+#[TLS]
 #enabled = nope
 #certfile = /etc/letsencrypt/live/.../fullchain.pem
 #keyfile = /etc/letsencrypt/live/.../privkey.pem
 #password = hunter2
+#hsts = nope
 
 #[REDIS]
-#host = localhost
-#port = 6379
-#ssl = nope
 #db = 0
 #username = default
 #password = hunter2
 #retry_on_timeout = nope
+#unix_socket_path = ...
+#host = localhost
+#port = 6379
+#ssl = nope
+#ssl_keyfile = ...
+#ssl_certfile = ...
+#ssl_cert_reqs = required
+#ssl_check_hostname = nope
 
 #[ELASTICSEARCH]
 #cloud_id = ...

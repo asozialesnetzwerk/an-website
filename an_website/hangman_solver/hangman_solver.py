@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The pages that helps solving hangman puzzles."""
+"""A page that helps solving hangman puzzles."""
+
 from __future__ import annotations
 
 import re
@@ -111,8 +112,8 @@ def fix_letter_counter_crossword_mode(
     """Fix the letter count for crossword mode."""
     n_word_count = -1 * matched_words_count
     update_dict: dict[str, int] = {}
-    for (_k, _v) in Counter(input_letters).most_common(30):
-        update_dict[_k] = n_word_count * _v
+    for key, value in Counter(input_letters).most_common(30):
+        update_dict[key] = n_word_count * value
     letter_counter.update(update_dict)
 
 

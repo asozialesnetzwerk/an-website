@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The quotes page of the website.
+A page with wrong quotes.
 
 It displays funny, but wrong, quotes.
 """
@@ -24,7 +24,6 @@ import logging
 import random
 from asyncio import Task
 from collections.abc import Awaitable
-from functools import cache
 from typing import Any, Literal
 
 from tornado.web import HTTPError, RedirectHandler
@@ -145,7 +144,6 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         super().__init__(*args, **kwargs)
         self.awaitables: list[Awaitable[Any]] = []
 
-    @cache
     def rating_filter(
         self,
     ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
@@ -178,10 +176,9 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             r=None
             if (rating_filter := self.rating_filter()) == "smart"
             else rating_filter,
-            **{"show-rating": self.get_show_rating() or None},
+            **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
         )
 
-    @cache
     def get_next_id(  # noqa: C901  # pylint: disable=too-complex
         self, rating_filter: None | str = None
     ) -> tuple[int, int]:
@@ -409,7 +406,6 @@ class QuoteById(QuoteBaseHandler):
             await self.get_old_vote(quote_id, author_id),
         )
 
-    @cache
     def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
         """Get the key to save the votes with Redis."""
         return (

@@ -20,33 +20,22 @@ You need:
 
 
 ## How to run (production)
-### Linux (tested with Arch Linux):
+### Linux
 You need:
 - CPython 3.10+
-- Packages from requirements.txt (`pip install -r requirements.txt`)
 - Supervisord
 - Redis 6.2+
 - redis-cell (for ratelimits)
 - Elasticsearch 7.17 or 8.x
 - UwUFetch
-- Git
 
 How:
-- Clone this repo in the home directory of a user
-- Add the following at the end of /etc/supervisord.conf (if necessary)
-```
-  [include]
-  files = /etc/supervisor.d/*.ini
-```
-- Create /etc/supervisor.d/ (if necessary)
-- Run update.sh as the user of the home directory
+- Create a venv somewhere (for example `/opt/an-website`)
+- Install an-website in the venv (`pip install git+https://github.com/asozialesnetzwerk/an-website.git`)
+- ??? (TODO: finish instructions)
 
 ### FreeBSD
 Should work similar to Linux.
-`/etc/supervisord.conf`   -> `/usr/local/etc/supervisord.conf`
-`/etc/supervisor.d/*.ini` -> `/usr/local/etc/supervisor.d/*.ini`
-`/etc/supervisor.d/`      -> `/usr/local/etc/supervisor.d/`
-update.sh: `/etc/supervisor.d/$SERVICE_FILE_NAME` -> `/usr/local/etc/supervisor.d/$SERVICE_FILE_NAME`
 
 ### macOS
 Not supported, but should work.

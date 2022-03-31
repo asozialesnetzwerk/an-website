@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Handle the requests for the soundboard."""
+
 from __future__ import annotations
 
 import os
@@ -40,8 +41,10 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         name="Soundboard",
-        description="Ein Soundboard mit coolen Sprüchen und Sounds aus den "
-        "Känguru-Chroniken",
+        description=(
+            "Ein Soundboard mit coolen Sprüchen und Sounds aus den "
+            "Känguru-Chroniken"
+        ),
         path="/soundboard",
         keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
         handlers=(
@@ -158,7 +161,7 @@ async def search_main_page_info(
 
 
 class SoundboardHTMLHandler(HTMLRequestHandler):
-    """The Tornado handler that handles requests to the HTML pages."""
+    """The request handler that handles requests to the HTML pages."""
 
     def update_title_and_desc(self, path: str) -> None:
         """Update the title and description of the page."""
@@ -183,7 +186,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
         )
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
-        """Handle the GET request and generate the page content."""
+        """Handle GET requests and generate the page content."""
         if path is not None:
             path = path.lower()
 
@@ -242,12 +245,12 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 
 
 class SoundboardRSSHandler(SoundboardHTMLHandler):
-    """The Tornado handler that handles requests to the RSS feeds."""
+    """The request handler that handles requests to the RSS feeds."""
 
     IS_NOT_HTML = True
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
-        """Handle the GET request and generate the feed content."""
+        """Handle GET requests and generate the feed content."""
         rss_str = get_rss_str(
             path, f"{self.request.protocol}://{self.request.host}"
         )

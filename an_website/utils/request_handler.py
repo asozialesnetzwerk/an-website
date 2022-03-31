@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The base request handlers used for other modules.
+The base request handlers used by other modules.
 
 This should only contain request handlers and the get_module_info function.
 """
@@ -30,7 +30,6 @@ import traceback
 import uuid
 from collections.abc import Awaitable, Coroutine
 from datetime import datetime, timedelta
-from functools import cache
 from http.client import responses
 from typing import Any, cast
 from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
@@ -167,16 +166,17 @@ class BaseRequestHandler(RequestHandler):
         # see: dev.mozilla.org/docs/Web/HTTP/Headers
         # Opt out of all FLoC cohort calculation.
         self.set_header("Permissions-Policy", "interest-cohort=()")
-        # disable Referer header for cross-origin requests
-        self.set_header("Referrer-Policy", "same-origin")
-        # community.torproject.org/onion-services/advanced/onion-location/
-        if self.get_protocol() == "https":
+        # send only origin in Referer header if request is cross-origin
+        self.set_header("Referrer-Policy", "origin-when-cross-origin")
+        if self.settings.get("HSTS"):
+            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
             self.set_header(
                 "Strict-Transport-Security", "max-age=31536000; preload"
             )
         if (
             _oa := self.settings.get("ONION_ADDRESS")
-        ) and not self.request.host.endswith(".onion"):
+        ) and not self.request.host_name.endswith(".onion"):
+            # community.torproject.org/onion-services/advanced/onion-location
             self.set_header(
                 "Onion-Location",
                 _oa
@@ -188,7 +188,7 @@ class BaseRequestHandler(RequestHandler):
             for permission in Permissions:
                 if permission.name:
                     self.set_header(
-                        f"X-Has-{permission.name.replace('_', '-')}-Permission",
+                        f"X-Permission-{permission.name}",
                         bool_to_str(self.is_authorized(permission)),
                     )
 
@@ -196,7 +196,16 @@ class BaseRequestHandler(RequestHandler):
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
+        if self.request.method == "GET":
+
+            if self.redirect_to_canonical_domain():
+                return
+
+            if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
+                self.set_cookie("c", "s", expires_days=days / 24, path="/")
+
         if self.request.method != "OPTIONS":
+
             if not self.is_authorized(self.REQUIRED_PERMISSION):
                 # TODO: self.set_header("WWW-Authenticate")
                 logger.info(
@@ -209,44 +218,24 @@ class BaseRequestHandler(RequestHandler):
             if not await self.ratelimit(True):
                 await self.ratelimit()
 
-        if self.request.method == "GET":
-            if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
-                self.set_cookie("c", "s", expires_days=days / 24, path="/")
-
-    @classmethod
-    def supports_head(cls) -> bool:
-        """Check whether this request handler supports HEAD requests."""
-        signature = inspect.signature(cls.get)
-        return (
-            "head" in signature.parameters
-            and signature.parameters["head"].kind
-            == inspect.Parameter.KEYWORD_ONLY
+    def redirect_to_canonical_domain(self) -> bool:
+        """Redirect to the canonical domain."""
+        if (
+            not (domain := self.settings.get("DOMAIN"))
+            or not self.request.headers.get("Host")
+            or self.request.host_name == domain
+            or self.request.host_name.endswith((".onion", ".i2p"))
+            or re.fullmatch(r"/[\u2800-\u28FF]+/?", self.request.path)
+        ):
+            return False
+        port = urlsplit(f"//{self.request.headers['Host']}").port
+        self.redirect(
+            urlsplit(self.request.full_url())
+            ._replace(netloc=f"{domain}:{port}" if port else domain)
+            .geturl(),
+            permanent=True,
         )
-
-    @classmethod
-    def get_allowed_methods(cls) -> list[str]:
-        """Get allowed methods."""
-        methods = ["OPTIONS"]
-        if "GET" in cls.ALLOWED_METHODS and cls.supports_head():
-            methods.append("HEAD")
-        methods.extend(cls.ALLOWED_METHODS)
-        return methods
-
-    def options(self, *args: Any, **kwargs: Any) -> None:
-        """Handle OPTIONS requests."""
-        # pylint: disable=unused-argument
-        self.set_header("Allow", ", ".join(self.get_allowed_methods()))
-        self.set_status(204)
-        self.finish()
-
-    def head(self, *args: Any, **kwargs: Any) -> None | Awaitable[None]:
-        """Handle HEAD requests."""
-        if self.get.__module__ == "tornado.web":
-            raise HTTPError(405)
-        if not self.supports_head():
-            raise HTTPError(501)
-        kwargs["head"] = True
-        return self.get(*args, **kwargs)
+        return True
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
@@ -254,11 +243,11 @@ class BaseRequestHandler(RequestHandler):
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
-            or self.is_authorized(Permissions.NO_RATELIMITS)
+            or self.is_authorized(Permissions.RATELIMITS)
         ):
             return False
         remote_ip = blake3(
-            str(self.request.remote_ip).encode("ascii")
+            cast(str, self.request.remote_ip).encode("ascii")
         ).hexdigest()
         method = self.request.method
         if method == "HEAD":
@@ -328,6 +317,41 @@ class BaseRequestHandler(RequestHandler):
                 self.write_error(429)
         return bool(result[0])
 
+    @classmethod
+    def supports_head(cls) -> bool:
+        """Check whether this request handler supports HEAD requests."""
+        signature = inspect.signature(cls.get)
+        return (
+            "head" in signature.parameters
+            and signature.parameters["head"].kind
+            == inspect.Parameter.KEYWORD_ONLY
+        )
+
+    @classmethod
+    def get_allowed_methods(cls) -> list[str]:
+        """Get allowed methods."""
+        methods = ["OPTIONS"]
+        if "GET" in cls.ALLOWED_METHODS and cls.supports_head():
+            methods.append("HEAD")
+        methods.extend(cls.ALLOWED_METHODS)
+        return methods
+
+    def options(self, *args: Any, **kwargs: Any) -> None:
+        """Handle OPTIONS requests."""
+        # pylint: disable=unused-argument
+        self.set_header("Allow", ", ".join(self.get_allowed_methods()))
+        self.set_status(204)
+        self.finish()
+
+    def head(self, *args: Any, **kwargs: Any) -> None | Awaitable[None]:
+        """Handle HEAD requests."""
+        if self.get.__module__ == "tornado.web":
+            raise HTTPError(405)
+        if not self.supports_head():
+            raise HTTPError(501)
+        kwargs["head"] = True
+        return self.get(*args, **kwargs)
+
     # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
         """Get the description for the error page."""
@@ -375,7 +399,6 @@ class BaseRequestHandler(RequestHandler):
             return cast(str, kwargs["exc_info"][1].log_message)
         return str(self._reason)
 
-    @cache
     def get_user_id(self) -> str:
         """Get the user id saved in the cookie or create one."""
         _user_id = self.get_secure_cookie(
@@ -396,22 +419,10 @@ class BaseRequestHandler(RequestHandler):
         )
         return user_id
 
-    def get_protocol(self) -> str:
-        """Get scheme of the URL."""
-        if self.request.host_name.endswith(".onion"):
-            # if the host is an onion domain, use HTTP
-            return self.settings["ONION_PROTOCOL"] or "http"
-        if self.settings.get("LINK_TO_HTTPS"):
-            # always use HTTPS if the config is set
-            return "https"
-        # otherwise, use the protocol of the request
-        return self.request.protocol
-
     def get_module_infos(self) -> tuple[ModuleInfo, ...]:
         """Get the module infos."""
         return self.settings.get("MODULE_INFOS") or tuple()
 
-    @cache
     def fix_url(  # pylint: disable=too-complex
         self,
         url: None | str | SplitResult = None,
@@ -462,7 +473,7 @@ class BaseRequestHandler(RequestHandler):
         return add_args_to_url(
             urlunsplit(
                 (
-                    self.get_protocol(),
+                    self.request.protocol,
                     self.request.host,
                     (new_path or url.path).rstrip("/"),
                     url.query,
@@ -480,7 +491,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_no_3rd_party_default(self) -> bool:
         """Get the default value for the no_3rd_party param."""
-        return self.request.host_name.endswith(".onion")
+        return self.request.host_name.endswith((".onion", ".i2p"))
 
     def get_saved_no_3rd_party(self) -> bool:
         """Get the saved value for no_3rd_party."""
@@ -490,7 +501,6 @@ class BaseRequestHandler(RequestHandler):
             return default
         return str_to_bool(no_3rd_party, default)
 
-    @cache
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
         saved = self.get_saved_no_3rd_party()
@@ -521,7 +531,6 @@ class BaseRequestHandler(RequestHandler):
             return theme
         return "default"
 
-    @cache
     def get_theme(self) -> str:
         """Get the theme currently selected."""
         theme = self.get_argument("theme", default=None)
@@ -596,8 +605,7 @@ class BaseRequestHandler(RequestHandler):
                 if self.SUPPORTS_COOKIE_AUTHORIZATION
                 else None,
             )
-            if key is not None
-            if key in api_secrets
+            if key is not None and key in api_secrets
         )
 
     def geoip(
@@ -621,7 +629,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         form_appendix: str
 
         form_appendix = (
-            f"<input name='no_3rd_party' class='hidden-input' "
+            "<input name='no_3rd_party' class='hidden-input' "
             f"value='{bool_to_str(self.get_no_3rd_party())}'>"
             if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
@@ -630,7 +638,7 @@ class HTMLRequestHandler(BaseRequestHandler):
 
         if self.get_dynload() != self.get_saved_dynload():
             form_appendix += (
-                f"<input name='dynload' class='hidden-input' "
+                "<input name='dynload' class='hidden-input' "
                 f"value='{bool_to_str(self.get_dynload())}'>"
             )
 
@@ -786,7 +794,6 @@ class APIRequestHandler(BaseRequestHandler):
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
         # see header docs at: dev.mozilla.org/docs/Web/HTTP/Headers
-        # 7200 = 2h (the chromium max)
         self.set_header("Access-Control-Max-Age", "7200")
         self.set_header("Content-Type", "application/json; charset=UTF-8")
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -809,13 +816,11 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFoundHandler(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
-    def initialize(  # type: ignore
-        self, *args: list[Any], **kwargs: dict[str, Any]
-    ) -> None:
+    def initialize(self, *args: Any, **kwargs: Any) -> None:
         """Do nothing to have default title and desc."""
         if "module_info" not in kwargs:
-            kwargs["module_info"] = None  # type: ignore
-        super().initialize(*args, **kwargs)  # type: ignore
+            kwargs["module_info"] = None
+        super().initialize(*args, **kwargs)
 
     async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""

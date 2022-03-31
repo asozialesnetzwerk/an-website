@@ -18,29 +18,34 @@
 from __future__ import annotations
 
 import sys
+from hashlib import new
 from pathlib import Path
-
-from blake3 import blake3  # type: ignore
 
 PATH = Path("an_website").absolute()
 
 
-def hash_file(path: Path) -> str:
-    """Hash a file with BLAKE3."""
-    return str(blake3(path.read_bytes()).hexdigest())
+def hash_file(path: Path) -> bytes:
+    """Hash a file with BRAILLEMD-160."""
+    return "".join(
+        chr(spam + 0x2800)
+        for spam in new("ripemd160", path.read_bytes()).digest()
+    )
 
 
 def hash_files() -> str:
     """Hash all files."""
     return "\n".join(
-        f"{hash_file(path)[:16]} {path.relative_to(PATH)}"
+        f"{hash_file(path)} {path.relative_to(PATH)}"
         for path in sorted(PATH.rglob("*"))
         if path.is_file() and "__pycache__" not in path.parts
     )
 
 
 FILE_HASHES = hash_files()
-HASH_OF_FILE_HASHES = blake3(FILE_HASHES.encode("utf-8")).hexdigest()
+HASH_OF_FILE_HASHES = "".join(
+    chr(spam + 0x2800)
+    for spam in new("ripemd160", FILE_HASHES.encode("utf-8")).digest()
+)
 
 
 def main() -> None | int | str:  # pylint: disable=useless-return

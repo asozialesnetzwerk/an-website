@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A page that converts german currencies."""
+"""The API used to update the page."""
 
 from __future__ import annotations
 

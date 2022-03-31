@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Module for the word game helper."""
+"""The module for the wordgame solver."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -31,11 +32,12 @@ def get_module_info() -> ModuleInfo:
             ("/api/wortspiel-helfer", WordGameHelperAPI),
         ),
         name="Wortspiel-Helfer",
-        description="Findet Worte, die nur eine Änderung "
-        "von einander entfernt sind.",
+        description=(
+            "Findet Worte, die nur eine Änderung von einander entfernt sind."
+        ),
         path="/wortspiel-helfer",
         keywords=("Wortspiel", "Helfer", "Hilfe", "Worte"),
-        aliases=("/word-game-helper",),
+        aliases=("/wordgame-solver",),
         hidden=True,
     )
 

@@ -118,7 +118,7 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await assert_run_and_print(
         url,
         "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
-        "Result:\n<Permissions.RESTART|BACKDOOR|TRACEBACK|NO_RATELIMITS: 15>",
+        "Result:\n<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
     )
     await assert_run_and_print(
         url,

@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Create page to create new wrong quotes."""
+"""A page to create new wrong quotes."""
 
 from __future__ import annotations
 
@@ -210,8 +210,7 @@ class CreatePage1(QuoteReadyCheckHandler):
             raise HTTPError(
                 400,
                 reason=(
-                    "Missing arguments. "
-                    "quote-1 and fake-author-1 are needed."
+                    "Missing arguments. quote-1 and fake-author-1 are needed."
                 ),
             )
         assert quote_str and fake_author_str  # for mypy

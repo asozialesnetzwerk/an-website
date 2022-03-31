@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-A page with a JavaScript web label page.
+A page with all the JavaScript files and their licenses.
 
 This is used for LibreJS to make sure the extension knows the licenses.
 This isn't important, as the JS files should contain the licenses themselves.
@@ -21,6 +21,7 @@ This assumes that every file is licensed under AGPL v3.
 See: https://www.gnu.org/software/librejs/free-your-javascript.html#step3
 and https://www.gnu.org/licenses/javascript-labels.html
 """
+
 from __future__ import annotations
 
 import logging
@@ -39,8 +40,10 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/js-lizenzen", JSLicenses),),
         name="JavaScript-Lizenzen",
-        description="Informationen über die Lizenzen der JavaScript-Dateien "
-        "auf dieser Seite",
+        description=(
+            "Informationen über die Lizenzen der JavaScript-Dateien "
+            "auf dieser Seite"
+        ),
         path="/js-lizenzen",
         aliases=("/js-licenses",),
         keywords=("JavaScript", "License", "Lizenz"),

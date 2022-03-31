@@ -77,8 +77,6 @@ async def test_sending_email() -> None:
         port=25,
     )
 
-    await asyncio.sleep(5)
-
     response = await AsyncHTTPClient().fetch(
         f"https://restmail.net/mail/{user}"
     )

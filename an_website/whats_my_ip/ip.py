@@ -11,9 +11,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The page that tells users their ip."""
+"""A page that tells users their IP address."""
 
 from __future__ import annotations
+
+from ipaddress import ip_address
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -37,10 +39,10 @@ def get_module_info() -> ModuleInfo:
 
 
 class IPAPI(APIRequestHandler):
-    """The Tornado request handler for the IP API."""
+    """The request handler for the IP API."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the IP API."""
+        """Handle GET requests to the IP API."""
         if head:
             return
         geoip = await self.geoip()
@@ -55,10 +57,10 @@ class IPAPI(APIRequestHandler):
 
 
 class IP(HTMLRequestHandler):
-    """The Tornado request handler for the IP page."""
+    """The request handler for the IP page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the IP page."""
+        """Handle GET requests to the IP page."""
         if head:
             return
         if not self.request.remote_ip:
@@ -73,8 +75,8 @@ class IP(HTMLRequestHandler):
                 + self.request.remote_ip
                 + " "
                 + (
-                    "🏴‍☠️"
-                    if self.request.remote_ip in {"127.0.0.1", "::1"}
+                    "🔁"
+                    if ip_address(self.request.remote_ip).is_loopback
                     else (await self.geoip() or {}).get("country_flag") or ""
                 )
             ).strip(),

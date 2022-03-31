@@ -11,24 +11,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The utilities module with many helpful things used by other modules."""
+"""A module with many useful things used by other modules."""
+
 from __future__ import annotations
 
 import asyncio
-import asyncio.subprocess
-import ipaddress
 import os
 import random
 import re
-import subprocess
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import IntFlag, auto
+from enum import IntFlag
 from functools import cache
-from pathlib import Path
-from typing import IO, Any, TypeVar, Union
+from ipaddress import ip_address, ip_network
+from typing import IO, Any, TypeVar, Union, cast
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
@@ -36,8 +34,9 @@ from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RequestHandler
 
-from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
+
+T = TypeVar("T")
 
 # pylint: disable=consider-alternative-union-syntax
 Handler = Union[
@@ -47,16 +46,16 @@ Handler = Union[
 ]
 
 
-# sortable so the pages can be linked in an order;
+# sortable so the pages can be linked in an order
 # frozen so it's immutable
 @dataclass(order=True, frozen=True)
 class PageInfo:
-    """The page info class that is used for the subpages of a module info."""
+    """The PageInfo class that is used for the subpages of a ModuleInfo."""
 
     name: str
     description: str
     path: None | str = None
-    # keywords, that can be used for searching
+    # keywords that can be used for searching
     keywords: tuple[str, ...] = field(default_factory=tuple)
     hidden: bool = False  # whether to hide this page info on the page
     short_name: None | str = None  # short name for the page
@@ -82,30 +81,30 @@ class PageInfo:
         else:
             words = query
 
-        # remove empty strings from words and make the rest lower case
-        words = [_w.lower() for _w in words if len(_w) > 0]
+        # remove empty strings from words and make the rest lowercase
+        words = [word.lower() for word in words if len(word) > 0]
 
         if not words:
-            # query empty, so find in everything
+            # query empty, so find everything
             return 1.0
 
         for word in words:
             if len(self.name) > 0 and word in self.name.lower():
-                # multiply by 3, so the title it the most important
+                # multiply by 3, so the title is most important
                 score += 3 * (len(word) / len(self.name))
             if len(self.description) > 0 and word in self.description.lower():
-                # multiply by 2, so the description it the second important
+                # multiply by 2, so the description is second-most important
                 score += 2 * (len(word) / len(self.description))
 
             if word in self.keywords:
                 # word is directly in the keywords (really good)
                 score += 1
             elif len(self.keywords) > 0:
-                # check if word is partly in the key words
+                # check if word is partially in the keywords
                 kw_score = 0.0
-                for _kw in self.keywords:
-                    if word in _kw.lower():
-                        kw_score += len(word) / len(_kw)
+                for keyword in self.keywords:
+                    if word in keyword.lower():
+                        kw_score += len(word) / len(keyword)
                 score += kw_score / len(self.keywords)
 
         return score / len(words)
@@ -114,7 +113,7 @@ class PageInfo:
 @dataclass(order=True, frozen=True)
 class ModuleInfo(PageInfo):
     """
-    The module info class adds handlers and sub pages to the page info.
+    The ModuleInfo class adds handlers and subpages to the PageInfo.
 
     This gets created by every module to add the handlers.
     """
@@ -124,7 +123,7 @@ class ModuleInfo(PageInfo):
     aliases: tuple[str, ...] = field(default_factory=tuple)
 
     def get_page_info(self, path: str) -> PageInfo:
-        """Get the page_info of that specified path."""
+        """Get the PageInfo of the specified path."""
         if self.path == path:
             return self
 
@@ -135,7 +134,7 @@ class ModuleInfo(PageInfo):
         return self
 
     def get_keywords_as_str(self, path: str) -> str:
-        """Get the keywords as comma seperated string."""
+        """Get the keywords as comma-seperated string."""
         page_info = self.get_page_info(path)
         if self != page_info:
             return ", ".join((*self.keywords, *page_info.keywords))
@@ -187,7 +186,13 @@ class Timer:
         return self._execution_time
 
 
-T = TypeVar("T")
+class Permissions(IntFlag):
+    """Permissions for accessing the website."""
+
+    RATELIMITS = 1
+    TRACEBACK = 2
+    BACKDOOR = 4
+    UPDATE = 8
 
 
 @cache
@@ -224,27 +229,20 @@ def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
     )
 
 
-def anonymize_ip(ip_address: str, *, ignore_invalid: bool = False) -> str:
+def anonymize_ip(address: str, *, ignore_invalid: bool = False) -> str:
     """Anonymize an IP address."""
     try:
-        version = ipaddress.ip_address(ip_address).version
+        version = ip_address(address).version
     except ValueError:
         if ignore_invalid:
-            return ip_address
+            return address
         raise
 
     if version == 4:
-        return str(
-            ipaddress.ip_network(
-                ip_address + "/24", strict=False
-            ).network_address
-        )
+        return str(ip_network(address + "/24", strict=False).network_address)
     if version == 6:
-        return str(
-            ipaddress.ip_network(
-                ip_address + "/32", strict=False
-            ).network_address
-        )
+        return str(ip_network(address + "/32", strict=False).network_address)
+
     raise HTTPError(reason="ERROR: -41")
 
 
@@ -286,18 +284,18 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
-def emojify(text: str) -> str:
-    """Emojify a given text."""
-    text = re.sub(
+def emojify(string: str) -> str:
+    """Emojify a given string."""
+    string = re.sub(
         r"[a-zA-Z]+",
         lambda match: "\u200b".join(country_code_to_flag(match.group(0))),
-        replace_umlauts(text),
+        replace_umlauts(string),
     )
-    text = re.sub(
-        r"[0-9#*]+", lambda match: f"{'⃣'.join(match.group(0))}⃣", text
+    string = re.sub(
+        r"[0-9#*]+", lambda match: f"{'⃣'.join(match.group(0))}⃣", string
     )
     return (
-        text.replace("!?", "⁉")
+        string.replace("!?", "⁉")
         .replace("!!", "‼")
         .replace("?", "❓")
         .replace("!", "❗")
@@ -307,8 +305,8 @@ def emojify(text: str) -> str:
 
 
 def country_code_to_flag(code: str) -> str:
-    """Convert a two-letter iso country code to a flag emoji."""
-    return "".join(chr(ord(ch) + 23 * 29 * 191) for ch in code.upper())
+    """Convert a two-letter ISO country code to a flag emoji."""
+    return "".join(chr(ord(char) + 23 * 29 * 191) for char in code.upper())
 
 
 async def geoip(
@@ -388,21 +386,16 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def hash_file(path: str | Path) -> str:
-    """Hash a file with BLAKE3."""
-    with open(path, "rb") as file:
-        return str(blake3(file.read()).hexdigest())
-
-
 def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
     """Hash an IP address."""
-    return str(
+    return cast(
+        str,
         blake3(
             ip.encode("ascii")
             + blake3(
                 datetime.utcnow().date().isoformat().encode("ascii")
             ).digest()
-        ).hexdigest()
+        ).hexdigest(),
     )
 
 
@@ -425,19 +418,28 @@ def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
     return new_set
 
 
-def replace_umlauts(text: str) -> str:
+def name_to_id(val: str) -> str:
+    """Replace umlauts and whitespaces in a string to get a valid HTML id."""
+    return re.sub(
+        r"[^a-z0-9]+",
+        "-",
+        replace_umlauts(val).lower(),
+    ).strip("-")
+
+
+def replace_umlauts(string: str) -> str:
     """Replace Ä, Ö, Ü, ẞ, ä, ö, ü, ß in string."""
-    if text.isupper():
+    if string.isupper():
         return (
-            text.replace("Ä", "AE")
+            string.replace("Ä", "AE")
             .replace("Ö", "OE")
             .replace("Ü", "UE")
             .replace("ẞ", "SS")
         )
-    if " " in text:
-        return " ".join(replace_umlauts(word) for word in text.split(" "))
+    if " " in string:
+        return " ".join(replace_umlauts(word) for word in string.split(" "))
     return (
-        text.replace("ä", "ae")
+        string.replace("ä", "ae")
         .replace("ö", "oe")
         .replace("ü", "ue")
         .replace("ß", "ss")
@@ -448,58 +450,26 @@ def replace_umlauts(text: str) -> str:
     )
 
 
-def name_to_id(val: str) -> str:
-    """Replace umlauts and whitespaces in a string to get a valid HTML id."""
-    return re.sub(
-        r"[^a-z0-9]+",
-        "-",
-        replace_umlauts(val).lower(),
-    ).strip("-")
-
-
 async def run(
     program: str,
     *args: str,
-    stdin: int | IO[Any] | None = asyncio.subprocess.PIPE,
+    stdin: int | IO[Any] = asyncio.subprocess.DEVNULL,
+    stdout: None | int | IO[Any] = asyncio.subprocess.PIPE,
+    stderr: None | int | IO[Any] = asyncio.subprocess.PIPE,
+    **kwargs: Any,
 ) -> tuple[None | int, bytes, bytes]:
-    """Run a programm & return the return code, stdout and stderr as tuple."""
+    """Run a programm and return the exit code, stdout and stderr as tuple."""
     proc = await asyncio.create_subprocess_exec(
         program,
         *args,
         stdin=stdin,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+        stdout=stdout,
+        stderr=stderr,
+        **kwargs,
     )
 
-    stdout, stderr = await proc.communicate()
-    return proc.returncode, stdout, stderr
-
-
-def run_shell_cmd(cmd: str, directory: str = ROOT_DIR) -> str:
-    """Run a command in a subprocess.
-
-    WARNING: This is blocking and should therefore ONLY be used during startup!
-    """
-    try:
-        return subprocess.run(
-            cmd,
-            cwd=directory,
-            shell=True,
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    except subprocess.CalledProcessError:
-        return ""
-
-
-class Permissions(IntFlag):
-    """Permissions for accessing the website."""
-
-    NO_RATELIMITS = auto()
-    TRACEBACK = auto()
-    BACKDOOR = auto()
-    RESTART = auto()
+    output = await proc.communicate()
+    return proc.returncode, *output
 
 
 def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
@@ -508,14 +478,14 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
         return val
     if isinstance(val, str):
         val = val.lower()
-        if val in {"sure", "y", "yes", "t", "true", "on", "1", "s"}:
+        if val in {"1", "on", "s", "sure", "t", "true", "y", "yes"}:
             return True
-        if val in {"nope", "n", "no", "f", "false", "off", "0"}:
+        if val in {"0", "f", "false", "n", "no", "nope", "off"}:
             return False
-        if val in {"maybe", "idc"}:
-            return random.choice((True, False))
+        if val in {"idc", "maybe", "random"}:
+            return bool(random.randrange(2))
     if default is None:
-        raise ValueError(f"invalid truth value '{val}'")
+        raise ValueError(f"Invalid truth value: {val}")
     return default
 
 

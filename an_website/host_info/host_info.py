@@ -48,8 +48,9 @@ def get_module_info() -> ModuleInfo:
         sub_pages=(
             PageInfo(
                 name="Howost-Infowmationyen",
-                description="Infowmationyen übew den Howost-Sewvew "
-                "diesew W-Webseite",
+                description=(
+                    "Infowmationyen übew den Howost-Sewvew diesew W-Webseite"
+                ),
                 path="/host-info/uwu",
                 keywords=("UWU",),
                 hidden=True,

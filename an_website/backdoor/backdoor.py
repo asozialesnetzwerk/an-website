@@ -20,6 +20,7 @@ import io
 import pickle
 import pydoc
 import traceback
+from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
@@ -121,9 +122,7 @@ class Backdoor(APIRequestHandler):
 
                 try:
                     result = eval(code, session)  # pylint: disable=eval-used
-                    if code.co_flags.bit_length() >= 8 and int(
-                        bin(code.co_flags)[-8]
-                    ):
+                    if code.co_flags & CO_COROUTINE:
                         result = await result
                 except Exception as exc:  # pylint: disable=broad-except
                     exception = exc  # pylint: disable=redefined-variable-type

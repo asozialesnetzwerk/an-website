@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for the request handlers of an_website."""
+"""The tests for the request handlers of an-website."""
 
 from __future__ import annotations
 
@@ -101,64 +101,64 @@ async def test_permissions(
         (
             "",
             {
-                "X-Has-Backdoor-Permission": "nope",
-                "X-Has-No-Ratelimits-Permission": "nope",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "nope",
+                "X-Permission-Backdoor": "nope",
+                "X-Permission-Ratelimits": "nope",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "nope",
             },
         ),
         (
             "s0",
             {
-                "X-Has-Backdoor-Permission": "nope",
-                "X-Has-No-Ratelimits-Permission": "nope",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "nope",
+                "X-Permission-Backdoor": "nope",
+                "X-Permission-Ratelimits": "nope",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "nope",
             },
         ),
         (
             "s1",
             {
-                "X-Has-Backdoor-Permission": "nope",
-                "X-Has-No-Ratelimits-Permission": "sure",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "nope",
+                "X-Permission-Backdoor": "nope",
+                "X-Permission-Ratelimits": "sure",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "nope",
             },
         ),
         (
             "s2",
             {
-                "X-Has-Backdoor-Permission": "nope",
-                "X-Has-No-Ratelimits-Permission": "nope",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "sure",
+                "X-Permission-Backdoor": "nope",
+                "X-Permission-Ratelimits": "nope",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "sure",
             },
         ),
         (
             "s3",
             {
-                "X-Has-Backdoor-Permission": "nope",
-                "X-Has-No-Ratelimits-Permission": "sure",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "sure",
+                "X-Permission-Backdoor": "nope",
+                "X-Permission-Ratelimits": "sure",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "sure",
             },
         ),
         (
             "s4",
             {
-                "X-Has-Backdoor-Permission": "sure",
-                "X-Has-No-Ratelimits-Permission": "nope",
-                "X-Has-Restart-Permission": "nope",
-                "X-Has-Traceback-Permission": "nope",
+                "X-Permission-Backdoor": "sure",
+                "X-Permission-Ratelimits": "nope",
+                "X-Permission-Update": "nope",
+                "X-Permission-Traceback": "nope",
             },
         ),
         (
             "xyzzy",
             {
-                "X-Has-Backdoor-Permission": "sure",
-                "X-Has-No-Ratelimits-Permission": "sure",
-                "X-Has-Restart-Permission": "sure",
-                "X-Has-Traceback-Permission": "sure",
+                "X-Permission-Backdoor": "sure",
+                "X-Permission-Ratelimits": "sure",
+                "X-Permission-Update": "sure",
+                "X-Permission-Traceback": "sure",
             },
         ),
     ):

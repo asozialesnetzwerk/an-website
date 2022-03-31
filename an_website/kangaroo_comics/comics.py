@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The page with the kangaroo comics by Zeit Online."""
+"""A page with the kangaroo comics by Zeit Online."""
+
 from __future__ import annotations
 
 from ..utils.request_handler import HTMLRequestHandler
@@ -23,8 +24,9 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/kaenguru-comics", KangarooComics),),
         name="Känguru-Comics",
-        description="Känguru-Comics von Zeit Online, Marc-Uwe Kling und "
-        "Bernd Kissel",
+        description=(
+            "Känguru-Comics von Zeit Online, Marc-Uwe Kling und Bernd Kissel"
+        ),
         path="/kaenguru-comics",
         keywords=("Känguru", "Comics", "Zeit", "Marc-Uwe Kling"),
         aliases=(

@@ -21,11 +21,11 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from functools import cache, lru_cache
 
 import orjson as json
 
-from ..utils.utils import hash_file, name_to_id, replace_umlauts
+from ..utils.static_file_handling import hash_file
+from ..utils.utils import name_to_id, replace_umlauts
 
 DIR = os.path.dirname(__file__)
 
@@ -54,7 +54,6 @@ Chapter = Enum("Chapter", [*chapters], module=__name__)  # type: ignore
 del books, chapters, person_dict
 
 
-@lru_cache(100)
 def mark_query(text: str, query: None | str) -> str:
     """Replace the instances of the query with itself in a div."""
     if not query:
@@ -82,7 +81,6 @@ class Info:
 
     text: str
 
-    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[  # pylint: disable=unused-argument
@@ -101,7 +99,6 @@ class HeaderInfo(Info):
     tag: str = "h1"
     type: type[Book | Chapter | Person] = Book
 
-    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
@@ -148,9 +145,9 @@ class SoundInfo(Info):
             replace_umlauts(self.text.lower().replace(" ", "_")),
         )
 
-    def contains(self, _str: None | str) -> bool:
+    def contains(self, string: None | str) -> bool:
         """Check whether this sound info contains a given string."""
-        if _str is None:
+        if string is None:
             return False
 
         content = " ".join([self.chapter.name, self.person.value, self.text])
@@ -158,10 +155,9 @@ class SoundInfo(Info):
 
         return not any(
             word not in content
-            for word in replace_umlauts(_str.lower()).split(" ")
+            for word in replace_umlauts(string.lower()).split(" ")
         )
 
-    @lru_cache(100)
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
@@ -170,8 +166,8 @@ class SoundInfo(Info):
         """Parse the info to a list element with an audio element."""
         file = self.get_file_name()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
-        path = f"/files/{file}.mp3"
-        file_url = f"/soundboard{path}?v={hash_file(DIR + path)[:8]}"
+        path = f"files/{file}.mp3"
+        file_url = f"/soundboard{path}?v={hash_file(os.path.join(DIR, path))}"
         return (
             f"""
 <li>
@@ -187,13 +183,12 @@ class SoundInfo(Info):
 </li>"""
         ).lstrip()
 
-    @cache
     def to_rss(self, url: None | str) -> str:
         """Parse the info to a RSS item."""
         file_name = self.get_file_name()
-        path = f"/files/{file_name}.mp3"
-        file_size = os.path.getsize(DIR + path)
-        mod_time_since_epoch = os.path.getmtime(DIR + path)
+        path = f"files/{file_name}.mp3"
+        file_size = os.path.getsize(os.path.join(DIR, path))
+        mod_time_since_epoch = os.path.getmtime(os.path.join(DIR, path))
         # Convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)
         link = f"/soundboard{path}"

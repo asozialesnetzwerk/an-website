@@ -17,6 +17,7 @@ The redirect page of the website.
 This page is used to redirect users to third party websites.
 This page will ask users if they want to leave this website.
 """
+
 from __future__ import annotations
 
 from ..utils.request_handler import HTMLRequestHandler
@@ -28,8 +29,10 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/redirect", RedirectPage),),
         name="Weiterleitungsseite",
-        description="Seite, die User davon abhält versehentlich eine fremde "
-        "Website zu besuchen",
+        description=(
+            "Seite, die User davon abhält versehentlich eine fremde "
+            "Website zu besuchen"
+        ),
         path="/redirect",
         short_name="Weiterleitung",
         hidden=True,

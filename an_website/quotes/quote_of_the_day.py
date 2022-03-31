@@ -84,8 +84,7 @@ class QuoteOfTheDayData:
     def get_quote_url(self) -> str:
         """Get the URL of the quote."""
         return (
-            f"{self.url_without_path}/zitate/"
-            f"{self.wrong_quote.get_id_as_str()}"
+            f"{self.url_without_path}/zitate/{self.wrong_quote.get_id_as_str()}"
         )
 
     def get_quote_image_url(self) -> str:
@@ -148,9 +147,9 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             1,  # True
         )
 
-    def get_protocol_and_host(self) -> str:
+    def get_scheme_and_netloc(self) -> str:
         """Get the beginning of the URL."""
-        return f"{self.get_protocol()}://{self.request.host}"
+        return f"{self.request.protocol}://{self.request.host}"
 
     async def get_quote_by_date(
         self, date: dt.date
@@ -166,7 +165,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if not wrong_quote:
             return None
         return QuoteOfTheDayData(
-            date, wrong_quote, self.get_protocol_and_host()
+            date, wrong_quote, self.get_scheme_and_netloc()
         )
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
@@ -195,7 +194,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
                     wq_id,
                 )
                 return QuoteOfTheDayData(
-                    today, quote, self.get_protocol_and_host()
+                    today, quote, self.get_scheme_and_netloc()
                 )
         return None
 

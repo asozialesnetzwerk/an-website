@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Module that generates an image from a wrong quote."""
+"""A module that generates an image from a wrong quote."""
 
 from __future__ import annotations
 
@@ -246,7 +246,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     }
     if file_type == "4-color-gif":
         colors: list[tuple[int, tuple[int, int, int]]]
-        colors = image.getcolors(69420)  # type: ignore[assignment]
+        colors = image.getcolors(2**16)  # type: ignore[assignment]
         colors.sort(reverse=True)
         values: list[int] = []
         for _, color in colors[:4]:
@@ -295,8 +295,10 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
             raise HTTPError(
                 status_code=400,
-                reason=f"Unsupported file extension: {file_extension} "
-                f"(supported: {', '.join(FILE_EXTENSIONS.keys())}).",
+                reason=(
+                    f"Unsupported file extension: {file_extension} "
+                    f"(supported: {', '.join(FILE_EXTENSIONS.keys())})."
+                ),
             )
         file_type = FILE_EXTENSIONS[file_extension]
         self.set_header("Content-Type", f"image/{file_type}")
