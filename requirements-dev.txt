@@ -16,7 +16,7 @@ certifi==2021.10.8
 cffi==1.15.0
 cfgv==3.3.1
 charset-normalizer==2.0.12
-click==8.1.0
+click==8.1.2
 colorama==0.4.4
 coverage==6.3.2
 cython==0.29.28
@@ -26,10 +26,10 @@ dill==0.3.4
 distlib==0.3.4
 dunamai==1.11.0
 ecs-logging==1.1.0
-elastic-apm==6.8.1
+elastic-apm==6.9.1
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0
-elasticsearch[async]==7.17.1
+elasticsearch[async]==7.17.2
 filelock==3.6.0
 flake8-bugbear==22.3.23
 flake8-docstrings==1.6.0
@@ -64,7 +64,7 @@ orjson==3.6.7
 packaging==21.3
 pathspec==0.9.0
 pep8-naming==0.12.1
-pillow==9.0.1
+pillow==9.1.0
 pip==22.0.4
 pipenv==2022.3.28
 platformdirs==2.5.1
@@ -87,10 +87,10 @@ python-dateutil==2.8.2
 python-levenshtein==0.12.2
 pyyaml==6.0
 rcssmin==1.1.0
-redis[hiredis]==4.2.0
+redis[hiredis]==4.2.1
 rjsmin==1.2.0
 rply==0.7.8
-setuptools==61.2.0
+setuptools==61.3.0
 six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.3.1
@@ -99,9 +99,9 @@ tomli==2.0.1
 tornado==6.1
 types-beautifulsoup4==4.10.16
 types-orjson==3.6.2
-types-pillow==9.0.8
-types-redis==4.1.18
-types-requests==2.27.15
+types-pillow==9.0.9
+types-redis==4.1.19
+types-requests==2.27.16
 types-urllib3==1.26.11
 typing-extensions==4.1.1
 urllib3==1.26.9

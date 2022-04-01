@@ -2,6 +2,8 @@ name: Daily build
 on:
   schedule:
     - cron: "0 0 * * *"
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
 
@@ -92,7 +94,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.TAG_NAME }}
-          files: dist/*
+          files: |
+            *.tar.gz
+            *.whl
 
   pypi:
     name: Upload to PyPI
@@ -111,4 +115,4 @@ jobs:
       - name: Install Twine
         run: pip install "twine~=4.0"
       - name: Run Twine
-        run: twine upload -u __token__ -p ${{ secrets.PYPI_TOKEN }} --verbose dist/*
+        run: twine upload -u __token__ -p ${{ secrets.PYPI_TOKEN }} --verbose *.tar.gz *.whl

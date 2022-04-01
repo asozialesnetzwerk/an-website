@@ -18,7 +18,11 @@ from __future__ import annotations
 from redis.asyncio import Redis  # type: ignore
 from tornado.web import HTTPError
 
-from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
+from ..utils.request_handler import (
+    APIRequestHandler,
+    HTMLRequestHandler,
+    NotFoundHandler,
+)
 from ..utils.utils import ModuleInfo
 
 
@@ -27,8 +31,10 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/LOLWUT", LOLWUT),
+            (r"/LOLWUT/([0-9/]+)/", NotFoundHandler),
             (r"/LOLWUT/([0-9/]+)", LOLWUT),
             (r"/API/LOLWUT", LOLWUTAPI),
+            (r"/API/LOLWUT/([0-9/]+)/", NotFoundHandler),
             (r"/API/LOLWUT/([0-9/]+)", LOLWUTAPI),
         ),
         name="LOLWUT",
@@ -51,8 +57,6 @@ async def generate_art(
         raise HTTPError(503)
     if args:
         arguments = args.split("/")
-        if not arguments[-1]:
-            arguments = arguments[:-1]
         for argument in arguments:
             if not argument:
                 raise HTTPError(404)

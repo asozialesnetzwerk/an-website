@@ -22,14 +22,14 @@ else
     git pull --rebase --autostash
 fi
 
-if [ ! -d "/opt/${NAME}/venv" ]
+if [ ! -d "/opt/an-website/venv" ]
 then
-    echo "python3 -m venv \"/opt/${NAME}/venv\""
-    python3 -m venv "/opt/${NAME}/venv"
+    echo "python3 -m venv \"/opt/an-website/venv\""
+    python3 -m venv "/opt/an-website/venv"
 fi
 
-echo "\"/opt/${NAME}/venv/bin/pip\" install ."
-"/opt/${NAME}/venv/bin/pip" --disable-pip-version-check install .
+echo "\"/opt/an-website/venv/bin/pip\" install ."
+"/opt/an-website/venv/bin/pip" --disable-pip-version-check install .
 
 if [ ! -f "/etc/supervisor.d/${NAME}.ini" ]
 then

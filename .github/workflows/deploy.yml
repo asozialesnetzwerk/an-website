@@ -1,10 +1,12 @@
 name: Deploy stuff
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 concurrency:
   group: deploy
   cancel-in-progress: true
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
 
@@ -68,7 +70,8 @@ jobs:
       - name: Move files
         run: |
           mkdir public
-          mv hashes public
+          mv hashes/hashes public
+          mv coverage/.coverage .
       - name: Create coverage files
         run: |
           grep "^coverage" requirements-dev.txt | xargs pip install

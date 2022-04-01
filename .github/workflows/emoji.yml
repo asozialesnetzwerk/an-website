@@ -1,6 +1,10 @@
 name: Check emoji
 on: [ push, pull_request ]
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: yes
+
 jobs:
+
   check_emoji:
     name: Look for Emoji in commit message
     runs-on: ubuntu-latest
