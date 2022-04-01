@@ -288,7 +288,7 @@ def emojify(string: str) -> str:
     """Emojify a given string."""
     string = re.sub(
         r"[a-zA-Z]+",
-        lambda match: "\u200b".join(country_code_to_flag(match.group(0))),
+        lambda match: "\u200C".join(country_code_to_flag(match.group(0))),
         replace_umlauts(string),
     )
     string = re.sub(

@@ -125,9 +125,9 @@ def test_name_to_id() -> None:
 
 def test_emojify() -> None:
     """Test the emojify function."""
-    assert utils.emojify("aBc 123 #!*") == "🇦\u200b🇧\u200b🇨 1⃣2⃣3⃣ #⃣❗*⃣"
+    assert utils.emojify("aBc 123 #!*") == "🇦\u200c🇧\u200c🇨 1⃣2⃣3⃣ #⃣❗*⃣"
     assert utils.emojify("!?!?!!") == "⁉⁉‼"
-    assert utils.emojify("Üẞ?!") == "🇺\u200b🇪\u200b🇸\u200b🇸❓❗"
+    assert utils.emojify("Üẞ?!") == "🇺\u200c🇪\u200c🇸\u200c🇸❓❗"
     assert utils.emojify("2 + 2 - 3 = 0!") == "2⃣ ➕ 2⃣ ➖ 3⃣ = 0⃣❗"
 
 

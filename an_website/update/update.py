@@ -33,7 +33,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/api/update/(.*)", UpdateAPI),),
         name="Update-API",
-        description="Update-API, die genutzt wird um die Seite zu aktualisieren",
+        description="Update-API, die genutzt wird, um die Seite zu aktualisieren",
         path="/api/update",
         hidden=True,
     )
@@ -73,13 +73,13 @@ class UpdateAPI(APIRequestHandler):
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
         )
-        returncode = None
+        returncode: None | int = None
         while returncode is None:  # pylint: disable=while-used
             returncode = process.returncode
             output = await process.stdout.readline()  # type: ignore[union-attr]
             if output:
                 self.write(output)
                 self.flush()
-        await self.finish()  # type: ignore[unreachable]
+        await self.finish()
         if not returncode:
             raise KeyboardInterrupt
