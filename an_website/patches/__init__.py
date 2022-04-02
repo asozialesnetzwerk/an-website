@@ -57,6 +57,7 @@ def apply() -> None:
     tornado.httpclient.AsyncHTTPClient.configure(
         "tornado.curl_httpclient.CurlAsyncHTTPClient"
     )
+    tornado.web.RedirectHandler.head = tornado.web.RedirectHandler.get
     tornado.web.RequestHandler.SUPPORTED_METHODS = (
         tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore
         + (

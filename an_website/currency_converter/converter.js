@@ -11,81 +11,71 @@
     const output = elById("output");
 
     const fields = [
-        elById("euro"),
-        elById("mark"),
-        elById("ost"),
-        elById("schwarz")
+        elById("euro"),   // Euro
+        elById("mark"),   // Deutsche Mark
+        elById("ost"),    // Ostmark
+        elById("schwarz") // Ostmark auf dem Schwarzmarkt
     ];
     const factors = [
-        BigInt(1), //Euro
-        BigInt(2), //Deutsche Mark
-        BigInt(4), //Ostmark
-        BigInt(20) //Ostmark auf dem Schwarzmarkt
+        BigInt(1), // Euro
+        BigInt(2), // Deutsche Mark
+        BigInt(4), // Ostmark
+        BigInt(20) // Ostmark auf dem Schwarzmarkt
     ];
-
     const numberRegex = /^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;
 
+    function isZero(str) {
+        return /^0*$/.test(str);
+    }
+
     function getDisplayValue(wert) {
-        if (typeof wert === "string") {
+        if (typeof wert === "string")
             wert = strToBigInt(wert);
-        }
-        if (typeof wert !== bigIntType) {
+
+        if (typeof wert !== bigIntType)
             alert(`Ungültiger Wert ${wert} mit type ${typeof wert}`);
-        }
-        if (bigIntType === "number") {
-            wert = Math.floor(wert);
-        }
+
+        if (bigIntType === "number") wert = Math.floor(wert);
+
         let str = wert.toString();
         if (bigIntType === "number" && str.includes("e")) {
             let [num, pow] = str.split("e");
             if (pow.startsWith("-")) {
                 // too small to be displayed
-                str = "0";
+                return "0";
             } else {
                 let [int, dec] = num.split(".");
-                if (!dec) {
-                    dec = "";
-                }
-                pow = Number(pow);
+                dec = dec || "";
                 str = int + dec + "0".repeat(pow - dec.length);
             }
         }
-        if (str.length === 1) {
-            if (str === "0") {
-                return "0";
-            }
-            str = "0" + str;
-        }
-        if (str.length === 2) {
-            if (str === "00") {
-                return "0";
-            }
-            return "0," + str
-        } else if (str.endsWith("00")) {
-            return str.slice(0, str.length - 2);
-        } else {
-            return str.slice(0, str.length - 2) + "," + str.slice(str.length - 2);
-        }
+        if (isZero(str)) return "0";  // is empty string or 0
+
+        let dec = str.slice(-2);  // last two chars or whole str if len <= 2
+        return (
+            (str.slice(0, -2) || "0")  // integer part, but "0" instead of ""
+            + (
+                isZero(dec)
+                    ? ""  // if is integer do not append
+                    : "," + (dec.length === 1 ? "0" : "") + dec
+            )
+        );
     }
 
     function strToBigInt(str) {
-        if (!str) {
-            return BigInt(0);
-        }
-        let preComma, postComma;
+        if (isZero(str)) return BigInt(0);
+
+        let [int, dec] = [str, "00"];
         if (str.includes(",")) {
-            [preComma, postComma] = str.split(",");
+            [int, dec] = str.split(",");
         } else if (str.includes(".")) {
-            [preComma, postComma] = str.split(".");
-        } else {
-            preComma = str;
-            postComma = "00";
+            [int, dec] = str.split(".");
         }
-        if (postComma.length !== 2) {
+        if (dec.length !== 2) {
             // get the first two digits after the comma, fill with 0 if needed
-            postComma = (postComma + "00").slice(0, 2);
+            dec = (dec + "00").slice(0, 2);
         }
-        return BigInt(preComma + postComma);
+        return BigInt(int + dec);
     }
 
     w.PopStateHandlers["currencyConverter"] = function (state) {
@@ -123,9 +113,7 @@
         for (let i = 0; i < 4; i++) {
             const value = getDisplayValue(euroValue * factors[i]);
             fields[i].placeholder = value;
-            if (i !== ignored) {
-                fields[i].value = value;
-            }
+            if (i !== ignored) fields[i].value = value;
         }
     }
 
@@ -146,7 +134,7 @@
             }
             // parse input as it is a number
             setAllFields(strToBigInt(fields[i].value) / factors[i], i);
-            // update the output
+
             updateOutput();
         }
     }
