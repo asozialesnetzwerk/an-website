@@ -67,7 +67,6 @@ class UpdateAPI(APIRequestHandler):
             "-m",
             "pip",
             "install",
-            "--force-reinstall",
             "--require-virtualenv",
             os.path.join(self.dir.name, filename),
             stdin=asyncio.subprocess.DEVNULL,
@@ -75,13 +74,12 @@ class UpdateAPI(APIRequestHandler):
             stderr=asyncio.subprocess.STDOUT,
         )
         self.set_status(202)
-        returncode: None | int = None
-        while returncode is None:  # pylint: disable=while-used
-            returncode = process.returncode
+        # pylint: disable=while-used
+        while not process.stdout.at_eof():  # type: ignore[union-attr]
             output = await process.stdout.readline()  # type: ignore[union-attr]
-            if output:
-                self.write(output)
-                self.flush()
+            self.write(output)
+            self.flush()
         await self.finish()
-        if not returncode:
+        await process.wait()
+        if not process.returncode:
             raise KeyboardInterrupt

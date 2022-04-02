@@ -48,6 +48,7 @@ def apply() -> None:
         gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
         namedthreads.patch()
     defusedxml.defuse_stdlib()
+    defusedxml.xmlrpc.monkey_patch()
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
         {"sure": True, "nope": False}
     )

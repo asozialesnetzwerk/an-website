@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The ping pong API of the website."""
+"""The ping API of the website."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/api/ping", Ping),),
+        handlers=((r"/api/ping", PingPong),),
         name="Ping Pong",
         description="🏓",
         path="/api/ping",
@@ -30,12 +30,11 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class Ping(APIRequestHandler):
-    """The Tornado request handler for the ping pong API."""
+class PingPong(APIRequestHandler):
+    """The request handler for the ping API."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the ping pong API."""
+        """Handle the GET request to the ping API."""
+        # pylint: disable=unused-argument
         self.set_header("Content-Type", "text/plain; charset=utf-8")
-        if head:
-            return
         await self.finish("🏓")
