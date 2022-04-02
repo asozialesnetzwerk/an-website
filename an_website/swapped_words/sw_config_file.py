@@ -277,7 +277,7 @@ class InvalidConfigError(Exception):
         )
 
 
-class SwappedWordsConfig:
+class SwappedWordsConfig:  # pylint: disable=eq-without-hash
     """SwappedWordsConfig class used to swap words in strings."""
 
     def __init__(self, config: str):

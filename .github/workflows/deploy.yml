@@ -53,7 +53,7 @@ jobs:
           name: hashes
 
   gh_pages:
-    name: Push version and coverage to GitHub Pages
+    name: Push hashes and coverage to GitHub Pages
     runs-on: ubuntu-latest
     needs:
       - tests
@@ -89,7 +89,7 @@ jobs:
           fi
           curl "https://img.shields.io/badge/coverage-$total%25-$COLOR" > public/coverage/badge.svg
           rm public/coverage/.gitignore
-      - name: Push version and coverage to GitHub Pages
+      - name: Push hashes and coverage to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
