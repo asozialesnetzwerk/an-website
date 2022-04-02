@@ -1,7 +1,7 @@
 # Webseite des AN
 [![Deploy](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml)
 [![Check code](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
-[![Check emoji](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml)
+[![Check emoji](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml)
 [![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1.svg?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort)
@@ -32,6 +32,7 @@ You need:
 How:
 - Create a venv somewhere (for example `/opt/an-website`)
 - Install an-website in the venv (`pip install git+https://github.com/asozialesnetzwerk/an-website.git`)
+- run `python -m an_website`
 - ??? (TODO: finish instructions)
 
 ### FreeBSD
