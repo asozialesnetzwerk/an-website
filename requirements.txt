@@ -16,6 +16,7 @@ colorama==0.4.4
 cython==0.29.28
 defusedxml==0.7.1
 deprecated==1.2.13
+dill==0.3.4
 dunamai==1.11.0
 ecs-logging==1.1.0
 elastic-apm==6.9.1
@@ -47,7 +48,7 @@ python-dateutil==2.8.2
 python-levenshtein==0.12.2
 redis[hiredis]==4.2.1
 rply==0.7.8
-setuptools==61.3.0
+setuptools==61.3.1
 six==1.16.0
 soupsieve==2.3.1
 tornado==6.1

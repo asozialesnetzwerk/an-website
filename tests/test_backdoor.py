@@ -66,7 +66,7 @@ async def run_and_get_output(
 async def assert_run_and_print(
     url: str,
     command: str,
-    output: None | str = None,
+    *output: str,
     lisp: bool = False,
     session: str = "69",
     assertion: None | Callable[[str], bool] = None,
@@ -83,21 +83,22 @@ async def assert_run_and_print(
     assert len(real_output) == 2
     assert real_output[0] is None
     assert isinstance(real_output[1], str)
+    assert real_output[1].endswith("\n")
     if assertion:
         assert assertion(real_output[1])
-    elif output is not None:
-        if real_output[1]:
-            assert real_output[1].endswith("\n")
-        assert real_output[1].removesuffix("\n") == output.removesuffix("\n")
-    else:
-        assert output
+    elif output:
+        output_str = "\n".join(output + ("",))
+        assert real_output[1] == output_str
 
 
 def get_error_assertion(error_line: str) -> Callable[[str], bool]:
     """Get the assertion lambda needed for asserting errors with the client."""
     return lambda spam: (
-        spam.startswith("Traceback (most recent call last):\n")
-        and spam.endswith(error_line.removesuffix("\n") + "\n")
+        spam.startswith(
+            "Success: False\n"
+            "Traceback (most recent call last):\n"
+        )
+        and spam.endswith(error_line + "\n")
     )
 
 
@@ -112,25 +113,18 @@ async def test_backdoor(  # pylint: disable=unused-argument
 
     url = f"http://127.0.0.1:{http_server_port[1]}"
 
-    await assert_run_and_print(url, "1 & 1", "Result:\n1")
-    await assert_run_and_print(url, "(+ 1 1)", "Result:\n2", True)
-    await assert_run_and_print(url, "_", "Result:\n2")
-    await assert_run_and_print(
-        url,
-        "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
-        "Result:\n<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
-    )
-    await assert_run_and_print(
-        url,
-        "app.settings['TRUSTED_API_SECRETS'].get('')",
-        "",
-    )
-    await assert_run_and_print(url, "print('42')", "Output:\n42\n")
     await assert_run_and_print(
         url,
         "1 1",
-        'File "<unknown>", line 1\n    1 1\n      ^\n'
+        'File "<unknown>", line 1',
+        "    1 1",
+        "      ^",
         "SyntaxError: invalid syntax",
+    )
+    await assert_run_and_print(
+        url,
+        "return 42",
+        assertion=get_error_assertion("SyntaxError: 'return' outside function")
     )
     await assert_run_and_print(
         url,
@@ -141,28 +135,66 @@ async def test_backdoor(  # pylint: disable=unused-argument
     )
     await assert_run_and_print(
         url,
-        "0/0",
+        "0 / 0",
         assertion=get_error_assertion("ZeroDivisionError: division by zero"),
     )
     await assert_run_and_print(
         url,
-        "1 1",
-        'File "<unknown>", line 1\n    1 1\n      ^\n'
-        "SyntaxError: invalid syntax",
+        "1 + 1",
+        "Success: True",
+        "Result:",
+        "2",
+    )
+    await assert_run_and_print(
+        url,
+        "(+ 1 1)",
+        "Success: True",
+        "Result:",
+        "2",
+        lisp=True,
+    )
+    await assert_run_and_print(
+        url,
+        "_",
+        "Success: True",
+        "Result:",
+        "2",
+    )
+    await assert_run_and_print(
+        url,
+        "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
+        "Success: True",
+        "Result:",
+        "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
+    )
+    await assert_run_and_print(
+        url,
+        "app.settings['TRUSTED_API_SECRETS'].get('')",
+        "Success: True",
+    )
+    await assert_run_and_print(
+        url,
+        "print('42')",
+        "Success: True",
+        "Output:",
+        "42",
     )
     await assert_run_and_print(
         url,
         "help",
-        "Result:\nType help() for interactive help, "
-        "or help(object) for help about object.",
+        "Success: True",
+        "Result:",
+        "Type help() for interactive help, or help(object) for help about object.",
     )
     await assert_run_and_print(
         url,
         "print",
-        "Result:\n<built-in function print>",
+        "Success: True",
+        "Result:",
+        "<built-in function print>",
     )
     await assert_run_and_print(
         "https://example.org",
-        "1 & 1",
-        "\x1b[91mNot Found\x1b[0m",
+        "1 + 1",
+        "\x1b[91m404 Not Found\x1b[0m",
     )

@@ -21,7 +21,6 @@ import ast
 import asyncio
 import http.client
 import os
-import pickle
 import pydoc
 import re
 import socket
@@ -33,6 +32,11 @@ from collections.abc import Callable, Iterable
 from types import EllipsisType
 from typing import Any
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
+
+try:
+    import dill as pickle
+except ImportError:
+    import pickle
 
 try:
     import hy  # type: ignore
@@ -237,7 +241,14 @@ def send(
     proxy_rdns: None | bool = True,
     proxy_username: None | str = None,
     proxy_password: None | str = None,
-) -> Any:
+) -> tuple[
+    int,
+    dict[str, str],
+    None
+    | str
+    | SystemExit
+    | dict[str, None | bool | str | tuple[str, None | bytes]],
+]:
     """Send code to the backdoor API."""
     body = code.encode("utf-8")
     if isinstance(url, str):
@@ -338,49 +349,6 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
             ).strip()
         )
         return
-    if response[0] >= 400:
-        print("\033[91m" + http.client.responses[response[0]] + "\033[0m")
-    if response[2] is None:
-        return
-    if isinstance(response[2], str):
-        print("\033[91m" + response[2] + "\033[0m")
-        return
-    if isinstance(response[2], SystemExit):
-        raise response[2]  # pylint: disable=raising-bad-type
-    if isinstance(response[2], dict):
-        if response[2]["success"]:
-            if response[2]["output"]:
-                print("Output:")
-                print(response[2]["output"].strip())
-            result_obj = None
-            if response[2]["result"][1]:
-                try:
-                    result_obj = pickle.loads(response[2]["result"][1])
-                except (
-                    pickle.UnpicklingError,
-                    AttributeError,
-                    EOFError,
-                    ImportError,
-                    IndexError,
-                ):
-                    pass
-                except Exception:  # pylint: disable=broad-except
-                    traceback.print_exc()
-            if (
-                isinstance(result_obj, tuple)
-                and len(result_obj) == 2
-                and result_obj[0] == "HelperTuple"
-                and isinstance(result_obj[1], str)
-            ):
-                pydoc.pager(result_obj[1])
-            elif response[2]["result"][0] != "None":
-                print("Result:")
-                print(response[2]["result"][0])
-        else:
-            print(response[2]["result"][0])
-    else:
-        print("Response has unknown type!")
-        print(response[2])
     if time_requests:
         took = time.monotonic() - start_time
         if took > 1:
@@ -390,6 +358,49 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         else:
             color = "92"  # green
         print(f"\033[{color}mTook: {took:.3f}s\033[0m")
+    status, headers, body = response
+    if status >= 400:
+        print(
+            "\033[91m"
+            + f"{status} {http.client.responses[status]}"
+            + "\033[0m"
+        )
+    if body is None:
+        return
+    if isinstance(body, str):
+        print("\033[91m" + body + "\033[0m")
+        return
+    if isinstance(body, SystemExit):
+        raise body  # pylint: disable=raising-bad-type
+    if isinstance(body, dict):
+        print(f"Success: {body['success']}")
+        if isinstance(body["output"], str) and body["output"]:
+            print("Output:")
+            print(body["output"].strip())
+        if isinstance(body["result"], tuple):
+            if not body["success"]:
+                print(body["result"][0])
+                return
+            result_obj: Any = None
+            if isinstance(body["result"][1], bytes):
+                try:
+                    result_obj = pickle.loads(body["result"][1])
+                except Exception:  # pylint: disable=broad-except
+                    if sys.flags.dev_mode:
+                        traceback.print_exc()
+            if (
+                isinstance(result_obj, tuple)
+                and len(result_obj) == 2
+                and result_obj[0] == "HelperTuple"
+                and isinstance(result_obj[1], str)
+            ):
+                pydoc.pager(result_obj[1])
+            else:
+                print("Result:")
+                print(body["result"][0])
+    else:
+        print("Response has unknown type!")  # type: ignore[unreachable]
+        print(body)
 
 
 def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
@@ -562,7 +573,8 @@ Accepted arguments:
             proxy_username=proxy_username,
             proxy_password=proxy_password,
         )
-        if response[0] >= 400 or not response[2]["success"]:
+        status, headers, body = response
+        if not (isinstance(body, dict) and body["success"]):
             print("\033[91mPatching help() failed!\033[0m")
 
     if "--lisp" in sys.argv:
@@ -581,7 +593,8 @@ Accepted arguments:
             proxy_username=proxy_username,
             proxy_password=proxy_password,
         )
-        if response[0] >= 400 or not response[2]["success"]:
+        status, headers, body = response
+        if not (isinstance(body, dict) and body["success"]):
             print("\033[91mImporting Hy builtins failed!\033[0m")
 
     # pylint: disable=import-outside-toplevel

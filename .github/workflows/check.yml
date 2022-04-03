@@ -108,6 +108,6 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Pylint + stuff required for checking the tests
-        run: grep -E "(pylint|pytest|html5lib)" requirements-dev.txt | xargs pip install
+        run: grep -E "^(pylint|pytest|html5lib)" requirements-dev.txt | xargs pip install
       - name: Run Pylint
         run: pylint -d fixme *.py an_website tests

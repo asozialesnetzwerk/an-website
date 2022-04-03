@@ -17,13 +17,13 @@ from __future__ import annotations, barry_as_FLUFL
 
 import ast
 import io
-import pickle
 import pydoc
 import traceback
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
+import dill as pickle
 from tornado.web import HTTPError
 
 from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
@@ -71,7 +71,7 @@ class Backdoor(APIRequestHandler):
         """Handle the POST request to the backdoor API."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         try:
-            result: Any = None
+            result: Any
             exception: None | BaseException = None
             source, output = self.request.body, io.StringIO()
             try:
@@ -126,8 +126,12 @@ class Backdoor(APIRequestHandler):
                         result = await result
                 except Exception as exc:  # pylint: disable=broad-except
                     exception = exc  # pylint: disable=redefined-variable-type
+                    try:
+                        del result
+                    except UnboundLocalError:
+                        pass
                 else:
-                    if result is session["print"]:
+                    if result is session["print"]:  # noqa: F821
                         result = print
                     elif result is session["help"]:
                         result = help
@@ -150,7 +154,7 @@ class Backdoor(APIRequestHandler):
                         result_tuple[1], max(pickle.DEFAULT_PROTOCOL, 5)
                     ),
                 )
-            except (pickle.PicklingError, TypeError, RecursionError):
+            except Exception:  # pylint: disable=broad-except
                 result_tuple = (
                     result_tuple[0] or repr(result_tuple[1]),
                     None,
@@ -172,8 +176,10 @@ class Backdoor(APIRequestHandler):
             pickle.dumps(
                 {
                     "success": exception is None,
-                    "result": result_tuple,
                     "output": output_str,
+                    "result": result_tuple
+                    if not (exception is None and result is None)
+                    else None,
                 },
                 max(pickle.DEFAULT_PROTOCOL, 5),
             )
