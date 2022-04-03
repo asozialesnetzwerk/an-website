@@ -60,15 +60,15 @@ class UpdateAPI(APIRequestHandler):
     async def put(self, filename: str) -> None:
         """Handle the PUT request to the update API."""
         self.file.close()
-        filename = unquote(filename)
-        os.rename(self.file.name, os.path.join(self.dir.name, filename))
+        filepath = os.path.join(self.dir.name, unquote(filename))
+        os.rename(self.file.name, filepath)
         process = await asyncio.create_subprocess_exec(
             sys.executable,
             "-m",
             "pip",
             "install",
             "--require-virtualenv",
-            os.path.join(self.dir.name, filename),
+            filepath,
             stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
