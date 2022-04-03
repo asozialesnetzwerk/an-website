@@ -29,6 +29,7 @@ STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
 
 def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
+    """Find, copy and minify all JS files."""
     if "--clean" in sys.argv:
         shutil.rmtree(STATIC_DIR)
     os.makedirs(STATIC_DIR, exist_ok=True)

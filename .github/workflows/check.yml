@@ -107,7 +107,7 @@ jobs:
         run: sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Install Pylint + stuff required for checking the tests
-        run: grep -E "^(pylint|pytest|html5lib)" requirements-dev.txt | xargs pip install
+      - name: Install Pylint + stuff required for checking
+        run: grep -E "^(pylint|pytest|html5lib|rcssmin|rjsmin)" requirements-dev.txt | xargs pip install
       - name: Run Pylint
         run: pylint -d fixme *.py an_website tests

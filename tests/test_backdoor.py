@@ -138,6 +138,13 @@ async def test_backdoor(  # pylint: disable=unused-argument
     )
     await assert_run_and_print(
         url,
+        "69420",
+        "Success: True",
+        "Result:",
+        "69420",
+    )
+    await assert_run_and_print(
+        url,
         "1 + 1",
         "Success: True",
         "Result:",
