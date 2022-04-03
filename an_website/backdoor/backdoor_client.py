@@ -34,9 +34,9 @@ from typing import Any
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 try:
-    import dill as pickle
+    import dill as pickle  # type: ignore
 except ImportError:
-    import pickle
+    import pickle  # type: ignore[no-redef]
 
 try:
     import hy  # type: ignore

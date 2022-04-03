@@ -23,7 +23,7 @@ from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
-import dill as pickle
+import dill as pickle  # type: ignore
 from tornado.web import HTTPError
 
 from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes

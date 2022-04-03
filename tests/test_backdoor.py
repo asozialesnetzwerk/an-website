@@ -62,7 +62,6 @@ async def run_and_get_output(
     return text  # type: ignore
 
 
-# pylint: disable=too-many-arguments
 async def assert_run_and_print(
     url: str,
     command: str,

@@ -578,10 +578,10 @@ class BaseRequestHandler(RequestHandler):
 
         try:
             body = json.loads(self.request.body)
-        except json.JSONDecodeError:
+        except Exception:  # pylint: disable=broad-except
             pass
         else:
-            if name in body:
+            if isinstance(body, dict) and name in body:
                 val = str(body[name])
                 return val.strip() if strip else val
 
