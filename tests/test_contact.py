@@ -20,6 +20,7 @@ import random
 from email.message import Message
 
 import orjson as json
+import pytest
 from tornado.httpclient import AsyncHTTPClient
 
 from an_website.contact import contact
@@ -49,15 +50,13 @@ def test_add_geoip_info_to_message() -> None:
     ]
 
 
-# Joshix broke this test:
-
-# def test_add_geoip_info_to_message_recursive() -> None:
-#     """Test infinite recursion."""
-#     geoip = {"spam": "eggs"}
-#     geoip["GeoIP"] = geoip  # type: ignore[assignment]
-#     message = Message()
-#     with pytest.raises(RecursionError):
-#         contact.add_geoip_info_to_message(message, geoip)
+def test_add_geoip_info_to_message_recursive() -> None:
+    """Test infinite recursion."""
+    geoip = {"spam": "eggs"}
+    geoip["GeoIP"] = geoip  # type: ignore[assignment]
+    message = Message()
+    with pytest.raises(RecursionError):
+        contact.add_geoip_info_to_message(message, geoip)
 
 
 async def test_sending_email() -> None:

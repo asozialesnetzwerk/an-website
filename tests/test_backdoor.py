@@ -56,7 +56,7 @@ async def run_and_get_output(
         kwargs=kwargs,
     )
     process.start()
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.05)
     text = parent_conn.recv()
     process.join()
     return text  # type: ignore

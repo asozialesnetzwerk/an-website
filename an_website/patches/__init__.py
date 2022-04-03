@@ -42,7 +42,7 @@ DIR = os.path.dirname(__file__)
 
 def apply() -> None:
     """Apply the patches."""
-    sys.setrecursionlimit(1_000_000)
+    sys.setrecursionlimit(10_000)
     signal.signal(signal.SIGHUP, signal_handler)
     if sys.flags.dev_mode:
         gc.set_debug(gc.DEBUG_UNCOLLECTABLE)

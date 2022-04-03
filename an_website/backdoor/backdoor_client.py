@@ -20,6 +20,7 @@ from __future__ import annotations, barry_as_FLUFL
 import ast
 import asyncio
 import http.client
+import io
 import os
 import pydoc
 import re
@@ -372,7 +373,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         raise body  # pylint: disable=raising-bad-type
     if isinstance(body, dict):
         print(f"Success: {body['success']}")
-        if body["output"] and isinstance(body["output"], str):
+        if isinstance(body["output"], str) and body["output"]:
             print("Output:")
             print(body["output"].strip())
         if isinstance(body["result"], tuple):
@@ -437,6 +438,7 @@ Accepted arguments:
         }:
             print(f"Unknown argument: {arg}")
             sys.exit(64 + 4 + 1)
+    file: io.IOBase
     url: None | str = None
     key: None | str = None
     session: None | str = None
@@ -456,8 +458,8 @@ Accepted arguments:
         print("Cache cleared")
     if "--no-cache" not in sys.argv:
         try:
-            with open(cache_pickle, "rb") as read_file:
-                cache = pickle.load(read_file)
+            with open(cache_pickle, "rb") as file:
+                cache = pickle.load(file)
         except FileNotFoundError:
             pass
         else:
@@ -532,7 +534,7 @@ Accepted arguments:
 
     if "--no-cache" not in sys.argv:
         os.makedirs(os.path.dirname(cache_pickle), exist_ok=True)
-        with open(cache_pickle, "wb") as write_file:
+        with open(cache_pickle, "wb") as file:
             pickle.dump(
                 {
                     "url": url,
@@ -545,7 +547,7 @@ Accepted arguments:
                     "proxy_username": proxy_username,
                     "proxy_password": proxy_password,
                 },
-                write_file,
+                file,
             )
         print("Saved information to cache")
 
