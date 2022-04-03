@@ -361,9 +361,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     status, headers, body = response
     if status >= 400:
         print(
-            "\033[91m"
-            + f"{status} {http.client.responses[status]}"
-            + "\033[0m"
+            "\033[91m" + f"{status} {http.client.responses[status]}" + "\033[0m"
         )
     if body is None:
         return

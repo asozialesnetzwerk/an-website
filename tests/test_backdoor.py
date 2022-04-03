@@ -95,8 +95,7 @@ def get_error_assertion(error_line: str) -> Callable[[str], bool]:
     """Get the assertion lambda needed for asserting errors with the client."""
     return lambda spam: (
         spam.startswith(
-            "Success: False\n"
-            "Traceback (most recent call last):\n"
+            "Success: False\n" "Traceback (most recent call last):\n"
         )
         and spam.endswith(error_line + "\n")
     )
@@ -124,7 +123,7 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await assert_run_and_print(
         url,
         "return 42",
-        assertion=get_error_assertion("SyntaxError: 'return' outside function")
+        assertion=get_error_assertion("SyntaxError: 'return' outside function"),
     )
     await assert_run_and_print(
         url,
