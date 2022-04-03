@@ -77,7 +77,6 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                 "/chat",  # head not supported
                 "/LOLWUT",  # needs Redis
                 "/zitat-des-tages",  # needs Redis
-                "/api/restart",  # needs Authorization, and does stuff
                 "/api/update",
             }:
                 head_response = await fetch(

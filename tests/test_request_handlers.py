@@ -47,7 +47,6 @@ async def test_json_apis(
         # "/api/zitate/1-1",  # gets tested with quotes
         "/api/hangman-loeser",
         # "/api/ping",  # (not JSON)
-        # "/api/restart",  # (not 200)
         "/api/vertauschte-woerter",
         "/api/wortspiel-helfer",
         "/api/waehrungs-rechner",
@@ -310,7 +309,6 @@ async def test_request_handlers(
     assert_valid_html_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
     assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), 404)
 
-    assert_valid_json_response(await fetch("/api/restart"), 401)
     assert_valid_response(
         await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 401
     )

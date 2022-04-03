@@ -32,7 +32,6 @@ You need:
 How:
 - Create a venv somewhere (for example `/opt/an-website`)
 - Install an-website in the venv (`pip install git+https://github.com/asozialesnetzwerk/an-website.git`)
-- run `python -m an_website`
 - ??? (TODO: finish instructions)
 
 ### FreeBSD
