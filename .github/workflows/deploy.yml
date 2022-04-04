@@ -52,7 +52,7 @@ jobs:
       - name: Install pytest, coverage and html5lib (needed for the tests)
         run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install
       - name: Run pytest
-        run: pytest --cov=an_website tests
+        run: pytest --verbose --cov=an_website tests
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v3
         with:
