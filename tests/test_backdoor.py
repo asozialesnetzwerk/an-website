@@ -56,7 +56,7 @@ async def run_and_get_output(
         kwargs=kwargs,
     )
     process.start()
-    await asyncio.sleep(0.05)
+    await asyncio.sleep(0.1)  # 0.05 works locally too
     text = parent_conn.recv()
     process.join()
     return text  # type: ignore

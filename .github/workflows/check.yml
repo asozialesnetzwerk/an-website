@@ -8,6 +8,7 @@ jobs:
   fix_stupid_mistakes:
     name: Fix stupid mistakes
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -40,6 +41,7 @@ jobs:
   check_types:
     name: Check types
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -67,6 +69,7 @@ jobs:
   flake8:
     name: Flake8
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -88,6 +91,7 @@ jobs:
   pylint:
     name: Pylint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
