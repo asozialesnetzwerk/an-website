@@ -87,10 +87,10 @@ python-dateutil==2.8.2
 python-levenshtein==0.12.2
 pyyaml==6.0
 rcssmin==1.1.0
-redis[hiredis]==4.2.1
+redis[hiredis]==4.2.2
 rjsmin==1.2.0
 rply==0.7.8
-setuptools==61.3.1
+setuptools==62.0.0
 six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.3.1
