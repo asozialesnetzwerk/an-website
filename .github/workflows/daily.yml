@@ -2,6 +2,12 @@ name: Daily build
 on:
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      check-if-the-person-is-sure:
+        description: 'Are you sure, that the workflow failed today and that you want to run it again?'
+        required: true
+        type: boolean
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
