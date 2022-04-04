@@ -8,7 +8,7 @@ jobs:
   check_emoji:
     name: Look for Emoji in commit message
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

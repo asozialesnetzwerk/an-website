@@ -13,7 +13,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
   tests:
     name: Run tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -62,7 +62,7 @@ jobs:
   hashes:
     name: Hash files
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -81,7 +81,7 @@ jobs:
   deploy:
     name: Deploy website
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - build
       - tests
@@ -96,9 +96,9 @@ jobs:
                -T *.whl https://asozial.org/api/update/
 
   gh_pages:
-    name: Push hashes and coverage to GitHub Pages
+    name: GitHub Pages
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - deploy
       - hashes

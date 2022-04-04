@@ -40,14 +40,14 @@ def _run_and_get_output(
 ) -> None:
     """Run a function with the arguments and get the printed output."""
     output = StringIO()
-    fun_out = fun(*args, print=PrintWrapper(output), **kwargs)  # type: ignore
-    conn.send((fun_out, output.getvalue()))
+    fun(*args, print=PrintWrapper(output), **kwargs)  # type: ignore[call-arg]
+    conn.send(output.getvalue())
     conn.close()
 
 
-async def run_and_get_output(
+def run_and_get_output(
     fun: Callable[..., Any], *args: Any, **kwargs: Any
-) -> tuple[Any, str]:
+) -> str:
     """Run a function with the arguments and get the printed output."""
     parent_conn, child_conn = Pipe()
     process = Process(
@@ -56,13 +56,12 @@ async def run_and_get_output(
         kwargs=kwargs,
     )
     process.start()
-    await asyncio.sleep(1)  # 0.05 works locally too
-    text = parent_conn.recv()
     process.join()
-    return text  # type: ignore
+    output: str = parent_conn.recv()
+    return output
 
 
-async def assert_run_and_print(
+def assert_run_and_print(
     url: str,
     command: str,
     *output: str,
@@ -71,7 +70,7 @@ async def assert_run_and_print(
     assertion: None | Callable[[str], bool] = None,
 ) -> None:
     """Test the run_and_print function."""
-    real_output = await run_and_get_output(
+    real_output = run_and_get_output(
         bc.run_and_print,
         url,
         "xyzzy",
@@ -79,15 +78,13 @@ async def assert_run_and_print(
         lisp,
         session,
     )
-    assert len(real_output) == 2
-    assert real_output[0] is None
-    assert isinstance(real_output[1], str)
-    assert real_output[1].endswith("\n")
+    assert isinstance(real_output, str)
+    assert real_output.endswith("\n")
     if assertion:
-        assert assertion(real_output[1])
-    elif output:
+        assert assertion(real_output)
+    if output:
         output_str = "\n".join(output + ("",))
-        assert real_output[1] == output_str
+        assert real_output == output_str
 
 
 def get_error_assertion(error_line: str) -> Callable[[str], bool]:
@@ -111,7 +108,14 @@ async def test_backdoor(  # pylint: disable=unused-argument
 
     url = f"http://127.0.0.1:{http_server_port[1]}"
 
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
+        "https://example.org",
+        "1 + 1",
+        "\x1b[91m404 Not Found\x1b[0m",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "1 1",
         'File "<unknown>", line 1',
@@ -119,38 +123,44 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "      ^",
         "SyntaxError: invalid syntax",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "return 42",
         assertion=get_error_assertion("SyntaxError: 'return' outside function"),
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "LOLWUT",
         assertion=get_error_assertion(
             "NameError: name 'LOLWUT' is not defined"
         ),
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "0 / 0",
         assertion=get_error_assertion("ZeroDivisionError: division by zero"),
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "69420",
         "Success: True",
         "Result:",
         "69420",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "1 + 1",
         "Success: True",
         "Result:",
         "2",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "(+ 1 1)",
         "Success: True",
@@ -158,48 +168,55 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "2",
         lisp=True,
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "None",
+        "Success: True",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "_",
         "Success: True",
         "Result:",
         "2",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
         "Success: True",
         "Result:",
         "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "app.settings['TRUSTED_API_SECRETS'].get('')",
         "Success: True",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "print('42')",
         "Success: True",
         "Output:",
         "42",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "help",
         "Success: True",
         "Result:",
         "Type help() for interactive help, or help(object) for help about object.",
     )
-    await assert_run_and_print(
+    await asyncio.to_thread(
+        assert_run_and_print,
         url,
         "print",
         "Success: True",
         "Result:",
         "<built-in function print>",
-    )
-    await assert_run_and_print(
-        "https://example.org",
-        "1 + 1",
-        "\x1b[91m404 Not Found\x1b[0m",
     )

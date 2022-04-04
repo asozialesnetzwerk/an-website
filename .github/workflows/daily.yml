@@ -4,7 +4,7 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
-      check-if-the-person-is-sure:
+      are-you-sure:
         description: 'Are you sure, that the workflow failed today and that you want to run it again?'
         required: true
         type: boolean
@@ -16,7 +16,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
   tests:
     name: Run tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -58,7 +58,7 @@ jobs:
       - name: Install pytest, coverage and html5lib (needed for the tests)
         run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install
       - name: Run pytest
-        run: pytest --cov=an_website tests
+        run: pytest --verbose --cov=an_website tests
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v3
         with:
@@ -68,7 +68,7 @@ jobs:
   hashes:
     name: Hash files
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -87,7 +87,7 @@ jobs:
   release:
     name: Create release
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - build
       - tests
@@ -115,7 +115,7 @@ jobs:
   pypi:
     name: Upload to PyPI
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - build
       - tests
@@ -139,7 +139,7 @@ jobs:
   deploy:
     name: Deploy website
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - build
       - tests
@@ -154,9 +154,9 @@ jobs:
                -T *.whl https://asozial.org/api/update/
 
   gh_pages:
-    name: Push hashes and coverage to GitHub Pages
+    name: GitHub Pages
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs:
       - deploy
       - hashes
