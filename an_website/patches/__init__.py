@@ -24,6 +24,7 @@ import signal
 import sys
 import types
 
+import certifi  # type: ignore
 import defusedxml  # type: ignore
 import namedthreads  # type: ignore
 import tornado.httpclient
@@ -32,6 +33,7 @@ import tornado.platform.asyncio
 import tornado.web
 import uvloop
 
+from .. import DIR as ROOT_DIR
 from ..utils.utils import anonymize_ip
 from . import json  # pylint: disable=reimported
 
@@ -68,6 +70,8 @@ def apply() -> None:
     )
     http.client.responses[420] = "Enhance Your Calm"
     anonymize_logs()
+    certifi.core.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
+    certifi.where = certifi.core.where
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
 

@@ -1,0 +1,18 @@
+{
+  "description": "The ingest pipeline for the shorten action of the URL shortener",
+  "processors": [
+    {
+      "uri_parts": {
+        "field": "url",
+        "target_field": "url",
+        "keep_original": true
+      }
+    },
+    {
+      "registered_domain": {
+        "field": "url.domain",
+        "target_field": "url"
+      }
+    }
+  ]
+}

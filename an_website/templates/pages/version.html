@@ -8,18 +8,19 @@
 Version: {{ version }}
     {% if no_3rd_party %}
 <a no-dynload
-   href="https://asozialesnetzwerk.github.io/an-website/coverage/"
+   href="https://asozialesnetzwerk.github.io/an-website/coverage"
    rel="noreferrer">Code-Coverage</a>
     {% else %}
-Code-Coverage: <a href="https://asozialesnetzwerk.github.io/an-website/coverage/"
+Code-Coverage: <a href="https://asozialesnetzwerk.github.io/an-website/coverage"
                   rel="noreferrer"><img src="https://github.asozial.org/an-website/coverage/badge.svg"
                                         no-dynload></a>
     {% end %}
-<a href="https://asozialesnetzwerk.github.io/an-website/hashes"
+<a href="https://asozialesnetzwerk.github.io/an-website/hashes.txt"
    rel="noreferrer"
    no-dynload>Hashes der neuesten Version</a><br>
 
-Hash der Datei-Hashes: {{ hash_of_file_hashes }}<br>
+Hash der Datei-Hashes:
+{{ hash_of_file_hashes }}<br>
 
 Datei-Hashes:
 {{ file_hashes }}

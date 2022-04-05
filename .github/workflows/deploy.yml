@@ -116,7 +116,7 @@ jobs:
       - name: Move files
         run: |
           mkdir public
-          mv hashes/hashes public
+          mv hashes/hashes public/hashes.txt
           mv coverage/.coverage .
       - name: Create coverage files
         run: |

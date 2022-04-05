@@ -373,7 +373,7 @@ def setup_apm(app: Application) -> None:
         "VERIFY_SERVER_CERT": config.getboolean(
             "ELASTIC_APM", "VERIFY_SERVER_CERT", fallback=True
         ),
-        "SERVER_CERT": os.path.join(DIR, "ca-bundle.crt"),
+        "USE_CERTIFI": True,  # doesn't actually use certifi
         "SERVICE_NAME": NAME.removesuffix("-dev"),
         "SERVICE_VERSION": VERSION,
         "ENVIRONMENT": "production"
@@ -504,26 +504,26 @@ async def setup_elasticsearch_configs(  # noqa: C901
             try:
                 if i == 0:  # pylint: disable=compare-to-zero
                     current = await get(id=name)
-                    current_version = current[name].get("version", 0)
+                    current_version = current[name].get("version", 1)
                 else:
                     current = await get(
                         name=name,
                         params={"filter_path": f"{what}.name,{what}.version"},
                     )
-                    current_version = current[what][0].get("version", 0)
+                    current_version = current[what][0].get("version", 1)
             except NotFoundError:
-                current_version = -1
+                current_version = 0
 
-            if current_version < body.get("version", 0):
+            if current_version < body.get("version", 1):
                 if i == 0:  # pylint: disable=compare-to-zero
                     await put(id=name, body=body)
                 else:
                     await put(name=name, body=body)
-            elif current_version > body.get("version", 0):
+            elif current_version > body.get("version", 1):
                 logger.warning(
                     "%s has older version %s. Current version is %s!",
                     path,
-                    body.get("version", 0),
+                    body.get("version", 1),
                     current_version,
                 )
 
