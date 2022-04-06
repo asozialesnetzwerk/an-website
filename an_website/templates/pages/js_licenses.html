@@ -13,7 +13,7 @@
         {% for file_name in js_files %}
         <tr>
             <td>
-                <a no-dynload href="{{fix_static(f'js/file_name')}}"
+                <a no-dynload href="{{fix_static(f'js/{file_name}')}}"
                    rel="noreferrer">{{ file_name }}</a>
             </td>
             <td>
