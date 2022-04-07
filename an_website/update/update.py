@@ -16,10 +16,12 @@
 from __future__ import annotations
 
 import asyncio
+import io
 import os
 import sys
+from queue import SimpleQueue
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import Any
+from threading import Thread
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -39,6 +41,19 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
+    """Read from a queue and write to a file."""
+    while True:  # pylint: disable=while-used
+
+        chunk = queue.get()
+
+        if chunk is None:
+            file.close()
+            break
+
+        file.write(chunk)
+
+
 @stream_request_body
 class UpdateAPI(APIRequestHandler):
     """The request handler for the update API."""
@@ -46,20 +61,30 @@ class UpdateAPI(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("PUT",)
     REQUIRED_PERMISSION: Permissions = Permissions.UPDATE
 
-    def initialize(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the request handler."""
+    queue: SimpleQueue[None | bytes]
+
+    async def prepare(self) -> None:
         # pylint: disable=attribute-defined-outside-init, consider-using-with
-        super().initialize(*args, **kwargs)
+        await super().prepare()
         self.dir = TemporaryDirectory()
         self.file = NamedTemporaryFile(dir=self.dir.name, delete=False)
+        self.queue = SimpleQueue()
+        self.thread = Thread(
+            target=write_from_queue, args=(self.file, self.queue), daemon=True
+        )
+        self.thread.start()
 
     def data_received(self, chunk: bytes) -> None:
-        """Write received data."""
-        self.file.write(chunk)
+        self.queue.put(chunk)
+
+    def on_finish(self) -> None:
+        self.queue.put(None)
 
     async def put(self, filename: str) -> None:
         """Handle the PUT request to the update API."""
-        self.file.close()
+        self.queue.put(None)
+        while not self.queue.empty():  # pylint: disable=while-used
+            await asyncio.sleep(0)
         filepath = os.path.join(self.dir.name, unquote(filename))
         os.rename(self.file.name, filepath)
         process = await asyncio.create_subprocess_exec(

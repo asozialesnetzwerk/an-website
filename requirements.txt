@@ -17,7 +17,7 @@ cython==0.29.28
 defusedxml==0.7.1
 deprecated==1.2.13
 dill==0.3.4
-dunamai==1.11.0
+dunamai==1.11.1
 ecs-logging==1.1.0
 elastic-apm==6.9.1
 elastic-enterprise-search==7.17.0
@@ -50,7 +50,7 @@ redis[hiredis]==4.2.2
 rply==0.7.8
 setuptools==62.0.0
 six==1.16.0
-soupsieve==2.3.1
+soupsieve==2.3.2
 tornado==6.1
 urllib3==1.26.9
 uvloop==0.16.0

@@ -70,8 +70,9 @@ def apply() -> None:
     )
     http.client.responses[420] = "Enhance Your Calm"
     anonymize_logs()
-    certifi.core.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
-    certifi.where = certifi.core.where
+    certifi.where = certifi.core.where = lambda: os.path.join(
+        ROOT_DIR, "ca-bundle.crt"
+    )
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
 
