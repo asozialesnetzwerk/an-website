@@ -423,11 +423,11 @@ class BaseRequestHandler(RequestHandler):
         """Get the module infos."""
         return self.settings.get("MODULE_INFOS") or tuple()
 
-    def fix_url(  # pylint: disable=too-complex
+    # pylint: disable=too-complex, too-many-branches
+    def fix_url(  # noqa: C901
         self,
         url: None | str | SplitResult = None,
         this_url: None | str = None,
-        always_add_params: bool = False,
         new_path: None | str = None,
         **query_args: None | str | bool | float,
     ) -> str:
@@ -444,25 +444,32 @@ class BaseRequestHandler(RequestHandler):
             url = urlsplit(url)
 
         if url.netloc and url.netloc.lower() != self.request.host.lower():
+            this_url = this_url or self.request.full_url()
+            if urlsplit(this_url).path == "/redirect":
+                # do not create long urls
+                this_url = self.get_argument("from", default="/") or "/"
             # URL is to other website:
             url = urlsplit(
-                f"/redirect?to={quote(url.geturl())}"
-                f"&from={quote(this_url or self.request.full_url())}"
+                f"/redirect?to={quote(url.geturl())}&from={quote(this_url)}"
             )
-
-        if "no_3rd_party" not in query_args:
-            query_args["no_3rd_party"] = self.get_no_3rd_party()
-        if "theme" not in query_args:
-            query_args["theme"] = self.get_theme()
-        if "dynload" not in query_args:
-            query_args["dynload"] = self.get_dynload()
 
         # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
             del query_args["as_json"]
 
-        if not always_add_params:
+        if (new_path or url.path).startswith("/static/"):
+            query_args["no_3rd_party"] = None
+            query_args["theme"] = None
+            query_args["dynload"] = None
+        else:
+            if "no_3rd_party" not in query_args:
+                query_args["no_3rd_party"] = self.get_no_3rd_party()
+            if "theme" not in query_args:
+                query_args["theme"] = self.get_theme()
+            if "dynload" not in query_args:
+                query_args["dynload"] = self.get_dynload()
+
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
             if query_args["theme"] == self.get_saved_theme():
@@ -475,7 +482,11 @@ class BaseRequestHandler(RequestHandler):
                 (
                     self.request.protocol,
                     self.request.host,
-                    (new_path or url.path).rstrip("/"),
+                    (
+                        "/redirect"
+                        if url.path == "/redirect"
+                        else new_path or url.path
+                    ).rstrip("/"),
                     url.query,
                     url.fragment,
                 )

@@ -168,13 +168,18 @@ def assert_valid_response(
 
 async def check_html_page(
     _fetch: FetchCallable,
-    url: str,
+    url: str | tornado.httpclient.HTTPResponse,
     code: int = 200,
-    # pylint: disable=dangerous-default-value
+    *,
+    recursive: int = 0,
     checked_urls: set[str] = set(),  # noqa: B006
 ) -> tornado.httpclient.HTTPResponse:
-    """Check an html page."""
-    response = await _fetch(url)
+    """Check a html page."""
+    if isinstance(url, str):
+        response = await _fetch(url)
+    else:
+        response = url
+        url = response.effective_url
     assert_valid_html_response(response, code)
     html = document_fromstring(
         response.body.decode("utf-8"), base_url=response.effective_url
@@ -186,9 +191,15 @@ async def check_html_page(
     prot_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
     found_ref_to_body = False
     for link_tuple in html.iterlinks():
+        if (
+            link_tuple[0].tag == "link"
+            and link_tuple[1] == "href"
+            and link_tuple[0].attrib.get("rel") == "canonical"
+        ):
+            continue  # ignore canonical urls
         if link_tuple[2] == response.effective_url + "#body":
             found_ref_to_body = True
-        link: str = link_tuple[2].removesuffix("#body")
+        link: str = link_tuple[2].split("#")[0]
         if (
             link.startswith(prot_and_host)
             and link not in checked_urls
@@ -199,8 +210,23 @@ async def check_html_page(
             _response = assert_valid_response(
                 await _fetch(link), content_type=None
             )
-            if link.startswith(f"{prot_and_host}/static/") or link.startswith(
-                f"{prot_and_host}/soundboard/files/"
+            if (
+                _response.headers["Content-Type"] == "text/html; charset=UTF-8"
+                and _response.effective_url.startswith(prot_and_host)
+                and recursive > 0
+            ):
+                await check_html_page(
+                    _fetch,
+                    _response,
+                    recursive=recursive - 1,
+                    checked_urls=checked_urls,
+                )
+
+            if (
+                link.startswith(f"{prot_and_host}/static/")
+                or link.startswith(f"{prot_and_host}/soundboard/files/")
+                and _response.headers["Content-Type"]
+                != "text/html; charset=UTF-8"
             ):
                 assert "v=" in link
                 file_hash = cast(str, blake3(_response.body).hexdigest(8))
@@ -220,10 +246,11 @@ def assert_valid_html_response(
     root: etree.ElementTree = HTMLParser(
         strict=True, namespaceHTMLElements=False
     ).parse(body)
-
-    assert root.find("./head/link[@rel='canonical']").get("href").rstrip(
-        "/"
-    ) == (effective_url or response.effective_url).split("?")[0].rstrip("/")
+    effective_url = effective_url or response.effective_url.split("#")[0]
+    assert (
+        (url_in_doc := root.find("./head/link[@rel='canonical']").get("href"))
+        == effective_url.split("?")[0].rstrip("/")
+    ) or print(url_in_doc, effective_url)
 
     return root
 

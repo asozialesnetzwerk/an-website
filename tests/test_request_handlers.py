@@ -91,6 +91,41 @@ async def test_not_found_handler(
     assert_valid_redirect(await fetch("a?x=y"), "/?x=y")
 
 
+async def test_page_crawling(
+    # pylint: disable=redefined-outer-name,unused-argument
+    fetch: FetchCallable,
+    http_server_port: tuple[socket.socket, int],
+) -> None:
+    """Test most of the request handlers with crawling."""
+    urls: set[str] = set()
+    await check_html_page(fetch, "/", recursive=4, checked_urls=urls)
+    for url in urls:
+        assert "theme=" not in url
+        assert "no_3rd_party" not in url
+        assert "dynload" not in url
+    urls_theme: set[str] = set()
+    await check_html_page(
+        fetch, "/ip?theme=pink", recursive=4, checked_urls=urls_theme
+    )
+    for url in urls_theme:
+        print(url)
+        assert "theme=pink" in url or "/static/" in url
+
+    urls_3rd_party: set[str] = set()
+    await check_html_page(
+        fetch, "/?no_3rd_party=sure", recursive=4, checked_urls=urls_3rd_party
+    )
+    for url in urls_3rd_party:
+        assert "no_3rd_party=sure" in url or "/static/" in url
+
+    urls_dynload: set[str] = set()
+    await check_html_page(
+        fetch, "/?dynload=sure", recursive=4, checked_urls=urls_dynload
+    )
+    for url in urls_dynload:
+        assert "dynload=sure" in url or "/static/" in url
+
+
 async def test_permissions(
     # pylint: disable=redefined-outer-name,unused-argument
     fetch: FetchCallable,
