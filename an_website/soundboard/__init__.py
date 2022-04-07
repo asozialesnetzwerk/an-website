@@ -167,7 +167,7 @@ class SoundInfo(Info):
         file = self.get_file_name()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"files/{file}.mp3"
-        file_url = f"/soundboard{path}?v={hash_file(os.path.join(DIR, path))}"
+        file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
         return (
             f"""
 <li>
@@ -191,7 +191,7 @@ class SoundInfo(Info):
         mod_time_since_epoch = os.path.getmtime(os.path.join(DIR, path))
         # Convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)
-        link = f"/soundboard{path}"
+        link = f"/soundboard/{path}"
         text = self.get_text()
         if url is not None:
             link = url + link

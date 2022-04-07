@@ -205,7 +205,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             query=parsed_info[1],
             feed_url=self.fix_url(
                 f"/soundboard/{path.strip('/')}/feed"
-                if path and path != "/"
+                if path and path != "/" and path != "personen"
                 else "/soundboard/feed",
             ),
         )

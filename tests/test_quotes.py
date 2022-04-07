@@ -26,6 +26,7 @@ from . import (
     assert_valid_json_response,
     assert_valid_redirect,
     assert_valid_response,
+    check_html_page,
     fetch,
 )
 
@@ -100,9 +101,10 @@ async def test_quote_request_handlers(
 ) -> None:
     """Test the request handlers for the quotes page."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)  # add data to cache
-    assert_valid_html_response(await fetch("/zitate"))
-    assert_valid_html_response(await fetch("/zitate/1-1"))
-    assert_valid_html_response(await fetch("/zitate/1-2"))
+    await check_html_page(fetch, "/zitate")
+    await check_html_page(fetch, "/zitate/1-1")
+    await check_html_page(fetch, "/zitate/1-2")
+
     assert_valid_json_response(await fetch("/api/zitate/1-1"))
     assert_valid_json_response(await fetch("/api/zitate/1-2"))
 
@@ -124,9 +126,9 @@ async def test_quote_request_handlers(
         assert_valid_html_response(await fetch(f"/zitate/info/a/{i}"))
         assert_valid_html_response(await fetch(f"/zitate/info/a/{i}"))
 
-    assert_valid_html_response(await fetch("/zitate/info/z/1"))
-    assert_valid_html_response(await fetch("/zitate/share/1-1"))
-    assert_valid_html_response(await fetch("/zitate/erstellen"))
+    await check_html_page(fetch, "/zitate/info/z/1")
+    await check_html_page(fetch, "/zitate/share/1-1")
+    await check_html_page(fetch, "/zitate/erstellen")
 
     assert len(
         assert_valid_response(await fetch("/zitate/1-1.gif"), "image/gif").body

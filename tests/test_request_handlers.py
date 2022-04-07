@@ -25,6 +25,7 @@ from . import (
     assert_valid_redirect,
     assert_valid_response,
     assert_valid_rss_response,
+    check_html_page,
     fetch,
 )
 
@@ -60,7 +61,7 @@ async def test_not_found_handler(
     fetch: FetchCallable,
 ) -> None:
     """Check if the not found handler works."""
-    assert_valid_html_response(await fetch("/qwertzuiop"), 404)
+    await check_html_page(fetch, "/qwertzuiop", 404)
 
     assert_valid_html_response(
         assert_valid_redirect(await fetch("services/index.html"), "/services")
@@ -234,15 +235,14 @@ async def test_request_handlers(
     for theme in ("default", "blue", "random", "random-dark"):
         assert_valid_html_response(await fetch(f"/?theme={theme}"))
     for _b1, _b2 in (("sure", "true"), ("nope", "false")):
-        response = await fetch(f"/?no_3rd_party={_b1}")
+        response = await check_html_page(fetch, f"/?no_3rd_party={_b1}")
         body = response.body.decode()
-        assert_valid_html_response(response)
-        response = await fetch(f"/?no_3rd_party={_b2}")
-        assert_valid_html_response(response)
+        response = await check_html_page(fetch, f"/?no_3rd_party={_b2}")
         assert response.body.decode().replace(_b2, _b1) == body
     assert_valid_html_response(await fetch("/?c=s"))
-    response = await fetch("/redirect?from=/&to=https://example.org")
-    assert_valid_html_response(response)
+    response = await check_html_page(
+        fetch, "/redirect?from=/&to=https://example.org"
+    )
     assert b"https://example.org" in response.body
 
     assert_valid_response(await fetch("/robots.txt"), "text/plain")
@@ -254,26 +254,26 @@ async def test_request_handlers(
         await fetch("/static/favicon.ico"), "image/vnd.microsoft.icon"
     )
 
-    assert_valid_html_response(await fetch("/betriebszeit"))
-    assert_valid_html_response(await fetch("/discord"))
-    assert_valid_html_response(await fetch("/einstellungen"))
-    assert_valid_html_response(await fetch("/endpunkte"))
-    assert_valid_html_response(await fetch("/hangman-loeser"))
-    assert_valid_html_response(await fetch("/host-info"))
-    assert_valid_html_response(await fetch("/ip"))
-    assert_valid_html_response(await fetch("/js-lizenzen"))
-    assert_valid_html_response(await fetch("/kaenguru-comics"))
-    assert_valid_html_response(await fetch("/kontakt"))
-    assert_valid_html_response(await fetch("/services"))
-    assert_valid_html_response(await fetch("/soundboard"))
-    assert_valid_html_response(await fetch("/soundboard/personen"))
-    assert_valid_html_response(await fetch("/soundboard/suche"))
-    assert_valid_html_response(await fetch("/suche"))
-    assert_valid_html_response(await fetch("/version"))
-    assert_valid_html_response(await fetch("/vertauschte-woerter"))
-    assert_valid_html_response(await fetch("/waehrungs-rechner"))
-    assert_valid_html_response(await fetch("/wiki"))
-    assert_valid_html_response(await fetch("/wortspiel-helfer"))
+    await check_html_page(fetch, "/betriebszeit")
+    await check_html_page(fetch, "/discord")
+    await check_html_page(fetch, "/einstellungen")
+    await check_html_page(fetch, "/endpunkte")
+    await check_html_page(fetch, "/hangman-loeser")
+    await check_html_page(fetch, "/host-info")
+    await check_html_page(fetch, "/ip")
+    await check_html_page(fetch, "/js-lizenzen")
+    await check_html_page(fetch, "/kaenguru-comics")
+    await check_html_page(fetch, "/kontakt")
+    await check_html_page(fetch, "/services")
+    await check_html_page(fetch, "/soundboard")
+    await check_html_page(fetch, "/soundboard/personen")
+    await check_html_page(fetch, "/soundboard/suche")
+    await check_html_page(fetch, "/suche")
+    await check_html_page(fetch, "/version")
+    await check_html_page(fetch, "/vertauschte-woerter")
+    await check_html_page(fetch, "/waehrungs-rechner")
+    await check_html_page(fetch, "/wiki")
+    await check_html_page(fetch, "/wortspiel-helfer")
 
     assert_valid_json_response(await fetch("/betriebszeit?as_json=sure"))
     assert_valid_json_response(await fetch("/discord?as_json=sure"))
@@ -305,9 +305,9 @@ async def test_request_handlers(
     assert_valid_rss_response(await fetch("/soundboard/feed"))
     assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
 
-    assert_valid_html_response(await fetch("/soundboard/muk"))
-    assert_valid_html_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
-    assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), 404)
+    await check_html_page(fetch, "/soundboard/muk")
+    await check_html_page(fetch, "/soundboard/qwertzuiop/feed", 404)
+    await check_html_page(fetch, "/soundboard/qwertzuiop", 404)
 
     assert_valid_response(
         await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 401

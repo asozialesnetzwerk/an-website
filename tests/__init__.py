@@ -19,14 +19,17 @@ import configparser
 import os
 import socket
 import sys
+import urllib.parse
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, cast
 
 import orjson as json
 import pytest
 import tornado.httpclient
 import tornado.web
+from blake3 import blake3  # type: ignore[import]
 from lxml import etree  # type: ignore[import]
+from lxml.html import document_fromstring  # type: ignore[import]
 from lxml.html.html5parser import HTMLParser  # type: ignore[import]
 
 DIR = os.path.dirname(__file__)
@@ -144,19 +147,65 @@ def assert_valid_redirect(
 
 def assert_valid_response(
     response: tornado.httpclient.HTTPResponse,
-    content_type: str,
+    content_type: None | str,
     code: int = 200,
     headers: None | dict[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
     url = response.effective_url
     assert response.code == code or print(url)
-    assert response.headers["Content-Type"] == content_type or print(url)
+
     headers = headers or {}
+    if content_type is not None:
+        headers["Content-Type"] = content_type
+
     for header, value in headers.items():
         assert response.headers[header] == value or print(
             url, response.headers, header, value
         )
+    return response
+
+
+async def check_html_page(
+    _fetch: FetchCallable,
+    url: str,
+    code: int = 200,
+    # pylint: disable=dangerous-default-value
+    checked_urls: set[str] = set(),  # noqa: B006
+) -> tornado.httpclient.HTTPResponse:
+    """Check an html page."""
+    response = await _fetch(url)
+    assert_valid_html_response(response, code)
+    html = document_fromstring(
+        response.body.decode("utf-8"), base_url=response.effective_url
+    )
+    assert html.find("head") is not None or print("no head found", url)
+    assert html.find("body") is not None or print("no body found", url)
+    html.make_links_absolute(response.effective_url)
+    eff_url = urllib.parse.urlsplit(response.effective_url)
+    prot_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
+    found_ref_to_body = False
+    for link_tuple in html.iterlinks():
+        if link_tuple[2] == response.effective_url + "#body":
+            found_ref_to_body = True
+        link: str = link_tuple[2].removesuffix("#body")
+        if (
+            link.startswith(prot_and_host)
+            and link not in checked_urls
+            and not link.startswith(f"{prot_and_host}/LOLWUT")
+            and response.effective_url != link
+        ):
+            checked_urls.add(link)
+            _response = assert_valid_response(
+                await _fetch(link), content_type=None
+            )
+            if link.startswith(f"{prot_and_host}/static/") or link.startswith(
+                f"{prot_and_host}/soundboard/files/"
+            ):
+                assert "v=" in link
+                file_hash = cast(str, blake3(_response.body).hexdigest(8))
+                assert f"v={file_hash}" in link
+    assert found_ref_to_body or print(url)
     return response
 
 
@@ -175,6 +224,7 @@ def assert_valid_html_response(
     assert root.find("./head/link[@rel='canonical']").get("href").rstrip(
         "/"
     ) == (effective_url or response.effective_url).split("?")[0].rstrip("/")
+
     return root
 
 
