@@ -35,7 +35,10 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/api/update/(.*)", UpdateAPI),),
         name="Update-API",
-        description=f"Update-API, die genutzt wird um {NAME.removesuffix('-dev')} zu aktualisieren",
+        description=(
+            "Update-API, die genutzt wird, "
+            f"um {NAME.removesuffix('-dev')} zu aktualisieren"
+        ),
         path="/api/update",
         hidden=True,
     )

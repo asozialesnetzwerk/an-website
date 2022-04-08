@@ -90,9 +90,7 @@ def assert_run_and_print(
 def get_error_assertion(error_line: str) -> Callable[[str], bool]:
     """Get the assertion lambda needed for asserting errors with the client."""
     return lambda spam: (
-        spam.startswith(
-            "Success: False\n" "Traceback (most recent call last):\n"
-        )
+        spam.startswith("Success: False\nTraceback (most recent call last):\n")
         and spam.endswith(error_line + "\n")
     )
 
