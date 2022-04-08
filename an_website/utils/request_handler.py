@@ -423,8 +423,8 @@ class BaseRequestHandler(RequestHandler):
         """Get the module infos."""
         return self.settings.get("MODULE_INFOS") or tuple()
 
-    # pylint: disable=too-complex, too-many-branches
     def fix_url(  # noqa: C901
+        # pylint: disable=too-complex, too-many-branches
         self,
         url: None | str | SplitResult = None,
         this_url: None | str = None,

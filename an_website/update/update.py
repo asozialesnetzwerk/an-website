@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The API used to update the page."""
+"""The API used to update the website."""
 
 from __future__ import annotations
 
@@ -21,11 +21,11 @@ import os
 import sys
 from queue import SimpleQueue
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from threading import Thread
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
 
+from .. import NAME
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
 
@@ -35,7 +35,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/api/update/(.*)", UpdateAPI),),
         name="Update-API",
-        description="Update-API, die genutzt wird um die Seite zu aktualisieren",
+        description=f"Update-API, die genutzt wird um {NAME.removesuffix('-dev')} zu aktualisieren",
         path="/api/update",
         hidden=True,
     )
@@ -66,13 +66,13 @@ class UpdateAPI(APIRequestHandler):
     async def prepare(self) -> None:
         # pylint: disable=attribute-defined-outside-init, consider-using-with
         await super().prepare()
+        loop = asyncio.get_running_loop()
         self.dir = TemporaryDirectory()
         self.file = NamedTemporaryFile(dir=self.dir.name, delete=False)
         self.queue = SimpleQueue()
-        self.thread = Thread(
-            target=write_from_queue, args=(self.file, self.queue), daemon=True
+        self.future = loop.run_in_executor(
+            None, write_from_queue, self.file, self.queue
         )
-        self.thread.start()
 
     def data_received(self, chunk: bytes) -> None:
         self.queue.put(chunk)
@@ -83,8 +83,7 @@ class UpdateAPI(APIRequestHandler):
     async def put(self, filename: str) -> None:
         """Handle the PUT request to the update API."""
         self.queue.put(None)
-        while not self.queue.empty():  # pylint: disable=while-used
-            await asyncio.sleep(0)
+        await self.future
         filepath = os.path.join(self.dir.name, unquote(filename))
         os.rename(self.file.name, filepath)
         process = await asyncio.create_subprocess_exec(

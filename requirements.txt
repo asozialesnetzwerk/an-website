@@ -5,7 +5,7 @@ ansi2html==1.7.0
 appdirs==1.4.4
 async-timeout==4.0.2
 attrs==21.4.0
-beautifulsoup4==4.10.0
+beautifulsoup4==4.11.0
 blake3==0.3.1
 brotli==1.0.9
 cchardet==2.1.7
