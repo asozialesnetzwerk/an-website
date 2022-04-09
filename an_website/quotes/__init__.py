@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import asyncio
-import datetime
 import logging
 import os
 import random
@@ -24,6 +23,7 @@ import sys
 import time
 from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass
+from datetime import date, datetime
 from typing import Any, Literal
 
 import elasticapm  # type: ignore
@@ -78,7 +78,7 @@ class Author(QuotesObjBase):
 
     name: str
     # tuple(url_to_info, info_str, creation_date)
-    info: None | tuple[str, None | str, datetime.date] = None
+    info: None | tuple[str, None | str, date] = None
 
     def update_name(self, name: str) -> None:
         """Update author data with another author."""
@@ -110,7 +110,7 @@ class Author(QuotesObjBase):
         """Return the name of the author."""
         return (
             emojify(self.name.strip())
-            if (now := datetime.datetime.utcnow()).day == 1 and now.month == 4
+            if (now := datetime.utcnow()).day == 1 and now.month == 4
             else self.name.strip()
         )
 
@@ -149,7 +149,7 @@ class Quote(QuotesObjBase):
         """Return the content of the quote."""
         return (
             emojify(self.quote.strip())
-            if (now := datetime.datetime.utcnow()).day == 1 and now.month == 4
+            if (now := datetime.utcnow()).day == 1 and now.month == 4
             else self.quote.strip()
         )
 

@@ -133,6 +133,26 @@ class BaseRequestHandler(RequestHandler):
                 self.request.path
             ).description
 
+    def redirect(
+        self, url: str, permanent: bool = False, status: None | int = None
+    ) -> None:
+        """Send a redirect to the given (optionally relative) URL.
+
+        If the ``status`` argument is specified, that value is used as the
+        HTTP status code; otherwise either 308 (permanent) or 307
+        (temporary) is chosen based on the ``permanent`` argument.
+        The default is 307 (temporary).
+        """
+        if self._headers_written:
+            raise Exception("Cannot redirect after headers have been written")
+        if status is None:
+            status = 308 if permanent else 307
+        else:
+            assert isinstance(status, int) and 300 <= status <= 399
+        self.set_status(status)
+        self.set_header("Location", url)
+        self.finish()
+
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
 

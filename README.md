@@ -31,7 +31,7 @@ You need:
 - UwUFetch
 
 How:
-- Create a virtual environment
+- [Create a virtual environment](https://docs.python.org/3/library/venv.html)
 - Install an-website in the venv (`pip install git+https://github.com/asozialesnetzwerk/an-website.git`)
 - ??? (TODO: finish instructions)
 
