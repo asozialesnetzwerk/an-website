@@ -5,7 +5,7 @@ ansi2html==1.7.0
 appdirs==1.4.4
 async-timeout==4.0.2
 attrs==21.4.0
-beautifulsoup4==4.11.0
+beautifulsoup4==4.11.1
 blake3==0.3.1
 brotli==1.0.9
 cchardet==2.1.7
@@ -43,7 +43,7 @@ pycparser==2.21
 pycryptodome==3.14.1
 pycurl==7.45.1
 pyjwt==2.3.0
-pyparsing==3.0.7
+pyparsing==3.0.8
 python-dateutil==2.8.2
 python-levenshtein==0.12.2
 redis[hiredis]==4.2.2

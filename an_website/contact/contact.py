@@ -116,6 +116,8 @@ def send_message(  # pylint: disable=too-many-arguments
     password: None | str = None,
     starttls: None | bool = None,
     port: int = 587,
+    *,
+    date: None | datetime = None,
 ) -> dict[str, tuple[int, bytes]]:
     """Send an email."""
     recipients = list(recipients)
@@ -123,7 +125,10 @@ def send_message(  # pylint: disable=too-many-arguments
         if eggs.startswith("@"):
             recipients[spam] = "contact" + eggs
 
-    message["Date"] = email_utils.format_datetime(datetime.now(tz=timezone.utc))
+    message["Date"] = email_utils.format_datetime(
+        date or datetime.now(tz=timezone.utc)
+    )
+
     if sender:
         message["Sender"] = sender
     message["From"] = from_address
@@ -211,6 +216,7 @@ class ContactPage(HTMLRequestHandler):
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
             port=self.settings.get("CONTACT_SMTP_PORT"),  # type: ignore[arg-type]
+            date=await self.get_time(),
         )
 
         await self.render("pages/empty.html", text="Erfolgreich gesendet.")

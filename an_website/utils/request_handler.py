@@ -29,10 +29,11 @@ import time
 import traceback
 import uuid
 from collections.abc import Awaitable, Coroutine
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone, tzinfo
 from http.client import responses
 from typing import Any, cast
 from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
+from zoneinfo import ZoneInfo
 
 import elasticapm  # type: ignore
 import orjson as json
@@ -648,6 +649,16 @@ class BaseRequestHandler(RequestHandler):
         if not ip:
             ip = str(self.request.remote_ip)
         return geoip(ip, database, self.elasticsearch)
+
+    async def get_time(self) -> datetime:
+        """Get the start time of the request in the user's timezone."""
+        tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
+        geoip = await self.geoip()  # pylint: disable=redefined-outer-name
+        if geoip and "timezone" in geoip:
+            tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
+        return datetime.fromtimestamp(
+            self.request._start_time, tz=tz  # pylint: disable=protected-access
+        )
 
 
 class HTMLRequestHandler(BaseRequestHandler):
