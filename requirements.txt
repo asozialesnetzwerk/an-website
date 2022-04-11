@@ -48,7 +48,7 @@ python-dateutil==2.8.2
 python-levenshtein==0.12.2
 redis[hiredis]==4.2.2
 rply==0.7.8
-setuptools==62.0.0
+setuptools==62.1.0
 six==1.16.0
 soupsieve==2.3.2
 tornado==6.1

@@ -28,6 +28,7 @@ import sys
 import time
 import traceback
 import uuid
+from asyncio import Future
 from collections.abc import Awaitable, Coroutine
 from datetime import datetime, timedelta, timezone, tzinfo
 from http.client import responses
@@ -44,7 +45,6 @@ from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis  # type: ignore
 from tornado import web
-from tornado.concurrent import Future  # pylint: disable=unused-import
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
@@ -329,8 +329,7 @@ class BaseRequestHandler(RequestHandler):
                 blake3(bucket.encode("ascii")).hexdigest(),
             )
         if result[0]:
-            now = datetime.utcnow()
-            if now.month == 4 and now.day == 20:
+            if (now := await self.get_time()).month == 4 and now.day == 20:
                 self.set_status(420)
                 self.write_error(420)
             else:
@@ -662,9 +661,18 @@ class BaseRequestHandler(RequestHandler):
 
 
 class HTMLRequestHandler(BaseRequestHandler):
-    """A request handler that serves HTML files."""
+    """A request handler that serves HTML."""
 
     used_render = False
+
+    async def prepare(self) -> None:
+        # pylint: disable=attribute-defined-outside-init, invalid-name
+        await super().prepare()
+        c = self.get_cookie("c", None)
+        if c is None:
+            self.c = (now := await self.get_time()).month == 4 and now.day == 1
+        else:
+            self.c = str_to_bool(c, False)
 
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
@@ -747,23 +755,21 @@ class HTMLRequestHandler(BaseRequestHandler):
                     else self.request.full_url().lower()
                 ).split("?")[0],
                 "settings": self.settings,
-                "c": str_to_bool(self.get_cookie("c", "n"), False)
-                or (now := datetime.utcnow()).day == 1
-                and now.month == 4,
+                "c": self.c,
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
             }
         )
         return namespace
 
-    def render(self, template_name: str, **kwargs: Any) -> "Future[None]":
+    def render(self, template_name: str, **kwargs: Any) -> Future[None]:
         """Render a template."""
         self.used_render = True
         return super().render(template_name, **kwargs)
 
     def finish(
         self, chunk: None | str | bytes | dict[Any, Any] = None
-    ) -> "Future[None]":
+    ) -> Future[None]:
         """Finish the request."""
         if (
             isinstance(chunk, dict)
@@ -859,13 +865,20 @@ class NotFoundHandler(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
     def initialize(self, *args: Any, **kwargs: Any) -> None:
-        """Do nothing to have default title and desc."""
+        """Do nothing to have default title and description."""
         if "module_info" not in kwargs:
             kwargs["module_info"] = None
         super().initialize(*args, **kwargs)
 
     async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
+        # pylint: disable=attribute-defined-outside-init, invalid-name, too-complex
+        c = self.get_cookie("c", None)
+        if c is None:
+            self.c = (now := await self.get_time()).month == 4 and now.day == 1
+        else:
+            self.c = str_to_bool(c, False)
+
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
 

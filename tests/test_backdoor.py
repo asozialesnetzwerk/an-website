@@ -49,11 +49,12 @@ def run_and_get_output(
     fun: Callable[..., Any], *args: Any, **kwargs: Any
 ) -> str:
     """Run a function with the arguments and get the printed output."""
-    parent_conn, child_conn = Pipe()
+    parent_conn, child_conn = Pipe(False)
     process = Process(
         target=_run_and_get_output,
         args=(child_conn, fun, *args),
         kwargs=kwargs,
+        daemon=True,
     )
     process.start()
     process.join()

@@ -90,7 +90,7 @@ rcssmin==1.1.0
 redis[hiredis]==4.2.2
 rjsmin==1.2.0
 rply==0.7.8
-setuptools==62.0.0
+setuptools==62.1.0
 six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.3.2
@@ -107,7 +107,7 @@ typing-extensions==4.1.1
 urllib3==1.26.9
 uvloop==0.16.0
 virtualenv-clone==0.5.7
-virtualenv==20.14.0
+virtualenv==20.14.1
 webencodings==0.5.1
 wrapt==1.14.0
 yarl==1.7.2
