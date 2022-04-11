@@ -9,9 +9,9 @@
 
 ## How to develop
 You need:
+- Git (obviously)
 - CPython 3.10+
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
-- Git (obviously)
 
 ### How to check
 - `./check.sh`
