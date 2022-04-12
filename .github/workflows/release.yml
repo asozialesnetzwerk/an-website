@@ -1,13 +1,10 @@
-name: Daily build
+name: Release
 on:
   schedule:
     - cron: "0 0 * * *"
-  workflow_dispatch:
-    inputs:
-      are-you-sure:
-        description: 'Are you sure, that the workflow failed today and that you want to run it again?'
-        required: true
-        type: boolean
+  push:
+    tags:
+      - v*
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
@@ -25,10 +22,13 @@ jobs:
         with:
           python-version: "3.10"
       - name: Check if already released
+        if: github.event_name == 'schedule'
         run: test -z $(git tag --list "v*" --points-at)
       - name: Create tag
+        if: github.event_name == 'schedule'
         run: git tag $(python -c "from datetime import datetime; print(datetime.utcnow().strftime('v%y.%m.%d'))")
       - name: Push tag
+        if: github.event_name == 'schedule'
         run: git push --tags
       - name: Install build frontend
         run: pip install "build>=0.7,<2"
@@ -103,7 +103,13 @@ jobs:
           python-version: "3.10"
       - name: Use black magic
         id: version
-        run: echo "::set-output name=TAG_NAME::$(python -c "from datetime import datetime; print(datetime.utcnow().strftime('v%y.%m.%d'))")"
+        shell: python
+        run: |
+          from datetime import datetime
+          if "${{ github.event_name }}" == "schedule":
+            print(f"::set-output name=TAG_NAME::{datetime.utcnow().strftime('v%y.%m.%d')}")
+          elif "${{ github.event_name }}" == "push" and "${{ github.event.ref }}".startswith("refs/tags/"):
+            print(f"::set-output name=TAG_NAME::{'${{ github.event.ref }}'[10:]}")
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -141,6 +147,7 @@ jobs:
     name: Deploy website
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: github.event_name == 'schedule'
     needs:
       - build
       - tests
@@ -158,6 +165,7 @@ jobs:
     name: GitHub Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: github.event_name == 'schedule'
     needs:
       - deploy
       - hashes

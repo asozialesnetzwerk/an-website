@@ -24,10 +24,10 @@ jobs:
           import os
           import emoji
           if "${{ github.event_name }}".startswith("pull_request"):
-              print(os.popen("git fetch").read())
-              commit = "${{ github.event.after }}"
+            print(os.popen("git fetch").read())
+            commit = "${{ github.event.after }}"
           else:
-              commit = "${{ github.sha }}"
+            commit = "${{ github.sha }}"
           commit_message = os.popen(f"git show -s --format=%B {commit}").read()
           if not emoji.emoji_count(commit_message):
             exit("No Emoji found. 👎")
