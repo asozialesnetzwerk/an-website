@@ -27,7 +27,7 @@ mypy --pretty -p an_website -p tests
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D100,D102 ./*.py an_website tests
+flake8 --extend-ignore=D102 ./*.py an_website tests
 echo Pylint:
 pylint --output-format=colorized ./*.py an_website tests
 

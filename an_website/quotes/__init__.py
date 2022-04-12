@@ -67,10 +67,6 @@ class QuotesObjBase:
         """Fetch new data from the API."""
         raise NotImplementedError
 
-    def __str__(self) -> str:
-        """Return a basic string with the id."""
-        return f"QuotesObj({self.id})"
-
 
 @dataclass
 class Author(QuotesObjBase):

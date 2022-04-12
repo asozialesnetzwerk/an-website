@@ -16,9 +16,9 @@
 from __future__ import annotations
 
 import dataclasses
-import datetime as dt
 import email.utils
 import random
+from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from tornado.web import HTTPError
@@ -70,7 +70,7 @@ def get_module_info() -> ModuleInfo:
 class QuoteOfTheDayData:
     """The class representing data for the quote of the day."""
 
-    date: dt.date
+    date: date
     wrong_quote: WrongQuote
     url_without_path: str
 
@@ -94,11 +94,11 @@ class QuoteOfTheDayData:
     def get_date_for_rss(self) -> str:
         """Get the date as specified in RFC 2822."""
         return email.utils.format_datetime(
-            dt.datetime(
+            datetime(
                 year=self.date.year,
                 month=self.date.month,
                 day=self.date.day,
-                tzinfo=dt.timezone.utc,
+                tzinfo=timezone.utc,
             ),
             True,
         )
@@ -124,11 +124,9 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         """Get the Redis used key."""
         return f"{self.redis_prefix}:quote-of-the-day:used:{wq_id}"
 
-    def get_redis_quote_date_key(self, date: dt.date) -> str:
+    def get_redis_quote_date_key(self, wq_date: date) -> str:
         """Get the Redis key for getting quotes by date."""
-        return (
-            f"{self.redis_prefix}:quote-of-the-day:by-date:{date.isoformat()}"
-        )
+        return f"{self.redis_prefix}:quote-of-the-day:by-date:{wq_date.isoformat()}"
 
     async def has_been_used(self, wq_id: str) -> None | bool:
         """Check with Redis here."""
@@ -152,12 +150,12 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         return f"{self.request.protocol}://{self.request.host}"
 
     async def get_quote_by_date(
-        self, date: dt.date
+        self, wq_date: date
     ) -> None | QuoteOfTheDayData:
         """Get the quote of the date if one was saved."""
         if not self.redis:
             return None
-        wq_id = await self.redis.get(self.get_redis_quote_date_key(date))
+        wq_id = await self.redis.get(self.get_redis_quote_date_key(wq_date))
         if not wq_id:
             return None
         quote, author = tuple(int(x) for x in wq_id.split("-"))
@@ -165,14 +163,14 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if not wrong_quote:
             return None
         return QuoteOfTheDayData(
-            date, wrong_quote, self.get_scheme_and_netloc()
+            wq_date, wrong_quote, self.get_scheme_and_netloc()
         )
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
         if not self.redis:
             return None
-        today = dt.datetime.now(tz=dt.timezone.utc).date()
+        today = datetime.now(tz=timezone.utc).date()
         quote_data = await self.get_quote_by_date(today)
         if quote_data:  # if was saved already
             return quote_data
@@ -209,7 +207,7 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
         self.set_header("Content-Type", "application/rss+xml")
         if head:
             return
-        today = dt.datetime.now(tz=dt.timezone.utc).date()
+        today = datetime.now(tz=timezone.utc).date()
         await self.render(
             "rss/quote_of_the_day.xml",
             quotes=tuple(
@@ -219,7 +217,7 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
                     + [
                         (
                             await self.get_quote_by_date(
-                                today - dt.timedelta(days=i)
+                                today - timedelta(days=i)
                             )
                         )
                         for i in range(1, 5)
@@ -238,7 +236,7 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
         if date_str:
             year, month, day = tuple(int(x) for x in date_str.split("-"))
             quote_data = await self.get_quote_by_date(
-                dt.date(year=year, month=month, day=day)
+                date(year=year, month=month, day=day)
             )
         else:
             quote_data = await self.get_quote_of_today()
@@ -268,7 +266,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
         if date_str:
             year, month, day = tuple(int(x) for x in date_str.split("-"))
             wrong_quote = await self.get_quote_by_date(
-                dt.date(year=year, month=month, day=day)
+                date(year=year, month=month, day=day)
             )
         else:
             wrong_quote = await self.get_quote_of_today()

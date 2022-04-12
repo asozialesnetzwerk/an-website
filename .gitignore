@@ -6,6 +6,7 @@
 /venv
 /logs
 /config.ini
+/.well-known
 
 # Unit test / coverage reports
 /.coverage*

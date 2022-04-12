@@ -108,8 +108,8 @@ jobs:
           from datetime import datetime
           if "${{ github.event_name }}" == "schedule":
             print(f"::set-output name=TAG_NAME::{datetime.utcnow().strftime('v%y.%m.%d')}")
-          elif "${{ github.event_name }}" == "push" and "${{ github.event.ref }}".startswith("refs/tags/"):
-            print(f"::set-output name=TAG_NAME::{'${{ github.event.ref }}'[10:]}")
+          elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
+            print("::set-output name=TAG_NAME::${{ github.ref_name }}")
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:

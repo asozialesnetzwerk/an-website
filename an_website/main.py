@@ -39,7 +39,7 @@ from redis.asyncio import (  # type: ignore
     UnixDomainSocketConnection,
 )
 from tornado.log import LogFormatter
-from tornado.web import Application, RedirectHandler
+from tornado.web import Application, RedirectHandler, StaticFileHandler
 
 from . import DIR, NAME, TEMPLATES_DIR, VERSION
 from .contact.contact import apply_contact_stuff_to_app
@@ -221,6 +221,10 @@ def get_all_handlers(
     handlers.append((r"(?i)/(.+)/api/*", RedirectHandler, {"url": "/api/{0}"}))
     # redirect from /api to /api/endpunkte (not with alias, because it fails)
     handlers.append((r"(?i)/api/*", RedirectHandler, {"url": "/api/endpunkte"}))
+
+    handlers.append(
+        (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
+    )
 
     if sys.flags.dev_mode:
         logger.debug(
@@ -417,9 +421,8 @@ def setup_app_search(app: Application) -> None:
     )
 
 
-async def setup_elasticsearch(app: Application) -> None:
+async def setup_elasticsearch(app: Application, raise_exc: bool = True) -> None:
     """Setup Elasticsearch."""  # noqa: D401
-    app.settings["ELASTICSEARCH"] = None
     config = app.settings["CONFIG"]
     elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
@@ -458,8 +461,10 @@ async def setup_elasticsearch(app: Application) -> None:
             elasticsearch, app.settings["ELASTICSEARCH_PREFIX"]
         )
     except Exception as exc:  # pylint: disable=broad-except
+        if raise_exc:
+            raise
         logger.exception(exc)
-        logger.error("Elasticsearch is unavailable!")
+        logger.error("Connecting to Elasticsearch failed!")
     else:
         app.settings["ELASTICSEARCH"] = elasticsearch
 
@@ -528,11 +533,8 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 )
 
 
-async def setup_redis(app: Application) -> None:
+async def setup_redis(app: Application, raise_exc: bool = True) -> None:
     """Setup Redis."""  # noqa: D401
-    if redis := app.settings.get("REDIS"):
-        await redis.close(close_connection_pool=True)
-    app.settings["REDIS"] = None
     config = app.settings["CONFIG"]
 
     kwargs = {
@@ -585,10 +587,15 @@ async def setup_redis(app: Application) -> None:
     try:
         await redis.ping()
     except Exception as exc:  # pylint: disable=broad-except
+        if raise_exc:
+            raise
         logger.exception(exc)
-        logger.error("Redis is unavailable!")
+        logger.error("Connecting to Redis failed!")
     else:
+        old_redis: None | Redis = app.settings.get("REDIS")
         app.settings["REDIS"] = redis
+        if old_redis:
+            await old_redis.close(close_connection_pool=True)
 
 
 def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
@@ -660,8 +667,10 @@ def main() -> None | int | str:
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
 
-    setup_es_task = loop.create_task(setup_elasticsearch(app))  # noqa: F841
-    setup_redis_task = loop.create_task(setup_redis(app))
+    # fmt: off
+    setup_es_task = loop.create_task(setup_elasticsearch(app, False))  # noqa: F841
+    setup_redis_task = loop.create_task(setup_redis(app, False))
+    # fmt: on
 
     from .quotes import update_cache_periodically
 

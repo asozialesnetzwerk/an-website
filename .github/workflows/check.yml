@@ -86,7 +86,7 @@ jobs:
       - name: Install Flake8 + stuff required for checking the tests
         run: grep -E "^(flake8|pep8-naming|pytest|html5lib)" requirements-dev.txt | xargs pip install
       - name: Run Flake8
-        run: flake8 --extend-ignore=D100,D102 *.py an_website tests
+        run: flake8 --extend-ignore=D102 ./*.py an_website tests
 
   pylint:
     name: Pylint
@@ -114,4 +114,4 @@ jobs:
       - name: Install Pylint + stuff required for checking the tests and other stuff
         run: grep -E "^(pylint|pytest|html5lib|rcssmin|rjsmin)" requirements-dev.txt | xargs pip install
       - name: Run Pylint
-        run: pylint -d fixme *.py an_website tests
+        run: pylint -d fixme,too-many-lines ./*.py an_website tests

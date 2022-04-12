@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+"""Nobody inspects the spammish repetition."""
+
 from __future__ import annotations
 
 FILE = "full_wordlist.txt"
