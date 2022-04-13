@@ -200,7 +200,7 @@ jobs:
           else
             COLOR=orange
           fi
-          curl "https://img.shields.io/badge/coverage-$total%25-$COLOR" > public/coverage/badge.svg
+          curl "https://img.shields.io/badge/Coverage-$total%25-$COLOR" > public/coverage/badge.svg
           rm public/coverage/.gitignore
       - name: Push hashes and coverage to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

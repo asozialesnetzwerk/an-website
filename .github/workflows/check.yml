@@ -1,4 +1,4 @@
-name: Check stuff
+name: Check
 on: [ push, pull_request ]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes

@@ -85,6 +85,7 @@ class UpdateAPI(APIRequestHandler):
 
     async def put(self, filename: str) -> None:
         """Handle the PUT request to the update API."""
+        # pylint: disable=while-used
         self.queue.put(None)
         await self.future
         filepath = os.path.join(self.dir.name, unquote(filename))
@@ -101,7 +102,7 @@ class UpdateAPI(APIRequestHandler):
             stderr=asyncio.subprocess.STDOUT,
         )
         self.set_status(202)
-        # pylint: disable=while-used
+        self.set_header("X-Accel-Buffering", "no")
         while not process.stdout.at_eof():  # type: ignore[union-attr]
             output = await process.stdout.readline()  # type: ignore[union-attr]
             self.write(output)

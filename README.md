@@ -1,11 +1,11 @@
 # Webseite des AN
+[![Style: Black](https://img.shields.io/badge/Code%20Style-Black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/Imports-isort-1674b1.svg?labelColor=ef8336)](https://pycqa.github.io/isort)
+[![Coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)\
+[![Check](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
 [![Deploy](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml)
-[![Check code](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
-[![Check emoji](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/emoji-in-commit.yml)
-[![Code coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1.svg?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort)
 [![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)
+[![Version](https://img.shields.io/pypi/v/an-website.svg?label=PyPi)](https://pypi.org/project/an-website)
 
 ## How to develop
 You need:
@@ -18,7 +18,6 @@ You need:
 
 ### How to run
 - `python -Xdev -m an_website` (`-Xdev` enables development mode)
-
 
 ## How to run (production)
 ### Linux
