@@ -104,8 +104,7 @@ class UpdateAPI(APIRequestHandler):
         self.set_status(202)
         self.set_header("X-Accel-Buffering", "no")
         while not process.stdout.at_eof():  # type: ignore[union-attr]
-            output = await process.stdout.readline()  # type: ignore[union-attr]
-            self.write(output)
+            self.write(await process.stdout.read(1))  # type: ignore[union-attr]
             self.flush()
         await self.finish()
         await process.wait()

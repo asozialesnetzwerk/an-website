@@ -3,8 +3,7 @@ on:
   schedule:
     - cron: "0 0 * * *"
   push:
-    tags:
-      - v*
+    tags: [ v* ]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 

@@ -1,12 +1,15 @@
 # Webseite des AN
-[![License](https://img.shields.io/pypi/l/an-website?label=License)]
+![License](https://img.shields.io/pypi/l/an-website?label=License)
+![Python](https://img.shields.io/pypi/pyversions/an-website?label=Python)
+![Implementation](https://img.shields.io/pypi/implementation/an-website?label=Implementation)
+[![PyPI](https://img.shields.io/pypi/v/an-website.svg?label=PyPI)](https://pypi.org/project/an-website)
+![Total lines](https://img.shields.io/tokei/lines/github/asozialesnetzwerk/an-website?label=Total%20lines)\
 [![Style: Black](https://img.shields.io/badge/Code%20Style-Black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/Imports-isort-1674b1.svg?labelColor=ef8336)](https://pycqa.github.io/isort)
 [![Coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)\
 [![Check](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
 [![Deploy](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml)
 [![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)
-[![Version](https://img.shields.io/pypi/v/an-website.svg?label=PyPi)](https://pypi.org/project/an-website)
 
 ## How to develop
 You need:
