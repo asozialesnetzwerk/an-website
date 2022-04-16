@@ -217,6 +217,9 @@ class BaseRequestHandler(RequestHandler):
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
+        # pylint: disable=attribute-defined-outside-init
+        self.now = await self.get_time()
+
         if self.request.method == "GET":
 
             if self.redirect_to_canonical_domain():
@@ -329,7 +332,7 @@ class BaseRequestHandler(RequestHandler):
                 blake3(bucket.encode("ascii")).hexdigest(),
             )
         if result[0]:
-            if (now := await self.get_time()).month == 4 and now.day == 20:
+            if self.now.month == 4 and self.now.day == 20:
                 self.set_status(420)
                 self.write_error(420)
             else:
@@ -665,15 +668,6 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     used_render = False
 
-    async def prepare(self) -> None:
-        # pylint: disable=attribute-defined-outside-init, invalid-name
-        await super().prepare()
-        c = self.get_cookie("c", None)
-        if c is None:
-            self.c = (now := await self.get_time()).month == 4 and now.day == 1
-        else:
-            self.c = str_to_bool(c, False)
-
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
         form_appendix: str
@@ -721,8 +715,8 @@ class HTMLRequestHandler(BaseRequestHandler):
         They are mostly needed by most of the pages (like title,
         description and no_3rd_party).
         """
+        # pylint: disable=invalid-name
         namespace = super().get_template_namespace()
-
         namespace.update(
             {
                 "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
@@ -755,7 +749,12 @@ class HTMLRequestHandler(BaseRequestHandler):
                     else self.request.full_url().lower()
                 ).split("?")[0],
                 "settings": self.settings,
-                "c": self.c,
+                "c": self.now.month == 4 and self.now.day == 1
+                if (c := self.get_cookie("c", None)) is None
+                else str_to_bool(c, False),
+                "🥚": self.now.year == 2022
+                and self.now.month == 4
+                and self.now.day in {17, 18},
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
             }
@@ -872,12 +871,8 @@ class NotFoundHandler(HTMLRequestHandler):
 
     async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
-        # pylint: disable=attribute-defined-outside-init, invalid-name, too-complex
-        c = self.get_cookie("c", None)
-        if c is None:
-            self.c = (now := await self.get_time()).month == 4 and now.day == 1
-        else:
-            self.c = str_to_bool(c, False)
+        # pylint: disable=attribute-defined-outside-init
+        self.now = await self.get_time()  # used by get_template_namespace
 
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)

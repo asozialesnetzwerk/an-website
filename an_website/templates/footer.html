@@ -1,6 +1,11 @@
 {% whitespace oneline %}
 <footer id="github-footer" data-elastic-exclude>
-  <div>Mit Liebe gebacken 🖤
+  <div>Mit Liebe gebacken
+  {% if globals()["🥚"] %}
+    <a href="{{fix_url("https://instagram.com/p/BsOGulcndj-")}}" rel="noreferrer" style="text-decoration: none">🥚</a>
+  {% else %}
+    🖤
+  {% end %}
   <a href="{{REPO_URL}}" rel="noreferrer">
     Asoziales Netzwerk: Sektion GitHub
   </a></div>
