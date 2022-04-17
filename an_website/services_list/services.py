@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import dataclasses
-from urllib.parse import quote
 
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -34,31 +33,13 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass()
 class Service:
     """A class representing a service."""
 
     title: str
     text: str
     infos: None | dict[str, str] = None
-
-    def to_html(self) -> str:
-        """Create a HTML representation of this service and return it."""
-        html = [f"<h2>{self.title}</h2>", self.text]
-
-        if self.infos is not None and len(self.infos) > 0:
-            html.append("<table class='table'><tbody>")
-            for key, value in self.infos.items():
-                if value.startswith("http") and "://" in value:
-                    value = (
-                        f'<a href="/redirect?to={quote(value)}'
-                        f'&amp;from=/services" rel="noreferrer">{value}</a>'
-                    )
-                html.append(f"<tr><td>{key}</td><td>{value}</td></tr>")
-
-            html.append("</tbody></table>")
-
-        return "".join(html)
 
 
 SERVICES: tuple[Service, ...] = (
@@ -106,11 +87,6 @@ SERVICES: tuple[Service, ...] = (
     ),
 )
 
-HTML_LIST: str = "\n".join(service.to_html() for service in SERVICES)
-
-
-del SERVICES
-
 
 class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
@@ -121,5 +97,5 @@ class ServicesHandler(HTMLRequestHandler):
             return
         self.render(
             "pages/services.html",
-            html=HTML_LIST,
+            services=SERVICES,
         )

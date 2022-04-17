@@ -433,13 +433,14 @@ class BaseRequestHandler(RequestHandler):
             str(uuid.uuid4()) if _user_id is None else _user_id.decode("ascii")
         )
         # save it in cookie or reset expiry date
-        self.set_secure_cookie(
-            "user_id",
-            user_id,
-            expires_days=90,
-            path="/",
-            samesite="Strict",
-        )
+        if not self.get_secure_cookie("user_id", max_age_days=30, min_version=2):
+            self.set_secure_cookie(
+                "user_id",
+                user_id,
+                expires_days=90,
+                path="/",
+                samesite="Strict",
+            )
         return user_id
 
     def get_module_infos(self) -> tuple[ModuleInfo, ...]:
@@ -447,7 +448,6 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("MODULE_INFOS") or tuple()
 
     def fix_url(  # noqa: C901
-        # pylint: disable=too-complex, too-many-branches
         self,
         url: None | str | SplitResult = None,
         this_url: None | str = None,
@@ -462,10 +462,8 @@ class BaseRequestHandler(RequestHandler):
         """
         if url is None:
             url = self.request.full_url()
-
         if isinstance(url, str):
             url = urlsplit(url)
-
         if url.netloc and url.netloc.lower() != self.request.host.lower():
             this_url = this_url or self.request.full_url()
             if urlsplit(this_url).path == "/redirect":
@@ -475,23 +473,18 @@ class BaseRequestHandler(RequestHandler):
             url = urlsplit(
                 f"/redirect?to={quote(url.geturl())}&from={quote(this_url)}"
             )
-
+        path = (new_path or url.path)  # the path of the url
         # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
             del query_args["as_json"]
 
-        if (new_path or url.path).startswith("/static/"):
-            query_args["no_3rd_party"] = None
-            query_args["theme"] = None
-            query_args["dynload"] = None
+        if path.startswith(("/static/", "/soundboard/files/")):
+            query_args.update(no_3rd_party=None, theme=None, dynload=None)
         else:
-            if "no_3rd_party" not in query_args:
-                query_args["no_3rd_party"] = self.get_no_3rd_party()
-            if "theme" not in query_args:
-                query_args["theme"] = self.get_theme()
-            if "dynload" not in query_args:
-                query_args["dynload"] = self.get_dynload()
+            query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
+            query_args.setdefault("theme", self.get_theme())
+            query_args.setdefault("dynload", self.get_dynload())
 
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
@@ -505,11 +498,7 @@ class BaseRequestHandler(RequestHandler):
                 (
                     self.request.protocol,
                     self.request.host,
-                    (
-                        "/redirect"
-                        if url.path == "/redirect"
-                        else new_path or url.path
-                    ).rstrip("/"),
+                    path.rstrip("/"),
                     url.query,
                     url.fragment,
                 )
@@ -577,7 +566,6 @@ class BaseRequestHandler(RequestHandler):
         if "random" not in (theme := self.get_theme()):
             return theme
 
-        # theme names to ignore:
         ignore_themes = ["random", "random-dark"]
 
         if theme == "random-dark":
@@ -679,13 +667,11 @@ class HTMLRequestHandler(BaseRequestHandler):
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else ""
         )
-
         if self.get_dynload() != self.get_saved_dynload():
             form_appendix += (
                 "<input name='dynload' class='hidden-input' "
                 f"value='{bool_to_str(self.get_dynload())}'>"
             )
-
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
                 f"<input name='theme' class='hidden-input' value='{theme}'>"
@@ -876,7 +862,6 @@ class NotFoundHandler(HTMLRequestHandler):
 
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
-
         new_path = (
             re.sub(r"/+", "/", self.request.path.rstrip("/"))
             .replace("_", "-")
@@ -959,8 +944,7 @@ class ErrorPage(HTMLRequestHandler):
     async def get(self, code: str) -> None:
         """Show the error page."""
         status_code: int = int(code)
-        # get the reason
-        reason: str = responses.get(status_code, "")
+        reason: str = responses.get(status_code, "")  # get the reason
         # set the status code if Tornado doesn't raise an error if it is set
         if status_code not in (204, 304) and not 100 <= status_code < 200:
             self.set_status(status_code)  # set the status code
@@ -1014,9 +998,11 @@ class ElasticRUM(BaseRequestHandler):
             self.redirect(self.fix_url(new_path), False)
             return
         if eggs:
-            self.set_header("Content-Type", "application/json")
+            self.set_header("Content-Type", "application/json; charset=UTF-8")
         else:
-            self.set_header("Content-Type", "application/javascript")
+            self.set_header(
+                "Content-Type", "application/javascript; charset=UTF-8"
+            )
             if spam:
                 self.set_header("SourceMap", self.URL + ".map")
         self.set_header(

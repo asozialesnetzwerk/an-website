@@ -25,7 +25,7 @@
                     {% for page_info in info.sub_pages %}
                     {% if not page_info.hidden and page_info.path is not None %}
                     <li class="tooltip">
-                        <a href="{{ fix_url(page_info.path) }}"
+                        <a href="{{fix_url(page_info.path)}}"
                            rel="noreferrer">{{page_info.name}}</a>
                         <div class="tooltip-text">{{page_info.description}}</div>
                     </li>

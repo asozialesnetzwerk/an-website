@@ -204,7 +204,7 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        self.set_header("Content-Type", "application/rss+xml")
+        self.set_header("Content-Type", "application/rss+xml; charset=UTF-8")
         if head:
             return
         today = datetime.now(tz=timezone.utc).date()

@@ -2,7 +2,7 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    <form action="{{canonical_url}}" method="get" id="form">
+    <form action="{{fix_url(canonical_url)}}" method="get" id="form">
         <label class="form-element">
             Euro:
             <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"

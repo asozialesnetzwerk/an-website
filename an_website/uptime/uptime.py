@@ -196,7 +196,7 @@ class AvailabilityChartHandler(BaseRequestHandler):
                 permanent=False,
             )
             return
-        self.set_header("Content-Type", "image/svg+xml")
+        self.set_header("Content-Type", "image/svg+xml; charset=UTF-8")
         self.set_header(
             "Cache-Control", f"public, min-fresh={14 * 24 * 60 * 60}, immutable"
         )

@@ -100,6 +100,22 @@ def app() -> tornado.web.Application:
     return app
 
 
+def assert_url_query(url: str, /, **args: None | str) -> None:
+    """Assert properties of an url."""
+    query_str = urllib.parse.urlsplit(url or "/").query
+
+    query: dict[str, str] = (
+        dict(urllib.parse.parse_qsl(query_str, True, True)) if query_str else {}
+    )
+
+    for key, value in args.items():
+        if value is None:
+            assert key not in query
+        else:
+            assert key in query or print(url, key, value)
+            assert query[key] == value or print(url, key, value)
+
+
 async def make_effective_url_relative(
     response: Awaitable[tornado.httpclient.HTTPResponse],
     host: str,
@@ -189,7 +205,9 @@ async def check_html_page(
     html.make_links_absolute(response.effective_url)
     eff_url = urllib.parse.urlsplit(response.effective_url)
     prot_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
+    checked_urls.add(url.removeprefix(prot_and_host) or "/")
     found_ref_to_body = False
+    responses_to_check: list[tornado.httpclient.HTTPResponse] = []
     for link_tuple in html.iterlinks():
         if (
             link_tuple[0].tag == "link"
@@ -200,13 +218,13 @@ async def check_html_page(
         if link_tuple[2] == response.effective_url + "#body":
             found_ref_to_body = True
         link: str = link_tuple[2].split("#")[0]
+        assert link == link.strip()
         if (
             link.startswith(prot_and_host)
-            and link not in checked_urls
+            and (link.removeprefix(prot_and_host) or "/") not in checked_urls
             and not link.startswith(f"{prot_and_host}/LOLWUT")
-            and response.effective_url != link
         ):
-            checked_urls.add(link)
+            checked_urls.add(link.removeprefix(prot_and_host) or "/")
             _response = assert_valid_response(
                 await _fetch(link), content_type=None
             )
@@ -215,23 +233,23 @@ async def check_html_page(
                 and _response.effective_url.startswith(prot_and_host)
                 and recursive > 0
             ):
-                await check_html_page(
-                    _fetch,
-                    _response,
-                    recursive=recursive - 1,
-                    checked_urls=checked_urls,
-                )
-
+                responses_to_check.append(_response)
             if (
                 link.startswith(f"{prot_and_host}/static/")
                 or link.startswith(f"{prot_and_host}/soundboard/files/")
                 and _response.headers["Content-Type"]
                 != "text/html; charset=UTF-8"
             ):
-                assert "v=" in link
                 file_hash = cast(str, blake3(_response.body).hexdigest(8))
-                assert f"v={file_hash}" in link
+                assert_url_query(link, v=file_hash)
     assert found_ref_to_body or print(url)
+    for _r in responses_to_check:
+        await check_html_page(
+            _fetch,
+            _r,
+            recursive=recursive - 1,
+            checked_urls=checked_urls,
+        )
     return response
 
 
@@ -259,7 +277,7 @@ def assert_valid_rss_response(
     response: tornado.httpclient.HTTPResponse, code: int = 200
 ) -> etree.ElementTree:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "application/rss+xml", code)
+    assert_valid_response(response, "application/rss+xml; charset=UTF-8", code)
     body = response.body
     parsed_xml: etree.ElementTree = etree.fromstring(
         body,

@@ -256,7 +256,9 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
         )
 
         if rss_str is not None:
-            self.set_header("Content-Type", "application/rss+xml")
+            self.set_header(
+                "Content-Type", "application/rss+xml; charset=UTF-8"
+            )
             if head:
                 return
             self.update_title_and_desc(path)

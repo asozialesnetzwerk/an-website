@@ -2,7 +2,27 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    {% raw html %}
+    {% for service in services %}
+        <h2>{{service.title}}</h2>
+        {{service.text}}
+        {% if service.infos %}
+            <table class='table'>
+                <tbody>
+                    {% for key, value in service.infos.items() %}
+                    <tr>
+                        <td>{{key}}</td>
+                        {% if value.startswith('http') and '://' in value %}
+                            <td><a href="{{fix_url(value)}}"
+                               rel="noreferrer">{value}</a></td>
+                        {% else %}
+                            <td>{{value}}</td>
+                        {% end %}
+                    </tr>
+                    {% end %}
+                </tbody>
+            </table>
+        {% end %}
+    {% end %}
 {% end %}
 
 {% block head %}

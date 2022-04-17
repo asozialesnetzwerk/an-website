@@ -2,7 +2,7 @@
 {% extends "../../base.html" %}
 
 {% block body %}
-    <form method="post" action="/zitate/erstellen">
+    <form method="post" action="{{fix_url('/zitate/erstellen')}}">
         <label class="form-element">
             Zitat
              <input name="quote-1"
