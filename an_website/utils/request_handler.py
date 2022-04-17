@@ -41,6 +41,7 @@ import orjson as json
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
+from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis  # type: ignore
@@ -740,9 +741,11 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "c": self.now.month == 4 and self.now.day == 1
                 if (c := self.get_cookie("c", None)) is None
                 else str_to_bool(c, False),
-                "🥚": self.now.year == 2022
-                and self.now.month == 4
-                and self.now.day in {17, 18},
+                "🥚": easter(self.now.year).timetuple()[1:3]
+                in {
+                    (self.now.month, self.now.day),
+                    (self.now.month, self.now.day - 1),
+                },
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
             }
