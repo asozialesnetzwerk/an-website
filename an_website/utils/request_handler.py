@@ -433,7 +433,9 @@ class BaseRequestHandler(RequestHandler):
             str(uuid.uuid4()) if _user_id is None else _user_id.decode("ascii")
         )
         # save it in cookie or reset expiry date
-        if not self.get_secure_cookie("user_id", max_age_days=30, min_version=2):
+        if not self.get_secure_cookie(
+            "user_id", max_age_days=30, min_version=2
+        ):
             self.set_secure_cookie(
                 "user_id",
                 user_id,
@@ -473,7 +475,7 @@ class BaseRequestHandler(RequestHandler):
             url = urlsplit(
                 f"/redirect?to={quote(url.geturl())}&from={quote(this_url)}"
             )
-        path = (new_path or url.path)  # the path of the url
+        path = new_path or url.path  # the path of the url
         # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
