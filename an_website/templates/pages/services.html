@@ -13,7 +13,7 @@
                         <td>{{key}}</td>
                         {% if value.startswith('http') and '://' in value %}
                             <td><a href="{{fix_url(value)}}"
-                               rel="noreferrer">{value}</a></td>
+                               rel="noreferrer">{{value}}</a></td>
                         {% else %}
                             <td>{{value}}</td>
                         {% end %}
