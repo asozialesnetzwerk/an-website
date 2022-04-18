@@ -741,10 +741,13 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "c": self.now.month == 4 and self.now.day == 1
                 if (c := self.get_cookie("c", None)) is None
                 else str_to_bool(c, False),
-                "🥚": easter(self.now.year).timetuple()[1:3]
+                "🥚": self.now.month in {3, 4}
+                and easter(self.now.year).timetuple()[1:3]
                 in {
                     (self.now.month, self.now.day),
-                    (self.now.month, self.now.day - 1),
+                    (3, 31)
+                    if self.now.month == 4 and self.now.day == 1
+                    else (self.now.month, self.now.day - 1),
                 },
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
