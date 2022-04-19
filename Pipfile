@@ -24,6 +24,7 @@ orjson = {version="~=3.6"}
 Pillow = {version="~=9.1"}
 pycryptodome = {version="~=3.14"}
 pycurl = {version="~=7.45"}
+python-dateutil = {version="~=2.8"}
 python-Levenshtein = {version=">=0.12.2,<2"}
 redis = {version="~=4.2", extras=["hiredis"]}
 #regex = {version=">=2022.3.15"}
@@ -46,7 +47,7 @@ pep8-naming = {version=">=0.12.1,<2"}
 pipenv = {version=">=2022.4.8"}
 pre-commit = {version="~=2.17"}
 pylint = {version="~=2.13"}
-pyrepl = {git="git+https://github.com/pypy/pyrepl.git", ref="master"}
+pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
 pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="main"}
 pytest = {version="~=7.1"}
 pytest-cov = {version="~=3.0"}

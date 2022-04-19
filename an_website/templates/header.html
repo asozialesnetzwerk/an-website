@@ -17,7 +17,7 @@
                        {% if info.path == "/js-lizenzen/" %}
                            data-jslicense="1"
                        {% end %}
-                       rel="noreferrer">{{info.name}}</a>
+                    >{{info.name}}</a>
                     <div class="tooltip-text">{{info.description}}</div>
                 </div>
                 {% if info.sub_pages is not None %}
@@ -25,8 +25,7 @@
                     {% for page_info in info.sub_pages %}
                     {% if not page_info.hidden and page_info.path is not None %}
                     <li class="tooltip">
-                        <a href="{{fix_url(page_info.path)}}"
-                           rel="noreferrer">{{page_info.name}}</a>
+                        <a href="{{fix_url(page_info.path)}}">{{page_info.name}}</a>
                         <div class="tooltip-text">{{page_info.description}}</div>
                     </li>
                     {% end %}
@@ -40,11 +39,11 @@
         {% if settings.get("CONTACT_USE_FORM") %}
         <a href="{{fix_url('/kontakt')}}"
            class="contact-anchor"
-           rel="noreferrer">KONTAKT</a>
+        >KONTAKT</a>
         {% elif contact_address is not None %}
         <a href="mailto:{{contact_address}}?subject=AN-Webseite: {{title}}"
            class="contact-anchor"
-           rel="noreferrer">KONTAKT</a>
+        >KONTAKT</a>
         {% end %}
     </div>
     {% end %}

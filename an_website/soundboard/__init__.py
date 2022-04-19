@@ -119,7 +119,7 @@ class HeaderInfo(Info):
         )
         return f"""
 <{self.tag} id="{_id}">
-    <a no-dynload href="#{_id}" rel="noreferrer" class="header-id-link"></a>
+    <a no-dynload href="#{_id}" class="header-id-link"></a>
     {text}
 </{self.tag}>
         """.strip()
@@ -171,9 +171,9 @@ class SoundInfo(Info):
         return (
             f"""
 <li>
-    <a href="{href}" rel="noreferrer" class="a_hover">
+    <a href="{href}" class="a_hover">
         {mark_query(self.person.value, query)}
-    </a>: »<a no-dynload href="{file_url}" class="quote-a" rel="noreferrer">
+    </a>: »<a no-dynload href="{file_url}" class="quote-a">
         {mark_query(self.get_text(), query)}
     </a>«
     <br>

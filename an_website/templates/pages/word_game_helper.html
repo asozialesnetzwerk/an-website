@@ -27,7 +27,7 @@
     <ul>
         {% for count, _w in words %}
         <li><a href="{{fix_url(f'/wordspiel-helfer?word={_w}&before={new_before}')}}"
-               rel="noreferrer">{{ _w }}</a> ({{count}})</li>
+            >{{ _w }}</a> ({{count}})</li>
         {% end %}
     </ul>
 {% end %}

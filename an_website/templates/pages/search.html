@@ -16,7 +16,7 @@
             {% for result in results %}
                 <li score="{{result['score']}}" class="menu-list">
                     <a href="{{fix_url(result['url'])}}"
-                       rel="noreferrer">{% raw result["title"]%}</a>:
+                    >{% raw result["title"]%}</a>:
                     {% raw result["description"] %}
                 </li>
             {% end %}

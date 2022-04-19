@@ -29,7 +29,6 @@ import defusedxml  # type: ignore
 import namedthreads  # type: ignore
 import tornado.httpclient
 import tornado.httputil
-import tornado.platform.asyncio
 import tornado.web
 import uvloop
 
@@ -55,7 +54,6 @@ def apply() -> None:
         {"sure": True, "nope": False}
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    tornado.platform.asyncio.AsyncIOMainLoop().install()
     tornado.httpclient.AsyncHTTPClient.configure(
         "tornado.curl_httpclient.CurlAsyncHTTPClient"
     )

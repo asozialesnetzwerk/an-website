@@ -4,13 +4,13 @@
 {% block body %}
   {{wrong_quote}}
   <br>
-  {% comment Generated using https://sharingbuttons.io/ %}
+  {% comment Generated using https://sharingbuttons.io %}
   <div id="share-button-container">
     <a no-dynload
        class="resp-sharing-button__link"
        href="https://facebook.com/sharer/sharer.php?u={{quote_url}}"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener"
        aria-label="Share on Facebook">
       <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -27,7 +27,7 @@
        class="resp-sharing-button__link"
        href="https://twitter.com/intent/tweet?text={{text}}&amp;url={{quote_url}}"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener"
        aria-label="Share on Twitter">
       <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -43,8 +43,6 @@
     <a no-dynload
        class="resp-sharing-button__link"
        href="mailto:?subject={{text}}&amp;body={{quote_url}}"
-       target="_self"
-       rel="noopener noreferrer"
        aria-label="Share by E-Mail">
       <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -59,9 +57,9 @@
 
     <a no-dynload
        class="resp-sharing-button__link"
-       href="https://pinterest.com/pin/create/button/?url={{quote_url}}&amp;media={{quote_url}}&amp;description={{text}}"
+       href="https://pinterest.com/pin/create/button?url={{quote_url}}&amp;media={{quote_url}}&amp;description={{text}}"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener"
        aria-label="Share on Pinterest">
       <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -76,9 +74,9 @@
 
     <a no-dynload
        class="resp-sharing-button__link"
-       href="https://reddit.com/submit/?url={{quote_url}}&amp;resubmit=true&amp;title={{text}}"
+       href="https://reddit.com/submit?url={{quote_url}}&amp;resubmit=true&amp;title={{text}}"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener"
        aria-label="Share on Reddit">
       <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -100,8 +98,6 @@
     <a no-dynload
        class="resp-sharing-button__link"
        href="whatsapp://send?text={{text}}%20{{quote_url}}"
-       target="_blank"
-       rel="noopener noreferrer"
        aria-label="Share on WhatsApp">
       <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
@@ -118,7 +114,7 @@
        class="resp-sharing-button__link"
        href="https://telegram.me/share/url?text={{text}}&amp;url={{quote_url}}"
        target="_blank"
-       rel="noopener noreferrer"
+       rel="noopener"
        aria-label="Share on Telegram">
       <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--large">
         <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"

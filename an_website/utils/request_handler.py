@@ -30,7 +30,7 @@ import traceback
 import uuid
 from asyncio import Future
 from collections.abc import Awaitable, Coroutine
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import date, datetime, timedelta, timezone, tzinfo
 from http.client import responses
 from typing import Any, cast
 from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
@@ -333,7 +333,7 @@ class BaseRequestHandler(RequestHandler):
                 blake3(bucket.encode("ascii")).hexdigest(),
             )
         if result[0]:
-            if self.now.month == 4 and self.now.day == 20:
+            if self.now.date() == date(self.now.year, 4, 20):
                 self.set_status(420)
                 self.write_error(420)
             else:
@@ -738,19 +738,16 @@ class HTMLRequestHandler(BaseRequestHandler):
                     else self.request.full_url().lower()
                 ).split("?")[0],
                 "settings": self.settings,
-                "c": self.now.month == 4 and self.now.day == 1
+                "c": self.now.date() == date(self.now.year, 4, 1)
                 if (c := self.get_cookie("c", None)) is None
                 else str_to_bool(c, False),
-                "🥚": self.now.month in {3, 4}
-                and easter(self.now.year).timetuple()[1:3]
-                in {
-                    (self.now.month, self.now.day),
-                    (3, 31)
-                    if self.now.month == 4 and self.now.day == 1
-                    else (self.now.month, self.now.day - 1),
-                },
+                "🥚": timedelta()
+                <= self.now.date() - easter(self.now.year)
+                < timedelta(days=2),
+                "🥦": self.now.date() == date(self.now.year, 4, 20),
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
+                "now": self.now,
             }
         )
         return namespace
