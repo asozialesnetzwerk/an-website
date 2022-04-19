@@ -56,6 +56,10 @@ async def test_json_apis(
     )
     for api in json_apis:
         assert_valid_json_response(await fetch(api))
+        assert not assert_valid_response(
+            await fetch(api, method="HEAD"),
+            "application/json; charset=UTF-8",
+        ).body
 
 
 async def test_not_found_handler(
@@ -212,7 +216,7 @@ async def test_permissions(
 
 
 async def test_request_handlers2(
-    # pylint: disable=redefined-outer-name
+    # pylint: disable=redefined-outer-name, unused-argument
     fetch: FetchCallable,
     http_server_port: tuple[socket.socket, int],
 ) -> None:
@@ -226,38 +230,52 @@ async def test_request_handlers2(
     assert "Onion-Location" not in response.headers
     assert_valid_html_response(response, effective_url="http://test.onion")
 
-    localhost = f"localhost:{http_server_port[1]}"
-    localhost_url = f"http://{localhost}/"
     assert_valid_redirect(
-        await fetch(
-            f"/redirect?url={localhost_url}",
-            headers={"Host": localhost},
-        ),
-        localhost_url,
+        await fetch("/redirect?to=/endpunkte?x=y"),
+        "/endpunkte?x=y",
     )
+
     assert_valid_redirect(
         await fetch(
-            f"/redirect?url={localhost_url}&theme=blue",
-            headers={"Host": localhost},
+            "/redirect?theme=blue&x=y&to=/betriebszeit",
         ),
-        f"{localhost_url}?theme=blue",
+        "/betriebszeit?theme=blue",
     )
     assert_valid_redirect(
         await fetch(
-            f"/redirect?url={localhost_url}&no_3rd_party=sure",
-            headers={"Host": localhost},
+            "/redirect?to=",
+            method="HEAD",
         ),
-        f"{localhost_url}?no_3rd_party=sure",
+        "/",
     )
-    assert_valid_json_response(
-        assert_valid_redirect(
-            await fetch(
-                f"/redirect?url={localhost_url}&as_json=sure",
-                headers={"Host": localhost},
-            ),
-            f"{localhost_url}?as_json=sure",
-        )
+    assert_valid_redirect(
+        await fetch(
+            "/redirect?to=/",
+        ),
+        "/",
     )
+    # no "to" query param, so redirect to main page
+    assert_valid_redirect(
+        await fetch(
+            "/redirect?theme=blue",
+        ),
+        "/?theme=blue",
+    )
+    # no redirect:
+    assert "https://evil.com" in assert_valid_redirect(
+        await fetch(
+            "/redirect?theme=blue&from=/&to=https://evil.com",
+        ),
+        "/redirect?theme=blue&from=/&to=https://evil.com",
+    ).body.decode("UTF-8")
+    assert_valid_redirect(
+        await fetch(
+            "/redirect?theme=blue&from=/&to=https://evil.com",
+            method="HEAD",
+        ),
+        "/redirect?theme=blue&from=/&to=https://evil.com",
+    )
+
     assert (
         assert_valid_response(
             await fetch("/", method="HEAD"), "text/html; charset=UTF-8"

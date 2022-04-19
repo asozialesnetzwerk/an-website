@@ -1,0 +1,4 @@
+ignore-failures:
+    python:
+      - pytest-tornasync  # only for testing; checked
+      - pyrepl  # only for backdoor client; checked

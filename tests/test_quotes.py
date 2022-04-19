@@ -129,6 +129,18 @@ async def test_quote_request_handlers(
     await check_html_page(fetch, "/zitate/info/z/1")
     await check_html_page(fetch, "/zitate/share/1-1")
     await check_html_page(fetch, "/zitate/erstellen")
+    assert not assert_valid_response(
+        await fetch("/zitate/info/z/1", method="HEAD"),
+        "text/html; charset=UTF-8",
+    ).body
+    assert not assert_valid_response(
+        await fetch("/zitate/share/1-1", method="HEAD"),
+        "text/html; charset=UTF-8",
+    ).body
+    assert not assert_valid_response(
+        await fetch("/zitate/erstellen", method="HEAD"),
+        "text/html; charset=UTF-8",
+    ).body
 
     assert len(
         assert_valid_response(await fetch("/zitate/1-1.gif"), "image/gif").body

@@ -18,6 +18,9 @@ from __future__ import annotations
 import asyncio
 import re
 
+import pytest
+from tornado.web import HTTPError
+
 from an_website.hangman_solver import hangman_solver as solver
 
 
@@ -55,6 +58,39 @@ def test_filter_words() -> None:
         assert "0" not in sorted_letters
         assert "b" not in sorted_letters
         assert len(sorted_letters) == 1
+
+
+def test_generate_pattern_str() -> None:
+    """Test generating the pattern string."""
+    pattern_str = asyncio.run(
+        solver.generate_pattern_str(
+            input_str="_", invalid="", crossword_mode=False
+        )
+    )
+    assert pattern_str == "."
+
+    pattern_str = asyncio.run(
+        solver.generate_pattern_str(
+            input_str="___", invalid="", crossword_mode=False
+        )
+    )
+    assert pattern_str == "..."
+
+    pattern_str = asyncio.run(
+        solver.generate_pattern_str(
+            input_str="_",
+            invalid="ABCcccccccccccccccccccccc",
+            crossword_mode=False,
+        )
+    )
+    assert re.fullmatch(r"^\[\^[abc]{3}]\{1}$", pattern_str)
+
+    pattern_str = asyncio.run(
+        solver.generate_pattern_str(
+            input_str="___", invalid="abc", crossword_mode=False
+        )
+    )
+    assert re.fullmatch(r"^\[\^[abc]{3}]\{3}$", pattern_str)
 
 
 def test_solving_hangman() -> None:
@@ -144,6 +180,18 @@ def test_solving_hangman() -> None:
     assert hangman.word_count > 10
     assert "ä" in hangman.letters
 
+    with pytest.raises(HTTPError):
+        asyncio.run(
+            solver.solve_hangman(
+                input_str="",
+                invalid="",
+                language="invalid",
+                max_words=0,
+                crossword_mode=False,
+            )
+        )
+
 
 if __name__ == "__main__":
     test_filter_words()
+    test_solving_hangman()

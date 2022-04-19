@@ -73,7 +73,7 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                         break
                 assert handler_matches_path
 
-            if module_info.hidden and module_info.path not in {
+            if module_info.path not in {
                 "/chat",  # head not supported
                 "/LOLWUT",  # needs Redis
                 "/zitat-des-tages",  # needs Redis

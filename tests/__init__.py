@@ -155,7 +155,9 @@ def assert_valid_redirect(
     """Assert a valid redirect to a new url."""
     effective_url_path = getattr(response, "effective_url_path", None)
     if effective_url_path:
-        assert effective_url_path == new_url
+        assert effective_url_path == new_url or print(
+            "assertion failed", effective_url_path, "≠", new_url
+        )
     else:
         print("Effective URL path missing for", response.effective_url)
     assert response.effective_url.endswith(new_url)
