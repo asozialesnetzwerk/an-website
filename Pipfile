@@ -46,7 +46,7 @@ pep8-naming = {version=">=0.12.1,<2"}
 pipenv = {version=">=2022.4.8"}
 pre-commit = {version="~=2.17"}
 pylint = {version="~=2.13"}
-pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
+pyrepl = {git="git+https://github.com/pypy/pyrepl.git", ref="master"}
 pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="main"}
 pytest = {version="~=7.1"}
 pytest-cov = {version="~=3.0"}
@@ -56,5 +56,6 @@ rjsmin = {version="~=1.2"}
 types-beautifulsoup4 = {version="~=4.10"}
 types-orjson = {version="~=3.6"}
 types-Pillow = {version="~=9.0"}
+types-python-dateutil = {version="~=2.8"}
 types-redis = {version="~=4.1"}
 types-requests = {version="~=2.27"}

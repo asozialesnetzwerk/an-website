@@ -1,4 +1,12 @@
 ignore-failures:
     python:
-      - pytest-tornasync  # only for testing; checked
-      - pyrepl  # only for backdoor client; checked
+      # all the dependencies here are unhealthy, but they are not used in production
+      - pytest-tornasync  # only for testing
+      - webencodings  # only needed for html5lib; only used in tests
+      - namedthreads  # only for debugging
+      - flake8-polyfill  # only for flake8
+      - mypy-extensions  # only used for mypy and black
+      # backdoor client:
+      - pyrepl
+      - funcparserlib  # only for hy
+      - pysocks

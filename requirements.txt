@@ -35,7 +35,7 @@ lxml==4.8.0
 multidict==6.0.2
 namedthreads==1.0
 numpy==1.22.3
-orjson==3.6.7
+orjson==3.6.8
 packaging==21.3
 pillow==9.1.0
 pycares==4.1.2
