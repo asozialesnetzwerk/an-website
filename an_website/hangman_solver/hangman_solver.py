@@ -249,20 +249,20 @@ class HangmanSolver(HTMLRequestHandler):
             0,
             min(
                 100,
-                int(str(self.get_query_argument("max_words", default="20"))),
+                int(str(self.get_argument("max_words", default="20"))),
             ),
         )
 
         crossword_mode_str = str(
-            self.get_query_argument("crossword_mode", default="False")
+            self.get_argument("crossword_mode", default="False")
         )
         crossword_mode = str_to_bool(crossword_mode_str)  # if crossword mode
 
-        language = str(self.get_query_argument("lang", default="de_only_a-z"))
+        language = str(self.get_argument("lang", default="de_only_a-z"))
 
-        input_str = str(self.get_query_argument("input", default=""))
+        input_str = str(self.get_argument("input", default=""))
 
-        invalid = str(self.get_query_argument("invalid", default=""))
+        invalid = str(self.get_argument("invalid", default=""))
 
         return await solve_hangman(
             max_words=max_words,

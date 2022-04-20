@@ -317,14 +317,14 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         source: None | str = (
             None
             if str_to_bool(
-                str(self.get_query_argument("no_source", default="False")),
+                str(self.get_argument("no_source", default="False")),
                 default=False,
             )
             else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
         )
 
         if file_type == "gif" and str_to_bool(
-            self.get_query_argument("small", default="False"),
+            self.get_argument("small", default="False"),
             default=False,
         ):
             file_type = "4-color-gif"

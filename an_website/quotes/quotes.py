@@ -148,7 +148,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         self,
     ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
         """Get a rating filter."""
-        rating_filter = self.get_query_argument("r", default="smart")
+        rating_filter = self.get_argument("r", default="smart")
         if rating_filter == "w":
             return "w"
         if rating_filter == "n":
@@ -164,7 +164,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
     def get_show_rating(self) -> bool:
         """Return whether the user wants to see the rating."""
         return str_to_bool(
-            self.get_query_argument("show-rating", default=None), default=False
+            self.get_argument("show-rating", default=None), default=False
         )
 
     def get_next_url(self) -> str:

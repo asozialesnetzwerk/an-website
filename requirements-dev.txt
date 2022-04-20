@@ -3,7 +3,7 @@ aiohttp[speedups]==3.8.1
 aiosignal==1.2.0
 ansi2html==1.7.0
 appdirs==1.4.4
-astroid==2.11.2
+astroid==2.11.3
 async-timeout==4.0.2
 attrs==21.4.0
 autoflake==1.4
@@ -78,7 +78,7 @@ pycurl==7.45.1
 pydocstyle==6.1.1
 pyflakes==2.4.0
 pyjwt==2.3.0
-pylint==2.13.5
+pylint==2.13.7
 pyparsing==3.0.8
 pytest-cov==3.0.0
 pytest-tornasync==0.6.0.post2

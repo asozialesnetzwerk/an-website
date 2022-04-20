@@ -1,37 +1,37 @@
 {% whitespace oneline %}
 <footer id="github-footer" data-elastic-exclude>
     <div>Mit Liebe gebacken
-        {% if now.day == 1 and now.month == 1 %}
-            🎇
-        {% elif now.day == 29 and now.month == 2 %}
-            🦘
-        {% elif now.day == 8 and now.month == 3 %}
-            ♀️
-        {% elif now.day == 14 and now.month == 3 %}
-            🥧
-        {% elif False and now.day == 20 and now.month == 4 %}
-            🥦
-        {% elif globals()["🥚"] %}
+        {% if globals()["🥚"] %}
             <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
                style="text-decoration: none">🥚</a>
-        {% elif now.day == 4 and now.month == 5 %}
+        {% elif now.month == 1 and now.day == 1 %}
+            🎇
+        {% elif now.month == 2 and now.day == 29 %}
+            🦘
+        {% elif now.month == 3 and now.day == 8 %}
+            ♀️
+        {% elif now.month == 3 and now.day == 14 %}
+            🥧
+        {% elif now.month == 4 and now.day == 20 %}
+            🥦
+        {% elif now.month == 5 and now.day == 4 %}
             ✨
-        {% elif now.day == 24 and now.month == 6 %}
+        {% elif now.month == 6 and now.day == 24 %}
             🛸
-        {% elif now.day == 4 and now.month == 7 %}
+        {% elif now.month == 7 and now.day == 4 %}
             🗽
-        {% elif now.day == 19 and now.month == 9 %}
+        {% elif now.month == 9 and now.day == 19 %}
             ☠️
-        {% elif now.day == 31 and now.month == 10 %}
+        {% elif now.month == 10 and now.day == 31 %}
             🎃
-        {% elif now.day == 11 and now.month == 11 %}
+        {% elif now.month == 11 and now.day == 11 %}
             🪅
-        {% elif now.day in {24, 25} and now.month == 12 %}
+        {% elif now.month == 12 and now.day in {24, 25} %}
             🎄
         {% else %}
             🖤
         {% end %}
-        <a href="{{REPO_URL}}">
+        <a href="{{fix_url(REPO_URL)}}">
             Asoziales Netzwerk: Sektion GitHub
         </a></div>
 </footer>

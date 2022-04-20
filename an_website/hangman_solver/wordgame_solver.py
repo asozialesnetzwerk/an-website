@@ -100,9 +100,9 @@ class WordGameHelper(HTMLRequestHandler):
         """Handle GET requests to the word game helper page."""
         if head:
             return
-        word: str = str(self.get_query_argument("word", default="")).lower()
+        word: str = str(self.get_argument("word", default="")).lower()
 
-        before_str: str = str(self.get_query_argument("before", default=""))
+        before_str: str = str(self.get_argument("before", default=""))
 
         before = [
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
@@ -132,9 +132,9 @@ class WordGameHelperAPI(APIRequestHandler):
         """Handle GET requests to the word game helper API."""
         if head:
             return
-        word: str = str(self.get_query_argument("word", default="")).lower()
+        word: str = str(self.get_argument("word", default="")).lower()
 
-        before_str: str = str(self.get_query_argument("before", default=""))
+        before_str: str = str(self.get_argument("before", default=""))
 
         before = tuple(
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0

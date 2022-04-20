@@ -112,9 +112,7 @@ class UwUHostInfo(HTMLRequestHandler):
         if head:
             cache_enabwed = 1
         else:
-            cache_disabwed = self.get_query_argument(
-                "cache_disabled", default=""
-            )
+            cache_disabwed = self.get_argument("cache_disabled", default="")
             cache_enabwed = (
                 0 if str_to_bool(cache_disabwed, default=False) else 1
             )

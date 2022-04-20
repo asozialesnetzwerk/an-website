@@ -511,9 +511,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_as_json(self) -> bool:
         """Get the value of the as_json query parameter."""
-        return str_to_bool(
-            self.get_query_argument("as_json", default="nope"), False
-        )
+        return str_to_bool(self.get_argument("as_json", default="nope"), False)
 
     def get_no_3rd_party_default(self) -> bool:
         """Get the default value for the no_3rd_party param."""
@@ -728,7 +726,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "form_appendix": self.get_form_appendix(),
                 "fix_url": self.fix_url,
                 "fix_static": lambda url: self.fix_url(fix_static_url(url)),
-                "REPO_URL": self.fix_url(REPO_URL),
+                "REPO_URL": REPO_URL,
                 "theme": self.get_display_theme(),
                 "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,

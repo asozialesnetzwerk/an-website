@@ -138,9 +138,9 @@ class SwappedWords(HTMLRequestHandler):
     ) -> None:
         """Handle GET requests to the swapped words page."""
         self.handle_text(
-            self.get_query_argument("text", default=None) or "",
-            self.get_query_argument("config", default=None),
-            self.get_query_argument("reset", default=None) or "nope",
+            self.get_argument("text", default=None) or "",
+            self.get_argument("config", default=None),
+            self.get_argument("reset", default=None) or "nope",
         )
 
     def post(self) -> None:

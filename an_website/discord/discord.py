@@ -154,6 +154,7 @@ class ANDiscord(HTMLRequestHandler):
             return
         return await self.render(
             "pages/ask_for_redirect.html",
+            referrerpolicy=None,
             redirect_url=invite,
             from_url=None,
             discord=True,

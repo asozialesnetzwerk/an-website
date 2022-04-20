@@ -56,7 +56,7 @@ class Search(HTMLRequestHandler):
 
     def get_query(self) -> str:
         """Return the query."""
-        return str(self.get_query_argument("q", strip=True, default=""))
+        return str(self.get_argument("q", strip=True, default=""))
 
     async def search(self) -> list[dict[str, float | str]]:
         """Search the website."""

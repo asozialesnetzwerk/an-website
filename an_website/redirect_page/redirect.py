@@ -44,7 +44,10 @@ class RedirectPage(HTMLRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the request page and render it."""
-        redirect_url = self.get_query_argument("to", default="")
+        # pylint: disable=unused-argument
+        referrerpolicy = self.get_argument("referrerpolicy", None)
+        redirect_url = self.get_argument("to", None)
+        from_url = self.get_argument("from", None)
 
         if not redirect_url or redirect_url == "/":
             # empty arg so redirect to main page
@@ -61,14 +64,9 @@ class RedirectPage(HTMLRequestHandler):
         if redirect_url.rstrip("/") == "https://chat.asozial.org":
             return self.redirect("https://chat.asozial.org")
 
-        if head:
-            return
-
-        # get the URL the redirect comes from
-        from_url = self.get_query_argument("from", default="/")
-
         await self.render(
             "pages/ask_for_redirect.html",
+            referrerpolicy=referrerpolicy,
             redirect_url=redirect_url,
             from_url=from_url,
             discord=False,
