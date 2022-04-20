@@ -744,7 +744,6 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "🥚": timedelta()
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2),
-                "🥦": self.now.date() == date(self.now.year, 4, 20),
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
                 "now": self.now,
