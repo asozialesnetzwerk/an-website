@@ -3,7 +3,8 @@
     <div>Mit Liebe gebacken
         {% if globals()["🥚"] %}
             <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
-               style="text-decoration: none">🥚</a>
+               style="text-decoration: none"
+            >🥚</a>
         {% elif now.month == 1 and now.day == 1 %}
             🎇
         {% elif now.month == 2 and now.day == 29 %}
@@ -14,12 +15,18 @@
             🥧
         {% elif now.month == 4 and now.day == 20 %}
             🥦
+        {% elif now.month == 4 and now.day == 22 %}
+            <a href="{{fix_url('https://earthday.org')}}"
+               style="text-decoration: none"
+            >🌍</a>
         {% elif now.month == 5 and now.day == 4 %}
             ✨
         {% elif now.month == 6 and now.day == 24 %}
             🛸
         {% elif now.month == 7 and now.day == 4 %}
             🗽
+        {% elif now.month == 9 and now.day == 11 %}
+            ✈️
         {% elif now.month == 9 and now.day == 19 %}
             ☠️
         {% elif now.month == 10 and now.day == 31 %}
@@ -31,7 +38,6 @@
         {% else %}
             🖤
         {% end %}
-        <a href="{{fix_url(REPO_URL)}}">
-            Asoziales Netzwerk: Sektion GitHub
-        </a></div>
+        <a href="{{fix_url(REPO_URL)}}">Asoziales Netzwerk: Sektion GitHub</a>
+    </div>
 </footer>

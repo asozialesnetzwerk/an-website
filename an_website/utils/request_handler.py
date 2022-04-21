@@ -129,7 +129,6 @@ class BaseRequestHandler(RequestHandler):
             page_info = self.module_info.get_page_info(self.request.path)
             self.title = page_info.name
             self.short_title = page_info.short_name or self.title
-
         if not default_description:
             self.description = self.module_info.get_page_info(
                 self.request.path
@@ -481,14 +480,12 @@ class BaseRequestHandler(RequestHandler):
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
             del query_args["as_json"]
-
         if path.startswith(("/static/", "/soundboard/files/")):
             query_args.update(no_3rd_party=None, theme=None, dynload=None)
         else:
             query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
             query_args.setdefault("theme", self.get_theme())
             query_args.setdefault("dynload", self.get_dynload())
-
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
             if query_args["theme"] == self.get_saved_theme():
@@ -659,8 +656,6 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
-        form_appendix: str
-
         form_appendix = (
             "<input name='no_3rd_party' class='hidden-input' "
             f"value='{bool_to_str(self.get_no_3rd_party())}'>"
@@ -677,7 +672,6 @@ class HTMLRequestHandler(BaseRequestHandler):
             form_appendix += (
                 f"<input name='theme' class='hidden-input' value='{theme}'>"
             )
-
         return form_appendix
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:

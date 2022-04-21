@@ -14,8 +14,7 @@
 
         <a class="leave form-button no-style-a" no-dynload
            href="{{redirect_url}}"
-           rel="noopener"
-           referrerpolicy="{{referrerpolicy or 'origin-when-cross-origin'}}"
+           referrerpolicy="{{'origin-when-cross-origin' if send_referrer else 'same-origin'}}"
         >Ja, ich bin mir sicher</a>
 
         {% if from_url %}

@@ -21,7 +21,7 @@ This page will ask users if they want to leave this website.
 from __future__ import annotations
 
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, str_to_bool
 
 
 def get_module_info() -> ModuleInfo:
@@ -45,7 +45,8 @@ class RedirectPage(HTMLRequestHandler):
     async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the request page and render it."""
         # pylint: disable=unused-argument
-        referrerpolicy = self.get_argument("referrerpolicy", None)
+
+        referrer = self.get_argument("referrer", None)
         redirect_url = self.get_argument("to", None)
         from_url = self.get_argument("from", None)
 
@@ -65,8 +66,8 @@ class RedirectPage(HTMLRequestHandler):
             return self.redirect("https://chat.asozial.org")
 
         await self.render(
-            "pages/ask_for_redirect.html",
-            referrerpolicy=referrerpolicy,
+            "pages/redirect.html",
+            send_referrer=str_to_bool(referrer, True),
             redirect_url=redirect_url,
             from_url=from_url,
             discord=False,
