@@ -5,14 +5,14 @@
     const outputText = elById("output");
     const errorText = elById("error_msg");
 
-    function onerror(error) {
-        error(error);
-        if (error.error) {
-            alert(error.error);
-            errorText.innerText = `${error.error} In line ${error.line_num}: "${error.line}"`;
+    function onerror(e) {
+        error(e);
+        if (e.error) {
+            alert(e.error);
+            errorText.innerText = `${e.error} In line ${e.line_num}: "${e.line}"`;
         } else {
-            alert(error);
-            errorText.innerText = error;
+            alert(e);
+            errorText.innerText = e;
         }
     }
 
@@ -36,40 +36,32 @@
         errorText.innerText = "";
     }
 
-    function onSubmit() {
-        post(
-            "/api/vertauschte-woerter",
-            {
-                text: textInput.value || "",
-                config: configInput.value || "",
-                minify_config: false,
-                return_config: true
-            },
-            ondata,
-            onerror
-        )
-    }
-
-    function onReset() {
-        post(
-            "/api/vertauschte-woerter",
-            {
-                text: textInput.value,
-                minify_config: false,
-                return_config: true
-            },
-            ondata,
-            onerror
-        )
-    }
-
     elById("form").action = "javascript:void(0)";
-    elById("reset").onclick = onReset;
-    elById("submit").onclick = onSubmit;
-
-    w.PopStateHandlers["swappedWords"] = (event) => (
-        event.state && ondata(event.state, true)
+    elById("reset").onclick = () => post(
+        "/api/vertauschte-woerter",
+        {
+            text: textInput.value,
+            minify_config: false,
+            return_config: true
+        },
+        ondata,
+        onerror
     );
+    elById("submit").onclick = () => post(
+        "/api/vertauschte-woerter",
+        {
+            text: textInput.value || "",
+            config: configInput.value || "",
+            minify_config: false,
+            return_config: true
+        },
+        ondata,
+        onerror
+    );
+
+    w.PopStateHandlers["swappedWords"] = (
+        event
+    ) => event.state && ondata(event.state, true);
 
 })();
 // @license-end

@@ -8,7 +8,9 @@
         resultsList.innerHTML = "";
         for (const result of results) {
             const resultElement = d.createElement("li");
-            resultElement.setAttribute("score", String(result["score"]));
+            resultElement.setAttribute(
+                "score", String(result["score"])
+            );
             resultElement.innerHTML = (
                 `<a rel="noreferrer" href='${fixHref(result.url)}'>`
                 + `${result.title}</a> ${result.description}`
@@ -23,24 +25,23 @@
     }
 
     searchForm.action = "javascript:void(0)";
-    searchForm.onsubmit = () => {
-        get(
-            "/api/suche",
-            "q=" + searchInput.value,
-            (data) => {
-                displayResults(data);
-                setURLParam(
-                    "q",
-                    searchInput.value,
-                    {
-                        "query": searchInput.value,
-                        "results": data
-                    },
-                    "search",
-                    true
-                );
-            }
-        )
-    }
+    searchForm.onsubmit = () => get(
+        "/api/suche",
+        "q=" + searchInput.value,
+        (data) => {
+            displayResults(data);
+            setURLParam(
+                "q",
+                searchInput.value,
+                {
+                    "query": searchInput.value,
+                    "results": data
+                },
+                "search",
+                true
+            );
+        }
+    );
+
 })();
 // @license-end

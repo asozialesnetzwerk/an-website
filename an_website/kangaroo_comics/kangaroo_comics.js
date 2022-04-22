@@ -6,6 +6,9 @@ function removeAllPopups() {
 }
 
 function startLoadingComics() {
+    const getDateBy = (year, month, dayOfMonth) => new Date(
+        year, month - 1, dayOfMonth, 6, 0, 0, 0
+    );
     // date with special link format:
     const wrongLinks = [
         [
@@ -57,6 +60,36 @@ function startLoadingComics() {
             "administratives/kaenguru-comics/2022-04/4/original"
         ]
     ];
+
+    const datesEqual = (date1, date2) => dateEquals(
+        date1,
+        date2.getFullYear(),
+        date2.getMonth() + 1,  // js is stupid
+        date2.getDate()
+    );
+
+    const dateEquals = (date, year, month, dayOfMonth) => (
+        // check if a date equals another based on year, month, and dayOfMonth
+        date.getFullYear() === year
+        && date.getMonth() === month - 1 // js is stupid
+        && date.getDate() === dayOfMonth
+    );
+
+    const isSunday = (date) => (
+        date
+        && date.getDay() === 0
+        // exception for 2020-12-20 (sunday) because there was a comic
+        && !dateEquals(date, 2020, 12, 20)
+    );
+
+    const copyDate = (date) => getDateBy(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate()
+    );
+
+    // get today without hours, minutes, seconds and ms
+    const getToday = () => copyDate(new Date());
 
     const comics = [];
 
@@ -116,9 +149,27 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
+    const days = [
+        "Sonntag", "Montag", "Dienstag", "Mittwoch",
+        "Donnerstag", "Freitag", "Samstag"
+    ];
+    const getDayName = (date) => days[date.getDay()];
+    const months = [
+        "Januar", "Februar", "März", "April", "Mai", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "Dezember"
+    ];
+    const getMonthName = (date) => months[date.getMonth()];
+
+    const getDateString = (date) => (
+        "Comic von "
+        + getDayName(date) + ", dem "
+        + date.getDate() + ". "
+        + getMonthName(date) + " "
+        + date.getFullYear()
+    );
+
     const currentImgHeader = elById("current-comic-header");
     const currentImg = elById("current-img");
-
     //const currentImgContainer = elById("current-img-container");
     function setCurrentComic(date) {
         let link = generateComicLink(date);
@@ -128,25 +179,6 @@ administratives/kaenguru-comics/kaenguru-045/original
         currentImgHeader.href = link;
     }
 
-    function getDateString(date) {
-        return "Comic von "
-            + getDayName(date) + ", dem "
-            + date.getDate() + ". "
-            + getMonthName(date) + " "
-            + date.getFullYear();
-    }
-
-    const days = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
-
-    function getDayName(date) {
-        return days[date.getDay()];
-    }
-
-    const months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-
-    function getMonthName(date) {
-        return months[date.getMonth()];
-    }
 
     const firstDateWithOldLink = getDateBy(2020, 12, 3);
     const oldLinkRegex = /administratives\/kaenguru-comics\/kaenguru-(\d{2,3})(?:-2)?\/original\/?/;
@@ -160,18 +192,16 @@ administratives/kaenguru-comics/kaenguru-045/original
         for (const reg of [newLinkRegex, relativeLinkRegex]) {
             // urls with year, month, day in them as three groups
             const match = link.toLowerCase().match(reg);
-            if (match && match.length > 3) {
+            if (match && match.length > 3)
                 return getDateBy(match[1], match[2], match[3]);
-            }
         }
         // urls with incrementing number in them
         let arr = link.toLowerCase().match(oldLinkRegex);
         if (arr && arr.length > 1) {
             const num = arr[1] - 5;
             let date = new Date(firstDateWithOldLink.getTime());
-            for (let i = 0; i < num; i++) {
+            for (let i = 0; i < num; i++)
                 date.setTime(dateIncreaseByDays(date, isSunday(date) ? 2 : 1));
-            }
             return isSunday(date) ? dateIncreaseByDays(date, 1) : date;
         }
         link = link.toLowerCase().trim()
@@ -207,41 +237,13 @@ administratives/kaenguru-comics/kaenguru-045/original
             .replace("%d", day.length === 2 ? day : "0" + day);
     }
 
-    function isSunday(date) {
-        return date
-            && date.getDay() === 0
-            // exception for 2020-12-20 (sunday) because there was a comic
-            && !dateEquals(date, 2020, 12, 20);
-    }
-
-    function datesEqual(date1, date2) {
-        return dateEquals(date1, date2.getFullYear(), date2.getMonth() + 1, date2.getDate());
-    }
-
-    function dateEquals(date, year, month, dayOfMonth) {
-        return date.getFullYear() === year
-            && date.getMonth() === month - 1
-            && date.getDate() === dayOfMonth;
-    }
-
-    const millisOfOneDay = 1000 * 60 * 60 * 24;
-
     function dateIncreaseByDays(date, days) {
-        date.setTime(date.getTime() + (days * millisOfOneDay));
+        date.setTime(
+            // working in milliseconds
+            date.getTime() + (days * 1000 * 60 * 60 * 24)
+        );
         date.setHours(6); // to compensate errors through daylight savings time
         return date;
-    }
-
-    function copyDate(date) {
-        return getDateBy(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    }
-
-    function getDateBy(year, month, dayOfMonth) {
-        return new Date(year, month - 1, dayOfMonth, 6, 0, 0, 0);
-    }
-
-    function getToday() {
-        return copyDate(new Date());
     }
 
     const comicCountToLoadOnCLick = 7;
@@ -300,12 +302,8 @@ administratives/kaenguru-comics/kaenguru-045/original
 
         const popupContainer = d.createElement("div");
         popupContainer.classList.add("popup-container");
-        popupContainer.onmouseleave = () => {
-            popupContainer.remove();
-        }
-        popupContainer.onclick = () => {
-            removeAllPopups();
-        }
+        popupContainer.onmouseleave = () => popupContainer.remove();
+        popupContainer.onclick = () => removeAllPopups();
 
         const clone = image.cloneNode(true);
         clone.classList.remove("normal-img");
@@ -330,8 +328,9 @@ administratives/kaenguru-comics/kaenguru-045/original
     currentImg.onerror = (event) => {
         dateIncreaseByDays(today, -1);
         setCurrentComic(today);
-        if (loaded < comicCountToLoadOnCLick) loaded++;
+
+        if (loaded < comicCountToLoadOnCLick)
+            loaded++;
     };
 }
-
 // @license-end

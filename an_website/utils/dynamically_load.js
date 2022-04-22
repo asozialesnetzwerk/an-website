@@ -2,14 +2,13 @@
 const bodyDiv = elById("body");
 
 function getJSONURLWithParams(originalUrl) {
-    if (originalUrl.includes("#")) {
+    if (originalUrl.includes("#"))
         originalUrl = originalUrl.split("#")[0];
-    }
-    let [url, query] = (
-        originalUrl.includes("?")
-            ? originalUrl.split("?")
-            : [originalUrl, ""]
-    );
+
+    let [url, query] = originalUrl.includes("?")
+                        ? originalUrl.split("?")
+                        : [originalUrl, ""];
+
     let params = new URLSearchParams(query);
     params.set("as_json", "sure");
     return [url, params.toString()];
@@ -17,7 +16,7 @@ function getJSONURLWithParams(originalUrl) {
 
 const lastLoaded = [];
 function dynLoadOnData(data, onpopstate) {
-    if (!data){
+    if (!data) {
         error("No data received");
         return;
     }
@@ -44,23 +43,23 @@ function dynLoadOnData(data, onpopstate) {
     }
     if (!data["body"]) {
         w.location.reload();
-        return
+        return;
     }
 
-    //d.onkeyup = () => {};
-    d.onkeydown = () => {};
+    //d.onkeyup = () => {}; // not used in any js file
+    d.onkeydown = () => {}; // remove keydown listeners
 
     bodyDiv.innerHTML = data["body"];
     if (data["css"]) {
         const style = d.createElement("style");
         style.innerHTML = data["css"];
-        bodyDiv.appendChild(style)
+        bodyDiv.appendChild(style);
     }
     if (data["stylesheets"]) {
         for (const scriptURL of data["stylesheets"]) {
             const link = d.createElement("link");
             link.rel = "stylesheet";
-            link.type = "text/css"
+            link.type = "text/css";
             link.href = scriptURL;
             bodyDiv.appendChild(link);
         }
@@ -68,37 +67,40 @@ function dynLoadOnData(data, onpopstate) {
     if (data["scripts"]) {
         for (const script of data["scripts"]) {
             const scriptElement = d.createElement("script");
-            if (script["src"]) scriptElement.src = script["src"];
-            if (script["script"]) scriptElement.innerHTML = script["script"];
-            if (script["onload"]) scriptElement.onload = () => eval(script["onload"]);
+            if (script["src"])
+                scriptElement.src = script["src"];
+            if (script["script"])
+                scriptElement.innerHTML = script["script"];
+            if (script["onload"])
+                scriptElement.onload = () => eval(script["onload"]);
             bodyDiv.appendChild(scriptElement);
         }
     }
+
     const title = data["title"];
     d.title = title;
     const shortTitle = data["short_title"] || title;
     let titleStyleText = `#title:before{content:"${shortTitle}"}`;
-    if (shortTitle !== title) {
+    if (shortTitle !== title)
         titleStyleText += (
             `@media(min-width:500px){#title:before{content:"${title}"}}`
         );
-    }
+
     elById("title-style").innerText = titleStyleText;
     dynLoadReplaceAnchors();
     w.urlData = data;
-    return true
+    return true;
 }
 
 function dynLoadReplaceAnchors() {
-    for (const anchor of d.getElementsByTagName("A")) {
+    for (const anchor of d.getElementsByTagName("A"))
         dynLoadReplaceHrefOnAnchor(anchor);
-    }
 }
 
 function dynLoadReplaceHrefOnAnchor(anchor) {
-    if (anchor.hasAttribute("no-dynload")) {
+    if (anchor.hasAttribute("no-dynload"))
         return;
-    }
+
     anchor.href = dynLoadGetFixedHref(anchor.href);
 }
 

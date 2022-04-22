@@ -28,10 +28,13 @@ function get(
     onerror = error
 ) {
     // log("GET", url, params);
-    fetch(url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()), {
-        method: "GET",
-        headers: {"Accept": "application/json"}
-    }).then(response => response.json()).catch(onerror)
+    fetch(
+        url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()),
+        {
+            method: "GET",
+            headers: {"Accept": "application/json"}
+        }
+    ).then(response => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
 
@@ -40,9 +43,8 @@ w.PopStateHandlers = {
         // reload if the last location was not the one that got replaced
         w.lastLocation === state["origin"] || w.location.reload();
     },
-    "URLParamChange": (state) => {
-        w.location.reload();
-    }
+    // always reload the location if URLParamChange
+    "URLParamChange": (s) => w.location.reload()
 };
 
 function setURLParam(
@@ -58,7 +60,7 @@ function setURLParam(
     const newUrl = `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
     //log("newUrl", newUrl);
     state["stateType"] = stateType;
-    if (push) {
+    if (push && newUrl !== w.location) {
         history.pushState(state, newUrl, newUrl);
     } else {
         history.replaceState(state, newUrl, newUrl)
@@ -69,19 +71,20 @@ function setURLParam(
 w.onpopstate = (event) => {
     if (event.state
         && event.state["stateType"]
-        && w.PopStateHandlers[event.state["stateType"]]) {
+        && w.PopStateHandlers[event.state["stateType"]]
+    ) {
         w.PopStateHandlers[event.state["stateType"]](event);
         w.lastLocation = w.location;
-    } else {
-        error("Couldn't handle state. ", event.state);
-        w.location.reload();
+        return;
     }
+    error("Couldn't handle state. ", event.state);
+    w.location.reload();
 }
 
 function fixHref(href) {
-    if (w.dynLoadGetFixedHref) {
+    if (w.dynLoadGetFixedHref)
         return w.dynLoadGetFixedHref(href);
-    }
+    // if the function doesn't exist don't change anything
     return href;
 }
 // @license-end

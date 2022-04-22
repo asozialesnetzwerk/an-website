@@ -9,9 +9,9 @@ function startQuotes(currId, nextId) {
 
     const keys = (() => {
         let k = new URLSearchParams(params).get("keys");
-        if (!(k && k.length)) {
+        if (!(k && k.length))
             return "WASD";
-        }  // for vim-like set keys to khjl
+        // for vim-like set keys to khjl
         if (k.length === 4) {
             return k.toUpperCase();
         } else {
@@ -25,14 +25,18 @@ function startQuotes(currId, nextId) {
     );
 
     d.onkeydown = (event) => {
-        if (event.code === `Key${keys[0]}`) {
-            upvoteButton.click();
-        } else if (event.code === `Key${keys[1]}`) {
-            w.history.back();
-        } else if (event.code === `Key${keys[2]}`) {
-            downvoteButton.click();
-        } else if (event.code === `Key${keys[3]}`) {
-            nextButton.click();
+        switch (event.code) {
+            case `Key${keys[0]}`:
+                upvoteButton.click();
+                break;
+            case `Key${keys[1]}`:
+                w.history.back();
+                break;
+            case `Key${keys[2]}`:
+                downvoteButton.click();
+                break;
+            case `Key${keys[3]}`:
+                nextButton.click();
         }
     };
 
@@ -44,9 +48,7 @@ function startQuotes(currId, nextId) {
     const realAuthor = elById("real-author-name");
 
     const ratingText = elById("rating-text");
-    const ratingImageContainer = elById(
-        "rating-img-container"
-    );
+    const ratingImageContainer = elById("rating-img-container");
 
     nextButton.removeAttribute("href");
 
@@ -98,9 +100,8 @@ function startQuotes(currId, nextId) {
     function handleData(data) {
         if (data["status"]) {
             error(data)
-            if (data["status"] in [429, 420]) {
+            if (data["status"] in [429, 420])
                 alert(data["reason"]);
-            }
         } else if (data && data["id"]) {
             updateQuoteId(data["id"]);
             nextQuoteId[0] = data["next"];
@@ -124,24 +125,22 @@ function startQuotes(currId, nextId) {
         `/api/zitate/${nextQuoteId[0]}`,
         params,
         (data) => {
-            if (handleData(data)) {
-                data["stateType"] = "quotes";
-                w.history.pushState(
-                    data,
-                    "Falsche Zitate",
-                    `/zitate/${data["id"]}${params}`
-                )
-            }
+            if (!handleData(data)) return;
+
+            data["stateType"] = "quotes";
+            w.history.pushState(
+                data,
+                "Falsche Zitate",
+                `/zitate/${data["id"]}${params}`
+            )
         }
     );
 
-    function vote(vote) {
-        post(
-            `/api/zitate/${thisQuoteId[0]}`,
-            {"vote": vote},
-            (data) => handleData(data)
-        );
-    }
+    const vote = (vote) => post(
+        `/api/zitate/${thisQuoteId[0]}`,
+        {"vote": vote},
+        (data) => handleData(data)
+    );
 
     function setDisabledOfVoteButtons(disabled) {
         upvoteButton.disabled = disabled;
