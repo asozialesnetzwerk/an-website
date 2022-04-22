@@ -413,6 +413,7 @@ def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
 Accepted arguments:
 
     --clear-cache      clear the whole cache
+    --dev              use a separate cache for a local developing instance
     --lisp             enable Lots of Irritating Superfluous Parentheses
     --new-proxy        don't use the cached proxy
     --new-session      start a new session with cached URL and key
@@ -427,6 +428,7 @@ Accepted arguments:
     for arg in sys.argv[1:]:
         if arg not in {
             "--clear-cache",
+            "--dev",
             "--lisp",
             "--new-proxy",
             "--new-session",
@@ -450,7 +452,9 @@ Accepted arguments:
     proxy_password: None | str = None
     cache_pickle = os.path.join(
         os.path.expanduser(os.getenv("XDG_CACHE_HOME") or "~/.cache"),
-        "an-backdoor-client/session.pickle",
+        "an-backdoor-client/"
+        + ("dev-" if "--dev" in sys.argv else "")
+        + "session.pickle",
     )
     if "--clear-cache" in sys.argv:
         if os.path.exists(cache_pickle):

@@ -16,8 +16,10 @@
 from __future__ import annotations, barry_as_FLUFL
 
 import ast
+import base64
 import io
 import pydoc
+import sys
 import traceback
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
@@ -63,6 +65,7 @@ class Backdoor(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRED_PERMISSION: Permissions = Permissions.BACKDOOR
     SUPPORTS_COOKIE_AUTHORIZATION: bool = False
+    PICKLE_PROTOCOL = max(pickle.DEFAULT_PROTOCOL, 5)
 
     sessions: dict[str, dict[str, Any]] = {}
 
@@ -100,17 +103,9 @@ class Backdoor(APIRequestHandler):
                 session_id: None | str = self.request.headers.get(
                     "X-Backdoor-Session"
                 )
-                if session_id:
-                    session: dict[str, Any] = (
-                        self.sessions.get(session_id)
-                        or self.get_default_session()
-                    )
-                    if session_id not in self.sessions:
-                        self.sessions[session_id] = session
-                else:
-                    session = self.get_default_session()
-
-                session["self"] = self
+                session: dict[str, Any] = await self.load_session_backup(
+                    session_id
+                )
                 if "print" not in session or isinstance(
                     session["print"], PrintWrapper
                 ):
@@ -131,12 +126,17 @@ class Backdoor(APIRequestHandler):
                     except UnboundLocalError:
                         pass
                 else:
-                    if result is session["print"]:  # noqa: F821
+                    if result is session["print"] and isinstance(  # noqa: F821
+                        result, PrintWrapper  # noqa: F821
+                    ):
                         result = print
-                    elif result is session["help"]:
+                    elif result is session["help"] and isinstance(
+                        session["help"], pydoc.Helper
+                    ):
                         result = help
                     if result is not None:
                         session["_"] = result
+                await self.backup_session(session)
             output_str: None | str = (
                 output.getvalue() if not output.closed else None
             )
@@ -150,9 +150,7 @@ class Backdoor(APIRequestHandler):
             try:
                 result_tuple = (
                     result_tuple[0] or repr(result_tuple[1]),
-                    pickle.dumps(
-                        result_tuple[1], max(pickle.DEFAULT_PROTOCOL, 5)
-                    ),
+                    pickle.dumps(result_tuple[1], self.PICKLE_PROTOCOL),
                 )
             except Exception:  # pylint: disable=broad-except
                 result_tuple = (
@@ -169,9 +167,7 @@ class Backdoor(APIRequestHandler):
                 else:
                     new_args.append(arg)
             exc.args = tuple(new_args)
-            return await self.finish(
-                pickle.dumps(exc, max(pickle.DEFAULT_PROTOCOL, 5))
-            )
+            return await self.finish(pickle.dumps(exc, self.PICKLE_PROTOCOL))
         return await self.finish(
             pickle.dumps(
                 {
@@ -181,22 +177,87 @@ class Backdoor(APIRequestHandler):
                     if not (exception is None and result is None)
                     else None,
                 },
-                max(pickle.DEFAULT_PROTOCOL, 5),
+                self.PICKLE_PROTOCOL,
             )
         )
 
-    def get_default_session(self) -> dict[str, Any]:
-        """Create the default session and return it."""
-        return {
-            "__builtins__": __builtins__,
-            "__name__": "this",
-            "app": self.application,
-            "get_authors": get_authors,
-            "get_quotes": get_quotes,
-            "get_wq": get_wrong_quote,
-            "get_wqs": get_wrong_quotes,
-            "settings": self.settings,
-        }
+    async def load_session_backup(
+        self, session_id: None | str
+    ) -> dict[str, Any]:
+        """Load the backup of a session or create a new one."""
+        if not session_id:
+            session: dict[str, Any] = {}
+        elif session_id in self.sessions:
+            session = self.sessions[session_id]
+        else:
+            session = {}
+            if self.redis:
+                session_pickle = await self.redis.get(
+                    f"{self.redis_prefix}:backdoor-session:{session_id}"
+                )
+                if session_pickle:
+                    try:
+                        session = pickle.loads(
+                            base64.decodebytes(session_pickle.encode("utf-8"))
+                        )
+                    except Exception:  # pylint: disable=broad-except
+                        if sys.flags.dev_mode:
+                            traceback.print_exc()
+            # save the session as session_id is truthy
+            self.sessions[session_id] = session
+        session.update(
+            session_id=session_id,
+            __builtins__=__builtins__,
+            __name__="this",
+            app=self.application,
+            get_authors=get_authors,
+            get_quotes=get_quotes,
+            get_wq=get_wrong_quote,
+            get_wqs=get_wrong_quotes,
+            settings=self.settings,
+            session=session,
+            self=self,
+        )
+        return session
+
+    async def backup_session(self, session: dict[str, Any]) -> bool:
+        """Backup a session using redis and return whether it succeeded."""
+        if not self.redis or "session_id" not in session:
+            return False
+        session_id = session["session_id"]
+        if self.sessions.get(session_id) is not session:
+            return False
+        try:
+            # delete stuff that gets set in load_session_backup
+            # this avoids errors and reduces the pickle size
+            for var in (
+                "__builtins__",
+                "app",
+                "get_authors",
+                "get_quotes",
+                "get_wq",
+                "get_wqs",
+                "self",
+                "session",
+                "settings",
+            ):
+                del session[var]
+
+            session_pickle = pickle.dumps(session, self.PICKLE_PROTOCOL)
+        except Exception:  # pylint: disable=broad-except
+            if sys.flags.dev_mode:
+                traceback.print_exc()
+            return False
+
+        return bool(
+            await self.redis.setex(
+                f"{self.redis_prefix}:backdoor-session:{session_id}",
+                60 * 60 * 24 * 7,  # time to live in seconds (1 week)
+                base64.encodebytes(
+                    session_pickle
+                ),  # value to save (the session)
+            )
+        )
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Respond with error message."""
@@ -208,7 +269,11 @@ class Backdoor(APIRequestHandler):
                 "exc_info"
             ]  # type: ignore
             if not issubclass(exc_info[0], HTTPError):
-                self.finish(pickle.dumps(self.get_error_message(**kwargs)))
+                self.finish(
+                    pickle.dumps(
+                        self.get_error_message(**kwargs), self.PICKLE_PROTOCOL
+                    )
+                )
                 return None
-        self.finish(pickle.dumps(None))
+        self.finish(pickle.dumps(None, self.PICKLE_PROTOCOL))
         return None
