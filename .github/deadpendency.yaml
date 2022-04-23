@@ -8,5 +8,5 @@ ignore-failures:
       - mypy-extensions  # only used for mypy and black
       # backdoor client:
       - pyrepl
-      - funcparserlib  # only for hy
       - pysocks
+      - funcparserlib  # only for hy, which could be used over backdoor

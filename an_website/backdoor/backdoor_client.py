@@ -390,7 +390,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
             if (
                 isinstance(result_obj, tuple)
                 and len(result_obj) == 2
-                and result_obj[0] == "HelperTuple"
+                and result_obj[0] == "PagerTuple"
                 and isinstance(result_obj[1], str)
             ):
                 pydoc.pager(result_obj[1])
@@ -555,51 +555,56 @@ Accepted arguments:
             )
         print("Saved information to cache")
 
+    def send_to_remote(code: str, *, mode: str) -> Any:
+        """Send code to the remote backdoor and return the unpickled body."""
+        return send(
+            url,  # type: ignore[arg-type]
+            key,  # type: ignore[arg-type]
+            code,
+            mode,
+            session,
+            proxy_type=proxy_type,  # type: ignore[arg-type]
+            proxy_addr=proxy_addr,
+            proxy_port=proxy_port,
+            proxy_rdns=proxy_rdns,
+            proxy_username=proxy_username,
+            proxy_password=proxy_password,
+        )[2]
+
     if "--no-patch-help" not in sys.argv:
-        code = (
+        body = send_to_remote(
             "def help(*args, **kwargs):\n"
             "    import io\n"
             "    import pydoc\n"
             "    helper_output = io.StringIO()\n"
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
-            "    return 'HelperTuple', helper_output.getvalue()"
+            "    return 'PagerTuple', helper_output.getvalue()",
+            mode="exec",
         )
-        response = send(
-            url,
-            key,
-            code,
-            "exec",
-            session,
-            proxy_type=proxy_type,
-            proxy_addr=proxy_addr,
-            proxy_port=proxy_port,
-            proxy_rdns=proxy_rdns,
-            proxy_username=proxy_username,
-            proxy_password=proxy_password,
-        )
-        status, headers, body = response
         if not (isinstance(body, dict) and body["success"]):
             print("\033[91mPatching help() failed!\033[0m")
 
     if "--lisp" in sys.argv:
         if not hy:
-            sys.exit("Hy is not installed!")
-        response = send(
-            url,
-            key,
-            "__import__('hy')",
-            "eval",
-            session,
-            proxy_type=proxy_type,
-            proxy_addr=proxy_addr,
-            proxy_port=proxy_port,
-            proxy_rdns=proxy_rdns,
-            proxy_username=proxy_username,
-            proxy_password=proxy_password,
-        )
-        status, headers, body = response
+            sys.exit("\033[91mHy is not installed!\033[0m")
+        body = send_to_remote("__import__('hy')", mode="eval")
         if not (isinstance(body, dict) and body["success"]):
             print("\033[91mImporting Hy builtins failed!\033[0m")
+
+    # print sys info
+    body = send_to_remote(
+        "import sys\nprint('Python', sys.version, 'on', sys.platform)",
+        mode="exec",
+    )
+    if isinstance(body, dict) and body["success"] and body["output"]:
+        print(f"\033[92mConnection to {url} was successful.\033[0m")
+        print(body["output"], end="")
+    else:
+        print("\033[91mGetting remote information failed.\033[0m")
+    print(
+        'Type "copyright", "credits" or '
+        'use the "help" function for more information.'
+    )
 
     # pylint: disable=import-outside-toplevel
     from pyrepl.python_reader import ReaderConsole  # type: ignore
@@ -633,7 +638,7 @@ Accepted arguments:
 
     # run the reader
     try:
-        _main()
+        _main(print_banner=False)
     except EOFError:
         pass
     return None
