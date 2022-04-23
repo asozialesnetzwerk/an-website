@@ -39,10 +39,7 @@ def get_module_info() -> ModuleInfo:
         handlers=((r"/api/backdoor/(eval|exec)", Backdoor),),
         name="Backdoor",
         description="🚪",
-        aliases=(
-            "/api/hintertür",
-            "/api/hintertuer",
-        ),
+        aliases=("/api/hintertür", "/api/hintertuer"),
         hidden=True,
     )
 
@@ -126,15 +123,17 @@ class Backdoor(APIRequestHandler):
                     except UnboundLocalError:
                         pass
                 else:
-                    if result is session["print"] and isinstance(  # noqa: F821
-                        result, PrintWrapper  # noqa: F821
-                    ):
-                        result = print
-                    elif result is session["help"] and isinstance(
-                        session["help"], pydoc.Helper
-                    ):
-                        result = help
-                    if result is not None:
+                    if result is not None:  # noqa: F821
+                        if result is session.get(  # noqa: F821
+                            "print"
+                        ) and isinstance(
+                            result, PrintWrapper  # noqa: F821
+                        ):
+                            result = print
+                        elif result is session.get("help") and isinstance(
+                            session["help"], pydoc.Helper
+                        ):
+                            result = help
                         session["_"] = result
                 await self.backup_session(session)
             output_str: None | str = (
@@ -173,13 +172,29 @@ class Backdoor(APIRequestHandler):
                 {
                     "success": exception is None,
                     "output": output_str,
-                    "result": result_tuple
-                    if not (exception is None and result is None)
-                    else None,
+                    "result": None
+                    if exception is None and result is None
+                    else result_tuple,
                 },
                 self.PICKLE_PROTOCOL,
             )
         )
+
+    def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
+        """Update a session with important default values."""
+        session.update(
+            __builtins__=__builtins__,
+            __name__="this",
+            app=self.application,
+            get_authors=get_authors,
+            get_quotes=get_quotes,
+            get_wq=get_wrong_quote,
+            get_wqs=get_wrong_quotes,
+            settings=self.settings,
+            session=session,
+            self=self,
+        )
+        return session
 
     async def load_session_backup(
         self, session_id: None | str
@@ -205,20 +220,9 @@ class Backdoor(APIRequestHandler):
                             traceback.print_exc()
             # save the session as session_id is truthy
             self.sessions[session_id] = session
-        session.update(
-            session_id=session_id,
-            __builtins__=__builtins__,
-            __name__="this",
-            app=self.application,
-            get_authors=get_authors,
-            get_quotes=get_quotes,
-            get_wq=get_wrong_quote,
-            get_wqs=get_wrong_quotes,
-            settings=self.settings,
-            session=session,
-            self=self,
-        )
-        return session
+        if session_id:
+            session["session_id"] = session_id
+        return self.update_session(session)
 
     async def backup_session(self, session: dict[str, Any]) -> bool:
         """Backup a session using redis and return whether it succeeded."""
@@ -228,7 +232,7 @@ class Backdoor(APIRequestHandler):
         if self.sessions.get(session_id) is not session:
             return False
         try:
-            # delete stuff that gets set in load_session_backup
+            # delete stuff that gets set in update_session
             # this avoids errors and reduces the pickle size
             for var in (
                 "__builtins__",
@@ -242,12 +246,14 @@ class Backdoor(APIRequestHandler):
                 "settings",
             ):
                 del session[var]
-
             session_pickle = pickle.dumps(session, self.PICKLE_PROTOCOL)
         except Exception:  # pylint: disable=broad-except
+            self.update_session(session)
             if sys.flags.dev_mode:
                 traceback.print_exc()
             return False
+        else:
+            self.update_session(session)
 
         return bool(
             await self.redis.setex(
