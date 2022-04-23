@@ -18,19 +18,22 @@ from __future__ import annotations, barry_as_FLUFL
 import ast
 import base64
 import io
+import logging
 import pydoc
-import sys
 import traceback
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
 import dill as pickle  # type: ignore
+import elasticapm  # type: ignore
 from tornado.web import HTTPError
 
 from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -100,9 +103,7 @@ class Backdoor(APIRequestHandler):
                 session_id: None | str = self.request.headers.get(
                     "X-Backdoor-Session"
                 )
-                session: dict[str, Any] = await self.load_session_backup(
-                    session_id
-                )
+                session: dict[str, Any] = await self.load_session(session_id)
                 if "print" not in session or isinstance(
                     session["print"], PrintWrapper
                 ):
@@ -135,7 +136,7 @@ class Backdoor(APIRequestHandler):
                         ):
                             result = help
                         session["_"] = result
-                await self.backup_session(session)
+                await self.save_session(session)
             output_str: None | str = (
                 output.getvalue() if not output.closed else None
             )
@@ -185,20 +186,17 @@ class Backdoor(APIRequestHandler):
         session.update(
             __builtins__=__builtins__,
             __name__="this",
+            self=self,
             app=self.application,
+            settings=self.settings,
             get_authors=get_authors,
             get_quotes=get_quotes,
             get_wq=get_wrong_quote,
             get_wqs=get_wrong_quotes,
-            settings=self.settings,
-            session=session,
-            self=self,
         )
         return session
 
-    async def load_session_backup(
-        self, session_id: None | str
-    ) -> dict[str, Any]:
+    async def load_session(self, session_id: None | str) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
         if not session_id:
             session: dict[str, Any] = {}
@@ -215,17 +213,21 @@ class Backdoor(APIRequestHandler):
                         session = pickle.loads(
                             base64.decodebytes(session_pickle.encode("utf-8"))
                         )
-                    except Exception:  # pylint: disable=broad-except
-                        if sys.flags.dev_mode:
-                            traceback.print_exc()
+                    except Exception as exc:  # pylint: disable=broad-except
+                        logger.exception(exc)
+                        apm: None | elasticapm.Client = self.settings.get(
+                            "ELASTIC_APM_CLIENT"
+                        )
+                        if apm:
+                            apm.capture_exception()
             # save the session as session_id is truthy
             self.sessions[session_id] = session
         if session_id:
             session["session_id"] = session_id
         return self.update_session(session)
 
-    async def backup_session(self, session: dict[str, Any]) -> bool:
-        """Backup a session using redis and return whether it succeeded."""
+    async def save_session(self, session: dict[str, Any]) -> bool:
+        """Backup a session using Redis and return whether it succeeded."""
         if not self.redis or "session_id" not in session:
             return False
         session_id = session["session_id"]
@@ -236,21 +238,24 @@ class Backdoor(APIRequestHandler):
             # this avoids errors and reduces the pickle size
             for var in (
                 "__builtins__",
+                "self",
                 "app",
+                "settings",
                 "get_authors",
                 "get_quotes",
                 "get_wq",
                 "get_wqs",
-                "self",
-                "session",
-                "settings",
             ):
                 del session[var]
             session_pickle = pickle.dumps(session, self.PICKLE_PROTOCOL)
-        except Exception:  # pylint: disable=broad-except
+        except Exception as exc:  # pylint: disable=broad-except
             self.update_session(session)
-            if sys.flags.dev_mode:
-                traceback.print_exc()
+            logger.exception(exc)
+            apm: None | elasticapm.Client = self.settings.get(
+                "ELASTIC_APM_CLIENT"
+            )
+            if apm:
+                apm.capture_exception()
             return False
         else:
             self.update_session(session)

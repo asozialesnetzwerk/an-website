@@ -66,7 +66,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                     if file.read() == minified:
                         continue
             print(
-                f"{file}: {len(original)} -> {len(minified)} characters "
+                f"{file.name}: {len(original)} -> {len(minified)} characters "
                 f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1

@@ -185,10 +185,17 @@ class BaseRequestHandler(RequestHandler):
     def set_default_headers(self) -> None:
         """Set default headers."""
         # see: dev.mozilla.org/docs/Web/HTTP/Headers
+        self.set_header("Access-Control-Max-Age", "7200")
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "*")
+        self.set_header(
+            "Access-Control-Allow-Methods",
+            ", ".join(self.get_allowed_methods()),
+        )
         # Opt out of all FLoC cohort calculation.
         self.set_header("Permissions-Policy", "interest-cohort=()")
-        # send only origin in Referer header if request is cross-origin
-        self.set_header("Referrer-Policy", "origin-when-cross-origin")
+        # don't send the Referer header for cross-origin requests
+        self.set_header("Referrer-Policy", "same-origin")
         if self.settings.get("HSTS"):
             # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
             self.set_header(
@@ -205,7 +212,7 @@ class BaseRequestHandler(RequestHandler):
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
         if self.settings.get("debug"):
-            self.set_header("X-Dev-Mode", bool_to_str(True))
+            self.set_header("X-Debug", bool_to_str(True))
             for permission in Permissions:
                 if permission.name:
                     self.set_header(
@@ -761,9 +768,6 @@ class HTMLRequestHandler(BaseRequestHandler):
         ):
             return super().finish(chunk)
         self.set_header("Content-Type", "application/json; charset=UTF-8")
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "*")
-        self.set_header("Access-Control-Allow-Methods", "OPTIONS, HEAD, GET")
         soup = BeautifulSoup(
             chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
             features="lxml",
@@ -822,15 +826,7 @@ class APIRequestHandler(BaseRequestHandler):
     def set_default_headers(self) -> None:
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
-        # see header docs at: dev.mozilla.org/docs/Web/HTTP/Headers
-        self.set_header("Access-Control-Max-Age", "7200")
         self.set_header("Content-Type", "application/json; charset=UTF-8")
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "*")
-        self.set_header(
-            "Access-Control-Allow-Methods",
-            ", ".join(self.get_allowed_methods()),
-        )
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""

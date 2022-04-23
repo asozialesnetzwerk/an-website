@@ -405,20 +405,20 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
 def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-    """Parse arguments, load the cache and start the backdoor client."""
+    """Parse arguments, load the config and start the backdoor client."""
     if "--help" in sys.argv or "-h" in sys.argv:
         sys.exit(
             """
 
 Accepted arguments:
 
-    --clear-cache      clear the whole cache
-    --dev              use a separate cache for a local developing instance
+    --dev              use a separate config for a local developing instance
     --lisp             enable Lots of Irritating Superfluous Parentheses
-    --new-proxy        don't use the cached proxy
-    --new-session      start a new session with cached URL and key
-    --no-cache         start without a cache
+    --new-proxy        don't use the saved proxy
+    --new-session      start a new session with saved URL and key
+    --no-config        start without loading/saveing the config
     --no-patch-help    don't patch help()
+    --reset-config     reset the whole config
     --timing           print the time it took to execute each command
 
     --help or -h       show this help message
@@ -427,13 +427,13 @@ Accepted arguments:
         )
     for arg in sys.argv[1:]:
         if arg not in {
-            "--clear-cache",
             "--dev",
             "--lisp",
             "--new-proxy",
             "--new-session",
-            "--no-cache",
+            "--no-config",
             "--no-patch-help",
+            "--reset-config",
             "--timing",
             "--help",
             "-h",
@@ -450,32 +450,31 @@ Accepted arguments:
     proxy_rdns: None | bool = True
     proxy_username: None | str = None
     proxy_password: None | str = None
-    cache_pickle = os.path.join(
-        os.path.expanduser(os.getenv("XDG_CACHE_HOME") or "~/.cache"),
+    config_pickle = os.path.join(
+        os.path.expanduser(os.getenv("XDG_CONFIG_HOME") or "~/.config"),
         "an-backdoor-client/"
         + ("dev-" if "--dev" in sys.argv else "")
         + "session.pickle",
     )
-    if "--clear-cache" in sys.argv:
-        if os.path.exists(cache_pickle):
-            os.remove(cache_pickle)
-        print("Cache cleared")
-    if "--no-cache" not in sys.argv:
+    if "--reset-config" in sys.argv:
+        if os.path.exists(config_pickle):
+            os.remove(config_pickle)
+    if "--no-config" not in sys.argv:
         try:
-            with open(cache_pickle, "rb") as file:
-                cache = pickle.load(file)
+            with open(config_pickle, "rb") as file:
+                config = pickle.load(file)
         except FileNotFoundError:
             pass
         else:
-            url = cache.get("url")
-            key = cache.get("key")
-            session = cache.get("session")
-            proxy_type = cache.get("proxy_type")
-            proxy_addr = cache.get("proxy_addr")
-            proxy_port = cache.get("proxy_port")
-            proxy_rdns = cache.get("proxy_rdns")
-            proxy_username = cache.get("proxy_username")
-            proxy_password = cache.get("proxy_password")
+            url = config.get("url")
+            key = config.get("key")
+            session = config.get("session")
+            proxy_type = config.get("proxy_type")
+            proxy_addr = config.get("proxy_addr")
+            proxy_port = config.get("proxy_port")
+            proxy_rdns = config.get("proxy_rdns")
+            proxy_username = config.get("proxy_username")
+            proxy_password = config.get("proxy_password")
             if "--new-session" in sys.argv:
                 print(f"Using URL {url}")
             else:
@@ -536,9 +535,9 @@ Accepted arguments:
             session = str(uuid.uuid4())
         print(f"Using session {session}")
 
-    if "--no-cache" not in sys.argv:
-        os.makedirs(os.path.dirname(cache_pickle), exist_ok=True)
-        with open(cache_pickle, "wb") as file:
+    if "--no-config" not in sys.argv:
+        os.makedirs(os.path.dirname(config_pickle), exist_ok=True)
+        with open(config_pickle, "wb") as file:
             pickle.dump(
                 {
                     "url": url,
@@ -553,7 +552,6 @@ Accepted arguments:
                 },
                 file,
             )
-        print("Saved information to cache")
 
     def send_to_remote(code: str, *, mode: str) -> Any:
         """Send code to the remote backdoor and return the unpickled body."""
@@ -598,7 +596,7 @@ Accepted arguments:
     )
     if isinstance(body, dict) and body["success"] and body["output"]:
         print(f"\033[92mConnection to {url} was successful.\033[0m")
-        print(body["output"], end="")
+        print(body["output"].strip())
     else:
         print("\033[91mGetting remote information failed.\033[0m")
     print(
