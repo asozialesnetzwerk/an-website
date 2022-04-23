@@ -3,7 +3,7 @@
     <div>Mit Liebe gebacken
         {% if globals()["🥚"] %}
             <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
-               style="text-decoration: none"
+               class="no-style-a-in"
             >🥚</a>
         {% elif now.month == 1 and now.day == 1 %}
             🎇
@@ -23,16 +23,22 @@
             👑🎂💯
         {% elif now.month == 4 and now.day == 22 %}
             <a href="{{fix_url('https://earthday.org')}}"
-               style="text-decoration: none"
+               class="no-style-a-in"
             >🌍</a>
         {% elif now.month == 4 and now.day == 23 %}
             <a href="{{fix_url('https://welttag-des-buches.de')}}"
-               style="text-decoration: none"
+               class="no-style-a-in"
             >📖</a>
         {% elif now.month == 5 and now.day == 4 %}
             ✨
         {% elif now.month == 6 and now.day == 24 %}
             🛸
+        {% elif now.month == 6 and now.day == 28 %}
+            <a href="{{fix_url('https://tauday.com/tau-manifesto')}}"
+               class="no-style-a-in" style="color: var(--contrast-2)!important;"
+            >τ</a>
+        {% elif now.month == 6 %}
+            {{("❤️", "🧡", "💛", "💚", "💙", "💜", "🤎", "🖤", "🤍")[now.microsecond % 9]}}
         {% elif now.month == 7 and now.day == 4 %}
             🗽
         {% elif now.month == 9 and now.day == 11 %}
