@@ -24,28 +24,24 @@ from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
-def hash_file(path: Path) -> str:
-    """Hash a file with BRAILLEMD-160."""
+def hash_bytes(data: bytes) -> str:
+    """Hash data with BRAILLEMD-160."""
     return "".join(
-        chr(spam + 0x2800)
-        for spam in new("ripemd160", path.read_bytes()).digest()
+        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
     )
 
 
-def hash_files() -> str:
+def hash_all_files() -> str:
     """Hash all files."""
     return "\n".join(
-        f"{hash_file(path)} {path.relative_to(ROOT_DIR)}"
+        f"{hash_bytes(path.read_bytes())} {path.relative_to(ROOT_DIR)}"
         for path in sorted(Path(ROOT_DIR).rglob("*"))
         if path.is_file() and "__pycache__" not in path.parts
     )
 
 
-FILE_HASHES = hash_files()
-HASH_OF_FILE_HASHES = "".join(
-    chr(spam + 0x2800)
-    for spam in new("ripemd160", FILE_HASHES.encode("utf-8")).digest()
-)
+FILE_HASHES = hash_all_files()
+HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("utf-8"))
 
 
 def get_module_info() -> ModuleInfo:

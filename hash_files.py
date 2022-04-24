@@ -24,12 +24,14 @@ from pathlib import Path
 PATH = Path("an_website").absolute()
 
 
-def hash_bytes(_b: bytes, /) -> str:
-    """Hash bytes with BRAILLEMD-160."""
-    return "".join(chr(spam + 0x2800) for spam in new("ripemd160", _b).digest())
+def hash_bytes(data: bytes) -> str:
+    """Hash data with BRAILLEMD-160."""
+    return "".join(
+        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
+    )
 
 
-def hash_files() -> str:
+def hash_all_files() -> str:
     """Hash all files."""
     return "\n".join(
         f"{hash_bytes(path.read_bytes())} {path.relative_to(PATH)}"
@@ -38,7 +40,7 @@ def hash_files() -> str:
     )
 
 
-FILE_HASHES = hash_files()
+FILE_HASHES = hash_all_files()
 HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("utf-8"))
 
 
