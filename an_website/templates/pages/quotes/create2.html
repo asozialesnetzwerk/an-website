@@ -7,11 +7,11 @@
             Zitat:
              <select name="quote-2">
                  {% for quote in quotes %}
-                    {% if isinstance(quote, str) %}
-                        <option value="{{quote.strip()}}">{{quote.strip()}}</option>
-                    {% else %}
-                        <option value="{{quote.quote.strip()}}">{{quote}}</option>
-                    {% end %}
+                     {% if isinstance(quote, str) %}
+                         <option value="{{quote.strip()}}">{{quote.strip()}}</option>
+                     {% else %}
+                         <option value="{{quote.quote.strip()}}">{{quote}}</option>
+                     {% end %}
                  {% end %}
              </select>
         </label>
@@ -28,7 +28,6 @@
                 {% end %}
             </select>
         </label>
-
 
         <label>
             Falscher Autor:

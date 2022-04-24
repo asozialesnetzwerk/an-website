@@ -52,12 +52,10 @@ HOST_NAME_FONT = ImageFont.truetype(
 
 def load_png(file_name: str) -> Image.Image:
     """Load a PNG image into memory."""
-    image = Image.open(
+    with Image.open(
         os.path.join(DIR, "files", f"{file_name}.png"), formats=("PNG",)
-    )
-    image_copy = image.copy()
-    image.close()
-    return image_copy
+    ) as image:
+        return image.copy()
 
 
 BACKGROUND_IMAGE = load_png("bg")

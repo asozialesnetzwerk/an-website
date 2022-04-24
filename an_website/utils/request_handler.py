@@ -868,7 +868,6 @@ class NotFoundHandler(HTMLRequestHandler):
         if new_path.lower() in {
             "/-profiler/phpinfo",
             "/.aws/credentials",
-            "/.env",
             "/.env.bak",
             "/.ftpconfig",
             "/admin/controller/extension/extension",

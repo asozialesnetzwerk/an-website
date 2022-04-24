@@ -10,9 +10,9 @@
         <label>
             Betreff
             {% if subject %}
-            <input type="text" name="subject" value="{{subject}}">
+                <input type="text" name="subject" value="{{subject}}">
             {% else %}
-            <input type="text" name="subject">
+                <input type="text" name="subject">
             {% end %}
         </label>
 
@@ -26,5 +26,6 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
 {% end %}

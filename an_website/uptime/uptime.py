@@ -140,8 +140,7 @@ AVAILABILITY_CHART = re.sub(
      width="20"
      viewBox="0 0 20 20"
      xmlns="http://www.w3.org/2000/svg"
->
-    <circle r="10" cx="10" cy="10" fill="red" />
+><circle r="10" cx="10" cy="10" fill="red" />
     <circle r="5" cx="10" cy="10" fill="transparent"
         stroke="green"
         stroke-width="10"

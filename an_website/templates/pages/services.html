@@ -9,14 +9,14 @@
             <table class='table'>
                 <tbody>
                     {% for key, value in service.infos.items() %}
-                    <tr>
-                        <td>{{key}}</td>
-                        {% if value.startswith('http') and '://' in value %}
-                            <td><a href="{{fix_url(value)}}">{{value}}</a></td>
-                        {% else %}
-                            <td>{{value}}</td>
-                        {% end %}
-                    </tr>
+                        <tr>
+                            <td>{{key}}</td>
+                            {% if value.startswith('http') and '://' in value %}
+                                <td><a href="{{fix_url(value)}}">{{value}}</a></td>
+                            {% else %}
+                                <td>{{value}}</td>
+                            {% end %}
+                        </tr>
                     {% end %}
                 </tbody>
             </table>
@@ -25,5 +25,6 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/table.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/table.css')}}">
 {% end %}

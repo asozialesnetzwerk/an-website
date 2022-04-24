@@ -9,29 +9,30 @@
             </th>
             <th>
                 {% if len(wrong_quotes) != 0 %}
-                Falsche Zitate:
-                <ol>
-                    {% for wq in wrong_quotes %}
-                    <li>
-                        <a class="wrong-quote-a"
-                           href="{{fix_url(f'/zitate/{wq.get_id_as_str()}/')}}"
-                        >{{str(wq)}}</a>
-                        (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}">{{wq.rating}}</div>)
-                    </li>
-                    {% end %}
-                </ol>
+                    Falsche Zitate:
+                    <ol>
+                        {% for wq in wrong_quotes %}
+                            <li>
+                                <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}/')}}"
+                                   class="wrong-quote-a">{{str(wq)}}</a>
+                                (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
+                                                >{{wq.rating}}</div>)
+                            </li>
+                        {% end %}
+                    </ol>
                 {% else %}
-                Keine falschen Zitate gefunden.
+                    Keine falschen Zitate gefunden.
                 {% end %}
             </th>
         </tr>
     </table>
     <span data-elastic-exclude style="margin-top: 17px">
-    Die auf dieser Seite präsentierten Informationen sind nicht notwendigerweise
-    korrekt. Wenn Du einen Fehler gefunden hast, kontaktiere uns bitte. Danke :)
+        Die auf dieser Seite präsentierten Informationen sind nicht notwendigerweise
+        korrekt. Wenn Du einen Fehler gefunden hast, kontaktiere uns bitte. Danke :)
     </span>
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/quote-info.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote-info.css')}}">
 {% end %}

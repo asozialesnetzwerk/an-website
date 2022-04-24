@@ -57,7 +57,11 @@ FILE_HASHES_DICT: dict[str, str] = create_file_hashes_dict()
 def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
-        (r"/(robots.txt|favicon.ico)", StaticFileHandler, {"path": STATIC_DIR})
+        (
+            r"/(robots\.txt|favicon\.ico|\.env)",
+            StaticFileHandler,
+            {"path": STATIC_DIR},
+        )
     ]
     if sys.flags.dev_mode:
         # add handlers for the not minified CSS files

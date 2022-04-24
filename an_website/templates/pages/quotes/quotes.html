@@ -34,8 +34,7 @@
             <a class="download tooltip"
                id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
-               download="zitat-{{ wrong_quote.get_id_as_str() }}.gif"
-            >
+               download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
                 <img class="download-img button-img"
                      src="{{fix_static('img/arrow.svg')}}"
                      alt="Zitat downloaden.">
@@ -154,8 +153,10 @@
 
 {% block head %}
     <meta class="elastic" name="quote_rating" content="{{wrong_quote.rating}}">
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/form.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{fix_static('style/quote.css')}}">
-    <script defer src="{{fix_static('js/quote.js')}}"
-            onload="startQuotes('{{wrong_quote.get_id_as_str()}}', '{{next_id}}')"></script>
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote.css')}}">
+    <script onload="startQuotes('{{wrong_quote.get_id_as_str()}}','{{next_id}}')"
+            defer src="{{fix_static('js/quote.js')}}"></script>
 {% end %}

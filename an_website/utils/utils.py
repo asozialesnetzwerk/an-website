@@ -380,7 +380,7 @@ def get_themes() -> tuple[str, ...]:
     files = os.listdir(os.path.join(STATIC_DIR, "style/themes"))
 
     return (
-        *(file[:-4] for file in files if file.endswith(".css")),
+        *(file.removesuffix(".css") for file in files if file.endswith(".css")),
         "random",  # add random to the list of themes
         "random-dark",
     )
