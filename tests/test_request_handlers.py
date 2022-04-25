@@ -76,22 +76,19 @@ async def test_not_found_handler(
         assert_valid_redirect(await fetch("servvices/index.htm"), "/services")
     )
     assert_valid_html_response(
-        assert_valid_redirect(await fetch("services/"), "/services")
-    )
-    assert_valid_html_response(
         assert_valid_redirect(await fetch("serwizes"), "/services")
     )
     assert_valid_html_response(
         assert_valid_redirect(await fetch("services/"), "/services")
     )
     assert_valid_html_response(
-        assert_valid_redirect(await fetch("services///////"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("servces?x=y"), "/services?x=y")
+        assert_valid_redirect(await fetch(f"services{'/'*8}"), "/services")
     )
     assert_valid_html_response(
         assert_valid_redirect(await fetch("service?x=y"), "/services?x=y")
+    )
+    assert_valid_html_response(
+        assert_valid_redirect(await fetch("servces?x=y"), "/services?x=y")
     )
 
     assert_valid_redirect(await fetch("a?x=y"), "/?x=y")

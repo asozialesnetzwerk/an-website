@@ -131,11 +131,6 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     color: var(--text-color);
     background-color: transparent;
 }
-
-#footer a {
-    color: var(--main);
-    background-color: transparent;
-}
 /* footer end */
 
 
@@ -150,10 +145,6 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     background-color: var(--main);
     color: #fff;
     height: var(--header-height);
-}
-
-.header * {
-    background-color:  var(--main);
 }
 
 .header h1 {
@@ -198,10 +189,6 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 }
 .site-pane:focus-within {
     right: 0;
-}
-
-.site-pane * {
-    background-color: var(--secondary-bg);
 }
 
 .site-pane h1 {

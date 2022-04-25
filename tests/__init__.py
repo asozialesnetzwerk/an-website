@@ -217,11 +217,12 @@ async def check_html_page(
             link_tuple[2].startswith(prot_and_host)
             or link_tuple[2].startswith(
                 (
-                    "https://",
+                    "https:",
                     "mailto:",
-                    "whatsapp://",
+                    "whatsapp:",
+                    "http://📙.la/",
                     # fixme: GÜRTELTIER FIXME DADDY
-                    "http://minceraft.asozial.org:8123/",
+                    "http://minceraft.asozial.org:8123",
                 )
             )
             or urllib.parse.urlsplit(link_tuple[2]).netloc.endswith(".onion")

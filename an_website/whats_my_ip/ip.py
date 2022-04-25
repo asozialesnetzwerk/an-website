@@ -77,7 +77,7 @@ class IP(HTMLRequestHandler):
                 + (
                     "🔁"
                     if ip_address(self.request.remote_ip).is_loopback
-                    else (await self.geoip() or {}).get("country_flag") or ""
+                    else (await self.geoip() or {}).get("country_flag") or "❔"
                 )
             ).strip(),
         )
