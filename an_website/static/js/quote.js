@@ -3,8 +3,9 @@ function startQuotes(currId,nextId){const thisQuoteId=[currId];const nextQuoteId
 return"WASD";if(k.length===4){return k.toUpperCase();}else{alert("Invalid keys given, using default.");return"WASD";}})();elById("wasd").innerText=(`${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), `
 +`${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`);d.onkeydown=(event)=>{switch(event.code){case`Key${keys[0]}`:upvoteButton.click();break;case`Key${keys[1]}`:w.history.back();break;case`Key${keys[2]}`:downvoteButton.click();break;case`Key${keys[3]}`:nextButton.click();}};const shareButton=elById("share");const downloadButton=elById("download");const author=elById("author");const quote=elById("quote");const realAuthor=elById("real-author-name");const ratingText=elById("rating-text");const ratingImageContainer=elById("rating-img-container");nextButton.removeAttribute("href");function updateQuoteId(quoteId){shareButton.href=fixHref(`/zitate/share/${quoteId}${params}`);downloadButton.href=fixHref(`/zitate/${quoteId}/image.gif${params}`);const[q_id,a_id]=quoteId.split("-",2);quote.href=fixHref(`/zitate/info/z/${q_id}${params}`);author.href=fixHref(`/zitate/info/a/${a_id}${params}`);thisQuoteId[0]=quoteId;}
 function updateRating(rating){rating=rating.toString()
-ratingText.innerText=rating;if(["---","???","0"].includes(rating)){ratingImageContainer.innerHTML="";}else{const ratingNum=Number.parseInt(rating);const ratingImg=d.createElement("div")
-ratingImg.className="rating-img"+(ratingNum>0?" witzig":" nicht-witzig");ratingImageContainer.innerHTML=(ratingImg.outerHTML+" ").repeat(Math.min(4,Math.abs(ratingNum)));}}
+ratingText.innerText=rating;if(["---","???","0"].includes(rating)){ratingImageContainer.innerHTML="";return;}
+const ratingNum=Number.parseInt(rating);const ratingImg=d.createElement("div")
+ratingImg.className="rating-img"+(ratingNum>0?" witzig":" nicht-witzig");ratingImageContainer.innerHTML=(ratingImg.outerHTML+" ").repeat(Math.min(4,Math.abs(ratingNum))).trim();}
 function updateVote(vote){if(vote===1){upvoteButton.classList.add("voted");upvoteButton.value="0";}else{upvoteButton.classList.remove("voted");upvoteButton.value="1";}
 if(vote===-1){downvoteButton.classList.add("voted");downvoteButton.value="0";}else{downvoteButton.classList.remove("voted");downvoteButton.value="-1";}}
 function handleData(data){if(data["status"]){error(data)

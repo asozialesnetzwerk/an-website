@@ -66,16 +66,16 @@ function startQuotes(currId, nextId) {
         ratingText.innerText = rating;
         if (["---", "???", "0"].includes(rating)) {
             ratingImageContainer.innerHTML = "";
-        } else {
-            const ratingNum = Number.parseInt(rating);
-            const ratingImg = d.createElement("div")
-            ratingImg.className = "rating-img" + (
-                ratingNum > 0 ? " witzig" : " nicht-witzig"
-            );
-            ratingImageContainer.innerHTML = (
-                ratingImg.outerHTML + " "
-            ).repeat(Math.min(4, Math.abs(ratingNum)));
+            return;
         }
+        const ratingNum = Number.parseInt(rating);
+        const ratingImg = d.createElement("div")
+        ratingImg.className = "rating-img" + (
+            ratingNum > 0 ? " witzig" : " nicht-witzig"
+        );
+        ratingImageContainer.innerHTML = (
+            ratingImg.outerHTML + " "
+        ).repeat(Math.min(4, Math.abs(ratingNum))).trim();
     }
 
     function updateVote(vote) {
@@ -101,6 +101,7 @@ function startQuotes(currId, nextId) {
         if (data["status"]) {
             error(data)
             if (data["status"] in [429, 420])
+                // ratelimited
                 alert(data["reason"]);
         } else if (data && data["id"]) {
             updateQuoteId(data["id"]);
