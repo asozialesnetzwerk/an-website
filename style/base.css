@@ -127,9 +127,6 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     width: 100%;
     text-align: center;
     margin-top: 42px;
-
-    color: var(--text-color);
-    background-color: transparent;
 }
 /* footer end */
 

@@ -4,8 +4,8 @@
     {
       "uri_parts": {
         "field": "url",
-        "target_field": "url",
-        "keep_original": true
+        "keep_original": true,
+        "target_field": "url"
       }
     },
     {

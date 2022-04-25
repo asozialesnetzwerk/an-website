@@ -11,7 +11,6 @@ textarea, input[type=text], input[type=search], input[type=email], select, input
 input[type=submit], button[type=submit], .form-button {
   width: 100%;
   background-color: var(--secondary-bg);
-  color: var(--text-color);
   padding: 14px 20px;
   margin: 8px 0;
   border: none;
