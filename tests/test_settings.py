@@ -66,11 +66,6 @@ async def test_setting_stuff_without_cookies(
         )
 
 
-# headers={
-#            "Set-Cookie": "theme=blue",
-#            "set-Cookie": "no_3rd_party=sure",
-#            "Set-cookie": "dynload=sure"
-#        }
 async def test_setting_stuff_and_saving_to_cookies(
     # pylint: disable=redefined-outer-name
     fetch: FetchCallable,

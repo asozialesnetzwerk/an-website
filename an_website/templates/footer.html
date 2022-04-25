@@ -1,61 +1,59 @@
 {% whitespace oneline %}
-<footer id="footer" data-elastic-exclude>
-    <div>Mit Liebe gebacken
-        {% if globals()["🥚"] %}
-            <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
-               class="no-style-a-emoji"
-            >🥚</a>
-        {% elif now.month == 1 and now.day == 1 %}
-            🎇
-        {% elif now.month == 2 and now.day == 29 %}
-            🦘
-        {% elif now.month == 3 and now.day == 8 %}
-            ♀️
-        {% elif now.month == 3 and now.day == 14 %}
-            🥧
-        {% elif now.month == 3 and now.day == 17 %}
-            ☘️
-        {% elif now.month == 3 and now.day == 25 %}
-            🧇
-        {% elif now.month == 4 and now.day == 20 %}
-            🥦
-        {% elif now.month == 4 and now.day == 21 and now.year == 2026 %}
-            👑🎂💯
-        {% elif now.month == 4 and now.day == 22 %}
-            <a href="{{fix_url('https://earthday.org')}}"
-               class="no-style-a-emoji"
-            >🌍</a>
-        {% elif now.month == 4 and now.day == 23 %}
-            <a href="{{fix_url('https://welttag-des-buches.de')}}"
-               class="no-style-a-emoji"
-            >📖</a>
-        {% elif now.month == 5 and now.day == 4 %}
-            ✨
-        {% elif now.month == 6 and now.day == 24 %}
-            🛸
-        {% elif now.month == 6 and now.day == 28 %}
-            <a href="{{fix_url('https://tauday.com/tau-manifesto')}}"
-               class="no-style-a-emoji" style="color: var(--contrast-2)!important"
-            >τ</a>
-        {% elif now.month == 6 %}
-            {{("❤️", "🧡", "💛", "💚", "💙", "💜")[now.microsecond % 6]}}
-        {% elif now.month == 7 and now.day == 4 %}
-            🗽
-        {% elif now.month == 9 and now.day == 11 %}
-            ✈️
-        {% elif now.month == 9 and now.day == 15 %}
-            🦨
-        {% elif now.month == 9 and now.day == 19 %}
-            ☠️
-        {% elif now.month == 10 and now.day == 31 %}
-            🎃
-        {% elif now.month == 11 and now.day == 11 %}
-            🪅
-        {% elif now.month == 12 and now.day in {24, 25} %}
-            🎄
-        {% else %}
-            🖤
-        {% end %}
-        <a href="{{fix_url(REPO_URL)}}">Asoziales Netzwerk: Sektion GitHub</a>
-    </div>
+<footer id="footer" data-elastic-exclude>Mit Liebe gebacken
+    {% if globals()["🥚"] %}
+        <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
+           class="no-style-a-emoji"
+        >🥚</a>
+    {% elif now.month == 1 and now.day == 1 %}
+        🎇
+    {% elif now.month == 2 and now.day == 29 %}
+        🦘
+    {% elif now.month == 3 and now.day == 8 %}
+        ♀️
+    {% elif now.month == 3 and now.day == 14 %}
+        🥧
+    {% elif now.month == 3 and now.day == 17 %}
+        ☘️
+    {% elif now.month == 3 and now.day == 25 %}
+        🧇
+    {% elif now.month == 4 and now.day == 20 %}
+        🥦
+    {% elif now.month == 4 and now.day == 21 and now.year == 2026 %}
+        👑🎂💯
+    {% elif now.month == 4 and now.day == 22 %}
+        <a href="{{fix_url('https://earthday.org')}}"
+           class="no-style-a-emoji"
+        >🌍</a>
+    {% elif now.month == 4 and now.day == 23 %}
+        <a href="{{fix_url('https://welttag-des-buches.de')}}"
+           class="no-style-a-emoji"
+        >📖</a>
+    {% elif now.month == 5 and now.day == 4 %}
+        ✨
+    {% elif now.month == 6 and now.day == 24 %}
+        🛸
+    {% elif now.month == 6 and now.day == 28 %}
+        <a href="{{fix_url('https://tauday.com/tau-manifesto')}}"
+           class="no-style-a-emoji" style="color: var(--contrast-2)!important"
+        >τ</a>
+    {% elif now.month == 6 %}
+        {{("❤️", "🧡", "💛", "💚", "💙", "💜")[now.microsecond % 6]}}
+    {% elif now.month == 7 and now.day == 4 %}
+        🗽
+    {% elif now.month == 9 and now.day == 11 %}
+        ✈️
+    {% elif now.month == 9 and now.day == 15 %}
+        🦨
+    {% elif now.month == 9 and now.day == 19 %}
+        ☠️
+    {% elif now.month == 10 and now.day == 31 %}
+        🎃
+    {% elif now.month == 11 and now.day == 11 %}
+        🪅
+    {% elif now.month == 12 and now.day in {24, 25} %}
+        🎄
+    {% else %}
+        🖤
+    {% end %}
+    <a href="{{fix_url(REPO_URL)}}">Asoziales Netzwerk: Sektion GitHub</a>
 </footer>

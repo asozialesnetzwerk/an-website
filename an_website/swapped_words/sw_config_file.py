@@ -73,11 +73,9 @@ def copy_case(reference_word: str, word_to_change: str) -> str:
 class ConfigLine:  # pylint: disable=too-few-public-methods
     """Class used to represent a word pair."""
 
-    def to_conf_line(  # pylint: disable=no-self-use, unused-argument
-        self, len_of_left: None | int = None
-    ) -> str:
+    def to_conf_line(self, len_of_left: None | int = None) -> str:
         """Get how this would look like in a config."""
-        return ""
+        raise NotImplementedError()
 
 
 @dataclass(frozen=True)
@@ -100,13 +98,13 @@ class WordPair(ConfigLine):
     # separator between the two words, that shouldn't be changed:
     separator: str = field(default="", init=False)
 
-    def get_replacement(self, word: str) -> str:  # pylint: disable=no-self-use
+    def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
-        return word
+        raise NotImplementedError()
 
-    def to_pattern_str(self) -> str:  # pylint: disable=no-self-use
+    def to_pattern_str(self) -> str:
         """Get the pattern that matches the replaceable words."""
-        return "a^"  # cannot match anything "a" followed by start of str
+        raise NotImplementedError()
 
     def len_of_left(self) -> int:
         """Get the length to the left of the separator."""
@@ -285,6 +283,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
         self.lines: WORDS_TUPLE = tuple(
             parse_config_line(line, i)
             for i, line in enumerate(re.split(LINE_END_REGEX, config.strip()))
+            if line
         )
 
     def get_regex(self) -> Pattern[str]:

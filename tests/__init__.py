@@ -172,7 +172,7 @@ def assert_valid_response(
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
     url = response.effective_url
-    assert response.code == code or print(url)
+    assert response.code == code or print(code, url, response)
 
     headers = headers or {}
     if content_type is not None:

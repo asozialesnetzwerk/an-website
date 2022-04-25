@@ -17,9 +17,22 @@ from __future__ import annotations
 
 import re
 
+import orjson as json
 import pytest
+import tornado.web
 
 from an_website.swapped_words import sw_config_file as sw_config
+from an_website.swapped_words import swap
+
+from . import (
+    FetchCallable,
+    app,
+    assert_valid_html_response,
+    assert_valid_json_response,
+    fetch,
+)
+
+assert app and fetch
 
 
 def test_copying_case_of_letters() -> None:
@@ -56,6 +69,7 @@ def test_copying_case() -> None:
             assert sw_config.copy_case(_str2, title) == _str2
 
     assert sw_config.copy_case("Long Short", "short LONG") == "Short Long"
+    assert sw_config.copy_case("Test1 TEST2", "word1 word2") == "Word1 WORD2"
 
 
 def test_parsing_config() -> None:
@@ -65,6 +79,7 @@ def test_parsing_config() -> None:
     test_conf_str = "(a)=>b;Cc<=>Dd"
     parsed_conf = sw_config.SwappedWordsConfig(test_conf_str)
 
+    assert parsed_conf.__eq__(None) == NotImplemented
     beautified = parsed_conf.to_config_str()
     minified = parsed_conf.to_config_str(minified=True)
 
@@ -78,6 +93,8 @@ def test_parsing_config() -> None:
     assert re.fullmatch(parsed_conf.get_regex(), "cc")
     assert sw_config.beautify(minified) == beautified
     assert sw_config.minify(beautified) == minified
+    assert parsed_conf.get_replacement_by_group_name("n", "lol") == "lol"
+    assert parsed_conf.get_replacement_by_group_name("lol", "lol") == "lol"
 
     test_conf_str = "a  <=> b\nCc  => Dd"
     parsed_conf = sw_config.SwappedWordsConfig(test_conf_str)
@@ -95,6 +112,8 @@ def test_parsing_config() -> None:
     assert re.fullmatch(parsed_conf.get_regex(), "cc")
     assert sw_config.beautify(minified) == beautified
     assert sw_config.minify(beautified) == minified
+
+    assert not sw_config.SwappedWordsConfig("").to_config_str()
 
     # test invalid configs:
     with pytest.raises(sw_config.InvalidConfigError):
@@ -121,7 +140,158 @@ def test_parsing_config() -> None:
         assert exc.reason in str(exc)
 
 
+def test_two_way_word_pair() -> None:
+    """Test the two-way word pair."""
+    pair = sw_config.TwoWayPair("x", "y")  # x <=> y
+    assert pair.to_pattern_str() == "x|y"
+    assert pair.get_replacement("x") == "y"
+    assert pair.get_replacement("X") == "Y"
+    assert pair.get_replacement("y") == "x"
+    assert pair.get_replacement("Y") == "X"
+    assert pair.get_replacement("z") == "z"
+    assert pair.get_replacement("Z") == "Z"
+
+
+def test_one_way_word_pair() -> None:
+    """Test the one-way word pair."""
+    pair = sw_config.OneWayPair("x", "y")  # x => y
+    assert pair.to_pattern_str() == "x"
+    assert pair.get_replacement("x") == "y"
+    assert pair.get_replacement("X") == "Y"
+    assert pair.get_replacement("y") == "y"
+    assert pair.get_replacement("Y") == "Y"
+    assert pair.get_replacement("z") == "z"
+    assert pair.get_replacement("Z") == "Z"
+
+
+def test_check_text_too_long() -> None:
+    """Test the check_text_too_long function."""
+    swap.check_text_too_long("")
+    swap.check_text_too_long("x" * swap.MAX_CHAR_COUNT)
+    with pytest.raises(tornado.web.HTTPError):
+        swap.check_text_too_long("x" * (swap.MAX_CHAR_COUNT + 1))
+
+
+async def test_sw_html_request_handlers(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+) -> None:
+    """Test the swapped words html request handlers."""
+    assert_valid_html_response(
+        await fetch(
+            "/vertauschte-woerter",
+            method="POST",
+            body="reset=nope&text=" + "x" * (swap.MAX_CHAR_COUNT + 1),
+        ),
+        413,  # text too long
+    )
+    assert_valid_html_response(
+        await fetch(
+            "/vertauschte-woerter",
+            method="POST",
+            body="",
+        ),
+        400,  # missing argument
+    )
+    assert_valid_html_response(
+        await fetch(
+            "/vertauschte-woerter",
+            method="POST",
+            body="reset=nope&text=x&config=xyz",
+        ),
+        400,  # invalid config
+    )
+    # everything ok:
+    assert_valid_html_response(
+        await fetch(
+            "/vertauschte-woerter",
+            method="POST",
+            body="reset=nope&text=x",
+        ),
+    )
+    # TODO: cookie stuff
+
+
+async def test_sw_json_request_handlers(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+) -> None:
+    """Test the swapped words json api request handlers."""
+    response = assert_valid_json_response(
+        await fetch(
+            "/api/vertauschte-woerter",
+            method="POST",
+            body=json.dumps(
+                {
+                    "text": " x z o ",
+                    "config": "x  => y\nz <=> o",
+                    "return_config": "sure",
+                    "minify_config": "sure",
+                }
+            ),
+        ),
+    )
+    assert response["text"] == "x z o"
+    assert response["replaced_text"] == "y o z"
+    assert response["return_config"] is True
+    assert response["minify_config"] is True
+    assert response["config"] == "x=>y;z<=>o"
+
+    response = assert_valid_json_response(
+        await fetch(
+            "/api/vertauschte-woerter",
+            method="POST",
+            body=json.dumps(
+                {
+                    "text": " x z o ",
+                    "config": "x  => y\nz <=> o",
+                    "return_config": "sure",
+                    "minify_config": "nope",
+                }
+            ),
+        ),
+    )
+    assert response["text"] == "x z o"
+    assert response["replaced_text"] == "y o z"
+    assert response["return_config"] is True
+    assert response["minify_config"] is False  # pylint: disable=compare-to-zero
+    assert response["config"] == "x  => y\nz <=> o"
+
+    response = assert_valid_json_response(
+        await fetch(
+            "/api/vertauschte-woerter",
+            method="POST",
+            body=json.dumps(
+                {
+                    "config": "x  => y\nz <> o",
+                }
+            ),
+        ),
+        400,
+    )
+    assert response["line"] == "z <> o"
+    assert response["line_num"] == 1
+
+    response = assert_valid_json_response(
+        await fetch(
+            "/api/vertauschte-woerter",
+            method="POST",
+            body=json.dumps(
+                {
+                    "config": "x  => y\nz <=> o\na == b",
+                }
+            ),
+        ),
+        400,
+    )
+    assert response["line"] == "a == b"
+    assert response["line_num"] == 2
+
+
 if __name__ == "__main__":
     test_copying_case_of_letters()
     test_copying_case()
     test_parsing_config()
+    test_two_way_word_pair()
+    test_one_way_word_pair()
+    test_check_text_too_long()

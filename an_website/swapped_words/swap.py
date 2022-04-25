@@ -79,7 +79,7 @@ class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
     def handle_text(
-        self, text: str, config_str: None | str, reset: str
+        self, text: str, config_str: None | str, use_default_config: str
     ) -> None:
         """Use the text to display the HTML page."""
         check_text_too_long(text)
@@ -111,7 +111,7 @@ class SwappedWords(HTMLRequestHandler):
 
             sw_config = (
                 DEFAULT_CONFIG
-                if config_str is None or str_to_bool(reset)
+                if config_str is None or str_to_bool(use_default_config)
                 else SwappedWordsConfig(config_str)
             )
 
@@ -124,6 +124,7 @@ class SwappedWords(HTMLRequestHandler):
                 error_msg=None,
             )
         except InvalidConfigError as exc:
+            self.set_status(400)
             self.render(
                 "pages/swapped_words.html",
                 text=text,
@@ -178,16 +179,18 @@ class SwappedWordsAPI(APIRequestHandler):
 
             if str_to_bool(return_config, False):
 
-                minify_config = self.get_argument(
-                    "minify_config", default="sure", strip=True
+                minify_config = str_to_bool(
+                    self.get_argument(
+                        "minify_config", default="sure", strip=True
+                    ),
+                    True,
                 )
                 return await self.finish(
                     {
                         "text": text,
                         "return_config": True,
-                        "config": sw_config.to_config_str(
-                            minified=str_to_bool(minify_config, True)
-                        ),
+                        "minify_config": minify_config,
+                        "config": sw_config.to_config_str(minify_config),
                         "replaced_text": sw_config.swap_words(text),
                     }
                 )
