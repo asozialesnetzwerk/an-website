@@ -52,7 +52,7 @@ SERVICES: tuple[Service, ...] = (
         {
             "Domain": "minceraft.asozial.org",
             "Version": "1.15.2 (1.7-1.18 wird unterstützt)",
-            "Karte": "http://minceraft.asozial.org:8123/",
+            "Karte": "https://minceraft.asozial.org/",
         },
     ),
     Service(

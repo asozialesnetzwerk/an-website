@@ -38,10 +38,10 @@ body * {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    max-width: 100%;
-    width: 100vw;
+    max-width: calc(100% - 4vw);
+    width: 96vw;
     /* top, right, bottom, left */
-    padding: 0.5rem 0 0 0;
+    padding: 0.5rem 2vw 0 2vw;
 }
 /* .text is for version page */
 #body, .text, a {

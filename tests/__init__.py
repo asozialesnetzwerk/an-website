@@ -221,8 +221,6 @@ async def check_html_page(
                     "mailto:",
                     "whatsapp:",
                     "http://📙.la/",
-                    # fixme: GÜRTELTIER FIXME DADDY
-                    "http://minceraft.asozial.org:8123",
                 )
             )
             or urllib.parse.urlsplit(link_tuple[2]).netloc.endswith(".onion")

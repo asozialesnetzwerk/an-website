@@ -4,7 +4,7 @@
 {% block body %}
     {% for service in services %}
         <h2>{{service.title}}</h2>
-        {{service.text}}
+        <div style="max-width: 800px">{{service.text}}</div>
         {% if service.infos %}
             <table class='table'>
                 <tbody>
