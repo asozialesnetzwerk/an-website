@@ -6,19 +6,18 @@
 
 #skip-to-content {
     position: absolute;
+    left: 1rem;
     top: 0;
-    transform: translateY(-120%);
-    transition: transform 420ms ease-out;
+    transform: translateY(-2rem);
     background: var(--main);
     color: var(--text-color);
-    border-radius: 0 0 1rem 1rem;
-    border-color: var(--main);
-    padding: 0.5rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    padding: 0 1rem 0 1rem;
+    height: 2rem;
 }
-
 #skip-to-content:focus {
     top: var(--header-height);
-    transform: translateY(0%);
+    transform: translateY(0);
 }
 
 body {
