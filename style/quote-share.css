@@ -1,5 +1,6 @@
 #share-button-container {
   min-width: 42%;
+  max-width: 100%;
 }
 
 /*Generated using https://sharingbuttons.io/*/
@@ -11,19 +12,19 @@
 .resp-sharing-button__link {
   text-decoration: none;
   color: #fff;
-  margin: 0.5em
+  margin: 0.5rem
 }
 
 .resp-sharing-button {
   border-radius: 5px;
   transition: 25ms ease-out;
-  padding: 0.5em 0.75em;
+  padding: 0.5rem 0.75rem;
 }
 
 .resp-sharing-button__icon svg {
-  width: 1em;
-  height: 1em;
-  margin-right: 0.4em;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.4rem;
   vertical-align: top
 }
 

@@ -2,15 +2,6 @@
     color: var(--secondary-text-color) !important;
 }
 
-input {
-    margin-bottom: 5px;
-}
-
-.marked {
-    display: inline !important;
-    color: var(--contrast-2);
-}
-
 h1:hover .header-id-link:before,
   h1:focus-within .header-id-link:before,
   h2:hover .header-id-link:before,
@@ -21,12 +12,23 @@ h1:hover .header-id-link:before,
 #soundboard-rss {
     position: absolute;
     top: var(--header-height);
-    margin-top: 10px;
-    right: 10px;
+    margin-top: 0.9rem;
+    right: 0.9rem;
     z-index: 0;
 }
 
 #soundboard-rss img {
-    width: 20px;
-    height: 20px;
+    width: 1.7rem;
+    height: 1.7rem;
 }
+
+/* for search */
+input {
+    margin-bottom: 5px;
+}
+
+.marked {
+    display: inline !important;
+    color: var(--contrast-2);
+}
+/* for search end */

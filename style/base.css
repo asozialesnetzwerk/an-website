@@ -1,7 +1,7 @@
 /* base */
 :root {
     /* other useful stuff: */
-    --header-height: 69px;
+    --header-height: 4rem;
 }
 
 #skip-to-content {
@@ -22,6 +22,9 @@
 }
 
 body {
+    max-width: 100vw;
+    padding: 0;
+    margin: 0;
     color: var(--text-color);
     background: var(--bg);
 }
@@ -31,18 +34,15 @@ body * {
     background: transparent;
 }
 
-body {
-    padding: 5px;
-}
-
 #body {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    width: 100%;
+    max-width: 100%;
+    width: 100vw;
     /* top, right, bottom, left */
-    padding: var(--header-height) 0 0 0;
+    padding: 0.5rem 0 0 0;
 }
 /* .text is for version page */
 #body, .text, a {
@@ -124,38 +124,40 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 /* footer */
 #footer {
     display: block;
-    width: 100%;
+    width: 100vw;
+    max-width: 100%;
     text-align: center;
     margin-top: 42px;
+    margin-bottom: 7px;
 }
 /* footer end */
 
 
 /* header */
-.header {
-    position: absolute;
-    z-index: 10;
-    left: 0;
-    top: 0;
-    width: 100%;
+header {
+    width: 100vw;
     max-width: 100%;
+    margin: 0;
     background-color: var(--main);
     color: #fff;
     height: var(--header-height);
 }
 
-.header h1 {
-    margin: 10px;
+#title {
+    margin-top: 0;
+    margin-left: 5px;
+    padding-top: 0.5rem;
+    font-size: 2rem;
     overflow-x: hidden;
     white-space: nowrap;
 }
 
 .open-pane {
-    top: 10px;
-    right: 10px;
-    width: 32px;
-    height: 32px;
     position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2rem;
+    height: 2rem;
 }
 
 .open-pane:hover {
@@ -171,20 +173,15 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     color: #fff;
     max-width: 70%;
     height: 100%;
+    overflow-y: auto;
 
     transition: right 0.5s;
 }
 
-.open-pane:hover + .site-pane {
-    right: 0;
-}
-.site-pane:hover {
-    right: 0;
-}
-.open-pane:focus-within + .site-pane {
-    right: 0;
-}
-.site-pane:focus-within {
+.site-pane:hover,
+    .site-pane:focus-within,
+    .open-pane:focus-within + .site-pane,
+    .open-pane:hover + .site-pane {
     right: 0;
 }
 
