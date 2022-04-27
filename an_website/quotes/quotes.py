@@ -23,7 +23,7 @@ import asyncio
 import logging
 import random
 from asyncio import Task
-from collections.abc import Awaitable
+from collections.abc import Coroutine, Generator
 from typing import Any, Literal
 
 from tornado.web import HTTPError, RedirectHandler
@@ -142,7 +142,9 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
     def __init__(self, *args, **kwargs):  # type: ignore
         """Initialize the base request handler."""
         super().__init__(*args, **kwargs)
-        self.awaitables: list[Awaitable[Any]] = []
+        self.awaitables: list[
+            Generator[Any, None, Any] | Coroutine[Any, Any, Any]
+        ] = []
 
     def rating_filter(
         self,

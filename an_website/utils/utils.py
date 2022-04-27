@@ -231,6 +231,7 @@ def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
 
 def anonymize_ip(address: str, *, ignore_invalid: bool = False) -> str:
     """Anonymize an IP address."""
+    address = address.strip()
     try:
         version = ip_address(address).version
     except ValueError:
@@ -262,15 +263,10 @@ def apm_anonymization_processor(  # pylint: disable=unused-argument
         if "headers" in request:
             headers = request["headers"]
             if "X-Forwarded-For" in headers:
-                if "," in headers["X-Forwarded-For"]:
-                    headers["X-Forwarded-For"] = anonymize_ip(
-                        headers["X-Forwarded-For"].split(","),
-                        ignore_invalid=True,
-                    )
-                else:
-                    headers["X-Forwarded-For"] = anonymize_ip(
-                        headers["X-Forwarded-For"], ignore_invalid=True
-                    )
+                headers["X-Forwarded-For"] = ", ".join(
+                    anonymize_ip(_, ignore_invalid=True)
+                    for _ in headers["X-Forwarded-For"].split(",")
+                )
             for header in headers:
                 if "ip" in header.lower().split("-"):
                     headers[header] = anonymize_ip(
@@ -378,7 +374,6 @@ async def geoip(
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
     files = os.listdir(os.path.join(STATIC_DIR, "style/themes"))
-
     return (
         *(file.removesuffix(".css") for file in files if file.endswith(".css")),
         "random",  # add random to the list of themes
@@ -467,7 +462,6 @@ async def run(
         stderr=stderr,
         **kwargs,
     )
-
     output = await proc.communicate()
     return proc.returncode, *output
 

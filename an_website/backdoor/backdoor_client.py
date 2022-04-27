@@ -587,9 +587,8 @@ Accepted arguments:
             sys.exit("\033[91mHy is not installed!\033[0m")
         body = send_to_remote("__import__('hy')", mode="eval")
         if not (isinstance(body, dict) and body["success"]):
-            print("\033[91mImporting Hy builtins failed!\033[0m")
+            print("\033[91mInjecting Hy builtins failed!\033[0m")
 
-    # print sys info
     body = send_to_remote(
         "import sys\nprint('Python', sys.version, 'on', sys.platform)",
         mode="exec",

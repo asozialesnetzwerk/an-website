@@ -74,7 +74,7 @@ def assert_run_and_print(
     real_output = run_and_get_output(
         bc.run_and_print,
         url,
-        "xyzzy",
+        "123qweQWE!@#000000000",
         command,
         lisp,
         session,
@@ -184,7 +184,7 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await asyncio.to_thread(
         assert_run_and_print,
         url,
-        "app.settings['TRUSTED_API_SECRETS']['xyzzy']",
+        "app.settings['TRUSTED_API_SECRETS']['123qweQWE!@#000000000']",
         "Success: True",
         "Result:",
         "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",

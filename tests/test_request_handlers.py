@@ -195,7 +195,7 @@ async def test_permissions(
             },
         ),
         (
-            "xyzzy",
+            "123qweQWE!@#000000000",
             {
                 "X-Permission-Backdoor": "sure",
                 "X-Permission-Ratelimits": "sure",

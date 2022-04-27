@@ -22,7 +22,8 @@ ecs-logging==1.1.0
 elastic-apm==6.9.1
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0
-elasticsearch[async]==7.17.2
+elasticsearch[async]==7.17.3
+emoji==1.7.0
 frozenlist==1.3.0
 funcparserlib==1.0.0a1
 get-version==3.5.4

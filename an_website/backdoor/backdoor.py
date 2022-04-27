@@ -29,11 +29,12 @@ import dill as pickle  # type: ignore
 import elasticapm  # type: ignore
 from tornado.web import HTTPError
 
-from ..quotes import get_authors, get_quotes, get_wrong_quote, get_wrong_quotes
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
 
 logger = logging.getLogger(__name__)
+
+PICKLE_PROTOCOL = max(pickle.DEFAULT_PROTOCOL, 5)
 
 
 def get_module_info() -> ModuleInfo:
@@ -65,7 +66,6 @@ class Backdoor(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRED_PERMISSION: Permissions = Permissions.BACKDOOR
     SUPPORTS_COOKIE_AUTHORIZATION: bool = False
-    PICKLE_PROTOCOL = max(pickle.DEFAULT_PROTOCOL, 5)
 
     sessions: dict[str, dict[str, Any]] = {}
 
@@ -100,10 +100,7 @@ class Backdoor(APIRequestHandler):
             except SyntaxError as exc:
                 exception = exc
             else:
-                session_id: None | str = self.request.headers.get(
-                    "X-Backdoor-Session"
-                )
-                session: dict[str, Any] = await self.load_session(session_id)
+                session = await self.load_session()
                 if "print" not in session or isinstance(
                     session["print"], PrintWrapper
                 ):
@@ -136,7 +133,11 @@ class Backdoor(APIRequestHandler):
                         ):
                             result = help
                         session["_"] = result
-                await self.save_session(session)
+                finally:
+                    del session["self"]
+                    del session["app"]
+                    del session["settings"]
+                    await self.backup_session()
             output_str: None | str = (
                 output.getvalue() if not output.closed else None
             )
@@ -150,7 +151,7 @@ class Backdoor(APIRequestHandler):
             try:
                 result_tuple = (
                     result_tuple[0] or repr(result_tuple[1]),
-                    pickle.dumps(result_tuple[1], self.PICKLE_PROTOCOL),
+                    pickle.dumps(result_tuple[1], PICKLE_PROTOCOL),
                 )
             except Exception:  # pylint: disable=broad-except
                 result_tuple = (
@@ -161,13 +162,13 @@ class Backdoor(APIRequestHandler):
             new_args = []
             for arg in exc.args:
                 try:
-                    pickle.dumps(arg)
+                    pickle.dumps(arg, PICKLE_PROTOCOL)
                 except Exception:  # pylint: disable=broad-except
                     new_args.append(repr(arg))
                 else:
                     new_args.append(arg)
             exc.args = tuple(new_args)
-            return await self.finish(pickle.dumps(exc, self.PICKLE_PROTOCOL))
+            return await self.finish(pickle.dumps(exc, PICKLE_PROTOCOL))
         return await self.finish(
             pickle.dumps(
                 {
@@ -177,29 +178,27 @@ class Backdoor(APIRequestHandler):
                     if exception is None and result is None
                     else result_tuple,
                 },
-                self.PICKLE_PROTOCOL,
+                PICKLE_PROTOCOL,
             )
         )
 
     def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
-        """Update a session with important default values."""
+        """Add request-specific stuff to the session."""
         session.update(
-            __builtins__=__builtins__,
-            __name__="this",
             self=self,
             app=self.application,
             settings=self.settings,
-            get_authors=get_authors,
-            get_quotes=get_quotes,
-            get_wq=get_wrong_quote,
-            get_wqs=get_wrong_quotes,
         )
         return session
 
-    async def load_session(self, session_id: None | str) -> dict[str, Any]:
+    async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
+        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
         if not session_id:
-            session: dict[str, Any] = {}
+            session: dict[str, Any] = {
+                "__builtins__": __builtins__,
+                "__name__": "this",
+            }
         elif session_id in self.sessions:
             session = self.sessions[session_id]
         else:
@@ -220,71 +219,40 @@ class Backdoor(APIRequestHandler):
                         )
                         if apm:
                             apm.capture_exception()
-            # save the session as session_id is truthy
             self.sessions[session_id] = session
-        if session_id:
-            session["session_id"] = session_id
         return self.update_session(session)
 
-    async def save_session(self, session: dict[str, Any]) -> bool:
+    async def backup_session(self) -> bool:
         """Backup a session using Redis and return whether it succeeded."""
-        if not self.redis or "session_id" not in session:
+        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
+        if not (self.redis and session_id in self.sessions):
             return False
-        session_id = session["session_id"]
-        if self.sessions.get(session_id) is not session:
-            return False
-        try:
-            # delete stuff that gets set in update_session
-            # this avoids errors and reduces the pickle size
-            for var in (
-                "__builtins__",
-                "self",
-                "app",
-                "settings",
-                "get_authors",
-                "get_quotes",
-                "get_wq",
-                "get_wqs",
-            ):
-                del session[var]
-            session_pickle = pickle.dumps(session, self.PICKLE_PROTOCOL)
-        except Exception as exc:  # pylint: disable=broad-except
-            self.update_session(session)
-            logger.exception(exc)
-            apm: None | elasticapm.Client = self.settings.get(
-                "ELASTIC_APM_CLIENT"
-            )
-            if apm:
-                apm.capture_exception()
-            return False
-        else:
-            self.update_session(session)
-
+        session: dict[str, Any] = self.sessions[session_id].copy()
+        for key, value in tuple(session.items()):
+            try:
+                pickle.dumps(value, PICKLE_PROTOCOL)
+            except Exception:  # pylint: disable=broad-except
+                del session[key]
         return bool(
             await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                base64.encodebytes(
-                    session_pickle
-                ),  # value to save (the session)
+                base64.encodebytes(pickle.dumps(session, PICKLE_PROTOCOL)),
             )
         )
 
-    def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
         if "exc_info" in kwargs:
             exc_info: tuple[
                 type[BaseException], BaseException, TracebackType
-            ] = kwargs[
-                "exc_info"
-            ]  # type: ignore
+            ] = kwargs["exc_info"]
             if not issubclass(exc_info[0], HTTPError):
                 self.finish(
                     pickle.dumps(
-                        self.get_error_message(**kwargs), self.PICKLE_PROTOCOL
+                        self.get_error_message(**kwargs), PICKLE_PROTOCOL
                     )
                 )
-                return None
-        self.finish(pickle.dumps(None, self.PICKLE_PROTOCOL))
-        return None
+                return
+        self.finish(pickle.dumps(None, PICKLE_PROTOCOL))

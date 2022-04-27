@@ -17,7 +17,9 @@
     {% elif now.month == 3 and now.day == 25 %}
         🧇
     {% elif now.month == 4 and now.day == 20 %}
-        🥦
+        <a href="{{fix_url('https://y.com.sb/watch?v=C_mndbMCzU8')}}"
+           class="no-style-a-emoji"
+        >🥦</a>
     {% elif now.month == 4 and now.day == 21 and now.year == 2026 %}
         👑🎂💯
     {% elif now.month == 4 and now.day == 22 %}
@@ -40,10 +42,19 @@
         {{("❤️", "🧡", "💛", "💚", "💙", "💜")[now.microsecond % 6]}}
     {% elif now.month == 7 and now.day == 4 %}
         🗽
+    {% elif now.month == 7 and now.day == 17 %}
+        {% from emoji import EMOJI_DATA %}
+        {% set emoji = tuple(EMOJI_DATA)[now.microsecond % len(EMOJI_DATA)] %}
+        <a href="{{fix_url(f'http://📙.la/{emoji}')}}"
+           tooltip="{{EMOJI_DATA[emoji].get(lang, EMOJI_DATA[emoji]['en'])}}"
+           class="no-style-a-emoji"
+        >{{emoji}}</a>
     {% elif now.month == 9 and now.day == 11 %}
         ✈️
     {% elif now.month == 9 and now.day == 15 %}
-        🦨
+        <a href="{{fix_url('https://sabrina-online.com')}}"
+           class="no-style-a-emoji"
+        >🦨</a>
     {% elif now.month == 9 and now.day == 19 %}
         ☠️
     {% elif now.month == 10 and now.day == 31 %}

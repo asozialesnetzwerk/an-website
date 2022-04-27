@@ -329,8 +329,13 @@ def get_ssl_context(
 def setup_logging(config: configparser.ConfigParser) -> None:
     """Configure logging."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
+    path = config.get(
+        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
+    )
+
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setFormatter(
         logging.Formatter(
@@ -342,9 +347,6 @@ def setup_logging(config: configparser.ConfigParser) -> None:
     )
     root_logger.addHandler(stream_handler)
 
-    path = config.get(
-        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
-    )
     if path:
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
@@ -660,7 +662,6 @@ def main() -> None | int | str:
         decompress_request=True,
         xheaders=behind_proxy,
     )
-    app.settings["PORT"] = port
 
     setup_apm(app)
     setup_app_search(app)

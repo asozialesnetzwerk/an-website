@@ -11,8 +11,9 @@ defusedxml = {version=">=0.7.1,<2"}
 dill = {version=">=0.3.4,<2"}
 ecs-logging = {version="~=1.1"}
 elastic-apm = {version="~=6.9"}
-elastic-enterprise-search = {version="~=7.17.0"}
-elasticsearch = {version="~=7.17.2", extras=["async"]}
+elastic-enterprise-search = {version="~=7.17"}
+elasticsearch = {version="~=7.17", extras=["async"]}
+emoji = {version="~=1.7"}
 funcparserlib = {version=">=1.0.0a0,<2"}
 get_version = {version=">=3.5.4,<4"}
 hyrule = {version=">=0.1,<2"}
