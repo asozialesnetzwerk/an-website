@@ -5,7 +5,9 @@
     {% if quote_data %}
         <a class="no-style-a"
            href="{{fix_url(quote_data.get_quote_url())}}"
-           style="text-align: center" >
+           tooltip="Das Zitat des Tages"
+           tooltip-position="bottom"
+           style="text-align: center">
             {{quote_data.wrong_quote.quote}}
             <br>
             - {{quote_data.wrong_quote.author}}

@@ -9,11 +9,14 @@
         <div class="site-pane">
             <h1 data-elastic-exclude>Unterseiten:</h1>
             <ul class="menu-list">
-                {% for info in settings.get("MODULE_INFOS") %}
+                {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
                     {% if not info.hidden and info.path is not None %}
                         <li>
                             <a href="{{fix_url(info.path)}}"
                                tooltip="{{info.description}}"
+                               {% if i < 6 %}
+                                   tooltip-position="bottom"
+                               {% end %}
                                {% if info.path == "/js-lizenzen/" %}
                                    data-jslicense="1"
                                {% end %}

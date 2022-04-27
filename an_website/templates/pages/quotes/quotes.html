@@ -32,6 +32,7 @@
         <div id="buttons">
             <a class="download"
                tooltip="Downloade das Zitat als Bild."
+               tooltip-position="bottom"
                id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
@@ -42,6 +43,7 @@
             <a class="share"
                id="share"
                tooltip="Teile das Zitat in den Sozialen Medien."
+               tooltip-position="bottom"
                href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
                rel="nofollow">
                 <img class="share-img button-img"
@@ -50,6 +52,7 @@
             </a>
             <a class="get-quote"
                tooltip="Gehe zum nächsten Zitat."
+               tooltip-position="bottom"
                id="next"
                href="{{next_href}}">
                 <img class="get-quote-img button-img button-img-no-rotation"

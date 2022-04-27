@@ -4,14 +4,14 @@
 {% block body %}
     <form>
         <label class="form-element">
-            Eingabe (Nutze "_" für nicht bekannte Buchstaben):
+            Eingabe (Nutze "_" für nicht bekannte Buchstaben)
             <input type="text"
                    name="input"
                    value="{{input}}">
         </label>
 
         <label class="form-element">
-            Falsche Buchstaben:
+            Falsche Buchstaben
             <input type="text"
                    name="invalid"
                    value="{{invalid}}">
@@ -19,27 +19,29 @@
 
         <div class="form-element">
             <label tooltip="Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen."
-                   for="crossword-mode">Kreuzworträtselmodus:</label>
-            <input type="checkbox"
+                   tooltip-position="right">Kreuzworträtselmodus
+                <input type="checkbox"
                    id="crossword-mode"
                    {% if crossword_mode %} checked {% end %}
                    name="crossword_mode">
+            </label>
         </div>
 
         <div class="form-element">
             <label tooltip="Wie viele Wörter maximal angezeigt werden dürfen."
-                   for="max_words">Maximale Wortanzahl:</label>
-            <input type="number"
+                   tooltip-position="right">Maximale Wortanzahl
+                <input type="number"
                    id="max_words"
                    name="max_words"
                    min="0"
                    max="100"
                    step="1"
                    value="{{max_words}}">
+            </label>
         </div>
 
         <label class="form-element">
-            Sprache der Wörter:
+            Sprache der Wörter
             <select name="lang">
                 <option {% if lang == "de_only_a-z" %}selected{% end %}
                     value="de_only_a-z">Deutsch ohne Umlaute</option>
