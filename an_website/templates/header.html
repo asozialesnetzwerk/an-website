@@ -12,23 +12,20 @@
                 {% for info in settings.get("MODULE_INFOS") %}
                     {% if not info.hidden and info.path is not None %}
                         <li>
-                            <div class="tooltip">
-                                <a href="{{fix_url(info.path)}}"
-                                   {% if info.path == "/js-lizenzen/" %}
-                                       data-jslicense="1"
-                                   {% end %}
-                                >{{info.name}}</a>
-                                <div class="tooltip-text">{{info.description}}</div>
-                            </div>
+                            <a href="{{fix_url(info.path)}}"
+                               tooltip="{{info.description}}"
+                               {% if info.path == "/js-lizenzen/" %}
+                                   data-jslicense="1"
+                               {% end %}
+                            >{{info.name}}</a>
                             {% if info.sub_pages is not None %}
                                 <ul class="menu-sub-list">
                                     {% for page_info in info.sub_pages %}
                                         {% if not page_info.hidden and page_info.path is not None %}
-                                            <li class="tooltip">
+                                            <li>
                                                 <a href="{{fix_url(page_info.path)}}"
-                                                    >{{page_info.name}}</a>
-                                                <div class="tooltip-text"
-                                                    >{{page_info.description}}</div>
+                                                   tooltip="{{page_info.description}}"
+                                                >{{page_info.name}}</a>
                                             </li>
                                         {% end %}
                                     {% end %}

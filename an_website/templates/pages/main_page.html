@@ -22,7 +22,7 @@
                     <ul class="menu-sub-list">
                         {% for page_info in info.sub_pages %}
                             {% if not page_info.hidden and page_info.path is not None %}
-                                <li class="tooltip">
+                                <li>
                                     <a href="{{fix_url(page_info.path)}}"
                                         >{{page_info.name}}</a>:
                                     {{page_info.description}}

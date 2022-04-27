@@ -18,10 +18,8 @@
         </label>
 
         <div class="form-element">
-            <div class="tooltip">
-                <label for="crossword-mode">Kreuzworträtselmodus:</label>
-                <span class="tooltip-text">Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.</span>
-            </div>
+            <label tooltip="Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen."
+                   for="crossword-mode">Kreuzworträtselmodus:</label>
             <input type="checkbox"
                    id="crossword-mode"
                    {% if crossword_mode %} checked {% end %}
@@ -29,10 +27,8 @@
         </div>
 
         <div class="form-element">
-            <div class="tooltip">
-                <label for="max_words">Maximale Wortanzahl:</label>
-                <span class="tooltip-text">Wie viele Wörter maximal angezeigt werden dürfen.</span>
-            </div>
+            <label tooltip="Wie viele Wörter maximal angezeigt werden dürfen."
+                   for="max_words">Maximale Wortanzahl:</label>
             <input type="number"
                    id="max_words"
                    name="max_words"

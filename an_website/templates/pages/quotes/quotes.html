@@ -11,7 +11,7 @@
                class="no-style-a quote-author"
                id="author">- {{wrong_quote.author}}</a>
         </div>
-        <div id="rating-container" class="tooltip">
+        <div id="rating-container" tooltip="Die Bewertung des Zitats">
             <div class="flex">
                 <div id="rating-text">{{rating}}</div>
                 <div id="rating-img-container">
@@ -28,77 +28,78 @@
                     {% end %}
                 </div>
             </div>
-            <div class="tooltip-text">Die Bewertung des Zitats</div>
         </div>
         <div id="buttons">
-            <a class="download tooltip"
+            <a class="download"
+               tooltip="Downloade das Zitat als Bild."
                id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
                 <img class="download-img button-img"
                      src="{{fix_static('img/arrow.svg')}}"
                      alt="Zitat downloaden.">
-                <div class="tooltip-text">Downloade das Zitat als Bild.</div>
             </a>
-            <a class="share tooltip"
+            <a class="share"
                id="share"
+               tooltip="Teile das Zitat in den Sozialen Medien."
                href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
                rel="nofollow">
                 <img class="share-img button-img"
                      src="{{fix_static('img/arrow.svg')}}"
                      alt="Zitat teilen.">
-                <div class="tooltip-text">Teile das Zitat auf Social Media.</div>
             </a>
-            <a class="get-quote tooltip" id="next" href="{{next_href}}">
+            <a class="get-quote"
+               tooltip="Gehe zum nächsten Zitat."
+               id="next"
+               href="{{next_href}}">
                 <img class="get-quote-img button-img button-img-no-rotation"
                      alt="Nächstes Zitat"
                      src="{{fix_static('img/arrow.svg')}}">
-                <div class="tooltip-text">Gehe zum nächsten Zitat.</div>
             </a>
         </div>
     </div>
     <form method="post" id="vote-container">
         {% raw form_appendix %}
         <input name="r" class="hidden-input" value="{{rating_filter}}">
-        <button class="tooltip form-button vote {% if vote == 1 %} voted {% end %}"
+        <button class="form-button vote {% if vote == 1 %} voted {% end %}"
+                tooltip="Bewerte das Zitat als witzig!"
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
                 type="submit" id="upvote" name="vote">
             <img src="{{fix_static('img/StempelWitzigKlein.svg')}}"
                  alt="WITZIG!">
-            <div class="tooltip-text">Bewerte das Zitat als witzig!</div>
         </button>
-        <button class="tooltip form-button vote {% if vote == -1 %} voted {% end %}"
+        <button class="form-button vote {% if vote == -1 %} voted {% end %}"
+                tooltip="Bewerte das Zitat als nicht witzig!"
                 value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
                 type="submit" id="downvote" name="vote">
             <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}"
                  alt="NICHT WITZIG!">
-            <div class="tooltip-text">Bewerte das Zitat als nicht witzig!</div>
         </button>
     </form>
 
     <div id="bottom-buttons-container">
-        <a class="tooltip"
+        <a tooltip="Neues Zitat hinzufügen"
            href="{{fix_url('/zitate/erstellen/')}}">
             <img class="button-img button-img-no-rotation"
                  src="{{fix_static('img/plus.svg')}}"
                  alt="Zitat hinzufügen.">
-            <div class="tooltip-text">Neues Zitat hinzufügen</div>
         </a>
 
         {% if contact_address is not None %}
             <a class="report tooltip"
                href="mailto:{{contact_address}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
+               tooltip="Melde das Zitat."
                no-dynload>
                 <img class="button-img report-img button-img-no-rotation"
                      alt="Zitat melden."
                      src="{{fix_static('img/report.svg')}}">
-                <div class="tooltip-text">Melde das Zitat.</div>
             </a>
         {% end %}
 
         <form method="get">
             {% raw form_appendix %}
-            <div class="tooltip rating-form-el">
+            <label tooltip="Filtere das nächste Zitate.">
+                Filter
                 <select name="r"
                         id="rating-filter-select"
                         class="rating-form-el"
@@ -116,9 +117,7 @@
                     <option {% if rating_filter=="all"%}selected{%end%}
                             value="all">Alle</option>
                 </select>
-                <label for="rating-filter-select"
-                       class="tooltip-text">Filtere nächste Zitate</label>
-            </div>
+            </label>
             <label class="rating-form-el">
                 Zeige Bewertung
                 <input {% if show_rating %}checked{% end %}

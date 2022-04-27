@@ -1,0 +1,57 @@
+[tooltip]:hover::after, [tooltip]:hover::before {
+    /* make tooltip and triangle visible */
+    opacity: 1;
+    transition: all 0.05s ease 0.1s;
+    visibility: visible;
+}
+
+[tooltip]::before, [tooltip]::after {
+    /* position */
+    left: 50%;
+    position: absolute;
+    /* on top of everything */
+    z-index: 99999999;
+    /* make invisible */
+    opacity: 0;
+    visibility: hidden;
+    /* ignore hover over tooltip so it disappears when leaving parent */
+    pointer-events: none;
+    /* reset font size, so it doesn't depend on parent */
+    font-size: 1rem;
+}
+
+[tooltip]::after {
+    /* the tooltip */
+    content: attr(tooltip);
+
+    hyphens: initial;
+    letter-spacing: normal;
+    text-align: center;
+
+    background-color: var(--tooltip-bg);
+    color: var(--text-color);
+
+    bottom: 100%;
+
+    padding: 0.4rem;
+    border-radius: 0.4rem;
+
+    width: 8.8rem;
+    /* Use half of the width (8.8/2 = 4.4), to center the tooltip */
+    margin-left: -4.4rem;
+}
+
+[tooltip]::before {
+    /* the triangle under the tooltip */
+    content: " ";
+
+    margin-left: -0.3125rem;
+
+    border-width: 0.3125rem;
+    border-style: solid;
+    border-color: var(--secondary-text-color) transparent transparent transparent;
+}
+
+[tooltip] {
+    position: relative;
+}

@@ -76,47 +76,6 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     height: 0;
     opacity: 0;
 }
-
-/* Tooltip container */
-.tooltip {
-    position: relative;
-    max-width: max-content;
-}
-
-/* Tooltip text */
-.tooltip .tooltip-text {
-    letter-spacing: normal;
-    visibility: hidden;
-    width: 140px;
-    background-color: var(--tooltip-bg);
-    color: var(--text-color);
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-    font-size: initial;
-
-    position: absolute;
-    z-index: 1;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -70px;/* Use half of the width (140/2 = 70), to center the tooltip */
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltip-text, .tooltip:focus-within .tooltip-text {
-    visibility: visible;
-}
-
-.tooltip .tooltip-text::after {
-    content: " ";
-    position: absolute;
-    top: 100%; /* At the bottom of the tooltip */
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--secondary-text-color) transparent transparent transparent;
-}
 /* base end */
 
 
@@ -189,18 +148,18 @@ header {
 }
 
 .menu-list {
-    margin: 5px;
+    margin: 4px;
     list-style-type: circle;
 }
 
 .menu-list li {
     display: inherit;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     color: var(--text-color)
 }
 
 .menu-sub-list {
-    margin: 5px;
+    margin: 4px;
     list-style-type: square;
 }
 
