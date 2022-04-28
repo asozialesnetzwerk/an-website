@@ -16,7 +16,6 @@ A page with all the JavaScript files and their licenses.
 
 This is used for LibreJS to make sure the extension knows the licenses.
 This isn't important, as the JS files should contain the licenses themselves.
-This assumes that every file is licensed under AGPL v3.
 
 See: https://www.gnu.org/software/librejs/free-your-javascript.html#step3
 and https://www.gnu.org/licenses/javascript-labels.html
@@ -50,11 +49,40 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+# All the licenses use
+LICENSES = {
+    "magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109"
+    "&dn=agpl-3.0.txt": "https://www.gnu.org/licenses/agpl-3.0.html",
+}
+
+
 @cache
-def get_js_file_names() -> list[str]:
-    """Get the names of the JS files in this project."""
+def get_js_file_names_and_licenses() -> list[tuple[str, str, str]]:
+    """Get the names of the JS files in this project.
+
+    Returns a list of tuples with file_name, license and license_url.
+    """
     js_files_dir = os.path.join(STATIC_DIR, "js")
-    return os.listdir(js_files_dir)
+    js_file_names = os.listdir(js_files_dir)
+
+    licenses_list: list[tuple[str, str, str]] = []
+
+    for file_name in js_file_names:
+        with open(
+            os.path.join(js_files_dir, file_name), encoding="UTF-8"
+        ) as file:
+            license_line = file.readline().strip()
+        if not license_line.startswith("// @license "):
+            logger.warning("%s has no license comment", file_name)
+            # TODO: exit in dev mode if this fails
+            continue
+        magnet, name = (
+            license_line.removeprefix("// @license").strip().split(" ")
+        )
+        licenses_list.append(
+            (file_name, name.strip(), LICENSES[magnet.strip()])
+        )
+    return licenses_list
 
 
 class JSLicenses(HTMLRequestHandler):
@@ -65,5 +93,5 @@ class JSLicenses(HTMLRequestHandler):
         if head:
             return
         await self.render(
-            "pages/js_licenses.html", js_files=get_js_file_names()
+            "pages/js_licenses.html", js_files=get_js_file_names_and_licenses()
         )

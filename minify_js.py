@@ -28,6 +28,17 @@ DIR = os.path.dirname(__file__)
 STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
 
+def get_license_str(file_content: str) -> None | str:
+    """Get the license string of a js file."""
+    file_content = file_content.strip()
+    if not (
+        file_content.endswith("// @license-end")
+        and file_content.startswith("// @license ")
+    ):
+        return None
+    return file_content.split("\n")[0].removeprefix("// @license").strip()
+
+
 def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
     """Find, copy and minify all JS files."""
     if "--clean" in sys.argv:
@@ -52,12 +63,14 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                 os.path.join(folder, file_name), encoding="UTF-8"
             ) as file:
                 original = file.read()
-            minified = (
-                "// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8"
-                + "270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0\n"
-                + rjsmin.jsmin(original)
-                + "\n// @license-end\n"
-            )
+            license_str = get_license_str(original)
+            minified = rjsmin.jsmin(original)
+            if license_str is None:
+                print(f"\033[93m{file.name} has no license!\033[0m")
+            else:
+                minified = (
+                    f"// @license {license_str}\n{minified}\n// @license-end\n"
+                )
             new_file = os.path.join(STATIC_DIR, file_name)
             if os.path.isfile(new_file):
                 with open(new_file, encoding="UTF-8") as file:

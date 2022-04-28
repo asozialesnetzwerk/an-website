@@ -1,4 +1,4 @@
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 const bodyDiv=elById("body");function getJSONURLWithParams(originalUrl){if(originalUrl.includes("#"))
 originalUrl=originalUrl.split("#")[0];let[url,query]=originalUrl.includes("?")?originalUrl.split("?"):[originalUrl,""];let params=new URLSearchParams(query);params.set("as_json","sure");return[url,params.toString()];}
 const lastLoaded=[];function dynLoadOnData(data,onpopstate){if(!data){error("No data received");return;}

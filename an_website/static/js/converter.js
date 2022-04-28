@@ -1,4 +1,4 @@
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 (()=>{let bigIntType="bigint";try{BigInt(69);}catch(e){BigInt=Number;bigIntType="number";}
 const output=elById("output");const fields=[elById("euro"),elById("mark"),elById("ost"),elById("schwarz")];const factors=[BigInt(1),BigInt(2),BigInt(4),BigInt(20)];const numberRegex=/^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;const isZero=(str)=>/^0*$/.test(str);function getDisplayValue(wert){if(typeof wert==="string")
 wert=strToBigInt(wert);if(typeof wert!==bigIntType)
