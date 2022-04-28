@@ -1,6 +1,10 @@
-:root{
+:root {
     /* offset moves tooltip to the center of the parent */
-    --tooltip-offset: -0.15rem;
+    --tp-offset: -0.15rem;
+    /* make stuff easier for people that steal this css file */
+    --tp-border-color: var(--main-2);
+    --tp-bg-color: var(--bg);
+    --tp-text-color: var(--text-color);
 }
 
 [tooltip] {
@@ -30,22 +34,26 @@
     visibility: visible;
 }
 
+/* top tooltip after and before */
+[tooltip][tooltip-position=top]::after,
+[tooltip][tooltip-position=top]::before,
+/* no tooltip-position defaults to top */
 [tooltip]:not([tooltip-position])::after,
-    [tooltip][tooltip-position=top]::after,
-        [tooltip]:not([tooltip-position])::before,
-            [tooltip][tooltip-position=top]::before,
-        [tooltip][tooltip-position=bottom]::after,
-            [tooltip][tooltip-position=bottom]::before{
+[tooltip]:not([tooltip-position])::before,
+/* bottom tooltip after and before */
+[tooltip][tooltip-position=bottom]::after,
+[tooltip][tooltip-position=bottom]::before {
     /* top or bottom */
     left: 50%;
     transform: translateX(-50%);
 }
 
-
+/* left tooltip after and before */
 [tooltip][tooltip-position=left]::after,
-    [tooltip][tooltip-position=left]::before,
-        [tooltip][tooltip-position=right]::after,
-            [tooltip][tooltip-position=right]::before{
+[tooltip][tooltip-position=left]::before,
+/* right tooltip after and before  */
+[tooltip][tooltip-position=right]::after,
+[tooltip][tooltip-position=right]::before {
     /* left or right */
     top: 50%;
     transform: translateY(-50%);
@@ -60,36 +68,40 @@
     letter-spacing: normal;
     text-align: center;
     white-space: pre-line;
-
-    background-color: var(--tooltip-bg);
-    color: var(--text-color);
-
     padding: 0.4rem;
-    border-radius: 0.4rem;
+
+    background-color: var(--tp-bg-color);
+    color: var(--tp-text-color);
 
     width: max-content;
     max-width: max(100%, 8.8rem);
+
+    border-radius: 0.4rem;
+    border-style: solid;
+    border-color: var(--tp-border-color);
+    border-width: 1px;
 }
 
-[tooltip]:not([tooltip-position])::after,
-    [tooltip][tooltip-position=top]::after {
+[tooltip][tooltip-position=top]::after,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::after {
     /* top */
-    bottom: calc(100% - var(--tooltip-offset));
+    bottom: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=bottom]::after {
     /* bottom */
-    top: calc(100% - var(--tooltip-offset));
+    top: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=left]::after {
     /* left */
-    right: calc(100% - var(--tooltip-offset));
+    right: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=right]::after {
     /* right */
-    left: calc(100% - var(--tooltip-offset));
+    left: calc(100% - var(--tp-offset));
 }
 
 /* the triangle that points from tooltip to parent */
@@ -97,30 +109,32 @@
     content: " ";
     border-width: 0.3125rem;
     border-style: solid;
+    /* set border-color defaults to override for each position */
     border-color: transparent transparent transparent transparent;
 }
 
-[tooltip]:not([tooltip-position])::before,
-    [tooltip][tooltip-position=top]::before {
+[tooltip][tooltip-position=top]::before,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::before {
     /* top */
-    top: var(--tooltip-offset);
-    border-top-color: var(--secondary-text-color);
+    top: var(--tp-offset);
+    border-top-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=bottom]::before {
     /* bottom */
-    bottom: var(--tooltip-offset);
-    border-bottom-color: var(--secondary-text-color);
+    bottom: var(--tp-offset);
+    border-bottom-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=left]::before {
     /* left */
-    left: var(--tooltip-offset);
-    border-left-color: var(--secondary-text-color);
+    left: var(--tp-offset);
+    border-left-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=right]::before {
     /* right */
-    right: var(--tooltip-offset);
-    border-right-color: var(--secondary-text-color);
+    right: var(--tp-offset);
+    border-right-color: var(--tp-border-color);
 }
