@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import inspect
 import logging
-import os
 import random
 import re
 import sys
@@ -46,10 +45,8 @@ from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis  # type: ignore
 from tornado import web
-from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
-from .. import DIR as ROOT_DIR
 from .. import REPO_URL
 from .static_file_handling import fix_static_url
 from .utils import (
@@ -79,11 +76,6 @@ def get_module_info() -> ModuleInfo:
                 {},
             ),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
-            (
-                r"/@elastic/apm-rum@(.+)/dist/bundles"
-                r"/elastic-apm-rum.umd(\.min|).js(\.map|)",
-                ElasticRUM,
-            ),
         ),
         hidden=True,
     )
@@ -515,7 +507,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_as_json(self) -> bool:
         """Get the value of the as_json query parameter."""
-        return str_to_bool(self.get_argument("as_json", default="nope"), False)
+        return self.get_bool_argument("as_json", default=False)
 
     def get_no_3rd_party_default(self) -> bool:
         """Get the default value for the no_3rd_party param."""
@@ -531,11 +523,9 @@ class BaseRequestHandler(RequestHandler):
 
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
-        saved = self.get_saved_no_3rd_party()
-        no_3rd_party = self.get_argument("no_3rd_party", default=None)
-        if no_3rd_party is None:
-            return saved
-        return str_to_bool(no_3rd_party, saved)
+        return self.get_bool_argument(
+            "no_3rd_party", default=self.get_saved_no_3rd_party()
+        )
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""
@@ -546,11 +536,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_dynload(self) -> bool:
         """Return the dynload query argument as boolean."""
-        saved = self.get_saved_dynload()
-        dynload = self.get_argument("dynload", default=None)
-        if dynload is None:
-            return saved
-        return str_to_bool(dynload, saved)
+        return self.get_bool_argument("dynload", self.get_saved_dynload())
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
@@ -589,6 +575,23 @@ class BaseRequestHandler(RequestHandler):
             return address
         # if address starts with @ it's a catch-all address
         return name_to_id(self.request.path) + "_contact" + address
+
+    def get_bool_argument(
+        self,
+        name: str,
+        default: None | bool = None,
+    ) -> bool:
+        """Get an argument parsed as boolean."""
+        if default is not None:
+            return str_to_bool(
+                self.get_argument(name, bool_to_str(default), strip=True) or "",
+                default,
+            )
+        value = str(self.get_argument(name, strip=True))
+        try:
+            return str_to_bool(value)
+        except ValueError as err:
+            raise HTTPError(400, f"{value} is not a Boolean.") from err
 
     def get_argument(  # type: ignore[override]
         self,
@@ -955,51 +958,3 @@ class ZeroDivision(HTMLRequestHandler):
         """Divide by zero and raise an error."""
         if not self.request.method == "OPTIONS":
             420 / 0  # pylint: disable=pointless-statement
-
-
-class ElasticRUM(BaseRequestHandler):
-    """A request handler that serves the RUM script."""
-
-    URL = (
-        "https://unpkg.com/@elastic/apm-rum@{}"
-        "/dist/bundles/elastic-apm-rum.umd{}.js{}"
-    )
-    SCRIPTS: dict[str, tuple[str, float]] = {}
-    CACHE_TIME = 365 * 60 * 60 * 24
-
-    async def get(self, version: str, spam: str = "", eggs: str = "") -> None:
-        """Serve the RUM script."""
-        key = version + spam + eggs
-        if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
-            response = await AsyncHTTPClient().fetch(
-                self.URL.format(version, spam, eggs),
-                raise_error=False,
-                ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
-            )
-            if response.code != 200:
-                raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[key] = (
-                response.body.decode(),
-                time.monotonic() + 365 * 60 * 60 * 24,
-            )
-            new_path = urlsplit(response.effective_url).path
-            if new_path.endswith(".js"):
-                BaseRequestHandler.ELASTIC_RUM_JS_URL = new_path
-            logger.info("RUM script %s updated", new_path)
-            self.redirect(self.fix_url(new_path), False)
-            return
-        if eggs:
-            self.set_header("Content-Type", "application/json; charset=UTF-8")
-        else:
-            self.set_header(
-                "Content-Type", "application/javascript; charset=UTF-8"
-            )
-            if spam:
-                self.set_header("SourceMap", self.URL + ".map")
-        self.set_header(
-            "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)
-        )
-        self.set_header(
-            "Cache-Control", f"public, min-fresh={self.CACHE_TIME}, immutable"
-        )
-        return await self.finish(self.SCRIPTS[key][0])

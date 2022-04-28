@@ -23,7 +23,7 @@ from functools import lru_cache
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, length_of_match, n_from_set, str_to_bool
+from ..utils.utils import ModuleInfo, length_of_match, n_from_set
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
 WILDCARDS_REGEX = re.compile(r"[_?-]+")
@@ -253,15 +253,9 @@ class HangmanSolver(HTMLRequestHandler):
             ),
         )
 
-        crossword_mode_str = str(
-            self.get_argument("crossword_mode", default="False")
-        )
-        crossword_mode = str_to_bool(crossword_mode_str)  # if crossword mode
-
+        crossword_mode = self.get_bool_argument("crossword_mode", default=False)
         language = str(self.get_argument("lang", default="de_only_a-z"))
-
         input_str = str(self.get_argument("input", default=""))
-
         invalid = str(self.get_argument("invalid", default=""))
 
         return await solve_hangman(

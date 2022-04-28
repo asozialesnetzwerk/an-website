@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 
 from Levenshtein import distance  # type: ignore
-from tornado.web import HTTPError
+from tornado.web import HTTPError, MissingArgumentError
 
 from ..utils.utils import ModuleInfo
 from . import (
@@ -271,15 +271,11 @@ class CreatePage2(QuoteReadyCheckHandler):
     async def post(self) -> None:
         """Handle POST requests to the create page."""
         quote_str = self.get_argument("quote-2", default=None)
+        if not quote_str:
+            raise MissingArgumentError("quote-2")
         fake_author_str = self.get_argument("fake-author-2", default=None)
-
-        if not (quote_str and fake_author_str):
-            raise HTTPError(
-                400,
-                reason=(
-                    "Missing arguments. quote-2 and fake-author-2 are needed."
-                ),
-            )
+        if not fake_author_str:
+            raise MissingArgumentError("fake-author-2")
 
         if (quote := get_quote_by_str(quote_str)) and (
             fake_author := get_author_by_name(fake_author_str)
@@ -294,12 +290,8 @@ class CreatePage2(QuoteReadyCheckHandler):
             )
 
         real_author = self.get_argument("real-author-2", default=None)
-
         if not real_author:
-            raise HTTPError(
-                400,
-                reason="Missing argument. real-author-2 is required.",
-            )
+            raise MissingArgumentError("real-author-2")
 
         wq_id = await create_wrong_quote(
             real_author,

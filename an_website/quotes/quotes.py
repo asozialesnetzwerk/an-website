@@ -29,7 +29,7 @@ from typing import Any, Literal
 from tornado.web import HTTPError, RedirectHandler
 
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, hash_ip, str_to_bool
+from ..utils.utils import ModuleInfo, hash_ip
 from . import (
     WRONG_QUOTES_CACHE,
     QuoteReadyCheckHandler,
@@ -165,9 +165,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     def get_show_rating(self) -> bool:
         """Return whether the user wants to see the rating."""
-        return str_to_bool(
-            self.get_argument("show-rating", default=None), default=False
-        )
+        return self.get_bool_argument("show-rating", default=False)
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
