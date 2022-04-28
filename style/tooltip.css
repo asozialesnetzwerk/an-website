@@ -43,7 +43,7 @@
 /* bottom tooltip after and before */
 [tooltip][tooltip-position=bottom]::after,
 [tooltip][tooltip-position=bottom]::before {
-    /* top or bottom */
+    /* if position top or bottom center tooltip horizontally */
     left: 50%;
     transform: translateX(-50%);
 }
@@ -54,7 +54,7 @@
 /* right tooltip after and before  */
 [tooltip][tooltip-position=right]::after,
 [tooltip][tooltip-position=right]::before {
-    /* left or right */
+    /* if position left or right center tooltip vertically */
     top: 50%;
     transform: translateY(-50%);
 }
@@ -85,22 +85,22 @@
 [tooltip][tooltip-position=top]::after,
 /* no tooltip-position defaults to top */
 [tooltip]:not([tooltip-position])::after {
-    /* top */
+    /* if position top move the tooltip above the parent*/
     bottom: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=bottom]::after {
-    /* bottom */
+    /* if position bottom move the tooltip below the parent */
     top: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=left]::after {
-    /* left */
+    /* if position left move the tooltip left of the parent */
     right: calc(100% - var(--tp-offset));
 }
 
 [tooltip][tooltip-position=right]::after {
-    /* right */
+    /* if position right move the tooltip right of the parent */
     left: calc(100% - var(--tp-offset));
 }
 
@@ -116,25 +116,25 @@
 [tooltip][tooltip-position=top]::before,
 /* no tooltip-position defaults to top */
 [tooltip]:not([tooltip-position])::before {
-    /* top */
+    /* position top */
     top: var(--tp-offset);
     border-top-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=bottom]::before {
-    /* bottom */
+    /* position bottom */
     bottom: var(--tp-offset);
     border-bottom-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=left]::before {
-    /* left */
+    /* position left */
     left: var(--tp-offset);
     border-left-color: var(--tp-border-color);
 }
 
 [tooltip][tooltip-position=right]::before {
-    /* right */
+    /* position right */
     right: var(--tp-offset);
     border-right-color: var(--tp-border-color);
 }

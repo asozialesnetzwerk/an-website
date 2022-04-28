@@ -584,10 +584,9 @@ class BaseRequestHandler(RequestHandler):
         """Get an argument parsed as boolean."""
         if default is not None:
             return str_to_bool(
-                self.get_argument(name, bool_to_str(default), strip=True) or "",
-                default,
+                self.get_argument(name, bool_to_str(default)) or "", default
             )
-        value = str(self.get_argument(name, strip=True))
+        value = str(self.get_argument(name))
         try:
             return str_to_bool(value)
         except ValueError as err:

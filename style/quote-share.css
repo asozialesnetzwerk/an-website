@@ -3,6 +3,13 @@
   max-width: 100%;
 }
 
+.resp-sharing-button--mastodon {
+  background-color: #2B90D9
+}
+.resp-sharing-button--mastodon:hover {
+  background-color: #2681c3
+}
+
 /*Generated using https://sharingbuttons.io/*/
 .resp-sharing-button__link,
 .resp-sharing-button__icon {

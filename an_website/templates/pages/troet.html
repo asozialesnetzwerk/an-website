@@ -1,0 +1,26 @@
+{% whitespace oneline %}
+{% extends "../base.html" %}
+
+{% block body %}
+<form method="get">
+    <label>Text zum Tröten
+        <input name="text" type="text" value="{{text}}">
+    </label>
+    <label>Mastodon-Instanz
+        <input name="instance" type="text" value="{{instance}}">
+    </label>
+    <label tooltip="Speichere die eingegebene Instanz in einem Cookie 🍪"
+           tooltip-position="right">Speichere Instanz
+        <input type="checkbox"
+               {% if save %} checked {% end %}
+               name="save"
+               value="sure">
+    </label>
+    <button type="submit" tooltip="Teile auf Mastodon">Tröt!</button>
+</form>
+{% end %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}

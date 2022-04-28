@@ -162,14 +162,12 @@ class SwappedWordsAPI(APIRequestHandler):
         self, *, head: bool = False  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests to the swapped words API."""
-        text = self.get_argument("text", default=None, strip=True) or ""
+        text = self.get_argument("text", default=None) or ""
 
         check_text_too_long(text)
 
-        config_str = self.get_argument("config", default=None, strip=True)
-        return_config = str(
-            self.get_argument("return_config", default="nope", strip=True)
-        )
+        config_str = self.get_argument("config", default=None)
+        return_config = str(self.get_argument("return_config", default="nope"))
         try:
             sw_config = (
                 DEFAULT_CONFIG
