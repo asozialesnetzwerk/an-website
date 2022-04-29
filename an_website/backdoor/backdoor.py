@@ -134,9 +134,9 @@ class Backdoor(APIRequestHandler):
                             result = help
                         session["_"] = result
                 finally:
-                    del session["self"]
-                    del session["app"]
-                    del session["settings"]
+                    session["self"] = None
+                    session["app"] = None
+                    session["settings"] = None
                     await self.backup_session()
             output_str: None | str = (
                 output.getvalue() if not output.closed else None
@@ -228,6 +228,9 @@ class Backdoor(APIRequestHandler):
         if not (self.redis and session_id in self.sessions):
             return False
         session: dict[str, Any] = self.sessions[session_id].copy()
+        session["self"] = None
+        session["app"] = None
+        session["settings"] = None
         for key, value in tuple(session.items()):
             try:
                 pickle.dumps(value, PICKLE_PROTOCOL)

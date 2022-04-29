@@ -41,7 +41,7 @@ class Troeter(HTMLRequestHandler):  # TODO: Test this!
         return self.get_cookie("mastodon-instance")
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle get requests to the page."""
+        """Handle GET requests to the page."""
         if head:
             return
         text: str = self.get_argument("text", default="") or ""
@@ -62,7 +62,7 @@ class Troeter(HTMLRequestHandler):  # TODO: Test this!
                         "mastodon-instance",
                         instance,
                         path="/troet",
-                        expires_days=100,
+                        expires_days=90,
                     )
                 if text:
                     self.redirect(

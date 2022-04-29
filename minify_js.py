@@ -29,7 +29,7 @@ STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
 
 def get_license_str(file_content: str) -> None | str:
-    """Get the license string of a js file."""
+    """Get the license string of a JS file."""
     file_content = file_content.strip()
     if not (
         file_content.endswith("// @license-end")

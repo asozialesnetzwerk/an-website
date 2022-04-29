@@ -38,14 +38,14 @@ autoflake = {version="~=1.4"}
 black = {version="~=22.3"}
 coverage = {version="~=6.3"}
 flake8 = {version="~=4.0"}
-flake8-bugbear = {version=">=22.3.23"}
+flake8-bugbear = {version="*"}
 flake8-docstrings = {version="~=1.6"}
 flake8-no-pep420 = {version="~=2.2"}
 html5lib = {version="~=1.1"}
 isort = {version="~=5.10"}
 mypy = {version=">=0.942,<2"}
 pep8-naming = {version=">=0.12.1,<2"}
-pipenv = {version=">=2022.4.8"}
+pipenv = {version="*"}
 pre-commit = {version="~=2.17"}
 pylint = {version="~=2.13"}
 pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}

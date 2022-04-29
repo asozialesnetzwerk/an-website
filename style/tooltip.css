@@ -15,7 +15,7 @@
     /* position */
     position: absolute;
     /* on top of everything */
-    z-index: 999999999;
+    z-index: 1000000000;
     /* make invisible */
     display: none;
     opacity: 0;
