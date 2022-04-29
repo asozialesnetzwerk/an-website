@@ -8,35 +8,19 @@
   <div id="share-button-container">
     <a no-dynload
        class="resp-sharing-button__link"
-       href="https://facebook.com/sharer/sharer.php?u={{quote_url}}"
+       href="{{fix_url(f'/troet?save=sure&amp;text={text}%0A{quote_url}')}}"
        target="_blank"
        rel="noreferrer"
-       aria-label="Share on Facebook">
-      <div class="resp-sharing-button resp-sharing-button--facebook resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M18.77 7.5H14.5V5.6c0-.9.6-1.1 1-1.1h3V.54L14.17.53C10.24.54 9.5 3.48 9.5 5.37V7.5h-3v4h3v12h5v-12h3.85l.42-4z"/>
+       aria-label="Toot">
+      <div class="resp-sharing-button resp-sharing-button--mastodon"
+           tooltip="Tröt!" tooltip-position="bottom">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="61.076954mm" height="65.47831mm" viewBox="0 0 216.4144 232.00976">
+            <path fill="#fff" d="M211.80734 139.0875c-3.18125 16.36625-28.4925 34.2775-57.5625 37.74875-15.15875 1.80875-30.08375 3.47125-45.99875 2.74125-26.0275-1.1925-46.565-6.2125-46.565-6.2125 0 2.53375.15625 4.94625.46875 7.2025 3.38375 25.68625 25.47 27.225 46.39125 27.9425 21.11625.7225 39.91875-5.20625 39.91875-5.20625l.8675 19.09s-14.77 7.93125-41.08125 9.39c-14.50875.7975-32.52375-.365-53.50625-5.91875C9.23234 213.82 1.40609 165.31125.20859 116.09125c-.365-14.61375-.14-28.39375-.14-39.91875 0-50.33 32.97625-65.0825 32.97625-65.0825C49.67234 3.45375 78.20359.2425 107.86484 0h.72875c29.66125.2425 58.21125 3.45375 74.8375 11.09 0 0 32.975 14.7525 32.975 65.0825 0 0 .41375 37.13375-4.59875 62.915"/>
+            <path fill="#2b90d9" d="M177.50984 80.077v60.94125h-24.14375v-59.15c0-12.46875-5.24625-18.7975-15.74-18.7975-11.6025 0-17.4175 7.5075-17.4175 22.3525v32.37625H96.20734V85.42325c0-14.845-5.81625-22.3525-17.41875-22.3525-10.49375 0-15.74 6.32875-15.74 18.7975v59.15H38.90484V80.077c0-12.455 3.17125-22.3525 9.54125-29.675 6.56875-7.3225 15.17125-11.07625 25.85-11.07625 12.355 0 21.71125 4.74875 27.8975 14.2475l6.01375 10.08125 6.015-10.08125c6.185-9.49875 15.54125-14.2475 27.8975-14.2475 10.6775 0 19.28 3.75375 25.85 11.07625 6.36875 7.3225 9.54 17.22 9.54 29.675"/>
           </svg>
         </div>
-        Share on Facebook
-      </div>
-    </a>
-
-    <a no-dynload
-       class="resp-sharing-button__link"
-       href="https://twitter.com/intent/tweet?text={{text}}&amp;url={{quote_url}}"
-       target="_blank"
-       rel="noreferrer"
-       aria-label="Share on Twitter">
-      <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M23.4 4.83c-.8.37-1.5.38-2.22.02.94-.56.98-.96 1.32-2.02-.88.52-1.85.9-2.9 1.1-.8-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.04.7.12 1.04-3.78-.2-7.12-2-9.37-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.73-.03-1.43-.23-2.05-.57v.06c0 2.2 1.57 4.03 3.65 4.44-.67.18-1.37.2-2.05.08.57 1.8 2.25 3.12 4.24 3.16-1.95 1.52-4.36 2.16-6.74 1.88 2 1.3 4.4 2.04 6.97 2.04 8.36 0 12.93-6.92 12.93-12.93l-.02-.6c.9-.63 1.96-1.22 2.57-2.14z"/>
-          </svg>
-        </div>
-        Share on Twitter
+        Teile auf Mastodon
       </div>
     </a>
 
@@ -44,31 +28,29 @@
        class="resp-sharing-button__link"
        href="mailto:?subject={{text}}&amp;body={{quote_url}}"
        aria-label="Share by E-Mail">
-      <div class="resp-sharing-button resp-sharing-button--email resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
+      <div class="resp-sharing-button resp-sharing-button--email">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M23.5 18c0 .8-.7 1.5-1.5 1.5H2c-.8 0-1.5-.7-1.5-1.5V6c0-.8.7-1.5 1.5-1.5h20c.8 0 1.5.7 1.5 1.5v12zm-3-9.5L12 14 3.5 8.5m0 7.5L7 14m13.5 2L17 14"/>
           </svg>
         </div>
-        Share by E-Mail
+        Teile über E-Mail
       </div>
     </a>
 
     <a no-dynload
        class="resp-sharing-button__link"
-       href="https://pinterest.com/pin/create/button?url={{quote_url}}&amp;media={{quote_url}}&amp;description={{text}}"
+       href="https://telegram.me/share/url?text={{text}}&amp;url={{quote_url}}"
        target="_blank"
        rel="noreferrer"
-       aria-label="Share on Pinterest">
-      <div class="resp-sharing-button resp-sharing-button--pinterest resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
+       aria-label="Teile auf Telegram">
+      <div class="resp-sharing-button resp-sharing-button--telegram">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12.14.5C5.86.5 2.7 5 2.7 8.75c0 2.27.86 4.3 2.7 5.05.3.12.57 0 .66-.33l.27-1.06c.1-.32.06-.44-.2-.73-.52-.62-.86-1.44-.86-2.6 0-3.33 2.5-6.32 6.5-6.32 3.55 0 5.5 2.17 5.5 5.07 0 3.8-1.7 7.02-4.2 7.02-1.37 0-2.4-1.14-2.07-2.54.4-1.68 1.16-3.48 1.16-4.7 0-1.07-.58-1.98-1.78-1.98-1.4 0-2.55 1.47-2.55 3.42 0 1.25.43 2.1.43 2.1l-1.7 7.2c-.5 2.13-.08 4.75-.04 5 .02.17.22.2.3.1.14-.18 1.82-2.26 2.4-4.33.16-.58.93-3.63.93-3.63.45.88 1.8 1.65 3.22 1.65 4.25 0 7.13-3.87 7.13-9.05C20.5 4.15 17.18.5 12.14.5z"/>
+            <path stroke-width="1.5px" d="M.707 8.475C.275 8.64 0 9.508 0 9.508s.284.867.718 1.03l5.09 1.897 1.986 6.38a1.102 1.102 0 0 0 1.75.527l2.96-2.41a.405.405 0 0 1 .494-.013l5.34 3.87a1.1 1.1 0 0 0 1.046.135 1.1 1.1 0 0 0 .682-.803l3.91-18.795A1.102 1.102 0 0 0 22.5.075L.706 8.475z"/>
           </svg>
         </div>
-        Share on Pinterest
+        Teile auf Telegram
       </div>
     </a>
 
@@ -77,10 +59,9 @@
        href="https://reddit.com/submit?url={{quote_url}}&amp;resubmit=true&amp;title={{text}}"
        target="_blank"
        rel="noreferrer"
-       aria-label="Share on Reddit">
-      <div class="resp-sharing-button resp-sharing-button--reddit resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
+       aria-label="Teile auf Reddit">
+      <div class="resp-sharing-button resp-sharing-button--reddit">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <ellipse cx="12" cy="15" rx="9.5" ry="6.5"/>
             <path d="M15.54 17.88c-.96.55-2.2.88-3.54.88-1.35 0-2.6-.33-3.55-.9"/>
@@ -91,58 +72,69 @@
             <path d="M5.26 10.42C4.86 9.58 4 9 3 9 1.62 9 .5 10.12.5 11.5c0 1.25.92 2.3 2.12 2.47M12 8.5s-.13-7.4 5.5-4"/>
           </svg>
         </div>
-        Share on Reddit
+        Teile auf Reddit
+      </div>
+    </a>
+
+    <a no-dynload
+       class="resp-sharing-button__link"
+       href="https://twitter.com/intent/tweet?text={{text}}&amp;url={{quote_url}}"
+       target="_blank"
+       rel="noreferrer"
+       aria-label="Teile auf Twitter">
+      <div class="resp-sharing-button resp-sharing-button--twitter">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M23.4 4.83c-.8.37-1.5.38-2.22.02.94-.56.98-.96 1.32-2.02-.88.52-1.85.9-2.9 1.1-.8-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.04.7.12 1.04-3.78-.2-7.12-2-9.37-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.73-.03-1.43-.23-2.05-.57v.06c0 2.2 1.57 4.03 3.65 4.44-.67.18-1.37.2-2.05.08.57 1.8 2.25 3.12 4.24 3.16-1.95 1.52-4.36 2.16-6.74 1.88 2 1.3 4.4 2.04 6.97 2.04 8.36 0 12.93-6.92 12.93-12.93l-.02-.6c.9-.63 1.96-1.22 2.57-2.14z"/>
+          </svg>
+        </div>
+        Teile auf Twitter
+      </div>
+    </a>
+
+    <a no-dynload
+       class="resp-sharing-button__link"
+       href="https://pinterest.com/pin/create/button?url={{quote_url}}&amp;media={{quote_url}}&amp;description={{text}}"
+       target="_blank"
+       rel="noreferrer"
+       aria-label="Teile auf Pinterest">
+      <div class="resp-sharing-button resp-sharing-button--pinterest">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12.14.5C5.86.5 2.7 5 2.7 8.75c0 2.27.86 4.3 2.7 5.05.3.12.57 0 .66-.33l.27-1.06c.1-.32.06-.44-.2-.73-.52-.62-.86-1.44-.86-2.6 0-3.33 2.5-6.32 6.5-6.32 3.55 0 5.5 2.17 5.5 5.07 0 3.8-1.7 7.02-4.2 7.02-1.37 0-2.4-1.14-2.07-2.54.4-1.68 1.16-3.48 1.16-4.7 0-1.07-.58-1.98-1.78-1.98-1.4 0-2.55 1.47-2.55 3.42 0 1.25.43 2.1.43 2.1l-1.7 7.2c-.5 2.13-.08 4.75-.04 5 .02.17.22.2.3.1.14-.18 1.82-2.26 2.4-4.33.16-.58.93-3.63.93-3.63.45.88 1.8 1.65 3.22 1.65 4.25 0 7.13-3.87 7.13-9.05C20.5 4.15 17.18.5 12.14.5z"/>
+          </svg>
+        </div>
+        Teile auf Pinterest
       </div>
     </a>
 
     <a no-dynload
        class="resp-sharing-button__link"
        href="whatsapp://send?text={{text}}%20{{quote_url}}"
-       aria-label="Share on WhatsApp">
-      <div class="resp-sharing-button resp-sharing-button--whatsapp resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
+       aria-label="Teile auf WhatsApp">
+      <div class="resp-sharing-button resp-sharing-button--whatsapp">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path stroke-width="1px" d="M20.1 3.9C17.9 1.7 15 .5 12 .5 5.8.5.7 5.6.7 11.9c0 2 .5 3.9 1.5 5.6L.6 23.4l6-1.6c1.6.9 3.5 1.3 5.4 1.3 6.3 0 11.4-5.1 11.4-11.4-.1-2.8-1.2-5.7-3.3-7.8zM12 21.4c-1.7 0-3.3-.5-4.8-1.3l-.4-.2-3.5 1 1-3.4L4 17c-1-1.5-1.4-3.2-1.4-5.1 0-5.2 4.2-9.4 9.4-9.4 2.5 0 4.9 1 6.7 2.8 1.8 1.8 2.8 4.2 2.8 6.7-.1 5.2-4.3 9.4-9.5 9.4zm5.1-7.1c-.3-.1-1.7-.9-1.9-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1s-1.2-.5-2.3-1.4c-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6s.3-.3.4-.5c.2-.1.3-.3.4-.5.1-.2 0-.4 0-.5C10 9 9.3 7.6 9 7c-.1-.4-.4-.3-.5-.3h-.6s-.4.1-.7.3c-.3.3-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.3-.3-.4-.6-.5z"/>
           </svg>
         </div>
-        Share on WhatsApp
+        Teile auf WhatsApp
       </div>
     </a>
 
     <a no-dynload
        class="resp-sharing-button__link"
-       href="https://telegram.me/share/url?text={{text}}&amp;url={{quote_url}}"
+       href="https://facebook.com/sharer/sharer.php?u={{quote_url}}"
        target="_blank"
        rel="noreferrer"
-       aria-label="Share on Telegram">
-      <div class="resp-sharing-button resp-sharing-button--telegram resp-sharing-button--large">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
+       aria-label="Teile auf Facebook">
+      <div class="resp-sharing-button resp-sharing-button--facebook">
+        <div class="resp-sharing-button__icon" aria-hidden="true">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path stroke-width="1.5px" d="M.707 8.475C.275 8.64 0 9.508 0 9.508s.284.867.718 1.03l5.09 1.897 1.986 6.38a1.102 1.102 0 0 0 1.75.527l2.96-2.41a.405.405 0 0 1 .494-.013l5.34 3.87a1.1 1.1 0 0 0 1.046.135 1.1 1.1 0 0 0 .682-.803l3.91-18.795A1.102 1.102 0 0 0 22.5.075L.706 8.475z"/>
+            <path d="M18.77 7.5H14.5V5.6c0-.9.6-1.1 1-1.1h3V.54L14.17.53C10.24.54 9.5 3.48 9.5 5.37V7.5h-3v4h3v12h5v-12h3.85l.42-4z"/>
           </svg>
         </div>
-        Share on Telegram
-      </div>
-    </a>
-
-    <a no-dynload
-       class="resp-sharing-button__link"
-       href="{{fix_url(f'/troet?save=sure&text={text}%0A{quote_url}')}}"
-       target="_blank"
-       rel="noreferrer"
-       aria-label="Toot">
-      <div class="resp-sharing-button resp-sharing-button--mastodon resp-sharing-button--large"
-           tooltip="Share on Mastodon">
-        <div class="resp-sharing-button__icon resp-sharing-button__icon--normal"
-             aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="61.076954mm" height="65.47831mm" viewBox="0 0 216.4144 232.00976">
-            <path fill="#fff" d="M211.80734 139.0875c-3.18125 16.36625-28.4925 34.2775-57.5625 37.74875-15.15875 1.80875-30.08375 3.47125-45.99875 2.74125-26.0275-1.1925-46.565-6.2125-46.565-6.2125 0 2.53375.15625 4.94625.46875 7.2025 3.38375 25.68625 25.47 27.225 46.39125 27.9425 21.11625.7225 39.91875-5.20625 39.91875-5.20625l.8675 19.09s-14.77 7.93125-41.08125 9.39c-14.50875.7975-32.52375-.365-53.50625-5.91875C9.23234 213.82 1.40609 165.31125.20859 116.09125c-.365-14.61375-.14-28.39375-.14-39.91875 0-50.33 32.97625-65.0825 32.97625-65.0825C49.67234 3.45375 78.20359.2425 107.86484 0h.72875c29.66125.2425 58.21125 3.45375 74.8375 11.09 0 0 32.975 14.7525 32.975 65.0825 0 0 .41375 37.13375-4.59875 62.915"/>
-            <path fill="#2b90d9" d="M177.50984 80.077v60.94125h-24.14375v-59.15c0-12.46875-5.24625-18.7975-15.74-18.7975-11.6025 0-17.4175 7.5075-17.4175 22.3525v32.37625H96.20734V85.42325c0-14.845-5.81625-22.3525-17.41875-22.3525-10.49375 0-15.74 6.32875-15.74 18.7975v59.15H38.90484V80.077c0-12.455 3.17125-22.3525 9.54125-29.675 6.56875-7.3225 15.17125-11.07625 25.85-11.07625 12.355 0 21.71125 4.74875 27.8975 14.2475l6.01375 10.08125 6.015-10.08125c6.185-9.49875 15.54125-14.2475 27.8975-14.2475 10.6775 0 19.28 3.75375 25.85 11.07625 6.36875 7.3225 9.54 17.22 9.54 29.675"/>
-          </svg>
-        </div>
-        Troet!
+        Teile auf Facebook
       </div>
     </a>
   </div>

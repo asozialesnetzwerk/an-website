@@ -26,7 +26,10 @@
     font-size: 1rem;
 }
 
-[tooltip]:hover::after, [tooltip]:hover::before {
+[tooltip]:hover::after,
+[tooltip]:hover::before,
+[tooltip]:focus::after,
+[tooltip]:focus::before {
     /* make tooltip and triangle visible */
     display: inherit;
     opacity: 1;
