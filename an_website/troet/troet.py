@@ -33,7 +33,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class Troeter(HTMLRequestHandler):  # TODO: Test this!
+class Troeter(HTMLRequestHandler):
     """The request handler that makes tooting easier."""
 
     def saved_mastodon_instance(self) -> None | str:
@@ -42,8 +42,6 @@ class Troeter(HTMLRequestHandler):  # TODO: Test this!
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the page."""
-        if head:
-            return
         text: str = self.get_argument("text", default="") or ""
         instance: None | str = self.get_argument("instance", default=None)
         save: bool = self.get_bool_argument("save", False)
@@ -51,7 +49,7 @@ class Troeter(HTMLRequestHandler):  # TODO: Test this!
         if not instance:
             instance = self.saved_mastodon_instance()
 
-        if instance and save:
+        if instance:
             if "://" not in instance:
                 instance = f"https://{instance}"
             scheme, netloc = urlsplit(instance)[:2]
@@ -69,6 +67,9 @@ class Troeter(HTMLRequestHandler):  # TODO: Test this!
                         f"{instance}/share?{urlencode({'text': text})}"
                     )
                     return
+
+        if head:
+            return
 
         await self.render(
             "pages/troet.html",

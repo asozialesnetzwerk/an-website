@@ -66,6 +66,13 @@ async def test_setting_stuff_without_cookies(
         )
 
 
+def parse_cookie(cookie: str) -> SimpleCookie[str]:
+    """Parse a cookie string to a SimpleCookie."""
+    simple_cookie: SimpleCookie[str] = SimpleCookie()
+    simple_cookie.load(cookie)
+    return simple_cookie
+
+
 async def test_setting_stuff_and_saving_to_cookies(
     # pylint: disable=redefined-outer-name
     fetch: FetchCallable,
@@ -98,8 +105,7 @@ async def test_setting_stuff_and_saving_to_cookies(
             assert response.effective_url.endswith("/einstellungen")
 
         for cookie_header in response.headers.get_list("Set-Cookie"):
-            cookie = SimpleCookie()  # type: ignore[var-annotated]
-            cookie.load(cookie_header)
+            cookie = parse_cookie(cookie_header)
             assert len(cookie) == 1
             morsel = cookie[tuple(cookie)[0]]
             assert morsel["expires"]

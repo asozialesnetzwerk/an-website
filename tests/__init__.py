@@ -275,7 +275,7 @@ def assert_valid_html_response(
     response: tornado.httpclient.HTTPResponse,
     code: int = 200,
     effective_url: None | str = None,
-) -> etree.ElementTree:
+) -> tornado.httpclient.HTTPResponse:
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "text/html; charset=UTF-8", code)
     body = response.body.decode("utf-8")
@@ -293,7 +293,7 @@ def assert_valid_html_response(
     matches = re.findall(r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8"))
     assert not matches or print(effective_url, matches)
 
-    return root
+    return response
 
 
 def assert_valid_rss_response(

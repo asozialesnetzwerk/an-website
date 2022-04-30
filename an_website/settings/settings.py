@@ -14,9 +14,6 @@
 """The settings page used to change settings."""
 from __future__ import annotations
 
-import datetime
-from typing import Any
-
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
 
@@ -39,31 +36,6 @@ def get_module_info() -> ModuleInfo:
 
 class SettingsPage(HTMLRequestHandler):
     """The request handler for the settings page."""
-
-    def set_cookie(  # pylint: disable=too-many-arguments
-        self,
-        name: str,
-        value: str | bytes,
-        domain: None | str = None,
-        expires: None | float | tuple[int, ...] | datetime.datetime = None,
-        path: str = "/",
-        expires_days: None | float = 365,  # changed
-        **kwargs: Any,
-    ) -> None:
-        """Override the set_cookie method to set expires days."""
-        if "samesite" not in kwargs:
-            # default for same site should be strict
-            kwargs["samesite"] = "Strict"
-
-        super().set_cookie(
-            name,
-            value,
-            domain,
-            expires,
-            path,
-            expires_days,
-            **kwargs,
-        )
 
     def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the settings page."""

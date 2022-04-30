@@ -191,6 +191,31 @@ class BaseRequestHandler(RequestHandler):
                         bool_to_str(self.is_authorized(permission)),
                     )
 
+    def set_cookie(  # pylint: disable=too-many-arguments
+        self,
+        name: str,
+        value: str | bytes,
+        domain: None | str = None,
+        expires: None | float | tuple[int, ...] | datetime = None,
+        path: str = "/",
+        expires_days: None | float = 365,  # changed
+        **kwargs: Any,
+    ) -> None:
+        """Override the set_cookie method to set expires days."""
+        if "samesite" not in kwargs:
+            # default for same site should be strict
+            kwargs["samesite"] = "Strict"
+
+        super().set_cookie(
+            name,
+            value,
+            domain,
+            expires,
+            path,
+            expires_days,
+            **kwargs,
+        )
+
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
     ) -> None:
