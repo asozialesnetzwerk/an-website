@@ -38,7 +38,7 @@ flake8-no-pep420==2.2.0
 flake8-polyfill==1.0.2
 flake8==4.0.1
 frozenlist==1.3.0
-funcparserlib==1.0.0a1
+funcparserlib==1.0.0a2
 get-version==3.5.4
 git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
 git+https://github.com/urllib3/PySocks.git@f4c3cd9897898de69e136c92fd957fd989ee08ec#egg=pysocks
@@ -54,6 +54,7 @@ jxlpy==0.9.1
 lazy-object-proxy==1.7.1
 lxml==4.8.0
 mccabe==0.6.1
+mpmath==1.2.1
 multidict==6.0.2
 mypy-extensions==0.4.3
 mypy==0.950
@@ -95,6 +96,7 @@ setuptools==62.1.0
 six==1.16.0
 snowballstemmer==2.2.0
 soupsieve==2.3.2.post1
+sympy==1.10.1
 toml==0.10.2
 tomli==2.0.1
 tornado==6.1
@@ -103,10 +105,11 @@ types-orjson==3.6.2
 types-pillow==9.0.14
 types-python-dateutil==2.8.14
 types-redis==4.2.0
-types-requests==2.27.24
-types-urllib3==1.26.13
+types-requests==2.27.25
+types-urllib3==1.26.14
 typing-extensions==4.2.0
 tzdata==2022.1
+ultradict==0.0.4
 urllib3==1.26.9
 uvloop==0.16.0
 virtualenv-clone==0.5.7

@@ -16,119 +16,112 @@
 from __future__ import annotations
 
 import inspect
+import re
+from collections.abc import Callable
+from json.encoder import JSONEncoder
+from typing import IO, Any, Protocol, TypeVar
 
 import orjson
 
-# pylint: disable=invalid-name, missing-function-docstring
-# pylint: disable=too-many-locals, unused-argument
+_T_co = TypeVar("_T_co", covariant=True)
 
 
-def dump(  # type: ignore  # noqa: D103
-    obj,
-    fp,
-    *,
-    skipkeys=False,
-    ensure_ascii=True,
-    check_circular=True,
-    allow_nan=True,
-    cls=None,
-    indent=None,
-    separators=None,
-    default=None,
-    sort_keys=False,
-    **kw,
-):
-    fp.write(
-        dumps(  # type: ignore
-            obj,
-            skipkeys=skipkeys,
-            ensure_ascii=ensure_ascii,
-            check_circular=check_circular,
-            allow_nan=allow_nan,
-            cls=cls,
-            indent=indent,
-            separators=separators,
-            default=default,
-            sort_keys=sort_keys,
-            **kw,
+class SupportsRead(Protocol[_T_co]):  # noqa: D101
+    # pylint: disable=missing-class-docstring, too-few-public-methods
+    def read(self, __length: int = ...) -> _T_co:
+        # pylint: disable=missing-function-docstring
+        ...
+
+
+def get_caller_name() -> None | str:  # noqa: D103
+    # pylint: disable=missing-function-docstring
+    try:
+        frame = inspect.currentframe()
+        frame = frame.f_back if frame else None
+        if not (frame and "__name__" in frame.f_globals):
+            return None
+        name = frame.f_globals["__name__"]
+        while (  # pylint: disable=while-used
+            frame
+            and "__name__" in frame.f_globals
+            and frame.f_globals["__name__"] == name
+        ):
+            frame = frame.f_back
+        caller = (
+            frame.f_globals["__name__"]
+            if frame and "__name__" in frame.f_globals
+            else None
         )
-    )
+    finally:
+        del frame
+    return caller  # type: ignore[no-any-return]
 
 
-def dumps(  # type: ignore  # noqa: D103
-    obj,
+def dumps(  # noqa: C901, D103
+    obj: Any,
     *,
-    skipkeys=False,
-    ensure_ascii=True,
-    check_circular=True,
-    allow_nan=True,
-    cls=None,
-    indent=None,
-    separators=None,
-    default=None,
-    sort_keys=False,
-    **kw,
-):
+    skipkeys: bool = False,
+    ensure_ascii: bool = True,
+    check_circular: bool = True,
+    allow_nan: bool = True,
+    cls: None | type[JSONEncoder] = None,
+    indent: None | int | str = None,
+    separators: None | tuple[str, str] = None,
+    default: None | Callable[[Any], Any] = None,
+    sort_keys: bool = False,
+    **kwargs: Any,
+) -> str:
+    # pylint: disable=missing-function-docstring
+    output: str | bytes
+    caller = get_caller_name()
+    option = orjson.OPT_SERIALIZE_NUMPY
+    if caller == "tornado.escape":
+        option |= orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
+    else:
+        option |= orjson.OPT_PASSTHROUGH_DATACLASS
+    if sort_keys:
+        option |= orjson.OPT_SORT_KEYS
+    if indent is not None:
+        option |= orjson.OPT_INDENT_2
     if cls is not None:
         _ = cls(
             skipkeys=skipkeys,
             ensure_ascii=ensure_ascii,
             check_circular=check_circular,
             allow_nan=allow_nan,
-            indent=indent,
+            indent=indent,  # type: ignore[arg-type]
             separators=separators,
             default=default,
             sort_keys=sort_keys,
-            **kw,
+            **kwargs,
         )
         default = _.default
-    decode = True
-    option = orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z  # fmt: skip
-    caller = inspect.currentframe().f_back.f_globals["__name__"]  # type: ignore[union-attr]
-    if caller == "elasticsearch.serializer":
-        decode = False
-    if sort_keys:
-        option |= orjson.OPT_SORT_KEYS
-    if indent is not None:
-        option |= orjson.OPT_INDENT_2
-    json = orjson.dumps(obj, default, option)
-    if decode:
-        return json.decode("utf-8")
-    return json
+    output = orjson.dumps(obj, default, option)
+    if indent is not None and indent not in {2, "  "}:
+        if isinstance(indent, int):
+            indent = " " * indent
+        output = re.sub(
+            rb"(?m)^\s+",
+            lambda match: match.group(0).replace(
+                b"  ", str(indent).encode("utf-8")
+            ),
+            output,
+        )
+    if caller != "elasticsearch.serializer":
+        output = output.decode("utf-8")
+    return output  # type: ignore[return-value]
 
 
-def load(  # type: ignore  # noqa: D103
-    fp,
-    *,
-    cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
-    **kw,
-):
-    return loads(  # type: ignore
-        fp.read(),
-        cls=cls,
-        object_hook=object_hook,
-        parse_float=parse_float,
-        parse_int=parse_int,
-        parse_constant=parse_constant,
-        object_pairs_hook=object_pairs_hook,
-        **kw,
-    )
+def dump(obj: Any, fp: IO[str], **kwargs: Any) -> None:  # noqa: D103
+    # pylint: disable=invalid-name, missing-function-docstring
+    fp.write(dumps(obj, **kwargs))
 
 
-def loads(  # type: ignore  # noqa: D103
-    s,
-    *,
-    cls=None,
-    object_hook=None,
-    parse_float=None,
-    parse_int=None,
-    parse_constant=None,
-    object_pairs_hook=None,
-    **kw,
-):
+def loads(s: str | bytes, **kwargs: Any) -> Any:  # noqa: D103
+    # pylint: disable=invalid-name, missing-function-docstring, unused-argument
     return orjson.loads(s)
+
+
+def load(fp: SupportsRead[str | bytes], **kwargs: Any) -> Any:  # noqa: D103
+    # pylint: disable=invalid-name, missing-function-docstring, unused-argument
+    return loads(fp.read())

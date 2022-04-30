@@ -18,6 +18,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from multiprocessing import Event
 
 import orjson
 from get_version import get_version
@@ -40,3 +41,5 @@ ORJSON_OPTIONS = (
 
 if sys.flags.dev_mode:
     NAME += "-dev"
+
+EVENT_SHUTDOWN = Event()

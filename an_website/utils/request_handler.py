@@ -44,6 +44,7 @@ from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis  # type: ignore
+from sympy.ntheory import isprime
 from tornado import web
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
@@ -126,26 +127,6 @@ class BaseRequestHandler(RequestHandler):
                 self.request.path
             ).description
 
-    def redirect(
-        self, url: str, permanent: bool = False, status: None | int = None
-    ) -> None:
-        """Send a redirect to the given (optionally relative) URL.
-
-        If the ``status`` argument is specified, that value is used as the
-        HTTP status code; otherwise either 308 (permanent) or 307
-        (temporary) is chosen based on the ``permanent`` argument.
-        The default is 307 (temporary).
-        """
-        if self._headers_written:
-            raise Exception("Cannot redirect after headers have been written")
-        if status is None:
-            status = 308 if permanent else 307
-        else:
-            assert isinstance(status, int) and 300 <= status <= 399
-        self.set_status(status)
-        self.set_header("Location", url)
-        self.finish()
-
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
 
@@ -190,9 +171,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Referrer-Policy", "same-origin")
         if self.settings.get("HSTS"):
             # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
-            self.set_header(
-                "Strict-Transport-Security", "max-age=31536000; preload"
-            )
+            self.set_header("Strict-Transport-Security", "max-age=63072000")
         if (
             _oa := self.settings.get("ONION_ADDRESS")
         ) and not self.request.host_name.endswith(".onion"):
@@ -744,7 +723,8 @@ class HTMLRequestHandler(BaseRequestHandler):
                 else str_to_bool(c, False),
                 "🥚": timedelta()
                 <= self.now.date() - easter(self.now.year)
-                < timedelta(days=2),
+                < timedelta(days=2)
+                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
                 "now": self.now,

@@ -2,62 +2,64 @@
 python_version = "3.10"
 
 [packages]
-aiohttp = {version="~=3.8", extras=["speedups"]}
-ansi2html = {version="~=1.7"}
-beautifulsoup4 = {version="~=4.10"}
-blake3 = {version=">=0.3,<2"}
-#defity = {version=">=0.3,<2"}
-defusedxml = {version=">=0.7.1,<2"}
-dill = {version=">=0.3.4,<2"}
-ecs-logging = {version="~=1.1"}
-elastic-apm = {version="~=6.9"}
-elastic-enterprise-search = {version="~=7.17"}
-elasticsearch = {version="~=7.17", extras=["async"]}
-emoji = {version="~=1.7"}
-funcparserlib = {version=">=1.0.0a0,<2"}
-get_version = {version=">=3.5.4,<4"}
-hyrule = {version=">=0.1,<2"}
-jxlpy = {version=">=0.9,<2"}
-lxml = {version="~=4.8"}
-namedthreads = {version="*"}
-numpy = {version="~=1.22"}
-orjson = {version="~=3.6"}
-Pillow = {version="~=9.1"}
-pycryptodome = {version="~=3.14"}
-pycurl = {version="~=7.45"}
-python-dateutil = {version="~=2.8"}
-python-Levenshtein = {version=">=0.12.2,<2"}
-redis = {version="~=4.2", extras=["hiredis"]}
-#regex = {version=">=2022.3.15"}
-tornado = {version="~=6.1"}
-tzdata = {version=">=2022.1"}
-uvloop = {version=">=0.16,<2"}
+aiohttp = {version = "==3.*", extras = ["speedups"]}
+ansi2html = {version = "==1.*"}
+beautifulsoup4 = {version = "==4.*"}
+blake3 = {version = "<2"}
+#defity = {version = "<2"}
+defusedxml = {version = "<2"}
+dill = {version = "<2"}
+ecs-logging = {version = "==1.*"}
+elastic-apm = {version = "==6.*"}
+elastic-enterprise-search = {version = "==7.*"}
+elasticsearch = {version = "==7.*", extras = ["async"]}
+emoji = {version = "==1.*"}
+funcparserlib = {version = ">=1.0.0a0,<2"}
+get_version = {version = "==3.*"}
+hyrule = {version = "<2"}
+jxlpy = {version = "<2"}
+lxml = {version = "==4.*"}
+namedthreads = {version = "*"}
+numpy = {version = "==1.*"}
+orjson = {version = "==3.*"}
+Pillow = {version = "==9.*"}
+pycryptodome = {version = "==3.*"}
+pycurl = {version = "*"}
+python-dateutil = {version = "==2.*"}
+python-Levenshtein = {version = "<2"}
+redis = {version = "==4.*", extras = ["hiredis"]}
+#regex = {version = "*"}
+sympy = {version = "==1.*"}
+tornado = {version = "==6.*"}
+tzdata = {version = "==2022.1"}
+UltraDict = {version = "<2"}
+uvloop = {version = "<2"}
 
 [dev-packages]
-autoflake = {version="~=1.4"}
-black = {version="~=22.3"}
-coverage = {version="~=6.3"}
-flake8 = {version="~=4.0"}
-flake8-bugbear = {version="*"}
-flake8-docstrings = {version="~=1.6"}
-flake8-no-pep420 = {version="~=2.2"}
-html5lib = {version="~=1.1"}
-isort = {version="~=5.10"}
-mypy = {version=">=0.942,<2"}
-pep8-naming = {version=">=0.12.1,<2"}
-pipenv = {version="*"}
-pre-commit = {version="~=2.17"}
-pylint = {version="~=2.13"}
-pyrepl = {git="git+https://github.com/blueyed/pyrepl.git", ref="release-0.10.0"}
-pysocks = {git="git+https://github.com/urllib3/PySocks.git", ref="main"}
-pytest = {version="~=7.1"}
-pytest-cov = {version="~=3.0"}
-pytest-tornasync = {version=">=0.6,<2"}
-rcssmin = {version="~=1.1"}
-rjsmin = {version="~=1.2"}
-types-beautifulsoup4 = {version="~=4.10"}
-types-orjson = {version="~=3.6"}
-types-Pillow = {version="~=9.0"}
-types-python-dateutil = {version="~=2.8"}
-types-redis = {version="~=4.1"}
-types-requests = {version="~=2.27"}
+autoflake = {version = "==1.*"}
+black = {version = "==22.*"}
+coverage = {version = "==6.*"}
+flake8 = {version = "==4.*"}
+flake8-bugbear = {version = "*"}
+flake8-docstrings = {version = "==1.*"}
+flake8-no-pep420 = {version = "==2.*"}
+html5lib = {version = "==1.*"}
+isort = {version = "==5.*"}
+mypy = {version = "<2"}
+pep8-naming = {version = "<2"}
+pipenv = {version = "*"}
+pre-commit = {version = "==2.*"}
+pylint = {version = "==2.*"}
+pyrepl = {git = "git+https://github.com/blueyed/pyrepl.git", ref = "release-0.10.0"}
+pysocks = {git = "git+https://github.com/urllib3/PySocks.git", ref = "main"}
+pytest = {version = "==7.*"}
+pytest-cov = {version = "==3.*"}
+pytest-tornasync = {version = "<2"}
+rcssmin = {version = "==1.*"}
+rjsmin = {version = "==1.*"}
+types-beautifulsoup4 = {version = "==4.*"}
+types-orjson = {version = "==3.*"}
+types-Pillow = {version = "==9.*"}
+types-python-dateutil = {version = "==2.*"}
+types-redis = {version = "==4.*"}
+types-requests = {version = "==2.*"}

@@ -29,6 +29,7 @@ import dill as pickle  # type: ignore
 import elasticapm  # type: ignore
 from tornado.web import HTTPError
 
+from .. import EVENT_SHUTDOWN
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
 
@@ -169,6 +170,11 @@ class Backdoor(APIRequestHandler):
                     new_args.append(arg)
             exc.args = tuple(new_args)
             return await self.finish(pickle.dumps(exc, PICKLE_PROTOCOL))
+        except KeyboardInterrupt:
+            await self.finish(
+                pickle.dumps(SystemExit("Shutdown initiated."), PICKLE_PROTOCOL)
+            )
+            return EVENT_SHUTDOWN.set()
         return await self.finish(
             pickle.dumps(
                 {
@@ -208,17 +214,19 @@ class Backdoor(APIRequestHandler):
                     f"{self.redis_prefix}:backdoor-session:{session_id}"
                 )
                 if session_pickle:
-                    try:
-                        session = pickle.loads(
-                            base64.decodebytes(session_pickle.encode("utf-8"))
-                        )
-                    except Exception as exc:  # pylint: disable=broad-except
-                        logger.exception(exc)
-                        apm: None | elasticapm.Client = self.settings.get(
-                            "ELASTIC_APM_CLIENT"
-                        )
-                        if apm:
-                            apm.capture_exception()
+                    session = pickle.loads(
+                        base64.decodebytes(session_pickle.encode("utf-8"))
+                    )
+                    for key, value in session.items():
+                        try:
+                            session[key] = pickle.loads(value)
+                        except Exception as exc:  # pylint: disable=broad-except
+                            logger.exception(exc)
+                            apm: None | elasticapm.Client = self.settings.get(
+                                "ELASTIC_APM_CLIENT"
+                            )
+                            if apm:
+                                apm.capture_exception()
             self.sessions[session_id] = session
         return self.update_session(session)
 
@@ -233,7 +241,7 @@ class Backdoor(APIRequestHandler):
         session["settings"] = None
         for key, value in tuple(session.items()):
             try:
-                pickle.dumps(value, PICKLE_PROTOCOL)
+                session[key] = pickle.dumps(value, PICKLE_PROTOCOL)
             except Exception:  # pylint: disable=broad-except
                 del session[key]
         return bool(

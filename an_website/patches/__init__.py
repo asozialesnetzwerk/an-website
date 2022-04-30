@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Patches that break everything."""
+"""Patches that improve everything."""
 from __future__ import annotations
 
 import asyncio
@@ -20,9 +20,7 @@ import gc
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
-import signal
 import sys
-import types
 
 import certifi  # type: ignore
 import defusedxml  # type: ignore
@@ -33,7 +31,6 @@ import tornado.web
 import uvloop
 
 from .. import DIR as ROOT_DIR
-from ..utils.utils import anonymize_ip
 from . import json  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
@@ -44,13 +41,12 @@ DIR = os.path.dirname(__file__)
 def apply() -> None:
     """Apply the patches."""
     sys.setrecursionlimit(10_000)
-    signal.signal(signal.SIGHUP, signal_handler)
     if sys.flags.dev_mode:
         gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
         namedthreads.patch()
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
-    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore
+    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {"sure": True, "nope": False}
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -58,8 +54,9 @@ def apply() -> None:
         "tornado.curl_httpclient.CurlAsyncHTTPClient"
     )
     tornado.web.RedirectHandler.head = tornado.web.RedirectHandler.get
+    tornado.web.RequestHandler.redirect = redirect  # type: ignore[assignment]
     tornado.web.RequestHandler.SUPPORTED_METHODS = (
-        tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore
+        tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
         + (
             "PROPFIND",
             "BREW",
@@ -67,25 +64,27 @@ def apply() -> None:
         )
     )
     http.client.responses[420] = "Enhance Your Calm"
-    anonymize_logs()
     certifi.where = certifi.core.where = lambda: os.path.join(
         ROOT_DIR, "ca-bundle.crt"
     )
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
+    anonymize_logs()
 
 
-def signal_handler(  # noqa: D103
-    signalnum: int, frame: None | types.FrameType
-) -> None:
-    # pylint: disable=unused-argument, missing-function-docstring
-    if signalnum == signal.SIGHUP:
-        raise KeyboardInterrupt
+def patch_json() -> None:
+    """Replace json with orjson."""
+    stdlib_json.dump = json.dump
+    stdlib_json.dumps = json.dumps
+    stdlib_json.load = json.load
 
 
 def anonymize_logs() -> None:
     """Anonymize logs."""
-    tornado.web.RequestHandler._request_summary = (  # type: ignore
+    # pylint: disable=import-outside-toplevel
+    from ..utils.utils import anonymize_ip
+
+    tornado.web.RequestHandler._request_summary = (  # type: ignore[assignment]
         lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
         % (
             self.request.method,
@@ -93,7 +92,7 @@ def anonymize_logs() -> None:
             anonymize_ip(str(self.request.remote_ip)),
         )
     )
-    tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore
+    tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore[assignment]
         lambda self: "%s(%s)"  # pylint: disable=consider-using-f-string
         % (
             self.__class__.__name__,
@@ -111,9 +110,25 @@ def anonymize_logs() -> None:
     )
 
 
-def patch_json() -> None:
-    """Replace json with orjson."""
-    stdlib_json.dump = json.dump
-    stdlib_json.dumps = json.dumps
-    stdlib_json.load = json.load
-    stdlib_json.loads = json.loads
+def redirect(
+    self: tornado.web.RequestHandler,
+    url: str,
+    permanent: bool = False,
+    status: None | int = None,
+) -> None:
+    """Send a redirect to the given (optionally relative) URL.
+
+    If the ``status`` argument is specified, that value is used as the
+    HTTP status code; otherwise either 308 (permanent) or 307
+    (temporary) is chosen based on the ``permanent`` argument.
+    The default is 307 (temporary).
+    """
+    if self._headers_written:
+        raise Exception("Cannot redirect after headers have been written")
+    if status is None:
+        status = 308 if permanent else 307
+    else:
+        assert isinstance(status, int) and 300 <= status <= 399
+    self.set_status(status)
+    self.set_header("Location", url)
+    self.finish()

@@ -20,7 +20,7 @@ import os
 import random
 import re
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
@@ -60,7 +60,7 @@ class PageInfo:
     hidden: bool = False  # whether to hide this page info on the page
     short_name: None | str = None  # short name for the page
 
-    def search(self, query: str | list[str]) -> float:  # noqa: C901
+    def search(self, query: str | Sequence[str]) -> float:  # noqa: C901
         # pylint: disable=too-complex
         """
         Check whether this should be shown on the search page.
@@ -72,6 +72,7 @@ class PageInfo:
             return 0
 
         score: float = 0
+        words: Sequence[str]
 
         if isinstance(query, str):
             words = re.split(r"\s+", query)
@@ -141,7 +142,7 @@ class ModuleInfo(PageInfo):
 
         return ", ".join(self.keywords)
 
-    def search(self, query: str | list[str]) -> float:
+    def search(self, query: str | Sequence[str]) -> float:
         score = super().search(query)
 
         if len(self.sub_pages) > 0:

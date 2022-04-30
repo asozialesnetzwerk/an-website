@@ -24,6 +24,7 @@ import time
 from collections.abc import Awaitable, Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
+from multiprocessing import Value
 from typing import Any, Literal
 
 import elasticapm  # type: ignore
@@ -32,6 +33,7 @@ import tornado.web
 from redis.asyncio import Redis  # type: ignore
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
+from UltraDict import UltraDict  # type: ignore
 
 from .. import DIR as ROOT_DIR
 from .. import ORJSON_OPTIONS
@@ -42,14 +44,16 @@ DIR = os.path.dirname(__file__)
 
 logger = logging.getLogger(__name__)
 
-API_URL: str = "https://zitate.prapsschnalinen.de/api"
+API_URL = "https://zitate.prapsschnalinen.de/api"
 
-QUOTES_CACHE: dict[int, Quote] = {}
-AUTHORS_CACHE: dict[int, Author] = {}
-WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = {}
+# fmt: off
+QUOTES_CACHE: dict[int, Quote] = UltraDict(buffer_size=16384)
+AUTHORS_CACHE: dict[int, Author] = UltraDict(buffer_size=16384)
+WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = UltraDict(buffer_size=16384)
+# fmt: on
 
-MAX_QUOTES_ID: list[int] = [0]
-MAX_AUTHORS_ID: list[int] = [0]
+MAX_QUOTES_ID = Value("Q", 0)
+MAX_AUTHORS_ID = Value("Q", 0)
 
 
 @dataclass
@@ -332,7 +336,7 @@ def get_author_updated_with(author_id: int, author_name: str) -> Author:
         Author(author_id, author_name),
     )
     author.update_name(author_name)
-    MAX_AUTHORS_ID[0] = max(MAX_AUTHORS_ID[0], author_id)
+    MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
     return author
 
 
@@ -370,13 +374,14 @@ def parse_quote(json_data: dict[str, Any]) -> Quote:
         ),
     )
 
-    MAX_QUOTES_ID[0] = max(MAX_QUOTES_ID[0], quote.id)
+    MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
 
     quote.update_quote(
         quote_str,
         author.id,
         author.name,
     )
+
     return quote
 
 
@@ -582,12 +587,12 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.randint(1, MAX_QUOTES_ID[0])
+    return random.randint(1, MAX_QUOTES_ID.value)
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.randint(1, MAX_AUTHORS_ID[0])
+    return random.randint(1, MAX_AUTHORS_ID.value)
 
 
 def get_random_id() -> tuple[int, int]:

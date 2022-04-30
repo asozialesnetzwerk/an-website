@@ -21,13 +21,18 @@ import importlib
 import logging
 import os
 import re
+import signal
 import ssl
 import sys
+import types
 from collections.abc import Callable, Coroutine
+from multiprocessing import process
 from pathlib import Path
 from typing import Any
 
 import orjson
+import tornado.netutil
+import tornado.process
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
@@ -38,11 +43,13 @@ from redis.asyncio import (  # type: ignore
     SSLConnection,
     UnixDomainSocketConnection,
 )
+from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 
-from . import DIR, NAME, TEMPLATES_DIR, VERSION
+from . import DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, VERSION
 from .contact.contact import apply_contact_stuff_to_app
+from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Permissions, Timer, time_function
@@ -93,6 +100,7 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 f".{module_name}",
                 package="an_website",
             )
+
             if "get_module_info" not in dir(module):
                 errors.append(
                     f"{os.path.join(DIR, potential_module, potential_file)} "
@@ -102,21 +110,12 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 )
                 continue
 
-            if (
-                (  # check if the annotations specify the return
-                    # type as Module info
-                    module.get_module_info.__annotations__.get("return", "")
-                    == "ModuleInfo"
-                )
-                # check if returned module_info is type ModuleInfo
-                and isinstance(
-                    module_info := module.get_module_info(),
-                    ModuleInfo,
-                )
+            if isinstance(
+                module_info := module.get_module_info(),
+                ModuleInfo,
             ):
                 module_infos.append(module_info)
                 loaded_modules.append(module_name)
-
                 if import_timer.stop() > 0.1:
                     logger.warning(
                         "Import of %s took %ss. "
@@ -143,28 +142,29 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         logger.error("\n".join(errors))
 
     logger.info(
-        "loaded %d modules: '%s'",
+        "Loaded %d modules: '%s'",
         len(loaded_modules),
         "', '".join(loaded_modules),
     )
+
     logger.info(
-        "ignored %d modules: '%s'",
+        "Ignored %d modules: '%s'",
         len(IGNORED_MODULES),
         "', '".join(IGNORED_MODULES),
     )
 
     sort_module_infos(module_infos)
 
-    # make module_infos immutable so it never changes:
+    # make module_infos immutable so it never changes
     return tuple(module_infos)
 
 
 def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
     """Sort a list of module info and move the main page to the top."""
-    # sort it so the order makes sense.
+    # sort it so the order makes sense
     module_infos.sort()
 
-    # move the main page to the top:
+    # move the main page to the top
     for i, info in enumerate(module_infos):
         if info.path == "/":
             module_infos.insert(0, module_infos.pop(i))
@@ -226,12 +226,11 @@ def get_all_handlers(
         (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
     )
 
-    if sys.flags.dev_mode:
-        logger.debug(
-            "loaded %d handlers: %s",
-            len(handlers),
-            "; ".join(str(handler) for handler in handlers),
-        )
+    logger.debug(
+        "Loaded %d handlers: %s",
+        len(handlers),
+        "; ".join(str(handler) for handler in handlers),
+    )
 
     return handlers
 
@@ -248,12 +247,11 @@ def make_app() -> str | Application:
         )
     handlers = get_all_handlers(module_infos)
     return Application(
-        handlers,  # type: ignore
+        handlers,  # type: ignore[arg-type]
         MODULE_INFOS=module_infos,
         HANDLERS=handlers,
         # General settings
         autoreload=False,
-        compress_response=True,
         debug=bool(sys.flags.dev_mode),
         default_handler_class=NotFoundHandler,
         websocket_ping_interval=10,
@@ -291,7 +289,6 @@ def apply_config_to_app(
         if key_perms[0]
     }
 
-    # the onion address of this website
     onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)
     app.settings["ONION_ADDRESS"] = onion_address
     if onion_address is None:
@@ -299,7 +296,6 @@ def apply_config_to_app(
     else:
         app.settings["ONION_PROTOCOL"] = onion_address.split("://")[0]
 
-    # whether ratelimits are enabled
     app.settings["RATELIMITS"] = config.getboolean(
         "GENERAL", "RATELIMITS", fallback=False
     )
@@ -624,19 +620,44 @@ def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
             )
 
 
+async def wait_for_shutdown() -> None:
+    """Wait for the shutdown event."""
+    loop = asyncio.get_running_loop()
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
+        await asyncio.sleep(1)
+    loop.stop()
+
+
+def signal_handler(  # noqa: D103
+    signalnum: int, frame: None | types.FrameType
+) -> None:
+    # pylint: disable=unused-argument, missing-function-docstring
+    if signalnum in {signal.SIGINT, signal.SIGTERM}:
+        EVENT_SHUTDOWN.set()
+
+
 def main() -> None | int | str:
-    # pylint: disable=import-outside-toplevel, unused-variable
+    # pylint: disable=too-complex, too-many-branches
+    # pylint: disable=too-many-locals, too-many-statements
     """
     Start everything.
 
     This is the main function that is called when running this file.
     """
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     config = configparser.ConfigParser(interpolation=None)
     config.read("config.ini", encoding="utf-8")
 
     setup_logging(config)
 
-    logger.warning("Starting %s %s", NAME, VERSION)
+    logger.info("Starting %s %s", NAME, VERSION)
+
+    if sys.platform == "win32":
+        logger.warning(
+            "Please note that running on Windows is not officially supported"
+        )
 
     # read ignored modules from the config
     for module_name in config.get(
@@ -652,21 +673,70 @@ def main() -> None | int | str:
 
     apply_config_to_app(app, config)
 
+    setup_app_search(app)
+    setup_apm(app)
+
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
-    port: int = config.getint("GENERAL", "PORT", fallback=8080)
-    server = app.listen(
-        port,
-        "localhost" if behind_proxy else "",
+    server = HTTPServer(
+        app,
         ssl_options=get_ssl_context(config),
         decompress_request=True,
         xheaders=behind_proxy,
     )
 
-    setup_apm(app)
-    setup_app_search(app)
+    containerized = os.getenv("container") or os.path.exists("/.dockerenv")
+
+    port = config.getint(
+        "GENERAL", "PORT", fallback=8888 if containerized else None
+    )
+
+    sockets = []
+
+    if port:
+        sockets.extend(
+            tornado.netutil.bind_sockets(
+                port, "localhost" if behind_proxy else ""
+            )
+        )
+
+    unix_socket_path = config.get(
+        "GENERAL",
+        "UNIX_SOCKET_PATH",
+        fallback="/data" if containerized else None,
+    )
+
+    if unix_socket_path:
+        os.makedirs(unix_socket_path, exist_ok=True)
+        sockets.append(
+            tornado.netutil.bind_unix_socket(
+                os.path.join(unix_socket_path, f"{NAME}.sock")
+            )
+        )
+
+    if hasattr(os, "fork"):
+        tornado.process.fork_processes(sys.flags.dev_mode)
+        # yeet all children (there should be none, but do it regardless, just in case)
+        process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
+        del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+        del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+        del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+
+    task_id = tornado.process.task_id()
+
+    if unix_socket_path and task_id is not None:
+        sockets.append(
+            tornado.netutil.bind_unix_socket(
+                os.path.join(unix_socket_path, f"{NAME}.{task_id}.sock")
+            )
+        )
+
+    server.add_sockets(sockets)
+
+    # pylint: disable=import-outside-toplevel, unused-variable
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
+    wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
     # fmt: off
     setup_es_task = loop.create_task(setup_elasticsearch(app, False))  # noqa: F841
@@ -675,9 +745,10 @@ def main() -> None | int | str:
 
     from .quotes import update_cache_periodically
 
-    quotes_cache_update_task = loop.create_task(  # noqa: F841
-        update_cache_periodically(app, setup_redis_task)
-    )
+    if not task_id:
+        quotes_cache_update_task = loop.create_task(  # noqa: F841
+            update_cache_periodically(app, setup_redis_task)
+        )
 
     try:
         loop.run_forever()
@@ -697,4 +768,5 @@ def main() -> None | int | str:
                 loop.run_until_complete(loop.shutdown_default_executor())
             finally:
                 loop.close()
+
     return None
