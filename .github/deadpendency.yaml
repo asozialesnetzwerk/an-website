@@ -9,4 +9,6 @@ ignore-failures:
       # backdoor client:
       - pyrepl
       - pysocks
-      - funcparserlib  # only for hy, which could be used over backdoor
+      # only for hy, which could be used over backdoor
+      - funcparserlib
+      - appdirs
