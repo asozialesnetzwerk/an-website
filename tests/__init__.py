@@ -93,6 +93,7 @@ def app() -> tornado.web.Application:
     assert isinstance(app, tornado.web.Application)
 
     app.settings["debug"] = True
+    app.settings["TESTING"] = True
 
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
@@ -117,18 +118,6 @@ def assert_url_query(url: str, /, **args: None | str) -> None:
             assert query[key] == value or print(url, key, value)
 
 
-async def make_effective_url_relative(
-    response: Awaitable[tornado.httpclient.HTTPResponse],
-    host: str,
-) -> tornado.httpclient.HTTPResponse:
-    """Add effective_url_path to response."""
-    _response = await response
-    _response.effective_url_path = (  # type: ignore[attr-defined]
-        _response.effective_url.removeprefix(host)
-    )
-    return _response
-
-
 @pytest.fixture
 def fetch(
     http_client: tornado.httpclient.AsyncHTTPClient,
@@ -137,30 +126,32 @@ def fetch(
     """Fetch a URL."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
     host = f"http://127.0.0.1:{http_server_port[1]}"
-    return lambda url, **kwargs: make_effective_url_relative(
-        http_client.fetch(
-            url
-            if url.startswith("http://") or url.startswith("https://")
-            else f"{host}/{url.removeprefix('/')}",
-            **{"raise_error": False, **kwargs},
-        ),
-        host,
+    return lambda url, **kwargs: http_client.fetch(
+        url
+        if url.startswith("http://") or url.startswith("https://")
+        else f"{host}/{url.removeprefix('/')}",
+        **{"raise_error": False, "follow_redirects": False, **kwargs},
     )
 
 
-def assert_valid_redirect(
-    response: tornado.httpclient.HTTPResponse,
-    new_url: str,
+async def assert_valid_redirect(
+    _fetch: FetchCallable,
+    path: str,
+    new_path: str,
+    codes: frozenset[int] | set[int] = frozenset({307, 308}),
+    **kwargs: Any,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid redirect to a new url."""
-    effective_url_path = getattr(response, "effective_url_path", None)
-    if effective_url_path:
-        assert effective_url_path == new_url or print(
-            "assertion failed", effective_url_path, "≠", new_url
-        )
-    else:
-        print("Effective URL path missing for", response.effective_url)
-    assert response.effective_url.endswith(new_url)
+    response = await _fetch(path, **kwargs)
+    assert response.code in codes or print(response.code, path, codes)
+
+    base_url = response.request.url.removesuffix(path)
+
+    real_new_path = response.headers["Location"].removeprefix(base_url) or "/"
+    if real_new_path.startswith("?"):
+        real_new_path = f"/{real_new_path}"
+    assert real_new_path == new_path or print(path, new_path, real_new_path)
+
     return response
 
 
@@ -243,7 +234,8 @@ async def check_html_page(
         ):
             checked_urls.add(link.removeprefix(prot_and_host) or "/")
             _response = assert_valid_response(
-                await _fetch(link), content_type=None  # ignore Content-Type
+                await _fetch(link, follow_redirects=True),
+                content_type=None,  # ignore Content-Type
             )
             if (
                 _response.headers["Content-Type"] == "text/html; charset=UTF-8"

@@ -228,8 +228,9 @@ class BaseRequestHandler(RequestHandler):
             if self.redirect_to_canonical_domain():
                 return
 
-            if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
-                self.set_cookie("c", "s", expires_days=days / 24, path="/")
+            if not self.settings.get("TESTING"):
+                if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
+                    self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
 
@@ -478,7 +479,7 @@ class BaseRequestHandler(RequestHandler):
             url = urlsplit(
                 f"/redirect?to={quote(url.geturl())}&from={quote(this_url)}"
             )
-        path = new_path or url.path  # the path of the url
+        path = url.path if new_path is None else new_path  # the path of the url
         # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
         if "as_json" in query_args and query_args["as_json"] is False:
@@ -749,7 +750,9 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "🥚": timedelta()
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2)
-                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
+                or isprime(  # type: ignore[no-untyped-call]
+                    69 if self.settings.get("TESTING") else self.now.microsecond
+                ),
                 "dynload": self.get_dynload(),
                 "as_json": self.get_as_json(),
                 "now": self.now,

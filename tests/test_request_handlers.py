@@ -69,29 +69,28 @@ async def test_not_found_handler(
     """Check if the not found handler works."""
     await check_html_page(fetch, "/qwertzuiop", 404)
 
+    await assert_valid_redirect(fetch, "/services.html", "/services", {308})
+    await assert_valid_redirect(fetch, "/services/", "/services", {308})
+    await assert_valid_redirect(fetch, f"/services{'/'*8}", "/services", {308})
+
+    await assert_valid_redirect(fetch, "/serices/index.htm", "/serices", {308})
+    await assert_valid_redirect(fetch, "/serices", "/services", {307})
+
+    await assert_valid_redirect(fetch, "/serwizes", "/services", {307})
+    await assert_valid_redirect(fetch, "/service?x=y", "/services?x=y", {307})
+    await assert_valid_redirect(fetch, "/servces?x=y", "/services?x=y", {307})
+
+    await assert_valid_redirect(fetch, "/a?x=y", "/?x=y", {307})
+
+    await assert_valid_redirect(fetch, "/index.php", "/", {308})
     assert_valid_html_response(
-        assert_valid_redirect(await fetch("services/index.html"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("servvices/index.htm"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("serwizes"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("services/"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch(f"services{'/'*8}"), "/services")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("service?x=y"), "/services?x=y")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("servces?x=y"), "/services?x=y")
+        await fetch(
+            "/index.php", method="POST", allow_nonstandard_methods=True
+        ),
+        404,
     )
 
-    assert_valid_redirect(await fetch("a?x=y"), "/?x=y")
+    assert_valid_html_response(await fetch("/wp-login.php"), 469)
 
 
 async def test_page_crawling(
@@ -227,50 +226,38 @@ async def test_request_handlers2(
     assert "Onion-Location" not in response.headers
     assert_valid_html_response(response, effective_url="http://test.onion")
 
-    assert_valid_redirect(
-        await fetch("/redirect?to=/endpunkte?x=y"),
+    await assert_valid_redirect(
+        fetch,
+        "/redirect?to=/endpunkte?x=y",
         "/endpunkte?x=y",
     )
 
-    assert_valid_redirect(
-        await fetch(
-            "/redirect?theme=blue&x=y&to=/betriebszeit",
-        ),
+    await assert_valid_redirect(
+        fetch,
+        "/redirect?theme=blue&x=y&to=/betriebszeit",
         "/betriebszeit?theme=blue",
     )
-    assert_valid_redirect(
-        await fetch(
-            "/redirect?to=",
-            method="HEAD",
-        ),
-        "/",
-    )
-    assert_valid_redirect(
-        await fetch(
-            "/redirect?to=/",
-        ),
+    await assert_valid_redirect(fetch, "/redirect?to=", "/", method="HEAD")
+    await assert_valid_redirect(
+        fetch,
+        "/redirect?to=/",
         "/",
     )
     # no "to" query param, so redirect to main page
-    assert_valid_redirect(
-        await fetch(
-            "/redirect?theme=blue",
-        ),
+    await assert_valid_redirect(
+        fetch,
+        "/redirect?theme=blue",
         "/?theme=blue",
     )
     # no redirect:
-    assert "https://evil.com" in assert_valid_redirect(
+    assert "https://evil.com" in assert_valid_html_response(
         await fetch(
             "/redirect?theme=blue&from=/&to=https://evil.com",
-        ),
-        "/redirect?theme=blue&from=/&to=https://evil.com",
+        )
     ).body.decode("UTF-8")
-    assert_valid_redirect(
-        await fetch(
-            "/redirect?theme=blue&from=/&to=https://evil.com",
-            method="HEAD",
-        ),
+    await fetch(
         "/redirect?theme=blue&from=/&to=https://evil.com",
+        method="HEAD",
     )
 
     assert (
@@ -352,7 +339,7 @@ async def test_request_handlers(
     assert_valid_json_response(await fetch("/wiki?as_json=sure"))
     assert_valid_json_response(await fetch("/wortspiel-helfer?as_json=sure"))
 
-    assert_valid_redirect(await fetch("/chat"), "https://chat.asozial.org/")
+    await assert_valid_redirect(fetch, "/chat", "https://chat.asozial.org")
 
     response = await fetch("/host-info/uwu")
     assert response.code in {200, 503}
@@ -376,6 +363,20 @@ async def test_request_handlers(
         await fetch("/api/ping"), "text/plain; charset=utf-8"
     )
     assert response.body.decode() == "🏓"
+
+    for boolean in (False, True):
+        url = (
+            "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
+            f".umd{'.min' if boolean else ''}.js"
+        )
+        assert_valid_response(
+            await fetch(url, follow_redirects=True),
+            "application/javascript; charset=UTF-8",
+        )
+    assert_valid_response(
+        await fetch(url + ".map", follow_redirects=True),
+        "application/json; charset=UTF-8",
+    )
 
     for code in range(200, 599):
         if code not in (204, 304):

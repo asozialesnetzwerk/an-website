@@ -84,44 +84,33 @@ class SwappedWords(HTMLRequestHandler):
         """Use the text to display the HTML page."""
         check_text_too_long(text)
 
-        try:
-            if config_str is None:
-                _c = self.get_cookie(
-                    name="swapped-words-config",
-                    default=None,
-                )
-                if _c is not None:
-                    # decode the base64 text
-                    config_str = str(
-                        base64.b64decode(_c.encode("utf-8")), "utf-8"
-                    )
-            else:
-                # save the config in a cookie
-                self.set_cookie(
-                    name="swapped-words-config",
-                    value=str(
-                        # encode the config as base64
-                        base64.b64encode(config_str.encode("utf-8")),
-                        "utf-8",
-                    ),
-                    expires_days=1000,
-                    path=self.request.path,
-                    SameSite="Strict",
-                )
+        if config_str is None:
+            _c = self.get_cookie(
+                name="swapped-words-config",
+                default=None,
+            )
+            if _c is not None:
+                # decode the base64 text
+                config_str = str(base64.b64decode(_c.encode("utf-8")), "utf-8")
+        else:
+            # save the config in a cookie
+            self.set_cookie(
+                name="swapped-words-config",
+                value=str(
+                    # encode the config as base64
+                    base64.b64encode(config_str.encode("utf-8")),
+                    "utf-8",
+                ),
+                expires_days=1000,
+                path=self.request.path,
+                SameSite="Strict",
+            )
 
+        try:
             sw_config = (
                 DEFAULT_CONFIG
                 if config_str is None or str_to_bool(use_default_config)
                 else SwappedWordsConfig(config_str)
-            )
-
-            self.render(
-                "pages/swapped_words.html",
-                text=text,
-                output=sw_config.swap_words(text),
-                config=sw_config.to_config_str(),
-                MAX_CHAR_COUNT=MAX_CHAR_COUNT,
-                error_msg=None,
             )
         except InvalidConfigError as exc:
             self.set_status(400)
@@ -132,6 +121,15 @@ class SwappedWords(HTMLRequestHandler):
                 config=config_str,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(exc),
+            )
+        else:  # everything went well
+            self.render(
+                "pages/swapped_words.html",
+                text=text,
+                output=sw_config.swap_words(text),
+                config=sw_config.to_config_str(),
+                MAX_CHAR_COUNT=MAX_CHAR_COUNT,
+                error_msg=None,
             )
 
     def get(

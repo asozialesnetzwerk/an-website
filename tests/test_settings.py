@@ -55,6 +55,7 @@ async def test_setting_stuff_without_cookies(
             else "/einstellungen?theme=pink&no_3rd_party=sure&dynload=sure",
             method="POST",
             body=request_body,
+            follow_redirects=True,
         )
         assert_valid_response(response, content_type="text/html; charset=UTF-8")
         assert_url_query(

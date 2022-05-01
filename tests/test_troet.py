@@ -15,7 +15,13 @@
 
 from __future__ import annotations
 
-from . import FetchCallable, app, assert_valid_html_response, fetch
+from . import (
+    FetchCallable,
+    app,
+    assert_valid_html_response,
+    assert_valid_redirect,
+    fetch,
+)
 from .test_settings import parse_cookie
 
 assert fetch and app
@@ -60,25 +66,17 @@ async def test_troet_page(
     assert morsel.key == "mastodon-instance"
     assert morsel.value == "https://example.test"
 
-    response = await fetch(
+    await assert_valid_redirect(
+        fetch,
         "/troet?text=xyz",
-        follow_redirects=False,
-        headers={
-            "Cookie": cookies[0],
-        },
+        "https://example.test/share?text=xyz",
+        {307},
+        headers={"Cookie": cookies[0]},
     )
-    assert response.code == 307
-    assert response.headers["Location"] == "https://example.test/share?text=xyz"
-
-    response = await fetch(
+    await assert_valid_redirect(
+        fetch,
         "/troet?text=xyz%20123",
-        follow_redirects=False,
-        headers={
-            "Cookie": cookies[0],
-        },
-    )
-    assert response.code == 307
-    assert (
-        response.headers["Location"]
-        == "https://example.test/share?text=xyz+123"
+        "https://example.test/share?text=xyz+123",
+        {307},
+        headers={"Cookie": cookies[0]},
     )

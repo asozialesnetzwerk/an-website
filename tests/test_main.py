@@ -62,7 +62,7 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                 assert alias.startswith("/")
                 assert not alias.endswith("/")
                 if module_info.path != "/chat" and alias.isascii():
-                    assert_valid_redirect(await fetch(alias), module_info.path)
+                    await assert_valid_redirect(fetch, alias, module_info.path)
 
             if module_info.path != "/api/update":
                 # check if at least one handler matches the path
@@ -79,15 +79,21 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
                 "/zitat-des-tages",  # needs Redis
                 "/api/update",
             }:
+                print(module_info.path)
                 head_response = await fetch(
-                    module_info.path, method="HEAD", raise_error=True
+                    module_info.path,
+                    method="HEAD",
+                    raise_error=True,
+                    follow_redirects=module_info.path == "/redirect",
                 )
                 assert head_response.body == b""
                 get_response = await fetch(
-                    module_info.path, method="GET", raise_error=True
+                    module_info.path,
+                    method="GET",
+                    raise_error=True,
+                    follow_redirects=module_info.path == "/redirect",
                 )
                 assert get_response.body != b""
-                print(module_info.path)
                 for header in (
                     "Content-Type",
                     "Onion-Location",

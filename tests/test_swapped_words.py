@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import base64
 import re
 
 import orjson as json
@@ -31,6 +32,7 @@ from . import (
     assert_valid_json_response,
     fetch,
 )
+from .test_settings import parse_cookie
 
 assert app and fetch
 
@@ -209,7 +211,41 @@ async def test_sw_html_request_handlers(
             body="reset=nope&text=x",
         ),
     )
-    # TODO: cookie stuff
+
+    response = assert_valid_html_response(
+        await fetch(
+            "/vertauschte-woerter",
+            method="POST",
+            body=json.dumps(
+                {"reset": "nope", "text": "text", "config": "abc <=> xyz"}
+            ),
+        )
+    )
+    cookies = response.headers.get_list("Set-Cookie")
+    assert len(cookies) == 1
+    cookie = parse_cookie(cookies[0])
+    morsel = cookie[tuple(cookie)[0]]
+    assert morsel["expires"]
+    assert morsel["path"] == "/vertauschte-woerter"
+    assert morsel["samesite"] == "Strict"
+    assert morsel.key == "swapped-words-config"
+    assert morsel.value == base64.b64encode(
+        "abc <=> xyz".encode("UTF-8")
+    ).decode("UTF-8")
+
+    response2 = await fetch(
+        "/vertauschte-woerter",
+        method="POST",
+        body=json.dumps(
+            {
+                "reset": "nope",
+                "text": "text",
+            }
+        ),
+        headers={"Cookie": cookies[0]},
+    )
+    assert not response2.headers.get_list("Set-Cookie")
+    assert response2.body == response.body
 
 
 async def test_sw_json_request_handlers(

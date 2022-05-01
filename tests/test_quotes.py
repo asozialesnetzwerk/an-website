@@ -108,18 +108,16 @@ async def test_quote_request_handlers(
     assert_valid_json_response(await fetch("/api/zitate/1-1"))
     assert_valid_json_response(await fetch("/api/zitate/1-2"))
 
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("/z/1-1"), "/zitate/1-1")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("/z/1"), "/zitate/1-2")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("/z/-1"), "/zitate/info/a/1")
-    )
-    assert_valid_html_response(
-        assert_valid_redirect(await fetch("/z/1-"), "/zitate/info/z/1")
-    )
+    await assert_valid_redirect(fetch, "/z/1-1", "/zitate/1-1")
+
+    await assert_valid_redirect(fetch, "/z/1", "/zitate/1")
+    await assert_valid_redirect(fetch, "/zitate/1", "/zitate/1-2")
+
+    await assert_valid_redirect(fetch, "/z/-1", "/zitate/-1")
+    await assert_valid_redirect(fetch, "/zitate/-1", "/zitate/info/a/1")
+
+    await assert_valid_redirect(fetch, "/z/1-", "/zitate/1-")
+    await assert_valid_redirect(fetch, "/zitate/1-", "/zitate/info/z/1")
 
     for i in (1, 2):
         # twice because we cache the author info from wikipedia
