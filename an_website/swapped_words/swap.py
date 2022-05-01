@@ -85,13 +85,13 @@ class SwappedWords(HTMLRequestHandler):
         check_text_too_long(text)
 
         if config_str is None:
-            _c = self.get_cookie(
+            cookie = self.get_cookie(
                 name="swapped-words-config",
                 default=None,
             )
-            if _c is not None:
+            if cookie is not None:
                 # decode the base64 text
-                config_str = str(base64.b64decode(_c.encode("utf-8")), "utf-8")
+                config_str = str(base64.b64decode(cookie.encode("utf-8")), "utf-8")
         else:
             # save the config in a cookie
             self.set_cookie(

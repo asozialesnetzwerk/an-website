@@ -656,7 +656,7 @@ def main() -> None | int | str:
 
     if sys.platform == "win32":
         logger.warning(
-            "Please note that running on Windows is not officially supported"
+            "Please note that running on Windows is not officially supported."
         )
 
     # read ignored modules from the config
@@ -714,8 +714,16 @@ def main() -> None | int | str:
             )
         )
 
-    if hasattr(os, "fork"):
-        tornado.process.fork_processes(sys.flags.dev_mode)
+    processes = config.getint(
+        "GENERAL",
+        "PROCESSES",
+        fallback=0
+        if sys.flags.dev_mode
+        else (tornado.process.cpu_count() if hasattr(os, "fork") else 0),
+    )
+
+    if processes > 0:
+        tornado.process.fork_processes(processes)
         # yeet all children (there should be none, but do it regardless, just in case)
         process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
