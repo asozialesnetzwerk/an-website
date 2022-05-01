@@ -91,7 +91,9 @@ class SwappedWords(HTMLRequestHandler):
             )
             if cookie is not None:
                 # decode the base64 text
-                config_str = str(base64.b64decode(cookie.encode("utf-8")), "utf-8")
+                config_str = str(
+                    base64.b64decode(cookie.encode("utf-8")), "utf-8"
+                )
         else:
             # save the config in a cookie
             self.set_cookie(

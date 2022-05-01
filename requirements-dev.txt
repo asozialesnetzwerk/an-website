@@ -67,7 +67,7 @@ pathspec==0.9.0
 pep8-naming==0.12.1
 pillow==9.1.0
 pip==22.0.4
-pipenv==2022.4.21
+pipenv==2022.4.30
 platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.18.1
