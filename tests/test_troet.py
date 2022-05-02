@@ -39,7 +39,7 @@ async def test_troet_page(
             await fetch(f"/troet?text=xyz&save={save}")
         )
         assert response.request.url == response.effective_url
-        assert b'value="xyz"' in response.body
+        assert b'<textarea name="text">xyz</textarea>' in response.body
         assert "Set-Cookie" not in response.headers
 
     response = assert_valid_html_response(
