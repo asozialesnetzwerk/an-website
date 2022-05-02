@@ -760,8 +760,6 @@ def main() -> None | int | str:
 
     try:
         loop.run_forever()
-    except KeyboardInterrupt:
-        pass
     finally:
         try:
             server.stop()

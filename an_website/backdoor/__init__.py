@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The backdoor API of the website."""
+
 from __future__ import annotations
 
 import os
