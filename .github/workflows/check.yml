@@ -61,7 +61,9 @@ jobs:
           key: mypy-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: mypy-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: sudo apt-get install -y libcurl4-openssl-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install mypy + stuff required for checking the tests
@@ -83,7 +85,9 @@ jobs:
           cache: "pip"
           cache-dependency-path: requirements*.txt
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: sudo apt-get install -y libcurl4-openssl-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Flake8 + stuff required for checking the tests
@@ -111,7 +115,9 @@ jobs:
           key: pylint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: pylint-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: sudo apt-get install -y libcurl4-openssl-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Pylint + stuff required for checking the tests and other stuff
