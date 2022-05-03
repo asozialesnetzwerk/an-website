@@ -3,6 +3,7 @@
 
 {% block body %}
 <form method="get">
+    {% raw form_appendix %}
     <label>Text zum Tröten
         <textarea name="text">{{text}}</textarea>
     </label>

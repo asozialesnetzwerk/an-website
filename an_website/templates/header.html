@@ -6,7 +6,7 @@
         <img class="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
-        <div class="site-pane">
+        <nav class="site-pane">
             <h1 data-elastic-exclude>Unterseiten:</h1>
             <ul class="menu-list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
@@ -45,6 +45,6 @@
                 <a href="mailto:{{contact_address}}?subject=AN-Webseite: {{title}}"
                    class="contact-anchor">KONTAKT</a>
             {% end %}
-        </div>
+        </nav>
     {% end %}
 </header>
