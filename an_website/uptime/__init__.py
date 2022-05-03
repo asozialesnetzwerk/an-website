@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The uptime page that shows the time the website is running."""
+
 from __future__ import annotations
 
 import os

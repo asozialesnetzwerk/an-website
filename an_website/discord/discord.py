@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """A permanent redirect to an invite of the Discord guild."""
+
 from __future__ import annotations
 
 import os

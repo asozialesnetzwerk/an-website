@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """A redirect to the Matrix client."""
+
 from __future__ import annotations
 
 import os

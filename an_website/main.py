@@ -47,7 +47,7 @@ from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 
-from . import DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, VERSION
+from . import CONTAINERIZED, DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, VERSION
 from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
@@ -685,10 +685,8 @@ def main() -> None | int | str:
         xheaders=behind_proxy,
     )
 
-    containerized = os.getenv("container") or os.path.exists("/.dockerenv")
-
     port = config.getint(
-        "GENERAL", "PORT", fallback=8888 if containerized else None
+        "GENERAL", "PORT", fallback=8888 if CONTAINERIZED else None
     )
 
     sockets = []
@@ -703,7 +701,7 @@ def main() -> None | int | str:
     unix_socket_path = config.get(
         "GENERAL",
         "UNIX_SOCKET_PATH",
-        fallback="/data" if containerized else None,
+        fallback="/data" if CONTAINERIZED else None,
     )
 
     if unix_socket_path:

@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The settings page used to change settings."""
+
 from __future__ import annotations
 
 from ..utils.request_handler import HTMLRequestHandler

@@ -39,6 +39,8 @@ ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
 
+CONTAINERIZED = os.getenv("container") or os.path.exists("/.dockerenv")
+
 if sys.flags.dev_mode:
     NAME += "-dev"
 

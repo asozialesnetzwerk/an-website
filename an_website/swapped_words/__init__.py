@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Page that swaps words."""
+"""A page that swaps words."""
+
 from __future__ import annotations
 
 import os

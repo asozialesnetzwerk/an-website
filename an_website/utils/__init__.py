@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The utilities module with many helpful things used by other modules."""
+"""The utilities package with many helpful things used by other modules."""
+
 from __future__ import annotations
 
 import os
