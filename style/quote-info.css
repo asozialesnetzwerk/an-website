@@ -26,6 +26,6 @@ th {
 /* author info page */
 #author-info {
     background-color: var(--secondary-bg);
-    padding: 5px;
-    border-right: 5px;
+    padding: 0.3125rem;
+    border-right: 0.3125rem;
 }

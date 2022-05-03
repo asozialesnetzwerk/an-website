@@ -85,8 +85,8 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     width: 100vw;
     max-width: 100%;
     text-align: center;
-    margin-top: 42px;
-    margin-bottom: 7px;
+    margin-top: 2.6rem;
+    margin-bottom: 0.5rem;
 }
 /* footer end */
 
@@ -103,7 +103,7 @@ header {
 
 #title {
     margin-top: 0;
-    margin-left: 5px;
+    margin-left: 0.3125rem;
     padding-top: 0.5rem;
     font-size: 2rem;
     overflow-x: hidden;
@@ -144,35 +144,35 @@ header {
 }
 
 .site-pane h1 {
-    margin: 10px;
+    margin: 0.625rem;
 }
 
 .menu-list {
-    margin: 4px;
+    margin: 0.25rem;
     list-style-type: circle;
 }
 
 .menu-list li {
     display: inherit;
-    margin-bottom: 4px;
+    margin-bottom: 0.25rem;
     color: var(--text-color)
 }
 
 .menu-sub-list {
-    margin: 4px;
+    margin: 0.25rem;
     list-style-type: square;
 }
 
 .menu-sub-list li {
     display: inherit;
-    margin-top: 3px;
+    margin-top: 0.1875rem;
     color: var(--text-color)
 }
 
 .contact-anchor {
     display: block;
-    margin: 20px;
-    padding: 10px;
+    margin: 1.25rem;
+    padding: 0.625rem;
     text-align: center;
     background-color: var(--contrast);
     color: var(--text-color)

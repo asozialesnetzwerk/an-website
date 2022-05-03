@@ -242,7 +242,7 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
             quote_data = await self.get_quote_of_today()
 
         if quote_data:
-            if self.request.path.endswith("/full/"):
+            if self.request.path.endswith("/full"):
                 return await self.finish(quote_data.to_json())
             wrong_quote = quote_data.wrong_quote
             return await self.finish(

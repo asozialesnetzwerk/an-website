@@ -30,32 +30,29 @@
             </div>
         </div>
         <div id="buttons">
-            <a class="download"
-               tooltip="Downloade das Zitat als Bild."
+            <a tooltip="Downloade das Zitat als Bild."
                tooltip-position="bottom"
                id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
-                <img class="download-img button-img"
-                     src="{{fix_static('img/arrow.svg')}}"
+                <img class="button-img"
+                     src="{{fix_static('img/save.svg')}}"
                      alt="Zitat downloaden.">
             </a>
-            <a class="share"
-               id="share"
+            <a id="share"
                tooltip="Teile das Zitat in den Sozialen Medien."
                tooltip-position="bottom"
                href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
                rel="nofollow">
-                <img class="share-img button-img"
-                     src="{{fix_static('img/arrow.svg')}}"
+                <img class="button-img"
+                     src="{{fix_static('img/share.svg')}}"
                      alt="Zitat teilen.">
             </a>
-            <a class="get-quote"
-               tooltip="Gehe zum nächsten Zitat."
+            <a tooltip="Gehe zum nächsten Zitat."
                tooltip-position="bottom"
                id="next"
                href="{{next_href}}">
-                <img class="get-quote-img button-img button-img-no-rotation"
+                <img class="button-img"
                      alt="Nächstes Zitat"
                      src="{{fix_static('img/arrow.svg')}}">
             </a>
@@ -81,9 +78,10 @@
     </form>
 
     <div id="bottom-buttons-container">
-        <a tooltip="Neues Zitat hinzufügen"
+        <a id="add-quote"
+           tooltip="Neues Zitat hinzufügen"
            href="{{fix_url('/zitate/erstellen/')}}">
-            <img class="button-img button-img-no-rotation"
+            <img class="button-img"
                  src="{{fix_static('img/plus.svg')}}"
                  alt="Zitat hinzufügen.">
         </a>
@@ -93,7 +91,7 @@
                href="mailto:{{contact_address}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
                tooltip="Melde das Zitat."
                no-dynload>
-                <img class="button-img report-img button-img-no-rotation"
+                <img class="button-img report-img"
                      alt="Zitat melden."
                      src="{{fix_static('img/report.svg')}}">
             </a>

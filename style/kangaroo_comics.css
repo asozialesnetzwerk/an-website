@@ -5,7 +5,7 @@
 
 input {
   width: 100%;
-  font-size: 23px;
+  font-size: 1.44rem;
 }
 
 .normal-img {
@@ -47,7 +47,7 @@ input {
 
 .close-button {
   position: absolute;
-  top: 1px;
-  right: 1px;
-  width: 42px;
+  top: 0.1rem;
+  right: 0.1rem;
+  width: 2.625rem;
 }

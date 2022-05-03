@@ -1,26 +1,16 @@
-.button-img-no-rotation:hover {
+.button-img:hover {
     transform: scale(1.08);
-    -webkit-filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
+    filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
 .report-img:hover {
-    -webkit-filter: drop-shadow(3px 3px 2px rgba(217, 229, 78, 0.5));
+    filter: drop-shadow(3px 3px 2px rgba(217, 229, 78, 0.5));
 }
 
 .button-img {
-    width: 69px;
-    height: 69px;
+    width: 4.3rem;
+    height: 4.3rem;
     border-radius: 50%;
-}
-
-.share-img {
-    transform: rotate(270deg);
-    border-radius: 50%;
-}
-
-.share-img:hover {
-    transform: scale(1.08) rotate(270deg);
-    -webkit-filter: drop-shadow(-3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
 #quote-container {
@@ -62,7 +52,7 @@
 
 #rating-text {
     display: block;
-    margin-right: 5px;
+    margin-right: 0.3rem;
 }
 
 .rating-img {
@@ -93,13 +83,13 @@
     justify-content: left;
 }
 
-#bottom-buttons-container .tooltip {
-    margin: 5px;
-}
-
 .rating-form-el {
     display: inline-block;
     width: auto !important;
+}
+
+#add-quote {
+    margin-right: 0.69rem;
 }
 
 #buttons a {
@@ -130,9 +120,9 @@
     width: auto !important;
     flex-grow: 1;
     display: inline-block;
-    padding: 10px !important;
-    margin: 5px;
-    height: 60px;
+    padding: 0.625rem !important;
+    margin: 0.3125rem;
+    height: 3.75rem;
     max-width: initial;
 }
 
@@ -145,15 +135,15 @@
 }
 
 .vote img {
-    max-height: 40px;
+    max-height: 2.5rem;
     width: auto;
     background-color: transparent !important;
 }
 
 @media (orientation:landscape) {
     #quote-container {
-        background: transparent url("/static/img/ZitateBackground.svg?v=0") no-repeat right top 5px;
-        /*background-position: right 10px top 5px;*/
+        background: transparent url("/static/img/ZitateBackground.svg?v=0") no-repeat right top 0.3125rem;
+        /*background-position: right 10px top 0.3125rem;*/
         width: 50rem;
         min-height: 380px;
         max-width: 90%;
@@ -181,6 +171,6 @@
 
     #rating-container {
         position: absolute;
-        bottom: 20px;
+        bottom: 1.25rem;
     }
 }
