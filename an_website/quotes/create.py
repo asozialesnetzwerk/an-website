@@ -162,7 +162,7 @@ def get_quote_by_str(quote_str: str) -> None | Quote:
 
 
 async def get_quotes(quote_str: str) -> list[Quote | str]:
-    """Get the possible meant authors based on the str."""
+    """Get the possible meant quotes based on the str."""
     quote: None | Quote = get_quote_by_str(quote_str)
     if isinstance(quote, Quote):
         return [quote]

@@ -352,8 +352,7 @@ def fix_quote_str(quote_str: str) -> str:
         and (quote_str.startswith('"') or quote_str.startswith("„"))
         and (quote_str.endswith('"') or quote_str.endswith("“"))
     ):
-        # remove double quotes from quote,
-        # that are stupid and shouldn't be there
+        # remove double quotes from quote, that shouldn't be there
         quote_str = quote_str[1:-1]
 
     return quote_str.strip()

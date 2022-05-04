@@ -10,6 +10,7 @@
 
 # Unit test / coverage reports
 /.coverage
+/.coverage.box*
 
 # nano backup files
 *~

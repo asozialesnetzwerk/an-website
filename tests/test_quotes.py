@@ -15,8 +15,11 @@
 
 from __future__ import annotations
 
+import orjson as json
+
 import an_website.quotes.quotes as main_page
 from an_website import quotes
+from an_website.quotes import create
 
 from . import (
     WRONG_QUOTE_DATA,
@@ -33,9 +36,23 @@ from . import (
 assert app and fetch
 
 
+def patch_stuff() -> quotes.WrongQuote:
+    """Patch stuff."""
+
+    async def patch(*args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+        print("Called make_api_request", args, kwargs)
+        return None
+
+    # this stops requests to the quote api from happening
+    quotes.make_api_request = patch
+
+    return quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
+
 async def test_parsing_wrong_quotes() -> None:
     """Test parsing wrong_quotes."""
-    wrong_quote = quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+    wrong_quote = patch_stuff()
+
     assert wrong_quote.id == 1
     # quote_id (1) - author_id (2)
     assert wrong_quote.get_id_as_str() == "1-2"
@@ -64,7 +81,7 @@ async def test_parsing_wrong_quotes() -> None:
 
 def test_author_updating() -> None:
     """Test updating the author."""
-    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+    patch_stuff()
 
     assert (author := quotes.get_author_updated_with(1, "test")).name == "test"
 
@@ -73,9 +90,94 @@ def test_author_updating() -> None:
     assert author.name == "Abraham Lincoln"
 
 
+async def test_create() -> None:
+    """Test some functions in the quote create module."""
+    wrong_quote = patch_stuff()
+
+    assert wrong_quote.quote.author is create.get_author_by_name(
+        "Abraham Lincoln"
+    )
+    assert wrong_quote.quote.author in await create.get_authors("abrah lincoln")
+
+    assert wrong_quote.author is create.get_author_by_name("Kim Jong-il")
+    assert wrong_quote.author is create.get_author_by_name("kIm jong-il")
+    assert wrong_quote.author in await create.get_authors("kIn jon il")
+
+    assert create.get_author_by_name("lol") is None
+
+    quote_str = wrong_quote.quote.quote.lower()
+
+    assert create.get_quote_by_str(quote_str) is wrong_quote.quote
+    assert create.get_quote_by_str(quote_str.upper()) is wrong_quote.quote
+    assert create.get_quote_by_str(quote_str.title()) is wrong_quote.quote
+    assert create.get_quote_by_str(f"„{quote_str}“") is wrong_quote.quote
+    assert create.get_quote_by_str(f'"{quote_str}"') is wrong_quote.quote
+
+    modified_quote_str = quote_str[1:8] + "x" + quote_str[9:-1].upper()
+    assert wrong_quote.quote in await create.get_quotes(modified_quote_str)
+
+
+async def test_argument_checking_create_pages(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+) -> None:
+    """Test whether the create handlers complain because of missing args."""
+    wrong_quote = patch_stuff()
+
+    await quotes.make_api_request("/test")
+
+    for data in (
+        "quote-1=&fake-author-1=",
+        "quote-1=test&fake-author-1=",
+        "quote-1=&fake-author-1=test",
+        "x=y",
+    ):
+        assert_valid_html_response(
+            await fetch("/zitate/erstellen", method="POST", body=data), 400
+        )
+
+    for data in (
+        "quote-2=&fake-author-2=",
+        "quote-2=test&fake-author-2=",
+        "quote-2=&fake-author-2=test",
+        "x=y",
+    ):
+        assert_valid_html_response(
+            await fetch("/zitate/create-wrong-quote", method="POST", body=data),
+            400,
+        )
+
+    for num in (1, 2):
+        url = "/zitate/erstellen" if num == 1 else "/zitate/create-wrong-quote"
+        await assert_valid_redirect(
+            fetch,
+            url,
+            "/zitate/1-1",
+            method="POST",
+            body=json.dumps(
+                {
+                    f"quote-{num}": wrong_quote.quote.quote.lower(),
+                    f"fake-author-{num}": wrong_quote.quote.author.name.upper(),
+                }
+            ),
+        )
+        await assert_valid_redirect(
+            fetch,
+            url,
+            "/zitate/1-2",
+            method="POST",
+            body=json.dumps(
+                {
+                    f"quote-{num}": wrong_quote.quote.quote.upper(),
+                    f"fake-author-{num}": wrong_quote.author.name.lower(),
+                }
+            ),
+        )
+
+
 async def test_quote_updating() -> None:
     """Test updating the quote."""
-    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+    patch_stuff()
 
     quote = await quotes.get_quote_by_id(1)
 
@@ -100,7 +202,7 @@ async def test_quote_request_handlers(
     fetch: FetchCallable,
 ) -> None:
     """Test the request handlers for the quotes page."""
-    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)  # add data to cache
+    patch_stuff()  # add data to cache
     await check_html_page(fetch, "/zitate")
     await check_html_page(fetch, "/zitate/1-1")
     await check_html_page(fetch, "/zitate/1-2")
