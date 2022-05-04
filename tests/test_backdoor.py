@@ -67,7 +67,7 @@ def assert_run_and_print(
     command: str,
     *output: str,
     lisp: bool = False,
-    session: str = "69",
+    session: None | str = "69",
     assertion: None | Callable[[str], bool] = None,
 ) -> None:
     """Test the run_and_print function."""
@@ -209,7 +209,8 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "help",
         "Success: True",
         "Result:",
-        "Type help() for interactive help, or help(object) for help about object.",
+        "Type help() for interactive help, "
+        "or help(object) for help about object.",
     )
     await asyncio.to_thread(
         assert_run_and_print,
@@ -218,4 +219,38 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "Success: True",
         "Result:",
         "<built-in function print>",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "x = 10",
+        "Success: True",
+        session="xx",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "(x, session_id)",
+        "Success: True",
+        "Result:",
+        "(10, 'xx')",
+        session="xx",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "session_id",
+        "Success: True",
+        "Result:",
+        "'123456789'",
+        session="123456789",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "'session_id' in locals()",
+        "Success: True",
+        "Result:",
+        "False",
+        session=None,
     )

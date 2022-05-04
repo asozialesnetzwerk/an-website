@@ -208,25 +208,33 @@ class Backdoor(APIRequestHandler):
         elif session_id in self.sessions:
             session = self.sessions[session_id]
         else:
-            session = {}
-            if self.redis:
-                session_pickle = await self.redis.get(
+            session_pickle = (
+                await self.redis.get(
                     f"{self.redis_prefix}:backdoor-session:{session_id}"
                 )
-                if session_pickle:
-                    session = pickle.loads(
-                        base64.decodebytes(session_pickle.encode("utf-8"))
-                    )
-                    for key, value in session.items():
-                        try:
-                            session[key] = pickle.loads(value)
-                        except Exception as exc:  # pylint: disable=broad-except
-                            logger.exception(exc)
-                            apm: None | elasticapm.Client = self.settings.get(
-                                "ELASTIC_APM_CLIENT"
-                            )
-                            if apm:
-                                apm.capture_exception()
+                if self.redis
+                else None
+            )
+            if session_pickle:
+                session = pickle.loads(
+                    base64.decodebytes(session_pickle.encode("utf-8"))
+                )
+                for key, value in session.items():
+                    try:
+                        session[key] = pickle.loads(value)
+                    except Exception as exc:  # pylint: disable=broad-except
+                        logger.exception(exc)
+                        apm: None | elasticapm.Client = self.settings.get(
+                            "ELASTIC_APM_CLIENT"
+                        )
+                        if apm:
+                            apm.capture_exception()
+            else:  # if session_id, but nothing was saved
+                session = {
+                    "__builtins__": __builtins__,
+                    "__name__": "this",
+                    "session_id": session_id,
+                }
             self.sessions[session_id] = session
         return self.update_session(session)
 
