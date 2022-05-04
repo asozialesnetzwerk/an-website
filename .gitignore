@@ -9,7 +9,7 @@
 /.well-known
 
 # Unit test / coverage reports
-/.coverage*
+/.coverage
 
 # nano backup files
 *~
