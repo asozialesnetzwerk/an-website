@@ -145,22 +145,6 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await asyncio.to_thread(
         assert_run_and_print,
         url,
-        "69420",
-        "Success: True",
-        "Result:",
-        "69420",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "1 + 1",
-        "Success: True",
-        "Result:",
-        "2",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
         "(+ 1 1)",
         "Success: True",
         "Result:",
@@ -170,16 +154,10 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await asyncio.to_thread(
         assert_run_and_print,
         url,
-        "None",
+        "print('42', _, app.settings['TRUSTED_API_SECRETS'].get(''))",
         "Success: True",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "_",
-        "Success: True",
-        "Result:",
-        "2",
+        "Output:",
+        "42 2 None",
     )
     await asyncio.to_thread(
         assert_run_and_print,
@@ -188,20 +166,6 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "Success: True",
         "Result:",
         "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "app.settings['TRUSTED_API_SECRETS'].get('')",
-        "Success: True",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "print('42')",
-        "Success: True",
-        "Output:",
-        "42",
     )
     await asyncio.to_thread(
         assert_run_and_print,
@@ -215,8 +179,27 @@ async def test_backdoor(  # pylint: disable=unused-argument
     await asyncio.to_thread(
         assert_run_and_print,
         url,
-        "print",
+        "(x := 10) and print",
         "Success: True",
         "Result:",
         "<built-in function print>",
+        session="xx",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "(x, session_id)",
+        "Success: True",
+        "Result:",
+        "(10, 'xx')",
+        session="xx",
+    )
+    await asyncio.to_thread(
+        assert_run_and_print,
+        url,
+        "('session_id' in locals(), __name__)",
+        "Success: True",
+        "Result:",
+        "(False, 'this')",
+        session=None,
     )

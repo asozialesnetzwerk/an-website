@@ -275,6 +275,10 @@ def apply_config_to_app(
         "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
     )
 
+    app.settings["NETCUP"] = config.getboolean(
+        "GENERAL", "NETCUP", fallback=False
+    )
+
     app.settings["TRUSTED_API_SECRETS"] = {
         key_perms[0]: Permissions(
             int(key_perms[1])

@@ -234,6 +234,8 @@ class Backdoor(APIRequestHandler):
                     "__builtins__": __builtins__,
                     "__name__": "this",
                 }
+                if self.settings.get("TESTING"):
+                    session["session_id"] = session_id
             self.sessions[session_id] = session
         return self.update_session(session)
 

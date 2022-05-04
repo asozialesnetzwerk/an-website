@@ -20,8 +20,10 @@ This page will ask users if they want to leave this website.
 
 from __future__ import annotations
 
+from urllib.parse import urlsplit
+
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo, str_to_bool
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -46,7 +48,7 @@ class RedirectPage(HTMLRequestHandler):
         """Handle the GET request to the request page and render it."""
         # pylint: disable=unused-argument
 
-        referrer = self.get_argument("referrer", None)
+        send_referrer = self.get_bool_argument("referrer", False)
         redirect_url = self.get_argument("to", None)
         from_url = self.get_argument("from", None)
 
@@ -65,9 +67,15 @@ class RedirectPage(HTMLRequestHandler):
         if redirect_url.rstrip("/") == "https://chat.asozial.org":
             return self.redirect("https://chat.asozial.org")
 
+        if not send_referrer and (domain := urlsplit(redirect_url).hostname):
+            send_referrer = domain.removeprefix("www.") in {
+                "netcup.eu",
+                "netcup.de",
+            }
+
         await self.render(
             "pages/redirect.html",
-            send_referrer=str_to_bool(referrer, True),
+            send_referrer=send_referrer,
             redirect_url=redirect_url,
             from_url=from_url,
             discord=False,

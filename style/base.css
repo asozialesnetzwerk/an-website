@@ -181,4 +181,16 @@ header {
 .contact-anchor:hover {
     transform: scale(1.05, 1.05);
 }
+
+#oekostrom {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+#oekostrom img {
+    height: auto;
+    max-width: 85%;
+    /*margin: 0.2rem auto 0 auto;*/
+}
 /* header end */
