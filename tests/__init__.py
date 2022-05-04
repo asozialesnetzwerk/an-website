@@ -77,17 +77,21 @@ apply()
 FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
 
 
-def get_module_infos() -> tuple[ModuleInfo, ...]:
-    """Get module infos and fail if they are a string."""
-    module_infos = main.get_module_infos()
-    assert not isinstance(module_infos, str)
-    assert isinstance(module_infos, tuple)
-    return module_infos
-
-
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
+    config = configparser.ConfigParser(interpolation=None)
+    config.read(os.path.join(DIR, "config.ini"))
+
+    main.setup_logging(config, allow_file_handler=False)
+
+    for module_name in config.get(
+        "GENERAL", "IGNORED_MODULES", fallback=""
+    ).split(","):
+        module_name = module_name.strip()
+        if len(module_name) > 0:
+            main.IGNORED_MODULES.append(module_name)
+
     app = main.make_app()  # pylint: disable=redefined-outer-name
 
     assert isinstance(app, tornado.web.Application)
@@ -95,8 +99,6 @@ def app() -> tornado.web.Application:
     app.settings["debug"] = True
     app.settings["TESTING"] = True
 
-    config = configparser.ConfigParser(interpolation=None)
-    config.read(os.path.join(DIR, "config.ini"))
     main.apply_config_to_app(app, config)
 
     return app
@@ -230,7 +232,7 @@ async def check_html_page(
         if (
             link.startswith(prot_and_host)
             and (link.removeprefix(prot_and_host) or "/") not in checked_urls
-            and not link.startswith(f"{prot_and_host}/LOLWUT")
+            # and not link.startswith(f"{prot_and_host}/LOLWUT")
         ):
             checked_urls.add(link.removeprefix(prot_and_host) or "/")
             _response = assert_valid_response(

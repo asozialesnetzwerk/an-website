@@ -19,28 +19,34 @@ import configparser
 import os
 import re
 
+from tornado.web import Application
+
 from an_website import main, patches
 from an_website.utils.request_handler import BaseRequestHandler
+from an_website.utils.utils import ModuleInfo
 
-from . import (
-    PARENT_DIR,
-    FetchCallable,
-    app,
-    assert_valid_redirect,
-    fetch,
-    get_module_infos,
-)
+from . import PARENT_DIR, FetchCallable, app, assert_valid_redirect, fetch
 
 assert fetch and app
 
 
-# pylint: disable=redefined-outer-name
-async def test_parsing_module_infos(fetch: FetchCallable) -> None:
+async def test_parsing_module_infos(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+    app: Application,
+) -> None:
     """Tests about the module infos in main."""
-    module_infos = get_module_infos()
+    module_infos = app.settings["MODULE_INFOS"]
 
     # should get more than one module_info
     assert len(module_infos) > 0
+
+    # test excludes module infos:
+    # pylint: disable=import-outside-toplevel
+    from an_website.lolwut.lolwut import get_module_info as gmi1
+    from an_website.quotes.quote_of_the_day import get_module_info as gmi2
+
+    assert isinstance(gmi1(), ModuleInfo) and isinstance(gmi2(), ModuleInfo)
 
     # module_infos should be sorted already; test that:
     module_infos_list = list(module_infos)
@@ -54,8 +60,9 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
             assert module_info.path.strip() == module_info.path
             assert not module_info.path.endswith("/") or module_info.path == "/"
             assert (
-                module_info.path == module_info.path.lower()
-                or module_info.path == "/LOLWUT"
+                module_info.path
+                == module_info.path.lower()
+                # or module_info.path == "/LOLWUT"
             )
 
             for alias in module_info.aliases:
@@ -75,8 +82,8 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
 
             if module_info.path not in {
                 "/chat",  # head not supported
-                "/LOLWUT",  # needs Redis
-                "/zitat-des-tages",  # needs Redis
+                # "/LOLWUT",  # needs Redis
+                # "/zitat-des-tages",  # needs Redis
                 "/api/update",
             }:
                 print(module_info.path)
@@ -118,16 +125,16 @@ async def test_parsing_module_infos(fetch: FetchCallable) -> None:
 def test_making_app() -> None:
     """Run the app making functions, to make sure they don't fail."""
     patches.apply()
-    app = main.make_app()
+    apple = main.make_app()
 
     # read the example config, because it is always the same and should always work
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(PARENT_DIR, "config.ini.example"))
 
-    main.apply_config_to_app(app, config)  # type: ignore[arg-type]
+    main.apply_config_to_app(apple, config)  # type: ignore[arg-type]
 
     # idk why; just to assert something lol
-    assert app.settings["CONFIG"] == config  # type: ignore[union-attr]
+    assert apple.settings["CONFIG"] == config  # type: ignore[union-attr]
 
 
 if __name__ == "__main__":

@@ -129,9 +129,8 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 "'get_module_info' in "
                 f"{os.path.join(DIR, potential_module, potential_file)} "
                 "does not return ModuleInfo. "
-                "Please add/fix the return type or add "
-                f"'{potential_module}.*' or '{module_name}' to "
-                "IGNORED_MODULES."
+                f"Please fix the returned value or add '{potential_module}.*' "
+                "or '{module_name}' to the IGNORED_MODULES."
             )
 
     if len(errors) > 0:
@@ -322,7 +321,9 @@ def get_ssl_context(
     return None
 
 
-def setup_logging(config: configparser.ConfigParser) -> None:
+def setup_logging(
+    config: configparser.ConfigParser, *, allow_file_handler: bool = True
+) -> None:
     """Configure logging."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
     path = config.get(
@@ -343,7 +344,7 @@ def setup_logging(config: configparser.ConfigParser) -> None:
     )
     root_logger.addHandler(stream_handler)
 
-    if path:
+    if allow_file_handler and path:
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
             os.path.join(path, f"{NAME}.log"),

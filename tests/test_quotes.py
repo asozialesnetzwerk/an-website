@@ -97,10 +97,19 @@ async def test_create() -> None:
     assert wrong_quote.quote.author is create.get_author_by_name(
         "Abraham Lincoln"
     )
+    assert [wrong_quote.quote.author] == await create.get_authors(
+        "Abraham Lincoln"
+    )
+    assert wrong_quote.quote.author is await create.create_author(
+        "Abraham Lincoln"
+    )
     assert wrong_quote.quote.author in await create.get_authors("abrah lincoln")
 
     assert wrong_quote.author is create.get_author_by_name("Kim Jong-il")
     assert wrong_quote.author is create.get_author_by_name("kIm jong-il")
+    assert wrong_quote.author is await create.create_author("kIm jong-il")
+
+    assert [wrong_quote.author] == await create.get_authors("kIm jong-il")
     assert wrong_quote.author in await create.get_authors("kIn jon il")
 
     assert create.get_author_by_name("lol") is None
@@ -112,6 +121,13 @@ async def test_create() -> None:
     assert create.get_quote_by_str(quote_str.title()) is wrong_quote.quote
     assert create.get_quote_by_str(f"„{quote_str}“") is wrong_quote.quote
     assert create.get_quote_by_str(f'"{quote_str}"') is wrong_quote.quote
+
+    assert (
+        await create.create_quote(f'"{quote_str}"', None)  # type: ignore[arg-type]
+        is wrong_quote.quote
+    )
+
+    assert await create.get_quotes(quote_str) == [wrong_quote.quote]
 
     modified_quote_str = quote_str[1:8] + "x" + quote_str[9:-1].upper()
     assert wrong_quote.quote in await create.get_quotes(modified_quote_str)
