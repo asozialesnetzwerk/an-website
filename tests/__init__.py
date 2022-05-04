@@ -28,10 +28,10 @@ import orjson as json
 import pytest
 import tornado.httpclient
 import tornado.web
-from blake3 import blake3  # type: ignore[import]
-from lxml import etree  # type: ignore[import]
-from lxml.html import document_fromstring  # type: ignore[import]
-from lxml.html.html5parser import HTMLParser  # type: ignore[import]
+from blake3 import blake3  # type: ignore
+from lxml import etree  # type: ignore
+from lxml.html import document_fromstring  # type: ignore
+from lxml.html.html5parser import HTMLParser  # type: ignore
 
 DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
@@ -201,13 +201,13 @@ async def check_html_page(
     assert html.find("body") is not None or print("no body found", url)
     html.make_links_absolute(response.effective_url)
     eff_url = urllib.parse.urlsplit(response.effective_url)
-    prot_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
-    checked_urls.add(url.removeprefix(prot_and_host) or "/")
+    scheme_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
+    checked_urls.add(url.removeprefix(scheme_and_host) or "/")
     found_ref_to_body = False
     responses_to_check: list[tornado.httpclient.HTTPResponse] = []
     for link_tuple in html.iterlinks():
         assert (  # do not allow http links to other unencrypted pages
-            link_tuple[2].startswith(prot_and_host)
+            link_tuple[2].startswith(scheme_and_host)
             or link_tuple[2].startswith(
                 (
                     "https:",
@@ -230,24 +230,23 @@ async def check_html_page(
         link: str = link_tuple[2].split("#")[0]
         assert link == link.strip()
         if (
-            link.startswith(prot_and_host)
-            and (link.removeprefix(prot_and_host) or "/") not in checked_urls
-            # and not link.startswith(f"{prot_and_host}/LOLWUT")
+            link.startswith(scheme_and_host)
+            and (link.removeprefix(scheme_and_host) or "/") not in checked_urls
         ):
-            checked_urls.add(link.removeprefix(prot_and_host) or "/")
+            checked_urls.add(link.removeprefix(scheme_and_host) or "/")
             _response = assert_valid_response(
                 await _fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type
             )
             if (
                 _response.headers["Content-Type"] == "text/html; charset=UTF-8"
-                and _response.effective_url.startswith(prot_and_host)
+                and _response.effective_url.startswith(scheme_and_host)
                 and recursive > 0
             ):
                 responses_to_check.append(_response)
             if (
-                link.startswith(f"{prot_and_host}/static/")
-                or link.startswith(f"{prot_and_host}/soundboard/files/")
+                link.startswith(f"{scheme_and_host}/static/")
+                or link.startswith(f"{scheme_and_host}/soundboard/files/")
                 and _response.headers["Content-Type"]
                 != "text/html; charset=UTF-8"
             ):

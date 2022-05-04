@@ -41,14 +41,14 @@ async def test_parsing_module_infos(
     # should get more than one module_info
     assert len(module_infos) > 0
 
-    # test excludes module infos:
+    # test excludes module infos
     # pylint: disable=import-outside-toplevel
     from an_website.lolwut.lolwut import get_module_info as gmi1
     from an_website.quotes.quote_of_the_day import get_module_info as gmi2
 
     assert isinstance(gmi1(), ModuleInfo) and isinstance(gmi2(), ModuleInfo)
 
-    # module_infos should be sorted already; test that:
+    # module_infos should be sorted already; test that
     module_infos_list = list(module_infos)
     main.sort_module_infos(module_infos_list)
     assert module_infos == tuple(module_infos_list)
@@ -59,11 +59,7 @@ async def test_parsing_module_infos(
             assert module_info.path.isascii()
             assert module_info.path.strip() == module_info.path
             assert not module_info.path.endswith("/") or module_info.path == "/"
-            assert (
-                module_info.path
-                == module_info.path.lower()
-                # or module_info.path == "/LOLWUT"
-            )
+            assert module_info.path == module_info.path.lower()
 
             for alias in module_info.aliases:
                 assert alias.startswith("/")
@@ -82,8 +78,6 @@ async def test_parsing_module_infos(
 
             if module_info.path not in {
                 "/chat",  # head not supported
-                # "/LOLWUT",  # needs Redis
-                # "/zitat-des-tages",  # needs Redis
                 "/api/update",
             }:
                 print(module_info.path)
@@ -125,16 +119,16 @@ async def test_parsing_module_infos(
 def test_making_app() -> None:
     """Run the app making functions, to make sure they don't fail."""
     patches.apply()
-    apple = main.make_app()
+    application = main.make_app()
 
     # read the example config, because it is always the same and should always work
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(PARENT_DIR, "config.ini.example"))
 
-    main.apply_config_to_app(apple, config)  # type: ignore[arg-type]
+    main.apply_config_to_app(application, config)  # type: ignore[arg-type]
 
     # idk why; just to assert something lol
-    assert apple.settings["CONFIG"] == config  # type: ignore[union-attr]
+    assert application.settings["CONFIG"] == config  # type: ignore[union-attr]
 
 
 if __name__ == "__main__":

@@ -229,11 +229,10 @@ class Backdoor(APIRequestHandler):
                         )
                         if apm:
                             apm.capture_exception()
-            else:  # if session_id, but nothing was saved
+            else:
                 session = {
                     "__builtins__": __builtins__,
                     "__name__": "this",
-                    "session_id": session_id,
                 }
             self.sessions[session_id] = session
         return self.update_session(session)

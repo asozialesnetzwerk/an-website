@@ -220,37 +220,3 @@ async def test_backdoor(  # pylint: disable=unused-argument
         "Result:",
         "<built-in function print>",
     )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "x = 10",
-        "Success: True",
-        session="xx",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "(x, session_id)",
-        "Success: True",
-        "Result:",
-        "(10, 'xx')",
-        session="xx",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "session_id",
-        "Success: True",
-        "Result:",
-        "'123456789'",
-        session="123456789",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "'session_id' in locals()",
-        "Success: True",
-        "Result:",
-        "False",
-        session=None,
-    )

@@ -625,7 +625,7 @@ async def wait_for_shutdown() -> None:
     """Wait for the shutdown event."""
     loop = asyncio.get_running_loop()
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
     loop.stop()
 
 

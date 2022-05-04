@@ -43,7 +43,7 @@ def patch_stuff() -> quotes.WrongQuote:
         print("Called make_api_request", args, kwargs)
         return None
 
-    # this stops requests to the quote api from happening
+    # this stops requests to the quote API from happening
     quotes.make_api_request = patch
 
     return quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
