@@ -5,20 +5,23 @@
     <form method="post">
         <label>Name<input type="text" name="name"></label>
 
-        <label>E-Mail-Adresse<input type="email" name="address" autocomplete="email"></label>
+        <label>E-Mail-Adresse<input type="email" name="addresse" autocomplete="email"></label>
 
         <label>
             Betreff
             {% if subject %}
-                <input type="text" name="subject" value="{{subject}}">
+                <input type="text" name="subjekt" value="{{subject}}">
             {% else %}
-                <input type="text" name="subject">
+                <input type="text" name="subjekt">
             {% end %}
         </label>
 
+        {% comment 🍯 %}
+        <input id="message-input" type="text" class="hidden-input" name="message">
+
         <label>
             Nachricht (erforderlich)
-            <textarea name="message"></textarea>
+            <textarea name="nachricht"></textarea>
         </label>
 
         <button type="submit">Absenden</button>

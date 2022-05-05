@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import logging
 import smtplib
 import ssl
 import sys
@@ -31,6 +32,8 @@ from tornado.web import Application, HTTPError, MissingArgumentError
 from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -181,11 +184,11 @@ class ContactPage(HTMLRequestHandler):
         """Handle POST requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
-        text = self.get_argument("message").strip()  # type: ignore[union-attr]
+        text = self.get_argument("nachricht")
         if not text:
-            raise MissingArgumentError("message")  # raise on empty message
-        name = self.get_argument("name", "").strip()  # type: ignore[union-attr]
-        address = self.get_argument("address", "").strip()  # type: ignore[union-attr]
+            raise MissingArgumentError("nachricht")  # raise on empty message
+        name = self.get_argument("name", "")
+        address = self.get_argument("addresse", "")
         from_address = (
             f"{name} <{address or 'anonymous@foo.bar'}>"
             if name
@@ -199,11 +202,24 @@ class ContactPage(HTMLRequestHandler):
             add_geoip_info_to_message(message, geoip)
 
         message["Subject"] = str(
-            self.get_argument("subject", "").strip()  # type: ignore[union-attr]
+            self.get_argument("subjekt", "")
             or f"{name or address or 'Jemand'} "
             f"will etwas über {self.request.host_name} schreiben."
         )
         message.set_payload(text, "utf-8")
+        if self.get_argument("message", ""):  # 🍯
+            logger.info(
+                "rejected message: %s",
+                {
+                    "Subject": message["Subject"],
+                    "message": message,
+                    "from_address": from_address,
+                    "geoip": geoip,
+                    "🍯": self.get_argument("message", ""),
+                },
+            )
+            # TODO: don't send message
+            message["Subject"] = f"[SPAM] {message['Subject']}"
         # pylint: disable=line-too-long
         await asyncio.to_thread(
             send_message,

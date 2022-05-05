@@ -71,9 +71,13 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 }
 
 .hidden-input {
+    position: absolute;
     display: none;
-    width: 0;
-    height: 0;
+    pointer-events: none;
+    visibility: collapse;
+    max-width: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
     opacity: 0;
 }
 /* base end */
@@ -186,11 +190,12 @@ header {
     display: flex;
     justify-content: center;
     width: 100%;
+    padding: 0.2rem 0;
 }
 
 #oekostrom img {
     height: auto;
+    width: 8rem;
     max-width: 85%;
-    /*margin: 0.2rem auto 0 auto;*/
 }
 /* header end */
