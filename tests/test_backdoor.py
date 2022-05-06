@@ -11,195 +11,159 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for the backdoor."""
+"""The tests for the request handlers of an-website."""
 
 from __future__ import annotations
 
-import asyncio
-import socket
-from collections.abc import Callable
-from io import StringIO
-from multiprocessing import Pipe, Process, connection
-from typing import Any
+import pickle
+from typing import Any, Literal
 
-import tornado.httpclient
+from . import FetchCallable, app, assert_valid_response, fetch
 
-import an_website.backdoor.backdoor_client as bc
-from an_website.backdoor.backdoor import PrintWrapper
-
-from . import app
-
-assert app
+assert fetch and app
 
 
-def _run_and_get_output(
-    conn: connection.Connection,
-    fun: Callable[[Any], Any],
-    *args: Any,
-    **kwargs: Any,
+async def request_and_parse(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+    /,
+    code: str,
+    *,
+    session: None | str = None,
+    auth_key: None | str = None,
+    mode: Literal["exec", "eval"] = "eval",
+) -> dict[str, Any] | Any:
+    """Make request to the backdoor and parse the response."""
+    auth_key = "123qweQWE!@#000000000" if auth_key is None else auth_key
+    headers = {"Authorization": auth_key}
+    if session:
+        headers["X-Backdoor-Session"] = session
+    response = await fetch(
+        f"/api/backdoor/{mode}",
+        method="POST",
+        headers=headers,
+        body=code,
+    )
+
+    assert_valid_response(response, "application/vnd.python.pickle")
+
+    unpickled = pickle.loads(response.body)
+
+    if not isinstance(unpickled, dict):
+        return unpickled
+
+    assert len(unpickled) == 3
+    assert isinstance(unpickled["success"], bool)
+    assert isinstance(unpickled["output"], str)
+
+    if unpickled["result"] is not None:
+        assert isinstance(unpickled["result"], tuple)
+        assert len(unpickled["result"]) == 2
+        assert isinstance(unpickled["result"][0], str)
+        assert mode == "eval"
+        if isinstance(unpickled["result"][1], bytes):
+            result_list = list(unpickled["result"])
+            result_list[1] = pickle.loads(result_list[1])
+            unpickled["result"] = tuple(result_list)
+
+    return unpickled
+
+
+async def test_backdoor(  # pylint: disable=too-many-statements
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
 ) -> None:
-    """Run a function with the arguments and get the printed output."""
-    output = StringIO()
-    fun(*args, print=PrintWrapper(output), **kwargs)  # type: ignore[call-arg]
-    conn.send(output.getvalue())
-    conn.close()
+    """Test the backdoor."""
+    response = await request_and_parse(fetch, "1 + 1")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][1] == 2
 
+    response = await request_and_parse(fetch, "print(2);", mode="eval")
+    assert not response["success"]
+    assert not response["output"]
+    assert isinstance(response["result"][1], SyntaxError)
 
-def run_and_get_output(
-    fun: Callable[..., Any], *args: Any, **kwargs: Any
-) -> str:
-    """Run a function with the arguments and get the printed output."""
-    parent_conn, child_conn = Pipe(False)
-    process = Process(
-        target=_run_and_get_output,
-        args=(child_conn, fun, *args),
-        kwargs=kwargs,
-        daemon=True,
-    )
-    process.start()
-    process.join()
-    output: str = parent_conn.recv()
-    return output
+    response = await request_and_parse(fetch, "print(2);", mode="exec")
+    assert response["success"]
+    assert response["output"] == "2\n"
+    assert not response["result"]
 
+    response = await request_and_parse(fetch, "(x := 420)", session="123456789")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][1] == 420
 
-def assert_run_and_print(
-    url: str,
-    command: str,
-    *output: str,
-    lisp: bool = False,
-    session: None | str = "69",
-    assertion: None | Callable[[str], bool] = None,
-) -> None:
-    """Test the run_and_print function."""
-    real_output = run_and_get_output(
-        bc.run_and_print,
-        url,
-        "123qweQWE!@#000000000",
-        command,
-        lisp,
-        session,
-    )
-    assert isinstance(real_output, str)
-    assert real_output.endswith("\n")
-    if assertion:
-        assert assertion(real_output)
-    if output:
-        output_str = "\n".join(output + ("",))
-        assert real_output == output_str
+    response = await request_and_parse(fetch, "x", session="123456789")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][1] == 420
 
+    response = await request_and_parse(fetch, "_", session="123456789")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][1] == 420
 
-def get_error_assertion(error_line: str) -> Callable[[str], bool]:
-    """Get the assertion lambda needed for asserting errors with the client."""
-    return lambda spam: (
-        spam.startswith("Success: False\nTraceback (most recent call last):\n")
-        and spam.endswith(error_line + "\n")
-    )
+    response = await request_and_parse(fetch, "print")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][1] is print
 
+    response = await request_and_parse(fetch, "help")
+    assert response["success"]
+    assert not response["output"]
+    assert type(response["result"][1]) is type(help)
 
-async def test_backdoor(  # pylint: disable=unused-argument
-    http_client: tornado.httpclient.AsyncHTTPClient,
-    http_server: Any,
-    http_server_port: tuple[socket.socket, int],
-) -> None:
-    """Test the backdoor client."""
-    assert bc.E == ...
-    assert bc.lisp_always_active() in {True, False}
+    response = await request_and_parse(fetch, "help")
+    assert response["success"]
+    assert not response["output"]
+    assert type(response["result"][1]) is type(help)
 
-    url = f"http://127.0.0.1:{http_server_port[1]}"
+    response = await request_and_parse(
+        fetch, "(await self.load_session())['__name__']"
+    )
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"] == ("'this'", "this")
 
-    await asyncio.to_thread(
-        assert_run_and_print,
-        "https://example.org",
-        "1 + 1",
-        "\x1b[91m404 Not Found\x1b[0m",
+    response = await request_and_parse(fetch, "_")
+    assert not response["success"]
+    assert not response["output"]
+    assert isinstance(response["result"][1], NameError)
+
+    response = await request_and_parse(
+        fetch, "raise SystemExit('x', 'y')", mode="exec"
     )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "1 1",
-        'File "<unknown>", line 1',
-        "    1 1",
-        "      ^",
-        "SyntaxError: invalid syntax",
+    assert isinstance(response, SystemExit)
+    assert response.args == ("x", "y")
+
+    # create something that cannot be pickled:
+    response = await request_and_parse(
+        fetch,
+        "def fun():\n"
+        "   class Result: pass\n"
+        "   return Result\n"
+        "LocalResult = fun()\n"
+        "t = LocalResult()",
+        mode="exec",
+        session="tomato",
     )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "return 42",
-        assertion=get_error_assertion("SyntaxError: 'return' outside function"),
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"] is None
+
+    response = await request_and_parse(
+        fetch, "raise SystemExit(t)", mode="exec", session="tomato"
     )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "LOLWUT",
-        assertion=get_error_assertion(
-            "NameError: name 'LOLWUT' is not defined"
-        ),
+    assert isinstance(response, SystemExit)
+    assert response.args[0].startswith("<this.fun.<locals>.Result object at ")
+    assert response.args[0].endswith(">")
+
+    response = await request_and_parse(fetch, "t", session="tomato")
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"][0].startswith(
+        "<this.fun.<locals>.Result object at "
     )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "0 / 0",
-        assertion=get_error_assertion("ZeroDivisionError: division by zero"),
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "(+ 1 1)",
-        "Success: True",
-        "Result:",
-        "2",
-        lisp=True,
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "print('42', _, app.settings['TRUSTED_API_SECRETS'].get(''))",
-        "Success: True",
-        "Output:",
-        "42 2 None",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "app.settings['TRUSTED_API_SECRETS']['123qweQWE!@#000000000']",
-        "Success: True",
-        "Result:",
-        "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "help",
-        "Success: True",
-        "Result:",
-        "Type help() for interactive help, "
-        "or help(object) for help about object.",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "(x := 10) and print",
-        "Success: True",
-        "Result:",
-        "<built-in function print>",
-        session="xx",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "(x, session_id)",
-        "Success: True",
-        "Result:",
-        "(10, 'xx')",
-        session="xx",
-    )
-    await asyncio.to_thread(
-        assert_run_and_print,
-        url,
-        "('session_id' in locals(), __name__)",
-        "Success: True",
-        "Result:",
-        "(False, 'this')",
-        session=None,
-    )
+    assert response["result"][0].endswith(">")
+    assert response["result"][1] is None
