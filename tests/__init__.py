@@ -220,11 +220,14 @@ async def check_html_page(
             or print(link_tuple[2], "is not https")
         )
         if (
+            # ignore canonical urls, cuz they have no query
             link_tuple[0].tag == "link"
             and link_tuple[1] == "href"
             and link_tuple[0].attrib.get("rel") == "canonical"
+            # ignore actions, cuz the stuff gets set with hidden input
+            or link_tuple[1] == "action"
         ):
-            continue  # ignore canonical urls, cuz they have no query
+            continue
         if link_tuple[2] == response.effective_url + "#body":
             found_ref_to_body = True  # every page should have a skip to content
         link: str = link_tuple[2].split("#")[0]

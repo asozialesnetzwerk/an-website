@@ -64,18 +64,21 @@
     <h2>Zitate beeinflussen</h2>
     <ul>
         <li>
-            <a href="{{fix_url('/zitate/erstellen/')}}">Zitate erstellen</a>
+            <a href="{{fix_url('/zitate/erstellen')}}">Zitate erstellen</a>
+        </li>
+        <li>
+            <a href="{{fix_url('/zitate/generator')}}">Zitate-Generator</a>
         </li>
         {% if settings.get("CONTACT_USE_FORM") %}
-        <li>
-            <a href="{{fix_url('/kontakt?subject=Falsch zugeordnete Zitate')}}"
-            >Per E-Mail beschweren</a>
-        </li>
+            <li>
+                <a href="{{fix_url('/kontakt?subject=Falsch zugeordnete Zitate')}}"
+                >Per E-Mail beschweren</a>
+            </li>
         {% elif contact_address is not None %}
-        <li>
-            <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate"
-            >Per E-Mail beschweren</a>
-        </li>
+            <li>
+                <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate"
+                >Per E-Mail beschweren</a>
+            </li>
         {% end %}
     </ul>
     <br>

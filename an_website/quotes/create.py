@@ -36,7 +36,7 @@ from . import (
 logger = logging.getLogger(__name__)
 
 
-def get_module_info() -> ModuleInfo:
+def get_module_info(*, hidden: bool = True) -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
@@ -47,7 +47,7 @@ def get_module_info() -> ModuleInfo:
         description="Erstelle witzige falsch zugeordnete Zitate",
         aliases=("/zitate/create",),
         path="/zitate/erstellen",
-        hidden=True,
+        hidden=hidden,
     )
 
 

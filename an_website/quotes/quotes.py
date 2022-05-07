@@ -29,6 +29,7 @@ from typing import Any, Literal
 
 from tornado.web import HTTPError, RedirectHandler
 
+from ..main import IGNORED_MODULES
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, hash_ip
 from . import (
@@ -41,7 +42,10 @@ from . import (
     get_wrong_quote,
     get_wrong_quotes,
 )
+from .create import get_module_info as get_create_mi
+from .game_of_quotes import get_module_info as get_goq_mi
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
+from .quote_of_the_day import get_module_info as get_qod_mi
 from .quotes_image import QuoteAsImage
 from .share_page import ShareQuote
 
@@ -97,6 +101,11 @@ def get_module_info() -> ModuleInfo:
         description="Witzige, aber falsch zugeordnete Zitate",
         path="/zitate",
         aliases=("/z",),
+        sub_pages=(
+            get_create_mi(hidden=False),
+            get_goq_mi(hidden=False),
+            get_qod_mi(hidden="quotes.quote_of_the_day" in IGNORED_MODULES),
+        ),
         keywords=(
             "falsch",
             "zugeordnet",

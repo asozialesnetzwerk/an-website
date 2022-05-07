@@ -28,16 +28,16 @@ from . import (
 )
 
 
-def get_module_info() -> ModuleInfo:
+def get_module_info(*, hidden: bool = True) -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/zitate-spiel", GameOfQuotes),),
-        name="Das Zitate-Spiel",
-        short_name="Zitate-Spiel",
-        description="Ein Spiel mit falschen Zitaten",
-        path="/zitate-spiel",
-        keywords=("Game of Quotes", "Falsche Zitate", "Spiel"),
-        hidden=True,
+        handlers=((r"/zitate/generator", GameOfQuotes),),
+        name="Der Zitate-Generator",
+        short_name="Zitate-Generator",
+        description="Lasse falsch zugeordnete Zitate generieren",
+        path="/zitate/generator",
+        keywords=("Generator", "Falsche Zitate", "Falsch zugeordnete Zitate"),
+        hidden=hidden,
     )
 
 
@@ -49,7 +49,7 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
     authors: list[Author] = list(get_authors(shuffle=True)[:count])
     quotes: list[Quote] = list(get_quotes(shuffle=True)[:count])
 
-    if not (authors and quotes):
+    if len(authors) <= 1 or len(quotes) <= 1:
         return authors, quotes
 
     wrong_quote = get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[0]
@@ -67,7 +67,8 @@ class GameOfQuotes(QuoteReadyCheckHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle get requests."""
-        authors, quotes = get_authors_and_quotes(5)
+        count = min(10, int(self.get_argument("count", "5") or "5"))
+        authors, quotes = get_authors_and_quotes(count)
         if head:
             return
         await self.render(

@@ -33,7 +33,7 @@ from . import (
 )
 
 
-def get_module_info() -> ModuleInfo:
+def get_module_info(*, hidden: bool = True) -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
@@ -55,14 +55,14 @@ def get_module_info() -> ModuleInfo:
             ),
         ),
         name="Das Zitat des Tages",
-        description="Jeden Tag ein anderes Zitat.",
+        description="Jeden Tag ein anderes Zitat",
         path="/zitat-des-tages",
         keywords=(
             "Zitate",
             "Witzig",
             "Känguru",
         ),
-        hidden=True,
+        hidden=hidden,
     )
 
 
