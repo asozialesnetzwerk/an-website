@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for the request handlers of an-website."""
+"""The tests for the backdoor."""
 
 from __future__ import annotations
 
@@ -60,7 +60,6 @@ async def request_and_parse(
         assert isinstance(unpickled["result"], tuple)
         assert len(unpickled["result"]) == 2
         assert isinstance(unpickled["result"][0], str)
-        assert mode == "eval"
         if isinstance(unpickled["result"][1], bytes):
             result_list = list(unpickled["result"])
             result_list[1] = pickle.loads(result_list[1])
@@ -77,7 +76,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(fetch, "1 + 1")
     assert response["success"]
     assert not response["output"]
-    assert response["result"][1] == 2
+    assert response["result"] == ("2", 2)
 
     response = await request_and_parse(fetch, "print(2);", mode="eval")
     assert not response["success"]
@@ -92,17 +91,17 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(fetch, "(x := 420)", session="123456789")
     assert response["success"]
     assert not response["output"]
-    assert response["result"][1] == 420
+    assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "x", session="123456789")
     assert response["success"]
     assert not response["output"]
-    assert response["result"][1] == 420
+    assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "_", session="123456789")
     assert response["success"]
     assert not response["output"]
-    assert response["result"][1] == 420
+    assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "print")
     assert response["success"]
@@ -129,6 +128,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(fetch, "_")
     assert not response["success"]
     assert not response["output"]
+    assert response["result"][0].startswith("Traceback (most recent call last)")
     assert isinstance(response["result"][1], NameError)
 
     response = await request_and_parse(
@@ -167,3 +167,10 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     )
     assert response["result"][0].endswith(">")
     assert response["result"][1] is None
+
+    response = await request_and_parse(fetch, "raise ValueError()", mode="exec")
+    assert not response["success"]
+    assert not response["output"]
+    assert response["result"][0].startswith("Traceback (most recent call last)")
+    assert response["result"][1].args == tuple()
+    assert isinstance(response["result"][1], ValueError)
