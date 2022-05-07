@@ -169,47 +169,52 @@ class SoundInfo(Info):
         path = f"files/{file}.mp3"
         file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
         return (
-            f"""
-<li>
-    <a href="{href}" class="a_hover">
-        {mark_query(self.person.value, query)}
-    </a>: »<a no-dynload href="{file_url}" class="quote-a">
-        {mark_query(self.get_text(), query)}
-    </a>«
-    <br>
-    <audio controls>
-        <source src="{file_url}" type="audio/mpeg">
-    </audio>
-</li>"""
-        ).lstrip()
+            f"<li>"
+            f"<a href='{href}' class='a_hover'>"
+            f"{mark_query(self.person.value, query)}"
+            "</a>"
+            ": »"
+            f"<a no-dynload href='{file_url}' class='quote-a'>"
+            f"{mark_query(self.get_text(), query)}"
+            "</a>"
+            "«"
+            "<br>"
+            "<audio controls>"
+            f"<source src='{file_url}' type='audio/mpeg'>"
+            "</audio>"
+            "</li>"
+        )
 
     def to_rss(self, url: None | str) -> str:
         """Parse the info to a RSS item."""
         file_name = self.get_file_name()
-        path = f"files/{file_name}.mp3"
-        file_size = os.path.getsize(os.path.join(DIR, path))
-        mod_time_since_epoch = os.path.getmtime(os.path.join(DIR, path))
+        rel_path = f"files/{file_name}.mp3"
+        abs_path = os.path.join(DIR, rel_path)
+        file_size = os.path.getsize(abs_path)
+        mod_time_since_epoch = os.path.getmtime(abs_path)
         # Convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)
-        link = f"/soundboard/{path}"
+        link = f"/soundboard/{rel_path}"
         text = self.get_text()
         if url is not None:
             link = url + link
-        return f"""
-<item>
-    <title>
-        [{self.book.name} - {self.chapter.name}] {self.person.value}: »{text}«
-    </title>
-    <quote>{text}</quote>
-    <book>{self.book.name}</book>
-    <chapter>{self.chapter.name}</chapter>
-    <person>{self.person.value}</person>
-    <link>{link}</link>
-    <enclosure url='{link}' type='audio/mpeg' length='{file_size}'></enclosure>
-    <guid>{link}</guid>
-    <pubDate>{modification_time}</pubDate>
-    </item>
-""".strip()
+        return (
+            "<item>"
+            "<title>"
+            f"[{self.book.name} - {self.chapter.name}] "
+            f"{self.person.value}: »{text}«"
+            "</title>"
+            f"<quote>{text}</quote>"
+            f"<book>{self.book.name}</book>"
+            f"<chapter>{self.chapter.name}</chapter>"
+            f"<person>{self.person.value}</person>"
+            f"<link>{link}</link>"
+            f"<enclosure url='{link}' type='audio/mpeg' length='{file_size}'>"
+            "</enclosure>"
+            f"<guid>{file_name}</guid>"
+            f"<pubDate>{modification_time}</pubDate>"
+            "</item>"
+        )
 
 
 all_sounds: list[SoundInfo] = []
