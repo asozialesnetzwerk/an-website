@@ -1,0 +1,31 @@
+{% whitespace oneline %}
+{% extends "../../base.html" %}
+
+{% block body %}
+    <form method="get" action="/zitate">
+        {% raw form_appendix %}
+        <h2>Wähle ein Zitat aus</h2>
+        {% for quote in quotes %}
+            <label class="form-element"
+                   tooltip-position="bottom"
+                   tooltip="Autor*in: {{quote.author.name}}">
+                <input type="radio" value="{{quote.id}}" name="quote">
+                {{quote.quote}}
+            </label>
+        {% end %}
+        <h2>Wähle einen Autor aus</h2>
+        {% for author in authors %}
+            <label class="form-element">
+                <input type="radio" value="{{author.id}}" name="author">
+                {{author.name}}
+            </label>
+        {% end %}
+        <button type="submit">Einreichen</button>
+    </form>
+{% end %}
+
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}

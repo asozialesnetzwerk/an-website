@@ -349,8 +349,8 @@ def fix_quote_str(quote_str: str) -> str:
     """Fix common mistakes in quotes."""
     if (
         len(quote_str) > 2
-        and (quote_str.startswith('"') or quote_str.startswith("„"))
-        and (quote_str.endswith('"') or quote_str.endswith("“"))
+        and quote_str.startswith(('"', "„", "“"))
+        and quote_str.endswith(('"', "“", "”"))
     ):
         # remove double quotes from quote, that shouldn't be there
         quote_str = quote_str[1:-1]

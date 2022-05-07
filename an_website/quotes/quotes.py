@@ -22,6 +22,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
+import re
 from asyncio import Task
 from collections.abc import Coroutine, Generator
 from typing import Any, Literal
@@ -243,6 +244,12 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         """Render the main quote page, with a few links."""
         if head:
             return
+        quote = self.get_argument("quote", None)
+        author = self.get_argument("author", None)
+        if quote and author and re.fullmatch(r"^[0-9]+$", quote + author):
+            self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
+            return
+
         await self.render(
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(

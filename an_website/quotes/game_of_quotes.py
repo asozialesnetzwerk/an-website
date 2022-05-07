@@ -1,0 +1,75 @@
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""A game about wrong quotes."""
+
+from __future__ import annotations
+
+import random
+
+from ..utils.utils import ModuleInfo
+from . import (
+    Author,
+    Quote,
+    QuoteReadyCheckHandler,
+    get_authors,
+    get_quotes,
+    get_wrong_quotes,
+)
+
+
+def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
+    return ModuleInfo(
+        handlers=((r"/zitate-spiel", GameOfQuotes),),
+        name="Das Zitate-Spiel",
+        short_name="Zitate-Spiel",
+        description="Ein Spiel mit falschen Zitaten",
+        path="/zitate-spiel",
+        keywords=("Game of Quotes", "Falsche Zitate", "Spiel"),
+        hidden=True,
+    )
+
+
+def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
+    """Get random batch of authors and quotes."""
+    if count < 1:
+        return [], []
+
+    authors: list[Author] = list(get_authors(shuffle=True)[:count])
+    quotes: list[Quote] = list(get_quotes(shuffle=True)[:count])
+
+    if not (authors and quotes):
+        return authors, quotes
+
+    wrong_quote = get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[0]
+    if wrong_quote.author not in authors:
+        authors[random.randrange(0, len(authors))] = wrong_quote.author
+
+    if wrong_quote.quote not in quotes:
+        quotes[random.randrange(0, len(quotes))] = wrong_quote.quote
+
+    return authors, quotes
+
+
+class GameOfQuotes(QuoteReadyCheckHandler):
+    """The request handler for the game of quotes html page."""
+
+    async def get(self, *, head: bool = False) -> None:
+        """Handle get requests."""
+        authors, quotes = get_authors_and_quotes(5)
+        if head:
+            return
+        await self.render(
+            "pages/quotes/game_of_quotes.html", authors=authors, quotes=quotes
+        )
