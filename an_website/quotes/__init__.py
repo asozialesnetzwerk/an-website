@@ -239,6 +239,7 @@ class WrongQuote(QuotesObjBase):
 
 def get_wrong_quotes(
     filter_fun: None | Callable[[WrongQuote], bool] = None,
+    *,
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
     shuffle: bool = False,

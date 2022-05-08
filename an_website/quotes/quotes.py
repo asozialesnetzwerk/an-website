@@ -253,20 +253,21 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         """Render the main quote page, with a few links."""
         if head:
             return
-        quote = self.get_argument("quote", None)
-        author = self.get_argument("author", None)
-        if quote and author and re.fullmatch(r"^[0-9]+$", quote + author):
+        quote: str = self.get_argument("quote", "") or ""
+        author: str = self.get_argument("author", "") or ""
+        if (quote or author) and re.fullmatch(r"^[0-9]+$", quote + author):
             self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
             return
 
         await self.render(
             "pages/quotes/quotes_main_page.html",
             funny_quote_url=self.id_to_url(
-                *get_wrong_quotes(
-                    lambda wq: wq.rating > 0,
-                    shuffle=True,
-                )[0].get_id(),
-                "w",
+                *(
+                    get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[
+                        0
+                    ].get_id()
+                ),
+                rating_param="w",
             ),
             random_quote_url=self.id_to_url(*self.get_next_id()),
             quote_of_the_day=await self.get_quote_of_today(),
@@ -292,8 +293,6 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
 class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
     """Redirect to the api for a random quote."""
 
-    IS_NOT_HTML = True
-
     async def get(  # pylint: disable=unused-argument
         self, suffix: str = "", *, head: bool = False
     ) -> None:
@@ -301,7 +300,7 @@ class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
         quote_id, author_id = self.get_next_id(rating_filter="w")
         return self.redirect(
             self.fix_url(
-                f"/api/zitate/{quote_id}-{author_id}/{suffix}",
+                f"/api/zitate/{quote_id}-{author_id}{suffix}",
                 as_json=self.get_as_json(),
             )
         )

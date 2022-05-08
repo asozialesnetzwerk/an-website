@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import random
 
+from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
     Author,
@@ -31,7 +32,10 @@ from . import (
 def get_module_info(*, hidden: bool = True) -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/zitate/generator", GameOfQuotes),),
+        handlers=(
+            (r"/zitate/generator", GameOfQuotes),
+            (r"/api/zitate/generator", GameOfQuotesAPI),
+        ),
         name="Der Zitate-Generator",
         short_name="Zitate-Generator",
         description="Lasse falsch zugeordnete Zitate generieren",
@@ -73,4 +77,21 @@ class GameOfQuotes(QuoteReadyCheckHandler):
             return
         await self.render(
             "pages/quotes/game_of_quotes.html", authors=authors, quotes=quotes
+        )
+
+
+class GameOfQuotesAPI(QuoteReadyCheckHandler, APIRequestHandler):
+    """The request handler for the game of quotes html page."""
+
+    async def get(self, *, head: bool = False) -> None:
+        """Handle get requests."""
+        count = min(10, int(self.get_argument("count", "5") or "5"))
+        authors, quotes = get_authors_and_quotes(count)
+        if head:
+            return
+        await self.finish(
+            {
+                "authors": [author.to_json() for author in authors],
+                "quotes": [quote.to_json() for quote in quotes],
+            }
         )

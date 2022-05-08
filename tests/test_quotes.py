@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import orjson as json
+import pytest
 
 import an_website.quotes.quotes as main_page
 from an_website import quotes
@@ -226,14 +227,19 @@ async def test_quote_request_handlers(
     assert_valid_json_response(await fetch("/api/zitate/1-1"))
     assert_valid_json_response(await fetch("/api/zitate/1-2"))
 
+    await assert_valid_redirect(
+        fetch, "/zitate?quote=1&author=1", "/zitate/1-1"
+    )
     await assert_valid_redirect(fetch, "/z/1-1", "/zitate/1-1")
 
     await assert_valid_redirect(fetch, "/z/1", "/zitate/1")
     await assert_valid_redirect(fetch, "/zitate/1", "/zitate/1-2")
 
+    await assert_valid_redirect(fetch, "/zitate?author=1", "/zitate/-1")
     await assert_valid_redirect(fetch, "/z/-1", "/zitate/-1")
     await assert_valid_redirect(fetch, "/zitate/-1", "/zitate/info/a/1")
 
+    await assert_valid_redirect(fetch, "/zitate?quote=1", "/zitate/1-")
     await assert_valid_redirect(fetch, "/z/1-", "/zitate/1-")
     await assert_valid_redirect(fetch, "/zitate/1-", "/zitate/info/z/1")
 
@@ -285,5 +291,59 @@ def test_parsing_vote_str() -> None:
     """Test parsing vote str."""
     # pylint: disable=compare-to-zero
     assert main_page.vote_to_int("-1") == -1
+    assert main_page.vote_to_int("-2") == -1
+    assert main_page.vote_to_int("-3") == -1
+
     assert main_page.vote_to_int("0") == 0
+    assert main_page.vote_to_int("00") == 0
+    assert main_page.vote_to_int("") == 0
+    assert main_page.vote_to_int(None) == 0  # type: ignore
+
     assert main_page.vote_to_int("1") == 1
+    assert main_page.vote_to_int("2") == 1
+    assert main_page.vote_to_int("3") == 1
+
+    with pytest.raises(ValueError):
+        main_page.vote_to_int("x")
+
+
+async def test_quote_apis(
+    # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,
+) -> None:
+    """Test the quote APIs."""
+    wrong_quote = patch_stuff()
+
+    response = assert_valid_json_response(
+        await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}")
+    )
+    assert response["id"] == wrong_quote.get_id_as_str()
+    assert response["quote"] == wrong_quote.quote.quote
+    assert response["author"] == wrong_quote.author.name
+    assert response["real_author"] == wrong_quote.quote.author.name
+    assert response["real_author_id"] == wrong_quote.quote.author.id
+    assert int(response["rating"]) == wrong_quote.rating
+
+    response = assert_valid_json_response(
+        await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}/full")
+    )
+    assert response["wrong_quote"] == wrong_quote.to_json()
+    response = response["wrong_quote"]
+    assert response["id"] == wrong_quote.get_id_as_str()
+    assert response["quote"] == wrong_quote.quote.to_json()
+    assert response["author"] == wrong_quote.author.to_json()
+    assert response["path"] == f"/zitate/{wrong_quote.get_id_as_str()}"
+    assert int(response["rating"]) == wrong_quote.rating
+
+    for count in (6, 2, 1):
+        response = assert_valid_json_response(
+            await fetch(f"/api/zitate/generator?count={count}")
+        )
+        assert 0 < len(response["quotes"]) <= count
+        assert 0 < len(response["authors"]) <= count
+
+        for quote in response["quotes"]:
+            assert quote == quotes.QUOTES_CACHE[quote["id"]].to_json()
+
+        for author in response["authors"]:
+            assert author == quotes.AUTHORS_CACHE[author["id"]].to_json()

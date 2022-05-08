@@ -833,6 +833,8 @@ class APIRequestHandler(BaseRequestHandler):
     It overrides the write error method to return errors as JSON.
     """
 
+    IS_NOT_HTML = True
+
     def set_default_headers(self) -> None:
         """Set important default headers for the API request handlers."""
         super().set_default_headers()
