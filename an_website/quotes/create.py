@@ -27,6 +27,7 @@ from . import (
     Author,
     Quote,
     QuoteReadyCheckHandler,
+    fix_author_name,
     fix_quote_str,
     make_api_request,
     parse_author,
@@ -70,7 +71,7 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
 
 async def create_author(author_str: str) -> Author:
     """Create an author."""
-    author_str = author_str.strip()
+    author_str = fix_author_name(author_str)
 
     author = get_author_by_name(author_str)
     if author is not None:
@@ -127,7 +128,7 @@ async def get_authors(author_name: str) -> list[Author | str]:
             for _a in AUTHORS_CACHE.values()
             if distance(_a.name.lower(), author_name_lower) <= max_distance
         ),
-        author_name,
+        fix_author_name(author_name),
     ]
     # authors should be in most cases title case
     fixed_author = author_name.title()
@@ -145,7 +146,7 @@ async def get_authors(author_name: str) -> list[Author | str]:
 
 def get_author_by_name(name: str) -> None | Author:
     """Get an author by its name."""
-    lower_name = name.lower()
+    lower_name = fix_author_name(name).lower()
     for _a in AUTHORS_CACHE.values():
         if _a.name.lower() == lower_name:
             return _a

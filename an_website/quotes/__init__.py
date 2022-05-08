@@ -82,6 +82,7 @@ class Author(QuotesObjBase):
 
     def update_name(self, name: str) -> None:
         """Update author data with another author."""
+        name = fix_author_name(name)
         if self.name != name:
             # name changed -> info should change too
             self.info = None
@@ -126,7 +127,7 @@ class Quote(QuotesObjBase):
         self, quote: str, author_id: int, author_name: str
     ) -> None:
         """Update quote data with new data."""
-        self.quote = quote
+        self.quote = fix_quote_str(quote)
         if self.author.id == author_id:
             self.author.update_name(author_name)
             return
@@ -327,9 +328,17 @@ async def make_api_request(
     return json.loads(response.body)
 
 
+def fix_author_name(name: str) -> str:
+    """Fix common mistakes in authors."""
+    if len(name) > 2 and name.startswith("(") and name.endswith(")"):
+        # remove () from author name, that shouldn't be there
+        name = name[1:-1]
+    return name.strip()
+
+
 def get_author_updated_with(author_id: int, author_name: str) -> Author:
     """Get the author with the given id and the name."""
-    author_name = author_name.strip()
+    author_name = fix_author_name(author_name)
     if not author_name:
         author_name = "None"
     author = AUTHORS_CACHE.setdefault(
@@ -353,7 +362,7 @@ def fix_quote_str(quote_str: str) -> str:
         and quote_str.startswith(('"', "„", "“"))
         and quote_str.endswith(('"', "“", "”"))
     ):
-        # remove double quotes from quote, that shouldn't be there
+        # remove quotation marks from quote, that shouldn't be there
         quote_str = quote_str[1:-1]
 
     return quote_str.strip()
