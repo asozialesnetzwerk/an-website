@@ -48,7 +48,6 @@ class RedirectPage(HTMLRequestHandler):
         """Handle the GET request to the request page and render it."""
         # pylint: disable=unused-argument
 
-        send_referrer = self.get_bool_argument("referrer", False)
         redirect_url = self.get_argument("to", None)
         from_url = self.get_argument("from", None)
 
@@ -64,13 +63,13 @@ class RedirectPage(HTMLRequestHandler):
                 self.fix_url(redirect_url, as_json=self.get_as_json())
             )
 
-        if redirect_url.rstrip("/") == "https://chat.asozial.org":
-            return self.redirect("https://chat.asozial.org")
+        if domain := urlsplit(redirect_url).hostname:
+            if domain.rsplit(".", 2)[-2:] == ["asozial", "org"]:
+                return self.redirect(redirect_url)
 
-        if not send_referrer and (domain := urlsplit(redirect_url).hostname):
             send_referrer = domain.removeprefix("www.") in {
-                "netcup.eu",
                 "netcup.de",
+                "netcup.eu",
             }
 
         await self.render(

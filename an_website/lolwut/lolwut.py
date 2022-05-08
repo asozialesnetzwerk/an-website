@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from redis.asyncio import Redis  # type: ignore
+from redis.asyncio import Redis
 from tornado.web import HTTPError
 
 from ..utils.request_handler import (
@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
 
 
 async def generate_art(
-    redis: None | Redis,
+    redis: None | Redis,  # type: ignore[type-arg]
     args: None | str = None,
     head: bool = False,
 ) -> None | str:
@@ -65,7 +65,7 @@ async def generate_art(
         command = "LOLWUT"
     if head:
         return None
-    return await redis.execute_command(command)  # type: ignore[no-any-return]
+    return await redis.execute_command(command)  # type: ignore[no-any-return, no-untyped-call]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
 
 
 class LOLWUT(HTMLRequestHandler):

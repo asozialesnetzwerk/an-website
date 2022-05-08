@@ -43,7 +43,7 @@ from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
-from redis.asyncio import Redis  # type: ignore
+from redis.asyncio import Redis
 from sympy.ntheory import isprime
 from tornado import web
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
@@ -131,7 +131,7 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     @property
-    def redis(self) -> None | Redis:
+    def redis(self) -> None | Redis:  # type: ignore[type-arg]
         """Get the Redis client from the settings."""
         return self.settings.get("REDIS")
 
@@ -312,7 +312,7 @@ class BaseRequestHandler(RequestHandler):
                 "Ratelimits are enabled, but Redis is not available. "
                 "This can happen shortly after starting the website.",
             )
-        result = await self.redis.execute_command(
+        result = await self.redis.execute_command(  # type: ignore[no-untyped-call]
             "CL.THROTTLE",
             key,
             max_burst,

@@ -17,7 +17,7 @@ cython==0.29.28
 defusedxml==0.7.1
 deprecated==1.2.13
 dill==0.3.4
-dunamai==1.11.1
+dunamai==1.12.0
 ecs-logging==1.1.0
 elastic-apm==6.9.1
 elastic-enterprise-search==7.17.0
@@ -48,7 +48,7 @@ pyjwt==2.3.0
 pyparsing==3.0.8
 python-dateutil==2.8.2
 python-levenshtein==0.12.2
-redis[hiredis]==4.2.2
+redis[hiredis]==4.3.0
 rply==0.7.8
 setuptools==62.1.0
 six==1.16.0

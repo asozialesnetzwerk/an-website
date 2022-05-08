@@ -30,7 +30,7 @@ from typing import Any, Literal
 import elasticapm  # type: ignore
 import orjson as json
 import tornado.web
-from redis.asyncio import Redis  # type: ignore
+from redis.asyncio import Redis
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 from UltraDict import UltraDict  # type: ignore
@@ -439,23 +439,23 @@ async def update_cache_periodically(
     """Start updating the cache every hour."""
     if setup_redis_awaitable:
         await setup_redis_awaitable
-    redis: None | Redis = app.settings.get("REDIS")
+    redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     if redis:
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),
+            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_wrong_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:quotes"),
+            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[misc]
             parse_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:authors"),
+            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_author,
         )
     if redis and QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
-        last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")
+        last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         if last_update:
             last_update_int = int(last_update)
             since_last_update = int(time.time()) - last_update_int
@@ -487,7 +487,7 @@ async def update_cache(  # noqa: C901  # pylint: disable=too-complex
 ) -> None:
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
-    redis: None | Redis = app.settings.get("REDIS")
+    redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     try:  # pylint: disable=too-many-try-statements
 
@@ -497,7 +497,7 @@ async def update_cache(  # noqa: C901  # pylint: disable=too-complex
                 parse_wrong_quote,
             )
             if wq_data and redis:
-                await redis.set(
+                await redis.set(  # type: ignore[misc]
                     f"{prefix}:cached-quote-data:wrongquotes",
                     json.dumps(wq_data, option=ORJSON_OPTIONS),
                 )
@@ -508,7 +508,7 @@ async def update_cache(  # noqa: C901  # pylint: disable=too-complex
                 parse_quote,
             )
             if quotes_data and redis:
-                await redis.set(
+                await redis.set(  # type: ignore[misc]
                     f"{prefix}:cached-quote-data:quotes",
                     json.dumps(quotes_data, option=ORJSON_OPTIONS),
                 )
@@ -519,13 +519,13 @@ async def update_cache(  # noqa: C901  # pylint: disable=too-complex
                 parse_author,
             )
             if authors_data and redis:
-                await redis.set(
+                await redis.set(  # type: ignore[misc]
                     f"{prefix}:cached-quote-data:authors",
                     json.dumps(authors_data, option=ORJSON_OPTIONS),
                 )
 
         if redis and update_wrong_quotes and update_quotes and update_authors:
-            await redis.set(
+            await redis.set(  # type: ignore[misc]
                 f"{prefix}:cached-quote-data:last-update",
                 int(time.time()),
             )

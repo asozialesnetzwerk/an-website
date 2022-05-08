@@ -31,7 +31,7 @@ import traceback
 import uuid
 from collections.abc import Callable, Iterable
 from types import EllipsisType
-from typing import Any
+from typing import Any, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 try:
@@ -60,6 +60,12 @@ else:
 E = eval(  # pylint: disable=eval-used
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
+
+
+class Response(TypedDict):  # noqa: D101
+    success: bool | EllipsisType
+    output: None | str
+    result: None | tuple[str, bytes | None] | SystemExit
 
 
 async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
@@ -242,14 +248,7 @@ def send(
     proxy_rdns: None | bool = True,
     proxy_username: None | str = None,
     proxy_password: None | str = None,
-) -> tuple[
-    int,
-    dict[str, str],
-    None
-    | str
-    | SystemExit
-    | dict[str, None | bool | str | tuple[str, None | bytes]],
-]:
+) -> tuple[int, dict[str, str], Response | str | None]:
     """Send code to the backdoor API."""
     body = code.encode("utf-8")
     if isinstance(url, str):
@@ -369,13 +368,13 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     if isinstance(body, str):
         print("\033[91m" + body + "\033[0m")
         return
-    if isinstance(body, SystemExit):
-        raise body  # pylint: disable=raising-bad-type
     if isinstance(body, dict):
         print(f"Success: {body['success']}")
         if isinstance(body["output"], str) and body["output"]:
             print("Output:")
             print(body["output"].strip())
+        if isinstance(body["result"], SystemExit):
+            raise body["result"]  # pylint: disable=raising-bad-type
         if isinstance(body["result"], tuple):
             if not body["success"]:
                 print(body["result"][0])
