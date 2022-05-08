@@ -57,6 +57,7 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
         return authors, quotes
 
     wrong_quote = get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[0]
+
     if wrong_quote.author not in authors:
         authors[random.randrange(0, len(authors))] = wrong_quote.author
 
@@ -67,10 +68,10 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
 
 
 class GameOfQuotes(QuoteReadyCheckHandler):
-    """The request handler for the game of quotes html page."""
+    """The request handler for the game of quotes HTML page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle get requests."""
+        """Handle GET requests."""
         count = min(10, int(self.get_argument("count", "5") or "5"))
         authors, quotes = get_authors_and_quotes(count)
         if head:
@@ -81,10 +82,10 @@ class GameOfQuotes(QuoteReadyCheckHandler):
 
 
 class GameOfQuotesAPI(QuoteReadyCheckHandler, APIRequestHandler):
-    """The request handler for the game of quotes html page."""
+    """The request handler for the game of quotes API."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle get requests."""
+        """Handle GET requests."""
         count = min(10, int(self.get_argument("count", "5") or "5"))
         authors, quotes = get_authors_and_quotes(count)
         if head:

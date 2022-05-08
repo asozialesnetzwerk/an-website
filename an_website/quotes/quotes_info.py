@@ -161,11 +161,11 @@ class AuthorsInfoPage(HTMLRequestHandler):
             fixed_author_name = fix_author_for_wikipedia_search(author.name)
             if self.redis is not None:
                 # try to get the info from Redis
-                result = await self.redis.get(
+                result = await self.redis.get(  # type: ignore[misc]
                     self.get_redis_info_key(fixed_author_name)
                 )
             if result and (len(info := result.split("|", maxsplit=1)) > 1):
-                remaining_ttl = await self.redis.ttl(
+                remaining_ttl = await self.redis.ttl(  # type: ignore[misc, union-attr]
                     self.get_redis_info_key(fixed_author_name)
                 )
                 creation_date = datetime.now(tz=timezone.utc) - timedelta(

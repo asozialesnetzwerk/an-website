@@ -177,7 +177,8 @@ class ContactPage(HTMLRequestHandler):
         if head:
             return
         self.render(
-            "pages/contact.html", subject=self.get_argument("subject", "")
+            "pages/contact.html",
+            subject=self.get_argument("subject", ""),
         )
 
     async def post(self) -> None:
@@ -207,7 +208,7 @@ class ContactPage(HTMLRequestHandler):
             f"will etwas über {self.request.host_name} schreiben."
         )
         message.set_payload(text, "utf-8")
-        if self.get_argument("message", ""):  # 🍯
+        if honeypot := self.get_argument("message", ""):  # 🍯
             logger.info(
                 "rejected message: %s",
                 {
@@ -215,7 +216,7 @@ class ContactPage(HTMLRequestHandler):
                     "message": message,
                     "from_address": from_address,
                     "geoip": geoip,
-                    "🍯": self.get_argument("message", ""),
+                    "🍯": honeypot,
                 },
             )
             # TODO: don't send message

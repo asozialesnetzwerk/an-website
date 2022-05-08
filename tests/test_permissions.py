@@ -118,6 +118,7 @@ async def test_permissions_with_backdoor(
     response = await request_and_parse(
         fetch, "app.settings['TRUSTED_API_SECRETS'].get('')"
     )
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] is None
@@ -125,6 +126,7 @@ async def test_permissions_with_backdoor(
     response = await request_and_parse(
         fetch, "app.settings['TRUSTED_API_SECRETS']['123qweQWE!@#000000000']"
     )
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == (
@@ -135,6 +137,7 @@ async def test_permissions_with_backdoor(
     response = await request_and_parse(
         fetch, "len(app.settings['TRUSTED_API_SECRETS'])"
     )
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("6", 6)

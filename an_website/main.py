@@ -37,7 +37,7 @@ from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
 from elasticsearch import AsyncElasticsearch, NotFoundError
-from redis.asyncio import (  # type: ignore
+from redis.asyncio import (
     BlockingConnectionPool,
     Redis,
     SSLConnection,
@@ -586,16 +586,16 @@ async def setup_redis(app: Application, raise_exc: bool = True) -> None:
                 }
             )
 
-    redis = Redis(connection_pool=BlockingConnectionPool(**kwargs))
+    redis = Redis(connection_pool=BlockingConnectionPool(**kwargs))  # type: ignore[var-annotated]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
     try:
-        await redis.ping()
+        await redis.ping()  # type: ignore[misc]
     except Exception as exc:  # pylint: disable=broad-except
         if raise_exc:
             raise
         logger.exception(exc)
         logger.error("Connecting to Redis failed!")
     else:
-        old_redis: None | Redis = app.settings.get("REDIS")
+        old_redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
         app.settings["REDIS"] = redis
         if old_redis:
             await old_redis.close(close_connection_pool=True)

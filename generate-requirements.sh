@@ -5,8 +5,8 @@ export PIPENV_VERBOSITY=-1
 
 pipenv verify
 
-pipenv lock --no-header -r > requirements.txt
-pipenv lock --no-header -r -d > requirements-dev.txt
+pipenv requirements > requirements.txt
+pipenv requirements --dev > requirements-dev.txt
 
 #remove global options
 sed -i "/^-/d" requirements.txt

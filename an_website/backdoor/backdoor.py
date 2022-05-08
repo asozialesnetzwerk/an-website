@@ -13,7 +13,7 @@
 
 """The backdoor API of the website."""
 
-from __future__ import annotations, barry_as_FLUFL
+from __future__ import annotations
 
 import ast
 import base64
@@ -74,107 +74,112 @@ class Backdoor(APIRequestHandler):
         # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle the POST request to the backdoor API."""
         self.set_header("Content-Type", "application/vnd.python.pickle")
+        result: Any
+        exception: None | BaseException = None
+        source, output = self.request.body, io.StringIO()
         try:
-            result: Any
-            exception: None | BaseException = None
-            source, output = self.request.body, io.StringIO()
+            parsed = compile(
+                source,
+                "",
+                mode,
+                ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS,
+                0x5F3759DF,
+                _feature_version=10,
+            )
+            code = compile(
+                parsed,
+                "",
+                mode,
+                ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                0x5F3759DF,
+                _feature_version=10,
+            )
+        except SyntaxError as exc:
+            exception = exc
+        else:
+            session = await self.load_session()
+            if "print" not in session or isinstance(
+                session["print"], PrintWrapper
+            ):
+                session["print"] = PrintWrapper(output)
+            if "help" not in session or isinstance(
+                session["help"], pydoc.Helper
+            ):
+                session["help"] = pydoc.Helper(io.StringIO(), output)
             try:
-                parsed = compile(
-                    source,
-                    "",
-                    mode,
-                    barry_as_FLUFL.compiler_flag
-                    | ast.PyCF_ONLY_AST
-                    | ast.PyCF_TYPE_COMMENTS,
-                    0x5F3759DF,
-                    _feature_version=10,
-                )
-                code = compile(
-                    parsed,
-                    "",
-                    mode,
-                    barry_as_FLUFL.compiler_flag
-                    | ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
-                    0x5F3759DF,
-                    _feature_version=10,
-                )
-            except SyntaxError as exc:
-                exception = exc
-            else:
-                session = await self.load_session()
-                if "print" not in session or isinstance(
-                    session["print"], PrintWrapper
-                ):
-                    session["print"] = PrintWrapper(output)
-                if "help" not in session or isinstance(
-                    session["help"], pydoc.Helper
-                ):
-                    session["help"] = pydoc.Helper(io.StringIO(), output)
-
                 try:
                     result = eval(code, session)  # pylint: disable=eval-used
                     if code.co_flags & CO_COROUTINE:
                         result = await result
-                except Exception as exc:  # pylint: disable=broad-except
-                    exception = exc  # pylint: disable=redefined-variable-type
+                except KeyboardInterrupt:
+                    EVENT_SHUTDOWN.set()
+                    raise SystemExit("Shutdown initiated.") from None
+            except SystemExit as exc:
+                new_args = []
+                for arg in exc.args:
                     try:
-                        del result
-                    except UnboundLocalError:
-                        pass
-                else:
-                    if result is not None:  # noqa: F821
-                        if result is session.get(  # noqa: F821
-                            "print"
-                        ) and isinstance(
-                            result, PrintWrapper  # noqa: F821
-                        ):
-                            result = print
-                        elif result is session.get("help") and isinstance(
-                            session["help"], pydoc.Helper
-                        ):
-                            result = help
-                        session["_"] = result
-                finally:
-                    session["self"] = None
-                    session["app"] = None
-                    session["settings"] = None
-                    await self.backup_session()
-            output_str: None | str = (
-                output.getvalue() if not output.closed else None
-            )
-            output.close()
-            result_tuple: tuple[None | str, Any] = (
-                "".join(traceback.format_exception(exception)).strip()
-                if exception is not None
-                else None,
-                exception or result,
-            )
-            try:
-                result_tuple = (
-                    result_tuple[0] or repr(result_tuple[1]),
-                    pickle.dumps(result_tuple[1], PICKLE_PROTOCOL),
+                        pickle.dumps(arg, PICKLE_PROTOCOL)
+                    except Exception:  # pylint: disable=broad-except
+                        new_args.append(repr(arg))
+                    else:
+                        new_args.append(arg)
+                exc.args = tuple(new_args)
+                output_str: None | str = (  # TODO: deduplicate this
+                    output.getvalue() if not output.closed else None
                 )
-            except Exception:  # pylint: disable=broad-except
-                result_tuple = (
-                    result_tuple[0] or repr(result_tuple[1]),
-                    None,
+                output.close()
+                return await self.finish(
+                    pickle.dumps(
+                        {
+                            "success": ...,
+                            "output": output_str,
+                            "result": exc,
+                        },
+                        PICKLE_PROTOCOL,
+                    )
                 )
-        except SystemExit as exc:
-            new_args = []
-            for arg in exc.args:
+            except Exception as exc:  # pylint: disable=broad-except
+                exception = exc  # pylint: disable=redefined-variable-type
                 try:
-                    pickle.dumps(arg, PICKLE_PROTOCOL)
-                except Exception:  # pylint: disable=broad-except
-                    new_args.append(repr(arg))
-                else:
-                    new_args.append(arg)
-            exc.args = tuple(new_args)
-            return await self.finish(pickle.dumps(exc, PICKLE_PROTOCOL))
-        except KeyboardInterrupt:
-            await self.finish(
-                pickle.dumps(SystemExit("Shutdown initiated."), PICKLE_PROTOCOL)
+                    del result
+                except UnboundLocalError:
+                    pass
+            else:
+                if result is not None:  # noqa: F821
+                    if result is session.get(  # noqa: F821
+                        "print"
+                    ) and isinstance(
+                        result, PrintWrapper  # noqa: F821
+                    ):
+                        result = print
+                    elif result is session.get("help") and isinstance(
+                        session["help"], pydoc.Helper
+                    ):
+                        result = help
+                    session["_"] = result
+            finally:
+                session["self"] = None
+                session["app"] = None
+                session["settings"] = None
+                await self.backup_session()
+        output_str = output.getvalue() if not output.closed else None
+        output.close()
+        result_tuple: tuple[None | str, Any] = (
+            "".join(traceback.format_exception(exception)).strip()
+            if exception is not None
+            else None,
+            exception or result,
+        )
+        try:
+            result_tuple = (
+                result_tuple[0] or repr(result_tuple[1]),
+                pickle.dumps(result_tuple[1], PICKLE_PROTOCOL),
             )
-            return EVENT_SHUTDOWN.set()
+        except Exception:  # pylint: disable=broad-except
+            result_tuple = (
+                result_tuple[0] or repr(result_tuple[1]),
+                None,
+            )
         return await self.finish(
             pickle.dumps(
                 {
@@ -209,7 +214,7 @@ class Backdoor(APIRequestHandler):
             session = self.sessions[session_id]
         else:
             session_pickle = (
-                await self.redis.get(
+                await self.redis.get(  # type: ignore[misc]
                     f"{self.redis_prefix}:backdoor-session:{session_id}"
                 )
                 if self.redis
@@ -254,7 +259,7 @@ class Backdoor(APIRequestHandler):
             except Exception:  # pylint: disable=broad-except
                 del session[key]
         return bool(
-            await self.redis.setex(
+            await self.redis.setex(  # type: ignore[misc]
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
                 base64.encodebytes(pickle.dumps(session, PICKLE_PROTOCOL)),

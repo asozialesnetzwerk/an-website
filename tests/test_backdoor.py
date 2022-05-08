@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import pickle
+from types import EllipsisType
 from typing import Any, Literal
 
 from . import FetchCallable, app, assert_valid_response, fetch
@@ -32,40 +33,44 @@ async def request_and_parse(
     session: None | str = None,
     auth_key: None | str = None,
     mode: Literal["exec", "eval"] = "eval",
-) -> dict[str, Any] | Any:
+) -> dict[str, Any] | str | None:
     """Make request to the backdoor and parse the response."""
     auth_key = "123qweQWE!@#000000000" if auth_key is None else auth_key
     headers = {"Authorization": auth_key}
+
     if session:
         headers["X-Backdoor-Session"] = session
-    response = await fetch(
+
+    http_response = await fetch(
         f"/api/backdoor/{mode}",
         method="POST",
         headers=headers,
         body=code,
     )
 
-    assert_valid_response(response, "application/vnd.python.pickle")
+    assert_valid_response(http_response, "application/vnd.python.pickle")
 
-    unpickled = pickle.loads(response.body)
+    response: dict[str, Any] | str | None = pickle.loads(http_response.body)
 
-    if not isinstance(unpickled, dict):
-        return unpickled
+    assert isinstance(response, dict | str | None)
 
-    assert len(unpickled) == 3
-    assert isinstance(unpickled["success"], bool)
-    assert isinstance(unpickled["output"], str)
+    if not isinstance(response, dict):
+        return response
 
-    if unpickled["result"] is not None:
-        assert isinstance(unpickled["result"], tuple)
-        assert len(unpickled["result"]) == 2
-        assert isinstance(unpickled["result"][0], str)
-        if isinstance(unpickled["result"][1], bytes):
-            result_list = list(unpickled["result"])
-            result_list[1] = pickle.loads(result_list[1])
-            unpickled["result"] = tuple(result_list)
+    assert len(response) == 3
+    assert isinstance(response["success"], bool | EllipsisType)
+    assert isinstance(response["output"], None | str)  # type: ignore[operator]
+    assert isinstance(response["result"], None | tuple | SystemExit)
+    if isinstance(response["result"], tuple):
+        assert len(response["result"]) == 2
+        assert isinstance(response["result"][0], str)
+        assert isinstance(response["result"][1], bytes | None)
+        if isinstance(response["result"][1], bytes):
+            result = list(response["result"])
+            result[1] = pickle.loads(result[1])
+            response["result"] = tuple(result)
 
-    return unpickled
+    return response
 
 
 async def test_backdoor(  # pylint: disable=too-many-statements
@@ -74,46 +79,55 @@ async def test_backdoor(  # pylint: disable=too-many-statements
 ) -> None:
     """Test the backdoor."""
     response = await request_and_parse(fetch, "1 + 1")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("2", 2)
 
     response = await request_and_parse(fetch, "print(2);", mode="eval")
+    assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
     assert isinstance(response["result"][1], SyntaxError)
 
     response = await request_and_parse(fetch, "print(2);", mode="exec")
+    assert isinstance(response, dict)
     assert response["success"]
     assert response["output"] == "2\n"
     assert not response["result"]
 
     response = await request_and_parse(fetch, "(x := 420)", session="123456789")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "x", session="123456789")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "_", session="123456789")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("420", 420)
 
     response = await request_and_parse(fetch, "print")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"][1] is print
 
     response = await request_and_parse(fetch, "help")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert type(response["result"][1]) is type(help)
 
     response = await request_and_parse(fetch, "help")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert type(response["result"][1]) is type(help)
@@ -121,11 +135,13 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(
         fetch, "(await self.load_session())['__name__']"
     )
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("'this'", "this")
 
     response = await request_and_parse(fetch, "_")
+    assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
     assert response["result"][0].startswith("Traceback (most recent call last)")
@@ -134,8 +150,11 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(
         fetch, "raise SystemExit('x', 'y')", mode="exec"
     )
-    assert isinstance(response, SystemExit)
-    assert response.args == ("x", "y")
+    assert isinstance(response, dict)
+    assert response["success"]
+    assert not response["output"]
+    assert isinstance(response["result"], SystemExit)
+    assert response["result"].args == ("x", "y")
 
     # create something that cannot be pickled:
     response = await request_and_parse(
@@ -148,6 +167,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
         mode="exec",
         session="tomato",
     )
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"] is None
@@ -155,11 +175,19 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     response = await request_and_parse(
         fetch, "raise SystemExit(t)", mode="exec", session="tomato"
     )
-    assert isinstance(response, SystemExit)
-    assert response.args[0].startswith("<this.fun.<locals>.Result object at ")
-    assert response.args[0].endswith(">")
+    assert isinstance(response, dict)
+    assert response["success"]
+    assert not response["output"]
+    assert isinstance(response["result"], SystemExit)
+    assert (
+        response["result"]
+        .args[0]
+        .startswith("<this.fun.<locals>.Result object at ")
+    )
+    assert response["result"].args[0].endswith(">")
 
     response = await request_and_parse(fetch, "t", session="tomato")
+    assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"][0].startswith(
@@ -169,6 +197,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert response["result"][1] is None
 
     response = await request_and_parse(fetch, "raise ValueError()", mode="exec")
+    assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
     assert response["result"][0].startswith("Traceback (most recent call last)")

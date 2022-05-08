@@ -62,13 +62,13 @@ async def test_parsing_wrong_quotes() -> None:
     # parsing the same dict twice should return the same object twice
     assert id(wrong_quote) == id(quotes.parse_wrong_quote(WRONG_QUOTE_DATA))
 
-    author = quotes.parse_author(WRONG_QUOTE_DATA["author"])  # type: ignore
+    author = quotes.parse_author(WRONG_QUOTE_DATA["author"])  # type: ignore[arg-type]
     assert id(author) == id(wrong_quote.author)
     assert author == await quotes.get_author_by_id(author_id=author.id)
     assert author.name == "Kim Jong-il"
     assert author.id == 2
 
-    quote = quotes.parse_quote(WRONG_QUOTE_DATA["quote"])  # type: ignore
+    quote = quotes.parse_quote(WRONG_QUOTE_DATA["quote"])  # type: ignore[arg-type]
     assert id(quote) == id(wrong_quote.quote)
     assert quote == await quotes.get_quote_by_id(quote_id=quote.id)
     assert quote.id == 1
@@ -297,7 +297,7 @@ def test_parsing_vote_str() -> None:
     assert main_page.vote_to_int("0") == 0
     assert main_page.vote_to_int("00") == 0
     assert main_page.vote_to_int("") == 0
-    assert main_page.vote_to_int(None) == 0  # type: ignore
+    assert main_page.vote_to_int(None) == 0  # type: ignore[arg-type]
 
     assert main_page.vote_to_int("1") == 1
     assert main_page.vote_to_int("2") == 1

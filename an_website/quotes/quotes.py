@@ -25,7 +25,7 @@ import random
 import re
 from asyncio import Task
 from collections.abc import Coroutine, Generator
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from tornado.web import HTTPError, RedirectHandler
 
@@ -253,8 +253,8 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         """Render the main quote page, with a few links."""
         if head:
             return
-        quote: str = self.get_argument("quote", "") or ""
-        author: str = self.get_argument("author", "") or ""
+        quote = cast(str, self.get_argument("quote", ""))
+        author = cast(str, self.get_argument("author", ""))
         if (quote or author) and re.fullmatch(r"^[0-9]+$", quote + author):
             self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
             return
@@ -434,7 +434,7 @@ class QuoteById(QuoteBaseHandler):
         """Save the new vote in Redis."""
         result = None
         if self.redis:
-            result = await self.redis.setex(
+            result = await self.redis.setex(  # type: ignore[misc]
                 self.get_redis_votes_key(quote_id, author_id),
                 60 * 60 * 24 * 90,  # time to live in seconds (3 months)
                 str(vote),  # value to save (the vote)
@@ -464,7 +464,7 @@ class QuoteById(QuoteBaseHandler):
         if not self.redis:
             logger.warning("No Redis connection")
             return 0
-        result = await self.redis.get(
+        result = await self.redis.get(  # type: ignore[misc]
             self.get_redis_votes_key(quote_id, author_id)
         )
         if result == "-1":
