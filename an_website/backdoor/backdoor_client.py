@@ -228,10 +228,10 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
 def detect_mode(code: str) -> str:
     """Detect which mode needs to be used."""
     try:
-        ast.parse(code, mode="eval")
+        compile(code, "", "eval", ast.PyCF_ONLY_AST)
         return "eval"
     except SyntaxError:
-        ast.parse(code, mode="exec")
+        compile(code, "", "exec", ast.PyCF_ONLY_AST)
         return "exec"
 
 

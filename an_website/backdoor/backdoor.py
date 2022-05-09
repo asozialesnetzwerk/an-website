@@ -82,7 +82,7 @@ class Backdoor(APIRequestHandler):
                 source,
                 "",
                 mode,
-                ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS,
+                ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS | 0x400000,
                 0x5F3759DF,
                 _feature_version=10,
             )
