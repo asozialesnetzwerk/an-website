@@ -41,9 +41,6 @@
             {% if settings.get("CONTACT_USE_FORM") %}
                 <a href="{{fix_url('/kontakt')}}"
                    class="contact-anchor">KONTAKT</a>
-            {% elif contact_address is not None %}
-                <a href="mailto:{{contact_address}}?subject=AN-Webseite: {{title}}"
-                   class="contact-anchor">KONTAKT</a>
             {% end %}
             {% if settings.get("NETCUP") %}
                 <a id="oekostrom" href="{{ fix_url('https://www.netcup.de') }}">

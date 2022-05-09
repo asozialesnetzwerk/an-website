@@ -78,24 +78,22 @@
     </form>
 
     <div id="bottom-buttons-container">
-        <a id="add-quote"
-           tooltip="Neues Zitat hinzufügen"
-           href="{{fix_url('/zitate/erstellen/')}}">
-            <img class="button-img"
-                 src="{{fix_static('img/plus.svg')}}"
-                 alt="Zitat hinzufügen.">
-        </a>
-
-        {% if contact_address is not None %}
+        {% if settings.get("CONTACT_USE_FORM") %}
             <a class="report tooltip"
-               href="mailto:{{contact_address}}?subject=Das falsche Zitat mit der Id {{wrong_quote.get_id_as_str()}} hat ein Problem&body={{str(wrong_quote) + '\n'}}"
-               tooltip="Melde das Zitat."
-               no-dynload>
-                <img class="button-img report-img"
-                     alt="Zitat melden."
+               style="margin-right: 0.69rem"
+               href="{{fix_url(f'/kontakt?subject=Das falsche Zitat mit der Id {wrong_quote.get_id_as_str()} hat ein Problem&message={wrong_quote}')}}"
+               tooltip="Melde das Zitat.">
+                <img class="button-img report-img" alt="Zitat melden."
                      src="{{fix_static('img/report.svg')}}">
             </a>
         {% end %}
+
+        <a id="add-quote"
+           tooltip="Neues Zitat hinzufügen"
+           href="{{fix_url('/zitate/erstellen/')}}">
+            <img class="button-img" alt="Zitat hinzufügen."
+                 src="{{fix_static('img/plus.svg')}}">
+        </a>
 
         <form method="get">
             {% raw form_appendix %}

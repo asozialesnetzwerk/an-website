@@ -71,13 +71,8 @@
         </li>
         {% if settings.get("CONTACT_USE_FORM") %}
             <li>
-                <a href="{{fix_url('/kontakt?subject=Falsch zugeordnete Zitate')}}"
-                >Per E-Mail beschweren</a>
-            </li>
-        {% elif contact_address is not None %}
-            <li>
-                <a href="mailto:{{contact_address}}?subject=Falsch zugeordnete Zitate"
-                >Per E-Mail beschweren</a>
+                <a href="{{fix_url('/kontakt?subject=Falsch+zugeordnete+Zitate')}}"
+                >Über Zitate beschweren</a>
             </li>
         {% end %}
     </ul>

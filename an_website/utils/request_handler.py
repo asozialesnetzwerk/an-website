@@ -58,7 +58,6 @@ from .utils import (
     anonymize_ip,
     bool_to_str,
     geoip,
-    name_to_id,
     str_to_bool,
 )
 
@@ -571,16 +570,6 @@ class BaseRequestHandler(RequestHandler):
             tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
 
-    def get_contact_address(self) -> None | str:
-        """Get the contact address from the settings."""
-        address: None | str = self.settings.get("CONTACT_ADDRESS")
-        if not address:
-            return None
-        if not address.startswith("@"):
-            return address
-        # if address starts with @ it's a catch-all address
-        return name_to_id(self.request.path) + "_contact" + address
-
     def get_bool_argument(
         self,
         name: str,
@@ -736,7 +725,6 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "fix_static": lambda url: self.fix_url(fix_static_url(url)),
                 "REPO_URL": REPO_URL,
                 "theme": self.get_display_theme(),
-                "contact_address": self.get_contact_address(),
                 "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
                 "canonical_url": self.fix_url(
                     self.request.full_url().upper()

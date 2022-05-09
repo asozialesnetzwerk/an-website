@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
 from typing import Any
+from urllib.parse import quote, urlencode
 
 from tornado.web import Application, HTTPError, MissingArgumentError
 
@@ -69,8 +70,11 @@ def apply_contact_stuff_to_app(
     )
 
     if not sender_address:
-        # the contact form is disabled if no sender address is set
-        app.settings["CONTACT_ADDRESS"] = contact_address
+        # the contact form in other mode if no sender address is set
+        app.settings.update(
+            CONTACT_ADDRESS=contact_address,
+            CONTACT_USE_FORM=1,
+        )
         return
     app.settings["CONTACT_ADDRESS"] = None
 
@@ -78,7 +82,7 @@ def apply_contact_stuff_to_app(
         return
 
     app.settings.update(
-        CONTACT_USE_FORM=True,
+        CONTACT_USE_FORM=2,
         CONTACT_RECIPIENTS={
             address.strip() for address in contact_address.split(",")
         },
@@ -179,12 +183,14 @@ class ContactPage(HTMLRequestHandler):
         self.render(
             "pages/contact.html",
             subject=self.get_argument("subject", ""),
+            message=self.get_argument("message", ""),
         )
 
     async def post(self) -> None:
         """Handle POST requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
+
         text = self.get_argument("nachricht")
         if not text:
             raise MissingArgumentError("nachricht")  # raise on empty message
@@ -197,10 +203,6 @@ class ContactPage(HTMLRequestHandler):
         )
 
         message = Message()
-
-        geoip = await self.geoip()
-        if geoip:
-            add_geoip_info_to_message(message, geoip)
 
         message["Subject"] = str(
             self.get_argument("subjekt", "")
@@ -215,20 +217,37 @@ class ContactPage(HTMLRequestHandler):
                     "Subject": message["Subject"],
                     "message": message,
                     "from_address": from_address,
-                    "geoip": geoip,
+                    "geoip": await self.geoip(),
                     "🍯": honeypot,
                 },
             )
-            # TODO: don't send message
-            message["Subject"] = f"[SPAM] {message['Subject']}"
-        # pylint: disable=line-too-long
+            await self.render("pages/empty.html", text="Erfolgreich gesendet.")
+            return
+
+        if self.settings.get("CONTACT_USE_FORM") == 1:
+            query = urlencode(
+                {
+                    "subject": message["Subject"],
+                    "body": f"{text}\n\nVon: {from_address}",
+                },
+                quote_via=quote,
+            )
+            self.redirect(
+                f"mailto:{self.settings.get('CONTACT_ADDRESS')}?{query}"
+            )
+            return
+
+        geoip = await self.geoip()
+        if geoip:
+            add_geoip_info_to_message(message, geoip)
+
         await asyncio.to_thread(
             send_message,
             message=message,
             from_address=from_address,
             server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore[arg-type]
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
-            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore[arg-type]  # noqa: B950
+            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore
             username=self.settings.get("CONTACT_SENDER_USERNAME"),
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
