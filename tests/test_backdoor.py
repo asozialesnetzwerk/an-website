@@ -78,11 +78,11 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     fetch: FetchCallable,
 ) -> None:
     """Test the backdoor."""
-    response = await request_and_parse(fetch, "1 + 1")
+    response = await request_and_parse(fetch, "(0<>0)")  # cute face
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
-    assert response["result"] == ("2", 2)
+    assert response["result"] == ("False", False)
 
     response = await request_and_parse(fetch, "print(2);", mode="eval")
     assert isinstance(response, dict)

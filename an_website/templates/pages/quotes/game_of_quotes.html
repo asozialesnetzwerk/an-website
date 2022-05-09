@@ -5,21 +5,27 @@
     <form method="get" action="/zitate">
         {% raw form_appendix %}
         <h2>Wähle ein Zitat aus</h2>
-        {% for quote in quotes %}
-            <label class="form-element"
-                   tooltip-position="bottom"
-                   tooltip="Autor*in: {{quote.author.name}}">
-                <input type="radio" value="{{quote.id}}" name="quote">
-                {{quote.quote}}
-            </label>
-        {% end %}
+        <fieldset id="quotes">
+            {% for quote in quotes %}
+                <div class="label-input-group"
+                     tooltip="Autor*in: {{quote.author.name}}"
+                     tooltip-position="bottom">
+                    <input type="radio" value="{{quote.id}}"
+                           id="q{{quote.id}}" name="quote">
+                    <label for="q{{quote.id}}">{{quote.quote}}</label>
+                </div>
+            {% end %}
+        </fieldset>
         <h2>Wähle einen Autor aus</h2>
-        {% for author in authors %}
-            <label class="form-element">
-                <input type="radio" value="{{author.id}}" name="author">
-                {{author.name}}
-            </label>
-        {% end %}
+        <fieldset>
+            {% for author in authors %}
+                <div class="label-input-group">
+                    <input type="radio" value="{{author.id}}"
+                           id="a{{author.id}}" name="author">
+                    <label for="a{{author.id}}">{{author.name}}</label>
+                </div>
+            {% end %}
+        </fieldset>
         <button type="submit">Einreichen</button>
     </form>
 {% end %}
@@ -28,4 +34,6 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote_generator.css')}}">
 {% end %}
