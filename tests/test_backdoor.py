@@ -33,6 +33,7 @@ async def request_and_parse(
     session: None | str = None,
     auth_key: None | str = None,
     mode: Literal["exec", "eval"] = "eval",
+    features: None | str = None,
 ) -> dict[str, Any] | str | None:
     """Make request to the backdoor and parse the response."""
     auth_key = "123qweQWE!@#000000000" if auth_key is None else auth_key
@@ -40,6 +41,9 @@ async def request_and_parse(
 
     if session:
         headers["X-Backdoor-Session"] = session
+
+    if features:
+        headers["X-Future-Feature"] = features
 
     http_response = await fetch(
         f"/api/backdoor/{mode}",
@@ -78,7 +82,15 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     fetch: FetchCallable,
 ) -> None:
     """Test the backdoor."""
-    response = await request_and_parse(fetch, "(0<>0)")  # cute face
+    response = await request_and_parse(fetch, "1 != 2")
+    assert isinstance(response, dict)
+    assert response["success"]
+    assert not response["output"]
+    assert response["result"] == ("True", True)
+
+    response = await request_and_parse(
+        fetch, "(0<>0)", features="barry_as_FLUFL"
+    )
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]

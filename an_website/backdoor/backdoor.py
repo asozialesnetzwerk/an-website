@@ -33,6 +33,9 @@ from .. import EVENT_SHUTDOWN
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
 
+if True:  # pylint: disable=using-constant-test
+    import __future__
+
 logger = logging.getLogger(__name__)
 
 PICKLE_PROTOCOL = max(pickle.DEFAULT_PROTOCOL, 5)
@@ -82,7 +85,7 @@ class Backdoor(APIRequestHandler):
                 source,
                 "",
                 mode,
-                ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS | 0x400000,
+                self.get_flags(ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS),
                 0x5F3759DF,
                 _feature_version=10,
             )
@@ -90,7 +93,7 @@ class Backdoor(APIRequestHandler):
                 parsed,
                 "",
                 mode,
-                ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+                self.get_flags(ast.PyCF_ALLOW_TOP_LEVEL_AWAIT),
                 0x5F3759DF,
                 _feature_version=10,
             )
@@ -192,6 +195,14 @@ class Backdoor(APIRequestHandler):
                 PICKLE_PROTOCOL,
             )
         )
+
+    def get_flags(self, flags: int) -> int:
+        """Get compiler flags."""
+        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
+            if (feature := ftr.strip()) in __future__.all_feature_names:
+                flags |= getattr(__future__, feature).compiler_flag
+
+        return flags
 
     def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
         """Add request-specific stuff to the session."""

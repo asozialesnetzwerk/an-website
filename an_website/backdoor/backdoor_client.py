@@ -57,6 +57,7 @@ else:
     uvloop.install()
 
 
+BARRY = True
 E = eval(  # pylint: disable=eval-used
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
@@ -227,11 +228,14 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
 
 def detect_mode(code: str) -> str:
     """Detect which mode needs to be used."""
+    flags: int = ast.PyCF_ONLY_AST
+    if BARRY:
+        flags |= barry_as_FLUFL.compiler_flag
     try:
-        compile(code, "", "eval", ast.PyCF_ONLY_AST)
+        compile(code, "", "eval", flags, 69)
         return "eval"
     except SyntaxError:
-        compile(code, "", "exec", ast.PyCF_ONLY_AST)
+        compile(code, "", "exec", flags, 69)
         return "exec"
 
 
@@ -256,6 +260,8 @@ def send(
     headers = {
         "Authorization": key,
     }
+    if BARRY:
+        headers["X-Future-Feature"] = "barry_as_FLUFL"
     if session:
         headers["X-Backdoor-Session"] = session
     response = asyncio.run(
