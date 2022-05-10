@@ -79,9 +79,8 @@
 
     <div id="bottom-buttons-container">
         {% if settings.get("CONTACT_USE_FORM") %}
-            <a class="report tooltip"
-               style="margin-right: 0.69rem"
-               href="{{fix_url(f'/kontakt?subject=Das falsche Zitat mit der Id {wrong_quote.get_id_as_str()} hat ein Problem&message={wrong_quote}')}}"
+            <a id="report"
+               href="{{fix_url('/kontakt', subject=f'Das falsche Zitat {wrong_quote.get_id_as_str()} hat ein Problem', message=str(wrong_quote))}}"
                tooltip="Melde das Zitat.">
                 <img class="button-img report-img" alt="Zitat melden."
                      src="{{fix_static('img/report.svg')}}">

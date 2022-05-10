@@ -6,6 +6,8 @@ function startQuotes(currId, nextId) {
     const nextButton = elById("next");
     const upvoteButton = elById("upvote");
     const downvoteButton = elById("downvote");
+    // may be missing
+    const reportButton = elById("report");
 
     const keys = (() => {
         let k = new URLSearchParams(params).get("keys");
@@ -112,6 +114,16 @@ function startQuotes(currId, nextId) {
             realAuthor.href = fixHref(
                 `/zitate/info/a/${data["real_author_id"]}${params}`
             );
+            if (reportButton) {
+                const reportHrefParams = new URLSearchParams(params);
+                reportHrefParams.set(
+                    "subject", `Das falsche Zitat ${data["id"]} hat ein Problem`
+                );
+                reportHrefParams.set(
+                    "message", `${quote.innerText} ${realAuthor.innerText}`
+                );
+                reportButton.href = fixHref(`/kontakt?${reportHrefParams}`);
+            }
             updateRating(data["rating"]);
             updateVote(Number.parseInt(data["vote"]));
             return true;

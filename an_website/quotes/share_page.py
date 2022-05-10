@@ -30,14 +30,12 @@ class ShareQuote(QuoteReadyCheckHandler):
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
         if head:
             return
+        text = f"»{wrong_quote.quote.quote}«\n- {wrong_quote.author.name}"
         await self.render(
             "pages/quotes/share.html",
-            text=quote(
-                f"»{wrong_quote.quote.quote}«\n- {wrong_quote.author.name}"
-            ),
-            # title=quote("Witziges falsch zugeordnetes Zitat!"),
-            quote_url=quote(
-                self.fix_url(f"/zitate/{quote_id}-{author_id}"), safe=""
-            ),
+            text=quote(text, safe=""),
+            u_text=text,
+            u_url=(url := self.fix_url(f"/zitate/{quote_id}-{author_id}")),
+            quote_url=quote(url, safe=""),
             wrong_quote=str(wrong_quote),
         )

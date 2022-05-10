@@ -71,7 +71,7 @@
         </li>
         {% if settings.get("CONTACT_USE_FORM") %}
             <li>
-                <a href="{{fix_url('/kontakt?subject=Falsch+zugeordnete+Zitate')}}"
+                <a href="{{fix_url('/kontakt', subject='Falsch zugeordnete Zitate')}}"
                 >Über Zitate beschweren</a>
             </li>
         {% end %}

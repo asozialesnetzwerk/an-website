@@ -58,21 +58,25 @@ function startLoadingComics() {
         [
             getDateBy(2022, 4, 4),
             "administratives/kaenguru-comics/2022-04/4/original"
-        ]
+        ],
+        [
+          getDateBy(2022, 5, 9),
+            "administratives/kaenguru-comics/2022-05/9/original"
+        ],
     ];
-
-    const datesEqual = (date1, date2) => dateEquals(
-        date1,
-        date2.getFullYear(),
-        date2.getMonth() + 1,  // js is stupid
-        date2.getDate()
-    );
 
     const dateEquals = (date, year, month, dayOfMonth) => (
         // check if a date equals another based on year, month, and dayOfMonth
         date.getFullYear() === year
         && date.getMonth() === month - 1 // js is stupid
         && date.getDate() === dayOfMonth
+    );
+
+    const datesEqual = (date1, date2) => dateEquals(
+        date1,
+        date2.getFullYear(),
+        date2.getMonth() + 1,  // js is stupid
+        date2.getDate()
     );
 
     const isSunday = (date) => (

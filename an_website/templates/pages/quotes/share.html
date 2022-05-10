@@ -8,7 +8,7 @@
   <div id="share-button-container">
     <a no-dynload
        class="resp-sharing-button__link"
-       href="{{fix_url(f'/troet?save=sure&text={text}%0A%0A{quote_url}%0A%0A%23falscheZitate')}}"
+       href="{{fix_url('/troet', save='sure', text=f'{u_text}\n\n{u_url}\n\n#falscheZitate')}}"
        target="_blank"
        aria-label="Toot">
       <div class="resp-sharing-button resp-sharing-button--mastodon"
