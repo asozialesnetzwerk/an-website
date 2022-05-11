@@ -150,11 +150,15 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         return f"{self.request.protocol}://{self.request.host}"
 
     async def get_quote_by_date(
-        self, wq_date: date
+        self, wq_date: date | str
     ) -> None | QuoteOfTheDayData:
         """Get the quote of the date if one was saved."""
         if not self.redis:
             return None
+
+        if isinstance(wq_date, str):
+            wq_date = date(*tuple(int(x) for x in wq_date.split("-")))
+
         wq_id = await self.redis.get(self.get_redis_quote_date_key(wq_date))  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         if not wq_id:
             return None
@@ -208,72 +212,74 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
         if head:
             return
         today = datetime.now(tz=timezone.utc).date()
+        quotes = (
+            await self.get_quote_of_today(),
+            *[
+                await self.get_quote_by_date(today - timedelta(days=i))
+                for i in range(1, 5)
+            ],
+        )
         await self.render(
             "rss/quote_of_the_day.xml",
-            quotes=tuple(
-                quote
-                for quote in (
-                    [await self.get_quote_of_today()]
-                    + [
-                        (
-                            await self.get_quote_by_date(
-                                today - timedelta(days=i)
-                            )
-                        )
-                        for i in range(1, 5)
-                    ]
-                )
-                if quote
-            ),
+            quotes=tuple(q for q in quotes if q),
         )
 
 
 class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
     """Handler for the JSON API that returns the quote of the day."""
 
-    async def get(self, date_str: None | str = None) -> None:
+    async def get(
+        self,
+        date_str: None | str = None,
+        *,
+        head: bool = False,  # pylint: disable=unused-argument
+    ) -> None:
         """Handle GET requests."""
-        if date_str:
-            year, month, day = tuple(int(x) for x in date_str.split("-"))
-            quote_data = await self.get_quote_by_date(
-                date(year=year, month=month, day=day)
-            )
-        else:
-            quote_data = await self.get_quote_of_today()
+        quote_data = await (
+            self.get_quote_by_date(date_str)
+            if date_str
+            else self.get_quote_of_today()
+        )
 
-        if quote_data:
-            if self.request.path.endswith("/full"):
-                return await self.finish(quote_data.to_json())
-            wrong_quote = quote_data.wrong_quote
-            return await self.finish_dict(
-                date=quote_data.date.isoformat(),
-                url=quote_data.get_quote_url(),
-                id=wrong_quote.get_id_as_str(),
-                quote=str(wrong_quote.quote),
-                author=str(wrong_quote.author),
-                rating=wrong_quote.rating,
-            )
-        raise HTTPError(404)
+        if not quote_data:
+            raise HTTPError(404)
+
+        if self.request.path.endswith("/full"):
+            return await self.finish(quote_data.to_json())
+
+        wrong_quote = quote_data.wrong_quote
+        await self.finish_dict(
+            date=quote_data.date.isoformat(),
+            url=quote_data.get_quote_url(),
+            id=wrong_quote.get_id_as_str(),
+            quote=str(wrong_quote.quote),
+            author=str(wrong_quote.author),
+            rating=wrong_quote.rating,
+        )
 
 
 class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
     """Redirect to the quote of the day."""
 
-    async def get(self, date_str: None | str = None) -> None:
+    async def get(
+        self,
+        date_str: None | str = None,
+        *,
+        head: bool = False,  # pylint: disable=unused-argument
+    ) -> None:
         """Handle GET requests."""
-        if date_str:
-            year, month, day = tuple(int(x) for x in date_str.split("-"))
-            wrong_quote = await self.get_quote_by_date(
-                date(year=year, month=month, day=day)
-            )
-        else:
-            wrong_quote = await self.get_quote_of_today()
+        wrong_quote_data = await (
+            self.get_quote_by_date(date_str)
+            if date_str
+            else self.get_quote_of_today()
+        )
 
-        if wrong_quote:
-            return self.redirect(
-                self.fix_url(
-                    wrong_quote.get_quote_url(), as_json=self.get_as_json()
-                ),
-                False,
-            )
-        raise HTTPError(404)
+        if not wrong_quote_data:
+            raise HTTPError(404)
+
+        self.redirect(
+            self.fix_url(
+                wrong_quote_data.get_quote_url(), as_json=self.get_as_json()
+            ),
+            False,
+        )

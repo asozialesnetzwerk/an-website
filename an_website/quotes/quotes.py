@@ -189,36 +189,34 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
         )
 
-    def get_next_id(  # noqa: C901  # pylint: disable=too-complex
-        self, rating_filter: None | str = None
-    ) -> tuple[int, int]:
+    def get_next_id(self, rating_filter: None | str = None) -> tuple[int, int]:
         """Get the id of the next quote."""
         if rating_filter is None:
             rating_filter = self.rating_filter()
+
         if rating_filter == "smart":
             rating_filter = random.choice(SMART_RATING_FILTERS)
 
-        if rating_filter == "unrated":
-            # get a random quote, but filter out already rated quotes
-            # pylint: disable=while-used
-            while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
-                if WRONG_QUOTES_CACHE[ids].id == -1:
-                    # Check for wrong quotes, that are unrated but in
-                    # the cache. They don't have a real wrong_quotes_id
-                    return ids
-            return ids
-
-        if rating_filter == "all":
-            return get_random_id()
-
-        if rating_filter == "w":
-            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating > 0)
-        elif rating_filter == "n":
-            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
-        elif rating_filter == "rated":
-            wrong_quotes = get_wrong_quotes()
-        else:
-            wrong_quotes = None
+        match rating_filter:
+            case "unrated":
+                # get a random quote, but filter out already rated quotes
+                # pylint: disable=while-used
+                while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
+                    if WRONG_QUOTES_CACHE[ids].id == -1:
+                        # Check for wrong quotes, that are unrated but in
+                        # the cache. They don't have a real wrong_quotes_id
+                        return ids
+                return ids
+            case "all":
+                return get_random_id()
+            case "w":
+                wrong_quotes = get_wrong_quotes(lambda wq: wq.rating > 0)
+            case "n":
+                wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
+            case "rated":
+                wrong_quotes = get_wrong_quotes()
+            case _:
+                wrong_quotes = tuple()
 
         if not wrong_quotes:
             # invalid rating filter or no wrong quotes with that filter
