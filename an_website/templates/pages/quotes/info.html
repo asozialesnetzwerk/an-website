@@ -26,9 +26,19 @@
             </th>
         </tr>
     </table>
-    <span data-elastic-exclude style="margin-top: 17px">
-        Die auf dieser Seite präsentierten Informationen sind nicht notwendigerweise
-        korrekt. Wenn Du einen Fehler gefunden hast, kontaktiere uns bitte. Danke :)
+    <span data-elastic-exclude id="disclaimer">
+        <div>
+            Die auf dieser Seite präsentierten Informationen sind nicht notwendigerweise
+            korrekt. Wenn Du einen Fehler gefunden hast, kontaktiere uns bitte. Danke :)
+        </div>
+        {% if settings.get("CONTACT_USE_FORM") %}
+            <a href="{{fix_url('/kontakt', subject=f'Fehler bei {type} {id}', message=f'{text}\n({canonical_url})')}}"
+               tooltip="Melde Fehler"
+               tooltip-position="left"
+               id="report">
+                <img alt="Fehler melden" src="{{fix_static('img/report.svg')}}">
+            </a>
+        {% end %}
     </span>
 {% end %}
 

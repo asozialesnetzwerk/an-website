@@ -23,6 +23,27 @@ th {
     color: var(--text-color)!important;
 }
 
+#disclaimer {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: row;
+}
+
+#report {
+    display: block;
+    height: 3rem;
+    width: 3rem;
+}
+
+#report img {
+    width: 100%;
+}
+
+#report img:hover {
+    transform: scale(1.08);
+    filter: drop-shadow(2px 2px 1px rgba(217, 229, 78, 0.5));
+}
+
 /* author info page */
 #author-info {
     background-color: var(--secondary-bg);

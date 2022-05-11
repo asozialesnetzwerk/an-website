@@ -699,52 +699,45 @@ class HTMLRequestHandler(BaseRequestHandler):
         They are mostly needed by most of the pages (like title,
         description and no_3rd_party).
         """
-        # pylint: disable=invalid-name
         namespace = super().get_template_namespace()
         namespace.update(
-            {
-                "ansi2html": Ansi2HTMLConverter(inline=True, scheme="xterm"),
-                "title": self.title,
-                "short_title": self.short_title,
-                "description": self.description,
-                "keywords": (
-                    "Asoziales Netzwerk, Känguru-Chroniken"
-                    + (
-                        ""
-                        if self.module_info is None
-                        else ", "
-                        + self.module_info.get_keywords_as_str(
-                            self.request.path
-                        )
-                    )
-                ),
-                "no_3rd_party": self.get_no_3rd_party(),
-                "lang": "de",  # TODO: add language support
-                "form_appendix": self.get_form_appendix(),
-                "fix_url": self.fix_url,
-                "fix_static": lambda url: self.fix_url(fix_static_url(url)),
-                "REPO_URL": REPO_URL,
-                "theme": self.get_display_theme(),
-                "elastic_rum_js_url": self.ELASTIC_RUM_JS_URL,
-                "canonical_url": self.fix_url(
-                    self.request.full_url().upper()
-                    if self.request.path.upper().startswith("/LOLWUT")
-                    else self.request.full_url().lower()
-                ).split("?")[0],
-                "settings": self.settings,
-                "c": self.now.date() == date(self.now.year, 4, 1)
-                if (c := self.get_cookie("c", None)) is None
-                else str_to_bool(c, False),
-                "🥚": timedelta()
-                <= self.now.date() - easter(self.now.year)
-                < timedelta(days=2)
-                or isprime(  # type: ignore[no-untyped-call]
-                    69 if self.settings.get("TESTING") else self.now.microsecond
-                ),
-                "dynload": self.get_dynload(),
-                "as_json": self.get_as_json(),
-                "now": self.now,
-            }
+            ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
+            title=self.title,
+            short_title=self.short_title,
+            description=self.description,
+            keywords="Asoziales Netzwerk, Känguru-Chroniken"
+            + (
+                f", {self.module_info.get_keywords_as_str(self.request.path)}"
+                if self.module_info
+                else ""
+            ),
+            no_3rd_party=self.get_no_3rd_party(),
+            lang="de",  # TODO: add language support
+            form_appendix=self.get_form_appendix(),
+            fix_url=self.fix_url,
+            fix_static=lambda url: self.fix_url(fix_static_url(url)),
+            REPO_URL=REPO_URL,
+            theme=self.get_display_theme(),
+            elastic_rum_js_url=self.ELASTIC_RUM_JS_URL,
+            canonical_url=self.fix_url(
+                self.request.full_url().upper()
+                if self.request.path.upper().startswith("/LOLWUT")
+                else self.request.full_url().lower()
+            ).split("?")[0],
+            settings=self.settings,
+            c=self.settings.get("TESTING")
+            or self.now.date() == date(self.now.year, 4, 1)
+            or str_to_bool(self.get_cookie("c", "f") or "f", False),
+            dynload=self.get_dynload(),
+            as_json=self.get_as_json(),
+            now=self.now,
+        )
+        namespace["🥚"] = (
+            self.settings.get("TESTING")
+            or timedelta()
+            <= self.now.date() - easter(self.now.year)
+            < timedelta(days=2)
+            or isprime(self.now.microsecond)  # type: ignore[no-untyped-call]
         )
         return namespace
 
