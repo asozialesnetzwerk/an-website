@@ -47,13 +47,11 @@ class IPAPI(APIRequestHandler):
             return
         geoip = await self.geoip()
         if geoip:
-            return await self.finish(
-                {
-                    "ip": self.request.remote_ip,
-                    "country": geoip.get("country_flag"),
-                }
+            return await self.finish_dict(
+                ip=self.request.remote_ip,
+                country=geoip.get("country_flag"),
             )
-        return await self.finish({"ip": self.request.remote_ip})
+        return await self.finish_dict(ip=self.request.remote_ip)
 
 
 class IP(HTMLRequestHandler):

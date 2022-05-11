@@ -90,9 +90,7 @@ class GameOfQuotesAPI(QuoteReadyCheckHandler, APIRequestHandler):
         authors, quotes = get_authors_and_quotes(count)
         if head:
             return
-        await self.finish(
-            {
-                "authors": [author.to_json() for author in authors],
-                "quotes": [quote.to_json() for quote in quotes],
-            }
+        await self.finish_dict(
+            authors=[author.to_json() for author in authors],
+            quotes=[quote.to_json() for quote in quotes],
         )

@@ -763,48 +763,37 @@ class HTMLRequestHandler(BaseRequestHandler):
             chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
             features="lxml",
         )
-        return super().finish(
-            {
-                "url": self.fix_url(  # request url without as_json param
-                    self.request.full_url(), as_json=None
-                ),
-                "title": self.title,
-                "short_title": self.short_title
-                if self.title != self.short_title
-                else None,
-                "body": "".join(
-                    str(_el)
-                    for _el in soup.find_all(name="main", id="body")[0].contents
-                ).strip(),
-                "scripts": [
-                    {
-                        "src": _s.get("src"),
-                        "script": _s.string,
-                        "onload": _s.get("onload"),
-                    }
-                    for _s in soup.find_all("script")
-                    # if "on-every-page" not in _s.attrs # (curr not used)
-                ]
-                if soup.head
-                else [],
-                "stylesheets": (
-                    [
-                        str(_s.get("href")).strip()
-                        for _s in soup.find_all("link", rel="stylesheet")
-                        # if "on-every-page" not in _s.attrs # (curr not used)
-                    ]
-                )
-                if soup.head
-                else [],
-                "css": "\n".join(
-                    str(_s.string or "")
-                    for _s in soup.find_all("style")
-                    # if "on-every-page" not in _s.attrs # (curr not used)
-                ).strip()
-                if soup.head
-                else "",
-            }
+        dictionary: dict[str, Any] = dict(
+            url=self.fix_url(as_json=None),  # request url without as_json param
+            title=self.title,
+            short_title=self.short_title
+            if self.title != self.short_title
+            else None,
+            body="".join(
+                str(_el)
+                for _el in soup.find_all(name="main", id="body")[0].contents
+            ).strip(),
+            scripts=[
+                {
+                    "src": _s.get("src"),
+                    "script": _s.string,
+                    "onload": _s.get("onload"),
+                }
+                for _s in soup.find_all("script")
+            ]
+            if soup.head
+            else [],
+            stylesheets=[
+                str(_s.get("href")).strip()
+                for _s in soup.find_all("link", rel="stylesheet")
+            ]
+            if soup.head
+            else [],
+            css="\n".join(str(_s.string or "") for _s in soup.find_all("style"))
+            if soup.head
+            else "",
         )
+        return super().finish(dictionary)
 
 
 class APIRequestHandler(BaseRequestHandler):
@@ -821,13 +810,15 @@ class APIRequestHandler(BaseRequestHandler):
         super().set_default_headers()
         self.set_header("Content-Type", "application/json; charset=UTF-8")
 
+    def finish_dict(self, **kwargs: Any) -> Future[None]:
+        """Finish the request with a json response."""
+        return self.finish(kwargs)
+
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""
-        self.finish(
-            {
-                "status": status_code,
-                "reason": self.get_error_message(**kwargs),
-            }
+        self.finish_dict(
+            status=status_code,
+            reason=self.get_error_message(**kwargs),
         )
 
 

@@ -490,22 +490,18 @@ class QuoteAPIHandler(QuoteById, APIRequestHandler):
         """Return the relevant data for the quotes page as JSON."""
         next_q, next_a = self.get_next_id()
         if self.request.path.endswith("/full"):
-            return await self.finish(
-                {
-                    "wrong_quote": wrong_quote.to_json(),
-                    "next": f"{next_q}-{next_a}",
-                    "vote": vote,
-                }
+            return await self.finish_dict(
+                wrong_quote=wrong_quote.to_json(),
+                next=f"{next_q}-{next_a}",
+                vote=vote,
             )
-        return await self.finish(
-            {
-                "id": wrong_quote.get_id_as_str(),
-                "quote": str(wrong_quote.quote),
-                "author": str(wrong_quote.author),
-                "real_author": str(wrong_quote.quote.author),
-                "real_author_id": wrong_quote.quote.author.id,
-                "rating": await self.get_rating_str(wrong_quote),
-                "vote": vote,
-                "next": f"{next_q}-{next_a}",
-            }
+        return await self.finish_dict(
+            id=wrong_quote.get_id_as_str(),
+            quote=str(wrong_quote.quote),
+            author=str(wrong_quote.author),
+            real_author=str(wrong_quote.quote.author),
+            real_author_id=wrong_quote.quote.author.id,
+            rating=await self.get_rating_str(wrong_quote),
+            vote=vote,
+            next=f"{next_q}-{next_a}",
         )

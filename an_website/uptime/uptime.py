@@ -214,13 +214,11 @@ class UptimeAPIHandler(APIRequestHandler):
         if head:
             return
         availability_data = await get_availability_data(self.elasticsearch)
-        return await self.finish(
-            {
-                "uptime": (uptime := calculate_uptime()),
-                "uptime_str": uptime_to_str(uptime),
-                "start_time": time.time() - uptime,
-                "availability": get_availability_dict(*availability_data)
-                if availability_data
-                else None,
-            }
+        return await self.finish_dict(
+            uptime=(uptime := calculate_uptime()),
+            uptime_str=uptime_to_str(uptime),
+            start_time=time.time() - uptime,
+            availability=get_availability_dict(*availability_data)
+            if availability_data
+            else None,
         )

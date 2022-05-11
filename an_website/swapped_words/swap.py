@@ -183,30 +183,24 @@ class SwappedWordsAPI(APIRequestHandler):
                     ),
                     True,
                 )
-                return await self.finish(
-                    {
-                        "text": text,
-                        "return_config": True,
-                        "minify_config": minify_config,
-                        "config": sw_config.to_config_str(minify_config),
-                        "replaced_text": sw_config.swap_words(text),
-                    }
+                return await self.finish_dict(
+                    text=text,
+                    return_config=True,
+                    minify_config=minify_config,
+                    config=sw_config.to_config_str(minify_config),
+                    replaced_text=sw_config.swap_words(text),
                 )
-            return await self.finish(
-                {
-                    "text": text,
-                    "return_config": False,
-                    "replaced_text": sw_config.swap_words(text),
-                }
+            return await self.finish_dict(
+                text=text,
+                return_config=False,
+                replaced_text=sw_config.swap_words(text),
             )
         except InvalidConfigError as exc:
             self.set_status(400)
-            return await self.finish(
-                {
-                    "error": exc.reason,
-                    "line": exc.line,
-                    "line_num": exc.line_num,
-                }
+            return await self.finish_dict(
+                error=exc.reason,
+                line=exc.line,
+                line_num=exc.line_num,
             )
 
     async def post(self) -> None:

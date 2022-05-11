@@ -175,7 +175,7 @@ class DiscordAPI(APIRequestHandler):
         if head:
             return
         invite, source_url = await get_invite_with_cache(guild_id)
-        return await self.finish({"invite": invite, "source": source_url})
+        return await self.finish_dict(invite=invite, source=source_url)
 
 
 class ANDiscordAPI(DiscordAPI):

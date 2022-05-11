@@ -27,6 +27,7 @@ from typing import Any
 
 import dill as pickle  # type: ignore
 import elasticapm  # type: ignore
+from tornado.concurrent import Future
 from tornado.web import HTTPError
 
 from .. import EVENT_SHUTDOWN
@@ -76,7 +77,6 @@ class Backdoor(APIRequestHandler):
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle the POST request to the backdoor API."""
-        self.set_header("Content-Type", "application/vnd.python.pickle")
         result: Any
         exception: None | BaseException = None
         source, output = self.request.body, io.StringIO()
@@ -131,15 +131,8 @@ class Backdoor(APIRequestHandler):
                     output.getvalue() if not output.closed else None
                 )
                 output.close()
-                return await self.finish(
-                    pickle.dumps(
-                        {
-                            "success": ...,
-                            "output": output_str,
-                            "result": exc,
-                        },
-                        PICKLE_PROTOCOL,
-                    )
+                return await self.finish_pickled_dict(
+                    success=..., output=output_str, result=exc
                 )
             except Exception as exc:  # pylint: disable=broad-except
                 exception = exc  # pylint: disable=redefined-variable-type
@@ -183,18 +176,18 @@ class Backdoor(APIRequestHandler):
                 result_tuple[0] or repr(result_tuple[1]),
                 None,
             )
-        return await self.finish(
-            pickle.dumps(
-                {
-                    "success": exception is None,
-                    "output": output_str,
-                    "result": None
-                    if exception is None and result is None
-                    else result_tuple,
-                },
-                PICKLE_PROTOCOL,
-            )
+        return await self.finish_pickled_dict(
+            success=exception is None,
+            output=output_str,
+            result=None
+            if exception is None and result is None
+            else result_tuple,
         )
+
+    def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
+        """Finish with a pickled dictionary."""
+        self.set_header("Content-Type", "application/vnd.python.pickle")
+        return self.finish(pickle.dumps(kwargs, PICKLE_PROTOCOL))
 
     def get_flags(self, flags: int) -> int:
         """Get compiler flags."""

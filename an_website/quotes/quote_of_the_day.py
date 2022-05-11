@@ -245,15 +245,13 @@ class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
             if self.request.path.endswith("/full"):
                 return await self.finish(quote_data.to_json())
             wrong_quote = quote_data.wrong_quote
-            return await self.finish(
-                {
-                    "date": quote_data.date.isoformat(),
-                    "url": quote_data.get_quote_url(),
-                    "id": wrong_quote.get_id_as_str(),
-                    "quote": str(wrong_quote.quote),
-                    "author": str(wrong_quote.author),
-                    "rating": wrong_quote.rating,
-                }
+            return await self.finish_dict(
+                date=quote_data.date.isoformat(),
+                url=quote_data.get_quote_url(),
+                id=wrong_quote.get_id_as_str(),
+                quote=str(wrong_quote.quote),
+                author=str(wrong_quote.author),
+                rating=wrong_quote.rating,
             )
         raise HTTPError(404)
 

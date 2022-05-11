@@ -140,10 +140,8 @@ class WordGameHelperAPI(APIRequestHandler):
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
         )
 
-        return await self.finish(
-            {
-                "before": before,
-                "word": word,
-                "solutions": await get_ranked_solutions(word, before),
-            }
+        return await self.finish_dict(
+            before=before,
+            word=word,
+            olutions=await get_ranked_solutions(word, before),
         )

@@ -69,11 +69,9 @@ class VersionAPI(APIRequestHandler):
         """Handle the GET request to the version API."""
         if head:
             return
-        return await self.finish(
-            {
-                "version": VERSION,
-                "hash": HASH_OF_FILE_HASHES,
-            }
+        return await self.finish_dict(
+            version=VERSION,
+            hash=HASH_OF_FILE_HASHES,
         )
 
 
