@@ -43,7 +43,7 @@ from . import (
     get_wrong_quotes,
 )
 from .create import get_module_info as get_create_mi
-from .game_of_quotes import get_module_info as get_goq_mi
+from .quote_generator import get_module_info as get_generator_mi
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .quote_of_the_day import get_module_info as get_qod_mi
 from .quotes_image import QuoteAsImage
@@ -103,7 +103,7 @@ def get_module_info() -> ModuleInfo:
         aliases=("/z",),
         sub_pages=(
             get_create_mi(hidden=False),
-            get_goq_mi(hidden=False),
+            get_generator_mi(hidden=False),
             get_qod_mi(hidden="quotes.quote_of_the_day" in IGNORED_MODULES),
         ),
         keywords=(

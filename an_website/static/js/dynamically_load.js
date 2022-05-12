@@ -13,8 +13,7 @@ if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=d.c
 scriptElement.src=script["src"];if(script["script"])
 scriptElement.innerHTML=script["script"];if(script["onload"])
 scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
-const title=data["title"];d.title=title;const shortTitle=data["short_title"]||title;let titleStyleText=`#title:before{content:"${shortTitle}"}`;if(shortTitle!==title)
-titleStyleText+=(`@media(min-width:500px){#title:before{content:"${title}"}}`);elById("title-style").innerText=titleStyleText;dynLoadReplaceAnchors();w.urlData=data;return true;}
+d.title=data["title"];const titleElement=elById("title");titleElement.setAttribute("short_title",data["short_title"]||data["title"]);titleElement.innerText=data["title"];dynLoadReplaceAnchors();w.urlData=data;return true;}
 function dynLoadReplaceAnchors(){for(const anchor of d.getElementsByTagName("A"))
 dynLoadReplaceHrefOnAnchor(anchor);}
 function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload"))

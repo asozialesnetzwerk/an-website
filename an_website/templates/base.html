@@ -4,30 +4,20 @@
         {% if not as_json %}
             <title>{{title}}</title>
             <meta charset="UTF-8">
-            <meta name="theme-color"
-                  content="#8B0000">
-            <meta property="og:locale"
-                  content="de_DE">
-            <meta property="og:url"
-                  content="{{canonical_url}}">
-            <meta property="og:type"
-                  content="website">
-            <meta property="og:title"
-                  content="{{title}}">
-            <meta property="og:site_name"
-                  content="Asoziale Webseite">
+            <meta name="theme-color" content="#8B0000">
+            <meta property="og:locale" content="de_DE">
+            <meta property="og:url" content="{{canonical_url}}">
+            <meta property="og:type" content="website">
+            <meta property="og:title" content="{{title}}">
+            <meta property="og:site_name" content="Asoziale Webseite">
             <meta property="og:description"
                   content="{% block description %}{{ description }}{% end %}">
-            <meta name="description"
-                  content="{{ description }}">
-            <meta name="keywords"
-                  content="{{keywords}}">
+            <meta name="description" content="{{ description }}">
+            <meta name="keywords" content="{{keywords}}">
             <meta name="viewport"
                   content="width=device-width, initial-scale=1.0">
-            <meta name="referrer"
-                  content="never">
-            <meta name="referrer"
-                  content="no-referrer">
+            <meta name="referrer" content="never">
+            <meta name="referrer" content="no-referrer">
             {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
                 <script>
                     ;(function(d, s, c) {
@@ -52,12 +42,6 @@
                   href="{{fix_static('style/base.css')}}">
             <link rel="stylesheet" type="text/css"
                   href="{{fix_static('style/tooltip.css')}}">
-            <style id="title-style">
-                #title:before{content:"{{short_title}}"}
-                {% if title != short_title %}
-                    @media(min-width:500px){ #title:before{content:"{{title}}"}}
-                {% end %}
-            </style>
             <script defer src="{{fix_static('js/utils.js')}}"></script>
             {% if dynload %}
                 <script defer

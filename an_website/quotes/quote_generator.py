@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A game about wrong quotes."""
+"""Generate quotes and authors for users to make their own wrong quotes."""
 
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ def get_module_info(*, hidden: bool = True) -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/zitate/generator", GameOfQuotes),
-            (r"/api/zitate/generator", GameOfQuotesAPI),
+            (r"/zitate/generator", QuoteGenerator),
+            (r"/api/zitate/generator", QuoteGeneratorAPI),
         ),
         name="Der Zitate-Generator",
         short_name="Zitate-Generator",
@@ -67,8 +67,8 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
     return authors, quotes
 
 
-class GameOfQuotes(QuoteReadyCheckHandler):
-    """The request handler for the game of quotes HTML page."""
+class QuoteGenerator(QuoteReadyCheckHandler):
+    """The request handler for the quotes generator HTML page."""
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
@@ -77,12 +77,12 @@ class GameOfQuotes(QuoteReadyCheckHandler):
         if head:
             return
         await self.render(
-            "pages/quotes/game_of_quotes.html", authors=authors, quotes=quotes
+            "pages/quotes/quote_generator.html", authors=authors, quotes=quotes
         )
 
 
-class GameOfQuotesAPI(QuoteReadyCheckHandler, APIRequestHandler):
-    """The request handler for the game of quotes API."""
+class QuoteGeneratorAPI(QuoteReadyCheckHandler, APIRequestHandler):
+    """The request handler for the quote generator API."""
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""

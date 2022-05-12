@@ -40,7 +40,8 @@ from . import (
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        name="Soundboard",
+        name="Känguru-Soundboard",
+        short_name="Soundboard",
         description=(
             "Ein Soundboard mit coolen Sprüchen und Sounds aus den "
             "Känguru-Chroniken"

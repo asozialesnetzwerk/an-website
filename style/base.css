@@ -114,6 +114,16 @@ header {
     white-space: nowrap;
 }
 
+@media (max-width:31rem) {
+    #title {
+        visibility: hidden;
+    }
+    #title:before{
+        content:attr(short_title);
+        visibility: visible;
+    }
+}
+
 .open-pane {
     position: absolute;
     top: 1rem;

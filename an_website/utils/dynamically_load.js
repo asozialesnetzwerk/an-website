@@ -77,16 +77,13 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
 
-    const title = data["title"];
-    d.title = title;
-    const shortTitle = data["short_title"] || title;
-    let titleStyleText = `#title:before{content:"${shortTitle}"}`;
-    if (shortTitle !== title)
-        titleStyleText += (
-            `@media(min-width:500px){#title:before{content:"${title}"}}`
-        );
+    d.title = data["title"];
+    const titleElement = elById("title");
+    titleElement.setAttribute(
+        "short_title", data["short_title"] || data["title"]
+    );
+    titleElement.innerText = data["title"];
 
-    elById("title-style").innerText = titleStyleText;
     dynLoadReplaceAnchors();
     w.urlData = data;
     return true;
