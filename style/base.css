@@ -8,13 +8,21 @@
     position: absolute;
     left: 1rem;
     top: 0;
-    transform: translateY(-2rem);
-    background: var(--main);
+    transform: translateY(-3rem);
+
+    font-weight: bold;
+
     color: var(--text-color);
+    background-color: var(--main);
+
     border-radius: 0 0 0.5rem 0.5rem;
+
     padding: 0 1rem 0 1rem;
     height: 2rem;
+
+    z-index: 10;
 }
+
 #skip-to-content:focus {
     top: var(--header-height);
     transform: translateY(0);

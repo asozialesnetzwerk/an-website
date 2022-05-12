@@ -198,11 +198,7 @@ class Backdoor(APIRequestHandler):
 
     def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
         """Add request-specific stuff to the session."""
-        session.update(
-            self=self,
-            app=self.application,
-            settings=self.settings,
-        )
+        session.update(self=self, app=self.application, settings=self.settings)
         return session
 
     async def load_session(self) -> dict[str, Any]:

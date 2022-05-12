@@ -22,18 +22,25 @@ from __future__ import annotations
 import logging
 import os
 import re
+import shutil
 import sys
 
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import CONTAINERIZED
 from .. import DIR as ROOT_DIR
+from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
 
 logger = logging.getLogger(__name__)
 
 SCREENFETCH_PATH = os.path.join(ROOT_DIR, "screenfetch")
+UWUFETCH_PATH = shutil.which("uwufetch")
+ENV = {
+    "USER": NAME,
+    "SHELL": f"python{sys.version.split(' ', maxsplit=1)[0]}",
+}
 
 
 def get_module_info() -> ModuleInfo:
@@ -44,17 +51,19 @@ def get_module_info() -> ModuleInfo:
             (r"/host-info/uwu", UwUHostInfo),
         ),
         name="Host-Informationen",
+        short_name="Host-Info",
         description="Informationen über den Host-Server dieser Webseite",
         path="/host-info",
         sub_pages=(
             PageInfo(
                 name="Howost-Infowmationyen",
+                short_name="Howost-Infow",
                 description=(
                     "Infowmationyen übew den Howost-Sewvew diesew W-Webseite"
                 ),
                 path="/host-info/uwu",
                 keywords=("UWU",),
-                hidden=True,
+                hidden=CONTAINERIZED or not UWUFETCH_PATH,
             ),
         ),
         keywords=("Host", "Informationen", "Screenfetch"),
@@ -93,7 +102,7 @@ class HostInfo(HTMLRequestHandler):
             "ansi2html.html",
             ansi=[
                 self.SCREENFETCH_CACHE["LOGO"],
-                (await run(SCREENFETCH_PATH, "-n"))[1].decode("utf-8"),
+                (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("utf-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
@@ -112,23 +121,22 @@ class UwUHostInfo(HTMLRequestHandler):
         Use UwUFetch to genyewate the page.
         """
         cache_enabwed = int(
-            True
-            if head
-            else not self.get_bool_argument("cache_disabled", default=False)
+            head or not self.get_bool_argument("cache_disabled", default=False)
         )
 
-        wetuwn_code, uwufetch_bytes, _ = await run(
-            "env",
-            f"SHELL=python{sys.version.split(' ', maxsplit=1)[0]}",
-            f"UWUFETCH_CACHE_ENABLED={cache_enabwed}",
-            "uwufetch",
-            "-w",
-        )
-        if wetuwn_code == 127:
+        if UWUFETCH_PATH:
+            wetuwn_code, uwufetch_bytes, _ = await run(
+                UWUFETCH_PATH,
+                "-w",
+                env={"UWUFETCH_CACHE_ENABLED": str(cache_enabwed), **ENV},
+            )
+
+        if not UWUFETCH_PATH or wetuwn_code == 127:
             raise HTTPEwwow(
                 503,
                 reason="Sowwy. This sewvew h-hasn't instawwed UwUFetch.",
             )
+
         if wetuwn_code:
             raise HTTPEwwow(
                 500,
