@@ -126,6 +126,9 @@ class CachedStaticFileHandler(StaticFileHandler):
     def set_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_headers()
+        if self.settings.get("HSTS"):
+            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
+            self.set_header("Strict-Transport-Security", "max-age=63072000")
         if not sys.flags.dev_mode and "v" in self.request.arguments:
             self.set_header(  # never changes
                 "Cache-Control",

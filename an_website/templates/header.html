@@ -7,7 +7,7 @@
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
         <nav class="site-pane">
-            <h1 data-elastic-exclude>Unterseiten:</h1>
+            <h2 data-elastic-exclude>Unterseiten:</h2>
             <ul class="menu-list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
                     {% if not info.hidden and info.path is not None %}

@@ -57,7 +57,15 @@ class ElasticRUM(BaseRequestHandler):
     SCRIPTS: dict[str, tuple[str, float]] = {}
     CACHE_TIME = 365 * 60 * 60 * 24
 
-    async def get(self, version: str, spam: str = "", eggs: str = "") -> None:
+    async def get(
+        self,
+        version: str,
+        spam: str = "",
+        eggs: str = "",
+        *,
+        # pylint: disable=unused-argument
+        head: bool = False,
+    ) -> None:
         """Serve the RUM script."""
         key = version + spam + eggs
         if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
@@ -70,7 +78,7 @@ class ElasticRUM(BaseRequestHandler):
                 raise HTTPError(response.code, reason=response.reason)
             self.SCRIPTS[key] = (
                 response.body.decode(),
-                time.monotonic() + 365 * 60 * 60 * 24,
+                time.monotonic() + 365 * 24 * 60 * 60,
             )
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
@@ -78,13 +86,13 @@ class ElasticRUM(BaseRequestHandler):
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
-        if eggs:
+        if eggs:  # if serving source map (url ends with .map)
             self.set_header("Content-Type", "application/json; charset=UTF-8")
-        else:
+        else:  # if serving js
             self.set_header(
                 "Content-Type", "application/javascript; charset=UTF-8"
             )
-            if spam:
+            if spam:  # if .min
                 self.set_header("SourceMap", self.URL + ".map")
         self.set_header(
             "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)

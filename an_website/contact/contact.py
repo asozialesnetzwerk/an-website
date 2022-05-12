@@ -21,6 +21,7 @@ import logging
 import smtplib
 import ssl
 import sys
+import time
 from collections.abc import Iterable
 from datetime import datetime, timezone
 from email import utils as email_utils
@@ -174,12 +175,24 @@ class ContactPage(HTMLRequestHandler):
     RATELIMIT_POST_COUNT_PER_PERIOD = 1
     RATELIMIT_POST_PERIOD = 120
 
+    ACCESS_LOG: dict[str, float] = {}
+
     def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
         if head:
             return
+
+        curr_time = time.monotonic()
+
+        # clean up old items from the access log
+        for key, value in tuple(self.ACCESS_LOG.items()):
+            if curr_time - value > 10:
+                del self.ACCESS_LOG[key]
+
+        self.ACCESS_LOG[str(self.request.remote_ip)] = curr_time
+
         self.render(
             "pages/contact.html",
             subject=self.get_argument("subject", ""),
@@ -191,9 +204,20 @@ class ContactPage(HTMLRequestHandler):
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
 
+        if atime := self.ACCESS_LOG.get(_ip := str(self.request.remote_ip)):
+            del self.ACCESS_LOG[_ip]
+            if time.monotonic() - atime < 3.1415926:
+                logger.info("rejected message because of timing")
+                await self.render(
+                    "pages/empty.html",
+                    text="Nicht gesendet, da du zu schnell warst.",
+                )
+                return
+
         text = self.get_argument("nachricht")
         if not text:
             raise MissingArgumentError("nachricht")  # raise on empty message
+
         name = self.get_argument("name", "")
         address = self.get_argument("addresse", "")
         from_address = (

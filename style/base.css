@@ -189,7 +189,7 @@ header {
     padding: 0.625rem;
     text-align: center;
     background-color: var(--contrast);
-    color: var(--text-color)
+    color: var(--text-color)!important;
 }
 
 .contact-anchor:hover {
