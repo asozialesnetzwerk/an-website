@@ -15,10 +15,11 @@
 
 from __future__ import annotations
 
+import multiprocessing
 import os
 import sys
 import time
-from multiprocessing import Event
+from asyncio import Event
 
 import orjson
 from get_version import get_version
@@ -39,9 +40,12 @@ ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
 
-CONTAINERIZED = os.getenv("container") or os.path.exists("/.dockerenv")
+CONTAINERIZED = bool(os.getenv("container") or os.path.exists("/.dockerenv"))
 
 if sys.flags.dev_mode:
     NAME += "-dev"
 
-EVENT_SHUTDOWN = Event()
+EVENT_SHUTDOWN = multiprocessing.Event()
+
+EVENT_ELASTICSEARCH = Event()
+EVENT_REDIS = Event()

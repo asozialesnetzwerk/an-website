@@ -44,13 +44,13 @@ pycares==4.1.2
 pycparser==2.21
 pycryptodome==3.14.1
 pycurl==7.45.1
-pyjwt==2.3.0
-pyparsing==3.0.8
+pyjwt==2.4.0
+pyparsing==3.0.9
 python-dateutil==2.8.2
 python-levenshtein==0.12.2
-redis[hiredis]==4.3.0
+redis[hiredis]==4.3.1
 rply==0.7.8
-setuptools==62.1.0
+setuptools==62.2.0
 six==1.16.0
 soupsieve==2.3.2.post1
 sympy==1.10.1

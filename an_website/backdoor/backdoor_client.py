@@ -15,7 +15,7 @@
 
 """The client for the backdoor API of the website."""
 
-from __future__ import annotations, barry_as_FLUFL
+from __future__ import annotations
 
 import ast
 import asyncio
@@ -57,7 +57,8 @@ else:
     uvloop.install()
 
 
-BARRY = True
+FLUFL = True
+
 E = eval(  # pylint: disable=eval-used
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
@@ -228,14 +229,16 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
 
 def detect_mode(code: str) -> str:
     """Detect which mode needs to be used."""
+    import __future__
+
     flags: int = ast.PyCF_ONLY_AST
-    if BARRY:
-        flags |= barry_as_FLUFL.compiler_flag
+    if FLUFL:
+        flags |= __future__.barry_as_FLUFL.compiler_flag
     try:
-        compile(code, "", "eval", flags, 69)
+        compile(code, "", "eval", flags, 0x5F3759DF)
         return "eval"
     except SyntaxError:
-        compile(code, "", "exec", flags, 69)
+        compile(code, "", "exec", flags, 0x5F3759DF)
         return "exec"
 
 
@@ -260,7 +263,7 @@ def send(
     headers = {
         "Authorization": key,
     }
-    if BARRY:
+    if FLUFL:
         headers["X-Future-Feature"] = "barry_as_FLUFL"
     if session:
         headers["X-Backdoor-Session"] = session

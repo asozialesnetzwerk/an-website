@@ -21,21 +21,18 @@ import io
 import logging
 import pydoc
 import traceback
+from asyncio import Future
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
 import dill as pickle  # type: ignore
 import elasticapm  # type: ignore
-from tornado.concurrent import Future
 from tornado.web import HTTPError
 
 from .. import EVENT_SHUTDOWN
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
-
-if True:  # pylint: disable=using-constant-test
-    import __future__
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +56,10 @@ class PrintWrapper:  # pylint: disable=too-few-public-methods
     def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
         self._output: io.TextIOBase = output
 
-    def __call__(self, *args: list[Any], **kwargs: dict[str, Any]) -> None:
+    def __call__(self, *args: Any, **kwargs: Any) -> None:
         if "file" not in kwargs:
-            kwargs["file"] = self._output  # type: ignore
-        print(*args, **kwargs)  # type: ignore
+            kwargs["file"] = self._output
+        print(*args, **kwargs)
 
 
 class Backdoor(APIRequestHandler):
@@ -77,9 +74,9 @@ class Backdoor(APIRequestHandler):
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle the POST request to the backdoor API."""
-        result: Any
-        exception: None | BaseException = None
         source, output = self.request.body, io.StringIO()
+        exception: None | Exception = None
+        output_str: None | str
         try:
             parsed = compile(
                 source,
@@ -111,7 +108,9 @@ class Backdoor(APIRequestHandler):
                 session["help"] = pydoc.Helper(io.StringIO(), output)
             try:
                 try:
-                    result = eval(code, session)  # pylint: disable=eval-used
+                    result: Any = eval(  # pylint: disable=eval-used
+                        code, session
+                    )
                     if code.co_flags & CO_COROUTINE:
                         result = await result
                 except KeyboardInterrupt:
@@ -127,9 +126,7 @@ class Backdoor(APIRequestHandler):
                     else:
                         new_args.append(arg)
                 exc.args = tuple(new_args)
-                output_str: None | str = (
-                    output.getvalue() if not output.closed else None
-                )
+                output_str = output.getvalue() if not output.closed else None
                 output.close()
                 return await self.finish_pickled_dict(
                     success=..., output=output_str, result=exc
@@ -191,6 +188,8 @@ class Backdoor(APIRequestHandler):
 
     def get_flags(self, flags: int) -> int:
         """Get compiler flags."""
+        import __future__  # pylint: disable=import-outside-toplevel
+
         for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
             if (feature := ftr.strip()) in __future__.all_feature_names:
                 flags |= getattr(__future__, feature).compiler_flag

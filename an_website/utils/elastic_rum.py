@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Serve the elastic js rum agent."""
+"""This module provides a request handler that serves the Elastic RUM Agent."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class ElasticRUM(BaseRequestHandler):
-    """A request handler that serves the RUM script."""
+    """A request handler that serves the Elastic RUM Agent."""
 
     URL = (
         "https://unpkg.com/@elastic/apm-rum@{}"
@@ -86,13 +86,13 @@ class ElasticRUM(BaseRequestHandler):
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
-        if eggs:  # if serving source map (url ends with .map)
+        if eggs:  # if serving source map (URL ends with ".map")
             self.set_header("Content-Type", "application/json; charset=UTF-8")
-        else:  # if serving js
+        else:  # if serving JS
             self.set_header(
                 "Content-Type", "application/javascript; charset=UTF-8"
             )
-            if spam:  # if .min
+            if spam:  # if serving minified JS (URL contains ".min")
                 self.set_header("SourceMap", self.URL + ".map")
         self.set_header(
             "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)

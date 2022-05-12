@@ -68,7 +68,7 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
 
 
 class QuoteGenerator(QuoteReadyCheckHandler):
-    """The request handler for the quotes generator HTML page."""
+    """The request handler for the quote generator HTML page."""
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""

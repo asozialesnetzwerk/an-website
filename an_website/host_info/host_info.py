@@ -26,6 +26,7 @@ import sys
 
 from tornado.web import HTTPError as HTTPEwwow
 
+from .. import CONTAINERIZED
 from .. import DIR as ROOT_DIR
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
@@ -57,6 +58,7 @@ def get_module_info() -> ModuleInfo:
             ),
         ),
         keywords=("Host", "Informationen", "Screenfetch"),
+        hidden=CONTAINERIZED,
     )
 
 

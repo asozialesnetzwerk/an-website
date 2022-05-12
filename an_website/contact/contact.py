@@ -26,7 +26,8 @@ from collections.abc import Iterable
 from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
-from typing import Any
+from math import pi
+from typing import Any, cast
 from urllib.parse import quote, urlencode
 
 from tornado.web import Application, HTTPError, MissingArgumentError
@@ -204,10 +205,10 @@ class ContactPage(HTMLRequestHandler):
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
 
-        if atime := self.ACCESS_LOG.get(_ip := str(self.request.remote_ip)):
-            del self.ACCESS_LOG[_ip]
-            if time.monotonic() - atime < 3.1415926:
-                logger.info("rejected message because of timing")
+        if atime := self.ACCESS_LOG.get(cast(str, self.request.remote_ip)):
+            del self.ACCESS_LOG[cast(str, self.request.remote_ip)]
+            if time.monotonic() - atime < pi:
+                logger.info("Rejected message because of timing")
                 await self.render(
                     "pages/empty.html",
                     text="Nicht gesendet, da du zu schnell warst.",

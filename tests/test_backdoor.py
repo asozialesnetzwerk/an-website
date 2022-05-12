@@ -82,7 +82,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     fetch: FetchCallable,
 ) -> None:
     """Test the backdoor."""
-    response = await request_and_parse(fetch, "1 != 2")
+    response = await request_and_parse(fetch, "0==0")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
@@ -96,47 +96,43 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert not response["output"]
     assert response["result"] == ("False", False)
 
-    response = await request_and_parse(fetch, "print(2);", mode="eval")
+    response = await request_and_parse(fetch, "print('spam');", mode="eval")
     assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
     assert isinstance(response["result"][1], SyntaxError)
 
-    response = await request_and_parse(fetch, "print(2);", mode="exec")
+    response = await request_and_parse(fetch, "print('spam');", mode="exec")
     assert isinstance(response, dict)
     assert response["success"]
-    assert response["output"] == "2\n"
+    assert response["output"] == "spam\n"
     assert not response["result"]
 
-    response = await request_and_parse(fetch, "(x := 420)", session="123456789")
+    response = await request_and_parse(
+        fetch, "(spam := 'tasty')", session="bacon"
+    )
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
-    assert response["result"] == ("420", 420)
+    assert response["result"] == ("'tasty'", "tasty")
 
-    response = await request_and_parse(fetch, "x", session="123456789")
+    response = await request_and_parse(fetch, "spam", session="bacon")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
-    assert response["result"] == ("420", 420)
+    assert response["result"] == ("'tasty'", "tasty")
 
-    response = await request_and_parse(fetch, "_", session="123456789")
+    response = await request_and_parse(fetch, "_", session="bacon")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
-    assert response["result"] == ("420", 420)
+    assert response["result"] == ("'tasty'", "tasty")
 
     response = await request_and_parse(fetch, "print")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"][1] is print
-
-    response = await request_and_parse(fetch, "help")
-    assert isinstance(response, dict)
-    assert response["success"]
-    assert not response["output"]
-    assert type(response["result"][1]) is type(help)
 
     response = await request_and_parse(fetch, "help")
     assert isinstance(response, dict)
@@ -160,24 +156,24 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert isinstance(response["result"][1], NameError)
 
     response = await request_and_parse(
-        fetch, "raise SystemExit('x', 'y')", mode="exec"
+        fetch, "raise SystemExit('spam', 'eggs')", mode="exec"
     )
     assert isinstance(response, dict)
     assert response["success"] is ...
     assert not response["output"]
     assert isinstance(response["result"], SystemExit)
-    assert response["result"].args == ("x", "y")
+    assert response["result"].args == ("spam", "eggs")
 
-    # create something that cannot be pickled:
+    # create something that cannot be pickled
     response = await request_and_parse(
         fetch,
-        "def fun():\n"
-        "   class Result: pass\n"
-        "   return Result\n"
-        "LocalResult = fun()\n"
-        "t = LocalResult()",
+        "def toast():\n"
+        "   class Toast: pass\n"
+        "   return Toast\n"
+        "LocalToast = toast()\n"
+        "t = LocalToast()",
         mode="exec",
-        session="tomato",
+        session="sausage",
     )
     assert isinstance(response, dict)
     assert response["success"]
@@ -185,7 +181,7 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert response["result"] is None
 
     response = await request_and_parse(
-        fetch, "raise SystemExit(t)", mode="exec", session="tomato"
+        fetch, "raise SystemExit(t)", mode="exec", session="sausage"
     )
     assert isinstance(response, dict)
     assert response["success"] is ...
@@ -194,16 +190,16 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert (
         response["result"]
         .args[0]
-        .startswith("<this.fun.<locals>.Result object at ")
+        .startswith("<this.toast.<locals>.Toast object at ")
     )
     assert response["result"].args[0].endswith(">")
 
-    response = await request_and_parse(fetch, "t", session="tomato")
+    response = await request_and_parse(fetch, "t", session="sausage")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
     assert response["result"][0].startswith(
-        "<this.fun.<locals>.Result object at "
+        "<this.toast.<locals>.Toast object at "
     )
     assert response["result"][0].endswith(">")
     assert response["result"][1] is None

@@ -10,14 +10,10 @@
             <meta property="og:type" content="website">
             <meta property="og:title" content="{{title}}">
             <meta property="og:site_name" content="Asoziale Webseite">
-            <meta property="og:description"
-                  content="{% block description %}{{ description }}{% end %}">
+            <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
             <meta name="description" content="{{ description }}">
             <meta name="keywords" content="{{keywords}}">
-            <meta name="viewport"
-                  content="width=device-width, initial-scale=1.0">
-            <meta name="referrer" content="never">
-            <meta name="referrer" content="no-referrer">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
                 <script>
                     ;(function(d, s, c) {
@@ -36,17 +32,15 @@
             {% end %}
             {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
             <link rel="canonical" href="{{canonical_url}}">
-            <link rel="stylesheet" type="text/css"
-                  href="{{fix_static(f'style/themes/{theme}.css')}}">
-            <link rel="stylesheet" type="text/css"
-                  href="{{fix_static('style/base.css')}}">
-            <link rel="stylesheet" type="text/css"
-                  href="{{fix_static('style/tooltip.css')}}">
+            <link rel="stylesheet" type="text/css" href="{{fix_static(f'style/themes/{theme}.css')}}">
+            <link rel="stylesheet" type="text/css" href="{{fix_static('style/base.css')}}">
+            <link rel="stylesheet" type="text/css" href="{{fix_static('style/tooltip.css')}}">
             <script defer src="{{fix_static('js/utils.js')}}"></script>
             {% if dynload %}
                 <script defer
-                        src="{{fix_static('js/dynamically_load.js')}}"
-                        onload="dynLoadReplaceAnchors()"></script>
+                    src="{{fix_static('js/dynamically_load.js')}}"
+                    onload="dynLoadReplaceAnchors()"
+                ></script>
             {% end %}
         {% end %}
         {% block head %} {% end %}

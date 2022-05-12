@@ -31,7 +31,7 @@
            class="no-style-a-emoji"
         >📖</a>
     {% elif now.month == 4 and now.day == 27 %}
-        <a href="{{fix_url('https://stanleyparable.com')}}"
+        <a href="{{fix_url(f'https://stanleyparable{2 if now.utctimetuple().tm_hour >= 16 else str()}.com')}}"
            class="no-style-a-emoji"
         >🪣</a>
     {% elif now.month == 5 and now.day == 4 %}

@@ -47,7 +47,16 @@ from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler, StaticFileHandler
 
-from . import CONTAINERIZED, DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, VERSION
+from . import (
+    CONTAINERIZED,
+    DIR,
+    EVENT_ELASTICSEARCH,
+    EVENT_REDIS,
+    EVENT_SHUTDOWN,
+    NAME,
+    TEMPLATES_DIR,
+    VERSION,
+)
 from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
@@ -424,6 +433,21 @@ def setup_app_search(app: Application) -> None:
     )
 
 
+async def check_elasticsearch(app: Application) -> None:
+    """Check Elasticsearch."""
+    # pylint: disable=invalid-name
+    while True:  # pylint: disable=while-used
+        es: None | AsyncElasticsearch = app.settings.get("ELASTICSEARCH")
+        if es:
+            try:
+                await es.info()
+            except Exception:  # pylint: disable=broad-except
+                await setup_elasticsearch(app, False)
+        else:
+            await setup_elasticsearch(app, False)
+        await asyncio.sleep(20)
+
+
 async def setup_elasticsearch(app: Application, raise_exc: bool = True) -> None:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
@@ -464,12 +488,15 @@ async def setup_elasticsearch(app: Application, raise_exc: bool = True) -> None:
             elasticsearch, app.settings["ELASTICSEARCH_PREFIX"]
         )
     except Exception as exc:  # pylint: disable=broad-except
+        app.settings["ELASTICSEARCH"] = None
+        EVENT_ELASTICSEARCH.clear()
         if raise_exc:
             raise
         logger.exception(exc)
         logger.error("Connecting to Elasticsearch failed!")
     else:
         app.settings["ELASTICSEARCH"] = elasticsearch
+        EVENT_ELASTICSEARCH.set()
 
 
 async def setup_elasticsearch_configs(  # noqa: C901
@@ -536,6 +563,20 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 )
 
 
+async def check_redis(app: Application) -> None:
+    """Check Redis."""
+    while True:  # pylint: disable=while-used
+        redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
+        if redis:
+            try:
+                await redis.ping()  # type: ignore[misc]
+            except Exception:  # pylint: disable=broad-except
+                await setup_redis(app, False)
+        else:
+            await setup_redis(app, False)
+        await asyncio.sleep(20)
+
+
 async def setup_redis(app: Application, raise_exc: bool = True) -> None:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
@@ -590,13 +631,19 @@ async def setup_redis(app: Application, raise_exc: bool = True) -> None:
     try:
         await redis.ping()  # type: ignore[misc]
     except Exception as exc:  # pylint: disable=broad-except
+        old_redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
+        app.settings["REDIS"] = None
+        EVENT_REDIS.clear()
+        if old_redis:
+            await old_redis.close(close_connection_pool=True)
         if raise_exc:
             raise
         logger.exception(exc)
         logger.error("Connecting to Redis failed!")
     else:
-        old_redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
+        old_redis = app.settings.get("REDIS")
         app.settings["REDIS"] = redis
+        EVENT_REDIS.set()
         if old_redis:
             await old_redis.close(close_connection_pool=True)
 
@@ -749,16 +796,14 @@ def main() -> None | int | str:
     loop = asyncio.get_event_loop_policy().get_event_loop()
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-    # fmt: off
-    setup_es_task = loop.create_task(setup_elasticsearch(app, False))  # noqa: F841
-    setup_redis_task = loop.create_task(setup_redis(app, False))
-    # fmt: on
+    check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
+    check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
     from .quotes import update_cache_periodically
 
     if not task_id:
         quotes_cache_update_task = loop.create_task(  # noqa: F841
-            update_cache_periodically(app, setup_redis_task)
+            update_cache_periodically(app)
         )
 
     try:

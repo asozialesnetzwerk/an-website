@@ -203,8 +203,8 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
                 # pylint: disable=while-used
                 while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
                     if WRONG_QUOTES_CACHE[ids].id == -1:
-                        # Check for wrong quotes, that are unrated but in
-                        # the cache. They don't have a real wrong_quotes_id
+                        # Check for wrong quotes that are unrated but in
+                        # the cache. They don't have a real wrong_quotes_id.
                         return ids
                 return ids
             case "all":

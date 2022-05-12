@@ -28,8 +28,8 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            ("/wortspiel-helfer", WordGameHelper),
-            ("/api/wortspiel-helfer", WordGameHelperAPI),
+            ("/wortspiel-helfer", WordgameSolver),
+            ("/api/wortspiel-helfer", WordgameSolverAPI),
         ),
         name="Wortspiel-Helfer",
         description=(
@@ -91,13 +91,13 @@ async def get_ranked_solutions(
     return ranked_sols
 
 
-class WordGameHelper(HTMLRequestHandler):
-    """The request handler for the word game helper page."""
+class WordgameSolver(HTMLRequestHandler):
+    """The request handler for the wordgame solver page."""
 
     RATELIMIT_GET_LIMIT = 10
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests to the word game helper page."""
+        """Handle GET requests to the wordgame solver page."""
         if head:
             return
         word: str = str(self.get_argument("word", default="")).lower()
@@ -114,7 +114,7 @@ class WordGameHelper(HTMLRequestHandler):
         )
 
         await self.render(
-            "pages/word_game_helper.html",
+            "pages/wordgame_solver.html",
             word=word,
             words=await get_ranked_solutions(word, before),
             before=", ".join(before),
@@ -122,14 +122,14 @@ class WordGameHelper(HTMLRequestHandler):
         )
 
 
-class WordGameHelperAPI(APIRequestHandler):
-    """The request handler for the word game helper API."""
+class WordgameSolverAPI(APIRequestHandler):
+    """The request handler for the wordgame solver API."""
 
     RATELIMIT_GET_LIMIT = 10
     ALLOWED_METHODS = ("GET",)
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests to the word game helper API."""
+        """Handle GET requests to the wordgame solver API."""
         if head:
             return
         word: str = str(self.get_argument("word", default="")).lower()
@@ -143,5 +143,5 @@ class WordGameHelperAPI(APIRequestHandler):
         return await self.finish_dict(
             before=before,
             word=word,
-            olutions=await get_ranked_solutions(word, before),
+            solutions=await get_ranked_solutions(word, before),
         )

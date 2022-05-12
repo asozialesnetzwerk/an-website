@@ -811,7 +811,7 @@ class APIRequestHandler(BaseRequestHandler):
         self.set_header("Content-Type", "application/json; charset=UTF-8")
 
     def finish_dict(self, **kwargs: Any) -> Future[None]:
-        """Finish the request with a json response."""
+        """Finish the request with a JSON response."""
         return self.finish(kwargs)
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
