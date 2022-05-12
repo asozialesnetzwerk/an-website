@@ -14,6 +14,7 @@
                         <li>
                             <a href="{{fix_url(info.path)}}"
                                tooltip="{{info.description}}"
+                               class="site-pane-a"
                                {% if i < 6 %}
                                    tooltip-position="bottom"
                                {% end %}
@@ -28,6 +29,7 @@
                                             <li>
                                                 <a href="{{fix_url(page_info.path)}}"
                                                    tooltip="{{page_info.description}}"
+                                                   class="site-pane-a"
                                                 >{{page_info.name}}</a>
                                             </li>
                                         {% end %}

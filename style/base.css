@@ -136,6 +136,10 @@ header {
     transform: rotateY(30deg);
 }
 
+.site-pane-a {
+    color: var(--main-2) !important;
+}
+
 .site-pane {
     right: -70%;
     top: 0;
@@ -157,7 +161,7 @@ header {
     right: 0;
 }
 
-.site-pane h1 {
+.site-pane h2 {
     margin: 0.625rem;
 }
 
