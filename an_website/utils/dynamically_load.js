@@ -40,6 +40,7 @@ function dynLoadOnData(data, onpopstate) {
             data["title"],
             url
         );
+        w.lastLocation = url;
     }
     if (!data["body"]) {
         w.location.reload();
@@ -76,6 +77,8 @@ function dynLoadOnData(data, onpopstate) {
             bodyDiv.appendChild(scriptElement);
         }
     }
+
+    showSitePane(false);  // bad without better_ui.js
 
     d.title = data["title"];
     const titleElement = elById("title");
@@ -167,9 +170,9 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
         (error) => {
             log(error);
             if (url === w.location.href) {
-                w.location.href = url;
-            } else {
                 w.location.reload();
+            } else {
+                w.location.href = url;
             }
         }
     );

@@ -105,6 +105,12 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 
 /* header */
 header {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+
+    z-index: 1;
+
     width: 100vw;
     max-width: 100%;
     margin: 0;
@@ -132,7 +138,7 @@ header {
     }
 }
 
-.open-pane {
+#open-pane {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -140,7 +146,7 @@ header {
     height: 2rem;
 }
 
-.open-pane:hover {
+#open-pane:hover {
     transform: rotateY(30deg);
 }
 
@@ -148,7 +154,7 @@ header {
     color: var(--main-2) !important;
 }
 
-.site-pane {
+#site-pane {
     right: -70%;
     top: 0;
     z-index: 11;
@@ -162,14 +168,14 @@ header {
     transition: right 0.5s;
 }
 
-.site-pane:hover,
-    .site-pane:focus-within,
-    .open-pane:focus-within + .site-pane,
-    .open-pane:hover + .site-pane {
+#site-pane:hover,
+    #site-pane:focus-within,
+    #open-pane:focus-within + #site-pane,
+    #open-pane:hover + #site-pane {
     right: 0;
 }
 
-.site-pane h2 {
+#site-pane h2 {
     margin: 0.625rem;
 }
 

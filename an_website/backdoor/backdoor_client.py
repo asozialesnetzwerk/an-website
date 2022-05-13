@@ -260,9 +260,7 @@ def send(
     body = code.encode("utf-8")
     if isinstance(url, str):
         url = urlsplit(url)
-    headers = {
-        "Authorization": key,
-    }
+    headers = {"Authorization": key}
     if FLUFL:
         headers["X-Future-Feature"] = "barry_as_FLUFL"
     if session:

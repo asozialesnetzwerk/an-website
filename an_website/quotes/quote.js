@@ -141,11 +141,13 @@ function startQuotes(currId, nextId) {
             if (!handleData(data)) return;
 
             data["stateType"] = "quotes";
+            data["url"] = `/zitate/${data["id"]}${params}`;
             w.history.pushState(
                 data,
                 "Falsche Zitate",
-                `/zitate/${data["id"]}${params}`
+                data["url"]
             )
+            w.lastLocation = data["url"];
         }
     );
 

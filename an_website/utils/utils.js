@@ -5,7 +5,7 @@ const elById = (id) => d.getElementById(id);
 const log = console.log;
 const error = console.error;
 
-w.lastLocation = w.location;
+w.lastLocation = String(w.location);
 
 function post(
     url,
@@ -65,19 +65,44 @@ function setURLParam(
     } else {
         history.replaceState(state, newUrl, newUrl)
     }
+    w.lastLocation = String(w.location);
     return newUrl;
 }
 
+w.yOffset = Math.floor(parseFloat(getComputedStyle(elById("header")).height));
+function scrollToAnchor() {
+    if (w.location.hash === "") return;
+    const anchor = d.querySelector(w.location.hash);
+    if (!anchor) return;
+    w.scrollBy(0, anchor.getBoundingClientRect().top - w.yOffset);
+}
+// scroll after few ms so the scroll is right on page load
+setTimeout(scrollToAnchor, 4);
+w.onhashchange = scrollToAnchor;
+
 w.onpopstate = (event) => {
-    if (event.state
+    if (
+        String(w.lastLocation).split("#")[0]
+        === String(w.location).split("#")[0]
+    ) {
+        // Only hash changed
+        w.lastLocation = String(w.location);
+        scrollToAnchor();
+        return;
+    }
+    if (
+        event.state
         && event.state["stateType"]
         && w.PopStateHandlers[event.state["stateType"]]
     ) {
         w.PopStateHandlers[event.state["stateType"]](event);
-        w.lastLocation = w.location;
+        w.lastLocation = String(w.location);
+        event.preventDefault();
+        scrollToAnchor();
         return;
     }
     error("Couldn't handle state. ", event.state);
+    w.lastLocation = String(w.location);
     w.location.reload();
 }
 
@@ -86,5 +111,9 @@ function fixHref(href) {
         return w.dynLoadGetFixedHref(href);
     // if the function doesn't exist don't change anything
     return href;
+}
+
+function showSitePane(show) {
+    elById("site-pane").style.right = show ? "0" : "-70%";
 }
 // @license-end

@@ -10,7 +10,7 @@ h1:hover .header-id-link:before,
 }
 
 #soundboard-rss {
-    position: absolute;
+    position: fixed;
     top: calc(var(--header-height) + 0.9rem);
     right: 0.9rem;
     z-index: 0;

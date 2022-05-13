@@ -1,12 +1,12 @@
 {% whitespace oneline %}
 
-<header data-elastic-exclude>
+<header data-elastic-exclude id="header">
     <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
     {% if not settings is None %}
-        <img class="open-pane"
+        <img id="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
-        <nav class="site-pane">
+        <nav id="site-pane">
             <h2 data-elastic-exclude>Unterseiten:</h2>
             <ul class="menu-list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
