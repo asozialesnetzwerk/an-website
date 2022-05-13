@@ -533,10 +533,11 @@ class BaseRequestHandler(RequestHandler):
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""
+        default = False  # TODO: change this
         dynload = self.get_cookie("dynload")
         if dynload is None:
-            return False
-        return str_to_bool(dynload, False)
+            return default
+        return str_to_bool(dynload, default)
 
     def get_dynload(self) -> bool:
         """Return the dynload query argument as boolean."""

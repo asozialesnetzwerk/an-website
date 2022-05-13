@@ -93,7 +93,9 @@ class ElasticRUM(BaseRequestHandler):
                 "Content-Type", "application/javascript; charset=UTF-8"
             )
             if spam:  # if serving minified JS (URL contains ".min")
-                self.set_header("SourceMap", self.URL + ".map")
+                self.set_header(
+                    "SourceMap", self.request.full_url().split("?")[0] + ".map"
+                )
         self.set_header(
             "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)
         )

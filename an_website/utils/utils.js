@@ -70,15 +70,15 @@ function setURLParam(
 }
 
 w.yOffset = Math.floor(parseFloat(getComputedStyle(elById("header")).height));
-function scrollToAnchor() {
+function scrollToId() {
     if (w.location.hash === "") return;
-    const anchor = d.querySelector(w.location.hash);
-    if (!anchor) return;
-    w.scrollBy(0, anchor.getBoundingClientRect().top - w.yOffset);
+    const el = d.querySelector(w.location.hash);
+    if (!el) return;
+    w.scrollBy(0, el.getBoundingClientRect().top - w.yOffset);
 }
 // scroll after few ms so the scroll is right on page load
-setTimeout(scrollToAnchor, 4);
-w.onhashchange = scrollToAnchor;
+setTimeout(scrollToId, 4);
+w.onhashchange = scrollToId;
 
 w.onpopstate = (event) => {
     if (
@@ -87,7 +87,7 @@ w.onpopstate = (event) => {
     ) {
         // Only hash changed
         w.lastLocation = String(w.location);
-        scrollToAnchor();
+        scrollToId();
         return;
     }
     if (
@@ -98,7 +98,7 @@ w.onpopstate = (event) => {
         w.PopStateHandlers[event.state["stateType"]](event);
         w.lastLocation = String(w.location);
         event.preventDefault();
-        scrollToAnchor();
+        scrollToId();
         return;
     }
     error("Couldn't handle state. ", event.state);
