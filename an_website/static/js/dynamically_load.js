@@ -13,7 +13,7 @@ if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=d.c
 scriptElement.src=script["src"];if(script["script"])
 scriptElement.innerHTML=script["script"];if(script["onload"])
 scriptElement.onload=()=>eval(script["onload"]);bodyDiv.appendChild(scriptElement);}}
-showSitePane(false);d.title=data["title"];const titleElement=elById("title");titleElement.setAttribute("short_title",data["short_title"]||data["title"]);titleElement.innerText=data["title"];dynLoadReplaceAnchors();w.urlData=data;return true;}
+if(w.showSitePane)showSitePane(false);d.title=data["title"];const titleElement=elById("title");titleElement.setAttribute("short_title",data["short_title"]||data["title"]);titleElement.innerText=data["title"];dynLoadReplaceAnchors();w.urlData=data;return true;}
 function dynLoadReplaceAnchors(){for(const anchor of d.getElementsByTagName("A"))
 dynLoadReplaceHrefOnAnchor(anchor);}
 function dynLoadReplaceHrefOnAnchor(anchor){if(anchor.hasAttribute("no-dynload"))

@@ -1,67 +1,56 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
+
+// these functions break if used the css-only functionality of the site-pane
+function showSitePane() {
+    elById("site-pane").style.right = "0";
+}
+function hideSitePane() {
+    elById("site-pane").style.right = "-70%";
+}
+
 (() => {
     const openPane = elById("open-pane");
-    const body = elById("body");
     const sitePane = elById("site-pane");
 
-    window.onscroll = () => {
-        elById("header")
-    }
-
-    openPane.onclick = () => showSitePane(true);
-    openPane.onmouseover = () => showSitePane(true);
-    body.onmouseover = () => showSitePane(false);
-    body.onclick = () => showSitePane(false);
-
-
-    body.ontouchstart = startTouch;
-    body.ontouchmove = (e) => moveTouch(
-        e,
-        () => showSitePane(true),
-        () => showSitePane(false)
-    );
-    sitePane.ontouchstart = startTouch;
-    sitePane.ontouchmove = (e) => moveTouch(
-        e,
-        null,
-        () => showSitePane(false)
+    const belongsToSitePane = (el) => (
+        el === openPane || el === sitePane || sitePane.contains(el)
     );
 
-    const startSwipePos = {x: null, y: null};
+    // mouse users
+    openPane.onmouseover = showSitePane;
+    sitePane.onmouseleave = hideSitePane;
 
-    function startTouch(e) {
-        startSwipePos.x = e.touches[0].clientX;
-        startSwipePos.y = e.touches[0].clientY;
-    }
+    // phone users
+    openPane.onclick = showSitePane;
+    d.onclick = (e) => belongsToSitePane(e.target) || hideSitePane();
 
-    function moveTouch(
-        e,
-        onSwipedLeft = null,
-        onSwipedRight = null,
-    ) {
-        if (startSwipePos.x === null) return;
-        if (startSwipePos.y === null) return;
-
-        let currentX = e.touches[0].clientX;
-        let currentY = e.touches[0].clientY;
-        let diffX = startSwipePos.x - currentX;
-        let diffY = startSwipePos.y - currentY;
-
-        startSwipePos.x = null;
-        startSwipePos.y = null;
-
-
+    // swipe gestures (for phone users)
+    const startPos = {x: null, y: null};
+    d.ontouchstart = (e) => {
+        // save start pos of touch
+        startPos.x = e.touches[0].clientX;
+        startPos.y = e.touches[0].clientY;
+    };
+    d.ontouchmove = (e) => {
+        if (startPos.x === null || startPos.y === null) return;
+        // calculate difference
+        const diffX = startPos.x - e.touches[0].clientX;
+        const diffY = startPos.y -  e.touches[0].clientY;
+        // reset start pos
+        startPos.x = null;
+        startPos.y = null;
+        // early return if just clicked, not swiped
         if (diffX === 0 && diffY === 0) return;
 
         if (Math.abs(diffX) > Math.abs(diffY)) {
             // sliding horizontally
             if (diffX > 0) {
-                if (onSwipedLeft !== null) onSwipedLeft(diffX);
+                showSitePane();
             } else {
-                if (onSwipedRight !== null) onSwipedRight(diffX);
+                hideSitePane();
             }
             e.preventDefault();
         }
-    }
+    };
 })()
 // @license-end

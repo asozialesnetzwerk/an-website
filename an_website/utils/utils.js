@@ -69,12 +69,16 @@ function setURLParam(
     return newUrl;
 }
 
-w.yOffset = Math.floor(parseFloat(getComputedStyle(elById("header")).height));
 function scrollToId() {
     if (w.location.hash === "") return;
     const el = d.querySelector(w.location.hash);
     if (!el) return;
-    w.scrollBy(0, el.getBoundingClientRect().top - w.yOffset);
+    w.scrollBy(
+        0,
+        el.getBoundingClientRect().top - Math.floor(
+            parseFloat(getComputedStyle(elById("header")).height)
+        )
+    );
 }
 // scroll after few ms so the scroll is right on page load
 setTimeout(scrollToId, 4);
@@ -111,9 +115,5 @@ function fixHref(href) {
         return w.dynLoadGetFixedHref(href);
     // if the function doesn't exist don't change anything
     return href;
-}
-
-function showSitePane(show) {
-    elById("site-pane").style.right = show ? "0" : "-70%";
 }
 // @license-end

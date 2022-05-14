@@ -78,7 +78,7 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
 
-    showSitePane(false);  // bad without better_ui.js
+    if (w.showSitePane) showSitePane(false);
 
     d.title = data["title"];
     const titleElement = elById("title");

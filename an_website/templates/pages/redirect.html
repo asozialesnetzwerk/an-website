@@ -2,8 +2,8 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    <div class="redirect_content">
-        Willst du wirklich {{redirect_url.split("?")[0]}} öffnen? Für die Inhalte auf
+    <p>
+        Willst du wirklich <strong>{{redirect_url.split("?")[0]}}</strong> öffnen? Für die Inhalte auf
         fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
         {% if discord %}
             <br>
@@ -11,22 +11,18 @@
             da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel
             über <a no-dynload href="{{fix_url('/chat')}}">chat.asozial.org</a> tun.
         {% end %}
-
-        <a class="leave form-button no-style-a" no-dynload
-           referrerpolicy="{{'strict-origin-when-cross-origin' if send_referrer else 'same-origin'}}"
-           href="{{redirect_url}}">Ja, ich bin mir sicher</a>
-
-        {% if from_url %}
-            <a class="stay form-button no-style-a"
-               href="{{from_url}}">Nein, ich möchte wieder zurück</a>
-        {% end %}
-    </div>
+    </p>
+    <a class="leave button no-style-a" no-dynload
+       referrerpolicy="{{'strict-origin-when-cross-origin' if send_referrer else 'same-origin'}}"
+       href="{{redirect_url}}">Ja, ich bin mir sicher</a>
+    {% if from_url %}
+        <a class="stay button no-style-a"
+           href="{{from_url}}">Nein, ich möchte wieder zurück</a>
+    {% end %}
 {% end %}
 
 {% block head %}
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/redirect.css')}}">
 {% end %}
