@@ -78,7 +78,7 @@ function dynLoadOnData(data, onpopstate) {
         }
     }
 
-    if (w.showSitePane) showSitePane(false);
+    if (w.hideSitePane) hideSitePane();
 
     d.title = data["title"];
     const titleElement = elById("title");
