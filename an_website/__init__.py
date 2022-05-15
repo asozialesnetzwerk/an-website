@@ -28,6 +28,8 @@ DIR = os.path.dirname(__file__)
 
 START_TIME = time.monotonic()
 
+EPOCH = 1651075200
+
 NAME = "an-website"
 VERSION = get_version(__file__, vcs="git")
 GIT_URL = "https://github.com/asozialesnetzwerk"

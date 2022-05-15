@@ -29,6 +29,7 @@ from typing import Any, Literal, cast
 
 from tornado.web import HTTPError, RedirectHandler
 
+from .. import EVENT_REDIS
 from ..main import IGNORED_MODULES
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, hash_ip
@@ -431,7 +432,7 @@ class QuoteById(QuoteBaseHandler):
     ) -> None:
         """Save the new vote in Redis."""
         result = None
-        if self.redis:
+        if EVENT_REDIS.is_set():
             result = await self.redis.setex(  # type: ignore[misc]
                 self.get_redis_votes_key(quote_id, author_id),
                 60 * 60 * 24 * 90,  # time to live in seconds (3 months)
@@ -459,7 +460,7 @@ class QuoteById(QuoteBaseHandler):
         Use the quote_id and author_id to query the vote.
         Return None if nothing is saved.
         """
-        if not self.redis:
+        if not EVENT_REDIS.is_set():
             logger.warning("No Redis connection")
             return 0
         result = await self.redis.get(  # type: ignore[misc]

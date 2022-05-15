@@ -25,7 +25,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 from multiprocessing import Value
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import elasticapm  # type: ignore
 import orjson as json
@@ -433,12 +433,15 @@ def parse_list_of_quote_data(
 
 async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     """Start updating the cache every hour."""
-    # pylint: disable=too-complex
-    await EVENT_REDIS.wait()
-    redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
+    # pylint: disable=too-complex, too-many-branches
+    try:
+        await asyncio.wait_for(EVENT_REDIS.wait(), 5)
+    except asyncio.TimeoutError:
+        pass
+    redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     apm: None | elasticapm.Client
-    if redis:
+    if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_wrong_quote,
@@ -451,37 +454,37 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
             await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_author,
         )
-    if redis and QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
-        last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
-        if last_update:
-            last_update_int = int(last_update)
-            since_last_update = int(time.time()) - last_update_int
-            if 0 <= since_last_update < 60 * 60:
-                # wait until the last update is at least one hour old
-                update_cache_in = 60 * 60 - since_last_update
-                if not sys.flags.dev_mode and update_cache_in > 60:
-                    # if in production mode update wrong quotes just to be sure
-                    try:
-                        await update_cache(
-                            app, update_quotes=False, update_authors=False
-                        )
-                    except Exception as exc:  # pylint: disable=broad-except
-                        logger.exception(exc)
-                        logger.error("Updating quotes cache failed.")
-                        apm = app.settings.get("ELASTIC_APM_CLIENT")
-                        if apm:
-                            apm.capture_exception()
-                    else:
-                        logger.info("Updated quotes cache successfully.")
-                logger.info(
-                    "Next update of quotes cache in %d seconds",
-                    update_cache_in,
-                )
-                await asyncio.sleep(update_cache_in)
+        if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
+            last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            if last_update:
+                last_update_int = int(last_update)
+                since_last_update = int(time.time()) - last_update_int
+                if 0 <= since_last_update < 60 * 60:
+                    # wait until the last update is at least one hour old
+                    update_cache_in = 60 * 60 - since_last_update
+                    if not sys.flags.dev_mode and update_cache_in > 60:
+                        # if in production mode update wrong quotes just to be sure
+                        try:
+                            await update_cache(
+                                app, update_quotes=False, update_authors=False
+                            )
+                        except Exception as exc:  # pylint: disable=broad-except
+                            logger.exception(exc)
+                            logger.error("Updating quotes cache failed.")
+                            apm = app.settings.get("ELASTIC_APM_CLIENT")
+                            if apm:
+                                apm.capture_exception()
+                        else:
+                            logger.info("Updated quotes cache successfully.")
+                    logger.info(
+                        "Next update of quotes cache in %d seconds",
+                        update_cache_in,
+                    )
+                    await asyncio.sleep(update_cache_in)
+
     failed = 0
     # pylint: disable=while-used
     while True:  # update the cache every hour
-        await EVENT_REDIS.wait()
         try:
             await update_cache(app)
         except Exception as exc:  # pylint: disable=broad-except
@@ -506,15 +509,16 @@ async def update_cache(
 ) -> None:
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
-    redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
+    redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
     prefix: str = app.settings.get("REDIS_PREFIX", "")
+    redis_available = EVENT_REDIS.is_set()
 
     if update_wrong_quotes:
         parse_list_of_quote_data(
             wq_data := await make_api_request("wrongquotes"),
             parse_wrong_quote,
         )
-        if wq_data and redis:
+        if wq_data and redis_available:
             await redis.set(  # type: ignore[misc]
                 f"{prefix}:cached-quote-data:wrongquotes",
                 json.dumps(wq_data, option=ORJSON_OPTIONS),
@@ -525,7 +529,7 @@ async def update_cache(
             quotes_data := await make_api_request("quotes"),
             parse_quote,
         )
-        if quotes_data and redis:
+        if quotes_data and redis_available:
             await redis.set(  # type: ignore[misc]
                 f"{prefix}:cached-quote-data:quotes",
                 json.dumps(quotes_data, option=ORJSON_OPTIONS),
@@ -536,13 +540,18 @@ async def update_cache(
             authors_data := await make_api_request("authors"),
             parse_author,
         )
-        if authors_data and redis:
+        if authors_data and redis_available:
             await redis.set(  # type: ignore[misc]
                 f"{prefix}:cached-quote-data:authors",
                 json.dumps(authors_data, option=ORJSON_OPTIONS),
             )
 
-    if redis and update_wrong_quotes and update_quotes and update_authors:
+    if (
+        redis_available
+        and update_wrong_quotes
+        and update_quotes
+        and update_authors
+    ):
         await redis.set(  # type: ignore[misc]
             f"{prefix}:cached-quote-data:last-update",
             int(time.time()),
@@ -554,7 +563,6 @@ async def get_author_by_id(author_id: int) -> Author:
     author = AUTHORS_CACHE.get(author_id, None)
     if author is not None:
         return author
-
     return parse_author(await make_api_request(f"authors/{author_id}"))
 
 

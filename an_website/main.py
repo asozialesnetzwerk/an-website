@@ -28,7 +28,7 @@ import types
 from collections.abc import Callable, Coroutine
 from multiprocessing import process
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import orjson
 import tornado.netutil
@@ -137,9 +137,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             errors.append(
                 "'get_module_info' in "
                 f"{os.path.join(DIR, potential_module, potential_file)} "
-                "does not return ModuleInfo. "
-                f"Please fix the returned value or add '{potential_module}.*' "
-                "or '{module_name}' to the IGNORED_MODULES."
+                "does not return ModuleInfo. Please fix the returned value "
+                f"or add '{potential_module}.*' or '{module_name}' to "
+                "IGNORED_MODULES."
             )
 
     if len(errors) > 0:
@@ -313,6 +313,7 @@ def apply_config_to_app(
     )
 
     app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
+
     app.settings["ELASTICSEARCH_PREFIX"] = config.get(
         "ELASTICSEARCH", "PREFIX", fallback=NAME
     )
@@ -330,7 +331,6 @@ def get_ssl_context(
             config.get("TLS", "PASSWORD", fallback=None),
         )
         return ssl_ctx
-
     return None
 
 
@@ -433,25 +433,14 @@ def setup_app_search(app: Application) -> None:
     )
 
 
-async def check_elasticsearch(app: Application) -> None:
-    """Check Elasticsearch."""
-    # pylint: disable=invalid-name
-    while True:  # pylint: disable=while-used
-        es: None | AsyncElasticsearch = app.settings.get("ELASTICSEARCH")
-        if es:
-            try:
-                await es.info()
-            except Exception:  # pylint: disable=broad-except
-                await setup_elasticsearch(app, False)
-        else:
-            await setup_elasticsearch(app, False)
-        await asyncio.sleep(20)
-
-
-async def setup_elasticsearch(app: Application, raise_exc: bool = True) -> None:
+def setup_elasticsearch(app: Application) -> None:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
-    elasticsearch = AsyncElasticsearch(
+    if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+        app.settings["ELASTICSEARCH"] = None
+        return
+
+    app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         hosts=tuple(
             host.strip()
@@ -482,21 +471,28 @@ async def setup_elasticsearch(app: Application, raise_exc: bool = True) -> None:
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
-    try:
-        await elasticsearch.info()
-        await setup_elasticsearch_configs(
-            elasticsearch, app.settings["ELASTICSEARCH_PREFIX"]
+
+
+async def check_elasticsearch(app: Application) -> None:
+    """Check Elasticsearch."""
+    # pylint: disable=invalid-name
+    while True:  # pylint: disable=while-used
+        es: AsyncElasticsearch = cast(
+            AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
-    except Exception as exc:  # pylint: disable=broad-except
-        app.settings["ELASTICSEARCH"] = None
-        EVENT_ELASTICSEARCH.clear()
-        if raise_exc:
-            raise
-        logger.exception(exc)
-        logger.error("Connecting to Elasticsearch failed!")
-    else:
-        app.settings["ELASTICSEARCH"] = elasticsearch
-        EVENT_ELASTICSEARCH.set()
+        try:
+            await es.info()
+        except Exception as exc:  # pylint: disable=broad-except
+            EVENT_ELASTICSEARCH.clear()
+            logger.exception(exc)
+            logger.error("Connecting to Elasticsearch failed!")
+        else:
+            if not EVENT_ELASTICSEARCH.is_set():
+                await setup_elasticsearch_configs(
+                    es, app.settings["ELASTICSEARCH_PREFIX"]
+                )
+            EVENT_ELASTICSEARCH.set()
+        await asyncio.sleep(20)
 
 
 async def setup_elasticsearch_configs(  # noqa: C901
@@ -563,23 +559,12 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 )
 
 
-async def check_redis(app: Application) -> None:
-    """Check Redis."""
-    while True:  # pylint: disable=while-used
-        redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
-        if redis:
-            try:
-                await redis.ping()  # type: ignore[misc]
-            except Exception:  # pylint: disable=broad-except
-                await setup_redis(app, False)
-        else:
-            await setup_redis(app, False)
-        await asyncio.sleep(20)
-
-
-async def setup_redis(app: Application, raise_exc: bool = True) -> None:
+def setup_redis(app: Application) -> None:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
+    if not config.getboolean("REDIS", "ENABLED", fallback=False):
+        app.settings["REDIS"] = None
+        return
 
     kwargs = {
         "db": config.getint("REDIS", "DB", fallback=0),
@@ -627,25 +612,24 @@ async def setup_redis(app: Application, raise_exc: bool = True) -> None:
                 }
             )
 
-    redis = Redis(connection_pool=BlockingConnectionPool(**kwargs))  # type: ignore[var-annotated]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
-    try:
-        await redis.ping()  # type: ignore[misc]
-    except Exception as exc:  # pylint: disable=broad-except
-        old_redis: None | Redis = app.settings.get("REDIS")  # type: ignore[type-arg]
-        app.settings["REDIS"] = None
-        EVENT_REDIS.clear()
-        if old_redis:
-            await old_redis.close(close_connection_pool=True)
-        if raise_exc:
-            raise
-        logger.exception(exc)
-        logger.error("Connecting to Redis failed!")
-    else:
-        old_redis = app.settings.get("REDIS")
-        app.settings["REDIS"] = redis
-        EVENT_REDIS.set()
-        if old_redis:
-            await old_redis.close(close_connection_pool=True)
+    app.settings["REDIS"] = Redis(
+        connection_pool=BlockingConnectionPool(**kwargs)
+    )
+
+
+async def check_redis(app: Application) -> None:
+    """Check Redis."""
+    while True:  # pylint: disable=while-used
+        redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
+        try:
+            await redis.ping()  # type: ignore[misc]
+        except Exception as exc:  # pylint: disable=broad-except
+            EVENT_REDIS.clear()
+            logger.exception(exc)
+            logger.error("Connecting to Redis failed!")
+        else:
+            EVENT_REDIS.set()
+        await asyncio.sleep(20)
 
 
 def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
@@ -688,7 +672,7 @@ def signal_handler(  # noqa: D103
         EVENT_SHUTDOWN.set()
 
 
-def main() -> None | int | str:
+def main() -> None | int | str:  # noqa: C901
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     """
@@ -724,8 +708,9 @@ def main() -> None | int | str:
         return app
 
     apply_config_to_app(app, config)
-
+    setup_elasticsearch(app)
     setup_app_search(app)
+    setup_redis(app)
     setup_apm(app)
 
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
@@ -796,8 +781,11 @@ def main() -> None | int | str:
     loop = asyncio.get_event_loop_policy().get_event_loop()
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-    check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
-    check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
+    if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+        check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
+
+    if config.getboolean("REDIS", "ENABLED", fallback=False):
+        check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
     from .quotes import update_cache_periodically
 

@@ -42,14 +42,14 @@ from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import ConnectionTimeout
+from elasticsearch.exceptions import ElasticsearchException
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis
 from sympy.ntheory import isprime
 from tornado import web
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
-from .. import REPO_URL
+from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, REPO_URL
 from .static_file_handling import fix_static_url
 from .utils import (
     THEMES,
@@ -131,9 +131,9 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     @property
-    def redis(self) -> None | Redis:  # type: ignore[type-arg]
+    def redis(self) -> Redis:  # type: ignore[type-arg]
         """Get the Redis client from the settings."""
-        return self.settings.get("REDIS")
+        return cast(Redis, self.settings.get("REDIS"))  # type: ignore[type-arg]
 
     @property
     def redis_prefix(self) -> str:
@@ -141,9 +141,9 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("REDIS_PREFIX", "")
 
     @property
-    def elasticsearch(self) -> None | AsyncElasticsearch:
+    def elasticsearch(self) -> AsyncElasticsearch:
         """Get the Elasticsearch client from the settings."""
-        return self.settings.get("ELASTICSEARCH")
+        return cast(AsyncElasticsearch, self.settings.get("ELASTICSEARCH"))
 
     @property
     def elasticsearch_prefix(self) -> str:
@@ -306,7 +306,7 @@ class BaseRequestHandler(RequestHandler):
                 self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
             )
             tokens = 1 if self.request.method != "HEAD" else 0
-        if self.redis is None:
+        if not EVENT_REDIS.is_set():
             raise HTTPError(
                 503,
                 "Ratelimits are enabled, but Redis is not available. "
@@ -633,6 +633,8 @@ class BaseRequestHandler(RequestHandler):
         """Get GeoIP information."""
         if not ip:
             ip = str(self.request.remote_ip)
+        if not EVENT_ELASTICSEARCH.is_set():
+            return geoip(ip, database)
         return geoip(ip, database, self.elasticsearch)
 
     async def get_time(self) -> datetime:
@@ -640,16 +642,16 @@ class BaseRequestHandler(RequestHandler):
         tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-            if geoip and "timezone" in geoip:
-                tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
-        except ConnectionTimeout as exc:
+        except ElasticsearchException as exc:
             logger.exception(exc)
             apm: None | elasticapm.Client = self.settings.get(
                 "ELASTIC_APM_CLIENT"
             )
             if apm:
                 apm.capture_exception()
-
+        else:
+            if geoip and "timezone" in geoip:
+                tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
         return datetime.fromtimestamp(
             self.request._start_time, tz=tz  # pylint: disable=protected-access
         )

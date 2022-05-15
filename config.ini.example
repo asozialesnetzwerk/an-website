@@ -32,6 +32,7 @@
 #hsts = nope
 
 #[REDIS]
+#enabled = nope
 #db = 0
 #username = default
 #password = hunter2
@@ -46,6 +47,7 @@
 #ssl_check_hostname = nope
 
 #[ELASTICSEARCH]
+#enabled = nope
 #cloud_id = ...
 #hosts = localhost:9200
 #url_prefix = /

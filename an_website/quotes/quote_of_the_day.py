@@ -23,6 +23,7 @@ from typing import Any
 
 from tornado.web import HTTPError
 
+from .. import EVENT_REDIS
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 from . import (
@@ -130,13 +131,13 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 
     async def has_been_used(self, wq_id: str) -> None | bool:
         """Check with Redis here."""
-        if not self.redis:
+        if not EVENT_REDIS.is_set():
             return None
         return bool(await self.redis.get(self.get_redis_used_key(wq_id)))  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
 
     async def set_used(self, wq_id: str) -> None:
         """Set Redis key with used state and TTL here."""
-        if not self.redis:
+        if not EVENT_REDIS.is_set():
             return
         await self.redis.setex(  # type: ignore[misc]
             self.get_redis_used_key(wq_id),
@@ -153,7 +154,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         self, wq_date: date | str
     ) -> None | QuoteOfTheDayData:
         """Get the quote of the date if one was saved."""
-        if not self.redis:
+        if not EVENT_REDIS.is_set():
             return None
 
         if isinstance(wq_date, str):
@@ -172,7 +173,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
-        if not self.redis:
+        if not EVENT_REDIS.is_set():
             return None
         today = datetime.now(tz=timezone.utc).date()
         quote_data = await self.get_quote_by_date(today)

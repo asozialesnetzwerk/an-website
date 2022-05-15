@@ -16,13 +16,14 @@
 from __future__ import annotations
 
 import logging
+import math
 import re
 import time
 
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
 
-from .. import NAME, START_TIME
+from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME
 from ..utils.request_handler import (
     APIRequestHandler,
     BaseRequestHandler,
@@ -75,12 +76,9 @@ def uptime_to_str(uptime: None | float = None) -> str:
 
 
 async def get_availability_data(
-    elasticsearch: None | AsyncElasticsearch,
-) -> None | tuple[int, int]:  # (up, down)
+    elasticsearch: AsyncElasticsearch,
+) -> tuple[int, int]:  # (up, down)
     """Get the availability data."""
-    if not elasticsearch:
-        return None
-
     data = await elasticsearch.search(
         index="heartbeat-*,synthetics-*",
         query={
@@ -122,14 +120,14 @@ async def get_availability_data(
     )
 
 
-def get_availability_dict(up: int, down: int) -> dict[str, int | float]:
+def get_availability_dict(up: int, down: int) -> dict[str, int | float | None]:
     """Get the availability data as a dict."""
     # pylint: disable=invalid-name
     return {
         "up": up,
         "down": down,
         "total": up + down,
-        "percentage": 100 * up / (up + down) if up + down else 0,
+        "percentage": 100 * up / (up + down) if up + down else None,
     }
 
 
@@ -156,16 +154,16 @@ class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request and render the page."""
+        """Handle GET requests."""
         self.set_header("Cache-Control", "no-cache")
         if head:
             return
-        availability_data = await get_availability_data(self.elasticsearch)
-        availability = (
-            get_availability_dict(*availability_data)["percentage"]
-            if availability_data
-            else None
+        availability_data = (
+            await get_availability_data(self.elasticsearch)
+            if EVENT_ELASTICSEARCH.is_set()
+            else (0, 0)
         )
+        availability = get_availability_dict(*availability_data)["percentage"]
         await self.render(
             "pages/uptime.html",
             uptime=(uptime := calculate_uptime()),
@@ -181,14 +179,19 @@ class AvailabilityChartHandler(BaseRequestHandler):
         """Handle GET requests."""
         availability = self.get_argument("a", default=None)
         if not availability:
-            availability_data = await get_availability_data(self.elasticsearch)
-            if not availability_data:
+            if not EVENT_ELASTICSEARCH.is_set():
                 raise HTTPError(503)
+            availability_data = await get_availability_data(self.elasticsearch)
             self.redirect(
                 self.fix_url(
                     self.request.full_url(),
                     a=int(
-                        get_availability_dict(*availability_data)["percentage"]
+                        (
+                            get_availability_dict(*availability_data)[
+                                "percentage"
+                            ]
+                            or 0
+                        )
                         * 100
                     )
                     / (100 * 100),
@@ -202,23 +205,27 @@ class AvailabilityChartHandler(BaseRequestHandler):
         )
         if head:
             return
-        await self.finish(AVAILABILITY_CHART % (31.4159 * float(availability)))
+        await self.finish(
+            AVAILABILITY_CHART % (math.pi * 10 * float(availability))
+        )
 
 
 class UptimeAPIHandler(APIRequestHandler):
     """The request handler for the uptime API."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the API."""
+        """Handle GET requests."""
         self.set_header("Cache-Control", "no-cache")
         if head:
             return
-        availability_data = await get_availability_data(self.elasticsearch)
+        availability_data = (
+            await get_availability_data(self.elasticsearch)
+            if EVENT_ELASTICSEARCH.is_set()
+            else (0, 0)
+        )
         return await self.finish_dict(
             uptime=(uptime := calculate_uptime()),
             uptime_str=uptime_to_str(uptime),
-            start_time=time.time() - uptime,
-            availability=get_availability_dict(*availability_data)
-            if availability_data
-            else None,
+            start_time=time.time() - uptime - EPOCH,
+            availability=get_availability_dict(*availability_data),
         )

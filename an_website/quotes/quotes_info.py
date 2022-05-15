@@ -23,6 +23,7 @@ import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 
 from .. import DIR as ROOT_DIR
+from .. import EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 from . import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
@@ -162,13 +163,13 @@ class AuthorsInfoPage(HTMLRequestHandler):
         if author.info is None:
             result = None
             fixed_author_name = fix_author_for_wikipedia_search(author.name)
-            if self.redis is not None:
+            if EVENT_REDIS.is_set():
                 # try to get the info from Redis
                 result = await self.redis.get(  # type: ignore[misc]
                     self.get_redis_info_key(fixed_author_name)
                 )
             if result and (len(info := result.split("|", maxsplit=1)) > 1):
-                remaining_ttl = await self.redis.ttl(  # type: ignore[misc, union-attr]
+                remaining_ttl = await self.redis.ttl(  # type: ignore[misc]
                     self.get_redis_info_key(fixed_author_name)
                 )
                 creation_date = datetime.now(tz=timezone.utc) - timedelta(
@@ -183,7 +184,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                 if author.info is None or author.info[1] is None:
                     # nothing found
                     logger.info("No information found about %s", repr(author))
-                elif self.redis is not None:
+                elif EVENT_REDIS.is_set():
                     await self.redis.setex(
                         self.get_redis_info_key(fixed_author_name),
                         AUTHOR_INFO_NEW_TTL,

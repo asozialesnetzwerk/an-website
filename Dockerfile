@@ -3,7 +3,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends git g++ libcurl4-nss-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
+ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_ROOT_USER_ACTION=ignore PYCURL_SSL_LIBRARY=nss
 COPY requirements.txt .
 RUN python -m venv venv \
  && /venv/bin/pip install -r requirements.txt

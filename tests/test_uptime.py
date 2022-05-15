@@ -48,7 +48,7 @@ def test_get_availability_dict() -> None:
         "up": 0,
         "down": 0,
         "total": 0,
-        "percentage": 0.0,
+        "percentage": None,
     }
 
 

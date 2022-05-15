@@ -14,7 +14,7 @@
 ## How to develop
 You need:
 - Git (obviously)
-- CPython 3.10+
+- CPython 3.10
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 
 ### How to check
@@ -26,9 +26,9 @@ You need:
 ## How to run (production)
 ### Linux
 You need:
-- CPython 3.10+
+- CPython 3.10
 - Supervisord
-- Redis 6.2+
+- Redis 6.2
 - redis-cell (for ratelimits)
 - Elasticsearch 7.17 or 8.x
 - UwUFetch

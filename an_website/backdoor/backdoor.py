@@ -15,12 +15,12 @@
 
 from __future__ import annotations
 
-import ast
 import base64
 import io
 import logging
 import pydoc
 import traceback
+from ast import PyCF_ALLOW_TOP_LEVEL_AWAIT, PyCF_ONLY_AST, PyCF_TYPE_COMMENTS
 from asyncio import Future
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
@@ -30,7 +30,7 @@ import dill as pickle  # type: ignore
 import elasticapm  # type: ignore
 from tornado.web import HTTPError
 
-from .. import EVENT_SHUTDOWN
+from .. import EVENT_REDIS, EVENT_SHUTDOWN
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permissions
 
@@ -82,7 +82,7 @@ class Backdoor(APIRequestHandler):
                 source,
                 "",
                 mode,
-                self.get_flags(ast.PyCF_ONLY_AST | ast.PyCF_TYPE_COMMENTS),
+                self.get_flags(PyCF_ONLY_AST | PyCF_TYPE_COMMENTS),
                 0x5F3759DF,
                 _feature_version=10,
             )
@@ -90,7 +90,7 @@ class Backdoor(APIRequestHandler):
                 parsed,
                 "",
                 mode,
-                self.get_flags(ast.PyCF_ALLOW_TOP_LEVEL_AWAIT),
+                self.get_flags(PyCF_ALLOW_TOP_LEVEL_AWAIT),
                 0x5F3759DF,
                 _feature_version=10,
             )
@@ -216,7 +216,7 @@ class Backdoor(APIRequestHandler):
                 await self.redis.get(  # type: ignore[misc]
                     f"{self.redis_prefix}:backdoor-session:{session_id}"
                 )
-                if self.redis
+                if EVENT_REDIS.is_set()
                 else None
             )
             if session_pickle:

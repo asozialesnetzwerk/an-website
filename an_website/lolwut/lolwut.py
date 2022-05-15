@@ -18,6 +18,7 @@ from __future__ import annotations
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
+from .. import EVENT_REDIS
 from ..utils.request_handler import (
     APIRequestHandler,
     HTMLRequestHandler,
@@ -48,13 +49,11 @@ def get_module_info() -> ModuleInfo:
 
 
 async def generate_art(
-    redis: None | Redis,  # type: ignore[type-arg]
+    redis: Redis,  # type: ignore[type-arg]
     args: None | str = None,
     head: bool = False,
 ) -> None | str:
     """Generate art."""
-    if not redis:
-        raise HTTPError(503)
     if args:
         arguments = args.split("/")
         for argument in arguments:
@@ -73,6 +72,8 @@ class LOLWUT(HTMLRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
         art = await generate_art(self.redis, args, head)
         if head:
             return
@@ -89,5 +90,7 @@ class LOLWUTAPI(APIRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT API."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
         self.set_header("Content-Type", "text/plain; charset=utf-8")
         await self.finish(await generate_art(self.redis, args, head))
