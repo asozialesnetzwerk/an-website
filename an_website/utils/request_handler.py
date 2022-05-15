@@ -455,7 +455,6 @@ class BaseRequestHandler(RequestHandler):
     def fix_url(  # noqa: C901
         self,
         url: None | str | SplitResult = None,
-        this_url: None | str = None,
         new_path: None | str = None,
         **query_args: None | str | bool | float,
     ) -> str:
@@ -470,14 +469,7 @@ class BaseRequestHandler(RequestHandler):
         if isinstance(url, str):
             url = urlsplit(url)
         if url.netloc and url.netloc.lower() != self.request.host.lower():
-            this_url = this_url or self.request.full_url()
-            if urlsplit(this_url).path == "/redirect":
-                # do not create long urls
-                this_url = self.get_argument("from", default="/") or "/"
-            # URL is to other website:
-            url = urlsplit(
-                f"/redirect?to={quote(url.geturl())}&from={quote(this_url)}"
-            )
+            url = urlsplit(f"/redirect?to={quote(url.geturl())}")
         path = url.path if new_path is None else new_path  # the path of the url
         # don't add as_json=nope to url if as_json is False
         # pylint: disable=compare-to-zero  # if None it shouldn't be deleted

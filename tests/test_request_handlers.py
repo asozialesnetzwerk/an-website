@@ -100,30 +100,33 @@ async def test_page_crawling(
 ) -> None:
     """Test most of the request handlers with crawling."""
     urls: set[str] = set()
-    await check_html_page(fetch, "/", recursive=5, checked_urls=urls)
+    await check_html_page(fetch, "/", recursive=6, checked_urls=urls)
     for url in urls:
         assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
+
     urls_theme: set[str] = set()
     await check_html_page(
-        fetch, "/?theme=pink", recursive=5, checked_urls=urls_theme
+        fetch, "/?theme=pink", recursive=6, checked_urls=urls_theme
     )
     for url in urls_theme:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
             assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
         else:
             assert_url_query(url, theme="pink", no_3rd_party=None, dynload=None)
+
     urls_3rd_party: set[str] = set()
     await check_html_page(
-        fetch, "/?no_3rd_party=sure", recursive=5, checked_urls=urls_3rd_party
+        fetch, "/?no_3rd_party=sure", recursive=6, checked_urls=urls_3rd_party
     )
     for url in urls_3rd_party:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
             assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
         else:
             assert_url_query(url, theme=None, no_3rd_party="sure", dynload=None)
+
     urls_dynload: set[str] = set()
     await check_html_page(
-        fetch, "/?dynload=sure", recursive=5, checked_urls=urls_dynload
+        fetch, "/?dynload=sure", recursive=6, checked_urls=urls_dynload
     )
     for url in urls_dynload:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):

@@ -49,7 +49,8 @@ class RedirectPage(HTMLRequestHandler):
         # pylint: disable=unused-argument
 
         redirect_url = self.get_argument("to", None)
-        from_url = self.get_argument("from", None)
+        referrer = self.request.headers.get_list("Referer")
+        from_url = referrer[0] if referrer else None
 
         if not redirect_url or redirect_url == "/":
             # empty arg so redirect to main page

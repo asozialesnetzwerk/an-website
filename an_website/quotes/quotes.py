@@ -139,8 +139,8 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
 
 SMART_RATING_FILTERS = (
     *(("n",) * 1),
-    *(("all",) * 3),
-    *(("w",) * 4),
+    *(("all",) * 5),
+    *(("w",) * 5),
 )
 
 
