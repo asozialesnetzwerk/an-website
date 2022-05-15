@@ -31,10 +31,13 @@ flake8 --extend-ignore=D102 ./*.py an_website tests
 echo Pylint:
 pylint --output-format=colorized ./*.py an_website tests
 
-if [ -n "$1" ] && [ "$1" = "test" ]
-then
-    # run tests
+if [ -n "$1" ]; then
+  if [ "$1" = "test" ]; then
     echo Tests:
-    pytest --cov-report= --cov=an_website tests
+    pytest --durations=0 --durations-min=0.5 tests
+  elif [ "$1" = "test-cov" ]; then
+    echo Tests with Coverage:
+    pytest  --durations=0 --durations-min=0.5 --cov-report= --cov=an_website tests
     echo 'Run "coverage report" to show the coverage'
+  fi
 fi

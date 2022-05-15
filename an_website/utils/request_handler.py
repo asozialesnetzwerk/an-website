@@ -42,6 +42,7 @@ from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
+from elasticsearch.exceptions import ConnectionTimeout
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis
 from sympy.ntheory import isprime
@@ -637,9 +638,18 @@ class BaseRequestHandler(RequestHandler):
     async def get_time(self) -> datetime:
         """Get the start time of the request in the user's timezone."""
         tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
-        geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-        if geoip and "timezone" in geoip:
-            tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
+        try:
+            geoip = await self.geoip()  # pylint: disable=redefined-outer-name
+            if geoip and "timezone" in geoip:
+                tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
+        except ConnectionTimeout as exc:
+            logger.exception(exc)
+            apm: None | elasticapm.Client = self.settings.get(
+                "ELASTIC_APM_CLIENT"
+            )
+            if apm:
+                apm.capture_exception()
+
         return datetime.fromtimestamp(
             self.request._start_time, tz=tz  # pylint: disable=protected-access
         )

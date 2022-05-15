@@ -478,7 +478,7 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
                     update_cache_in,
                 )
                 await asyncio.sleep(update_cache_in)
-
+    failed = 0
     # pylint: disable=while-used
     while True:  # update the cache every hour
         await EVENT_REDIS.wait()
@@ -490,9 +490,12 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
             apm = app.settings.get("ELASTIC_APM_CLIENT")
             if apm:
                 apm.capture_exception()
+            failed += 1
+            await asyncio.sleep(pow(min(failed * 2, 60), 2))  # 4,16,...,60*60
         else:
             logger.info("Updated quotes cache successfully.")
-        await asyncio.sleep(60 * 60)
+            failed = 0
+            await asyncio.sleep(60 * 60)
 
 
 async def update_cache(

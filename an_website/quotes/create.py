@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import logging
+from typing import cast
 
 from Levenshtein import distance  # type: ignore
 from tornado.web import HTTPError, MissingArgumentError
@@ -228,18 +229,21 @@ class CreatePage1(QuoteReadyCheckHandler):
                 ),
             )
 
-        # TODO: Search for real author, to reduce work for users
-        real_author_str = self.get_argument("real-author-1", default=None)
-        if not real_author_str:
-            raise HTTPError(
-                400, reason="Missing arguments. real-author-1 is needed."
-            )
+        if not quote:
+            # TODO: Search for real author, to reduce work for users
+            real_author_str = self.get_argument("real-author-1", default=None)
+            if not real_author_str:
+                raise HTTPError(
+                    400, reason="Missing arguments. real-author-1 is needed."
+                )
 
         quotes: list[Quote | str] = (
             [quote] if quote else await get_quotes(quote_str)
         )
         real_authors: list[Author | str] = (
-            [quote.author] if quote else await get_authors(real_author_str)
+            [quote.author]
+            if quote
+            else await get_authors(cast(str, real_author_str))
         )
         fake_authors: list[Author | str] = (
             [fake_author] if fake_author else await get_authors(fake_author_str)
