@@ -1,4 +1,5 @@
 :root {
+    color-scheme: dark;
     /* colors: */
     --main: hsl(279, 90%, 69%);
     --main-2: hsl(279, 100%, 57%);

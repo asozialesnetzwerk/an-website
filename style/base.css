@@ -1,5 +1,6 @@
 /* base */
 :root {
+    accent-color: var(--main);
     /* other useful stuff: */
     --header-height: 4rem;
 }
