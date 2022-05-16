@@ -156,7 +156,8 @@ function dynLoad(url) {
 
 function dynLoadSwitchToURL(url, allowSameUrl = false) {
     if (!allowSameUrl && url === w.location.href) {
-        error("URL is the same as current, ignoring");
+        log("URL is the same as current, just hide site pane");
+        if (w.hideSitePane) hideSitePane();
         return;
     }
     bodyDiv.prepend(

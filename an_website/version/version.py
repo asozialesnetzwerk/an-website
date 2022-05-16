@@ -48,17 +48,14 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/version", Version),
+            (r"/version(/full|)", Version),
             (r"/api/version", VersionAPI),
         ),
         name="Versions-Informationen",
+        short_name="Versions-Info",
         description="Die aktuelle Version der Webseite",
         path="/version",
-        keywords=(
-            "Version",
-            "aktuell",
-        ),
-        hidden=True,
+        keywords=("Version", "aktuell"),
     )
 
 
@@ -69,16 +66,13 @@ class VersionAPI(APIRequestHandler):
         """Handle the GET request to the version API."""
         if head:
             return
-        return await self.finish_dict(
-            version=VERSION,
-            hash=HASH_OF_FILE_HASHES,
-        )
+        return await self.finish_dict(version=VERSION, hash=HASH_OF_FILE_HASHES)
 
 
 class Version(HTMLRequestHandler):
     """The Tornado request handler for the version page."""
 
-    async def get(self, *, head: bool = False) -> None:
+    async def get(self, full: str, *, head: bool = False) -> None:
         """Handle the GET request to the version page."""
         if head:
             return
@@ -87,4 +81,5 @@ class Version(HTMLRequestHandler):
             version=VERSION,
             file_hashes=FILE_HASHES,
             hash_of_file_hashes=HASH_OF_FILE_HASHES,
+            full=full,
         )

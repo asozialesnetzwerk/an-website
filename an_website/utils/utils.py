@@ -406,11 +406,10 @@ def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
     i = 0
     new_set = set()
     for _el in _set:
-        if i < _n:
-            i += 1
-            new_set.add(_el)
-        else:
+        if i >= _n:
             break
+        i += 1
+        new_set.add(_el)
     return new_set
 
 
