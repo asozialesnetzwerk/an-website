@@ -1,8 +1,8 @@
 :root {
     color-scheme: dark;
     /* colors: */
-    --main: hsl(50, 100%, 50%);
-    --main-2: hsl(60, 80%, 39%);
+    --main: hsl(50, 100%, 42%);
+    --main-2: hsl(60, 80%, 32%);
 
     --text-color: hsl(0, 0%, 90%);
     --secondary-text-color: hsl(0, 0%, 70%);

@@ -133,7 +133,7 @@ header {
     #title {
         visibility: hidden;
     }
-    #title:before{
+    #title:before {
         content:attr(short_title);
         visibility: visible;
     }
@@ -141,13 +141,13 @@ header {
 
 #open-pane {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 2rem;
-    height: 2rem;
+    top: calc(calc(var(--header-height) - calc(var(--header-height) / 2)) / 2);
+    right: calc(calc(var(--header-height) - calc(var(--header-height) / 2)) / 2);
+    width: calc(var(--header-height) / 2);
+    height: calc(var(--header-height) / 2);
 }
 
-#open-pane:hover {
+#open-pane:hover, #open-pane:focus {
     transform: rotateY(30deg);
 }
 
@@ -171,7 +171,7 @@ header {
 
 #site-pane:hover,
     #site-pane:focus-within,
-    #open-pane:focus-within + #site-pane,
+    #open-pane:focus + #site-pane,
     #open-pane:hover + #site-pane {
     right: 0;
 }

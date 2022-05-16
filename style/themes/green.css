@@ -1,7 +1,7 @@
 :root {
     color-scheme: dark;
     /* colors: */
-    --main: hsl(100, 100%, 45%);
+    --main: hsl(100, 100%, 40%);
     --main-2: hsl(100, 100%, 30%);
 
     --text-color: hsl(100, 0%, 90%);

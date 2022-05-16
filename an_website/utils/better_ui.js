@@ -20,6 +20,10 @@ function hideSitePane() {
     openPane.onmouseover = showSitePane;
     sitePane.onmouseleave = hideSitePane;
 
+    // keyboard users
+    sitePane.onfocusin = showSitePane;
+    sitePane.onfocusout = hideSitePane;
+
     // phone users
     openPane.onclick = showSitePane;
     d.onclick = (e) => belongsToSitePane(e.target) || hideSitePane();
