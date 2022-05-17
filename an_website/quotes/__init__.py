@@ -182,18 +182,18 @@ class WrongQuote(QuotesObjBase):
 
     async def fetch_new_data(self) -> WrongQuote:
         """Fetch new data from the API."""
-        return parse_wrong_quote(
-            (
-                await make_api_request(
-                    "wrongquotes",
-                    f"quote={self.quote.id}"
-                    f"&author={self.author.id}"
-                    "&simulate=true",
-                )
-            )[0]
-            if self.id == -1
-            else await make_api_request(f"wrongquotes/{self.id}")
-        )
+        if self.id == -1:
+            api_data = await make_api_request(
+                "wrongquotes",
+                f"quote={self.quote.id}&author={self.author.id}&simulate=true",
+            )
+            if api_data:
+                api_data = api_data[0]
+        else:
+            api_data = await make_api_request(f"wrongquotes/{self.id}")
+        if not api_data:
+            return self
+        return parse_wrong_quote(api_data)
 
     async def vote(
         self, vote: Literal[-1, 1], fast: bool = False
@@ -579,7 +579,6 @@ async def get_wrong_quote(
 ) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
-
     if wrong_quote:
         if use_cache:
             return wrong_quote
