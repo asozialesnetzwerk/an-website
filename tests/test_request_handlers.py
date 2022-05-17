@@ -205,7 +205,12 @@ async def test_request_handlers(
         response = await check_html_page(fetch, f"/?no_3rd_party={_b1}")
         body = response.body.decode()
         response = await check_html_page(fetch, f"/?no_3rd_party={_b2}")
-        assert response.body.decode().replace(_b2, _b1) == body
+        assert (
+            response.body.decode().replace(
+                f"no_3rd_party={_b2}", f"no_3rd_party={_b1}"
+            )
+            == body
+        )
     assert_valid_html_response(await fetch("/?c=s"))
     response = await check_html_page(
         fetch, "/redirect?from=/&to=https://example.org"
