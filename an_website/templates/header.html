@@ -1,7 +1,11 @@
 {% whitespace oneline %}
 
 <header data-elastic-exclude id="header">
-    <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
+    <section id="title-container">
+        <a href="{{fix_url('/')}}" class="no-style-a-emoji" id="back-to-home"><div></div></a>
+        <div id="back-to-home-ears"></div>
+        <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
+    </section>
     {% if not settings is None %}
         <img id="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"

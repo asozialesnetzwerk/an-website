@@ -110,7 +110,7 @@ header {
     position: sticky;
     top: 0;
 
-    z-index: 1;
+    z-index: 2;
 
     width: 100vw;
     max-width: 100%;
@@ -120,13 +120,53 @@ header {
     height: var(--header-height);
 }
 
-#title {
-    margin-top: 0;
-    margin-left: 0.3125rem;
-    padding-top: 0.5rem;
-    font-size: 2rem;
+#title-container {
     overflow-x: hidden;
+    margin-top: 0;
+    padding: 0;
+    height: var(--header-height);
+}
+
+#title, #back-to-home, #back-to-home-ears {
+    position: absolute;
+    display: block;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0;
+    margin: 0;
+}
+
+#title {
+    font-size: 2rem;
     white-space: nowrap;
+    left: calc(1rem + calc(var(--header-height) / 1.5));
+}
+
+#back-to-home {
+    left: 0.5rem;
+    border-color: var(--text-color);
+    border-width: 0;
+    border-style: solid;
+    border-radius: 50%;
+    background-color: var(--text-color);
+    overflow: hidden;
+    z-index: 4;
+}
+
+#back-to-home div, #back-to-home-ears {
+    height: calc(var(--header-height) / 1.5);
+    width: calc(var(--header-height) / 1.5);
+    clip-path: url("/static/img/KangarooFace.svg?v=0#b");
+}
+#back-to-home div {
+    background-color: var(--main);
+    z-index: 5;
+}
+#back-to-home-ears {
+    left: 0.5rem;
+    z-index: 3;
+    background-color: var(--text-color);
+    border-radius: 0 0 50% 50%;  /* only show ears */
 }
 
 @media (max-width:31rem) {

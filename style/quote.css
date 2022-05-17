@@ -142,7 +142,7 @@
 
 @media (orientation:landscape) {
     #quote-container {
-        background: transparent url("/static/img/ZitateBackground.svg?v=1") no-repeat right top 0.3125rem;
+        background: transparent url("/static/img/KangarooFace.svg?v=0") no-repeat right top 0.3125rem;
         /*background-position: right 10px top 0.3125rem;*/
         width: 50rem;
         min-height: 380px;

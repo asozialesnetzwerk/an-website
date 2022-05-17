@@ -60,12 +60,12 @@ function setURLParam(
     const newUrl = `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
     //log("newUrl", newUrl);
     state["stateType"] = stateType;
-    if (push && newUrl !== w.location) {
+    if (push && newUrl !== w.location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
         history.replaceState(state, newUrl, newUrl)
     }
-    w.lastLocation = String(w.location);
+    w.lastLocation = w.location.href;
     return newUrl;
 }
 
@@ -86,11 +86,11 @@ w.onhashchange = scrollToId;
 
 w.onpopstate = (event) => {
     if (
-        String(w.lastLocation).split("#")[0]
-        === String(w.location).split("#")[0]
+        w.lastLocation.split("#")[0]
+        === w.location.href.split("#")[0]
     ) {
         // Only hash changed
-        w.lastLocation = String(w.location);
+        w.lastLocation = w.location.href;
         scrollToId();
         return;
     }
@@ -100,13 +100,13 @@ w.onpopstate = (event) => {
         && w.PopStateHandlers[event.state["stateType"]]
     ) {
         w.PopStateHandlers[event.state["stateType"]](event);
-        w.lastLocation = String(w.location);
+        w.lastLocation = w.location.href;
         event.preventDefault();
         scrollToId();
         return;
     }
     error("Couldn't handle state. ", event.state);
-    w.lastLocation = String(w.location);
+    w.lastLocation = w.location.href;
     w.location.reload();
 }
 
