@@ -2,14 +2,18 @@
 
 <header data-elastic-exclude id="header">
     <section id="title-container">
-        <a href="{{fix_url('/')}}" class="no-style-a-emoji" id="back-to-home"></a>
+        <a aria-hidden="true"
+           tabindex="-1"
+           href="{{fix_url('/')}}"
+           class="no-style-a-emoji"
+           id="back-to-home"></a>
         <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
     </section>
     {% if not settings is None %}
         <img id="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
-        <nav id="site-pane">
+        <nav id="site-pane" tabindex="-1">
             <h2 data-elastic-exclude>Unterseiten:</h2>
             <ul class="menu-list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
