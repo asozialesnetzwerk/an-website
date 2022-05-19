@@ -443,19 +443,21 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     apm: None | elasticapm.Client
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_wrong_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[misc]
+            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
             parse_author,
         )
         if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
-            last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            last_update = await redis.get(
+                f"{prefix}:cached-quote-data:last-update"
+            )
             if last_update:
                 last_update_int = int(last_update)
                 since_last_update = int(time.time()) - last_update_int
@@ -519,7 +521,7 @@ async def update_cache(
             parse_wrong_quote,
         )
         if wq_data and redis_available:
-            await redis.set(  # type: ignore[misc]
+            await redis.set(
                 f"{prefix}:cached-quote-data:wrongquotes",
                 json.dumps(wq_data, option=ORJSON_OPTIONS),
             )
@@ -530,7 +532,7 @@ async def update_cache(
             parse_quote,
         )
         if quotes_data and redis_available:
-            await redis.set(  # type: ignore[misc]
+            await redis.set(
                 f"{prefix}:cached-quote-data:quotes",
                 json.dumps(quotes_data, option=ORJSON_OPTIONS),
             )
@@ -541,7 +543,7 @@ async def update_cache(
             parse_author,
         )
         if authors_data and redis_available:
-            await redis.set(  # type: ignore[misc]
+            await redis.set(
                 f"{prefix}:cached-quote-data:authors",
                 json.dumps(authors_data, option=ORJSON_OPTIONS),
             )
@@ -552,7 +554,7 @@ async def update_cache(
         and update_quotes
         and update_authors
     ):
-        await redis.set(  # type: ignore[misc]
+        await redis.set(
             f"{prefix}:cached-quote-data:last-update",
             int(time.time()),
         )

@@ -213,7 +213,7 @@ class Backdoor(APIRequestHandler):
             session = self.sessions[session_id]
         else:
             session_pickle = (
-                await self.redis.get(  # type: ignore[misc]
+                await self.redis.get(
                     f"{self.redis_prefix}:backdoor-session:{session_id}"
                 )
                 if EVENT_REDIS.is_set()
@@ -258,7 +258,7 @@ class Backdoor(APIRequestHandler):
             except Exception:  # pylint: disable=broad-except
                 del session[key]
         return bool(
-            await self.redis.setex(  # type: ignore[misc]
+            await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
                 base64.encodebytes(pickle.dumps(session, PICKLE_PROTOCOL)),

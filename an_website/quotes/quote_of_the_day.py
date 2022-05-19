@@ -133,13 +133,13 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         """Check with Redis here."""
         if not EVENT_REDIS.is_set():
             return None
-        return bool(await self.redis.get(self.get_redis_used_key(wq_id)))  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        return bool(await self.redis.get(self.get_redis_used_key(wq_id)))
 
     async def set_used(self, wq_id: str) -> None:
         """Set Redis key with used state and TTL here."""
         if not EVENT_REDIS.is_set():
             return
-        await self.redis.setex(  # type: ignore[misc]
+        await self.redis.setex(
             self.get_redis_used_key(wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
             420 * 24 * 60 * 60,  # TTL
@@ -160,7 +160,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if isinstance(wq_date, str):
             wq_date = date(*tuple(int(x) for x in wq_date.split("-")))
 
-        wq_id = await self.redis.get(self.get_redis_quote_date_key(wq_date))  # type: ignore[misc]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        wq_id = await self.redis.get(self.get_redis_quote_date_key(wq_date))
         if not wq_id:
             return None
         quote, author = tuple(int(x) for x in wq_id.split("-"))
@@ -191,7 +191,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             else:
                 wq_id = quote.get_id_as_str()
                 await self.set_used(wq_id)
-                await self.redis.setex(  # type: ignore[misc]
+                await self.redis.setex(
                     self.get_redis_quote_date_key(today),
                     420 * 24 * 60 * 60,  # TTL
                     wq_id,

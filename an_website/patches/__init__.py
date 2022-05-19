@@ -22,7 +22,7 @@ import json as stdlib_json  # pylint: disable=preferred-module
 import os
 import sys
 
-import certifi  # type: ignore
+import certifi
 import defusedxml  # type: ignore
 import namedthreads  # type: ignore
 import tornado.httpclient

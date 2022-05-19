@@ -433,7 +433,7 @@ class QuoteById(QuoteBaseHandler):
         """Save the new vote in Redis."""
         result = None
         if EVENT_REDIS.is_set():
-            result = await self.redis.setex(  # type: ignore[misc]
+            result = await self.redis.setex(
                 self.get_redis_votes_key(quote_id, author_id),
                 60 * 60 * 24 * 90,  # time to live in seconds (3 months)
                 str(vote),  # value to save (the vote)
@@ -463,7 +463,7 @@ class QuoteById(QuoteBaseHandler):
         if not EVENT_REDIS.is_set():
             logger.warning("No Redis connection")
             return 0
-        result = await self.redis.get(  # type: ignore[misc]
+        result = await self.redis.get(
             self.get_redis_votes_key(quote_id, author_id)
         )
         if result == "-1":
