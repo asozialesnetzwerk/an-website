@@ -36,9 +36,19 @@
         {% end %}
     </ul>
 
+    <section data-elastic-exclude style="max-width: 800px">
+        Diese Seite wird auf Chromium-basierten Browsern nicht korrekt angezeigt.
+        Da wir quasi Monopole nicht unterstützen wollen, müsst ihr euch entweder
+        damit abfinden oder einen Firefox-basierten Browser nutzen.
+        <br>
+        Gute Browser sind zum Beispiel: LibreWolf & Pale Moon
+    </section>
+
     {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
-        Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
-        <a href="{{settings.get('ONION_ADDRESS')}}"
-           no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
+        <section style="margin-top: 2rem">
+            Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
+            <a href="{{settings.get('ONION_ADDRESS')}}"
+               no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
+        </section>
     {% end %}
 {% end %}
