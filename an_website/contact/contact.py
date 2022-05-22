@@ -20,6 +20,7 @@ import configparser
 import logging
 import time
 from email import utils as email_utils
+from html import escape
 from math import pi
 from typing import Any, cast
 from urllib.parse import quote, urlencode
@@ -216,27 +217,38 @@ class ContactPage(HTMLRequestHandler):
         env = Envelope()
 
         if self.settings.get("CONTACT_USE_GPG"):
-            text = f"Subject: {subject}\n\n{text}\n\nFrom: {from_address}"
+            env.message(
+                "<html>"
+                "<head></head>"
+                "<body>"
+                f"Subject: <b>{escape(subject)}</b><br>"
+                f"From: <b>{escape(from_address)}</b><br>"
+                f"<p style='margin-left: 1rem'>{escape(text)}</p>"
+                "</body>"
+                "</html>",
+                alternative="html",
+            )
+            text = f"Subject: {subject}\nFrom: {from_address}\n\n{text}"
             env.encryption(key=self.settings.get("CONTACT_RECIPIENTS"))
             env.subject(
-                encrypted=f"Jemand schreibt etwas über {self.request.host_name}"
+                subject=subject,
+                encrypted=f"Jemand schreibt etwas über {self.request.host}",
             )
             env.from_(self.settings.get("CONTACT_SENDER_ADDRESS") or False)
         else:
             env.subject(subject)
             env.from_(from_address)
+        env.message(text, alternative="plain")
 
         geoip = await self.geoip()
         if geoip:
             if self.settings.get("CONTACT_USE_GPG"):
                 # don't add it as header; they aren't encrypted
-                text += "\n\n" + str(geoip)
+                env.attach(str(geoip) + "\n", "application/json", "geoip.json")
             else:
                 add_geoip_info_to_envelope(env, geoip)
 
-        env.message(text, alternative="plain")
-
-        env.date(email_utils.format_datetime(await self.get_time()))
+        env.date(email_utils.format_datetime(self.now))
 
         env.smtp(
             host=self.settings.get("CONTACT_SMTP_SERVER"),
