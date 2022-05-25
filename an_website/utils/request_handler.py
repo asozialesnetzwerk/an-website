@@ -665,7 +665,7 @@ class HTMLRequestHandler(BaseRequestHandler):
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
         form_appendix = (
-            "<input name='no_3rd_party' class='hidden-input' "
+            "<input name='no_3rd_party' class='hidden' "
             f"value='{bool_to_str(self.get_no_3rd_party())}'>"
             if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
@@ -673,12 +673,12 @@ class HTMLRequestHandler(BaseRequestHandler):
         )
         if self.get_dynload() != self.get_saved_dynload():
             form_appendix += (
-                "<input name='dynload' class='hidden-input' "
+                "<input name='dynload' class='hidden' "
                 f"value='{bool_to_str(self.get_dynload())}'>"
             )
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
-                f"<input name='theme' class='hidden-input' value='{theme}'>"
+                f"<input name='theme' class='hidden' value='{theme}'>"
             )
         return form_appendix
 

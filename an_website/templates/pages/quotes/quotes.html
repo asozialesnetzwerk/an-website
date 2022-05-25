@@ -60,7 +60,7 @@
     </div>
     <form method="post" id="vote-container">
         {% raw form_appendix %}
-        <input name="r" class="hidden-input" value="{{rating_filter}}">
+        <input name="r" class="hidden" value="{{rating_filter}}">
         <button class="form-button vote {% if vote == 1 %} voted {% end %}"
                 tooltip="Bewerte das Zitat als witzig!"
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
