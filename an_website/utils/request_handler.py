@@ -737,12 +737,15 @@ class HTMLRequestHandler(BaseRequestHandler):
             as_json=self.get_as_json(),
             now=self.now,
         )
-        namespace["🥚"] = (
-            self.settings.get("TESTING")
-            or timedelta()
-            <= self.now.date() - easter(self.now.year)
-            < timedelta(days=2)
-            or isprime(self.now.microsecond)  # type: ignore[no-untyped-call]
+        namespace.update(
+            {
+                "🥚": self.settings.get("TESTING")
+                or timedelta()
+                <= self.now.date() - easter(self.now.year)
+                < timedelta(days=2),
+                "🦘": self.settings.get("TESTING")
+                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
+            }
         )
         return namespace
 

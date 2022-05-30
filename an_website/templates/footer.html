@@ -1,13 +1,15 @@
 {% whitespace oneline %}
 <footer id="footer" data-elastic-exclude>Mit Liebe gebacken
-    {% if globals()["🥚"] %}
+    {% if globals()["🦘"] %}
+        🦘
+    {% elif globals()["🥚"] %}
         <a href="{{fix_url('https://bibliogram.pussthecat.org/p/BsOGulcndj-')}}"
            class="no-style-a-emoji"
         >🥚</a>
     {% elif now.day == now.month %}
         ("🥇", "🥈", "🔱", "🍀", "🖐️", "🔯", "🎰", "✴️", "9⃣", "🔟", "🧝", "🕛️")[now.day - 1]
     {% elif now.month == 2 and now.day == 29 %}
-        🦘
+        🫀
     {% elif now.month == 3 and now.day == 8 %}
         ♀️
     {% elif now.month == 3 and now.day == 14 %}
