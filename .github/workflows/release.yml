@@ -195,16 +195,7 @@ jobs:
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x
-          # get the total coverage percentage and round it to 2 decimals
-          total="$(jq '.totals.percent_covered' public/coverage.json | awk '{ printf( "%3.2f\n", $1 ) }')"
-          if (( $(echo "$total <= 50" | bc -l) )) ; then
-            COLOR=red
-          elif (( $(echo "$total > 80" | bc -l) )); then
-            COLOR=green
-          else
-            COLOR=orange
-          fi
-          curl "https://img.shields.io/badge/Coverage-$total%25-$COLOR" > public/coverage/badge.svg
+          ./generate_badge.sh > public/coverage/badge.svg
           rm public/coverage/.gitignore
       - name: Push hashes and coverage to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
