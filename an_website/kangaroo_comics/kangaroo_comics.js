@@ -1,8 +1,7 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 function removeAllPopups() {
-    for (let node of d.getElementsByClassName("popup-container")) {
+    for (let node of d.getElementsByClassName("popup-container"))
         node.remove();
-    }
 }
 
 function startLoadingComics() {
@@ -179,6 +178,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         let link = generateComicLink(date);
         link = link.startsWith("/") ? link : "https://img.zeit.de/" + link
         currentImg.src = link;
+        // currentImg.crossOrigin = "";
         currentImgHeader.innerText = "Neuster " + getDateString(date) + ":";
         currentImgHeader.href = link;
     }
@@ -275,7 +275,8 @@ administratives/kaenguru-comics/kaenguru-045/original
             listItem.appendChild(header);
             listItem.appendChild(d.createElement("br"));
             const image = d.createElement("img");
-            image.classList.add("normal-img")
+            image.classList.add("normal-img");
+            // image.crossOrigin = "";
             image.src = link;
             image.alt = getDateString(date);
             image.onclick = () => createImgPopup(image);
@@ -299,7 +300,6 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
     elById("load-button").onclick = loadMoreComics;
-    log(elById("load-button").onclick)
 
     function createImgPopup(image) {
         removeAllPopups();
@@ -312,7 +312,6 @@ administratives/kaenguru-comics/kaenguru-045/original
         const clone = image.cloneNode(true);
         clone.classList.remove("normal-img");
         clone.classList.add("popup-img");
-
 
         const closeButton = d.createElement("img");
         closeButton.classList.add("close-button");
