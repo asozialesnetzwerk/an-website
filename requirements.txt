@@ -16,7 +16,7 @@ colorama==0.4.4
 cython==0.29.30
 defusedxml==0.7.1
 deprecated==1.2.13
-dill==0.3.4
+dill==0.3.5.1
 dunamai==1.12.0
 ecs-logging==1.1.0
 elastic-apm==6.9.1
@@ -32,11 +32,11 @@ hy==1.0a4
 hyrule==0.1
 idna==3.3
 jxlpy==0.9.1
-lxml==4.8.0
+lxml==4.9.0
 mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
-numpy==1.22.3
+numpy==1.22.4
 orjson==3.6.8
 packaging==21.3
 pillow==9.1.1

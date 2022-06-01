@@ -216,6 +216,7 @@ async def test_sw_html_request_handlers(
         await fetch(
             "/vertauschte-woerter",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {"reset": "nope", "text": "text", "config": "abc <=> xyz"}
             ),
@@ -236,13 +237,13 @@ async def test_sw_html_request_handlers(
     response2 = await fetch(
         "/vertauschte-woerter",
         method="POST",
+        headers={"Content-Type": "application/json", "Cookie": cookies[0]},
         body=json.dumps(
             {
                 "reset": "nope",
                 "text": "text",
             }
         ),
-        headers={"Cookie": cookies[0]},
     )
     assert not response2.headers.get_list("Set-Cookie")
     assert response2.body == response.body
@@ -257,6 +258,7 @@ async def test_sw_json_request_handlers(
         await fetch(
             "/api/vertauschte-woerter",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     "text": " x z o ",
@@ -277,6 +279,7 @@ async def test_sw_json_request_handlers(
         await fetch(
             "/api/vertauschte-woerter",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     "text": " x z o ",
@@ -297,6 +300,7 @@ async def test_sw_json_request_handlers(
         await fetch(
             "/api/vertauschte-woerter",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     "config": "x  => y\nz <> o",
@@ -312,6 +316,7 @@ async def test_sw_json_request_handlers(
         await fetch(
             "/api/vertauschte-woerter",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     "config": "x  => y\nz <=> o\na == b",

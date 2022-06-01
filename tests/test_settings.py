@@ -54,6 +54,9 @@ async def test_setting_stuff_without_cookies(
             if request_body
             else "/einstellungen?theme=pink&no_3rd_party=sure&dynload=sure",
             method="POST",
+            headers={"Content-Type": "application/json"}
+            if isinstance(request_body, bytes)
+            else None,
             body=request_body,
             follow_redirects=True,
         )
@@ -99,6 +102,9 @@ async def test_setting_stuff_and_saving_to_cookies(
                 else ""
             ),
             method="POST",
+            headers={"Content-Type": "application/json"}
+            if isinstance(request_body, bytes)
+            else None,
             body=request_body,
         )
         assert_valid_response(response, content_type="text/html; charset=UTF-8")

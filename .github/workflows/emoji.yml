@@ -1,4 +1,4 @@
-name: Check emoji
+name: Emoji
 on:
   push:
     branches: [ "**" ]

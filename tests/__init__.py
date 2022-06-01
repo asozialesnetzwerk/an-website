@@ -83,7 +83,7 @@ def app() -> tornado.web.Application:
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
 
-    main.setup_logging(config, allow_file_handler=False)
+    main.setup_logging(config, testing=True)
 
     for module_name in config.get(
         "GENERAL", "IGNORED_MODULES", fallback=""

@@ -164,45 +164,45 @@ async def test_backdoor(  # pylint: disable=too-many-statements
     assert isinstance(response["result"], SystemExit)
     assert response["result"].args == ("spam", "eggs")
 
-    # create something that cannot be pickled
-    response = await request_and_parse(
-        fetch,
-        "def toast():\n"
-        "   class Toast: pass\n"
-        "   return Toast\n"
-        "LocalToast = toast()\n"
-        "t = LocalToast()",
-        mode="exec",
-        session="sausage",
-    )
-    assert isinstance(response, dict)
-    assert response["success"]
-    assert not response["output"]
-    assert response["result"] is None
+    # # create something that cannot be pickled
+    # response = await request_and_parse(
+    #     fetch,
+    #     "def toast():\n"
+    #     "   class Toast: pass\n"
+    #     "   return Toast\n"
+    #     "LocalToast = toast()\n"
+    #     "t = LocalToast()",
+    #     mode="exec",
+    #     session="sausage",
+    # )
+    # assert isinstance(response, dict)
+    # assert response["success"]
+    # assert not response["output"]
+    # assert response["result"] is None
 
-    response = await request_and_parse(
-        fetch, "raise SystemExit(t)", mode="exec", session="sausage"
-    )
-    assert isinstance(response, dict)
-    assert response["success"] is ...
-    assert not response["output"]
-    assert isinstance(response["result"], SystemExit)
-    assert (
-        response["result"]
-        .args[0]
-        .startswith("<this.toast.<locals>.Toast object at ")
-    )
-    assert response["result"].args[0].endswith(">")
+    # response = await request_and_parse(
+    #     fetch, "raise SystemExit(t)", mode="exec", session="sausage"
+    # )
+    # assert isinstance(response, dict)
+    # assert response["success"] is ...
+    # assert not response["output"]
+    # assert isinstance(response["result"], SystemExit)
+    # assert (
+    #     response["result"]
+    #     .args[0]
+    #     .startswith("<this.toast.<locals>.Toast object at ")
+    # )
+    # assert response["result"].args[0].endswith(">")
 
-    response = await request_and_parse(fetch, "t", session="sausage")
-    assert isinstance(response, dict)
-    assert response["success"]
-    assert not response["output"]
-    assert response["result"][0].startswith(
-        "<this.toast.<locals>.Toast object at "
-    )
-    assert response["result"][0].endswith(">")
-    assert response["result"][1] is None
+    # response = await request_and_parse(fetch, "t", session="sausage")
+    # assert isinstance(response, dict)
+    # assert response["success"]
+    # assert not response["output"]
+    # assert response["result"][0].startswith(
+    #     "<this.toast.<locals>.Toast object at "
+    # )
+    # assert response["result"][0].endswith(">")
+    # assert response["result"][1] is None
 
     response = await request_and_parse(fetch, "raise ValueError()", mode="exec")
     assert isinstance(response, dict)

@@ -171,6 +171,7 @@ async def test_argument_checking_create_pages(
             url,
             "/zitate/1-1",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     f"quote-{num}": wrong_quote.quote.quote.lower(),
@@ -183,6 +184,7 @@ async def test_argument_checking_create_pages(
             url,
             "/zitate/1-2",
             method="POST",
+            headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     f"quote-{num}": wrong_quote.quote.quote.upper(),

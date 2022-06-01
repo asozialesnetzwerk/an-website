@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import configparser
-import gc
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
@@ -27,8 +26,10 @@ import defusedxml  # type: ignore
 import namedthreads  # type: ignore
 import tornado.httpclient
 import tornado.httputil
+import tornado.log
 import tornado.web
 import uvloop
+from tornado.httputil import parse_body_arguments as _parse_body_arguments
 
 from .. import DIR as ROOT_DIR
 from . import json  # pylint: disable=reimported
@@ -40,12 +41,11 @@ DIR = os.path.dirname(__file__)
 
 def apply() -> None:
     """Apply the patches."""
-    sys.setrecursionlimit(10_000)
     if sys.flags.dev_mode:
-        gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
         namedthreads.patch()
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
+    certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {"sure": True, "nope": False}
     )
@@ -53,6 +53,7 @@ def apply() -> None:
     tornado.httpclient.AsyncHTTPClient.configure(
         "tornado.curl_httpclient.CurlAsyncHTTPClient"
     )
+    tornado.httputil.parse_body_arguments = parse_body_arguments
     tornado.web.RedirectHandler.head = tornado.web.RedirectHandler.get
     tornado.web.RequestHandler.redirect = redirect  # type: ignore[assignment]
     tornado.web.RequestHandler.SUPPORTED_METHODS = (
@@ -63,10 +64,11 @@ def apply() -> None:
             "WHEN",
         )
     )
+    _ = tornado.web.RequestHandler._unimplemented_method
+    tornado.web.RequestHandler.propfind = _  # type: ignore[attr-defined]
+    tornado.web.RequestHandler.brew = _  # type: ignore[attr-defined]
+    tornado.web.RequestHandler.when = _  # type: ignore[attr-defined]
     http.client.responses[420] = "Enhance Your Calm"
-    certifi.where = certifi.core.where = lambda: os.path.join(
-        ROOT_DIR, "ca-bundle.crt"
-    )
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
     anonymize_logs()
@@ -74,8 +76,9 @@ def apply() -> None:
 
 def patch_json() -> None:
     """Replace json with orjson."""
-    stdlib_json.dump = json.dump
     stdlib_json.dumps = json.dumps
+    stdlib_json.dump = json.dump
+    stdlib_json.loads = json.loads
     stdlib_json.load = json.load
 
 
@@ -108,6 +111,31 @@ def anonymize_logs() -> None:
             ),
         )
     )
+
+
+def parse_body_arguments(  # noqa: D103
+    content_type: str,
+    body: bytes,
+    arguments: dict[str, list[bytes]],
+    files: dict[str, list[tornado.httputil.HTTPFile]],
+    headers: None | tornado.httputil.HTTPHeaders = None,
+) -> None:
+    # pylint: disable=missing-function-docstring
+    if content_type.startswith("application/json"):
+        if headers and "Content-Encoding" in headers:
+            tornado.log.gen_log.warning(
+                "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
+            )
+            return
+        try:
+            spam = json.loads(body)
+        except Exception as exc:  # pylint: disable=broad-except
+            tornado.log.gen_log.warning("Invalid JSON body: %s", exc)
+        else:
+            for key, value in spam.items():
+                arguments.setdefault(key, []).append(value)
+    else:
+        _parse_body_arguments(content_type, body, arguments, files, headers)
 
 
 def redirect(

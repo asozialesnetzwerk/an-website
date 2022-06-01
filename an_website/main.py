@@ -335,7 +335,7 @@ def get_ssl_context(
 
 
 def setup_logging(
-    config: configparser.ConfigParser, *, allow_file_handler: bool = True
+    config: configparser.ConfigParser, *, testing: bool = False
 ) -> None:
     """Configure logging."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
@@ -346,7 +346,7 @@ def setup_logging(
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
         logging.Formatter(
             re.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT),
@@ -357,7 +357,7 @@ def setup_logging(
     )
     root_logger.addHandler(stream_handler)
 
-    if allow_file_handler and path:
+    if not testing and path:
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
             os.path.join(path, f"{NAME}.log"),
@@ -372,6 +372,9 @@ def setup_logging(
 
     logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
+
+    if testing and not debug:
+        logger.setLevel(logging.WARNING)
 
 
 def setup_apm(app: Application) -> None:
@@ -439,7 +442,6 @@ def setup_elasticsearch(app: Application) -> None:
     if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         app.settings["ELASTICSEARCH"] = None
         return
-
     app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         hosts=tuple(
@@ -565,7 +567,6 @@ def setup_redis(app: Application) -> None:
     if not config.getboolean("REDIS", "ENABLED", fallback=False):
         app.settings["REDIS"] = None
         return
-
     kwargs = {
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
@@ -576,7 +577,6 @@ def setup_redis(app: Application) -> None:
         "decode_responses": True,
         "client_name": NAME,
     }
-
     if config.has_option("REDIS", "UNIX_SOCKET_PATH"):
         kwargs.update(
             {
@@ -591,7 +591,6 @@ def setup_redis(app: Application) -> None:
                 "port": config.getint("REDIS", "PORT", fallback=6379),
             }
         )
-
         if config.getboolean("REDIS", "SSL", fallback=False):
             kwargs.update(
                 {
@@ -611,7 +610,6 @@ def setup_redis(app: Application) -> None:
                     ),
                 }
             )
-
     app.settings["REDIS"] = Redis(
         connection_pool=BlockingConnectionPool(**kwargs)
     )
