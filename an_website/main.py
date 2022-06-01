@@ -346,7 +346,7 @@ def setup_logging(
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
         logging.Formatter(
             re.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT),

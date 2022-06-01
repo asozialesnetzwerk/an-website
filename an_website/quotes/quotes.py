@@ -25,7 +25,7 @@ import random
 import re
 from asyncio import Task
 from collections.abc import Coroutine, Generator
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 from tornado.web import HTTPError, RedirectHandler
 
@@ -252,8 +252,8 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         """Render the main quote page, with a few links."""
         if head:
             return
-        quote = cast(str, self.get_argument("quote", ""))
-        author = cast(str, self.get_argument("author", ""))
+        quote = self.get_argument("quote", "")
+        author = self.get_argument("author", "")
         if (quote or author) and re.fullmatch(r"^[0-9]+$", quote + author):
             self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
             return

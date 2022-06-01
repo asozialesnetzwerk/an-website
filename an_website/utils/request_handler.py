@@ -28,6 +28,7 @@ import time
 import traceback
 import uuid
 from asyncio import Future
+from base64 import b64decode
 from collections.abc import Awaitable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from http.client import responses
@@ -46,7 +47,6 @@ from elasticsearch.exceptions import ElasticsearchException
 from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis
 from sympy.ntheory import isprime
-from tornado import web
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, REPO_URL
@@ -102,6 +102,8 @@ class BaseRequestHandler(RequestHandler):
     short_title = "Asoziales Netzwerk"
     description = "Die tolle Webseite des Asozialen Netzwerkes"
 
+    _active_origin_trials: set[str]
+
     def initialize(
         self,
         *,
@@ -126,6 +128,7 @@ class BaseRequestHandler(RequestHandler):
             self.description = self.module_info.get_page_info(
                 self.request.path
             ).description
+        self._active_origin_trials = set()
 
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
@@ -190,6 +193,36 @@ class BaseRequestHandler(RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(self.is_authorized(permission)),
                     )
+        self.origin_trial(
+            "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        )
+
+    def origin_trial(self, token: str | bytes) -> bool:
+        """Enable an experimental feature."""
+        # pylint: disable=protected-access
+        if token in self._active_origin_trials:
+            return True
+        url = urlsplit(self.request.full_url())
+        payload = json.loads(b64decode(token)[69:])
+        origin = urlsplit(payload["origin"])
+        if url.port is None and url.scheme in {"http", "https"}:
+            url = url._replace(
+                netloc=f"{url.hostname}:{443 if url.scheme == 'https' else 80}"
+            )
+        if self.request._start_time > payload["expiry"]:
+            return False
+        if url.scheme != origin.scheme:
+            return False
+        if url.netloc != origin.netloc and not (
+            payload.get("isSubdomain")
+            and url.netloc.endswith(f".{origin.netloc}")
+        ):
+            return False
+        self.add_header("Origin-Trial", token)
+        self._active_origin_trials.add(
+            token if isinstance(token, str) else token.decode("ascii")
+        )
+        return True
 
     def set_cookie(  # pylint: disable=too-many-arguments
         self,
@@ -580,49 +613,20 @@ class BaseRequestHandler(RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a Boolean.") from err
 
-    def get_argument(  # type: ignore[override]
-        self,
-        name: str,
-        default: (
-            None | str | web._ArgDefaultMarker
-        ) = web._ARG_DEFAULT,  # pylint: disable=protected-access
-        strip: bool = True,
-    ) -> None | str:
-        """Get an argument based on body or query."""
-        arg = super().get_argument(name, default=None, strip=strip)
-        if arg is not None:
-            return arg
-
-        try:
-            body = json.loads(self.request.body)
-        except Exception:  # pylint: disable=broad-except
-            pass
-        else:
-            if isinstance(body, dict) and name in body:
-                val = str(body[name])
-                return val.strip() if strip else val
-
-        # pylint: disable=protected-access
-        if isinstance(default, web._ArgDefaultMarker):
-            raise web.MissingArgumentError(name)
-
-        return default
-
     def is_authorized(self, permission: Permissions) -> bool:
         """Check whether the request is authorized."""
+        found_keys: list[None | str]
         if permission == Permissions(0):
             return True
         api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
+        found_keys = self.request.headers.get_list("Authorization")
+        found_keys.extend(self.get_arguments("key"))
+        if self.SUPPORTS_COOKIE_AUTHORIZATION:
+            found_keys.append(self.get_cookie("key", default=None))
         return any(
             permission in api_secrets[key]
-            for key in (
-                self.request.headers.get("Authorization"),
-                self.get_argument("key", default=None),
-                self.get_cookie("key", default=None)
-                if self.SUPPORTS_COOKIE_AUTHORIZATION
-                else None,
-            )
-            if key is not None and key in api_secrets
+            for key in found_keys
+            if key and key in api_secrets
         )
 
     def geoip(

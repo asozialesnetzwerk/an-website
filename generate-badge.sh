@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ###
-# This script is used in the gh-actions workflows deploy and release
+# This script is used in the GitHub Actions workflows "Deploy" and "Release"
 ###
 
 # get the total coverage percentage and round it to 2 decimals

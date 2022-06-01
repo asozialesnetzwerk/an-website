@@ -195,7 +195,7 @@ jobs:
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x
-          ./generate_badge.sh > public/coverage/badge.svg
+          ./generate-badge.sh > public/coverage/badge.svg
           rm public/coverage/.gitignore
       - name: Push hashes and coverage to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
