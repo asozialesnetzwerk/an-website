@@ -88,7 +88,7 @@ def app() -> tornado.web.Application:
     for module_name in config.get(
         "GENERAL", "IGNORED_MODULES", fallback=""
     ).split(","):
-        module_name = module_name.strip()
+        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
         if len(module_name) > 0:
             main.IGNORED_MODULES.append(module_name)
 

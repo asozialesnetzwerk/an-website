@@ -194,7 +194,7 @@ def get_all_handlers(
     # add all the normal handlers
     for module_info in module_infos:
         for handler in module_info.handlers:
-            handler = list(handler)
+            handler = list(handler)  # pylint: disable=redefined-loop-name
             handler[0] = "(?i)" + handler[0]
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler & RedirectHandler
@@ -697,7 +697,7 @@ def main() -> None | int | str:  # noqa: C901
     for module_name in config.get(
         "GENERAL", "IGNORED_MODULES", fallback=""
     ).split(","):
-        module_name = module_name.strip()
+        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
         if len(module_name) > 0:
             IGNORED_MODULES.append(module_name)
 

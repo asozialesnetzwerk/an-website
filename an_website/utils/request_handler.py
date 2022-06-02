@@ -172,8 +172,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # don't send the Referer header for cross-origin requests
         self.set_header("Referrer-Policy", "same-origin")
-        self.set_header("Cross-Origin-Resource-Policy", "same-origin")
-        # developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements  # noqa: B950  # pylint: disable=line-too-long
+        # dev.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
         self.set_header("Cross-Origin-Opener-Policy", "same-origin")
         if self.request.path != "/kaenguru-comics":  # TODO: make this better
             self.set_header("Cross-Origin-Embedder-Policy", "require-corp")

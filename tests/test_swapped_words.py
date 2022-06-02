@@ -81,7 +81,9 @@ def test_parsing_config() -> None:
     test_conf_str = "(a)=>b;Cc<=>Dd"
     parsed_conf = sw_config.SwappedWordsConfig(test_conf_str)
 
-    assert parsed_conf.__eq__(None) == NotImplemented
+    assert (  # pylint: disable=unnecessary-dunder-call
+        parsed_conf.__eq__(None) == NotImplemented
+    )
     beautified = parsed_conf.to_config_str()
     minified = parsed_conf.to_config_str(minified=True)
 
