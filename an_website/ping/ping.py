@@ -33,6 +33,8 @@ def get_module_info() -> ModuleInfo:
 class PingPong(APIRequestHandler):
     """The request handler for the ping API."""
 
+    POSSIBLE_CONTENT_TYPES = ("text/plain",)
+
     async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the ping API."""
         # pylint: disable=unused-argument
