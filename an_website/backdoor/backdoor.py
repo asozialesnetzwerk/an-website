@@ -65,6 +65,8 @@ class PrintWrapper:  # pylint: disable=too-few-public-methods
 class Backdoor(APIRequestHandler):
     """The Tornado request handler for the backdoor API."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ("application/vnd.python.pickle",)
+
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
     REQUIRED_PERMISSION: Permissions = Permissions.BACKDOOR
     SUPPORTS_COOKIE_AUTHORIZATION: bool = False

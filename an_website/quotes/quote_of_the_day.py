@@ -229,6 +229,10 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
     """Handler for the JSON API that returns the quote of the day."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
+
     async def get(
         self,
         date_str: None | str = None,
@@ -280,7 +284,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
 
         self.redirect(
             self.fix_url(
-                wrong_quote_data.get_quote_url(), as_json=self.get_as_json()
+                wrong_quote_data.get_quote_url(),
             ),
             False,
         )

@@ -84,6 +84,10 @@ class QuoteGenerator(QuoteReadyCheckHandler):
 class QuoteGeneratorAPI(QuoteReadyCheckHandler, APIRequestHandler):
     """The request handler for the quote generator API."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
+
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         count = min(10, int(self.get_argument("count", "5") or "5"))

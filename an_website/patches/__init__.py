@@ -29,6 +29,7 @@ import tornado.httputil
 import tornado.log
 import tornado.web
 import uvloop
+import yaml
 from tornado.httputil import parse_body_arguments as _parse_body_arguments
 
 from .. import DIR as ROOT_DIR
@@ -113,7 +114,7 @@ def anonymize_logs() -> None:
     )
 
 
-def parse_body_arguments(  # noqa: D103
+def parse_body_arguments(  # noqa: D103 # pylint: disable=too-complex
     content_type: str,
     body: bytes,
     arguments: dict[str, list[bytes]],
@@ -131,6 +132,19 @@ def parse_body_arguments(  # noqa: D103
             spam = json.loads(body)
         except Exception as exc:  # pylint: disable=broad-except
             tornado.log.gen_log.warning("Invalid JSON body: %s", exc)
+        else:
+            for key, value in spam.items():
+                arguments.setdefault(key, []).append(value)
+    elif content_type.startswith(("application/yaml", "text/yaml")):
+        if headers and "Content-Encoding" in headers:
+            tornado.log.gen_log.warning(
+                "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
+            )
+            return
+        try:
+            spam = yaml.safe_load(body)
+        except Exception as exc:  # pylint: disable=broad-except
+            tornado.log.gen_log.warning("Invalid YAML body: %s", exc)
         else:
             for key, value in spam.items():
                 arguments.setdefault(key, []).append(value)

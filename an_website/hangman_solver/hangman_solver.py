@@ -277,6 +277,9 @@ class HangmanSolver(HTMLRequestHandler):
 class HangmanSolverAPI(HangmanSolver, APIRequestHandler):
     """Request handler for the hangman solver JSON API."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
     RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 

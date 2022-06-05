@@ -2,6 +2,7 @@
 python_version = "3.10"
 
 [packages]
+accept-types = {version = "==0.*"}
 aiohttp = {version = "==3.*", extras = ["speedups"]}
 ansi2html = {version = "==1.*"}
 beautifulsoup4 = {version = "==4.*"}
@@ -26,6 +27,7 @@ pycryptodome = {version = "==3.*"}
 pycurl = {version = "*"}
 python-dateutil = {version = "==2.*"}
 python-Levenshtein = {version = "<2"}
+PyYAML = {version = "==6.*"}
 redis = {version = "==4.*", extras = ["hiredis"]}
 #regex = {version = "*"}
 sympy = {version = "==1.*"}
@@ -60,5 +62,6 @@ types-beautifulsoup4 = {version = "==4.*"}
 types-orjson = {version = "==3.*"}
 types-Pillow = {version = "==9.*"}
 types-python-dateutil = {version = "==2.*"}
+types-PyYAML = {version = "==6.*"}
 types-redis = {version = "==4.*"}
 types-requests = {version = "==2.*"}

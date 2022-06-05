@@ -50,6 +50,7 @@ def get_module_info() -> ModuleInfo:
 class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the Elastic RUM Agent."""
 
+    IGNORE_ACCEPT_HEADER = True
     URL = (
         "https://unpkg.com/@elastic/apm-rum@{}"
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"

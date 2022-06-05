@@ -28,6 +28,7 @@ import orjson as json
 import pytest
 import tornado.httpclient
 import tornado.web
+import yaml
 from blake3 import blake3  # type: ignore
 from lxml import etree  # type: ignore
 from lxml.html import document_fromstring  # type: ignore
@@ -304,6 +305,16 @@ def assert_valid_rss_response(
         base_url=response.request.url,
     )
     return parsed_xml
+
+
+def assert_valid_yaml_response(
+    response: tornado.httpclient.HTTPResponse, code: int = 200
+) -> Any:
+    """Assert a valid yaml response with the given code."""
+    assert_valid_response(response, "application/yaml; charset=UTF-8", code)
+    parsed = yaml.full_load(response.body)
+    assert parsed is not None and len(parsed)
+    return parsed
 
 
 def assert_valid_json_response(

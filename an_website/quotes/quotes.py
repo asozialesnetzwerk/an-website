@@ -76,13 +76,13 @@ def get_module_info() -> ModuleInfo:
                 RedirectHandler,
                 {"url": "/zitate/{0}-{1}"},
             ),
-            (  # redirect to the new URL (changed because of robots.txt)
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image.([a-zA-Z]{3,4})",
+            (  # redirect to the new URL
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image\.([a-zA-Z]{3,4})",
                 RedirectHandler,
                 {"url": "/zitate/{0}-{1}.{2}"},
             ),
             (
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10}).([a-zA-Z]{3,4})",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})\.([a-zA-Z]{3,4})",
                 QuoteAsImage,
             ),
             (  # redirect to the new URL (changed because of robots.txt)
@@ -292,6 +292,10 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
 class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
     """Redirect to the api for a random quote."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
+
     async def get(  # pylint: disable=unused-argument
         self, suffix: str = "", *, head: bool = False
     ) -> None:
@@ -300,7 +304,6 @@ class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
         return self.redirect(
             self.fix_url(
                 f"/api/zitate/{quote_id}-{author_id}{suffix}",
-                as_json=self.get_as_json(),
             )
         )
 
@@ -328,7 +331,6 @@ class QuoteById(QuoteBaseHandler):
             return self.redirect(
                 self.fix_url(
                     f"/zitate/{wqs[0].quote.id}-{wqs[0].author.id}",
-                    as_json=self.get_as_json(),
                 )
             )
         if head:
@@ -477,6 +479,10 @@ class QuoteById(QuoteBaseHandler):
 
 class QuoteAPIHandler(QuoteById, APIRequestHandler):
     """API request handler for the quotes page."""
+
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
 
     RATELIMIT_GET_PERIOD = 10
     RATELIMIT_GET_COUNT_PER_PERIOD = 20  # 20 requests per 10s

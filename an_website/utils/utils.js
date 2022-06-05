@@ -27,9 +27,9 @@ function get(
     ondata = log,
     onerror = error
 ) {
-    // log("GET", url, params);
+    if (params) url += "?" + (new URLSearchParams(params)).toString()
     fetch(
-        url + (!params ? "" : "?" + (new URLSearchParams(params)).toString()),
+        url,
         {
             method: "GET",
             headers: {"Accept": "application/json"}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{lang}}">
     <head>
-        {% if not as_json %}
+        {% if as_html %}
             <title>{{title}}</title>
             <meta charset="UTF-8">
             <meta name="theme-color" content="#8B0000">
@@ -47,7 +47,7 @@
         {% block head %} {% end %}
     </head>
     <body>
-        {% if not as_json %}
+        {% if as_html %}
             <a href="#body"
                no-dynload
                id="skip-to-content"
@@ -58,7 +58,7 @@
         <main data-elastic-include
               id="body">{% block body %}{{content}}{% end %}</main>
 
-        {% if not as_json %}
+        {% if as_html %}
             {% include "footer.html" %}
         {% end %}
     </body>

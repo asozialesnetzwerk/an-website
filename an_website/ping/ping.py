@@ -36,5 +36,5 @@ class PingPong(APIRequestHandler):
     async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the ping API."""
         # pylint: disable=unused-argument
-        self.set_header("Content-Type", "text/plain; charset=utf-8")
+        self.set_header("Content-Type", "text/plain; charset=UTF-8")
         await self.finish("🏓")

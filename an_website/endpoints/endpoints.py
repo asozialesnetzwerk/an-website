@@ -15,10 +15,8 @@
 
 from __future__ import annotations
 
-import orjson as json
 from tornado.web import RedirectHandler
 
-from .. import ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, name_to_id
 
@@ -86,8 +84,10 @@ class Endpoints(HTMLRequestHandler):
 class EndpointsAPI(Endpoints, APIRequestHandler):
     """Show a list of all API endpoints."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
+
     async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""
-        return await self.finish(
-            json.dumps(self.get_endpoints(), option=ORJSON_OPTIONS)
-        )
+        return await self.finish(self.get_dump_func()(self.get_endpoints()))

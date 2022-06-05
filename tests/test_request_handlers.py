@@ -27,6 +27,7 @@ from . import (
     assert_valid_redirect,
     assert_valid_response,
     assert_valid_rss_response,
+    assert_valid_yaml_response,
     check_html_page,
     fetch,
 )
@@ -55,9 +56,16 @@ async def test_json_apis(
         "/api/waehrungs-rechner",
     )
     for api in json_apis:
-        assert_valid_json_response(await fetch(api))
+        json_resp = assert_valid_json_response(await fetch(api))
+        yaml_resp = assert_valid_yaml_response(
+            await fetch(api, headers={"Accept": "application/yaml"})
+        )
+        if not api == "/api/betriebszeit":
+            assert json_resp == yaml_resp
         assert not assert_valid_response(
-            await fetch(api, method="HEAD"),
+            await fetch(
+                api, method="HEAD", headers={"Accept": "application/json"}
+            ),
             "application/json; charset=UTF-8",
         ).body
 
@@ -247,26 +255,72 @@ async def test_request_handlers(
     await check_html_page(fetch, "/wiki")
     await check_html_page(fetch, "/wortspiel-helfer")
 
-    assert_valid_json_response(await fetch("/betriebszeit?as_json=sure"))
-    assert_valid_json_response(await fetch("/discord?as_json=sure"))
-    assert_valid_json_response(await fetch("/einstellungen?as_json=sure"))
-    assert_valid_json_response(await fetch("/endpunkte?as_json=sure"))
-    assert_valid_json_response(await fetch("/hangman-loeser?as_json=sure"))
-    assert_valid_json_response(await fetch("/host-info?as_json=sure"))
-    assert_valid_json_response(await fetch("/ip?as_json=sure"))
-    assert_valid_json_response(await fetch("/js-lizenzen?as_json=sure"))
-    assert_valid_json_response(await fetch("/kaenguru-comics?as_json=sure"))
-    assert_valid_json_response(await fetch("/kontakt?as_json=sure"))
-    assert_valid_json_response(await fetch("/services?as_json=sure"))
-    assert_valid_json_response(await fetch("/soundboard?as_json=sure"))
-    assert_valid_json_response(await fetch("/soundboard/personen?as_json=sure"))
-    assert_valid_json_response(await fetch("/soundboard/suche?as_json=sure"))
-    assert_valid_json_response(await fetch("/suche?as_json=sure"))
-    assert_valid_json_response(await fetch("/version?as_json=sure"))
-    assert_valid_json_response(await fetch("/vertauschte-woerter?as_json=sure"))
-    assert_valid_json_response(await fetch("/waehrungs-rechner?as_json=sure"))
-    assert_valid_json_response(await fetch("/wiki?as_json=sure"))
-    assert_valid_json_response(await fetch("/wortspiel-helfer?as_json=sure"))
+    assert_valid_json_response(
+        await fetch("/betriebszeit", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/discord", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/einstellungen", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/endpunkte", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/hangman-loeser", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/host-info", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/ip", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/js-lizenzen", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/kaenguru-comics", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/kontakt", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/services", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/soundboard", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch(
+            "/soundboard/personen", headers={"Accept": "application/json"}
+        )
+    )
+    assert_valid_json_response(
+        await fetch("/soundboard/suche", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/suche", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/version", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch(
+            "/vertauschte-woerter", headers={"Accept": "application/json"}
+        )
+    )
+    assert_valid_json_response(
+        await fetch(
+            "/waehrungs-rechner", headers={"Accept": "application/json"}
+        )
+    )
+    assert_valid_json_response(
+        await fetch("/wiki", headers={"Accept": "application/json"})
+    )
+    assert_valid_json_response(
+        await fetch("/wortspiel-helfer", headers={"Accept": "application/json"})
+    )
 
     await assert_valid_redirect(fetch, "/chat", "https://chat.asozial.org")
 
@@ -289,7 +343,7 @@ async def test_request_handlers(
     )
 
     response = assert_valid_response(
-        await fetch("/api/ping"), "text/plain; charset=utf-8"
+        await fetch("/api/ping"), "text/plain; charset=UTF-8"
     )
     assert response.body.decode() == "🏓"
 

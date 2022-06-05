@@ -266,6 +266,10 @@ class CurrencyConverter(HTMLRequestHandler):
 class CurrencyConverterAPI(CurrencyConverter, APIRequestHandler):
     """Request handler for the currency converter JSON API."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
+
     async def get(self, *, head: bool = False) -> None:
         """
         Handle the GET request and return the value dict as JSON.

@@ -21,6 +21,7 @@ import re
 import orjson as json
 import pytest
 import tornado.web
+import yaml
 
 from an_website.swapped_words import sw_config_file as sw_config
 from an_website.swapped_words import swap
@@ -218,8 +219,8 @@ async def test_sw_html_request_handlers(
         await fetch(
             "/vertauschte-woerter",
             method="POST",
-            headers={"Content-Type": "application/json"},
-            body=json.dumps(
+            headers={"Content-Type": "application/yaml"},
+            body=yaml.dump(
                 {"reset": "nope", "text": "text", "config": "abc <=> xyz"}
             ),
         )

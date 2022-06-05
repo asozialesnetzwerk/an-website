@@ -98,13 +98,13 @@ async def test_permissions(
     ):
         assert_valid_response(
             await fetch("/api/ping", headers={"Authorization": key}),
-            "text/plain; charset=utf-8",
+            "text/plain; charset=UTF-8",
             200,
             headers=headers,
         )
         assert_valid_response(
             await fetch(f"/api/ping?key={key.replace('#', '%23')}"),
-            "text/plain; charset=utf-8",
+            "text/plain; charset=UTF-8",
             200,
             headers=headers,
         )

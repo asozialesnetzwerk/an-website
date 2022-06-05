@@ -48,21 +48,16 @@ class RedirectPage(HTMLRequestHandler):
         """Handle the GET request to the request page and render it."""
         # pylint: disable=unused-argument
 
-        redirect_url = self.get_argument("to", None)
+        redirect_url = self.get_argument("to", "") or "/"
         referrer = self.request.headers.get_list("Referer")
         from_url = referrer[0] if referrer else None
-
-        if not redirect_url or redirect_url == "/":
-            # empty arg so redirect to main page
-            # use fix_url to maybe add no_3rd_party
-            return self.redirect(self.fix_url("/", as_json=self.get_as_json()))
 
         if redirect_url.startswith("/"):
             # it is a local URL, so just redirect
             # use fix_url to maybe add no_3rd_party
-            return self.redirect(
-                self.fix_url(redirect_url, as_json=self.get_as_json())
-            )
+            return self.redirect(self.fix_url(redirect_url))
+
+        send_referrer = False
 
         if domain := urlsplit(redirect_url).hostname:
             if domain.rsplit(".", 2)[-2:] == ["asozial", "org"]:

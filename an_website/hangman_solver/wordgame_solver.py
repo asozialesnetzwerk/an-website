@@ -136,10 +136,9 @@ class WordgameSolverAPI(APIRequestHandler):
 
         before_str: str = str(self.get_argument("before", default=""))
 
-        before = tuple(
+        before = [
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
-        )
-
+        ]
         return await self.finish_dict(
             before=before,
             word=word,

@@ -1,3 +1,4 @@
+accept-types==0.4.1
 aiodns==3.0.0
 aiohttp[speedups]==3.8.1
 aiosignal==1.2.0
@@ -37,7 +38,7 @@ mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
 numpy==1.22.4
-orjson==3.6.9
+orjson==3.7.1
 packaging==21.3
 pillow==9.1.1
 pycares==4.1.2
@@ -48,7 +49,8 @@ pyjwt==2.4.0
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-levenshtein==0.12.2
-redis[hiredis]==4.3.2
+pyyaml==6.0
+redis[hiredis]==4.3.3
 rply==0.7.8
 setuptools==62.3.2
 six==1.16.0

@@ -159,6 +159,9 @@ class Search(HTMLRequestHandler):
 class SearchAPIHandler(Search, APIRequestHandler):
     """The Tornado request handler for the search API."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
     IS_NOT_HTML = True
 
     async def get(self, *, head: bool = False) -> None:

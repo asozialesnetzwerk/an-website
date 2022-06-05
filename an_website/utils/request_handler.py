@@ -29,7 +29,7 @@ import traceback
 import uuid
 from asyncio import Future
 from base64 import b64decode
-from collections.abc import Awaitable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from http.client import responses
 from typing import Any, cast
@@ -38,6 +38,8 @@ from zoneinfo import ZoneInfo
 
 import elasticapm  # type: ignore
 import orjson as json
+import yaml
+from accept_types import get_best_match  # type: ignore
 from ansi2html import Ansi2HTMLConverter  # type: ignore
 from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
@@ -49,7 +51,7 @@ from redis.asyncio import Redis
 from sympy.ntheory import isprime
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
-from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, REPO_URL
+from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, ORJSON_OPTIONS, REPO_URL
 from .static_file_handling import fix_static_url
 from .utils import (
     THEMES,
@@ -87,6 +89,7 @@ class BaseRequestHandler(RequestHandler):
     """The base Tornado request handler used by every page and API."""
 
     REQUIRED_PERMISSION: Permissions = Permissions(0)
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
     # the following should be False on security relevant endpoints
     SUPPORTS_COOKIE_AUTHORIZATION: bool = True
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
@@ -98,9 +101,10 @@ class BaseRequestHandler(RequestHandler):
 
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
-    title = "Das Asoziale Netzwerk"
-    short_title = "Asoziales Netzwerk"
-    description = "Die tolle Webseite des Asozialen Netzwerkes"
+    title: str = "Das Asoziale Netzwerk"
+    short_title: str = "Asoziales Netzwerk"
+    description: str = "Die tolle Webseite des Asozialen Netzwerkes"
+    content_type: str = ""
 
     _active_origin_trials: set[str]
 
@@ -253,12 +257,70 @@ class BaseRequestHandler(RequestHandler):
             **kwargs,
         )
 
+    def get_dump_func(self) -> Callable[[Any], bytes]:
+        """Get the function used to dump the output dict."""
+
+        def ensure_bytes(spam: str | bytes) -> bytes:
+            return spam.encode("utf-8") if isinstance(spam, str) else spam
+
+        if not self.content_type:
+            return ensure_bytes
+
+        def add_new_line(
+            func: Callable[[Any], str | bytes]
+        ) -> Callable[[Any], bytes]:
+            return lambda spam: (
+                ham
+                if (ham := ensure_bytes(func(spam))).endswith(b"\n")
+                else ham + b"\n"
+            )
+
+        if self.content_type.startswith("text/yaml"):
+            self.set_header("Content-Type", "text/yaml; charset=UTF-8")
+            return add_new_line(yaml.dump)
+        if self.content_type.startswith("application/yaml"):
+            self.set_header("Content-Type", "application/yaml; charset=UTF-8")
+            return add_new_line(yaml.dump)
+        if self.content_type.startswith("application/json"):
+            self.set_header("Content-Type", "application/json; charset=UTF-8")
+            return add_new_line(
+                lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
+            )
+        # if self.content_type.startswith("application/xml"):
+        #     self.set_header("Content-Type", "application/xml; charset=UTF-8")
+        #     return add_new_line(dicttoxml.dicttoxml)
+
+        return ensure_bytes
+
+    def finish(
+        self, chunk: None | str | bytes | dict[Any, Any] = None
+    ) -> Future[None]:
+        """Finish the request."""
+        if isinstance(chunk, dict):
+            chunk = self.get_dump_func()(chunk)
+        return super().finish(chunk)
+
+    def handle_accept_header(self) -> None:
+        """Handle the Accept header and set `self.content_type`."""
+        if not self.POSSIBLE_CONTENT_TYPES:
+            return
+        content_type = get_best_match(
+            self.request.headers.get("Accept") or "",
+            self.POSSIBLE_CONTENT_TYPES,
+        )
+        if content_type is None:
+            self.content_type = "text/html"
+            raise HTTPError(406)
+        self.content_type = content_type
+
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=attribute-defined-outside-init
         self.now = await self.get_time()
+
+        self.handle_accept_header()
 
         if self.request.method == "GET":
 
@@ -413,6 +475,13 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(405)
         if not self.supports_head():
             raise HTTPError(501)
+
+        if self.content_type.startswith("text/html"):
+            self.set_header("Content-Type", "text/html; charset=UTF-8")
+        elif self.content_type:
+            self.set_header("Content-Type", self.content_type)
+            self.get_dump_func()  # maybe improve content-type header
+
         kwargs["head"] = True
         return self.get(*args, **kwargs)
 
@@ -509,10 +578,6 @@ class BaseRequestHandler(RequestHandler):
         if url.netloc and url.netloc.lower() != self.request.host.lower():
             url = urlsplit(f"/redirect?to={quote(url.geturl())}")
         path = url.path if new_path is None else new_path  # the path of the url
-        # don't add as_json=nope to url if as_json is False
-        # pylint: disable=compare-to-zero  # if None it shouldn't be deleted
-        if "as_json" in query_args and query_args["as_json"] is False:
-            del query_args["as_json"]
         if path.startswith(("/static/", "/soundboard/files/")):
             query_args.update(no_3rd_party=None, theme=None, dynload=None)
         else:
@@ -538,10 +603,6 @@ class BaseRequestHandler(RequestHandler):
             ),
             **query_args,
         )
-
-    def get_as_json(self) -> bool:
-        """Get the value of the as_json query parameter."""
-        return self.get_bool_argument("as_json", default=False)
 
     def get_no_3rd_party_default(self) -> bool:
         """Get the default value for the no_3rd_party param."""
@@ -668,6 +729,11 @@ class BaseRequestHandler(RequestHandler):
 class HTMLRequestHandler(BaseRequestHandler):
     """A request handler that serves HTML."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "text/html",
+        "text/plain",
+        "application/json",
+    )
     used_render = False
 
     def get_form_appendix(self) -> str:
@@ -742,7 +808,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             or self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
             dynload=self.get_dynload(),
-            as_json=self.get_as_json(),
+            as_html=self.content_type.startswith("text/html"),
             now=self.now,
         )
         namespace.update(
@@ -766,21 +832,29 @@ class HTMLRequestHandler(BaseRequestHandler):
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
         """Finish the request."""
+        as_json: bool = self.content_type.startswith("application/json")
+        as_plain_text: bool = self.content_type.startswith("text/plain")
         if (
-            isinstance(chunk, dict)
+            not isinstance(chunk, bytes | str)
             or chunk is None
             or not self.used_render
             or getattr(self, "IS_NOT_HTML", False)
-            or not self.get_as_json()
+            or not (as_json or as_plain_text)
         ):
             return super().finish(chunk)
-        self.set_header("Content-Type", "application/json; charset=UTF-8")
+
         soup = BeautifulSoup(
             chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
             features="lxml",
         )
+        if as_plain_text:
+            self.set_header("Content-Type", "text/plain; charset=UTF-8")
+            text = soup.get_text("\n", True)
+            return super().finish(text if text.endswith("\n") else text + "\n")
+
+        self.set_header("Content-Type", "application/json; charset=UTF-8")
         dictionary: dict[str, Any] = dict(
-            url=self.fix_url(as_json=None),  # request url without as_json param
+            url=self.fix_url(),  # request url
             title=self.title,
             short_title=self.short_title
             if self.title != self.short_title
@@ -819,12 +893,12 @@ class APIRequestHandler(BaseRequestHandler):
     It overrides the write error method to return errors as JSON.
     """
 
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "application/json",
+        "application/yaml",
+        "text/yaml",
+    )
     IS_NOT_HTML = True
-
-    def set_default_headers(self) -> None:
-        """Set important default headers for the API request handlers."""
-        super().set_default_headers()
-        self.set_header("Content-Type", "application/json; charset=UTF-8")
 
     def finish_dict(self, **kwargs: Any) -> Future[None]:
         """Finish the request with a JSON response."""
@@ -851,6 +925,8 @@ class NotFoundHandler(HTMLRequestHandler):
         """Throw a 404 HTTP error or redirect to another page."""
         # pylint: disable=attribute-defined-outside-init
         self.now = await self.get_time()  # used by get_template_namespace
+
+        self.handle_accept_header()
 
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
