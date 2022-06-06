@@ -248,6 +248,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 class SoundboardRSSHandler(SoundboardHTMLHandler):
     """The request handler that handles requests to the RSS feeds."""
 
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
     IS_NOT_HTML = True
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
@@ -267,5 +268,5 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
                 "rss/soundboard.xml",
                 rss_str=rss_str,
             )
-
+        self.content_type = "text/html"
         raise HTTPError(404, reason="Feed not found.")

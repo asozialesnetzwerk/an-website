@@ -205,11 +205,12 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
     """The request handler for the quote of the day RSS feed."""
 
+    POSSIBLE_CONTENT_TYPES = ("application/rss+xml", "application/xml")
     IS_NOT_HTML = True
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        self.set_header("Content-Type", "application/rss+xml; charset=UTF-8")
+        self.set_header("Content-Type", f"{self.content_type}; charset=UTF-8")
         if head:
             return
         today = datetime.now(tz=timezone.utc).date()

@@ -279,9 +279,7 @@ FILE_EXTENSIONS = {
 class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = tuple(
-        f"image/{file_type}" for file_type in FILE_EXTENSIONS.values()
-    )
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
     RATELIMIT_GET_LIMIT = 15
 
     async def get(
