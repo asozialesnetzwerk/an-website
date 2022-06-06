@@ -48,7 +48,7 @@ class RedirectPage(HTMLRequestHandler):
         """Handle the GET request to the request page and render it."""
         # pylint: disable=unused-argument
 
-        redirect_url = self.get_argument("to", "") or "/"
+        redirect_url = self.get_argument("to", None) or "/"
         referrer = self.request.headers.get_list("Referer")
         from_url = referrer[0] if referrer else None
 

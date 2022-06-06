@@ -2,7 +2,7 @@
 python_version = "3.10"
 
 [packages]
-accept-types = {version = "==0.*"}
+accept-types = {version = "<2"}
 aiohttp = {version = "==3.*", extras = ["speedups"]}
 ansi2html = {version = "==1.*"}
 beautifulsoup4 = {version = "==4.*"}
@@ -16,7 +16,7 @@ elastic-enterprise-search = {version = "==7.*"}
 elasticsearch = {version = "==7.*", extras = ["async"]}
 emoji = {version = "==1.*"}
 get_version = {version = "==3.*"}
-html2text = {version = "==2020.*"}
+html2text = {version = "*"}
 hyrule = {version = "<2"}
 jxlpy = {version = "<2"}
 lxml = {version = "==4.*"}

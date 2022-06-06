@@ -591,7 +591,7 @@ Accepted arguments:
     if "--lisp" in sys.argv:
         if not hy:
             sys.exit("\033[91mHy is not installed!\033[0m")
-        body = send_to_remote("import hy", mode="exec")
+        body = send_to_remote("__import__('hy')", mode="exec")
         if not (isinstance(body, dict) and body["success"]):
             print("\033[91mInjecting Hy builtins failed!\033[0m")
 

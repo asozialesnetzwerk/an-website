@@ -173,7 +173,7 @@ class BaseRequestHandler(RequestHandler):
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
-        # Opt out of all FLoC cohort calculation.
+        # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # don't send the Referer header for cross-origin requests
         self.set_header("Referrer-Policy", "same-origin")
@@ -258,7 +258,8 @@ class BaseRequestHandler(RequestHandler):
             **kwargs,
         )
 
-    def get_dump_func(self) -> Callable[[Any], bytes]:
+    @property
+    def dump(self) -> Callable[[Any], bytes]:
         """Get the function used to dump the output dict."""
 
         def ensure_bytes(spam: str | bytes) -> bytes:
@@ -267,7 +268,7 @@ class BaseRequestHandler(RequestHandler):
         if not self.content_type:
             return ensure_bytes
 
-        def add_new_line(
+        def add_newline(
             func: Callable[[Any], str | bytes]
         ) -> Callable[[Any], bytes]:
             return lambda spam: (
@@ -276,20 +277,14 @@ class BaseRequestHandler(RequestHandler):
                 else ham + b"\n"
             )
 
-        if self.content_type == "text/yaml":
-            self.set_header("Content-Type", "text/yaml; charset=UTF-8")
-            return add_new_line(yaml.dump)
-        if self.content_type == "application/yaml":
-            self.set_header("Content-Type", "application/yaml; charset=UTF-8")
-            return add_new_line(yaml.dump)
         if self.content_type == "application/json":
             self.set_header("Content-Type", "application/json; charset=UTF-8")
-            return add_new_line(
+            return add_newline(
                 lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
             )
-        # if self.content_type == "application/xml":
-        #     self.set_header("Content-Type", "application/xml; charset=UTF-8")
-        #     return add_new_line(dicttoxml.dicttoxml)
+        if self.content_type == "application/yaml":
+            self.set_header("Content-Type", "application/yaml; charset=UTF-8")
+            return add_newline(yaml.dump)
 
         return ensure_bytes
 
@@ -298,7 +293,7 @@ class BaseRequestHandler(RequestHandler):
     ) -> Future[None]:
         """Finish the request."""
         if isinstance(chunk, dict):
-            chunk = self.get_dump_func()(chunk)
+            chunk = self.dump(chunk)
 
         if isinstance(chunk, str):
             chunk = chunk if chunk.endswith("\n") else chunk + "\n"
@@ -487,7 +482,7 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("Content-Type", "text/html; charset=UTF-8")
         elif self.content_type:
             self.set_header("Content-Type", self.content_type)
-            self.get_dump_func()  # maybe improve content-type header
+            self.dump  # pylint: disable=pointless-statement
 
         kwargs["head"] = True
         return self.get(*args, **kwargs)
@@ -495,7 +490,7 @@ class BaseRequestHandler(RequestHandler):
     # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
         """Get the description for the error page."""
-        # see: https://developer.mozilla.org/docs/Web/HTTP/Status
+        # https://developer.mozilla.org/docs/Web/HTTP/Status
         if 100 <= status_code <= 199:
             return "Hier gibt es eine total wichtige Information."
         if 200 <= status_code <= 299:
@@ -738,8 +733,8 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
         "text/html",
-        "text/markdown",
         "text/plain",
+        "text/markdown",
         "application/json",
     )
     used_render = False
@@ -910,7 +905,6 @@ class APIRequestHandler(BaseRequestHandler):
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
         "application/json",
         "application/yaml",
-        "text/yaml",
     )
     IS_NOT_HTML = True
 

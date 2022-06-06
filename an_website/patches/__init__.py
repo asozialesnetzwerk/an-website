@@ -135,7 +135,7 @@ def parse_body_arguments(  # noqa: D103 # pylint: disable=too-complex
         else:
             for key, value in spam.items():
                 arguments.setdefault(key, []).append(value)
-    elif content_type.startswith(("application/yaml", "text/yaml")):
+    elif content_type.startswith("application/yaml"):
         if headers and "Content-Encoding" in headers:
             tornado.log.gen_log.warning(
                 "Unsupported Content-Encoding: %s", headers["Content-Encoding"]

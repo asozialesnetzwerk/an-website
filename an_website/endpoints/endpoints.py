@@ -90,4 +90,4 @@ class EndpointsAPI(Endpoints, APIRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""
-        return await self.finish(self.get_dump_func()(self.get_endpoints()))
+        return await self.finish(self.dump(self.get_endpoints()))
