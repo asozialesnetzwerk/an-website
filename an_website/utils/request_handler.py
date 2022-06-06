@@ -37,6 +37,7 @@ from urllib.parse import SplitResult, quote, unquote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
 import elasticapm  # type: ignore
+import html2text
 import orjson as json
 import yaml
 from accept_types import get_best_match  # type: ignore
@@ -275,18 +276,18 @@ class BaseRequestHandler(RequestHandler):
                 else ham + b"\n"
             )
 
-        if self.content_type.startswith("text/yaml"):
+        if self.content_type == "text/yaml":
             self.set_header("Content-Type", "text/yaml; charset=UTF-8")
             return add_new_line(yaml.dump)
-        if self.content_type.startswith("application/yaml"):
+        if self.content_type == "application/yaml":
             self.set_header("Content-Type", "application/yaml; charset=UTF-8")
             return add_new_line(yaml.dump)
-        if self.content_type.startswith("application/json"):
+        if self.content_type == "application/json":
             self.set_header("Content-Type", "application/json; charset=UTF-8")
             return add_new_line(
                 lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
             )
-        # if self.content_type.startswith("application/xml"):
+        # if self.content_type == "application/xml":
         #     self.set_header("Content-Type", "application/xml; charset=UTF-8")
         #     return add_new_line(dicttoxml.dicttoxml)
 
@@ -298,6 +299,12 @@ class BaseRequestHandler(RequestHandler):
         """Finish the request."""
         if isinstance(chunk, dict):
             chunk = self.get_dump_func()(chunk)
+
+        if isinstance(chunk, str):
+            chunk = chunk if chunk.endswith("\n") else chunk + "\n"
+        elif isinstance(chunk, bytes):
+            chunk = chunk if chunk.endswith(b"\n") else chunk + b"\n"
+
         return super().finish(chunk)
 
     def handle_accept_header(self) -> None:
@@ -305,7 +312,7 @@ class BaseRequestHandler(RequestHandler):
         if not self.POSSIBLE_CONTENT_TYPES:
             return
         content_type = get_best_match(
-            self.request.headers.get("Accept") or "",
+            self.request.headers.get("Accept") or "*/*",
             self.POSSIBLE_CONTENT_TYPES,
         )
         if content_type is None:
@@ -476,7 +483,7 @@ class BaseRequestHandler(RequestHandler):
         if not self.supports_head():
             raise HTTPError(501)
 
-        if self.content_type.startswith("text/html"):
+        if self.content_type == "text/html":
             self.set_header("Content-Type", "text/html; charset=UTF-8")
         elif self.content_type:
             self.set_header("Content-Type", self.content_type)
@@ -731,6 +738,7 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
         "text/html",
+        "text/markdown",
         "text/plain",
         "application/json",
     )
@@ -808,7 +816,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             or self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
             dynload=self.get_dynload(),
-            as_html=self.content_type.startswith("text/html"),
+            as_html=self.content_type == "text/html",
             now=self.now,
         )
         namespace.update(
@@ -832,25 +840,31 @@ class HTMLRequestHandler(BaseRequestHandler):
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
         """Finish the request."""
-        as_json: bool = self.content_type.startswith("application/json")
-        as_plain_text: bool = self.content_type.startswith("text/plain")
+        as_json: bool = self.content_type == "application/json"
+        as_plain_text: bool = self.content_type == "text/plain"
+        as_markdown: bool = self.content_type == "text/markdown"
         if (
             not isinstance(chunk, bytes | str)
             or chunk is None
             or not self.used_render
             or getattr(self, "IS_NOT_HTML", False)
-            or not (as_json or as_plain_text)
+            or not (as_json or as_plain_text or as_markdown)
         ):
             return super().finish(chunk)
 
-        soup = BeautifulSoup(
-            chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk,
-            features="lxml",
-        )
+        chunk = chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
+
+        if as_markdown:
+            self.set_header("Content-Type", "text/markdown; charset=UTF-8")
+            return super().finish(
+                f"# {self.title}\n\n"
+                + html2text.html2text(chunk, self.request.full_url()).strip()
+            )
+
+        soup = BeautifulSoup(chunk, features="lxml")
         if as_plain_text:
             self.set_header("Content-Type", "text/plain; charset=UTF-8")
-            text = soup.get_text("\n", True)
-            return super().finish(text if text.endswith("\n") else text + "\n")
+            return super().finish(soup.get_text("\n", True))
 
         self.set_header("Content-Type", "application/json; charset=UTF-8")
         dictionary: dict[str, Any] = dict(

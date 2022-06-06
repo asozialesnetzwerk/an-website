@@ -50,13 +50,15 @@ async def test_json_apis(
         "/api/ip",
         # "/api/zitate/1-1",  # gets tested with quotes
         "/api/hangman-loeser",
-        # "/api/ping",  # (not JSON)
+        "/api/ping",
         "/api/vertauschte-woerter",
         "/api/wortspiel-helfer",
         "/api/waehrungs-rechner",
     )
     for api in json_apis:
-        json_resp = assert_valid_json_response(await fetch(api))
+        json_resp = assert_valid_json_response(
+            await fetch(api, headers={"Accept": "application/json"})
+        )
         yaml_resp = assert_valid_yaml_response(
             await fetch(api, headers={"Accept": "application/yaml"})
         )
@@ -67,6 +69,12 @@ async def test_json_apis(
                 api, method="HEAD", headers={"Accept": "application/json"}
             ),
             "application/json; charset=UTF-8",
+        ).body
+        assert not assert_valid_response(
+            await fetch(
+                api, method="HEAD", headers={"Accept": "application/yaml"}
+            ),
+            "application/yaml; charset=UTF-8",
         ).body
 
 
@@ -345,7 +353,7 @@ async def test_request_handlers(
     response = assert_valid_response(
         await fetch("/api/ping"), "text/plain; charset=UTF-8"
     )
-    assert response.body.decode() == "🏓"
+    assert response.body.decode() == "🏓\n"
 
     for boolean in (False, True):
         url = (

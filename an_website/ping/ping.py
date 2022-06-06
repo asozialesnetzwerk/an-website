@@ -33,10 +33,16 @@ def get_module_info() -> ModuleInfo:
 class PingPong(APIRequestHandler):
     """The request handler for the ping API."""
 
-    POSSIBLE_CONTENT_TYPES = ("text/plain",)
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "text/plain",
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
+    )
 
     async def get(self, *, head: bool = False) -> None:
         """Handle the GET request to the ping API."""
         # pylint: disable=unused-argument
-        self.set_header("Content-Type", "text/plain; charset=UTF-8")
-        await self.finish("🏓")
+        if self.content_type == "text/plain":
+            self.set_header("Content-Type", "text/plain; charset=UTF-8")
+            await self.finish("🏓")
+        else:
+            await self.finish({"ping": "🏓"})

@@ -16,6 +16,7 @@ elastic-enterprise-search = {version = "==7.*"}
 elasticsearch = {version = "==7.*", extras = ["async"]}
 emoji = {version = "==1.*"}
 get_version = {version = "==3.*"}
+html2text = {version = "==2020.*"}
 hyrule = {version = "<2"}
 jxlpy = {version = "<2"}
 lxml = {version = "==4.*"}

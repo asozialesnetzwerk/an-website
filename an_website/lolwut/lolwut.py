@@ -88,14 +88,17 @@ class LOLWUT(HTMLRequestHandler):
 class LOLWUTAPI(APIRequestHandler):
     """The request handler for the LOLWUT API."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ("text/plain", "application/xml")
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "text/plain",
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
+    )
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT API."""
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
         art = await generate_art(self.redis, args, head)
-        if self.content_type.startswith("text/plain"):
+        if self.content_type == "text/plain":
             self.set_header("Content-Type", "text/plain; charset=UTF-8")
             return await self.finish(art)
 
