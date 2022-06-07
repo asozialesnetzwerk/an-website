@@ -81,12 +81,8 @@ class Endpoints(HTMLRequestHandler):
         return endpoints
 
 
-class EndpointsAPI(Endpoints, APIRequestHandler):
+class EndpointsAPI(APIRequestHandler, Endpoints):
     """Show a list of all API endpoints."""
-
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
 
     async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""

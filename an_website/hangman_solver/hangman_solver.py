@@ -274,12 +274,9 @@ class HangmanSolver(HTMLRequestHandler):
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
-class HangmanSolverAPI(HangmanSolver, APIRequestHandler):
+class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
     """Request handler for the hangman solver JSON API."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
     RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 

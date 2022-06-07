@@ -168,6 +168,15 @@ def assert_valid_response(
     url = response.effective_url
     assert response.code == code or print(code, url, response)
 
+    if (
+        response.headers["Content-Type"].startswith(("application/", "text/"))
+        and response.body
+        and url != "https://minceraft.asozial.org/"
+    ):
+        assert response.body.endswith(b"\n") or print(
+            f"body from {url} doesn't end with newline"
+        )
+
     headers = headers or {}
     if content_type is not None:
         headers["Content-Type"] = content_type

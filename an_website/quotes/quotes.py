@@ -289,12 +289,8 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         return self.fix_url(f"/zitate/{quote_id}-{author_id}", r=rating_param)
 
 
-class QuoteRedirectAPI(QuoteBaseHandler, APIRequestHandler):
+class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
     """Redirect to the api for a random quote."""
-
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
 
     async def get(  # pylint: disable=unused-argument
         self, suffix: str = "", *, head: bool = False
@@ -477,12 +473,8 @@ class QuoteById(QuoteBaseHandler):
         return None
 
 
-class QuoteAPIHandler(QuoteById, APIRequestHandler):
+class QuoteAPIHandler(APIRequestHandler, QuoteById):
     """API request handler for the quotes page."""
-
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
 
     RATELIMIT_GET_PERIOD = 10
     RATELIMIT_GET_COUNT_PER_PERIOD = 20  # 20 requests per 10s

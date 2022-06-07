@@ -259,48 +259,35 @@ class BaseRequestHandler(RequestHandler):
         )
 
     @property
-    def dump(self) -> Callable[[Any], bytes]:
+    def dump(self) -> Callable[..., str | bytes | dict[Any, Any]]:
         """Get the function used to dump the output dict."""
-
-        def ensure_bytes(spam: str | bytes) -> bytes:
-            return spam.encode("utf-8") if isinstance(spam, str) else spam
-
-        if not self.content_type:
-            return ensure_bytes
-
-        def add_newline(
-            func: Callable[[Any], str | bytes]
-        ) -> Callable[[Any], bytes]:
-            return lambda spam: (
-                ham
-                if (ham := ensure_bytes(func(spam))).endswith(b"\n")
-                else ham + b"\n"
-            )
-
         if self.content_type == "application/json":
             self.set_header("Content-Type", "application/json; charset=UTF-8")
-            return add_newline(
-                lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
-            )
+            return lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
+
         if self.content_type == "application/yaml":
             self.set_header("Content-Type", "application/yaml; charset=UTF-8")
-            return add_newline(yaml.dump)
+            return yaml.dump
 
-        return ensure_bytes
+        return lambda spam: spam  # type: ignore[no-any-return]
 
     def finish(
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
         """Finish the request."""
+        if self._finished:
+            return super().finish(chunk)
+
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
 
-        if isinstance(chunk, str):
-            chunk = chunk if chunk.endswith("\n") else chunk + "\n"
-        elif isinstance(chunk, bytes):
-            chunk = chunk if chunk.endswith(b"\n") else chunk + b"\n"
+        if chunk is not None:
+            self.write(chunk)
 
-        return super().finish(chunk)
+        if self._write_buffer and not self._write_buffer[-1].endswith(b"\n"):
+            self.write(b"\n")
+
+        return super().finish()
 
     def handle_accept_header(self) -> None:
         """Handle the Accept header and set `self.content_type`."""
@@ -311,7 +298,8 @@ class BaseRequestHandler(RequestHandler):
             self.POSSIBLE_CONTENT_TYPES,
         )
         if content_type is None:
-            self.content_type = "text/html"
+            if self.POSSIBLE_CONTENT_TYPES:
+                self.content_type = self.POSSIBLE_CONTENT_TYPES[0]
             raise HTTPError(406)
         self.content_type = content_type
 

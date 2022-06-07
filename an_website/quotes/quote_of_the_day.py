@@ -227,12 +227,8 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
         )
 
 
-class QuoteOfTheDayAPI(QuoteOfTheDayBaseHandler, APIRequestHandler):
+class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
     """Handler for the JSON API that returns the quote of the day."""
-
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES
 
     async def get(
         self,
