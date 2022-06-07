@@ -170,6 +170,7 @@ def assert_valid_response(
 
     if (
         response.headers["Content-Type"].startswith(("application/", "text/"))
+        and response.headers["Content-Type"] != "application/vnd.python.pickle"
         and response.body
         and url != "https://minceraft.asozial.org/"
     ):

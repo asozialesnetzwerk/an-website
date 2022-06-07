@@ -284,7 +284,12 @@ class BaseRequestHandler(RequestHandler):
         if chunk is not None:
             self.write(chunk)
 
-        if self._write_buffer and not self._write_buffer[-1].endswith(b"\n"):
+        if (
+            "Content-Type" in self._headers
+            and self._headers["Content-Type"].lower().endswith("charset=utf-8")
+            and self._write_buffer
+            and not self._write_buffer[-1].endswith(b"\n")
+        ):
             self.write(b"\n")
 
         return super().finish()
