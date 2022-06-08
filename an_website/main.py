@@ -234,11 +234,7 @@ def get_all_handlers(
         (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
     )
 
-    logger.debug(
-        "Loaded %d handlers: %s",
-        len(handlers),
-        "; ".join(str(handler) for handler in handlers),
-    )
+    logger.debug("Loaded %d handlers.", len(handlers))
 
     return handlers
 

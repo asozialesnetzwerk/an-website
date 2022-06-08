@@ -71,6 +71,7 @@ def get_module_info(*, hidden: bool = True) -> ModuleInfo:
 class QuoteOfTheDayData:
     """The class representing data for the quote of the day."""
 
+    __slots__ = ("date", "wrong_quote", "url_without_path")
     date: date
     wrong_quote: WrongQuote
     url_without_path: str

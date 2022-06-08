@@ -55,10 +55,11 @@ MAX_QUOTES_ID = Value("Q", 0)
 MAX_AUTHORS_ID = Value("Q", 0)
 
 
-@dataclass
+@dataclass(init=False)
 class QuotesObjBase:
     """An object with an id."""
 
+    __slots__ = ("id",)
     id: int  # pylint: disable=invalid-name
 
     # pylint: disable=unused-argument
@@ -75,9 +76,10 @@ class QuotesObjBase:
 class Author(QuotesObjBase):
     """The author object with a name."""
 
+    __slots__ = ("name", "info")
     name: str
     # tuple(url_to_info, info_str, creation_date)
-    info: None | tuple[str, None | str, date] = None
+    info: None | tuple[str, None | str, date]
 
     def update_name(self, name: str) -> None:
         """Update author data with another author."""
@@ -119,6 +121,7 @@ class Author(QuotesObjBase):
 class Quote(QuotesObjBase):
     """The quote object with a quote text and an author."""
 
+    __slots__ = ("quote", "author")
     quote: str
     author: Author
 
@@ -158,6 +161,7 @@ class Quote(QuotesObjBase):
 class WrongQuote(QuotesObjBase):
     """The wrong quote object with a quote, an author and a rating."""
 
+    __slots__ = ("quote", "author", "rating")
     quote: Quote
     author: Author
     rating: int
@@ -342,7 +346,7 @@ def get_author_updated_with(author_id: int, author_name: str) -> Author:
         author_name = "None"
     author = AUTHORS_CACHE.setdefault(
         author_id,
-        Author(author_id, author_name),
+        Author(author_id, author_name, None),
     )
     author.update_name(author_name)
     MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)

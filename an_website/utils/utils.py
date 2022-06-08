@@ -47,7 +47,7 @@ Handler = Union[
 
 
 # sortable so the pages can be linked in an order
-# frozen so it's immutable
+# frozen, so it's immutable
 @dataclass(order=True, frozen=True)
 class PageInfo:
     """The PageInfo class that is used for the subpages of a ModuleInfo."""

@@ -49,7 +49,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-@dataclass()
+@dataclass(slots=True)
 class Hangman:  # pylint: disable=too-many-instance-attributes
     """Hangman object that holds all the important information."""
 
