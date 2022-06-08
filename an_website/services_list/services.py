@@ -53,7 +53,7 @@ SERVICES: tuple[Service, ...] = (
         {
             "Domain": "minceraft.asozial.org",
             "Version": "1.15.2 (1.7-1.18 wird unterstützt)",
-            "Karte": "https://minceraft.asozial.org/",
+            "Karte": "https://minceraft.asozial.org",
         },
     ),
     Service(
@@ -74,7 +74,7 @@ SERVICES: tuple[Service, ...] = (
         "E-Mail-Adresse oder Telefonnummer möglich.",
         {
             "Domain": "asozial.org",
-            "Matrix-Client": "https://chat.asozial.org/",
+            "Matrix-Client": "https://chat.asozial.org",
         },
     ),
     Service(
@@ -83,7 +83,7 @@ SERVICES: tuple[Service, ...] = (
         "zusammen Sachen gucken.",
         {
             "Domain": "syncplay.asozial.org:8999",
-            "Installations-Guide": "https://syncplay.pl/guide/install/",
+            "Installations-Guide": "https://syncplay.pl/guide/install",
         },
     ),
 )

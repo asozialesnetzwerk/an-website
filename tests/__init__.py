@@ -175,7 +175,7 @@ def assert_valid_response(
         and url != "https://minceraft.asozial.org/"
     ):
         assert response.body.endswith(b"\n") or print(
-            f"body from {url} doesn't end with newline"
+            f"Body from {url} doesn't end with newline"
         )
 
     headers = headers or {}

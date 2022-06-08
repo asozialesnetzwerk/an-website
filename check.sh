@@ -1,8 +1,7 @@
 #!/bin/sh
 
-if [ -d venv ]
-then
-    . venv/bin/activate
+if [ -d venv ]; then
+  . venv/bin/activate
 fi
 
 set -e

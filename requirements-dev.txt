@@ -39,7 +39,7 @@ mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
 numpy==1.22.4
-orjson==3.7.1
+orjson==3.7.2
 packaging==21.3
 pillow==9.1.1
 pycares==4.1.2
@@ -88,7 +88,7 @@ nodeenv==1.6.0
 pathspec==0.9.0
 pep8-naming==0.13.0
 pip==22.1.2
-pipenv==2022.5.2
+pipenv==2022.6.7
 platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.19.0
@@ -96,7 +96,7 @@ py==1.11.0
 pycodestyle==2.8.0
 pydocstyle==6.1.1
 pyflakes==2.4.0
-pylint==2.14.0
+pylint==2.14.1
 git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
 git+https://github.com/urllib3/PySocks.git@f4c3cd9897898de69e136c92fd957fd989ee08ec#egg=pysocks
 pytest==7.1.2

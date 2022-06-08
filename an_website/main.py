@@ -340,6 +340,10 @@ def setup_logging(
     )
 
     root_logger = logging.getLogger()
+
+    if root_logger.handlers:
+        return
+
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
     stream_handler = logging.StreamHandler()

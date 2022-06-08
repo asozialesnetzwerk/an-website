@@ -18,16 +18,16 @@
 from __future__ import annotations
 
 import sys
-from hashlib import blake2b
+from hashlib import new
 from pathlib import Path
 
 PATH = Path("an_website").absolute()
 
 
 def hash_bytes(data: bytes) -> str:
-    """Hash data with fast BLAKE2bRAILLE20."""
+    """Hash data with BRAILLEMD-160."""
     return "".join(
-        chr(spam + 0x2800) for spam in blake2b(data, digest_size=20).digest()
+        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
     )
 
 

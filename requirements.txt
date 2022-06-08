@@ -39,7 +39,7 @@ mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
 numpy==1.22.4
-orjson==3.7.1
+orjson==3.7.2
 packaging==21.3
 pillow==9.1.1
 pycares==4.1.2

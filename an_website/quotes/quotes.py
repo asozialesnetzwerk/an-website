@@ -148,7 +148,7 @@ SMART_RATING_FILTERS = (
 class QuoteBaseHandler(QuoteReadyCheckHandler):
     """The base request handler for the quotes package."""
 
-    TASK_REFERENCES: list[Task[Any]] = []
+    TASK_REFERENCES: set[Task[Any]] = set()
 
     def __init__(self, *args, **kwargs):  # type: ignore
         """Initialize the base request handler."""
@@ -233,16 +233,15 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """
         if not self.awaitables:
             quote_id, author_id = self.get_next_id()
-            self.TASK_REFERENCES.append(
-                asyncio.create_task(
-                    get_wrong_quote(quote_id, author_id, use_cache=False)
-                )
+            task = asyncio.create_task(
+                get_wrong_quote(quote_id, author_id, use_cache=False)
             )
+            self.TASK_REFERENCES.add(task)
+            task.add_done_callback(self.TASK_REFERENCES.discard)
         for awaitable in self.awaitables:
-            self.TASK_REFERENCES.append(asyncio.create_task(awaitable))
-        for task in self.TASK_REFERENCES[:]:  # iterate over copy
-            if task.done():
-                self.TASK_REFERENCES.remove(task)
+            task = asyncio.create_task(awaitable)
+            self.TASK_REFERENCES.add(task)
+            task.add_done_callback(self.TASK_REFERENCES.discard)
 
 
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
