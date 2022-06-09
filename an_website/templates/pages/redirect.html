@@ -17,7 +17,8 @@
        href="{{redirect_url}}">Ja, ich bin mir sicher</a>
     {% if from_url %}
         <a class="stay button no-style-a"
-           href="{{from_url}}">Nein, ich möchte wieder zurück</a>
+           href="{{from_url}}"
+        >{{globals()["back_button_text"] or "Nein, ich möchte wieder zurück" }}</a>
     {% end %}
 {% end %}
 

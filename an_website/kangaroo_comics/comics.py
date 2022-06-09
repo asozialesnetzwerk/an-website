@@ -22,7 +22,10 @@ from ..utils.utils import ModuleInfo
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
-        handlers=((r"/kaenguru-comics", KangarooComics),),
+        handlers=(
+            (r"/kaenguru-comics", KangarooComicsRedirect),
+            (r"/kaenguru-comics-alt", KangarooComics),
+        ),
         name="Känguru-Comics",
         description=(
             "Känguru-Comics von Zeit Online, Marc-Uwe Kling und Bernd Kissel"
@@ -36,6 +39,23 @@ def get_module_info() -> ModuleInfo:
             "/k%C3%A4nguru-comics",
         ),
     )
+
+
+class KangarooComicsRedirect(HTMLRequestHandler):
+    """Request handler for the kangaroo comics redirect."""
+
+    def get(self, *, head: bool = False) -> None:
+        """Handle GET requests to the kangaroo comics page."""
+        if head:
+            return
+        self.render(
+            "pages/redirect.html",
+            send_referrer=False,
+            redirect_url="https://www.zeit.de/serie/die-kaenguru-comics",
+            from_url=self.fix_url("/kaenguru-comics-alt"),
+            back_button_text="Comics hier lesen (nicht empfohlen)",
+            discord=False,
+        )
 
 
 class KangarooComics(HTMLRequestHandler):

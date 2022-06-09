@@ -179,7 +179,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Referrer-Policy", "same-origin")
         # dev.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
         self.set_header("Cross-Origin-Opener-Policy", "same-origin")
-        if self.request.path == "/kaenguru-comics":  # TODO: make this better
+        if self.request.path == "/kaenguru-comics-alt":  # TODO: improve this
             self.set_header("Cross-Origin-Embedder-Policy", "credentialless")
         else:
             self.set_header("Cross-Origin-Embedder-Policy", "require-corp")
