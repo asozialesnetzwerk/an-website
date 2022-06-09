@@ -18,16 +18,16 @@
 from __future__ import annotations
 
 import sys
-from hashlib import new
+from hashlib import blake2b
 from pathlib import Path
 
 PATH = Path("an_website").absolute()
 
 
 def hash_bytes(data: bytes) -> str:
-    """Hash data with BRAILLEMD-160."""
+    """Hash data with fast BLAKE2bRAILLE20."""
     return "".join(
-        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
+        chr(spam + 0x2800) for spam in blake2b(data, digest_size=20).digest()
     )
 
 
@@ -55,5 +55,18 @@ def main() -> None | int | str:  # pylint: disable=useless-return
     return None
 
 
+def benchmark() -> None | int | str:  # pylint: disable=useless-return
+    """Benchmark the hashing of all files."""
+    from timeit import timeit  # pylint: disable=import-outside-toplevel
+
+    count = 10
+    result = timeit(
+        lambda: hash_bytes(hash_all_files().encode("utf-8")),
+        number=count,
+    )
+    print(f"{result=}, {result/count=}")
+    return None
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(benchmark() if "--benchmark" in sys.argv else main())
