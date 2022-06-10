@@ -18,17 +18,16 @@
 from __future__ import annotations
 
 import sys
-from hashlib import new
 from pathlib import Path
+
+from blake3 import blake3  # type: ignore[import]
 
 PATH = Path("an_website").absolute()
 
 
 def hash_bytes(data: bytes) -> str:
-    """Hash data with BRAILLEMD-160."""
-    return "".join(
-        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
-    )
+    """Hash data with fast BLAKE3BRAILLE20."""
+    return "".join(chr(spam + 0x2800) for spam in blake3(data).digest(20))
 
 
 def hash_all_files() -> str:
