@@ -46,9 +46,9 @@ logger = logging.getLogger(__name__)
 API_URL = "https://zitate.prapsschnalinen.de/api"
 
 # fmt: off
-QUOTES_CACHE: dict[int, Quote] = UltraDict(buffer_size=16384)
-AUTHORS_CACHE: dict[int, Author] = UltraDict(buffer_size=16384)
-WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = UltraDict(buffer_size=16384)
+QUOTES_CACHE: dict[int, Quote] = UltraDict(buffer_size=1024**2)
+AUTHORS_CACHE: dict[int, Author] = UltraDict(buffer_size=1024**2)
+WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = UltraDict(buffer_size=1024**2)
 # fmt: on
 
 MAX_QUOTES_ID = Value("Q", 0)

@@ -376,7 +376,8 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         print("\033[91m" + body + "\033[0m")
         return
     if isinstance(body, dict):
-        print(f"Success: {body['success']}")
+        if isinstance(body["success"], bool):
+            print(f"Success: {body['success']}")
         if isinstance(body["output"], str) and body["output"]:
             print("Output:")
             print(body["output"].strip())

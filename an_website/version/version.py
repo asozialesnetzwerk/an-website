@@ -15,33 +15,19 @@
 
 from __future__ import annotations
 
-from hashlib import blake2b
+from ctypes import c_char
+from hashlib import new
+from multiprocessing import Array
 from pathlib import Path
+from typing import cast
 
 from .. import DIR as ROOT_DIR
 from .. import VERSION
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-
-def hash_bytes(data: bytes) -> str:
-    """Hash data with fast BLAKE2bRAILLE20."""
-    return "".join(
-        chr(spam + 0x2800) for spam in blake2b(data, digest_size=20).digest()
-    )
-
-
-def hash_all_files() -> str:
-    """Hash all files."""
-    return "\n".join(
-        f"{hash_bytes(path.read_bytes())} {path.relative_to(ROOT_DIR)}"
-        for path in sorted(Path(ROOT_DIR).rglob("*"))
-        if path.is_file() and "__pycache__" not in path.parts
-    )
-
-
-FILE_HASHES = hash_all_files()
-HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("utf-8"))
+FILE_HASHES = Array(c_char, 1024**2)
+HASH_OF_FILE_HASHES = Array(c_char, 40)
 
 
 def get_module_info() -> ModuleInfo:
@@ -59,6 +45,42 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+def hash_bytes(data: bytes) -> str:
+    """Hash data with BRAILLEMD-160."""
+    return "".join(
+        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
+    )
+
+
+def hash_all_files() -> str:
+    """Hash all files."""
+    return "\n".join(
+        f"{hash_bytes(path.read_bytes())} {path.relative_to(ROOT_DIR)}"
+        for path in sorted(Path(ROOT_DIR).rglob("*"))
+        if path.is_file() and "__pycache__" not in path.parts
+    )
+
+
+def get_file_hashes() -> str:
+    """Return the file hashes."""
+    with FILE_HASHES:
+        if FILE_HASHES.value:
+            return cast(str, FILE_HASHES.value.decode("utf-8"))
+        file_hashes = hash_all_files()
+        FILE_HASHES.value = file_hashes.encode("utf-8")
+        return file_hashes
+
+
+def get_hash_of_file_hashes() -> str:
+    """Return a hash of the file hashes."""
+    with HASH_OF_FILE_HASHES:
+        if HASH_OF_FILE_HASHES.value:
+            return cast(str, HASH_OF_FILE_HASHES.value.decode("utf-16-be"))
+        hash_of_file_hashes = hash_bytes(get_file_hashes().encode("utf-8"))
+        HASH_OF_FILE_HASHES.value = hash_of_file_hashes.encode("utf-16-be")
+        return hash_of_file_hashes
+
+
 class VersionAPI(APIRequestHandler):
     """The Tornado request handler for the version API."""
 
@@ -66,7 +88,7 @@ class VersionAPI(APIRequestHandler):
         """Handle the GET request to the version API."""
         if head:
             return
-        return await self.finish_dict(version=VERSION, hash=HASH_OF_FILE_HASHES)
+        await self.finish_dict(version=VERSION, hash=get_hash_of_file_hashes())
 
 
 class Version(HTMLRequestHandler):
@@ -79,7 +101,7 @@ class Version(HTMLRequestHandler):
         await self.render(
             "pages/version.html",
             version=VERSION,
-            file_hashes=FILE_HASHES,
-            hash_of_file_hashes=HASH_OF_FILE_HASHES,
+            file_hashes=get_file_hashes(),
+            hash_of_file_hashes=get_hash_of_file_hashes(),
             full=full,
         )
