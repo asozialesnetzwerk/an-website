@@ -41,14 +41,11 @@ def hash_file(path: str | Path) -> str:
 
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
-    return dict(
-        (
-            str(path).removeprefix(ROOT_DIR),
-            hash_file(path),
-        )
+    return {
+        str(path).removeprefix(ROOT_DIR): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
         if path.is_file()
-    )
+    }
 
 
 FILE_HASHES_DICT: dict[str, str] = create_file_hashes_dict()

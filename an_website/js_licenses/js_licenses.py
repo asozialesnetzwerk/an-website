@@ -69,7 +69,7 @@ def get_js_file_names_and_licenses() -> list[tuple[str, str, str]]:
 
     for file_name in js_file_names:
         with open(
-            os.path.join(js_files_dir, file_name), encoding="UTF-8"
+            os.path.join(js_files_dir, file_name), encoding="utf-8"
         ) as file:
             license_line = file.readline().strip()
         if not license_line.startswith("// @license "):

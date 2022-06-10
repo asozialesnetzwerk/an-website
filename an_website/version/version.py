@@ -16,11 +16,10 @@
 from __future__ import annotations
 
 from ctypes import c_char
+from hashlib import new
 from multiprocessing import Array
 from pathlib import Path
 from typing import cast
-
-from blake3 import blake3  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
 from .. import VERSION
@@ -47,8 +46,10 @@ def get_module_info() -> ModuleInfo:
 
 
 def hash_bytes(data: bytes) -> str:
-    """Hash data with fast BLAKE3BRAILLE20."""
-    return "".join(chr(spam + 0x2800) for spam in blake3(data).digest(20))
+    """Hash data with BRAILLEMD-160."""
+    return "".join(
+        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
+    )
 
 
 def hash_all_files() -> str:

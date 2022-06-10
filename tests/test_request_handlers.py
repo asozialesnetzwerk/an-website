@@ -201,7 +201,7 @@ async def test_request_handlers2(
         await fetch(
             "/redirect?theme=blue&from=/&to=https://evil.com",
         )
-    ).body.decode("UTF-8")
+    ).body.decode("utf-8")
     await fetch(
         "/redirect?theme=blue&from=/&to=https://evil.com",
         method="HEAD",

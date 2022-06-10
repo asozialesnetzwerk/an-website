@@ -219,7 +219,7 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
             status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
-            headers = dict((re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n")))  # type: ignore[union-attr, misc]  # noqa: B950
+            headers = dict(re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n"))  # type: ignore[union-attr, misc]  # noqa: B950
     writer.close()
     await writer.wait_closed()
     if "status" not in locals():

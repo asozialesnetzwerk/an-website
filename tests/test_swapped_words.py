@@ -233,9 +233,7 @@ async def test_sw_html_request_handlers(
     assert morsel["path"] == "/vertauschte-woerter"
     assert morsel["samesite"] == "Strict"
     assert morsel.key == "swapped-words-config"
-    assert morsel.value == base64.b64encode(
-        "abc <=> xyz".encode("UTF-8")
-    ).decode("UTF-8")
+    assert morsel.value == base64.b64encode(b"abc <=> xyz").decode("utf-8")
 
     response2 = await fetch(
         "/vertauschte-woerter",

@@ -56,13 +56,13 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                 continue
             file_counter += 1
             with open(
-                os.path.join(folder, file_name), encoding="UTF-8"
+                os.path.join(folder, file_name), encoding="utf-8"
             ) as file:
                 original = file.read()
             minified = rcssmin.cssmin(original) + "\n"
             new_file = os.path.join(new_dir, file_name)
             if os.path.isfile(new_file):
-                with open(new_file, encoding="UTF-8") as file:
+                with open(new_file, encoding="utf-8") as file:
                     if file.read() == minified:
                         continue
             print(
@@ -70,7 +70,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                 f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1
-            with open(new_file, "w", encoding="UTF-8") as file:
+            with open(new_file, "w", encoding="utf-8") as file:
                 file.write(minified)
 
     print(f"Minified {minified_counter} of {file_counter} files.")
