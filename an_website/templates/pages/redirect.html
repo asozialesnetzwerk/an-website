@@ -18,7 +18,7 @@
     {% if from_url %}
         <a class="stay button no-style-a"
            href="{{from_url}}"
-        >{{globals()["back_button_text"] or "Nein, ich möchte wieder zurück" }}</a>
+        >{{globals().get("back_button_text") or "Nein, ich möchte wieder zurück" }}</a>
     {% end %}
 {% end %}
 
