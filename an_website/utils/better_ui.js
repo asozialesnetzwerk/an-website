@@ -2,10 +2,10 @@
 
 // these functions break if used the css-only functionality of the site-pane
 function showSitePane() {
-    elById("site-pane").style.right = "0";
+    elById("site-pane").setAttribute("open", "");
 }
 function hideSitePane() {
-    elById("site-pane").style.right = "-70%";
+    elById("site-pane").removeAttribute("open");
 }
 
 (() => {
@@ -40,19 +40,18 @@ function hideSitePane() {
         // calculate difference
         const diffX = startPos.x - e.touches[0].clientX;
         const diffY = startPos.y -  e.touches[0].clientY;
-        // reset start pos
-        startPos.x = null;
-        startPos.y = null;
+
         // early return if just clicked, not swiped
         if (diffX === 0 && diffY === 0) return;
 
+        // reset start pos
+        startPos.x = null;
+        startPos.y = null;
+
         if (Math.abs(diffX) > Math.abs(diffY)) {
             // sliding horizontally
-            if (diffX > 0) {
-                showSitePane();
-            } else {
-                hideSitePane();
-            }
+            diffX > 0 ? showSitePane() : hideSitePane();
+
             e.preventDefault();
         }
     };

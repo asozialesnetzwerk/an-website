@@ -222,7 +222,8 @@ header {
     transition: right 0.5s;
 }
 
-#site-pane:hover,
+#site-pane[open],
+    #site-pane:hover,
     #site-pane:focus-within,
     #open-pane:focus + #site-pane,
     #open-pane:hover + #site-pane {

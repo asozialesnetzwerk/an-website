@@ -1,5 +1,5 @@
 .button, p {
-    max-width: 800px;
+    max-width: 50rem;
     font-size: 1.1rem;
 }
 
@@ -10,13 +10,13 @@
     padding: 0.875rem 1.25rem;
 
     border: none;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 
     cursor: pointer;
     text-align: center;
     /* subtract padding (both sides) so it doesn't become to wide*/
     width: calc(100% - 2.5rem);
-    max-width: calc(800px - 2.5rem);
+    max-width: 47.5rem; /* calc(50rem - 2.5rem) */
 }
 
 .button:hover {

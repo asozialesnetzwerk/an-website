@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Minify all JS files in this repo and move them to /static/js."""
+"""Minify all JS files in this repo and move them to an_website/static/js."""
 
 from __future__ import annotations
 

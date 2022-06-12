@@ -82,7 +82,7 @@
     border-radius: 0.4rem;
     border-style: solid;
     border-color: var(--tp-border-color);
-    border-width: 1px;
+    border-width: thin;
 }
 
 [tooltip][tooltip-position=top]::after,
