@@ -200,12 +200,12 @@ class WrongQuote(QuotesObjBase):
         return parse_wrong_quote(api_data)
 
     async def vote(
-        self, vote: Literal[-1, 1], fast: bool = False
+        self, vote: Literal[-1, 1], lazy: bool = False
     ) -> WrongQuote:
         """Vote for the wrong quote."""
         if self.id == -1:
             raise ValueError("Can't vote for a not existing quote.")
-        if fast:  # simulate the vote and do the actual voting later
+        if lazy:  # simulate the vote and do the actual voting later
             self.rating += vote
             asyncio.get_running_loop().call_soon_threadsafe(
                 self.vote,
@@ -660,7 +660,7 @@ async def create_wq_and_vote(
             ),
         )
     )
-    return await wrong_quote.vote(vote, fast=True)
+    return await wrong_quote.vote(vote, lazy=True)
 
 
 class QuoteReadyCheckHandler(HTMLRequestHandler):

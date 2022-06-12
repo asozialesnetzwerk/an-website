@@ -3,35 +3,35 @@
   max-width: 100%;
 }
 
-.resp-sharing-button__link:hover .resp-sharing-button,
-.resp-sharing-button__link:focus .resp-sharing-button {
+.share-btn__link:hover .share-btn,
+.share-btn__link:focus .share-btn {
   transform: scale(1.01);
   filter: contrast(120%) brightness(120%);
 }
 
-.resp-sharing-button--mastodon {
+.share-btn--mastodon {
   background-color: #2B90D9
 }
 
 /*Generated using https://sharingbuttons.io/*/
-.resp-sharing-button__link,
-.resp-sharing-button__icon {
+.share-btn__link,
+.share-btn__icon {
   background-color: transparent;
 }
 
-.resp-sharing-button__link {
+.share-btn__link {
   text-decoration: none;
   color: #fff;
   margin: 0.5rem
 }
 
-.resp-sharing-button {
+.share-btn {
   border-radius: 0.3125rem;
   transition: 25ms ease-out;
   padding: 0.5rem 0.75rem;
 }
 
-.resp-sharing-button__icon svg {
+.share-btn__icon svg {
   width: 1rem;
   height: 1rem;
   margin-right: 0.4rem;
@@ -39,35 +39,35 @@
 }
 
 /* Non solid icons get a stroke */
-.resp-sharing-button__icon {
+.share-btn__icon {
   stroke: #fff;
   fill: none
 }
 
-.resp-sharing-button--twitter {
+.share-btn--twitter {
   background-color: #55acee
 }
 
-.resp-sharing-button--pinterest {
+.share-btn--pinterest {
   background-color: #bd081c
 }
 
-.resp-sharing-button--facebook {
+.share-btn--facebook {
   background-color: #3b5998
 }
 
-.resp-sharing-button--reddit {
+.share-btn--reddit {
   background-color: #ff4400
 }
 
-.resp-sharing-button--email {
+.share-btn--email {
   background-color: #777
 }
 
-.resp-sharing-button--whatsapp {
+.share-btn--whatsapp {
   background-color: #25D366
 }
 
-.resp-sharing-button--telegram {
+.share-btn--telegram {
   background-color: #54A9EB;
 }

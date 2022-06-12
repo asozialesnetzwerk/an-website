@@ -126,11 +126,11 @@
     max-width: initial;
 }
 
-.vote:hover:not(.voted) {
+.vote:hover:not([voted]) {
     background-color: var(--tertiary-bg) !important;
 }
 
-.voted {
+.vote[voted] {
     filter: grayscale(69%);
 }
 

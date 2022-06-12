@@ -16,7 +16,9 @@ function post(
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
-        headers: {"Accept": "application/json"}
+        headers: {
+            "Accept": "application/json", "Content-Type": "application/json"
+        }
     }).then(response => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }

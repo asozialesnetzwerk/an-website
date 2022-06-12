@@ -6,14 +6,13 @@ function updateRating(rating){rating=rating.toString()
 ratingText.innerText=rating;if(["---","???","0"].includes(rating)){ratingImageContainer.innerHTML="";return;}
 const ratingNum=Number.parseInt(rating);const ratingImg=d.createElement("div")
 ratingImg.className="rating-img"+(ratingNum>0?" witzig":" nicht-witzig");ratingImageContainer.innerHTML=(ratingImg.outerHTML+" ").repeat(Math.min(4,Math.abs(ratingNum))).trim();}
-function updateVote(vote){if(vote===1){upvoteButton.classList.add("voted");upvoteButton.value="0";}else{upvoteButton.classList.remove("voted");upvoteButton.value="1";}
-if(vote===-1){downvoteButton.classList.add("voted");downvoteButton.value="0";}else{downvoteButton.classList.remove("voted");downvoteButton.value="-1";}}
+function updateVote(vote){function update(btn,btn_vote,btn_vote_str){btn.disabled=false;if(vote===btn_vote){btn.setAttribute("voted",btn_vote_str);btn.value="0";}else{btn.removeAttribute("voted");btn.value=btn_vote_str;}}
+update(upvoteButton,1,"1");update(downvoteButton,-1,"-1");}
 function handleData(data){if(data["status"]){error(data)
 if(data["status"]in[429,420])
 alert(data["reason"]);}else if(data&&data["id"]){updateQuoteId(data["id"]);nextQuoteId[0]=data["next"];quote.innerText=`»${data["quote"]}«`;author.innerText=`- ${data["author"]}`;realAuthor.innerText=data["real_author"];realAuthor.href=fixHref(`/zitate/info/a/${data["real_author_id"]}${params}`);if(reportButton){const reportHrefParams=new URLSearchParams(params);reportHrefParams.set("subject",`Das falsche Zitat ${data["id"]} hat ein Problem`);reportHrefParams.set("message",`${quote.innerText} ${realAuthor.innerText}`);reportButton.href=fixHref(`/kontakt?${reportHrefParams}`);}
 updateRating(data["rating"]);updateVote(Number.parseInt(data["vote"]));return true;}}
 w.PopStateHandlers["quotes"]=(event)=>(event.state&&handleData(event.state))
 nextButton.onclick=()=>get(`/api/zitate/${nextQuoteId[0]}`,params,(data)=>{if(!handleData(data))return;data["stateType"]="quotes";data["url"]=`/zitate/${data["id"]}${params}`;w.history.pushState(data,"Falsche Zitate",data["url"])
-w.lastLocation=data["url"];});const vote=(vote)=>post(`/api/zitate/${thisQuoteId[0]}`,{"vote":vote},(data)=>handleData(data));function setDisabledOfVoteButtons(disabled){upvoteButton.disabled=disabled;downvoteButton.disabled=disabled;}
-for(const voteButton of[upvoteButton,downvoteButton]){voteButton.type="button";voteButton.onclick=()=>{setDisabledOfVoteButtons(true);vote(voteButton.value);setDisabledOfVoteButtons(false);}}}
+w.lastLocation=data["url"];});const vote=(vote)=>post(`/api/zitate/${thisQuoteId[0]}`,{"vote":vote},(data)=>handleData(data));for(const voteButton of[upvoteButton,downvoteButton]){voteButton.type="button";voteButton.onclick=()=>{upvoteButton.disabled=true;downvoteButton.disabled=true;vote(voteButton.value);upvoteButton.disabled=false;downvoteButton.disabled=false;}}}
 // @license-end

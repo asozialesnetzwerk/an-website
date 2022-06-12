@@ -25,7 +25,7 @@ import random
 import re
 from asyncio import Task
 from collections.abc import Coroutine, Generator
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from tornado.web import HTTPError, RedirectHandler
 
@@ -338,45 +338,38 @@ class QuoteById(QuoteBaseHandler):
 
         This is used to vote the quote, without changing the URL.
         """
-        # pylint: disable=confusing-consecutive-elif
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)
+
         new_vote_str = self.get_argument("vote", default=None)
+
         if not new_vote_str:
             return await self.render_quote(quote_id, author_id)
 
-        old_vote = await self.get_old_vote(quote_id, author_id)
+        old_vote: Literal[-1, 0, 1] = await self.get_old_vote(
+            quote_id, author_id
+        )
 
-        if (vote := vote_to_int(new_vote_str)) == old_vote:
+        new_vote: Literal[-1, 0, 1] = vote_to_int(new_vote_str)
+        vote_diff: int = new_vote - old_vote
+
+        if not vote_diff:  # == 0
             return await self.render_quote(quote_id, author_id)
 
-        await self.update_saved_votes(quote_id, author_id, vote)
+        await self.update_saved_votes(quote_id, author_id, new_vote)
 
-        contributed_by = self.get_argument("user-name", default=None)
-        if contributed_by:
-            contributed_by = contributed_by.strip()
-        if not contributed_by or len(contributed_by) < 2:
-            contributed_by = (
-                f"an-website_{hash_ip(str(self.request.remote_ip))}"
-            )
+        to_vote = cast(Literal[-1, 1], -1 if vote_diff < 0 else 1)
+
+        contributed_by = f"an-website_{hash_ip(str(self.request.remote_ip))}"
+
         # do the voting:
-        if vote > old_vote:
-            wrong_quote = await create_wq_and_vote(
-                1, quote_id, author_id, contributed_by
-            )
-            if vote - old_vote == 2:
-                self.awaitables.append(wrong_quote.vote(1))
-                wrong_quote.rating += 1
-        elif vote < old_vote:
-            wrong_quote = await create_wq_and_vote(
-                -1, quote_id, author_id, contributed_by
-            )
-            if vote - old_vote == -2:
-                self.awaitables.append(wrong_quote.vote(-1))
-                wrong_quote.rating -= 1
-        else:
-            raise HTTPError(500)
-        await self.render_wrong_quote(wrong_quote, vote)
+        wrong_quote = await create_wq_and_vote(
+            to_vote, quote_id, author_id, contributed_by
+        )
+        if abs(vote_diff) == 2:
+            await wrong_quote.vote(to_vote, lazy=True)
+
+        await self.render_wrong_quote(wrong_quote, new_vote)
 
     async def render_wrong_quote(
         self, wrong_quote: WrongQuote, vote: int
@@ -402,6 +395,8 @@ class QuoteById(QuoteBaseHandler):
         if (
             not self.get_show_rating()  # don't hide the rating on wish of user
             and self.rating_filter() == "smart"
+            and self.request.method
+            and self.request.method.upper() == "GET"
             and await self.get_saved_vote(
                 wrong_quote.quote.id, wrong_quote.author.id
             )

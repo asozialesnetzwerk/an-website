@@ -61,15 +61,17 @@
     <form method="post" id="vote-container">
         {% raw form_appendix %}
         <input name="r" class="hidden" value="{{rating_filter}}">
-        <button class="form-button vote {% if vote == 1 %} voted {% end %}"
+        <button class="form-button vote"
                 tooltip="Bewerte das Zitat als witzig!"
+                {% if vote == 1 %} voted="1" {% end %}
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
                 type="submit" id="upvote" name="vote">
             <img src="{{fix_static('img/StempelWitzigKlein.svg')}}"
                  alt="WITZIG!">
         </button>
-        <button class="form-button vote {% if vote == -1 %} voted {% end %}"
+        <button class="form-button vote"
                 tooltip="Bewerte das Zitat als nicht witzig!"
+                {% if vote == -1 %} voted="-1" {% end %}
                 value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
                 type="submit" id="downvote" name="vote">
             <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}"

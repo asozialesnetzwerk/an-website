@@ -81,22 +81,22 @@ function startQuotes(currId, nextId) {
     }
 
     function updateVote(vote) {
-        if (vote === 1) {
-            // now voted up
-            upvoteButton.classList.add("voted");
-            upvoteButton.value = "0";
-        } else {
-            upvoteButton.classList.remove("voted");
-            upvoteButton.value = "1";
+        function update(btn, btn_vote, btn_vote_str) {
+            btn.disabled = false;
+            if (vote === btn_vote) {
+                // the vote of the button is active
+                btn.setAttribute("voted", btn_vote_str);
+                btn.value = "0";  // if pressed again reset the vote
+            } else {
+                // the vote of the button isn't active
+                btn.removeAttribute("voted");
+                btn.value = btn_vote_str;  // if pressed, vote with the button
+            }
         }
-        if (vote === -1) {
-            // now voted down
-            downvoteButton.classList.add("voted");
-            downvoteButton.value = "0";
-        } else {
-            downvoteButton.classList.remove("voted");
-            downvoteButton.value = "-1";
-        }
+        // update the upvote button
+        update(upvoteButton, 1, "1");
+        // update the downvote button
+        update(downvoteButton, -1, "-1");
     }
 
     function handleData(data) {
@@ -157,17 +157,14 @@ function startQuotes(currId, nextId) {
         (data) => handleData(data)
     );
 
-    function setDisabledOfVoteButtons(disabled) {
-        upvoteButton.disabled = disabled;
-        downvoteButton.disabled = disabled;
-    }
-
     for (const voteButton of [upvoteButton, downvoteButton]) {
         voteButton.type = "button";
         voteButton.onclick = () => {
-            setDisabledOfVoteButtons(true);
+            upvoteButton.disabled = true;
+            downvoteButton.disabled = true;
             vote(voteButton.value);
-            setDisabledOfVoteButtons(false);
+            upvoteButton.disabled = false;
+            downvoteButton.disabled = false;
         }
     }
 }
