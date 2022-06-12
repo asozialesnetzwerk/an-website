@@ -166,11 +166,8 @@ async def test_request_handlers2(
     assert "Onion-Location" not in response.headers
     assert_valid_html_response(response, effective_url="http://test.onion")
 
-    assert_valid_html_response(
-        await fetch("/", headers={"Accept": "text/spam"}), code=406
-    )
-    assert_valid_json_response(
-        await fetch("/api/ping", headers={"Accept": "text/spam"}), code=406
+    assert_valid_response(
+        await fetch("/", headers={"Accept": "text/spam"}), None, 406
     )
 
     await assert_valid_redirect(

@@ -33,10 +33,10 @@ pylint --output-format=colorized ./*.py an_website tests
 if [ -n "$1" ]; then
   if [ "$1" = "test" ]; then
     echo Tests:
-    pytest --failed-first --durations=0 --durations-min=0.5 tests
+    pytest --durations=0 --durations-min=0.5 tests
   elif [ "$1" = "test-cov" ]; then
     echo Tests:
-    pytest --failed-first --durations=0 --durations-min=0.5 --cov=an_website --cov-report= tests
+    pytest --durations=0 --durations-min=0.5 --cov=an_website --cov-report= tests
     echo Coverage:
     coverage report --precision=3 --sort=cover --skip-covered
   fi

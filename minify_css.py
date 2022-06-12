@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Minify all CSS files in style and move them to an_website/static/style."""
+"""Minify all CSS files in style and copy them to an_website/static/style."""
 
 from __future__ import annotations
 
