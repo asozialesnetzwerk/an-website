@@ -3,9 +3,7 @@
   "processors": [
     {
       "uri_parts": {
-        "field": "url",
-        "keep_original": true,
-        "target_field": "url"
+        "field": "url"
       }
     },
     {

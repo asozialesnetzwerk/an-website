@@ -2,13 +2,13 @@
   "_meta": {
     "description": "The index template for the shorten action of the URL shortener"
   },
+  "index_patterns": [
+    "{prefix}-shortener-urls"
+  ],
   "composed_of": [
     "{prefix}-ecs-base",
     "{prefix}-ecs-ecs",
     "{prefix}-ecs-url"
-  ],
-  "index_patterns": [
-    "{prefix}-shortener-urls"
   ],
   "template": {
     "settings": {

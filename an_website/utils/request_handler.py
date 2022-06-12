@@ -105,7 +105,7 @@ class BaseRequestHandler(RequestHandler):
     title: str = "Das Asoziale Netzwerk"
     short_title: str = "Asoziales Netzwerk"
     description: str = "Die tolle Webseite des Asozialen Netzwerkes"
-    content_type: str = ""
+    content_type: None | str = None
 
     _active_origin_trials: set[str]
 
@@ -202,7 +202,7 @@ class BaseRequestHandler(RequestHandler):
                 if permission.name:
                     self.set_header(
                         f"X-Permission-{permission.name}",
-                        bool_to_str(self.is_authorized(permission)),
+                        bool_to_str(bool(self.is_authorized(permission))),
                     )
         self.origin_trial(
             "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
@@ -305,9 +305,8 @@ class BaseRequestHandler(RequestHandler):
             self.POSSIBLE_CONTENT_TYPES,
         )
         if content_type is None:
-            if self.POSSIBLE_CONTENT_TYPES:
-                self.content_type = self.POSSIBLE_CONTENT_TYPES[0]
-            raise HTTPError(406)
+            self.set_status(406)
+            self.finish("\n".join(self.POSSIBLE_CONTENT_TYPES))
         self.content_type = content_type
 
     async def prepare(  # pylint: disable=invalid-overridden-method
@@ -330,14 +329,15 @@ class BaseRequestHandler(RequestHandler):
 
         if self.request.method != "OPTIONS":
 
-            if not self.is_authorized(self.REQUIRED_PERMISSION):
+            is_authorized = self.is_authorized(self.REQUIRED_PERMISSION)
+            if not is_authorized:
                 # TODO: self.set_header("WWW-Authenticate")
                 logger.info(
                     "Unauthorized access to %s from %s",
                     self.request.path,
                     anonymize_ip(str(self.request.remote_ip)),
                 )
-                raise HTTPError(403)
+                raise HTTPError(401 if is_authorized is None else 403)
 
             if not await self.ratelimit(True):
                 await self.ratelimit()
@@ -673,9 +673,9 @@ class BaseRequestHandler(RequestHandler):
         try:
             return str_to_bool(value)
         except ValueError as err:
-            raise HTTPError(400, f"{value} is not a Boolean.") from err
+            raise HTTPError(400, f"{value} is not a boolean") from err
 
-    def is_authorized(self, permission: Permissions) -> bool:
+    def is_authorized(self, permission: Permissions) -> None | bool:
         """Check whether the request is authorized."""
         found_keys: list[None | str] = []
         if permission == Permissions(0):
@@ -685,6 +685,8 @@ class BaseRequestHandler(RequestHandler):
         found_keys.extend(self.get_arguments("key"))
         if self.SUPPORTS_COOKIE_AUTHORIZATION:
             found_keys.append(self.get_cookie("key", default=None))
+        if not any(found_keys):
+            return None
         return any(
             permission in api_secrets[key]
             for key in found_keys

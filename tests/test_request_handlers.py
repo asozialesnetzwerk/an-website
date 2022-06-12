@@ -351,10 +351,10 @@ async def test_request_handlers(
     await check_html_page(fetch, "/soundboard/qwertzuiop", 404)
 
     assert_valid_response(
-        await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 403
+        await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 401
     )
     assert_valid_response(
-        await fetch("/api/backdoor/exec"), "application/vnd.python.pickle", 403
+        await fetch("/api/backdoor/exec"), "application/vnd.python.pickle", 401
     )
 
     response = assert_valid_response(
