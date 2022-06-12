@@ -109,6 +109,18 @@ async def test_permissions(
             headers=headers,
         )
 
+    assert_valid_response(
+        await fetch("/api/ping?key=s3", headers={"Authorization": "s4"}),
+        "text/plain; charset=UTF-8",
+        200,
+        headers={
+            "X-Permission-Backdoor": "sure",
+            "X-Permission-Ratelimits": "sure",
+            "X-Permission-Update": "nope",
+            "X-Permission-Traceback": "sure",
+        },
+    )
+
 
 async def test_permissions_with_backdoor(
     # pylint: disable=redefined-outer-name
@@ -141,3 +153,38 @@ async def test_permissions_with_backdoor(
     assert response["success"]
     assert not response["output"]
     assert response["result"] == ("6", 6)
+
+    response = await request_and_parse(
+        fetch,
+        "from an_website.utils.utils import Permissions\n"
+        "print("
+        "self.is_authorized(Permissions.BACKDOOR | Permissions.RATELIMITS))",
+        auth_key="s4",
+        mode="exec?key=s3",  # type: ignore[arg-type]
+    )
+    assert isinstance(response, dict)
+    assert response["success"]
+    assert response["output"] == "True\n"
+    assert response["result"] is None
+
+    response = await request_and_parse(
+        fetch,
+        "from an_website.utils.utils import Permissions\n"
+        "print(self.is_authorized(Permissions.RATELIMITS))",
+        mode="exec",
+    )
+    assert isinstance(response, dict)
+    assert response["success"]
+    assert response["output"] == "True\n"
+    assert response["result"] is None
+
+    assert_valid_response(
+        await fetch("/api/backdoor/exec", headers={"Authorization": "unknown"}),
+        None,
+        401,  # unauthenticated request
+    )
+    assert_valid_response(
+        await fetch("/api/backdoor/exec", headers={"Authorization": "s3"}),
+        None,
+        403,  # unauthorized request
+    )

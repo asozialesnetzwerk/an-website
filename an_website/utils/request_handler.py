@@ -685,13 +685,16 @@ class BaseRequestHandler(RequestHandler):
         found_keys.extend(self.get_arguments("key"))
         if self.SUPPORTS_COOKIE_AUTHORIZATION:
             found_keys.append(self.get_cookie("key", default=None))
-        if not any(found_keys):
-            return None
-        return any(
-            permission in api_secrets[key]
-            for key in found_keys
-            if key and key in api_secrets
-        )
+
+        user_perms = Permissions(0)
+        for key in found_keys:
+            if key and key in api_secrets:
+                user_perms |= api_secrets[key]
+
+        if user_perms == Permissions(0):
+            return None  # no known key with permissions supplied
+
+        return permission in user_perms
 
     def geoip(
         self,
