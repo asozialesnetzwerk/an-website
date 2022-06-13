@@ -348,11 +348,14 @@ def get_author_updated_with(author_id: int, name: str) -> Author:
     if not name:
         name = "None"
 
-    author = AUTHORS_CACHE.get(author_id) or Author(author_id, name, None)
-    AUTHORS_CACHE[author.id] = author
+    author = AUTHORS_CACHE.get(author_id)
+    if author is None:  # author not in cache, create new one
+        author = Author(author_id, name, None)
+        AUTHORS_CACHE[author.id] = author
+        MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
+    else:  # update to make sure cache is correct
+        author.update_name(name)
 
-    author.update_name(name)
-    MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
     return author
 
 
@@ -377,40 +380,42 @@ def fix_quote_str(quote_str: str) -> str:
 def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
     """Parse a quote from JSON data."""
     quote_id = int(json_data["id"])
-    author = parse_author(json_data["author"])
+    author = parse_author(json_data["author"])  # update author
     quote_str = fix_quote_str(json_data["quote"])
 
-    if quote is None or quote_id != quote.id:
-        quote = QUOTES_CACHE.get(quote_id) or Quote(quote_id, quote_str, author)
+    if quote is None:  # no quote supplied, try getting it from cache
+        quote = QUOTES_CACHE.get(quote_id)
+    if quote is None:  # new quote
+        quote = Quote(quote_id, quote_str, author)
         QUOTES_CACHE[quote.id] = quote
-
-    MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
-
-    quote.update_quote(
-        quote_str,
-        author.id,
-        author.name,
-    )
-
+        MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
+    else:  # quote was already saved
+        quote.update_quote(
+            quote_str,
+            author.id,
+            author.name,
+        )
     return quote
 
 
 def parse_wrong_quote(
     json_data: dict[str, Any], wrong_quote: None | WrongQuote = None
 ) -> WrongQuote:
-    """Parse a quote."""
-    id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
+    """Parse a wrong quote and update the cache."""
+    quote = parse_quote(json_data["quote"])
+    author = parse_author(json_data["author"])
+
+    id_tuple = (quote.id, author.id)
     rating = json_data["rating"]
     wrong_quote_id = int(json_data.get("id") or -1)
 
     if wrong_quote is None:
-        if id_tuple in WRONG_QUOTES_CACHE:
-            wrong_quote = WRONG_QUOTES_CACHE[id_tuple]
-        else:
+        wrong_quote = WRONG_QUOTES_CACHE.get(id_tuple)
+        if wrong_quote is None:
             wrong_quote = WrongQuote(
                 id=wrong_quote_id,
-                quote=parse_quote(json_data["quote"]),
-                author=parse_author(json_data["author"]),
+                quote=quote,
+                author=author,
                 rating=rating,
             )
             WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
