@@ -137,7 +137,7 @@ class Quote(QuotesObjBase):
 
     async def fetch_new_data(self) -> Quote:
         """Fetch new data from the API."""
-        return parse_quote(await make_api_request(f"quotes/{self.id}"))
+        return parse_quote(await make_api_request(f"quotes/{self.id}"), self)
 
     def to_json(self) -> dict[str, Any]:
         """Get the quote as JSON."""
@@ -197,29 +197,32 @@ class WrongQuote(QuotesObjBase):
             api_data = await make_api_request(f"wrongquotes/{self.id}")
         if not api_data:
             return self
-        return parse_wrong_quote(api_data)
+        return parse_wrong_quote(api_data, self)
 
     async def vote(
-        self, vote: Literal[-1, 1], lazy: bool = False
+        # pylint: disable=unused-argument
+        self,
+        vote: Literal[-1, 1],
+        lazy: bool = False
     ) -> WrongQuote:
         """Vote for the wrong quote."""
         if self.id == -1:
             raise ValueError("Can't vote for a not existing quote.")
-        if lazy:  # simulate the vote and do the actual voting later
-            self.rating += vote
-            asyncio.get_running_loop().call_soon_threadsafe(
-                self.vote,
-                vote,
-                False,
-            )
-            return self
+        # if lazy:  # simulate the vote and do the actual voting later
+        #     self.rating += vote
+        #     asyncio.get_running_loop().call_soon_threadsafe(
+        #         self.vote,
+        #         vote,
+        #     )
+        #     return self
         # do the voting
         return parse_wrong_quote(
             await make_api_request(
                 f"wrongquotes/{self.id}",
                 method="POST",
                 body=f"vote={vote}",
-            )
+            ),
+            self,
         )
 
     def to_json(self) -> dict[str, Any]:
@@ -339,16 +342,16 @@ def fix_author_name(name: str) -> str:
     return name.strip()
 
 
-def get_author_updated_with(author_id: int, author_name: str) -> Author:
+def get_author_updated_with(author_id: int, name: str) -> Author:
     """Get the author with the given id and the name."""
-    author_name = fix_author_name(author_name)
-    if not author_name:
-        author_name = "None"
-    author = AUTHORS_CACHE.setdefault(
-        author_id,
-        Author(author_id, author_name, None),
-    )
-    author.update_name(author_name)
+    name = fix_author_name(name)
+    if not name:
+        name = "None"
+
+    author = AUTHORS_CACHE.get(author_id) or Author(author_id, name, None)
+    AUTHORS_CACHE[author.id] = author
+
+    author.update_name(name)
     MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
     return author
 
@@ -371,20 +374,15 @@ def fix_quote_str(quote_str: str) -> str:
     return quote_str.strip()
 
 
-def parse_quote(json_data: dict[str, Any]) -> Quote:
+def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
     """Parse a quote from JSON data."""
     quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])
     quote_str = fix_quote_str(json_data["quote"])
 
-    quote = QUOTES_CACHE.setdefault(
-        quote_id,
-        Quote(
-            quote_id,
-            quote_str,
-            author,
-        ),
-    )
+    if quote is None or quote_id != quote.id:
+        quote = QUOTES_CACHE.get(quote_id) or Quote(quote_id, quote_str, author)
+        QUOTES_CACHE[quote.id] = quote
 
     MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
 
@@ -397,20 +395,26 @@ def parse_quote(json_data: dict[str, Any]) -> Quote:
     return quote
 
 
-def parse_wrong_quote(json_data: dict[str, Any]) -> WrongQuote:
+def parse_wrong_quote(
+    json_data: dict[str, Any], wrong_quote: None | WrongQuote = None
+) -> WrongQuote:
     """Parse a quote."""
     id_tuple = (int(json_data["quote"]["id"]), int(json_data["author"]["id"]))
     rating = json_data["rating"]
     wrong_quote_id = int(json_data.get("id") or -1)
-    wrong_quote = WRONG_QUOTES_CACHE.setdefault(
-        id_tuple,
-        WrongQuote(
-            id=wrong_quote_id,
-            quote=parse_quote(json_data["quote"]),
-            author=parse_author(json_data["author"]),
-            rating=rating,
-        ),
-    )
+
+    if wrong_quote is None:
+        if id_tuple in WRONG_QUOTES_CACHE:
+            wrong_quote = WRONG_QUOTES_CACHE[id_tuple]
+        else:
+            wrong_quote = WrongQuote(
+                id=wrong_quote_id,
+                quote=parse_quote(json_data["quote"]),
+                author=parse_author(json_data["author"]),
+                rating=rating,
+            )
+            WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
+
     # make sure the wrong quote is the correct one
     assert (wrong_quote.quote.id, wrong_quote.author.id) == id_tuple
     # update the data of the wrong quote

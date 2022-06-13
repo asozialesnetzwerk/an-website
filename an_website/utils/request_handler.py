@@ -677,12 +677,15 @@ class BaseRequestHandler(RequestHandler):
 
     def is_authorized(self, permission: Permissions) -> None | bool:
         """Check whether the request is authorized."""
-        found_keys: list[None | str] = []
         if permission == Permissions(0):
             return True
+
         api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
-        found_keys.extend(self.request.headers.get_list("Authorization"))
-        found_keys.extend(self.get_arguments("key"))
+
+        found_keys: list[None | str] = [
+            *self.request.headers.get_list("Authorization"),
+            *self.get_arguments("key"),
+        ]
         if self.SUPPORTS_COOKIE_AUTHORIZATION:
             found_keys.append(self.get_cookie("key", default=None))
 
