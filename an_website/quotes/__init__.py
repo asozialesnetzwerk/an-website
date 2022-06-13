@@ -203,7 +203,7 @@ class WrongQuote(QuotesObjBase):
         # pylint: disable=unused-argument
         self,
         vote: Literal[-1, 1],
-        lazy: bool = False
+        lazy: bool = False,
     ) -> WrongQuote:
         """Vote for the wrong quote."""
         if self.id == -1:
