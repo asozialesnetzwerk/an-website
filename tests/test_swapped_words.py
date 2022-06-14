@@ -285,8 +285,8 @@ async def test_sw_json_request_handlers(
                 {
                     "text": " x z o ",
                     "config": "x  => y\nz <=> o",
-                    "return_config": "sure",
-                    "minify_config": "nope",
+                    "return_config": True,
+                    "minify_config": False,
                 }
             ),
         ),

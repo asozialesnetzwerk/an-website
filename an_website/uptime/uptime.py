@@ -175,6 +175,8 @@ class UptimeHandler(HTMLRequestHandler):
 class AvailabilityChartHandler(BaseRequestHandler):
     """The request handler for the availability chart."""
 
+    POSSIBLE_CONTENT_TYPES = ("image/svg+xml",)
+
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         availability = self.get_argument("a", default=None)
@@ -199,7 +201,6 @@ class AvailabilityChartHandler(BaseRequestHandler):
                 permanent=False,
             )
             return
-        self.set_header("Content-Type", "image/svg+xml; charset=UTF-8")
         self.set_header(
             "Cache-Control", f"public, min-fresh={14 * 24 * 60 * 60}, immutable"
         )

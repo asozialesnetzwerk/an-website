@@ -31,7 +31,7 @@ from tornado.web import HTTPError, RedirectHandler
 
 from .. import EVENT_REDIS
 from ..main import IGNORED_MODULES
-from ..utils.request_handler import APIRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, hash_ip
 from . import (
     WRONG_QUOTES_CACHE,
@@ -47,7 +47,7 @@ from .create import get_module_info as get_create_mi
 from .quote_generator import get_module_info as get_generator_mi
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .quote_of_the_day import get_module_info as get_qod_mi
-from .quotes_image import QuoteAsImage
+from .quotes_image import FILE_EXTENSIONS, QuoteAsImage, create_image
 from .share_page import ShareQuote
 
 logger = logging.getLogger(__name__)
@@ -314,6 +314,11 @@ class QuoteById(QuoteBaseHandler):
     RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per 30s
     RATELIMIT_POST_PERIOD = 30
 
+    POSSIBLE_CONTENT_TYPES = (
+        *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
+        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+    )
+
     async def get(
         self, quote_id: str, author_id: None | str = None, *, head: bool = False
     ) -> None:
@@ -326,6 +331,17 @@ class QuoteById(QuoteBaseHandler):
             return self.redirect(
                 self.fix_url(
                     f"/zitate/{wqs[0].quote.id}-{wqs[0].author.id}",
+                )
+            )
+        if self.content_type and self.content_type.startswith("image/"):
+            _wq = await get_wrong_quote(int_quote_id, int(author_id))
+            return await self.finish(
+                create_image(
+                    _wq.quote.quote,
+                    _wq.author.name,
+                    _wq.rating,
+                    f"{self.request.host_name}/z/{_wq.get_id_as_str(True)}",
+                    self.content_type.removeprefix("image/"),
                 )
             )
         if head:
@@ -474,6 +490,11 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
     RATELIMIT_GET_COUNT_PER_PERIOD = 20  # 20 requests per 10s
 
     ALLOWED_METHODS = ("GET", "POST")
+
+    POSSIBLE_CONTENT_TYPES = (
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
+        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+    )
 
     async def render_wrong_quote(
         self, wrong_quote: WrongQuote, vote: int

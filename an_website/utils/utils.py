@@ -36,6 +36,19 @@ from tornado.web import HTTPError, RequestHandler
 
 from .. import STATIC_DIR
 
+# All the text content types used by the website
+TEXT_CONTENT_TYPES = {
+    "application/javascript",
+    "application/json",
+    "application/rss+xml",
+    "application/xml",
+    "application/yaml",
+    "image/svg+xml",
+    "text/html",
+    "text/markdown",
+    "text/plain",
+}
+
 T = TypeVar("T")
 
 # pylint: disable=consider-alternative-union-syntax

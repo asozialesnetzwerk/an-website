@@ -211,7 +211,6 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        self.set_header("Content-Type", f"{self.content_type}; charset=UTF-8")
         if head:
             return
         today = datetime.now(tz=timezone.utc).date()

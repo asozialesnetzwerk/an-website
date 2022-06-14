@@ -342,16 +342,20 @@ async def test_request_handlers(
 
     assert_valid_rss_response(await fetch("/soundboard/feed"))
     assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
+    assert_valid_rss_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
 
     await check_html_page(fetch, "/soundboard/muk")
-    await check_html_page(fetch, "/soundboard/qwertzuiop/feed", 404)
     await check_html_page(fetch, "/soundboard/qwertzuiop", 404)
 
     assert_valid_response(
-        await fetch("/api/backdoor/eval"), "application/vnd.python.pickle", 401
+        await fetch("/api/backdoor/eval"),
+        "application/vnd.python.pickle",
+        401,
     )
     assert_valid_response(
-        await fetch("/api/backdoor/exec"), "application/vnd.python.pickle", 401
+        await fetch("/api/backdoor/exec"),
+        "application/vnd.python.pickle",
+        401,
     )
 
     response = assert_valid_response(

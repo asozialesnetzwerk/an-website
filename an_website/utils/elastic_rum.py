@@ -50,7 +50,10 @@ def get_module_info() -> ModuleInfo:
 class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the Elastic RUM Agent."""
 
-    IGNORE_ACCEPT_HEADER = True
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "application/javascript",
+        "application/json",
+    )
     URL = (
         "https://unpkg.com/@elastic/apm-rum@{}"
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
@@ -68,6 +71,9 @@ class ElasticRUM(BaseRequestHandler):
         head: bool = False,
     ) -> None:
         """Serve the RUM script."""
+        accepted_ct = "application/json" if eggs else "application/javascript"
+        self.handle_accept_header((accepted_ct,))
+
         key = version + spam + eggs
         if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
             response = await AsyncHTTPClient().fetch(
@@ -87,16 +93,10 @@ class ElasticRUM(BaseRequestHandler):
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
-        if eggs:  # if serving source map (URL ends with ".map")
-            self.set_header("Content-Type", "application/json; charset=UTF-8")
-        else:  # if serving JS
+        if spam:  # if serving minified JS (URL contains ".min")
             self.set_header(
-                "Content-Type", "application/javascript; charset=UTF-8"
+                "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
-            if spam:  # if serving minified JS (URL contains ".min")
-                self.set_header(
-                    "SourceMap", self.request.full_url().split("?")[0] + ".map"
-                )
         self.set_header(
             "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)
         )

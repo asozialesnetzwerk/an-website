@@ -273,20 +273,23 @@ async def test_quote_request_handlers(
             await fetch("/zitate/1-1.gif?small=sure"), "image/gif"
         ).body
     )
+    assert_valid_response(await fetch("/zitate/1-2.png"), "image/png")
+    assert_valid_response(
+        await fetch("/zitate/1-2", headers={"Accept": "image/png"}), "image/png"
+    )
     # pylint: disable=import-outside-toplevel
     from an_website.quotes.quotes_image import FILE_EXTENSIONS
 
     for extension, name in FILE_EXTENSIONS.items():
         content_type = f"image/{name}"
-        assert_valid_response(
+        image1 = assert_valid_response(
             await fetch(f"/zitate/1-1.{extension}"), content_type
-        )
-        assert_valid_response(
-            await fetch(f"/zitate/1-1.{extension.upper()}"), content_type
-        )
-        assert_valid_response(
-            await fetch(f"/zitate/1-2.{extension}"), content_type
-        )
+        ).body
+        image2 = assert_valid_response(
+            await fetch("/zitate/1-1", headers={"Accept": content_type}),
+            content_type,
+        ).body
+        assert image1 == image2
 
 
 def test_parsing_vote_str() -> None:

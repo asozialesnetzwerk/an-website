@@ -185,7 +185,6 @@ class Backdoor(APIRequestHandler):
 
     def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
         """Finish with a pickled dictionary."""
-        self.set_header("Content-Type", "application/vnd.python.pickle")
         return self.finish(pickle.dumps(kwargs, PICKLE_PROTOCOL))
 
     def get_flags(self, flags: int) -> int:
@@ -269,7 +268,6 @@ class Backdoor(APIRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""
-        self.set_header("Content-Type", "application/vnd.python.pickle")
         if "exc_info" in kwargs:
             exc_info: tuple[
                 type[BaseException], BaseException, TracebackType

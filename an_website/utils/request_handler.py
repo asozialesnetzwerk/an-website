@@ -55,6 +55,7 @@ from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, ORJSON_OPTIONS, REPO_URL
 from .static_file_handling import fix_static_url
 from .utils import (
+    TEXT_CONTENT_TYPES,
     THEMES,
     ModuleInfo,
     Permissions,
@@ -264,11 +265,9 @@ class BaseRequestHandler(RequestHandler):
     def dump(self) -> Callable[..., str | bytes | dict[Any, Any]]:
         """Get the function used to dump the output dict."""
         if self.content_type == "application/json":
-            self.set_header("Content-Type", "application/json; charset=UTF-8")
             return lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
 
         if self.content_type == "application/yaml":
-            self.set_header("Content-Type", "application/yaml; charset=UTF-8")
             return yaml.dump
 
         return lambda spam: spam  # type: ignore[no-any-return]
@@ -280,6 +279,8 @@ class BaseRequestHandler(RequestHandler):
         if self._finished:
             return super().finish(chunk)
 
+        self.set_content_type_header()
+
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
 
@@ -287,8 +288,7 @@ class BaseRequestHandler(RequestHandler):
             self.write(chunk)
 
         if (
-            "Content-Type" in self._headers
-            and self._headers["Content-Type"].lower().endswith("charset=utf-8")
+            self.content_type in TEXT_CONTENT_TYPES
             and self._write_buffer
             and not self._write_buffer[-1].endswith(b"\n")
         ):
@@ -296,18 +296,38 @@ class BaseRequestHandler(RequestHandler):
 
         return super().finish()
 
-    def handle_accept_header(self) -> None:
+    def set_content_type_header(self) -> None:
+        """Set the Content-Type header based on `self.content_type`."""
+        if self.content_type in TEXT_CONTENT_TYPES:
+            self.set_header(
+                "Content-Type", f"{self.content_type}; charset=UTF-8"
+            )
+        elif self.content_type is not None:
+            self.set_header("Content-Type", self.content_type)
+
+    def raise_non_acceptable(
+        self, possible_content_types: tuple[str, ...]
+    ) -> None:
+        """Only call this if we cannot respect the Accept header."""
+        self.clear_header("Content-Type")
+        self.set_status(406)
+        self.finish("\n".join(possible_content_types) + "\n")
+
+    def handle_accept_header(
+        self, possible_content_types: tuple[str, ...]
+    ) -> None:
         """Handle the Accept header and set `self.content_type`."""
-        if not self.POSSIBLE_CONTENT_TYPES:
+        if not possible_content_types:
             return
         content_type = get_best_match(
             self.request.headers.get("Accept") or "*/*",
-            self.POSSIBLE_CONTENT_TYPES,
+            possible_content_types,
         )
         if content_type is None:
-            self.set_status(406)
-            self.finish("\n".join(self.POSSIBLE_CONTENT_TYPES))
+            self.raise_non_acceptable(possible_content_types)
+            return
         self.content_type = content_type
+        self.set_content_type_header()
 
     async def prepare(  # pylint: disable=invalid-overridden-method
         self,
@@ -316,7 +336,7 @@ class BaseRequestHandler(RequestHandler):
         # pylint: disable=attribute-defined-outside-init
         self.now = await self.get_time()
 
-        self.handle_accept_header()
+        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method == "GET":
 
@@ -472,12 +492,6 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(405)
         if not self.supports_head():
             raise HTTPError(501)
-
-        if self.content_type == "text/html":
-            self.set_header("Content-Type", "text/html; charset=UTF-8")
-        elif self.content_type:
-            self.set_header("Content-Type", self.content_type)
-            self.dump  # pylint: disable=pointless-statement
 
         kwargs["head"] = True
         return self.get(*args, **kwargs)
@@ -853,7 +867,6 @@ class HTMLRequestHandler(BaseRequestHandler):
         chunk = chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
 
         if as_markdown:
-            self.set_header("Content-Type", "text/markdown; charset=UTF-8")
             return super().finish(
                 f"# {self.title}\n\n"
                 + html2text.html2text(chunk, self.request.full_url()).strip()
@@ -861,10 +874,8 @@ class HTMLRequestHandler(BaseRequestHandler):
 
         soup = BeautifulSoup(chunk, features="lxml")
         if as_plain_text:
-            self.set_header("Content-Type", "text/plain; charset=UTF-8")
             return super().finish(soup.get_text("\n", True))
 
-        self.set_header("Content-Type", "application/json; charset=UTF-8")
         dictionary: dict[str, Any] = dict(
             url=self.fix_url(),  # request url
             title=self.title,
@@ -937,7 +948,7 @@ class NotFoundHandler(HTMLRequestHandler):
         # pylint: disable=attribute-defined-outside-init
         self.now = await self.get_time()  # used by get_template_namespace
 
-        self.handle_accept_header()
+        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)

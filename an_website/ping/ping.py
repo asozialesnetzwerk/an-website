@@ -42,7 +42,6 @@ class PingPong(APIRequestHandler):
         """Handle the GET request to the ping API."""
         # pylint: disable=unused-argument
         if self.content_type == "text/plain":
-            self.set_header("Content-Type", "text/plain; charset=UTF-8")
             await self.finish("🏓")
         else:
             await self.finish({"success": True})

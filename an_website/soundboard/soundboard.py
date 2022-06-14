@@ -248,7 +248,10 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 class SoundboardRSSHandler(SoundboardHTMLHandler):
     """The request handler that handles requests to the RSS feeds."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        "application/rss+xml",
+        "application/xml",
+    )
     IS_NOT_HTML = True
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
@@ -258,15 +261,13 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
         )
 
         if rss_str is not None:
-            self.set_header(
-                "Content-Type", "application/rss+xml; charset=UTF-8"
-            )
             if head:
                 return
             self.update_title_and_desc(path)
             return await self.render(
                 "rss/soundboard.xml",
+                found=True,
                 rss_str=rss_str,
             )
-        self.content_type = "text/html"
-        raise HTTPError(404, reason="Feed not found.")
+        self.set_status(404, reason="Feed not found.")
+        return await self.render("rss/soundboard.xml", found=False, rss_str="")

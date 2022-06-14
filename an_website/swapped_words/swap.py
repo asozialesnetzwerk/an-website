@@ -177,11 +177,8 @@ class SwappedWordsAPI(APIRequestHandler):
 
             if str_to_bool(return_config, False):
 
-                minify_config = str_to_bool(
-                    self.get_argument(
-                        "minify_config", default="sure", strip=True
-                    ),
-                    True,
+                minify_config = self.get_bool_argument(
+                    "minify_config", default=True
                 )
                 return await self.finish_dict(
                     text=text,

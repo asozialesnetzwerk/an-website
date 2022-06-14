@@ -99,7 +99,6 @@ class LOLWUTAPI(APIRequestHandler):
             raise HTTPError(503)
         art = await generate_art(self.redis, args, head)
         if self.content_type == "text/plain":
-            self.set_header("Content-Type", "text/plain; charset=UTF-8")
             return await self.finish(art)
 
         await self.finish({"LOLWUT": art})
