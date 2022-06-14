@@ -20,6 +20,7 @@ import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
 import sys
+from typing import Any
 
 import certifi
 import defusedxml  # type: ignore
@@ -114,7 +115,16 @@ def anonymize_logs() -> None:
     )
 
 
-def parse_body_arguments(  # noqa: D103 # pylint: disable=too-complex
+def ensure_bytes(value: Any) -> bytes:
+    """Return the specified value as bytes or str or None."""
+    if isinstance(value, bool):
+        return b"sure" if value else b"nope"
+    if isinstance(value, bytes):
+        return value
+    return str(value).encode("utf-8")
+
+
+def parse_body_arguments(  # noqa: D103,C901,B950 # pylint: disable=too-complex,too-many-branches
     content_type: str,
     body: bytes,
     arguments: dict[str, list[bytes]],
@@ -134,7 +144,8 @@ def parse_body_arguments(  # noqa: D103 # pylint: disable=too-complex
             tornado.log.gen_log.warning("Invalid JSON body: %s", exc)
         else:
             for key, value in spam.items():
-                arguments.setdefault(key, []).append(value)
+                if value is not None:
+                    arguments.setdefault(key, []).append(ensure_bytes(value))
     elif content_type.startswith("application/yaml"):
         if headers and "Content-Encoding" in headers:
             tornado.log.gen_log.warning(
@@ -147,7 +158,8 @@ def parse_body_arguments(  # noqa: D103 # pylint: disable=too-complex
             tornado.log.gen_log.warning("Invalid YAML body: %s", exc)
         else:
             for key, value in spam.items():
-                arguments.setdefault(key, []).append(value)
+                if value is not None:
+                    arguments.setdefault(key, []).append(ensure_bytes(value))
     else:
         _parse_body_arguments(content_type, body, arguments, files, headers)
 
