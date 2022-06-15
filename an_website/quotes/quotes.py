@@ -47,7 +47,7 @@ from .create import get_module_info as get_create_mi
 from .quote_generator import get_module_info as get_generator_mi
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .quote_of_the_day import get_module_info as get_qod_mi
-from .quotes_image import FILE_EXTENSIONS, QuoteAsImage, create_image
+from .quotes_image import QuoteAsImage, create_image
 from .share_page import ShareQuote
 
 logger = logging.getLogger(__name__)
@@ -85,6 +85,10 @@ def get_module_info() -> ModuleInfo:
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})\.([a-zA-Z]{3,4})",
                 QuoteAsImage,
             ),
+            (
+                r"/zitate/([0-9]{1,10})()\.([a-zA-Z]{3,4})",
+                QuoteAsImage,
+            ),
             (  # redirect to the new URL (changed because of robots.txt)
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share",
                 RedirectHandler,
@@ -94,6 +98,10 @@ def get_module_info() -> ModuleInfo:
             (r"/api/zitate(/full|)", QuoteRedirectAPI),
             (
                 r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)",
+                QuoteAPIHandler,
+            ),
+            (
+                r"/api/zitate/([0-9]{1,10})(?:/full|)",
                 QuoteAPIHandler,
             ),
         ),
@@ -316,8 +324,9 @@ class QuoteById(QuoteBaseHandler):
 
     POSSIBLE_CONTENT_TYPES = (
         *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
-        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+        *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
+    LONG_PATH = "/zitate/%d-%d"
 
     async def get(
         self, quote_id: str, author_id: None | str = None, *, head: bool = False
@@ -330,7 +339,7 @@ class QuoteById(QuoteBaseHandler):
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
             return self.redirect(
                 self.fix_url(
-                    f"/zitate/{wqs[0].quote.id}-{wqs[0].author.id}",
+                    self.LONG_PATH % (wqs[0].quote.id, wqs[0].author.id)
                 )
             )
         if self.content_type and self.content_type.startswith("image/"):
@@ -493,8 +502,9 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
 
     POSSIBLE_CONTENT_TYPES = (
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
-        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+        *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
+    LONG_PATH = "/api/zitate/%d-%d"
 
     async def render_wrong_quote(
         self, wrong_quote: WrongQuote, vote: int

@@ -29,7 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
 from ..utils.utils import str_to_bool
-from . import DIR, QuoteReadyCheckHandler, get_wrong_quote
+from . import DIR, QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 
 logger = logging.getLogger(__name__)
 
@@ -279,7 +279,9 @@ FILE_EXTENSIONS = {
 class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+    )
     RATELIMIT_GET_LIMIT = 15
 
     async def get(
@@ -300,14 +302,24 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 ),
             )
         file_type = FILE_EXTENSIONS[file_extension]
+        self.handle_accept_header((f"image/{file_type}",))
         self.set_header("Content-Type", f"image/{file_type}")
 
-        wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
+        int_quote_id = int(quote_id)
+        wrong_quote = (
+            await get_wrong_quote(int_quote_id, int(author_id))
+            if author_id
+            else (
+                get_wrong_quotes(lambda wq: wq.id == int_quote_id) or (None,)
+            )[0]
+        )
+        if wrong_quote is None:
+            raise HTTPError(404, reason="Falsches Zitat nicht gefunden.")
 
         self.set_header(
             "Content-Disposition",
             f"inline; filename={self.request.host.replace('.', '-')}_z_"
-            f"{wrong_quote.get_id_as_str(True)}.{file_extension.lower()}",
+            f"{wrong_quote.get_id_as_str()}.{file_extension.lower()}",
         )
 
         if head:

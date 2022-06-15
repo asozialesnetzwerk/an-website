@@ -93,7 +93,7 @@ class ElasticRUM(BaseRequestHandler):
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
-        if spam:  # if serving minified JS (URL contains ".min")
+        if spam and not eggs:  # if serving minified JS (URL contains ".min")
             self.set_header(
                 "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
