@@ -1,33 +1,42 @@
-form {
-  max-width: 50rem;
+.form, form {
+    width: min(50rem, calc(100% - 2rem));
 }
 
-textarea, input[type=text], input[type=search], input[type=email], select, input[type=number] {
-  width: 100%;
-  padding: 0.75rem 1.25rem;
-  margin: 0.5rem 0;
-  display: inline-block;
-  border: 0.125rem solid var(--main-2);
-  border-radius: 0.625rem;
-  box-sizing: border-box;
+textarea,
+select,
+input[type=text],
+input[type=search],
+input[type=email],
+input[type=number] {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    margin: 0.5rem 0;
+    display: block;
+    border: 0.125rem solid var(--main-2);
+    border-radius: 0.625rem;
+    box-sizing: border-box;
 }
 
-input[type=submit], button[type=submit], .form-button {
-  width: 100%;
-  background-color: var(--secondary-bg);
-  padding: 0.875rem 1.25rem;
-  margin: 0.5rem 0;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
+input[type=submit],
+button[type=submit],
+.form-button {
+    width: 100%;
+    background-color: var(--secondary-bg);
+    padding: 0.875rem 1.25rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
 }
 
-input[type=submit]:hover, button[type=submit]:hover, .form-button:hover {
-  background-color: var(--main);
+input[type=submit]:hover,
+button[type=submit]:hover,
+.form-button:hover {
+    background-color: var(--main);
 }
 
 .form-element {
-  display: block;
-  width: 100%;
-  margin-bottom: 0.625rem;
+    display: block;
+    width: 100%;
+    margin-bottom: 0.625rem;
 }

@@ -62,6 +62,7 @@ class Endpoints(HTMLRequestHandler):
                 {
                     "path": handler[0],
                     "methods": handler[1].get_allowed_methods(),
+                    "content_types": list(handler[1].POSSIBLE_CONTENT_TYPES),
                 }
                 for handler in module_info.handlers
                 if handler[0].startswith("/api/")

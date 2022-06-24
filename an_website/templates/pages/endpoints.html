@@ -13,6 +13,7 @@
         <tr>
             <th>Pfad</th>
             <th>Methoden</th>
+            <th>Mögliche Antwort-Arten</th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,7 @@
             <tr>
                 <td>{{path["path"]}}</td>
                 <td>{{", ".join(path["methods"])}}</td>
+                <td>{{", ".join(path["content_types"])}}</td>
             </tr>
         {% end %}
     </tbody>

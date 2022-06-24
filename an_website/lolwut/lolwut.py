@@ -19,11 +19,7 @@ from redis.asyncio import Redis
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
-from ..utils.request_handler import (
-    APIRequestHandler,
-    HTMLRequestHandler,
-    NotFoundHandler,
-)
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
@@ -32,11 +28,9 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=(
             (r"/LOLWUT", LOLWUT),
-            (r"/LOLWUT/([0-9/]+)/", NotFoundHandler),
-            (r"/LOLWUT/([0-9/]+)", LOLWUT),
+            (r"/LOLWUT/((?:\d+/)*\d+)", LOLWUT),
             (r"/API/LOLWUT", LOLWUTAPI),
-            (r"/API/LOLWUT/([0-9/]+)/", NotFoundHandler),
-            (r"/API/LOLWUT/([0-9/]+)", LOLWUTAPI),
+            (r"/API/LOLWUT/((?:\d+/)*\d+)", LOLWUTAPI),
         ),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",

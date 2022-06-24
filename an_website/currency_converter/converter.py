@@ -54,28 +54,40 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def string_to_num(string: str, divide_by: int = 1) -> None | float:
+def string_to_num(num: str, divide_by: int = 1) -> int:
     """Convert a string to a number and divide it by divide_by."""
-    if not string:
-        return None
+    num = re.sub(r"[^\d,]", "", num.replace(".", ","))
 
-    string = string.replace(",", ".")
-    try:
-        return float(string) / divide_by
-    except ValueError:
-        try:
-            return float(re.sub(r"[^0-9\.]", "", string)) / divide_by
-        except ValueError:
-            return None
+    if not num:
+        return 0
+
+    if "," not in num:
+        return (int(num) * 100) // divide_by
+
+    split = [spam for spam in num.split(",") if spam]
+    if not split:
+        return 0
+
+    if len(split) == 1:
+        return (int(split[0]) * 100) // divide_by
+
+    dec = split[-1]
+    pre = "".join(split[:-1])
+
+    return (int(pre or "0") * 100 + int((dec + "00")[0:2])) // divide_by
 
 
-def num_to_string(num: float) -> str:
+def num_to_string(num: int) -> str:
     """
     Convert a float to the german representation of a number.
 
     The number has 2 or 0 digits after the comma.
     """
-    return f"{num:.2f}".replace(".", ",").replace(",00", "")
+    if not num:
+        return "0"
+    string = f"00{num}"
+    string = (string[0:-2].lstrip("0") or "0") + "," + string[-2:]
+    return string.removesuffix(",00")
 
 
 async def conversion_string(value_dict: ValueDict) -> str:
@@ -90,40 +102,40 @@ async def conversion_string(value_dict: ValueDict) -> str:
 
 async def continuation_string(
     values: ValuesTuple,
-    ticket_price: None | float = None,
+    ticket_price: None | int = None,
     ins_kino_gehen: None | str = None,
 ) -> str:
     """Generate a second text that complains how expensive everything is."""
-    price: float = ticket_price or values[0]
+    price: int = ticket_price or values[0]
     if not ins_kino_gehen:
         ins_kino_gehen = "ins Kino gehen"
-    price_ostmark: float = (
-        1
+    price_ostmark: int = (
+        100
         if ins_kino_gehen == "ins Kino gehen"
-        else max(round(price / 8) / 2, 0.5)
+        else int(max(round(price // 8) // 2, 50))
     )
     _rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
-    kino_count: int = int(values[-1] / price_ostmark)
+    kino_count: int = values[-1] // price_ostmark
     output = [
         "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker für",
-        "eine" if price_ostmark == 1 else num_to_string(price_ostmark),
+        "eine" if price_ostmark == 100 else num_to_string(price_ostmark),
         f"Ostmark {ins_kino_gehen}! Das heißt man konnte von "
         f"{num_to_string(values[-1])} Ostmark "
         f"{kino_count}-mal {ins_kino_gehen}.",
     ]
     while True:  # pylint: disable=while-used
-        euro, mark, ost, schwarz = convert(price * kino_count)
+        euro, mark, ost, schwarz = convert(int(price * kino_count))
         no_time = (
             " — dafür habt ihr ja keine Zeit im Kapitalismus, "
             "aber wenn ihr die Zeit hättet —"
-            if mark > 20_300_000_000
+            if mark > 20_300_000_000 * 100
             else ""
         )
         output.append(
             f"Wenn ihr aber heute {kino_count}-mal "
             f"{ins_kino_gehen} wollt{no_time}, müsst ihr"
         )
-        if euro > 1_000_000:
+        if euro > 1_000_000 * 100:
             output.append("...äh...")
         output.append(f"{num_to_string(euro)} Euro bezahlen.")
         output.append(
@@ -135,14 +147,14 @@ async def continuation_string(
                 )
             )
         )
-        if mark > 20_300_000_000:  # Staatsschulden der DDR
+        if mark > 20_300_000_000 * 100:  # Staatsschulden der DDR
             output.append(  # the end of the text
                 "Davon hätte man die DDR entschulden können! "
                 f"Von einmal {ins_kino_gehen}. "
                 "So teuer ist das alles geworden."
             )
             break
-        new_kino_count = int(schwarz * price_ostmark)
+        new_kino_count = int((schwarz * price_ostmark) // 100)
         # TODO: Add random chance to get approximation
         output.append(
             f"{num_to_string(mark)} Mark, {num_to_string(ost)} Ostmark, "
@@ -158,27 +170,27 @@ async def continuation_string(
 
 
 # class ValueDict(TypedDict):
-#     euro: float
-#     mark: float
-#     ost: float
-#     schwarz: float
+#     euro: int
+#     mark: int
+#     ost: int
+#     schwarz: int
 #     euro_str: str
 #     mark_str: str
 #     ost_str: str
 #     schwarz_str: str
 #     text: str
-ValueDict = dict[str, str | float | bool]
-#                    euro, mark,  ost,   schwarz
-ValuesTuple = tuple[float, float, float, float]
+ValueDict = dict[str, str | int | bool]
+#                  euro,mark, ost, schwarz
+ValuesTuple = tuple[int, int, int, int]
 
 
-def convert(euro: float) -> ValuesTuple:
+def convert(euro: int) -> ValuesTuple:
     """Convert a number to the german representation of a number."""
     return tuple(euro * _m for _m in multipliers)  # type: ignore
 
 
 async def get_value_dict(
-    euro: float,
+    euro: int,
     ins_kino_gehen: None | str = None,
 ) -> ValueDict:
     """Create the value dict base on the euro."""

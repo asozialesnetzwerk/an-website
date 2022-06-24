@@ -22,33 +22,27 @@ from an_website.currency_converter import converter
 
 def test_num_string_conversion() -> None:
     """Test the num_to_string and string_to_num conversion."""
-    for num in (0.5, 0.75, 1, 5.5, 10, 100):
-        assert converter.string_to_num(converter.num_to_string(num)) == num
-        assert (
-            converter.string_to_num(converter.num_to_string(num), divide_by=20)
-            == num / 20
-        )
-        assert converter.string_to_num(str(num)) == num
-
     for num_str in ("0,50", "0,75", "1", "5,50", "10", "100"):
-        _num: None | float = converter.string_to_num(num_str)
-        assert _num is not None
+        _num: int = converter.string_to_num(num_str)
         assert converter.num_to_string(_num) == num_str
 
-    assert converter.string_to_num("1,50") == 1.5
-    assert converter.string_to_num("100") == 100
+    assert converter.string_to_num("1,50") == 150
+    assert converter.string_to_num("100xx") == 100 * 100
+    assert converter.string_to_num("1,,50") == 150
+    assert converter.string_to_num("100,,,,,,") == 100 * 100
+    assert converter.string_to_num("1,50") == 150
 
-    assert converter.num_to_string(1.5) == "1,50"
-    assert converter.num_to_string(100) == "100"
+    assert converter.num_to_string(150) == "1,50"
+    assert converter.num_to_string(10000) == "100"
 
     for not_a_num in ("", ".", "..", "text"):
-        assert converter.string_to_num(not_a_num) is None
+        assert not converter.string_to_num(not_a_num)
 
 
 def test_currency_conversion() -> None:
     """Test the currency conversion."""
     for _f in (0.5, 1, 2, 4, 8, 16, 32, 64, 128):
-        val_dict = asyncio.run(converter.get_value_dict(_f))
+        val_dict = asyncio.run(converter.get_value_dict(int(_f * 100)))
         for currency in ("euro", "mark", "ost", "schwarz"):
             assert val_dict[currency] == converter.string_to_num(
                 val_dict[f"{currency}_str"]  # type: ignore

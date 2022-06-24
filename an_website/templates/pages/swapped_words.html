@@ -2,62 +2,57 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    <div>
-        <form method="post" id="form">
-            <label class="form-element">
-                Der Text, dessen Wörter vertauscht werden sollen
-                <textarea
-                        id="text"
-                        name="text"
-                        placeholder="Gebe witzigen Text ein."
-                        rows="10"
-                        maxlength="{{MAX_CHAR_COUNT}}"
-                        spellcheck="true">{{text}}</textarea>
-            </label>
-
-            <label class="form-element">
-                Die Regeln nach denen vertauscht werden sollen
-                <button
-                        name="reset"
-                        value="sure"
-                        id="reset">Reset</button>
-                <textarea
-                        name="config"
-                        id="config-textarea"
-                        placeholder="# Vertauschungen eingeben, zum Beispiel:
-                amüsant <=> relevant
-                Björn Höcke => Bernd Höcke"
-                        rows="10"
-                        maxlength="{{MAX_CHAR_COUNT}}"
-                        style="font-family: monospace, monospace;"
-                        spellcheck="true">{{config}}</textarea>
-            </label>
-
-            <div id="error_msg" style="color: var(--contrast)">
-                {% if error_msg is not None %}
-                    {% raw error_msg %}
-                {% end %}
-            </div>
-
-            {% raw form_appendix %}
-
-            <div tooltip="Aktualisiere die Eingabe."
-                 class="button-container form-element">
-                <input type="submit" id="submit" value="Eingabe">
-            </div>
-        </form>
-
-        {% if error_msg is not None %}
-        <script>alert("{% raw error_msg %}");</script>
-        {% end %}
-
-        <br>
-
-        <label>
-            Ausgabe:
-            <textarea rows="10" id="output" readonly>{{output}}</textarea>
+    <form method="post" id="form">
+        <label class="form-element">
+            Der Text, dessen Wörter vertauscht werden sollen
+            <textarea id="text"
+                    name="text"
+                    placeholder="Gebe witzigen Text ein."
+                    rows="10"
+                    maxlength="{{MAX_CHAR_COUNT}}"
+                    spellcheck="true">{{text}}</textarea>
         </label>
-    </div>
+
+        <label class="form-element">
+            Die Regeln nach denen vertauscht werden sollen
+            <button name="reset"
+                    value="sure"
+                    id="reset">Reset</button>
+            <textarea name="config"
+                    id="config-textarea"
+                    placeholder="# Vertauschungen eingeben, zum Beispiel:
+amüsant <=> relevant
+Björn Höcke => Bernd Höcke"
+                    rows="10"
+                    maxlength="{{MAX_CHAR_COUNT}}"
+                    style="font-family: monospace, monospace;"
+                    spellcheck="true">{{config}}</textarea>
+        </label>
+
+        <div id="error_msg" style="color: var(--contrast)">
+            {% if error_msg is not None %}
+                {% raw error_msg %}
+            {% end %}
+        </div>
+
+        {% raw form_appendix %}
+
+        <div tooltip="Aktualisiere die Eingabe."
+             class="button-container form-element">
+            <input type="submit" id="submit" value="Eingabe">
+        </div>
+    </form>
+
+    {% if error_msg is not None %}
+        <script>alert("{% raw error_msg %}");</script>
+    {% end %}
+
+    <br>
+
+    <label class="form">
+        Ausgabe:
+        <textarea rows="10" id="output" readonly>{{output}}</textarea>
+    </label>
 {% end %}
 
 {% block head %}
