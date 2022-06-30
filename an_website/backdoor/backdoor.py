@@ -32,7 +32,7 @@ from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, Permissions
+from ..utils.utils import ModuleInfo, Permission
 
 logger = logging.getLogger(__name__)
 
@@ -63,19 +63,19 @@ class PrintWrapper:  # pylint: disable=too-few-public-methods
 
 
 class Backdoor(APIRequestHandler):
-    """The Tornado request handler for the backdoor API."""
+    """The request handler for the backdoor API."""
 
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ("application/vnd.python.pickle",)
 
     ALLOWED_METHODS: tuple[str, ...] = ("POST",)
-    REQUIRED_PERMISSION: Permissions = Permissions.BACKDOOR
-    SUPPORTS_COOKIE_AUTHORIZATION: bool = False
+    REQUIRED_PERMISSION = Permission.BACKDOOR
+    ALLOW_COOKIE_AUTHENTICATION: bool = False
 
     sessions: dict[str, dict[str, Any]] = {}
 
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
-        """Handle the POST request to the backdoor API."""
+        """Handle POST requests to the backdoor API."""
         source, output = self.request.body, io.StringIO()
         exception: None | Exception = None
         output_str: None | str
@@ -153,9 +153,9 @@ class Backdoor(APIRequestHandler):
                         result = help
                     session["_"] = result
             finally:
-                session["self"] = None
-                session["app"] = None
-                session["settings"] = None
+                session.pop("self", None)
+                session.pop("app", None)
+                session.pop("settings", None)
                 await self.backup_session()
         output_str = output.getvalue() if not output.closed else None
         output.close()

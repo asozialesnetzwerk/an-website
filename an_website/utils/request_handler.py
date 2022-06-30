@@ -52,13 +52,21 @@ from redis.asyncio import Redis
 from sympy.ntheory import isprime
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
-from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, ORJSON_OPTIONS, REPO_URL
+from .. import (
+    EVENT_ELASTICSEARCH,
+    EVENT_REDIS,
+    GH_ORG_URL,
+    GH_PAGES_URL,
+    GH_REPO_URL,
+    NAME,
+    ORJSON_OPTIONS,
+)
 from .static_file_handling import fix_static_url
 from .utils import (
     TEXT_CONTENT_TYPES,
     THEMES,
     ModuleInfo,
-    Permissions,
+    Permission,
     add_args_to_url,
     anonymize_ip,
     bool_to_str,
@@ -86,20 +94,22 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-# pylint: disable=too-many-public-methods
 class BaseRequestHandler(RequestHandler):
-    """The base Tornado request handler used by every page and API."""
+    """The base request handler used by every page and API."""
 
-    REQUIRED_PERMISSION: Permissions = Permissions(0)
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
-    # the following should be False on security relevant endpoints
-    SUPPORTS_COOKIE_AUTHORIZATION: bool = True
-    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
+    # pylint: disable=too-many-instance-attributes, too-many-public-methods
 
-    ELASTIC_RUM_JS_URL = (
+    ELASTIC_RUM_URL = (
         "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
+
+    MAX_BODY_SIZE: None | int = None
+    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
+    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
+    REQUIRED_PERMISSION: None | Permission = None
+    # the following should be False on security relevant endpoints
+    ALLOW_COOKIE_AUTHENTICATION = True
 
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
@@ -107,8 +117,9 @@ class BaseRequestHandler(RequestHandler):
     short_title: str = "Asoziales Netzwerk"
     description: str = "Die tolle Webseite des Asozialen Netzwerkes"
     content_type: None | str = None
-
     _active_origin_trials: set[str]
+    _auth_failed: bool = False
+    now: datetime
 
     def initialize(
         self,
@@ -146,7 +157,7 @@ class BaseRequestHandler(RequestHandler):
     @property
     def redis_prefix(self) -> str:
         """Get the Redis prefix from the settings."""
-        return self.settings.get("REDIS_PREFIX", "")
+        return self.settings.get("REDIS_PREFIX", NAME)
 
     @property
     def elasticsearch(self) -> AsyncElasticsearch:
@@ -156,7 +167,7 @@ class BaseRequestHandler(RequestHandler):
     @property
     def elasticsearch_prefix(self) -> str:
         """Get the Elasticsearch prefix from the settings."""
-        return self.settings.get("ELASTICSEARCH_PREFIX", "")
+        return self.settings.get("ELASTICSEARCH_PREFIX", NAME)
 
     @property
     def elastic_apm_client(self) -> None | elasticapm.Client:
@@ -166,6 +177,21 @@ class BaseRequestHandler(RequestHandler):
     def set_default_headers(self) -> None:
         """Set default headers."""
         self._active_origin_trials = set()
+        if self.settings.get("REPORTING"):
+            endpoint = self.settings.get("REPORTING_ENDPOINT")
+            self.set_header("Reporting-Endpoints", f'default="{endpoint}"')
+            self.set_header(
+                "Report-To",
+                json.dumps(
+                    {
+                        "group": "default",
+                        "max_age": 2592000,
+                        "endpoints": [{"url": endpoint}],
+                    },
+                    option=ORJSON_OPTIONS,
+                ),
+            )
+            self.set_header("NEL", '{"report_to":"default","max_age":2592000}')
         # dev.mozilla.org/docs/Web/HTTP/Headers
         self.set_header("Access-Control-Max-Age", "7200")
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -179,32 +205,42 @@ class BaseRequestHandler(RequestHandler):
         # don't send the Referer header for cross-origin requests
         self.set_header("Referrer-Policy", "same-origin")
         # dev.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
-        self.set_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.set_header(
+            "Cross-Origin-Opener-Policy", "same-origin; report-to=default"
+        )
         if self.request.path == "/kaenguru-comics-alt":  # TODO: improve this
-            self.set_header("Cross-Origin-Embedder-Policy", "credentialless")
+            self.set_header(
+                "Cross-Origin-Embedder-Policy",
+                "credentialless; report-to=default",
+            )
         else:
-            self.set_header("Cross-Origin-Embedder-Policy", "require-corp")
+            self.set_header(
+                "Cross-Origin-Embedder-Policy",
+                "require-corp; report-to=default",
+            )
         if self.settings.get("HSTS"):
             # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
             self.set_header("Strict-Transport-Security", "max-age=63072000")
         if (
-            _oa := self.settings.get("ONION_ADDRESS")
+            onion_address := self.settings.get("ONION_ADDRESS")
         ) and not self.request.host_name.endswith(".onion"):
             # community.torproject.org/onion-services/advanced/onion-location
             self.set_header(
                 "Onion-Location",
-                _oa
+                onion_address
                 + self.request.path
                 + (f"?{self.request.query}" if self.request.query else ""),
             )
         if self.settings.get("debug"):
             self.set_header("X-Debug", bool_to_str(True))
-            for permission in Permissions:
+            for permission in Permission:
                 if permission.name:
                     self.set_header(
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
+        if self._auth_failed:
+            self.set_header("WWW-Authenticate", "Bearer")
         self.origin_trial(
             "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         )
@@ -262,8 +298,8 @@ class BaseRequestHandler(RequestHandler):
         )
 
     @property
-    def dump(self) -> Callable[..., str | bytes | dict[Any, Any]]:
-        """Get the function used to dump the output dict."""
+    def dump(self) -> Callable[[Any], str | bytes]:
+        """Get the function for dumping the output."""
         if self.content_type == "application/json":
             return lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
 
@@ -272,17 +308,36 @@ class BaseRequestHandler(RequestHandler):
 
         return lambda spam: spam  # type: ignore[no-any-return]
 
-    def finish(
-        self, chunk: None | str | bytes | dict[Any, Any] = None
-    ) -> Future[None]:
-        """Finish the request."""
+    def write(self, chunk: str | bytes | dict[str, Any]) -> None:
+        """Write the given chunk to the output buffer.
+
+        To write the output to the network, use the ``flush()`` method.
+        """
         if self._finished:
-            return super().finish(chunk)
+            raise RuntimeError("Cannot write() after finish()")
 
         self.set_content_type_header()
 
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
+
+        super().write(chunk)
+
+    def finish(
+        self, chunk: None | str | bytes | dict[str, Any] = None
+    ) -> Future[None]:
+        """Finish this response, ending the HTTP request.
+
+        Passing a ``chunk`` to ``finish()`` is equivalent to passing that
+        chunk to ``write()`` and then calling ``finish()`` with no arguments.
+
+        Returns a ``Future`` which may optionally be awaited to track the sending
+        of the response to the client. This ``Future`` resolves when all the response
+        data has been sent, and raises an error if the connection is closed before all
+        data can be sent.
+        """
+        if self._finished:
+            raise RuntimeError("finish() called twice")
 
         if chunk is not None:
             self.write(chunk)
@@ -298,9 +353,9 @@ class BaseRequestHandler(RequestHandler):
 
     def set_content_type_header(self) -> None:
         """Set the Content-Type header based on `self.content_type`."""
-        if self.content_type in TEXT_CONTENT_TYPES:
+        if str(self.content_type).startswith("text/"):  # RFC2616 3.7.1
             self.set_header(
-                "Content-Type", f"{self.content_type}; charset=UTF-8"
+                "Content-Type", f"{self.content_type};charset=utf-8"
             )
         elif self.content_type is not None:
             self.set_header("Content-Type", self.content_type)
@@ -329,11 +384,11 @@ class BaseRequestHandler(RequestHandler):
         self.content_type = content_type
         self.set_content_type_header()
 
-    async def prepare(  # pylint: disable=invalid-overridden-method
+    async def prepare(  # noqa: C901
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=attribute-defined-outside-init
+        # pylint: disable=invalid-overridden-method, too-complex
         self.now = await self.get_time()
 
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
@@ -349,15 +404,35 @@ class BaseRequestHandler(RequestHandler):
 
         if self.request.method != "OPTIONS":
 
-            is_authorized = self.is_authorized(self.REQUIRED_PERMISSION)
-            if not is_authorized:
-                # TODO: self.set_header("WWW-Authenticate")
-                logger.info(
-                    "Unauthorized access to %s from %s",
-                    self.request.path,
-                    anonymize_ip(str(self.request.remote_ip)),
-                )
-                raise HTTPError(401 if is_authorized is None else 403)
+            required_permission = self.REQUIRED_PERMISSION
+            required_permission_for_method = getattr(
+                self, f"REQUIRED_PERMISSION_{self.request.method}", None
+            )
+
+            if required_permission is None:
+                required_permission = required_permission_for_method
+            elif required_permission_for_method is not None:
+                required_permission |= required_permission_for_method
+
+            if required_permission is not None:
+                is_authorized = self.is_authorized(required_permission)
+                if not is_authorized:
+                    self._auth_failed = True
+                    logger.warning(
+                        "Unauthorized access to %s from %s",
+                        self.request.path,
+                        anonymize_ip(str(self.request.remote_ip)),
+                    )
+                    raise HTTPError(401 if is_authorized is None else 403)
+
+            if self.MAX_BODY_SIZE is not None:
+                if len(self.request.body) > self.MAX_BODY_SIZE:
+                    logger.warning(
+                        "%s > MAX_BODY_SIZE (%s)",
+                        len(self.request.body),
+                        self.MAX_BODY_SIZE,
+                    )
+                    raise HTTPError(413)
 
             if not await self.ratelimit(True):
                 await self.ratelimit()
@@ -387,7 +462,7 @@ class BaseRequestHandler(RequestHandler):
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
-            or self.is_authorized(Permissions.RATELIMITS)
+            or self.is_authorized(Permission.RATELIMITS)
         ):
             return False
         remote_ip = blake3(
@@ -399,7 +474,7 @@ class BaseRequestHandler(RequestHandler):
         if global_ratelimit:
             key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
             max_burst = 99  # limit = 100
-            count_per_period = 20  # 20 requests per 1 second
+            count_per_period = 20  # 20 requests per second
             period = 1
             tokens = 10 if self.settings.get("UNDER_ATTACK") else 1
         else:
@@ -423,11 +498,11 @@ class BaseRequestHandler(RequestHandler):
             )
             tokens = 1 if self.request.method != "HEAD" else 0
         if not EVENT_REDIS.is_set():
-            raise HTTPError(
-                503,
+            logger.warning(
                 "Ratelimits are enabled, but Redis is not available. "
                 "This can happen shortly after starting the website.",
             )
+            raise HTTPError(503)
         result = await self.redis.execute_command(  # type: ignore[no-untyped-call]
             "CL.THROTTLE",
             key,
@@ -436,13 +511,15 @@ class BaseRequestHandler(RequestHandler):
             period,
             tokens,
         )
+        # fmt: off
+        # pylint: disable=line-too-long
         if result[0]:
-            retry_after = result[3] + 1  # redis-cell stupidly rounds down
+            retry_after = result[3] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
             self.set_header("Retry-After", retry_after)
             if global_ratelimit:
                 self.set_header("X-RateLimit-Global", "true")
         if not global_ratelimit:
-            reset_after = result[4] + 1  # redis-cell stupidly rounds down
+            reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
             self.set_header("X-RateLimit-Limit", str(result[1]))
             self.set_header("X-RateLimit-Remaining", str(result[2]))
             self.set_header("X-RateLimit-Reset", str(time.time() + reset_after))
@@ -451,6 +528,7 @@ class BaseRequestHandler(RequestHandler):
                 "X-RateLimit-Bucket",
                 blake3(bucket.encode("ascii")).hexdigest(),
             )
+        # fmt: on
         if result[0]:
             if self.now.date() == date(self.now.year, 4, 20):
                 self.set_status(420)
@@ -496,9 +574,9 @@ class BaseRequestHandler(RequestHandler):
         kwargs["head"] = True
         return self.get(*args, **kwargs)
 
-    # pylint: disable=too-many-return-statements
     def get_error_page_description(self, status_code: int) -> str:
         """Get the description for the error page."""
+        # pylint: disable=too-many-return-statements
         # https://developer.mozilla.org/docs/Web/HTTP/Status
         if 100 <= status_code <= 199:
             return "Hier gibt es eine total wichtige Information."
@@ -529,7 +607,7 @@ class BaseRequestHandler(RequestHandler):
             kwargs["exc_info"][0], HTTPError
         ):
             if self.settings.get("serve_traceback") or self.is_authorized(
-                Permissions.TRACEBACK
+                Permission.TRACEBACK
             ):
                 return "".join(
                     traceback.format_exception(*kwargs["exc_info"])
@@ -689,29 +767,40 @@ class BaseRequestHandler(RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a boolean") from err
 
-    def is_authorized(self, permission: Permissions) -> None | bool:
+    def is_authorized(self, permission: Permission) -> None | bool:
         """Check whether the request is authorized."""
-        if permission == Permissions(0):
-            return True
+
+        def keydecode(token: str) -> None | str:
+            try:
+                return b64decode(token).decode("utf-8")
+            except ValueError:
+                return None
 
         api_secrets = self.settings.get("TRUSTED_API_SECRETS", {})
-
-        found_keys: list[None | str] = [
-            *self.request.headers.get_list("Authorization"),
+        found_keys: tuple[None | str, ...] = (
+            *(
+                (keydecode(_[7:]) if _.lower().startswith("bearer ") else _)
+                for _ in self.request.headers.get_list("Authorization")
+            ),
+            *(keydecode(_) for _ in self.get_arguments("access_token")),
             *self.get_arguments("key"),
-        ]
-        if self.SUPPORTS_COOKIE_AUTHORIZATION:
-            found_keys.append(self.get_cookie("key", default=None))
+            keydecode(cast(str, self.get_cookie("access_token", default="")))
+            if self.ALLOW_COOKIE_AUTHENTICATION
+            else None,
+            self.get_cookie("key", default=None)
+            if self.ALLOW_COOKIE_AUTHENTICATION
+            else None,
+        )
 
-        user_perms = Permissions(0)
+        if not any(key and key in api_secrets for key in found_keys):
+            return None
+
+        permissions = Permission(0)
         for key in found_keys:
             if key and key in api_secrets:
-                user_perms |= api_secrets[key]
+                permissions |= api_secrets[key]
 
-        if user_perms == Permissions(0):
-            return None  # no known key with permissions supplied
-
-        return permission in user_perms
+        return permission in permissions
 
     def geoip(
         self,
@@ -726,7 +815,7 @@ class BaseRequestHandler(RequestHandler):
         return geoip(ip, database, self.elasticsearch)
 
     async def get_time(self) -> datetime:
-        """Get the start time of the request in the user's timezone."""
+        """Get the start time of the request in the users timezone."""
         tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
@@ -787,7 +876,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             and not issubclass(kwargs["exc_info"][0], HTTPError)
             and (
                 self.settings.get("serve_traceback")
-                or self.is_authorized(Permissions.TRACEBACK)
+                or self.is_authorized(Permission.TRACEBACK)
             ),
         )
 
@@ -801,35 +890,37 @@ class HTMLRequestHandler(BaseRequestHandler):
         namespace = super().get_template_namespace()
         namespace.update(
             ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
-            title=self.title,
-            short_title=self.short_title,
+            as_html=self.content_type == "text/html",
+            c=self.settings.get("TESTING")
+            or self.now.date() == date(self.now.year, 4, 1)
+            or str_to_bool(self.get_cookie("c", "f") or "f", False),
+            canonical_url=self.fix_url(
+                self.request.full_url().upper()
+                if self.request.path.upper().startswith("/LOLWUT")
+                else self.request.full_url().lower()
+            ).split("?")[0],
             description=self.description,
+            dynload=self.get_dynload(),
+            elastic_rum_url=self.ELASTIC_RUM_URL,
+            fix_static=lambda url: self.fix_url(fix_static_url(url)),
+            fix_url=self.fix_url,
+            form_appendix=self.get_form_appendix(),
+            GH_ORG_URL=GH_ORG_URL,
+            GH_PAGES_URL=GH_PAGES_URL,
+            GH_REPO_URL=GH_REPO_URL,
             keywords="Asoziales Netzwerk, Känguru-Chroniken"
             + (
                 f", {self.module_info.get_keywords_as_str(self.request.path)}"
                 if self.module_info
                 else ""
             ),
-            no_3rd_party=self.get_no_3rd_party(),
             lang="de",  # TODO: add language support
-            form_appendix=self.get_form_appendix(),
-            fix_url=self.fix_url,
-            fix_static=lambda url: self.fix_url(fix_static_url(url)),
-            REPO_URL=REPO_URL,
-            theme=self.get_display_theme(),
-            elastic_rum_js_url=self.ELASTIC_RUM_JS_URL,
-            canonical_url=self.fix_url(
-                self.request.full_url().upper()
-                if self.request.path.upper().startswith("/LOLWUT")
-                else self.request.full_url().lower()
-            ).split("?")[0],
-            settings=self.settings,
-            c=self.settings.get("TESTING")
-            or self.now.date() == date(self.now.year, 4, 1)
-            or str_to_bool(self.get_cookie("c", "f") or "f", False),
-            dynload=self.get_dynload(),
-            as_html=self.content_type == "text/html",
+            no_3rd_party=self.get_no_3rd_party(),
             now=self.now,
+            settings=self.settings,
+            short_title=self.short_title,
+            theme=self.get_display_theme(),
+            title=self.title,
         )
         namespace.update(
             {
@@ -857,7 +948,6 @@ class HTMLRequestHandler(BaseRequestHandler):
         as_markdown: bool = self.content_type == "text/markdown"
         if (
             not isinstance(chunk, bytes | str)
-            or chunk is None
             or not self.used_render
             or getattr(self, "IS_NOT_HTML", False)
             or not (as_json or as_plain_text or as_markdown)
@@ -945,8 +1035,7 @@ class NotFoundHandler(HTMLRequestHandler):
 
     async def prepare(self) -> None:
         """Throw a 404 HTTP error or redirect to another page."""
-        # pylint: disable=attribute-defined-outside-init
-        self.now = await self.get_time()  # used by get_template_namespace
+        self.now = await self.get_time()
 
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
@@ -1051,5 +1140,7 @@ class ZeroDivision(HTMLRequestHandler):
 
     async def prepare(self) -> None:
         """Divide by zero and raise an error."""
+        self.now = await self.get_time()
+        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
         if not self.request.method == "OPTIONS":
             420 / 0  # pylint: disable=pointless-statement

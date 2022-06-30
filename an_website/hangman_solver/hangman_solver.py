@@ -18,7 +18,7 @@ from __future__ import annotations
 import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
-from functools import lru_cache
+from functools import cache
 
 from tornado.web import HTTPError
 
@@ -117,7 +117,7 @@ def fix_letter_counter_crossword_mode(
     letter_counter.update(update_dict)
 
 
-@lru_cache(5)
+@cache
 def filter_words(
     words: frozenset[str] | str,
     regex: re.Pattern[str],
@@ -267,7 +267,7 @@ class HangmanSolver(HTMLRequestHandler):
         )
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request and render the page."""
+        """Handle GET requests to the hangman solver page."""
         if head:
             return
         hangman = await self.get_hangman_obj()
@@ -275,13 +275,13 @@ class HangmanSolver(HTMLRequestHandler):
 
 
 class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
-    """Request handler for the hangman solver JSON API."""
+    """Request handler for the hangman solver API."""
 
     RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request and write the Hangman object as JSON."""
+        """Handle GET requests to the hangman solver API."""
         if head:
             return
         hangman = await self.get_hangman_obj()

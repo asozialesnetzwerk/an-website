@@ -35,13 +35,15 @@ setup(
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "License :: OSI Approved :: "
-        "GNU Affero General Public License v3 or later (AGPLv3+)",
+        "License :: OSI Approved"
+        " :: GNU Affero General Public License v3 or later (AGPLv3+)",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: Implementation :: CPython",
         "Typing :: Typed",
     ],

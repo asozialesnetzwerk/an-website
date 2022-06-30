@@ -68,9 +68,12 @@ class LOLWUT(HTMLRequestHandler):
         """Handle GET requests to the LOLWUT page."""
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
+
         art = await generate_art(self.redis, args, head)
+
         if head:
             return
+
         await self.render(
             "ansi2html.html",
             ansi=art,
@@ -91,7 +94,9 @@ class LOLWUTAPI(APIRequestHandler):
         """Handle GET requests to the LOLWUT API."""
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
+
         art = await generate_art(self.redis, args, head)
+
         if self.content_type == "text/plain":
             return await self.finish(art)
 

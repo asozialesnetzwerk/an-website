@@ -42,7 +42,7 @@ class WikiHandler(HTMLRequestHandler):
     """The request handler for the wiki page."""
 
     def get(self, *, head: bool = False) -> None:
-        """Handle the GET requests to the wiki page."""
+        """Handle GET requestss to the wiki page."""
         if head:
             return
         self.render(

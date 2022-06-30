@@ -32,8 +32,9 @@ EPOCH = 1651075200
 
 NAME = "an-website"
 VERSION = get_version(__file__, vcs="git")
-GIT_URL = "https://github.com/asozialesnetzwerk"
-REPO_URL = f"{GIT_URL}/{NAME}"
+GH_ORG_URL = "https://github.com/asozialesnetzwerk"
+GH_REPO_URL = f"{GH_ORG_URL}/{NAME}"
+GH_PAGES_URL = f"https://github.asozial.org/{NAME}"
 
 STATIC_DIR = os.path.join(DIR, "static")
 TEMPLATES_DIR = os.path.join(DIR, "templates")

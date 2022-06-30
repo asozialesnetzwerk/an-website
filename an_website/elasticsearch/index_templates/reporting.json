@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "description": "The index template for the reporting API"
+  },
+  "index_patterns": [
+    "{prefix}-reports"
+  ],
+  "data_stream": {},
+  "composed_of": [
+    "{prefix}-ecs-base",
+    "{prefix}-ecs-ecs",
+    "{prefix}-ecs-url",
+    "{prefix}-ecs-user_agent"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "codec": "best_compression",
+        "default_pipeline": "{prefix}-reporting",
+        "lifecycle": {
+          "name": "30-days-default"
+        },
+        "query": {
+          "default_field": [
+            "message",
+            "tags",
+            "type",
+            "url.*",
+            "user_agent.*"
+          ]
+        }
+      }
+    },
+    "mappings": {
+      "dynamic": "strict",
+      "_size": {
+        "enabled": true
+      },
+      "properties": {
+        "type": {
+          "type": "keyword",
+          "ignore_above": 1024
+        },
+        "body": {
+          "type": "flattened",
+          "null_value": "null"
+        }
+      }
+    }
+  }
+}

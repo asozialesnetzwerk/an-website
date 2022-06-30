@@ -52,13 +52,11 @@ class Endpoints(HTMLRequestHandler):
 
     def get_endpoints(
         self,
-    ) -> list[dict[str, str | list[dict[str, str | int | list[str]]]]]:
+    ) -> list[dict[str, str | list[dict[str, str | list[str]]]]]:
         """Get a list of all API endpoints and return it."""
-        endpoints: list[
-            dict[str, str | list[dict[str, str | int | list[str]]]]
-        ] = []
+        endpoints: list[dict[str, str | list[dict[str, str | list[str]]]]] = []
         for module_info in self.settings["MODULE_INFOS"]:
-            api_paths: list[dict[str, str | int | list[str]]] = [
+            api_paths: list[dict[str, str | list[str]]] = [
                 {
                     "path": handler[0],
                     "methods": handler[1].get_allowed_methods(),
@@ -66,9 +64,10 @@ class Endpoints(HTMLRequestHandler):
                 }
                 for handler in module_info.handlers
                 if handler[0].startswith("/api/")
+                if issubclass(handler[1], APIRequestHandler)
                 if (
-                    issubclass(handler[1], APIRequestHandler)
-                    and self.is_authorized(handler[1].REQUIRED_PERMISSION)
+                    handler[1].REQUIRED_PERMISSION is None
+                    or self.is_authorized(handler[1].REQUIRED_PERMISSION)
                 )
             ]
             if len(api_paths) > 0:

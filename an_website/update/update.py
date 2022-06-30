@@ -27,7 +27,7 @@ from tornado.web import stream_request_body
 
 from .. import EVENT_SHUTDOWN, NAME
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, Permissions
+from ..utils.utils import ModuleInfo, Permission
 
 
 def get_module_info() -> ModuleInfo:
@@ -62,7 +62,7 @@ class UpdateAPI(APIRequestHandler):
     """The request handler for the update API."""
 
     ALLOWED_METHODS: tuple[str, ...] = ("PUT",)
-    REQUIRED_PERMISSION: Permissions = Permissions.UPDATE
+    REQUIRED_PERMISSION = Permission.UPDATE
 
     queue: SimpleQueue[None | bytes]
 
@@ -84,7 +84,7 @@ class UpdateAPI(APIRequestHandler):
         self.queue.put(None)
 
     async def put(self, filename: str) -> None:
-        """Handle the PUT request to the update API."""
+        """Handle PUT requests to the update API."""
         # pylint: disable=while-used
         self.queue.put(None)
         await self.future

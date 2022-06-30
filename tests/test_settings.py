@@ -60,7 +60,7 @@ async def test_setting_stuff_without_cookies(
             body=request_body,
             follow_redirects=True,
         )
-        assert_valid_response(response, content_type="text/html; charset=UTF-8")
+        assert_valid_response(response, content_type="text/html;charset=utf-8")
         assert_url_query(
             response.effective_url,
             theme="pink",
@@ -107,7 +107,7 @@ async def test_setting_stuff_and_saving_to_cookies(
             else None,
             body=request_body,
         )
-        assert_valid_response(response, content_type="text/html; charset=UTF-8")
+        assert_valid_response(response, content_type="text/html;charset=utf-8")
         if request_body:
             assert response.effective_url.endswith("/einstellungen")
 

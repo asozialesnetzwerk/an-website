@@ -116,9 +116,9 @@ def anonymize_logs() -> None:
 
 
 def ensure_bytes(value: Any) -> bytes:
-    """Return the specified value as bytes or str or None."""
+    """Return the value as bytes."""
     if isinstance(value, bool):
-        return b"sure" if value else b"nope"
+        return b"true" if value else b"false"
     if isinstance(value, bytes):
         return value
     return str(value).encode("utf-8")

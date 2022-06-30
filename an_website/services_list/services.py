@@ -52,7 +52,7 @@ SERVICES: tuple[Service, ...] = (
         "verraten möchten, einen eigenen Skin nutzen können.",
         {
             "Domain": "minceraft.asozial.org",
-            "Version": "1.15.2 (1.7-1.18 wird unterstützt)",
+            "Version": "1.15.2 (1.7-1.19 wird unterstützt)",
             "Karte": "https://minceraft.asozial.org",
         },
     ),

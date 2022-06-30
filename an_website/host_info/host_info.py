@@ -87,7 +87,7 @@ class HostInfo(HTMLRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """
-        Handle the GET requests to the host info page.
+        Handle GET requests to the host info page.
 
         Use screenFetch to generate the page.
         """

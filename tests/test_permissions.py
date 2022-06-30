@@ -17,8 +17,6 @@ from __future__ import annotations
 
 import socket
 
-from an_website.utils.utils import Permissions
-
 from . import FetchCallable, app, assert_valid_response, fetch
 from .test_backdoor import request_and_parse
 
@@ -98,20 +96,20 @@ async def test_permissions(
     ):
         assert_valid_response(
             await fetch("/api/ping", headers={"Authorization": key}),
-            "text/plain; charset=UTF-8",
+            "text/plain;charset=utf-8",
             200,
             headers=headers,
         )
         assert_valid_response(
             await fetch(f"/api/ping?key={key.replace('#', '%23')}"),
-            "text/plain; charset=UTF-8",
+            "text/plain;charset=utf-8",
             200,
             headers=headers,
         )
 
     assert_valid_response(
         await fetch("/api/ping?key=s3", headers={"Authorization": "s4"}),
-        "text/plain; charset=UTF-8",
+        "text/plain;charset=utf-8",
         200,
         headers={
             "X-Permission-Backdoor": "sure",
@@ -136,17 +134,6 @@ async def test_permissions_with_backdoor(
     assert response["result"] is None
 
     response = await request_and_parse(
-        fetch, "app.settings['TRUSTED_API_SECRETS']['123qweQWE!@#000000000']"
-    )
-    assert isinstance(response, dict)
-    assert response["success"]
-    assert not response["output"]
-    assert response["result"] == (
-        "<Permissions.UPDATE|BACKDOOR|TRACEBACK|RATELIMITS: 15>",
-        Permissions(15),
-    )
-
-    response = await request_and_parse(
         fetch, "len(app.settings['TRUSTED_API_SECRETS'])"
     )
     assert isinstance(response, dict)
@@ -156,9 +143,8 @@ async def test_permissions_with_backdoor(
 
     response = await request_and_parse(
         fetch,
-        "from an_website.utils.utils import Permissions\n"
-        "print("
-        "self.is_authorized(Permissions.BACKDOOR | Permissions.RATELIMITS))",
+        "from an_website.utils.utils import Permission\n"
+        "print(self.is_authorized(Permission.TRACEBACK | Permission.BACKDOOR))",
         auth_key="s4",
         mode="exec?key=s3",  # type: ignore[arg-type]
     )
@@ -169,8 +155,8 @@ async def test_permissions_with_backdoor(
 
     response = await request_and_parse(
         fetch,
-        "from an_website.utils.utils import Permissions\n"
-        "print(self.is_authorized(Permissions.RATELIMITS))",
+        "from an_website.utils.utils import Permission\n"
+        "print(self.is_authorized(Permission.RATELIMITS))",
         mode="exec",
     )
     assert isinstance(response, dict)

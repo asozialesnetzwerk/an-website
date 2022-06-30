@@ -21,6 +21,7 @@ import re
 import socket
 import sys
 import urllib.parse
+import warnings
 from collections.abc import Awaitable, Callable
 from typing import Any, cast
 
@@ -33,6 +34,8 @@ from blake3 import blake3  # type: ignore
 from lxml import etree  # type: ignore
 from lxml.html import document_fromstring  # type: ignore
 from lxml.html.html5parser import HTMLParser  # type: ignore
+
+warnings.filterwarnings("ignore", module="defusedxml")
 
 DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
@@ -64,14 +67,10 @@ WRONG_QUOTE_DATA = {
 # this makes importing an_website possible
 sys.path.append(PARENT_DIR)
 
-from an_website import main  # noqa  # pylint: disable=wrong-import-position
-from an_website import quotes  # noqa  # pylint: disable=wrong-import-position
-from an_website.patches import (  # noqa  # pylint: disable=wrong-import-position
-    apply,
-)
-from an_website.utils.utils import (  # noqa  # pylint: disable=wrong-import-position
-    ModuleInfo,
-)
+# pylint: disable=wrong-import-position
+from an_website import main  # noqa: E402
+from an_website import quotes  # noqa: E402
+from an_website.patches import apply  # noqa: E402
 
 apply()
 
@@ -84,7 +83,7 @@ def app() -> tornado.web.Application:
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
 
-    main.setup_logging(config, testing=True)
+    main.setup_logging(config)
 
     for module_name in config.get(
         "GENERAL", "IGNORED_MODULES", fallback=""
@@ -166,6 +165,10 @@ def assert_valid_response(
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
     url = response.effective_url
+
+    if url.startswith("https://"):
+        return response
+
     assert response.code == code or print(code, url, response)
 
     if (
@@ -175,7 +178,6 @@ def assert_valid_response(
         )
         and response.headers["Content-Type"] != "application/vnd.python.pickle"
         and response.body
-        and url != "https://minceraft.asozial.org/"
     ):
         assert response.body.endswith(b"\n") or print(
             f"Body from {url} doesn't end with newline"
@@ -256,7 +258,7 @@ async def check_html_page(
                 content_type=None,  # ignore Content-Type
             )
             if (
-                _response.headers["Content-Type"] == "text/html; charset=UTF-8"
+                _response.headers["Content-Type"] == "text/html;charset=utf-8"
                 and _response.effective_url.startswith(scheme_and_host)
                 and recursive > 0
             ):
@@ -265,7 +267,7 @@ async def check_html_page(
                 link.startswith(f"{scheme_and_host}/static/")
                 or link.startswith(f"{scheme_and_host}/soundboard/files/")
                 and _response.headers["Content-Type"]
-                != "text/html; charset=UTF-8"
+                != "text/html;charset=utf-8"
             ):
                 # check if static file is linked with correct hash as v
                 file_hash = cast(str, blake3(_response.body).hexdigest(8))
@@ -287,7 +289,7 @@ def assert_valid_html_response(
     effective_url: None | str = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "text/html; charset=UTF-8", code)
+    assert_valid_response(response, "text/html;charset=utf-8", code)
     body = response.body.decode("utf-8")
     # check if body is valid html5
     root: etree.ElementTree = HTMLParser(
@@ -310,7 +312,7 @@ def assert_valid_rss_response(
     response: tornado.httpclient.HTTPResponse, code: int = 200
 ) -> etree.ElementTree:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "application/rss+xml; charset=UTF-8", code)
+    assert_valid_response(response, "application/rss+xml", code)
     body = response.body
     parsed_xml: etree.ElementTree = etree.fromstring(
         body,
@@ -324,9 +326,9 @@ def assert_valid_yaml_response(
     response: tornado.httpclient.HTTPResponse, code: int = 200
 ) -> Any:
     """Assert a valid yaml response with the given code."""
-    assert_valid_response(response, "application/yaml; charset=UTF-8", code)
+    assert_valid_response(response, "application/yaml", code)
     parsed = yaml.full_load(response.body)
-    assert parsed is not None and len(parsed)
+    assert parsed
     return parsed
 
 
@@ -334,7 +336,7 @@ def assert_valid_json_response(
     response: tornado.httpclient.HTTPResponse, code: int = 200
 ) -> Any:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "application/json; charset=UTF-8", code)
+    assert_valid_response(response, "application/json", code)
     parsed_json = json.loads(response.body)
-    assert parsed_json is not None and len(parsed_json)
+    assert parsed_json
     return parsed_json

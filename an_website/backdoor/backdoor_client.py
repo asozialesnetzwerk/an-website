@@ -29,6 +29,7 @@ import sys
 import time
 import traceback
 import uuid
+from base64 import b64encode
 from collections.abc import Callable, Iterable
 from types import EllipsisType
 from typing import Any, TypedDict
@@ -260,6 +261,7 @@ def send(
     body = code.encode("utf-8")
     if isinstance(url, str):
         url = urlsplit(url)
+    key = f"Bearer {b64encode(key.encode('utf-8')).decode('ascii')}"
     headers = {"Authorization": key, "Accept": "application/vnd.python.pickle"}
     if FLUFL:
         headers["X-Future-Feature"] = "barry_as_FLUFL"

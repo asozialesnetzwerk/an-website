@@ -155,7 +155,7 @@ async def continuation_string(
             )
             break
         new_kino_count = int((schwarz * price_ostmark) // 100)
-        # TODO: Add random chance to get approximation
+        # TODO: add random chance to get approximation
         output.append(
             f"{num_to_string(mark)} Mark, {num_to_string(ost)} Ostmark, "
             f"{num_to_string(schwarz)} Ostmark auf dem Schwarzmarkt, "
@@ -211,7 +211,7 @@ class CurrencyConverter(HTMLRequestHandler):
     """Request handler for the currency converter page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request and display the page."""
+        """Handle GET requests to the currency converter page."""
         value_dict = await self.create_value_dict()
         if value_dict is None:
             value_dict = await get_value_dict(0)
@@ -276,11 +276,11 @@ class CurrencyConverter(HTMLRequestHandler):
 
 
 class CurrencyConverterAPI(APIRequestHandler, CurrencyConverter):
-    """Request handler for the currency converter JSON API."""
+    """Request handler for the currency converter API."""
 
     async def get(self, *, head: bool = False) -> None:
         """
-        Handle the GET request and return the value dict as JSON.
+        Handle GET requests to the currency converter API.
 
         If no arguments are given the potential arguments are shown.
         """

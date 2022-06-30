@@ -15,9 +15,10 @@ elastic-apm = {version = "==6.*"}
 elastic-enterprise-search = {version = "==7.*"}
 elasticsearch = {version = "==7.*", extras = ["async"]}
 emoji = {version = "==1.*"}
+frozendict = {version = "==2.*"}
 get_version = {version = "==3.*"}
 html2text = {version = "*"}
-hyrule = {version = "<2"}
+hyrule = {version = "==0.1"}
 jxlpy = {version = "<2"}
 lxml = {version = "==4.*"}
 namedthreads = {version = "*"}
@@ -65,4 +66,3 @@ types-Pillow = {version = "==9.*"}
 types-python-dateutil = {version = "==2.*"}
 types-PyYAML = {version = "==6.*"}
 types-redis = {version = "==4.*"}
-types-requests = {version = "==2.*"}

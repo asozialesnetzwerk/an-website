@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Handle the requests for the soundboard."""
+"""The soundboard of the website."""
 
 from __future__ import annotations
 
@@ -162,7 +162,7 @@ async def search_main_page_info(
 
 
 class SoundboardHTMLHandler(HTMLRequestHandler):
-    """The request handler that handles requests to the HTML pages."""
+    """The request handler for the HTML pages."""
 
     def update_title_and_desc(self, path: str) -> None:
         """Update the title and description of the page."""
@@ -246,7 +246,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 
 
 class SoundboardRSSHandler(SoundboardHTMLHandler):
-    """The request handler that handles requests to the RSS feeds."""
+    """The request handler for the RSS feeds."""
 
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
         "application/rss+xml",

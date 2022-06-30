@@ -292,7 +292,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         *,
         head: bool = False,
     ) -> None:
-        """Handle the GET request to this page and render the quote as image."""
+        """Handle GET requests to this page and render the quote as image."""
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
             raise HTTPError(
                 status_code=400,

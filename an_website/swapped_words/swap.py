@@ -20,7 +20,7 @@ import os
 
 from tornado.web import HTTPError
 
-from .. import GIT_URL
+from .. import GH_ORG_URL
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, str_to_bool
 from . import DIR
@@ -42,7 +42,7 @@ def get_module_info() -> ModuleInfo:
             PageInfo(
                 name="Plugin",
                 description="Ein Browser-Plugin, welches Wörter vertauscht",
-                path=f"{GIT_URL}/VertauschteWoerterPlugin",
+                path=f"{GH_ORG_URL}/VertauschteWoerterPlugin",
             ),
         ),
         aliases=(

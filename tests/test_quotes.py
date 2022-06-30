@@ -21,6 +21,7 @@ import pytest
 import an_website.quotes.quotes as main_page
 from an_website import quotes
 from an_website.quotes import create
+from an_website.quotes.quotes_image import FILE_EXTENSIONS
 
 from . import (
     WRONG_QUOTE_DATA,
@@ -255,15 +256,15 @@ async def test_quote_request_handlers(
     await check_html_page(fetch, "/zitate/erstellen")
     assert not assert_valid_response(
         await fetch("/zitate/info/z/1", method="HEAD"),
-        "text/html; charset=UTF-8",
+        "text/html;charset=utf-8",
     ).body
     assert not assert_valid_response(
         await fetch("/zitate/share/1-1", method="HEAD"),
-        "text/html; charset=UTF-8",
+        "text/html;charset=utf-8",
     ).body
     assert not assert_valid_response(
         await fetch("/zitate/erstellen", method="HEAD"),
-        "text/html; charset=UTF-8",
+        "text/html;charset=utf-8",
     ).body
 
     assert len(
@@ -277,8 +278,6 @@ async def test_quote_request_handlers(
     assert_valid_response(
         await fetch("/zitate/1-2", headers={"Accept": "image/png"}), "image/png"
     )
-    # pylint: disable=import-outside-toplevel
-    from an_website.quotes.quotes_image import FILE_EXTENSIONS
 
     for extension, name in FILE_EXTENSIONS.items():
         content_type = f"image/{name}"
@@ -289,7 +288,7 @@ async def test_quote_request_handlers(
             await fetch("/zitate/1-1", headers={"Accept": content_type}),
             content_type,
         ).body
-        assert image1 == image2
+        assert image1 == image2 or name == "pdf"  # Planet der Frauen
 
 
 def test_parsing_vote_str() -> None:

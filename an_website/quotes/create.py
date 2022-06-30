@@ -192,7 +192,7 @@ class CreatePage1(QuoteReadyCheckHandler):
     """The request handler for the create page."""
 
     RATELIMIT_POST_LIMIT = 5
-    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the create page."""
@@ -227,7 +227,7 @@ class CreatePage1(QuoteReadyCheckHandler):
             )
 
         if not quote:
-            # TODO: Search for real author, to reduce work for users
+            # TODO: search for real author, to reduce work for users
             real_author_str = self.get_argument("real-author-1", default=None)
             if not real_author_str:
                 raise HTTPError(
@@ -266,7 +266,7 @@ class CreatePage2(QuoteReadyCheckHandler):
     """The request handler for the second part of the create page."""
 
     RATELIMIT_POST_LIMIT = 5
-    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per minute
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""

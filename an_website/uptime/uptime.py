@@ -84,26 +84,12 @@ async def get_availability_data(
         query={
             "bool": {
                 "filter": [
-                    {
-                        "range": {
-                            "@timestamp": {
-                                "gte": "now-1M",
-                            },
-                        },
-                    },
+                    {"range": {"@timestamp": {"gte": "now-1M"}}},
+                    {"term": {"monitor.type": {"value": "http"}}},
                     {
                         "term": {
-                            "service.name": {
-                                "value": NAME.removesuffix("-dev"),
-                            }
-                        },
-                    },
-                    {
-                        "term": {
-                            "monitor.type": {
-                                "value": "http",
-                            }
-                        },
+                            "service.name": {"value": NAME.removesuffix("-dev")}
+                        }
                     },
                 ]
             }

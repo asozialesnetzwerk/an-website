@@ -1,0 +1,21 @@
+{
+  "description": "The ingest pipeline for the reporting API",
+  "processors": [
+    {
+      "uri_parts": {
+        "field": "url"
+      }
+    },
+    {
+      "registered_domain": {
+        "field": "url.domain",
+        "target_field": "url"
+      }
+    },
+    {
+      "user_agent": {
+        "field": "user_agent"
+      }
+    }
+  ]
+}

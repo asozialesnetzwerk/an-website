@@ -41,6 +41,7 @@ TEXT_CONTENT_TYPES = {
     "application/javascript",
     "application/json",
     "application/rss+xml",
+    "application/x-ndjson",
     "application/xml",
     "application/yaml",
     "image/svg+xml",
@@ -200,13 +201,14 @@ class Timer:
         return self._execution_time
 
 
-class Permissions(IntFlag):
+class Permission(IntFlag):
     """Permissions for accessing the website."""
 
     RATELIMITS = 1
     TRACEBACK = 2
     BACKDOOR = 4
     UPDATE = 8
+    REPORTING = 16
 
 
 @cache
@@ -294,6 +296,11 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
+def country_code_to_flag(code: str) -> str:
+    """Convert a two-letter ISO country code to a flag emoji."""
+    return "".join(chr(ord(char) + 23 * 29 * 191) for char in code.upper())
+
+
 def emojify(string: str) -> str:
     """Emojify a given string."""
     string = re.sub(
@@ -312,11 +319,6 @@ def emojify(string: str) -> str:
         .replace("-", "➖")
         .replace("+", "➕")
     )
-
-
-def country_code_to_flag(code: str) -> str:
-    """Convert a two-letter ISO country code to a flag emoji."""
-    return "".join(chr(ord(char) + 23 * 29 * 191) for char in code.upper())
 
 
 async def geoip(

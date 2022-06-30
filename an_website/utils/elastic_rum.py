@@ -54,10 +54,12 @@ class ElasticRUM(BaseRequestHandler):
         "application/javascript",
         "application/json",
     )
+
     URL = (
         "https://unpkg.com/@elastic/apm-rum@{}"
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
+
     SCRIPTS: dict[str, tuple[str, float]] = {}
     CACHE_TIME = 365 * 60 * 60 * 24
 
@@ -89,7 +91,7 @@ class ElasticRUM(BaseRequestHandler):
             )
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
-                BaseRequestHandler.ELASTIC_RUM_JS_URL = new_path
+                BaseRequestHandler.ELASTIC_RUM_URL = new_path
             logger.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return

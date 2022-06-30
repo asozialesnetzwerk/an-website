@@ -82,20 +82,20 @@ def get_hash_of_file_hashes() -> str:
 
 
 class VersionAPI(APIRequestHandler):
-    """The Tornado request handler for the version API."""
+    """The request handler for the version API."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the version API."""
+        """Handle GET requests to the version API."""
         if head:
             return
         await self.finish_dict(version=VERSION, hash=get_hash_of_file_hashes())
 
 
 class Version(HTMLRequestHandler):
-    """The Tornado request handler for the version page."""
+    """The request handler for the version page."""
 
     async def get(self, full: str, *, head: bool = False) -> None:
-        """Handle the GET request to the version page."""
+        """Handle GET requests to the version page."""
         if head:
             return
         await self.render(

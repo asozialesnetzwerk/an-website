@@ -41,19 +41,19 @@ async def test_json_apis(
 ) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
-        "/api/endpunkte",
-        "/api/version",
         "/api/betriebszeit",
         "/api/discord",
         "/api/discord/367648314184826880",
         "/api/discord",
-        "/api/ip",
-        # "/api/zitate/1-1",  # gets tested with quotes
+        "/api/endpunkte",
         "/api/hangman-loeser",
+        "/api/ip",
         "/api/ping",
+        "/api/version",
         "/api/vertauschte-woerter",
-        "/api/wortspiel-helfer",
         "/api/waehrungs-rechner",
+        "/api/wortspiel-helfer",
+        # "/api/zitate/1-1",  # gets tested with quotes
     )
     for api in json_apis:
         json_resp = assert_valid_json_response(
@@ -68,13 +68,13 @@ async def test_json_apis(
             await fetch(
                 api, method="HEAD", headers={"Accept": "application/json"}
             ),
-            "application/json; charset=UTF-8",
+            "application/json",
         ).body
         assert not assert_valid_response(
             await fetch(
                 api, method="HEAD", headers={"Accept": "application/yaml"}
             ),
-            "application/yaml; charset=UTF-8",
+            "application/yaml",
         ).body
 
 
@@ -206,7 +206,7 @@ async def test_request_handlers2(
 
     assert (
         assert_valid_response(
-            await fetch("/", method="HEAD"), "text/html; charset=UTF-8"
+            await fetch("/", method="HEAD"), "text/html;charset=utf-8"
         ).body
         == b""
     )
@@ -348,18 +348,13 @@ async def test_request_handlers(
     await check_html_page(fetch, "/soundboard/qwertzuiop", 404)
 
     assert_valid_response(
-        await fetch("/api/backdoor/eval"),
-        "application/vnd.python.pickle",
-        401,
-    )
-    assert_valid_response(
         await fetch("/api/backdoor/exec"),
         "application/vnd.python.pickle",
         401,
     )
 
     response = assert_valid_response(
-        await fetch("/api/ping"), "text/plain; charset=UTF-8"
+        await fetch("/api/ping"), "text/plain;charset=utf-8"
     )
     assert response.body.decode() == "🏓\n"
 
@@ -370,11 +365,11 @@ async def test_request_handlers(
         )
         assert_valid_response(
             await fetch(url, follow_redirects=True),
-            "application/javascript; charset=UTF-8",
+            "application/javascript",
         )
     assert_valid_response(
         await fetch(url + ".map", follow_redirects=True),
-        "application/json; charset=UTF-8",
+        "application/json",
     )
 
     for code in range(200, 599):

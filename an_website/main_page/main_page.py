@@ -38,7 +38,7 @@ class MainPage(QuoteOfTheDayBaseHandler):
         pass
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET requests and display the main page."""
+        """Handle GET requests to the main page."""
         if head:
             return
         await self.render(

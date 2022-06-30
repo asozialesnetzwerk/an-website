@@ -45,7 +45,7 @@ class RedirectPage(HTMLRequestHandler):
     """The redirect page that redirects you to another page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the request page and render it."""
+        """Handle GET requests to the redirect page."""
         # pylint: disable=unused-argument
 
         redirect_url = self.get_argument("to", None) or "/"

@@ -86,10 +86,10 @@ def get_js_file_names_and_licenses() -> list[tuple[str, str, str]]:
 
 
 class JSLicenses(HTMLRequestHandler):
-    """The request handler for the JS-licenses page."""
+    """The request handler for the JS licenses page."""
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET requests to the JS-licenses page."""
+        """Handle GET requests to the JS licenses page."""
         if head:
             return
         await self.render(

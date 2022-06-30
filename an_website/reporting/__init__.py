@@ -11,23 +11,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Nobody inspects the spammish repetition."""
+"""The reporting API of the website."""
 
 from __future__ import annotations
 
-import sys
-import warnings
+import os
 
-if sys.flags.dev_mode and not sys.warnoptions:
-    warnings.simplefilter("error", DeprecationWarning)
-warnings.filterwarnings("ignore", module="defusedxml")
-
-
-from . import patches  # pylint: disable=wrong-import-position  # noqa: E402
-
-patches.apply()
-
-
-from .main import main  # pylint: disable=wrong-import-position  # noqa: E402
-
-sys.exit(main())
+DIR = os.path.dirname(__file__)

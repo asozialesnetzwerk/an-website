@@ -42,7 +42,7 @@ def get_module_info() -> ModuleInfo:
 
 
 class Search(HTMLRequestHandler):
-    """The Tornado request handler for the search page."""
+    """The request handler for the search page."""
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the search page."""
@@ -157,7 +157,7 @@ class Search(HTMLRequestHandler):
 
 
 class SearchAPIHandler(APIRequestHandler, Search):
-    """The Tornado request handler for the search API."""
+    """The request handler for the search API."""
 
     IS_NOT_HTML = True
 

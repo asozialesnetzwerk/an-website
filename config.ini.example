@@ -5,14 +5,19 @@
 #cookie_secret = fb7322c2c89e87db60045c9a93b9484119346e68b3e2cd2a7285c735f1a9310873bd34b7b89c2913a33bf3af7bc6c548ace9182ec05015589b103004bb2fe0e2c757165b16dd0dd9b8758d60a3523b0e43163dfcf25da3ad9dc12fabd8dd29a937894fafa0a2c10df30adf27ae3efee981ff3d001e9702f428317276ae875f24
 #onion_address = ...
 #behind_proxy = nope
-#ratelimits = nope
+#ratelimits = ...  # enabled by default if Redis is enabled
 #domain = ...
 #port = ...
 #unix_socket_path = ...
 
 #[LOGGING]
 #debug = nope
-#path = logs
+#path = ...
+
+#[REPORTING]
+#enabled = sure
+#builtin = nope
+#endpoint = https://asozial.org/api/reporting
 
 #[CONTACT]
 #smtp_server = localhost

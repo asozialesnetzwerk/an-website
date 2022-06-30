@@ -39,7 +39,7 @@ class PingPong(APIRequestHandler):
     )
 
     async def get(self, *, head: bool = False) -> None:
-        """Handle the GET request to the ping API."""
+        """Handle GET requests to the ping API."""
         # pylint: disable=unused-argument
         if self.content_type == "text/plain":
             await self.finish("🏓")

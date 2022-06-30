@@ -166,7 +166,7 @@ class DiscordAPI(APIRequestHandler):
     """The API request handler that gets the Discord invite and returns it."""
 
     RATELIMIT_GET_LIMIT = 5
-    RATELIMIT_GET_COUNT_PER_PERIOD = 10  # 10 requests per minute
+    RATELIMIT_GET_COUNT_PER_PERIOD = 10
 
     async def get(
         self, guild_id: str = GUILD_ID, *, head: bool = False
@@ -182,4 +182,4 @@ class ANDiscordAPI(DiscordAPI):
     """The API request handler only for the AN Discord guild."""
 
     RATELIMIT_GET_LIMIT = 10
-    RATELIMIT_GET_COUNT_PER_PERIOD = 30  # 30 requests per minute
+    RATELIMIT_GET_COUNT_PER_PERIOD = 30

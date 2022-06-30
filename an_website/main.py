@@ -10,6 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=import-private-name
 
 """The website of the AN. Loads config and modules and starts Tornado."""
 
@@ -25,6 +26,7 @@ import signal
 import ssl
 import sys
 import types
+from asyncio.runners import _cancel_all_tasks  # type: ignore
 from collections.abc import Callable, Coroutine
 from multiprocessing import process
 from pathlib import Path
@@ -61,7 +63,7 @@ from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.request_handler import BaseRequestHandler, NotFoundHandler
-from .utils.utils import Handler, ModuleInfo, Permissions, Timer, time_function
+from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
 
 IGNORED_MODULES = [
     "patches.*",
@@ -74,6 +76,9 @@ IGNORED_MODULES = [
     "quotes.share_page",
     "backdoor.backdoor_client",
 ]
+
+CONFIG = configparser.ConfigParser(interpolation=None)
+CONFIG.read("config.ini", encoding="utf-8")
 
 logger = logging.getLogger(__name__)
 
@@ -270,32 +275,21 @@ def apply_config_to_app(
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
-    app.settings["DOMAIN"] = config.get("GENERAL", "DOMAIN", fallback=None)
-
-    app.settings["HSTS"] = config.get("TLS", "HSTS", fallback=None)
-
-    apply_contact_stuff_to_app(app, config)
-
     app.settings["cookie_secret"] = config.get(
         "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
     )
 
+    app.settings["DOMAIN"] = config.get("GENERAL", "DOMAIN", fallback=None)
+
+    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
+        "ELASTICSEARCH", "PREFIX", fallback=NAME
+    )
+
+    app.settings["HSTS"] = config.get("TLS", "HSTS", fallback=None)
+
     app.settings["NETCUP"] = config.getboolean(
         "GENERAL", "NETCUP", fallback=False
     )
-
-    app.settings["TRUSTED_API_SECRETS"] = {
-        key_perms[0]: Permissions(
-            int(key_perms[1])
-            if len(key_perms) > 1
-            else (1 << len(Permissions)) - 1  # should be all permissions
-        )
-        for secret in config.get(
-            "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
-        ).split(",")
-        if (key_perms := [part.strip() for part in secret.split("=")])
-        if key_perms[0]
-    }
 
     onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)
     app.settings["ONION_ADDRESS"] = onion_address
@@ -305,14 +299,43 @@ def apply_config_to_app(
         app.settings["ONION_PROTOCOL"] = onion_address.split("://")[0]
 
     app.settings["RATELIMITS"] = config.getboolean(
-        "GENERAL", "RATELIMITS", fallback=False
+        "GENERAL",
+        "RATELIMITS",
+        fallback=config.getboolean("REDIS", "ENABLED", fallback=False),
     )
 
     app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
 
-    app.settings["ELASTICSEARCH_PREFIX"] = config.get(
-        "ELASTICSEARCH", "PREFIX", fallback=NAME
+    app.settings["REPORTING"] = config.getboolean(
+        "REPORTING", "ENABLED", fallback=True
     )
+
+    app.settings["REPORTING_BUILTIN"] = config.getboolean(
+        "REPORTING", "BUILTIN", fallback=False
+    )
+
+    app.settings["REPORTING_ENDPOINT"] = config.get(
+        "REPORTING", "ENDPOINT", fallback="https://asozial.org/api/reporting"
+    )
+
+    app.settings["TRUSTED_API_SECRETS"] = {
+        key_perms[0]: Permission(
+            int(key_perms[1])
+            if len(key_perms) > 1
+            else (1 << len(Permission)) - 1  # should be all permissions
+        )
+        for secret in config.get(
+            "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
+        ).split(",")
+        if (key_perms := [part.strip() for part in secret.split("=")])
+        if key_perms[0]
+    }
+
+    app.settings["UNDER_ATTACK"] = config.getboolean(
+        "GENERAL", "UNDER_ATTACK", fallback=False
+    )
+
+    apply_contact_stuff_to_app(app, config)
 
 
 def get_ssl_context(
@@ -331,18 +354,20 @@ def get_ssl_context(
 
 
 def setup_logging(
-    config: configparser.ConfigParser, *, testing: bool = False
+    config: configparser.ConfigParser, *, force: bool = False
 ) -> None:
     """Configure logging."""
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
-    path = config.get(
-        "LOGGING", "PATH", fallback=None if sys.flags.dev_mode else "logs"
-    )
+    path = config.get("LOGGING", "PATH", fallback=None)
 
     root_logger = logging.getLogger()
 
     if root_logger.handlers:
-        return
+        if not force:
+            return
+        for handler in root_logger.handlers[:]:
+            root_logger.removeHandler(handler)
+            handler.close()
 
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
@@ -357,7 +382,7 @@ def setup_logging(
     )
     root_logger.addHandler(stream_handler)
 
-    if not testing and path:
+    if path:
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
             os.path.join(path, f"{NAME}.log"),
@@ -372,9 +397,6 @@ def setup_logging(
 
     logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
-
-    if testing and not debug:
-        logger.setLevel(logging.WARNING)
 
 
 def setup_apm(app: Application) -> None:
@@ -483,7 +505,7 @@ async def check_elasticsearch(app: Application) -> None:
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
         try:
-            await es.info()
+            await es.transport.perform_request("HEAD", "/")
         except Exception as exc:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
             logger.exception(exc)
@@ -501,8 +523,8 @@ async def setup_elasticsearch_configs(  # noqa: C901
     elasticsearch: AsyncElasticsearch,
     prefix: str,
 ) -> None:
-    # pylint: disable=too-complex, too-many-branches
     """Setup Elasticsearch configs."""  # noqa: D401
+    # pylint: disable=too-complex, too-many-branches
     get: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
     put: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
     for i in range(3):
@@ -630,35 +652,11 @@ async def check_redis(app: Application) -> None:
         await asyncio.sleep(20)
 
 
-def cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
-    """Cancel all tasks."""
-    tasks = asyncio.all_tasks(loop)
-    if not tasks:
-        return
-
-    for task in tasks:
-        task.cancel()
-
-    loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
-
-    for task in tasks:
-        if task.cancelled():
-            continue
-        if task.exception() is not None:
-            loop.call_exception_handler(
-                {
-                    "message": "unhandled exception during shutdown",
-                    "exception": task.exception(),
-                    "task": task,
-                }
-            )
-
-
 async def wait_for_shutdown() -> None:
     """Wait for the shutdown event."""
     loop = asyncio.get_running_loop()
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.05)
     loop.stop()
 
 
@@ -670,21 +668,24 @@ def signal_handler(  # noqa: D103
         EVENT_SHUTDOWN.set()
 
 
+def install_signal_handler() -> None:
+    """Install the signal handler."""
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+
 def main() -> None | int | str:  # noqa: C901
-    # pylint: disable=too-complex, too-many-branches
-    # pylint: disable=too-many-locals, too-many-statements
     """
     Start everything.
 
     This is the main function that is called when running this file.
     """
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    # pylint: disable=too-complex, too-many-branches
+    # pylint: disable=too-many-locals, too-many-statements
 
-    config = configparser.ConfigParser(interpolation=None)
-    config.read("config.ini", encoding="utf-8")
+    install_signal_handler()
 
-    setup_logging(config)
+    setup_logging(CONFIG)
 
     logger.info("Starting %s %s", NAME, VERSION)
 
@@ -694,7 +695,7 @@ def main() -> None | int | str:  # noqa: C901
         )
 
     # read ignored modules from the config
-    for module_name in config.get(
+    for module_name in CONFIG.get(
         "GENERAL", "IGNORED_MODULES", fallback=""
     ).split(","):
         module_name = module_name.strip()  # pylint: disable=redefined-loop-name
@@ -705,26 +706,26 @@ def main() -> None | int | str:  # noqa: C901
     if isinstance(app, str):
         return app
 
-    apply_config_to_app(app, config)
+    apply_config_to_app(app, CONFIG)
     setup_elasticsearch(app)
     setup_app_search(app)
     setup_redis(app)
     setup_apm(app)
 
-    behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
+    behind_proxy = CONFIG.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
     server = HTTPServer(
         app,
-        ssl_options=get_ssl_context(config),
+        ssl_options=get_ssl_context(CONFIG),
         decompress_request=True,
         xheaders=behind_proxy,
     )
 
-    port = config.getint(
+    sockets = []
+
+    port = CONFIG.getint(
         "GENERAL", "PORT", fallback=8888 if CONTAINERIZED else None
     )
-
-    sockets = []
 
     if port:
         sockets.extend(
@@ -733,7 +734,7 @@ def main() -> None | int | str:  # noqa: C901
             )
         )
 
-    unix_socket_path = config.get(
+    unix_socket_path = CONFIG.get(
         "GENERAL",
         "UNIX_SOCKET_PATH",
         fallback="/data" if CONTAINERIZED else None,
@@ -747,7 +748,7 @@ def main() -> None | int | str:  # noqa: C901
             )
         )
 
-    processes = config.getint(
+    processes = CONFIG.getint(
         "GENERAL",
         "PROCESSES",
         fallback=0
@@ -772,17 +773,21 @@ def main() -> None | int | str:  # noqa: C901
             )
         )
 
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+
+    _ = asyncio.get_event_loop
+    asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
+    asyncio.get_event_loop = _
 
     # pylint: disable=import-outside-toplevel, unused-variable
 
-    loop = asyncio.get_event_loop_policy().get_event_loop()
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-    if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+    if CONFIG.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-    if config.getboolean("REDIS", "ENABLED", fallback=False):
+    if CONFIG.getboolean("REDIS", "ENABLED", fallback=False):
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
     from .quotes import update_cache_periodically
@@ -801,9 +806,11 @@ def main() -> None | int | str:  # noqa: C901
             loop.run_until_complete(server.close_all_connections())
             if redis := app.settings.get("REDIS"):
                 loop.run_until_complete(redis.close(close_connection_pool=True))
+            if elasticsearch := app.settings.get("ELASTICSEARCH"):
+                loop.run_until_complete(elasticsearch.close())
         finally:
             try:
-                cancel_all_tasks(loop)
+                _cancel_all_tasks(loop)
                 loop.run_until_complete(loop.shutdown_asyncgens())
                 loop.run_until_complete(loop.shutdown_default_executor())
             finally:

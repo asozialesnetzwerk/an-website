@@ -158,7 +158,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     TASK_REFERENCES: set[Task[Any]] = set()
 
-    def __init__(self, *args, **kwargs):  # type: ignore
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the base request handler."""
         super().__init__(*args, **kwargs)
         self.awaitables: list[
@@ -315,11 +315,11 @@ class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
     RATELIMIT_GET_LIMIT = 10
-    RATELIMIT_GET_COUNT_PER_PERIOD = 15  # 15 requests per 10s
+    RATELIMIT_GET_COUNT_PER_PERIOD = 15
     RATELIMIT_GET_PERIOD = 10
 
     RATELIMIT_POST_LIMIT = 5
-    RATELIMIT_POST_COUNT_PER_PERIOD = 10  # 10 requests per 30s
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10
     RATELIMIT_POST_PERIOD = 30
 
     POSSIBLE_CONTENT_TYPES = (
@@ -331,7 +331,7 @@ class QuoteById(QuoteBaseHandler):
     async def get(
         self, quote_id: str, author_id: None | str = None, *, head: bool = False
     ) -> None:
-        """Handle the GET request to this page and render the quote."""
+        """Handle GET requests to this page and render the quote."""
         int_quote_id = int(quote_id)
         if author_id is None:
             wqs = get_wrong_quotes(lambda wq: wq.id == int_quote_id)
@@ -359,7 +359,7 @@ class QuoteById(QuoteBaseHandler):
 
     async def post(self, quote_id_str: str, author_id_str: str) -> None:
         """
-        Handle the POST request to this page and render the quote.
+        Handle POST requests to this page and render the quote.
 
         This is used to vote the quote, without changing the URL.
         """
@@ -496,7 +496,7 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
     """API request handler for the quotes page."""
 
     RATELIMIT_GET_PERIOD = 10
-    RATELIMIT_GET_COUNT_PER_PERIOD = 20  # 20 requests per 10s
+    RATELIMIT_GET_COUNT_PER_PERIOD = 20
 
     ALLOWED_METHODS = ("GET", "POST")
 
