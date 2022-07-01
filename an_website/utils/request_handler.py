@@ -208,8 +208,8 @@ class BaseRequestHandler(RequestHandler):
             "media-src 'self';"
             "object-src 'self';"
             "manifest-src 'self';"
-            "script-src 'self';"
-            "style-src 'self';"
+            "script-src 'self' 'unsafe-inline';"
+            "style-src 'self' 'unsafe-inline';"
             "report-to default;",
         )
         # opt out of all FLoC cohort calculation
