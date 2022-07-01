@@ -313,8 +313,8 @@ class BaseRequestHandler(RequestHandler):
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
         """Get the function for dumping the output."""
-        option = ORJSON_OPTIONS
         if self.content_type == "application/json":
+            option = ORJSON_OPTIONS
             if self.get_bool_argument("pretty", False):
                 option |= json.OPT_INDENT_2
             return lambda spam: json.dumps(spam, option=option)
@@ -767,6 +767,35 @@ class BaseRequestHandler(RequestHandler):
             tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
 
+    def get_int_argument(
+        self,
+        name: str,
+        default: None | int = None,
+        *,
+        max_: None | int = None,
+        min_: None | int = None,
+    ) -> int:
+        """Get an argument parsed as integer."""
+        value: int
+        if default is None:
+            str_value = self.get_argument(name)
+            try:
+                value = int(str_value)
+            except ValueError as err:
+                raise HTTPError(400, f"{str_value} is not an integer") from err
+        else:
+            try:
+                value = int(self.get_argument(name, None) or default)
+            except ValueError:
+                value = default
+
+        if max_ is not None:
+            value = min(max_, value)
+        if min_ is not None:
+            value = max(min_, value)
+
+        return value
+
     def get_bool_argument(
         self,
         name: str,
@@ -774,9 +803,7 @@ class BaseRequestHandler(RequestHandler):
     ) -> bool:
         """Get an argument parsed as boolean."""
         if default is not None:
-            return str_to_bool(
-                self.get_argument(name, bool_to_str(default)) or "", default
-            )
+            return str_to_bool(self.get_argument(name, None) or "", default)
         value = str(self.get_argument(name))
         try:
             return str_to_bool(value)

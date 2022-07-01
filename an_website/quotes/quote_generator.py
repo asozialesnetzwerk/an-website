@@ -72,7 +72,7 @@ class QuoteGenerator(QuoteReadyCheckHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        count = min(10, int(self.get_argument("count", "5") or "5"))
+        count = self.get_int_argument("count", 5, min_=0, max_=10)
         authors, quotes = get_authors_and_quotes(count)
         if head:
             return
@@ -86,11 +86,12 @@ class QuoteGeneratorAPI(APIRequestHandler, QuoteReadyCheckHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        count = min(10, int(self.get_argument("count", "5") or "5"))
+        count = self.get_int_argument("count", 5, min_=0, max_=10)
         authors, quotes = get_authors_and_quotes(count)
         if head:
             return
         await self.finish_dict(
+            count=count,
             authors=[author.to_json() for author in authors],
             quotes=[quote.to_json() for quote in quotes],
         )

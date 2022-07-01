@@ -22,7 +22,7 @@ from tornado.web import HTTPError
 
 from .. import GH_ORG_URL
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, PageInfo, str_to_bool
+from ..utils.utils import ModuleInfo, PageInfo
 from . import DIR
 from .sw_config_file import InvalidConfigError, SwappedWordsConfig
 
@@ -79,7 +79,7 @@ class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
     def handle_text(
-        self, text: str, config_str: None | str, use_default_config: str
+        self, text: str, config_str: None | str, use_default_config: bool
     ) -> None:
         """Use the text to display the HTML page."""
         check_text_too_long(text)
@@ -111,7 +111,7 @@ class SwappedWords(HTMLRequestHandler):
         try:
             sw_config = (
                 DEFAULT_CONFIG
-                if config_str is None or str_to_bool(use_default_config)
+                if config_str is None or use_default_config
                 else SwappedWordsConfig(config_str)
             )
         except InvalidConfigError as exc:
@@ -141,7 +141,7 @@ class SwappedWords(HTMLRequestHandler):
         self.handle_text(
             self.get_argument("text", default=None) or "",
             self.get_argument("config", default=None),
-            self.get_argument("reset", default=None) or "nope",
+            self.get_bool_argument("reset", default=False),
         )
 
     def post(self) -> None:
@@ -149,7 +149,7 @@ class SwappedWords(HTMLRequestHandler):
         self.handle_text(
             self.get_argument("text") or "",
             self.get_argument("config", default=None),
-            self.get_argument("reset") or "nope",
+            self.get_bool_argument("reset", default=False),
         )
 
 
@@ -167,7 +167,7 @@ class SwappedWordsAPI(APIRequestHandler):
         check_text_too_long(text)
 
         config_str = self.get_argument("config", default=None)
-        return_config = str(self.get_argument("return_config", default="nope"))
+        return_config = self.get_bool_argument("return_config", False)
         try:
             sw_config = (
                 DEFAULT_CONFIG
@@ -175,7 +175,7 @@ class SwappedWordsAPI(APIRequestHandler):
                 else SwappedWordsConfig(config_str)
             )
 
-            if str_to_bool(return_config, False):
+            if return_config:
 
                 minify_config = self.get_bool_argument(
                     "minify_config", default=True

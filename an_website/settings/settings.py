@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import THEMES, ModuleInfo, bool_to_str, str_to_bool
+from ..utils.utils import THEMES, ModuleInfo, bool_to_str
 
 
 def get_module_info() -> ModuleInfo:
@@ -48,31 +48,23 @@ class SettingsPage(HTMLRequestHandler):
             themes=THEMES,
             no_3rd_party_default=self.get_no_3rd_party_default(),
             dynload=self.get_dynload(),
-            save_in_cookie=str_to_bool(
-                self.get_argument("save_in_cookie", "true")
-            ),
+            save_in_cookie=self.get_bool_argument("save_in_cookie", True),
             replace_url_with=None,
         )
 
     def post(self) -> None:
         """Handle POST requests to the settings page."""
         theme: str = self.get_argument("theme", None) or "default"
-        no_3rd_party: str = self.get_argument(
-            "no_3rd_party", None
-        ) or bool_to_str(self.get_no_3rd_party_default())
-        dynload: str = self.get_argument("dynload", None) or "nope"
-
-        save_in_cookie = str_to_bool(
-            self.get_argument(
-                "save_in_cookie",
-                default="f",
-            ),
-            False,
+        no_3rd_party: bool = self.get_bool_argument(
+            "no_3rd_party", self.get_no_3rd_party_default()
         )
+        dynload: bool = self.get_bool_argument("dynload", False)
+        save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
+
         if save_in_cookie:
             self.set_cookie("theme", theme)
-            self.set_cookie("no_3rd_party", no_3rd_party)
-            self.set_cookie("dynload", dynload)
+            self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
+            self.set_cookie("dynload", bool_to_str(dynload))
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 dynload=None,
@@ -96,9 +88,9 @@ class SettingsPage(HTMLRequestHandler):
             "pages/settings.html",
             theme_name=theme,
             themes=THEMES,
-            no_3rd_party=str_to_bool(no_3rd_party),
+            no_3rd_party=no_3rd_party,
             no_3rd_party_default=self.get_no_3rd_party_default(),
-            dynload=str_to_bool(dynload),
+            dynload=dynload,
             save_in_cookie=save_in_cookie,
             replace_url_with=replace_url_with,
         )

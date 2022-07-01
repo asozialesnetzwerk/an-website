@@ -37,16 +37,16 @@ async def test_parsing_module_infos(
 ) -> None:
     """Tests about the module infos in main."""
     module_infos = app.settings["MODULE_INFOS"]
-
     # should get more than one module_info
     assert len(module_infos) > 0
 
-    # test excludes module infos
     # pylint: disable=import-outside-toplevel
     from an_website.lolwut.lolwut import get_module_info as gmi1
     from an_website.quotes.quote_of_the_day import get_module_info as gmi2
+    from an_website.reporting.reporting import get_module_info as gmi3
 
-    assert isinstance(gmi1(), ModuleInfo) and isinstance(gmi2(), ModuleInfo)
+    # test excluded module infos
+    assert all(isinstance(_mi, ModuleInfo) for _mi in (gmi1(), gmi2(), gmi3()))
 
     # module_infos should be sorted already; test that
     module_infos_list = list(module_infos)

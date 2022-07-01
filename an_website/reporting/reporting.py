@@ -106,10 +106,6 @@ class ReportingAPI(APIRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:  # noqa: C901
         """Handle GET requests to the Reporting API™️."""
-        # pylint: disable=too-complex
-        if self.settings.get("TESTING"):
-            return await self.finish("Pls don't fail!")
-
         if not EVENT_ELASTICSEARCH.is_set():
             raise HTTPError(503)
 
@@ -118,23 +114,12 @@ class ReportingAPI(APIRequestHandler):
 
         domain = self.get_argument("domain", None)
         type_ = self.get_argument("type", None)
-
-        try:
-            from_ = int(self.get_argument("from", "0"))
-        except ValueError:
-            from_ = 0
-
-        try:
-            size = int(self.get_argument("size", "10"))
-        except ValueError:
-            size = 10
+        from_ = self.get_int_argument("from", 0, min_=0)
+        size = self.get_int_argument("size", 10, min_=0)
 
         if not self.is_authorized(Permission.REPORTING):
             from_ = 0
             size = min(10, size)
-
-        from_ = max(0, from_)
-        size = max(0, size)
 
         try:
             reports = await get_reports(
@@ -179,7 +164,7 @@ class ReportingAPI(APIRequestHandler):
             body = data.get("csp-report")
             if not isinstance(body, dict):
                 raise HTTPError(400)
-            for spam, ham in (
+            for camel, kebab in (
                 ("blockedURL", "blocked-uri"),
                 ("documentURL", "document-uri"),
                 ("effectiveDirective", "effective-directive"),
@@ -188,8 +173,8 @@ class ReportingAPI(APIRequestHandler):
                 ("statusCode", "status-code"),
                 ("violatedDirective", "violated-directive"),
             ):
-                if ham in body:
-                    body[spam] = body.pop(ham)
+                if kebab in body:
+                    body[camel] = body.pop(kebab)  # 🥙 → 🐪
             report = {
                 "age": 0,
                 "body": body,

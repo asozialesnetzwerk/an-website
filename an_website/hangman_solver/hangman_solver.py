@@ -245,13 +245,7 @@ class HangmanSolver(HTMLRequestHandler):
 
     async def get_hangman_obj(self) -> Hangman:
         """Get the information and return the Hangman object."""
-        max_words = max(
-            0,
-            min(
-                100,
-                int(str(self.get_argument("max_words", default="20"))),
-            ),
-        )
+        max_words = self.get_int_argument("max_words", 20, min_=0, max_=100)
 
         crossword_mode = self.get_bool_argument("crossword_mode", default=False)
         language = str(self.get_argument("lang", default="de_only_a-z"))
