@@ -200,6 +200,18 @@ class BaseRequestHandler(RequestHandler):
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
+        self.set_header(
+            "Content-Security-Policy",
+            "font-src 'self';"
+            "frame-src 'self';"
+            "img-src 'self' https://http.cat https://img.zeit.de;"
+            "media-src 'self';"
+            "object-src 'self';"
+            "manifest-src 'self';"
+            "script-src 'self';"
+            "style-src 'self';"
+            "report-to default;",
+        )
         # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # don't send the Referer header for cross-origin requests
