@@ -107,9 +107,8 @@ def dumps(  # noqa: C901, D103
             ),
             output,
         )
-    if caller != "elasticsearch.serializer":
-        output = output.decode("utf-8")
-    return output  # type: ignore[return-value]
+
+    return output.decode("utf-8")
 
 
 def dump(obj: Any, fp: IO[str], **kwargs: Any) -> None:  # noqa: D103

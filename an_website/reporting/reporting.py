@@ -148,7 +148,7 @@ class ReportingAPI(APIRequestHandler):
                 size,
             )
         except NotFoundError:
-            raise HTTPError(404) from None
+            raise HTTPError(404, reason="No report found") from None
 
         if self.content_type in {"application/json", "application/yaml"}:
             await self.finish(self.dump(reports))
@@ -181,18 +181,17 @@ class ReportingAPI(APIRequestHandler):
             body = data.get("csp-report")
             if not isinstance(body, dict):
                 raise HTTPError(400)
-            for spam, ham in {
-                "blockedURL": "blocked-uri",
-                "documentURL": "document-uri",
-                "effectiveDirective": "effective-directive",
-                "originalPolicy": "original-policy",
-                "sample": "script-sample",
-                "statusCode": "status-code",
-                "violatedDirective": "violated-directive",
-            }.items():
-                if ham in body:
-                    body[spam] = body[ham]
-                    del body[ham]
+            for camel, spam in (
+                ("blockedURL", "blocked-uri"),
+                ("documentURL", "document-uri"),
+                ("effectiveDirective", "effective-directive"),
+                ("originalPolicy", "original-policy"),
+                ("sample", "script-sample"),
+                ("statusCode", "status-code"),
+                ("violatedDirective", "violated-directive"),
+            ):
+                if spam in body:
+                    body[camel] = body.pop(spam)
             report = {
                 "age": 0,
                 "body": body,
@@ -212,8 +211,9 @@ class ReportingAPI(APIRequestHandler):
                 self.MAX_REPORTS_PER_REQUEST,
             )
             raise HTTPError(400)
-        self.set_status(202)
-        self.finish()
+        if not reports:
+            raise HTTPError(400, reason="No report given.")
+
         for report in reports.copy():
             if not isinstance(report, dict):
                 reports.remove(report)  # type: ignore[unreachable]
@@ -237,8 +237,15 @@ class ReportingAPI(APIRequestHandler):
             report["ecs"] = {"version": "1.12.2"}
             report["_op_type"] = "create"
             report.pop("_index", None)  # DO NOT REMOVE
+
+        if not reports:
+            raise HTTPError(400, reason="No valid report given.")
+
         await async_bulk(
             self.elasticsearch,
             reports,
             index=f"{self.elasticsearch_prefix}-reports",
         )
+
+        self.set_status(202)
+        await self.finish()  # TODO: move this without await before async_bulk
