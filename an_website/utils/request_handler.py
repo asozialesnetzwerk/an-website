@@ -204,7 +204,7 @@ class BaseRequestHandler(RequestHandler):
             "Content-Security-Policy",
             "font-src 'self';"
             "frame-src 'self';"
-            "img-src 'self' https://http.cat https://img.zeit.de;"
+            "img-src 'self' https://img.zeit.de https://github.asozial.org;"
             "media-src 'self';"
             "object-src 'self';"
             "manifest-src 'self';"

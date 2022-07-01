@@ -79,7 +79,7 @@ async def get_reports(  # pylint: disable=too-many-arguments
         )
     reports = await elasticsearch.search(
         index=f"{prefix}-reports",
-        sort="@timestamp:desc",
+        sort=[{"@timestamp": {"order": "desc", "unmapped_type": "date"}}],  # type: ignore[list-item]  # noqa: B950  # pylint: disable=line-too-long,useless-suppression
         query=query,
         from_=from_,
         size=size,
@@ -241,11 +241,11 @@ class ReportingAPI(APIRequestHandler):
         if not reports:
             raise HTTPError(400, reason="No valid report given.")
 
+        self.set_status(202)
+        self.finish()
+
         await async_bulk(
             self.elasticsearch,
             reports,
             index=f"{self.elasticsearch_prefix}-reports",
         )
-
-        self.set_status(202)
-        await self.finish()  # TODO: move this without await before async_bulk
