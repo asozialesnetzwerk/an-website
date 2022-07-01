@@ -17,7 +17,7 @@
 #[REPORTING]
 #enabled = sure
 #builtin = nope
-#endpoint = https://asozial.org/api/reporting
+#endpoint = https://asozial.org/api/reports
 
 #[CONTACT]
 #smtp_server = localhost
