@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import dataclasses
 import email.utils
+import logging
 import random
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
@@ -32,6 +33,8 @@ from . import (
     WrongQuote,
     get_wrong_quotes,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info(*, hidden: bool = True) -> ModuleInfo:
@@ -184,6 +187,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             lambda wq: wq.rating > 1
         )
         if not quotes:
+            logger.warning("No quotes available!")
             return None
         count = len(quotes)
         index = random.randrange(0, count)

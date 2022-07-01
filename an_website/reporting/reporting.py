@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The reporting API of the website."""
+"""The Reporting API™️ of the website."""
 
 from __future__ import annotations
 
@@ -36,9 +36,9 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=((r"/api/reports", ReportingAPI),),
-        name="Reporting-API",
+        name="Reporting API™️",
         description=(
-            "Die Reporting-API kann zur Überwachung von "
+            "Die Reporting API™️ kann zur Überwachung von "
             "Sicherheits-Verstößen, veralteten API-Aufrufen und mehr "
             "von Seiten des Asozialen Netzwerks genutzt werden.\n"
             "Bei Interesse kontakten Sie bitte das Gürteltier."
@@ -79,7 +79,7 @@ async def get_reports(  # pylint: disable=too-many-arguments
         )
     reports = await elasticsearch.search(
         index=f"{prefix}-reports",
-        sort=[{"@timestamp": {"order": "desc", "unmapped_type": "date"}}],  # type: ignore[list-item]  # noqa: B950  # pylint: disable=line-too-long,useless-suppression
+        sort=[{"@timestamp": {"order": "desc"}}],  # type: ignore[list-item]
         query=query,
         from_=from_,
         size=size,
@@ -88,13 +88,11 @@ async def get_reports(  # pylint: disable=too-many-arguments
 
 
 class ReportingAPI(APIRequestHandler):
-    """The request handler for the reporting API."""
+    """The request handler for the Reporting API™️."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
-        "application/json",
-        "application/yaml",
-        "application/x-ndjson",
-    )
+    POSSIBLE_CONTENT_TYPES: tuple[
+        str, ...
+    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
 
     RATELIMIT_GET_LIMIT = 20
     RATELIMIT_GET_COUNT_PER_PERIOD = 2
@@ -107,7 +105,7 @@ class ReportingAPI(APIRequestHandler):
     MAX_REPORTS_PER_REQUEST = 100
 
     async def get(self, *, head: bool = False) -> None:  # noqa: C901
-        """Handle GET requests to the reporting API."""
+        """Handle GET requests to the Reporting API™️."""
         # pylint: disable=too-complex
         if self.settings.get("TESTING"):
             return await self.finish("Pls don't fail!")
@@ -147,21 +145,21 @@ class ReportingAPI(APIRequestHandler):
                 from_,
                 size,
             )
-        except NotFoundError:
-            raise HTTPError(404, reason="No report found") from None
+        except NotFoundError:  # Data Stream doesn't exist
+            raise HTTPError(404) from None
 
-        if self.content_type in {"application/json", "application/yaml"}:
-            await self.finish(self.dump(reports))
-        elif self.content_type == "application/x-ndjson":
+        if self.content_type == "application/x-ndjson":
             await self.finish(
                 b"\n".join(
                     json.dumps(report, option=ORJSON_OPTIONS)
                     for report in reports
                 )
             )
+        else:
+            await self.finish(self.dump(reports))
 
     async def post(self) -> None:  # noqa: C901
-        """Handle POST requests to the reporting API."""
+        """Handle POST requests to the Reporting API™️."""
         # pylint: disable=too-complex, too-many-branches
         if not (
             self.settings.get("REPORTING_BUILTIN")
@@ -181,7 +179,7 @@ class ReportingAPI(APIRequestHandler):
             body = data.get("csp-report")
             if not isinstance(body, dict):
                 raise HTTPError(400)
-            for camel, spam in (
+            for spam, ham in (
                 ("blockedURL", "blocked-uri"),
                 ("documentURL", "document-uri"),
                 ("effectiveDirective", "effective-directive"),
@@ -190,8 +188,8 @@ class ReportingAPI(APIRequestHandler):
                 ("statusCode", "status-code"),
                 ("violatedDirective", "violated-directive"),
             ):
-                if spam in body:
-                    body[camel] = body.pop(spam)
+                if ham in body:
+                    body[spam] = body.pop(ham)
             report = {
                 "age": 0,
                 "body": body,
@@ -211,9 +209,8 @@ class ReportingAPI(APIRequestHandler):
                 self.MAX_REPORTS_PER_REQUEST,
             )
             raise HTTPError(400)
-        if not reports:
-            raise HTTPError(400, reason="No report given.")
-
+        self.set_status(202)
+        self.finish()
         for report in reports.copy():
             if not isinstance(report, dict):
                 reports.remove(report)  # type: ignore[unreachable]
@@ -237,13 +234,6 @@ class ReportingAPI(APIRequestHandler):
             report["ecs"] = {"version": "1.12.2"}
             report["_op_type"] = "create"
             report.pop("_index", None)  # DO NOT REMOVE
-
-        if not reports:
-            raise HTTPError(400, reason="No valid report given.")
-
-        self.set_status(202)
-        self.finish()
-
         await async_bulk(
             self.elasticsearch,
             reports,

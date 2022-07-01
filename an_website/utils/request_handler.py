@@ -202,15 +202,16 @@ class BaseRequestHandler(RequestHandler):
         )
         self.set_header(
             "Content-Security-Policy",
-            "font-src 'self';"
-            "frame-src 'self';"
-            "img-src 'self' https://img.zeit.de https://github.asozial.org;"
-            "media-src 'self';"
-            "object-src 'self';"
-            "manifest-src 'self';"
+            "default-src 'self';"
             "script-src 'self' 'unsafe-inline';"
             "style-src 'self' 'unsafe-inline';"
-            "report-to default;",
+            "img-src 'self' https://img.zeit.de https://github.asozial.org;"
+            "report-to default;"
+            + (
+                f"report-uri {endpoint};"
+                if self.settings.get("REPORTING")
+                else ""
+            ),
         )
         # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
@@ -312,8 +313,11 @@ class BaseRequestHandler(RequestHandler):
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
         """Get the function for dumping the output."""
+        option = ORJSON_OPTIONS
         if self.content_type == "application/json":
-            return lambda spam: json.dumps(spam, option=ORJSON_OPTIONS)
+            if self.get_bool_argument("pretty", False):
+                option |= json.OPT_INDENT_2
+            return lambda spam: json.dumps(spam, option=option)
 
         if self.content_type == "application/yaml":
             return yaml.dump

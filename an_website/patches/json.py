@@ -107,7 +107,6 @@ def dumps(  # noqa: C901, D103
             ),
             output,
         )
-
     return output.decode("utf-8")
 
 
