@@ -183,6 +183,8 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
             lambda wq: wq.rating > 1
         )
+        if not quotes:
+            return None
         count = len(quotes)
         index = random.randrange(0, count)
         for _ in range(count - 1):

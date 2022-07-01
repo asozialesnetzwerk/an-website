@@ -21,8 +21,8 @@ import re
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-keys = ["euro", "mark", "ost", "schwarz"]
-multipliers = [1, 2, 4, 20]
+KEYS = ("euro", "mark", "ost", "schwarz")
+MULTIPLIERS = (1, 2, 4, 20)
 
 
 def get_module_info() -> ModuleInfo:
@@ -169,16 +169,6 @@ async def continuation_string(
     return " ".join(output)
 
 
-# class ValueDict(TypedDict):
-#     euro: int
-#     mark: int
-#     ost: int
-#     schwarz: int
-#     euro_str: str
-#     mark_str: str
-#     ost_str: str
-#     schwarz_str: str
-#     text: str
 ValueDict = dict[str, str | int | bool]
 #                  euro,mark, ost, schwarz
 ValuesTuple = tuple[int, int, int, int]
@@ -186,7 +176,7 @@ ValuesTuple = tuple[int, int, int, int]
 
 def convert(euro: int) -> ValuesTuple:
     """Convert a number to the german representation of a number."""
-    return tuple(euro * _m for _m in multipliers)  # type: ignore
+    return tuple(euro * _m for _m in MULTIPLIERS)  # type: ignore
 
 
 async def get_value_dict(
@@ -196,7 +186,7 @@ async def get_value_dict(
     """Create the value dict base on the euro."""
     values = convert(euro)
     value_dict: ValueDict = {}
-    for key, val in zip(keys, values):
+    for key, val in zip(KEYS, values):
         value_dict[key] = val
         value_dict[key + "_str"] = num_to_string(val)
 
@@ -232,7 +222,7 @@ class CurrencyConverter(HTMLRequestHandler):
                     key: value_dict.get(f"{used_key}_str")
                     if key == used_key
                     else None
-                    for key in keys
+                    for key in KEYS
                 },
             )
 
@@ -251,7 +241,7 @@ class CurrencyConverter(HTMLRequestHandler):
         """
         arg_list: list[tuple[int, str, str]] = []
 
-        for _i, key in enumerate(keys):
+        for _i, key in enumerate(KEYS):
             num_str = self.get_argument(name=key, default=None)
             if num_str is not None:
                 arg_list.append((_i, key, num_str))
@@ -259,7 +249,7 @@ class CurrencyConverter(HTMLRequestHandler):
         too_many_params: bool = len(arg_list) > 1
 
         for _i, key, num_str in arg_list:
-            euro = string_to_num(num_str, multipliers[_i])
+            euro = string_to_num(num_str, MULTIPLIERS[_i])
 
             if euro is not None:
                 value_dict: ValueDict = await get_value_dict(
@@ -290,6 +280,9 @@ class CurrencyConverterAPI(APIRequestHandler, CurrencyConverter):
             return
 
         if value_dict is None:
-            return await self.finish(dict(zip(keys, [None] * len(keys))))
+            return await self.finish(dict(zip(KEYS, [None] * len(KEYS))))
+
+        for key in KEYS:
+            value_dict[key] = value_dict.pop(f"{key}_str")
 
         return await self.finish(value_dict)
