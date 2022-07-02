@@ -307,11 +307,11 @@ def apply_config_to_app(
     app.settings["REDIS_PREFIX"] = config.get("REDIS", "PREFIX", fallback=NAME)
 
     app.settings["REPORTING"] = config.getboolean(
-        "REPORTING", "ENABLED", fallback=not sys.flags.dev_mode
+        "REPORTING", "ENABLED", fallback=True
     )
 
     app.settings["REPORTING_BUILTIN"] = config.getboolean(
-        "REPORTING", "BUILTIN", fallback=False
+        "REPORTING", "BUILTIN", fallback=sys.flags.dev_mode
     )
 
     app.settings["REPORTING_ENDPOINT"] = config.get(

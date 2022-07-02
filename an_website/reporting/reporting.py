@@ -130,7 +130,7 @@ class ReportingAPI(APIRequestHandler):
                 from_,
                 size,
             )
-        except NotFoundError:  # Data Stream doesn't exist
+        except NotFoundError:  # data stream doesn't exist
             raise HTTPError(404) from None
 
         if self.content_type == "application/x-ndjson":
