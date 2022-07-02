@@ -179,6 +179,10 @@ class BaseRequestHandler(RequestHandler):
         self._active_origin_trials = set()
         if self.settings.get("REPORTING"):
             endpoint = self.settings.get("REPORTING_ENDPOINT")
+            if endpoint and endpoint.startswith("/"):
+                endpoint = (
+                    f"{self.request.protocol}://{self.request.host}{endpoint}"
+                )
             self.set_header("Reporting-Endpoints", f'default="{endpoint}"')
             self.set_header(
                 "Report-To",

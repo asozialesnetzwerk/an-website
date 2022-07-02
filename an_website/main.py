@@ -315,7 +315,11 @@ def apply_config_to_app(
     )
 
     app.settings["REPORTING_ENDPOINT"] = config.get(
-        "REPORTING", "ENDPOINT", fallback="https://asozial.org/api/reports"
+        "REPORTING",
+        "ENDPOINT",
+        fallback="/api/reports"
+        if app.settings["REPORTING_BUILTIN"]
+        else "https://asozial.org/api/reports",
     )
 
     app.settings["TRUSTED_API_SECRETS"] = {
