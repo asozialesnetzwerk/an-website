@@ -52,7 +52,7 @@ function hideSitePane() {
             // sliding horizontally
             diffX > 0 ? showSitePane() : hideSitePane();
 
-            e.preventDefault();
+            // e.preventDefault();
         }
     };
 })()

@@ -211,6 +211,12 @@ class BaseRequestHandler(RequestHandler):
                 f"report-uri {endpoint};"
                 if self.settings.get("REPORTING")
                 else ""
+            )
+            + (
+                f"connect-src 'self' {self.settings['ELASTIC_APM']['SERVER_URL']};"
+                if "ELASTIC_APM" in self.settings
+                and self.settings["ELASTIC_APM"]["ENABLED"]
+                else ""
             ),
         )
         # opt out of all FLoC cohort calculation
