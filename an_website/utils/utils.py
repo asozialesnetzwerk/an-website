@@ -32,6 +32,7 @@ from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 import elasticapm  # type: ignore
 from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
+from Levenshtein import distance  # type: ignore
 from tornado.web import HTTPError, RequestHandler
 
 from .. import STATIC_DIR
@@ -435,6 +436,11 @@ def name_to_id(val: str) -> str:
         "-",
         replace_umlauts(val).lower(),
     ).strip("-")
+
+
+def normalized_levenshtein(string1: str, string2: str) -> float:
+    """Calculate the normalized Levenshtein distance between two strings."""
+    return float(distance(string1, string2)) / max(len(string1), len(string2))
 
 
 def replace_umlauts(string: str) -> str:

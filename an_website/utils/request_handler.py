@@ -47,7 +47,6 @@ from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
-from Levenshtein import distance  # type: ignore
 from redis.asyncio import Redis
 from sympy.ntheory import isprime
 from tornado.web import HTTPError, MissingArgumentError, RequestHandler
@@ -71,6 +70,7 @@ from .utils import (
     anonymize_ip,
     bool_to_str,
     geoip,
+    normalized_levenshtein,
     str_to_bool,
 )
 
@@ -1094,16 +1094,13 @@ class NotFoundHandler(HTMLRequestHandler):
 
         if self.request.method not in ("GET", "HEAD"):
             raise HTTPError(404)
-        new_path = (
-            re.sub(r"/+", "/", self.request.path.rstrip("/"))
-            .replace("_", "-")
-            .removesuffix("/index.html")
-            .removesuffix("/index.htm")
-            .removesuffix("/index.php")
-            .removesuffix(".html")
-            .removesuffix(".htm")
-            .removesuffix(".php")
+        new_path = re.sub(r"/+", "/", self.request.path.rstrip("/")).replace(
+            "_", "-"
         )
+        for ext in (".html", ".htm", ".php"):
+            new_path = new_path.removesuffix(f"/index{ext}").removesuffix(ext)
+
+        new_path = replace_umlauts(new_path)
 
         if new_path.lower() in {
             "/-profiler/phpinfo",
@@ -1135,13 +1132,13 @@ class NotFoundHandler(HTMLRequestHandler):
             return self.redirect(self.fix_url(new_path=new_path), True)
 
         this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → " "
-        distances: list[tuple[int, str]] = []
-        max_dist = max(1, min(4, len(this_path_stripped) - 1))
+        distances: list[tuple[float, str]] = []
+        max_dist = 0.5
 
         for module_info in self.get_module_infos():
             if module_info.path is not None:
                 dist = min(  # get the smallest distance with the aliases
-                    distance(this_path_stripped, path.strip("/"))
+                    normalized_levenshtein(this_path_stripped, path.strip("/"))
                     for path in (*module_info.aliases, module_info.path)
                     if path != "/z"  # do not redirect to /z
                 )
@@ -1151,7 +1148,9 @@ class NotFoundHandler(HTMLRequestHandler):
             if len(module_info.sub_pages) > 0:
                 distances.extend(
                     (
-                        distance(this_path_stripped, sub_page.path.strip("/")),
+                        normalized_levenshtein(
+                            this_path_stripped, sub_page.path.strip("/")
+                        ),
                         sub_page.path,
                     )
                     for sub_page in module_info.sub_pages
@@ -1161,6 +1160,7 @@ class NotFoundHandler(HTMLRequestHandler):
         if len(distances) > 0:
             # sort to get the one with the smallest distance in index 0
             distances.sort()
+            print(distances)
             dist, path = distances[0]
             # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:
