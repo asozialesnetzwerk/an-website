@@ -1,9 +1,5 @@
-*
-!.git
-!setup.py
-!README.md
-!MANIFEST.in
-!pyproject.toml
-!requirements.txt
-!an_website
 **/*.py[cod]
+build
+dist
+venv
+logs

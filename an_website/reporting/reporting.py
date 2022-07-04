@@ -65,6 +65,7 @@ async def get_reports(  # pylint: disable=too-many-arguments
                 "simple_query_string": {
                     "query": domain,
                     "fields": ["url.domain"],
+                    "flags": "AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|WHITESPACE",
                 }
             }
         )
@@ -74,6 +75,7 @@ async def get_reports(  # pylint: disable=too-many-arguments
                 "simple_query_string": {
                     "query": type_,
                     "fields": ["type"],
+                    "flags": "AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|WHITESPACE",
                 }
             }
         )
