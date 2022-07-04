@@ -71,6 +71,7 @@ from .utils import (
     bool_to_str,
     geoip,
     normalized_levenshtein,
+    replace_umlauts,
     str_to_bool,
 )
 
@@ -1165,6 +1166,9 @@ class NotFoundHandler(HTMLRequestHandler):
             # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:
                 return self.redirect(self.fix_url(new_path=path), False)
+
+        if len(this_path_stripped) == 1:
+            return self.redirect(self.fix_url(new_path="/"), False)
 
         raise HTTPError(404)
 
