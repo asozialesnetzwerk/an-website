@@ -1087,7 +1087,7 @@ class NotFoundHandler(HTMLRequestHandler):
             kwargs["module_info"] = None
         super().initialize(*args, **kwargs)
 
-    async def prepare(self) -> None:
+    async def prepare(self) -> None:  # pylint: disable=too-complex # noqa: C901
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
 
@@ -1133,6 +1133,10 @@ class NotFoundHandler(HTMLRequestHandler):
             return self.redirect(self.fix_url(new_path=new_path), True)
 
         this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → " "
+
+        if len(this_path_stripped) == 1:
+            return self.redirect(self.fix_url(new_path="/"))
+
         distances: list[tuple[float, str]] = []
         max_dist = 0.5
 
