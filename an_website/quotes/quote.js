@@ -1,13 +1,15 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-function startQuotes(currId, nextId) {
-    const thisQuoteId = [currId];
-    const nextQuoteId = [nextId];
-    const params = w.location.search;
+function startQuotes() {
     const nextButton = elById("next");
     const upvoteButton = elById("upvote");
     const downvoteButton = elById("downvote");
     // may be missing
     const reportButton = elById("report");
+
+    const thisQuoteId = [elById("top").getAttribute("quote-id")];
+    const nextQuoteId = [nextButton.getAttribute("quote-id")];
+    const params = w.location.search;
+
 
     const keys = (() => {
         let k = new URLSearchParams(params).get("keys");
@@ -168,4 +170,6 @@ function startQuotes(currId, nextId) {
         }
     }
 }
+
+startQuotes();
 // @license-end

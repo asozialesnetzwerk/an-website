@@ -5,7 +5,7 @@
 
 {% block body %}
     <div>
-        Diese Webseite läuft bereits <div id="uptime">{{uptime_str}}</div>
+        Diese Webseite läuft bereits <div id="uptime" uptime="{{uptime}}">{{uptime_str}}</div>
     </div>
     {% if availability is not None %}
         <div>
@@ -21,6 +21,5 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/uptime.css')}}">
-    <script defer src="{{fix_static('js/uptime.js')}}"
-            onload="startDisplayingUptime({{uptime}})"></script>
+    <script defer src="{{fix_static('js/uptime.js')}}"></script>
 {% end %}

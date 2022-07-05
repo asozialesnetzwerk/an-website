@@ -45,6 +45,13 @@
             </select>
         </label>
 
+        {% if show_token_input %}
+            <label class="form-element">
+                Autorisierungsschlüssel
+                <input type="text" name="access_token" value="{{token}}">
+            </label>
+        {% end %}
+
         <label class="form-element">
            Speicher in Cookies 🍪 (empfohlen)
             <input type="checkbox"
@@ -56,8 +63,6 @@
         </label>
         <input type="submit" value="Speichern">
     </form>
-
-    {% include "../util/replace_url_with.html" %}
 {% end %}
 
 {% block head %}

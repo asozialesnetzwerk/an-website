@@ -3,7 +3,7 @@
 
 {% block body %}
     <div id="quote-container">
-        <article id="top">
+        <article id="top" quote-id="{{wrong_quote.get_id_as_str()}}">
             <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
                class="no-style-a quote-text"
                id="quote">»{{wrong_quote.quote}}«</a>
@@ -51,6 +51,7 @@
             <a tooltip="Gehe zum nächsten Zitat."
                tooltip-position="bottom"
                id="next"
+               quote-id="{{next_id}}"
                href="{{next_href}}">
                 <img class="button-img"
                      alt="Nächstes Zitat"
@@ -156,6 +157,5 @@
           href="{{fix_static('style/form.css')}}">
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/quote.css')}}">
-    <script onload="startQuotes('{{wrong_quote.get_id_as_str()}}','{{next_id}}')"
-            defer src="{{fix_static('js/quote.js')}}"></script>
+    <script defer src="{{fix_static('js/quote.js')}}"></script>
 {% end %}

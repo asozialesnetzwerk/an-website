@@ -1,9 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-function removeAllPopups() {
-    for (let node of d.getElementsByClassName("popup-container"))
-        node.remove();
-}
-
 function startLoadingComics() {
     const getDateBy = (year, month, dayOfMonth) => new Date(
         year, month - 1, dayOfMonth, 6, 0, 0, 0
@@ -171,12 +166,18 @@ administratives/kaenguru-comics/kaenguru-045/original
         + date.getFullYear()
     );
 
+    function removeAllPopups() {
+        for (let node of d.getElementsByClassName("popup-container"))
+            node.remove();
+    }
+
     const currentImgHeader = elById("current-comic-header");
     const currentImg = elById("current-img");
+    currentImg.onmouseover = removeAllPopups;
     //const currentImgContainer = elById("current-img-container");
     function setCurrentComic(date) {
         let link = generateComicLink(date);
-        link = link.startsWith("/") ? link : "https://img.zeit.de/" + link
+        link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
         currentImg.src = link;
         // currentImg.crossOrigin = "";
         currentImgHeader.innerText = "Neuster " + getDateString(date) + ":";
@@ -336,4 +337,22 @@ administratives/kaenguru-comics/kaenguru-045/original
             loaded++;
     };
 }
+
+(() => {
+    const startButton = elById("start-button-no_3rd_party");
+    if (startButton) {
+        const contentContainer = elById("comic-content-container");
+        // no_3rd_party is activated
+        function removeButtonAndLoad() {
+            startButton.remove();
+            contentContainer.removeAttribute("hidden");
+            startLoadingComics();
+        }
+
+        startButton.onclick = removeButtonAndLoad;
+        contentContainer.setAttribute("hidden", "")
+    } else {
+        startLoadingComics();
+    }
+})()
 // @license-end

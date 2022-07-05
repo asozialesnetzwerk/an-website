@@ -14,21 +14,9 @@
             <meta name="description" content="{{ description }}">
             <meta name="keywords" content="{{keywords}}">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            {% if settings and "ELASTIC_APM" in settings and settings["ELASTIC_APM"]["ENABLED"] %}
-                <script>
-                    ;(function(d, s, c) {
-                      var j = d.createElement(s),
-                        t = d.getElementsByTagName(s)[0]
-                      j.src = "{{fix_url(elastic_rum_url)}}"
-                      j.onload = function() {elasticApm.init(c)}
-                      t.parentNode.insertBefore(j, t)
-                    })(document, 'script', {
-                        serverUrl: '{% raw settings["ELASTIC_APM"]["SERVER_URL"] %}',
-                        serviceName: '{% raw settings["ELASTIC_APM"]["SERVICE_NAME"] %}',
-                        serviceVersion: '{% raw settings["ELASTIC_APM"]["SERVICE_VERSION"] %}',
-                        environment: '{% raw settings["ELASTIC_APM"]["ENVIRONMENT"] %}',
-                    })
-                </script>
+            {% if apm_script %}
+                <script src="{{fix_url(elastic_rum_url)}}"></script>
+                <script>{% raw apm_script %}</script>
             {% end %}
             {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
             <link rel="canonical" href="{{canonical_url}}">
@@ -38,10 +26,7 @@
             <script defer src="{{fix_static('js/utils.js')}}"></script>
             <script defer src="{{fix_static('js/better_ui.js')}}"></script>
             {% if dynload %}
-                <script defer
-                    src="{{fix_static('js/dynamically_load.js')}}"
-                    onload="dynLoadReplaceAnchors()"
-                ></script>
+                <script defer src="{{fix_static('js/dynamically_load.js')}}"></script>
             {% end %}
         {% end %}
         {% block head %} {% end %}

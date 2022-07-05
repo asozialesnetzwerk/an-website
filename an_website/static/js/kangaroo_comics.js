@@ -1,6 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-function removeAllPopups(){for(let node of d.getElementsByClassName("popup-container"))
-node.remove();}
 function startLoadingComics(){const getDateBy=(year,month,dayOfMonth)=>new Date(year,month-1,dayOfMonth,6,0,0,0);const wrongLinks=[[getDateBy(2021,5,25),"administratives/kaenguru-comics/25/original/"],[getDateBy(2021,9,6),"administratives/kaenguru-comics/2021-09/6/original/"],[getDateBy(2021,10,4),"administratives/kaenguru-comics/2021-10/4/original"],[getDateBy(2021,10,29),"administratives/kaenguru-comics/29/original"],[getDateBy(2021,11,3),"administratives/kaenguru-comics/2021-11/03-11-21/original"],[getDateBy(2021,12,6),"administratives/kaenguru-comics/2021-12/6/original"],[getDateBy(2022,1,29),"administratives/kaenguru-comics/2022-01/29-3/original"],[getDateBy(2022,2,7),"administratives/kaenguru-comics/08-02-22/original"],[getDateBy(2022,2,12),"administratives/kaenguru-comics/12/original"],[getDateBy(2022,2,14),"administratives/kaenguru-comics/14/original"],[getDateBy(2022,3,28),"administratives/kaenguru-comics/2022-03/kaenguru-2022-03-28/original"],[getDateBy(2022,4,4),"administratives/kaenguru-comics/2022-04/4/original"],[getDateBy(2022,5,9),"administratives/kaenguru-comics/2022-05/9/original"],];const dateEquals=(date,year,month,dayOfMonth)=>(date.getFullYear()===year&&date.getMonth()===month-1&&date.getDate()===dayOfMonth);const datesEqual=(date1,date2)=>dateEquals(date1,date2.getFullYear(),date2.getMonth()+1,date2.getDate());const isSunday=(date)=>(date&&date.getDay()===0&&!dateEquals(date,2020,12,20));const copyDate=(date)=>getDateBy(date.getFullYear(),date.getMonth()+1,date.getDate());const getToday=()=>copyDate(new Date());const comics=[];const links=`/static/img/2020-11-03.jpg
 administratives/kaenguru-comics/pilot-kaenguru/original
 administratives/kaenguru-comics/pow-kaenguru/original
@@ -52,8 +50,9 @@ const days=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Sam
 +getDayName(date)+", dem "
 +date.getDate()+". "
 +getMonthName(date)+" "
-+date.getFullYear());const currentImgHeader=elById("current-comic-header");const currentImg=elById("current-img");function setCurrentComic(date){let link=generateComicLink(date);link=link.startsWith("/")?link:"https://img.zeit.de/"+link
-currentImg.src=link;currentImgHeader.innerText="Neuster "+getDateString(date)+":";currentImgHeader.href=link;}
++date.getFullYear());function removeAllPopups(){for(let node of d.getElementsByClassName("popup-container"))
+node.remove();}
+const currentImgHeader=elById("current-comic-header");const currentImg=elById("current-img");currentImg.onmouseover=removeAllPopups;function setCurrentComic(date){let link=generateComicLink(date);link=link.startsWith("/")?link:"https://img.zeit.de/"+link;currentImg.src=link;currentImgHeader.innerText="Neuster "+getDateString(date)+":";currentImgHeader.href=link;}
 const firstDateWithOldLink=getDateBy(2020,12,3);const oldLinkRegex=/administratives\/kaenguru-comics\/kaenguru-(\d{2,3})(?:-2)?\/original\/?/;const firstDateWithNewLink=getDateBy(2021,1,19);const newLinkRegex=/administratives\/kaenguru-comics\/(\d{4})-(\d{2})\/(\d{2})\/original\/?/;const relativeLinkRegex=/\/static\/img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;function getDateFromLink(link){for(const reg of[newLinkRegex,relativeLinkRegex]){const match=link.toLowerCase().match(reg);if(match&&match.length>3)
 return getDateBy(match[1],match[2],match[3]);}
 let arr=link.toLowerCase().match(oldLinkRegex);if(arr&&arr.length>1){const num=arr[1]-5;let date=new Date(firstDateWithOldLink.getTime());for(let i=0;i<num;i++)
@@ -72,4 +71,6 @@ elById("load-button").onclick=loadMoreComics;function createImgPopup(image){remo
 comics.push.apply(comics,links.split("\n"));addLinksToComics();const today=dateIncreaseByDays(getToday(),1);setCurrentComic(today)
 currentImg.onerror=(event)=>{dateIncreaseByDays(today,-1);setCurrentComic(today);if(loaded<comicCountToLoadOnCLick)
 loaded++;};}
+(()=>{const startButton=elById("start-button-no_3rd_party");if(startButton){const contentContainer=elById("comic-content-container");function removeButtonAndLoad(){startButton.remove();contentContainer.removeAttribute("hidden");startLoadingComics();}
+startButton.onclick=removeButtonAndLoad;contentContainer.setAttribute("hidden","")}else{startLoadingComics();}})()
 // @license-end

@@ -13,34 +13,21 @@
             <img id="current-img"
                  class="normal-img"
                  alt="Aktueller Comic"
-                 src=""
                  {# crossorigin #}
-                 onmouseover="removeAllPopups()">
+                 src="">
         </div>
         <h1>Alte Comics:</h1>
         <ul id="old-comics-list"></ul>
         <input id="load-button"
                type="button"
-               value="Lade mehr Comics!"
-               onclick="alert('Try again.')">
+               value="Lade mehr Comics!">
     </div>
     {% if no_3rd_party %}
-        <button onclick="removeButtonAndLoad()"
-                id="start-button-no_3rd_party">Lade Inhalte von zeit.de</button>
-        <script>
-            elById("comic-content-container").style.display = "none";
-
-            function removeButtonAndLoad() {
-                elById("start-button-no_3rd_party").remove();
-                elById("comic-content-container").style.display = "inherit";
-                startLoadingComics();
-            }
-        </script>
+        <button id="start-button-no_3rd_party">Lade Inhalte von zeit.de</button>
     {% end %}
 {% end %}
 
 {% block head %}
     <link rel="stylesheet" href="{{fix_static('style/kangaroo_comics.css')}}">
-    <script {% if not no_3rd_party %}onload="startLoadingComics()"{% end %}
-            defer src="{{fix_static('js/kangaroo_comics.js')}}"></script>
+    <script defer src="{{fix_static('js/kangaroo_comics.js')}}"></script>
 {% end %}

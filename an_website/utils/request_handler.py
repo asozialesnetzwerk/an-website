@@ -121,6 +121,7 @@ class BaseRequestHandler(RequestHandler):
     active_origin_trials: set[bytes]
     auth_failed: bool = False
     now: datetime
+    apm_script: None | str
 
     def initialize(
         self,
@@ -175,15 +176,53 @@ class BaseRequestHandler(RequestHandler):
         """Get the Elastic APM client from the settings."""
         return self.settings.get("ELASTIC_APM_CLIENT")
 
+    def set_csp_header(self) -> None:
+        """Set the Content-Security-Policy header."""
+        script_src = [
+            "'self'",
+            # "this.form.submit()" used in quotes page
+            "'sha256-osjxnKEPL/pQJbFk1dKsF7PYFmTyMWGmVSiL9inhxJY='",
+        ]
+        if self.elastic_apm_enabled():
+            script_src.append(
+                f"'sha256-{self.settings['ELASTIC_APM']['INLINE_SCRIPT_HASH']}'"
+            )
+        self.set_header(
+            "Content-Security-Policy",
+            "default-src 'self';"
+            f"script-src {' '.join(script_src)};"
+            "style-src 'self' 'unsafe-inline';"
+            "img-src 'self' https://img.zeit.de https://github.asozial.org;"
+            "report-to default;"
+            + (
+                f"report-uri {self.get_reporting_api_endpoint()};"
+                if self.settings.get("REPORTING")
+                else ""
+            )
+            + (
+                f"connect-src 'self' {self.settings['ELASTIC_APM']['SERVER_URL']};"
+                if self.elastic_apm_enabled()
+                else ""
+            ),
+        )
+
+    def get_reporting_api_endpoint(self) -> None | str:
+        """Get the endpoint for the reporting API."""
+        if not self.settings.get("REPORTING"):
+            return None
+        endpoint = self.settings.get("REPORTING_ENDPOINT")
+
+        if not endpoint or not endpoint.startswith("/"):
+            return endpoint
+
+        return f"{self.request.protocol}://{self.request.host}{endpoint}"
+
     def set_default_headers(self) -> None:
         """Set default headers."""
+        self.set_csp_header()
         self.active_origin_trials = set()
         if self.settings.get("REPORTING"):
-            endpoint = self.settings.get("REPORTING_ENDPOINT")
-            if endpoint and endpoint.startswith("/"):
-                endpoint = (
-                    f"{self.request.protocol}://{self.request.host}{endpoint}"
-                )
+            endpoint = self.get_reporting_api_endpoint()
             self.set_header("Reporting-Endpoints", f'default="{endpoint}"')
             self.set_header(
                 "Report-To",
@@ -204,25 +243,6 @@ class BaseRequestHandler(RequestHandler):
         self.set_header(
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
-        )
-        self.set_header(
-            "Content-Security-Policy",
-            "default-src 'self';"
-            "script-src 'self' 'unsafe-inline';"
-            "style-src 'self' 'unsafe-inline';"
-            "img-src 'self' https://img.zeit.de https://github.asozial.org;"
-            "report-to default;"
-            + (
-                f"report-uri {endpoint};"
-                if self.settings.get("REPORTING")
-                else ""
-            )
-            + (
-                f"connect-src 'self' {self.settings['ELASTIC_APM']['SERVER_URL']};"
-                if "ELASTIC_APM" in self.settings
-                and self.settings["ELASTIC_APM"]["ENABLED"]
-                else ""
-            ),
         )
         # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
@@ -410,13 +430,19 @@ class BaseRequestHandler(RequestHandler):
         self.content_type = content_type
         self.set_content_type_header()
 
+    def elastic_apm_enabled(self) -> bool:
+        """Return whether elastic apm is enabled."""
+        return (
+            "ELASTIC_APM" in self.settings
+            and self.settings["ELASTIC_APM"]["ENABLED"]
+        )
+
     async def prepare(  # noqa: C901
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=invalid-overridden-method, too-complex
         self.now = await self.get_time()
-
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method == "GET":
@@ -974,6 +1000,9 @@ class HTMLRequestHandler(BaseRequestHandler):
             short_title=self.short_title,
             theme=self.get_display_theme(),
             title=self.title,
+            apm_script=self.settings["ELASTIC_APM"]["INLINE_SCRIPT"]
+            if self.elastic_apm_enabled()
+            else None,
         )
         namespace.update(
             {
@@ -1033,7 +1062,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 {
                     "src": _s.get("src"),
                     "script": _s.string,
-                    "onload": _s.get("onload"),
+                    # "onload": _s.get("onload"),  # not in use because of csp
                 }
                 for _s in soup.find_all("script")
             ]

@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+from base64 import b64encode
+
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import THEMES, ModuleInfo, bool_to_str
 
@@ -49,7 +51,8 @@ class SettingsPage(HTMLRequestHandler):
             no_3rd_party_default=self.get_no_3rd_party_default(),
             dynload=self.get_dynload(),
             save_in_cookie=self.get_bool_argument("save_in_cookie", True),
-            replace_url_with=None,
+            show_token_input=self.get_bool_argument("auth", False),
+            token="",
         )
 
     def post(self) -> None:
@@ -61,7 +64,14 @@ class SettingsPage(HTMLRequestHandler):
         dynload: bool = self.get_bool_argument("dynload", False)
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
 
+        token = self.get_argument("access_token", None)
+        access_token: None | str = (
+            b64encode(token.encode("utf-8")).decode("utf-8") if token else None
+        )
+
         if save_in_cookie:
+            if access_token:
+                self.set_cookie("access_token", access_token)
             self.set_cookie("theme", theme)
             self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
             self.set_cookie("dynload", bool_to_str(dynload))
@@ -71,6 +81,7 @@ class SettingsPage(HTMLRequestHandler):
                 no_3rd_party=None,
                 theme=None,
                 save_in_cookie=None,
+                access_token=None,
             )
         else:
             replace_url_with = self.fix_url(
@@ -79,10 +90,12 @@ class SettingsPage(HTMLRequestHandler):
                 no_3rd_party=no_3rd_party,
                 theme=theme,
                 save_in_cookie=False,
+                access_token=access_token,
             )
-            if replace_url_with != self.request.full_url():
-                self.redirect(replace_url_with)
-                return
+
+        if replace_url_with != self.request.full_url():
+            self.redirect(replace_url_with)
+            return
 
         self.render(
             "pages/settings.html",
@@ -92,5 +105,6 @@ class SettingsPage(HTMLRequestHandler):
             no_3rd_party_default=self.get_no_3rd_party_default(),
             dynload=dynload,
             save_in_cookie=save_in_cookie,
-            replace_url_with=replace_url_with,
+            show_token_input=token or self.get_bool_argument("auth", False),
+            token=token or "",
         )

@@ -59,8 +59,8 @@ function dynLoadOnData(data, onpopstate) {
                 scriptElement.src = script["src"];
             if (script["script"])
                 scriptElement.innerHTML = script["script"];
-            if (script["onload"])
-                scriptElement.onload = () => eval(script["onload"]);
+            // if (script["onload"])
+            //     scriptElement.onload = () => eval(script["onload"]);
             bodyDiv.appendChild(scriptElement);
         }
     }
@@ -88,21 +88,19 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
     if (anchor.hasAttribute("no-dynload"))
         return;
 
-    anchor.href = dynLoadGetFixedHref(anchor.href);
+    dynLoadFixHref(anchor);
 }
 
-function dynLoadGetFixedHref(url) {
+function dynLoadFixHref(anchor) {
     const href = (
-        url.startsWith("/")
-        ? (w.location.origin + url)
-        : url
+        anchor.href.startsWith("/")
+        ? (w.location.origin + anchor.href)
+        : anchor.href
     ).trim();
     const hrefWithoutQuery = href.split("?")[0];
     if (
-        // already dealt with
-        href.startsWith("javascript:")
         // link is to different domain
-        || !href.startsWith(w.location.origin)
+        !href.startsWith(w.location.origin)
         // link is to file, not html page
         || (
             hrefWithoutQuery.split("/").pop().includes(".")
@@ -111,14 +109,18 @@ function dynLoadGetFixedHref(url) {
         )
         // link is to /chat, which redirects to another page
         || hrefWithoutQuery === (w.location.origin + "/chat")
-    ) return href;
+    ) return;
 
     if ( // is url to the same page, but with hash
         href.startsWith("#")
         || href.startsWith(w.location.href.split("#")[0] + "#")
-    ) return href;
+    ) return;
 
-    return `javascript:dynLoad("${href.replace(/"/g, '%22')}");`;
+    // TODO: this broken because CSP
+    anchor.onclick = (e) => {
+        dynLoad(href);
+        e.preventDefault();
+    }
 }
 
 function dynLoad(url) {
@@ -187,4 +189,6 @@ function dynLoadOnPopState(event) {
 }
 
 w.PopStateHandlers["dynLoad"] = dynLoadOnPopState;
+
+dynLoadReplaceAnchors();
 // @license-end

@@ -107,9 +107,12 @@ async def test_setting_stuff_and_saving_to_cookies(
             else None,
             body=request_body,
         )
-        assert_valid_response(response, content_type="text/html;charset=utf-8")
         if request_body:
-            assert response.effective_url.endswith("/einstellungen")
+            assert_valid_response(
+                response, content_type="text/html;charset=utf-8"
+            )
+        else:
+            assert response.headers["Location"].endswith("/einstellungen")
 
         for cookie_header in response.headers.get_list("Set-Cookie"):
             cookie = parse_cookie(cookie_header)

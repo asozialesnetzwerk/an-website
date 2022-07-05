@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import configparser
 import importlib
 import logging
@@ -28,6 +29,7 @@ import sys
 import types
 from asyncio.runners import _cancel_all_tasks  # type: ignore
 from collections.abc import Callable, Coroutine
+from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, cast
@@ -440,6 +442,23 @@ def setup_apm(app: Application) -> None:
             "elasticapm.processors.sanitize_http_request_body",
         ],
     }
+    app.settings["ELASTIC_APM"]["INLINE_SCRIPT"] = (
+        "elasticApm.init({"
+        f"serverUrl:'{app.settings['ELASTIC_APM']['SERVER_URL']}',"
+        f"serviceName:'{app.settings['ELASTIC_APM']['SERVICE_NAME']}',"
+        f"serviceVersion:'{app.settings['ELASTIC_APM']['SERVICE_VERSION']}',"
+        f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}',"
+        "})"
+    )
+    app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = (
+        base64.encodebytes(
+            sha256(
+                app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("utf-8")
+            ).digest()
+        )
+        .decode("utf-8")
+        .removesuffix("\n")
+    )
     app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
 
 

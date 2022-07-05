@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import random
 import re
+from typing import cast
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -207,12 +208,10 @@ class CurrencyConverter(HTMLRequestHandler):
             value_dict = await get_value_dict(0)
             description = self.description
         else:
-            description = str(value_dict["text"])
+            description = cast(str, value_dict["text"])
 
         if head:
             return
-
-        replace_url_with = None
 
         if value_dict.get("too_many_params", False):
             used_key = value_dict.get("key_used")
@@ -225,12 +224,14 @@ class CurrencyConverter(HTMLRequestHandler):
                     for key in KEYS
                 },
             )
+            if replace_url_with != self.request.full_url():
+                self.redirect(replace_url_with)
+                return
 
         await self.render(
             "pages/converter.html",
             **value_dict,
             description=description,
-            replace_url_with=replace_url_with,
         )
 
     async def create_value_dict(self) -> None | ValueDict:
