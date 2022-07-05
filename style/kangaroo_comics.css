@@ -51,8 +51,3 @@ input {
     right: 0.1rem;
     width: 2.625rem;
 }
-
-#comic-content-container[hidden] {
-    display: none;
-    visibility: hidden;
-}

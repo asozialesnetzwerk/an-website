@@ -345,12 +345,12 @@ administratives/kaenguru-comics/kaenguru-045/original
         // no_3rd_party is activated
         function removeButtonAndLoad() {
             startButton.remove();
-            contentContainer.removeAttribute("hidden");
+            contentContainer.classList.remove("hidden");
             startLoadingComics();
         }
 
         startButton.onclick = removeButtonAndLoad;
-        contentContainer.setAttribute("hidden", "")
+        contentContainer.classList.add("hidden");
     } else {
         startLoadingComics();
     }

@@ -44,7 +44,7 @@ Björn Höcke => Bernd Höcke"
     </form>
 
     {% if error_msg is not None %}
-        <script>alert("{% raw error_msg %}");</script>
+        <div id="error-msg" class="hidden" error-msg="{% raw error_msg %}"></div>
     {% end %}
 
     <br>

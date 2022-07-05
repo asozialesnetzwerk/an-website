@@ -71,6 +71,6 @@ elById("load-button").onclick=loadMoreComics;function createImgPopup(image){remo
 comics.push.apply(comics,links.split("\n"));addLinksToComics();const today=dateIncreaseByDays(getToday(),1);setCurrentComic(today)
 currentImg.onerror=(event)=>{dateIncreaseByDays(today,-1);setCurrentComic(today);if(loaded<comicCountToLoadOnCLick)
 loaded++;};}
-(()=>{const startButton=elById("start-button-no_3rd_party");if(startButton){const contentContainer=elById("comic-content-container");function removeButtonAndLoad(){startButton.remove();contentContainer.removeAttribute("hidden");startLoadingComics();}
-startButton.onclick=removeButtonAndLoad;contentContainer.setAttribute("hidden","")}else{startLoadingComics();}})()
+(()=>{const startButton=elById("start-button-no_3rd_party");if(startButton){const contentContainer=elById("comic-content-container");function removeButtonAndLoad(){startButton.remove();contentContainer.classList.remove("hidden");startLoadingComics();}
+startButton.onclick=removeButtonAndLoad;contentContainer.classList.add("hidden");}else{startLoadingComics();}})()
 // @license-end

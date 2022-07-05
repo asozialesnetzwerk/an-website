@@ -1,5 +1,8 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 (() => {
+    const errorMsgEl = elById("error-msg");
+    if (errorMsgEl) alert(errorMsgEl.getAttribute("error-msg"));
+
     const textInput = elById("text");
     const configInput = elById("config-textarea");
     const outputText = elById("output");
