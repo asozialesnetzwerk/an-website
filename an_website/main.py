@@ -285,7 +285,7 @@ def apply_config_to_app(
         "ELASTICSEARCH", "PREFIX", fallback=NAME
     )
 
-    app.settings["HSTS"] = config.get("TLS", "HSTS", fallback=None)
+    app.settings["HSTS"] = config.getboolean("TLS", "HSTS", fallback=False)
 
     app.settings["NETCUP"] = config.getboolean(
         "GENERAL", "NETCUP", fallback=False

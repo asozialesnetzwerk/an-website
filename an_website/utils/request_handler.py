@@ -118,8 +118,8 @@ class BaseRequestHandler(RequestHandler):
     short_title: str = "Asoziales Netzwerk"
     description: str = "Die tolle Webseite des Asozialen Netzwerkes"
     content_type: None | str = None
-    _active_origin_trials: set[str]
-    _auth_failed: bool = False
+    active_origin_trials: set[bytes]
+    auth_failed: bool = False
     now: datetime
 
     def initialize(
@@ -177,7 +177,7 @@ class BaseRequestHandler(RequestHandler):
 
     def set_default_headers(self) -> None:
         """Set default headers."""
-        self._active_origin_trials = set()
+        self.active_origin_trials = set()
         if self.settings.get("REPORTING"):
             endpoint = self.settings.get("REPORTING_ENDPOINT")
             if endpoint and endpoint.startswith("/"):
@@ -263,20 +263,21 @@ class BaseRequestHandler(RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
-        if self._auth_failed:
+        if self.auth_failed:
             self.set_header("WWW-Authenticate", "Bearer")
         self.origin_trial(
             "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         )
 
-    def origin_trial(self, token: str | bytes) -> bool:
+    def origin_trial(self, token: bytes | str) -> bool:
         """Enable an experimental feature."""
         # pylint: disable=protected-access
-        if token in self._active_origin_trials:
-            return True
-        url = urlsplit(self.request.full_url())
-        payload = json.loads(b64decode(token)[69:])
+        data = b64decode(token)
+        payload = json.loads(data[69:])
         origin = urlsplit(payload["origin"])
+        url = urlsplit(self.request.full_url())
+        if data in self.active_origin_trials:
+            return True
         if url.port is None and url.scheme in {"http", "https"}:
             url = url._replace(
                 netloc=f"{url.hostname}:{443 if url.scheme == 'https' else 80}"
@@ -291,9 +292,7 @@ class BaseRequestHandler(RequestHandler):
         ):
             return False
         self.add_header("Origin-Trial", token)
-        self._active_origin_trials.add(
-            token if isinstance(token, str) else token.decode("ascii")
-        )
+        self.active_origin_trials.add(data)
         return True
 
     def set_cookie(  # pylint: disable=too-many-arguments
@@ -444,7 +443,7 @@ class BaseRequestHandler(RequestHandler):
             if required_permission is not None:
                 is_authorized = self.is_authorized(required_permission)
                 if not is_authorized:
-                    self._auth_failed = True
+                    self.auth_failed = True
                     logger.warning(
                         "Unauthorized access to %s from %s",
                         self.request.path,
@@ -1165,7 +1164,6 @@ class NotFoundHandler(HTMLRequestHandler):
         if len(distances) > 0:
             # sort to get the one with the smallest distance in index 0
             distances.sort()
-            print(distances)
             dist, path = distances[0]
             # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:

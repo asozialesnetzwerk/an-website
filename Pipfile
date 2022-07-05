@@ -18,7 +18,7 @@ emoji = {version = "==1.*"}
 frozendict = {version = "==2.*"}
 get_version = {version = "==3.*"}
 html2text = {version = "*"}
-hyrule = {version = "==0.1"}
+hyrule = {version = "<2"}
 jxlpy = {version = "<2"}
 lxml = {version = "==4.*"}
 namedthreads = {version = "*"}
