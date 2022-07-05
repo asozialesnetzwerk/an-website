@@ -29,7 +29,7 @@ Björn Höcke => Bernd Höcke"
                     spellcheck="true">{{config}}</textarea>
         </label>
 
-        <div id="error_msg" style="color: var(--contrast)">
+        <div id="error-msg" style="color: var(--contrast)">
             {% if error_msg is not None %}
                 {% raw error_msg %}
             {% end %}
@@ -42,10 +42,6 @@ Björn Höcke => Bernd Höcke"
             <input type="submit" id="submit" value="Eingabe">
         </div>
     </form>
-
-    {% if error_msg is not None %}
-        <div id="error-msg" class="hidden" error-msg="{% raw error_msg %}"></div>
-    {% end %}
 
     <br>
 

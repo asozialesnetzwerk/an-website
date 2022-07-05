@@ -7,9 +7,7 @@ history.pushState({"data":data,"url":url,"stateType":"dynLoad"},data["title"],ur
 if(!data["body"]){w.location.reload();return;}
 d.onkeydown=()=>{};bodyDiv.innerHTML=data["body"];if(data["css"]){const style=d.createElement("style");style.innerHTML=data["css"];bodyDiv.appendChild(style);}
 if(data["stylesheets"]){for(const scriptURL of data["stylesheets"]){const link=d.createElement("link");link.rel="stylesheet";link.type="text/css";link.href=scriptURL;bodyDiv.appendChild(link);}}
-if(data["scripts"]){for(const script of data["scripts"]){const scriptElement=d.createElement("script");if(script["src"])
-scriptElement.src=script["src"];if(script["script"])
-scriptElement.innerHTML=script["script"];bodyDiv.appendChild(scriptElement);}}
+if(data["scripts"]){for(const script of data["scripts"]){if(script["src"]){const scriptElement=d.createElement("script");scriptElement.src=script["src"];bodyDiv.appendChild(scriptElement);}else{error("Script without src",script);}}}
 if(w.hideSitePane)hideSitePane();d.title=data["title"];const titleElement=elById("title");titleElement.setAttribute("short_title",data["short_title"]||data["title"]);titleElement.innerText=data["title"];dynLoadReplaceAnchors();w.urlData=data;return true;}
 function dynLoadReplaceAnchors(){for(const anchor of d.getElementsByTagName("A"))
 dynLoadReplaceHrefOnAnchor(anchor);}

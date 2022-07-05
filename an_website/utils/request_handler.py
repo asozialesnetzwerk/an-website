@@ -1061,7 +1061,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             scripts=[
                 {
                     "src": _s.get("src"),
-                    "script": _s.string,
+                    # "script": _s.string,  # not in use because of csp
                     # "onload": _s.get("onload"),  # not in use because of csp
                 }
                 for _s in soup.find_all("script")

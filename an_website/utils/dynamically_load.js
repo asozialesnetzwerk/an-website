@@ -54,14 +54,13 @@ function dynLoadOnData(data, onpopstate) {
     }
     if (data["scripts"]) {
         for (const script of data["scripts"]) {
-            const scriptElement = d.createElement("script");
-            if (script["src"])
+            if (script["src"]) {
+                const scriptElement = d.createElement("script");
                 scriptElement.src = script["src"];
-            if (script["script"])
-                scriptElement.innerHTML = script["script"];
-            // if (script["onload"])
-            //     scriptElement.onload = () => eval(script["onload"]);
-            bodyDiv.appendChild(scriptElement);
+                bodyDiv.appendChild(scriptElement);
+            } else {
+                error("Script without src", script);
+            }
         }
     }
 
