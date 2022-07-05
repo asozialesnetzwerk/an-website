@@ -178,11 +178,7 @@ class BaseRequestHandler(RequestHandler):
 
     def set_csp_header(self) -> None:
         """Set the Content-Security-Policy header."""
-        script_src = [
-            "'self'",
-            # "this.form.submit()" used in quotes page
-            "'sha256-osjxnKEPL/pQJbFk1dKsF7PYFmTyMWGmVSiL9inhxJY='",
-        ]
+        script_src = ["'self'"]
         if self.elastic_apm_enabled():
             script_src.append(
                 f"'sha256-{self.settings['ELASTIC_APM']['INLINE_SCRIPT_HASH']}'"

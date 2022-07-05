@@ -15,5 +15,6 @@ updateRating(data["rating"]);updateVote(Number.parseInt(data["vote"]));return tr
 w.PopStateHandlers["quotes"]=(event)=>(event.state&&handleData(event.state))
 nextButton.onclick=()=>get(`/api/zitate/${nextQuoteId[0]}`,params,(data)=>{if(!handleData(data))return;data["stateType"]="quotes";data["url"]=`/zitate/${data["id"]}${params}`;w.history.pushState(data,"Falsche Zitate",data["url"])
 w.lastLocation=data["url"];});const vote=(vote)=>post(`/api/zitate/${thisQuoteId[0]}`,{"vote":vote},(data)=>handleData(data));for(const voteButton of[upvoteButton,downvoteButton]){voteButton.type="button";voteButton.onclick=()=>{upvoteButton.disabled=true;downvoteButton.disabled=true;vote(voteButton.value);upvoteButton.disabled=false;downvoteButton.disabled=false;}}}
+for(let autoSubmitEl of document.getElementsByClassName("auto-submit-element")){autoSubmitEl.onchange=()=>autoSubmitEl.form.submit();}
 startQuotes();
 // @license-end

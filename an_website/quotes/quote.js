@@ -171,5 +171,9 @@ function startQuotes() {
     }
 }
 
+for (let autoSubmitEl of document.getElementsByClassName("auto-submit-element")) {
+    autoSubmitEl.onchange = () => autoSubmitEl.form.submit();
+}
+
 startQuotes();
 // @license-end

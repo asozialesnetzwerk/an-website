@@ -103,8 +103,7 @@
                 Filter
                 <select name="r"
                         id="rating-filter-select"
-                        class="rating-form-el"
-                        onchange="this.form.submit()">
+                        class="rating-form-el auto-submit-element">
                     <option {% if rating_filter=="smart"%}selected{%end%}
                             value="smart">Smart</option>
                     <option {% if rating_filter=="w"%}selected{%end%}
@@ -125,8 +124,7 @@
                    type="checkbox"
                    id="show-rating"
                    name="show-rating"
-                   class="rating-form-el"
-                   onchange="this.form.submit()"
+                   class="rating-form-el auto-submit-element"
                    value="sure">
             </label>
 
