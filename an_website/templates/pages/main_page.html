@@ -7,40 +7,46 @@
            href="{{fix_url(quote_data.get_quote_url())}}"
            tooltip="Das Zitat des Tages"
            tooltip-position="bottom"
-           style="text-align: center">
+           id="quote-of-the-day">
             {{quote_data.wrong_quote.quote}}<br>
             - {{quote_data.wrong_quote.author}}
         </a>
     {% end %}
-    <ul style="padding: 1em">
+    <ul class="list" id="pages-list">
         {% for info in handler.settings.get("MODULE_INFOS") %}
             {% if not info.hidden and not info.path is None and not info.path == "/" %}
-                <li class="menu-list">
+                <li>
                     <a href="{{fix_url(info.path)}}">{{info.name}}</a>:
                     {{info.description}}
-                </li>
-                {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
-                    <ul class="menu-sub-list">
-                        {% for page_info in info.sub_pages %}
-                            {% if not page_info.hidden and page_info.path is not None %}
-                                <li>
-                                    <a href="{{fix_url(page_info.path)}}"
-                                        >{{page_info.name}}</a>:
-                                    {{page_info.description}}
-                                </li>
+
+                    {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
+                        <ul class="sub-list">
+                            {% for page_info in info.sub_pages %}
+                                {% if not page_info.hidden and page_info.path is not None %}
+                                    <li>
+                                        <a href="{{fix_url(page_info.path)}}"
+                                            >{{page_info.name}}</a>:
+                                        {{page_info.description}}
+                                    </li>
+                                {% end %}
                             {% end %}
-                        {% end %}
-                    </ul>
-                {% end %}
+                        </ul>
+                    {% end %}
+                </li>
             {% end %}
         {% end %}
     </ul>
 
     {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
-        <section style="margin-top: 2rem">
+        <section id="onion-address-section">
             Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
             <a href="{{settings.get('ONION_ADDRESS')}}"
                no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
         </section>
     {% end %}
+{% end %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/main-page.css')}}">
 {% end %}

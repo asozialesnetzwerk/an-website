@@ -12,7 +12,7 @@
         <h2>
             Gefundene Seiten:
         </h2>
-        <ul id="search-results">
+        <ul id="search-results" class="list">
             {% for result in results %}
                 <li score="{{result['score']}}" class="menu-list">
                     <a href="{{fix_url(result['url'])}}"
@@ -29,6 +29,6 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
-    <style>em {color: var(--contrast-2);}</style>
+    <style>em{color:var(--contrast-2);}</style>
     <script defer src="{{fix_static('js/search.js')}}"></script>
 {% end %}

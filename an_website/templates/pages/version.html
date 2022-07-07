@@ -4,6 +4,7 @@
 {% block description %}{{ version }}{% end %}
 
 {% block body %}
+
 <pre style="{% if full %}max-width: 100%; overflow: scroll{% else %}font-size: 1rem{% end %}">
 Version: {{ version }}
     {% if no_3rd_party %}
@@ -22,4 +23,5 @@ Hash der Datei-Hashes:
 {% if full %}
 Datei-Hashes:
 {{ file_hashes }}{% end %}</pre>
+
 {% end %}

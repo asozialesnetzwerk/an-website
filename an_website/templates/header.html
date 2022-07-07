@@ -21,7 +21,7 @@
              alt="Menü">
         <nav id="site-pane" tabindex="-1">
             <h2 data-elastic-exclude>Unterseiten:</h2>
-            <ul class="menu-list">
+            <ul class="list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
                     {% if not info.hidden and info.path is not None %}
                         <li>
@@ -36,7 +36,7 @@
                                {% end %}
                             >{{info.name}}</a>
                             {% if info.sub_pages is not None %}
-                                <ul class="menu-sub-list">
+                                <ul>
                                     {% for page_info in info.sub_pages %}
                                         {% if not page_info.hidden and page_info.path is not None %}
                                             <li>

@@ -23,17 +23,18 @@ import sys
 import urllib.parse
 import warnings
 from collections.abc import Awaitable, Callable
-from typing import Any, cast
+from typing import Any
 
 import orjson as json
 import pytest
 import tornado.httpclient
 import tornado.web
 import yaml
-from blake3 import blake3  # type: ignore
 from lxml import etree  # type: ignore
 from lxml.html import document_fromstring  # type: ignore
 from lxml.html.html5parser import HTMLParser  # type: ignore
+
+from an_website.utils.utils import hash_bytes_b64
 
 warnings.filterwarnings("ignore", module="defusedxml")
 
@@ -270,7 +271,7 @@ async def check_html_page(
                 != "text/html;charset=utf-8"
             ):
                 # check if static file is linked with correct hash as v
-                file_hash = cast(str, blake3(_response.body).hexdigest(8))
+                file_hash = hash_bytes_b64(_response.body, 12)
                 assert_url_query(link, v=file_hash)
     assert found_ref_to_body or print(url)
     for _r in responses_to_check:

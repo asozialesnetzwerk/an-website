@@ -30,11 +30,6 @@
 {% end %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/table.css')}}">
-    <style>
-        h2:hover .header-id-link:before, h2:focus-within .header-id-link:before {
-            content: "🔗";
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{{fix_static('style/table.css')}}">
+    <style>h2:hover .header-id-link::before,h2:focus-within .header-id-link::before{content:"🔗";}</style>
 {% end %}

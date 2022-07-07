@@ -69,7 +69,8 @@ function dynLoadOnData(data, onpopstate) {
     d.title = data["title"];
     const titleElement = elById("title");
     titleElement.setAttribute(
-        "short_title", data["short_title"] || data["title"]
+        "short_title",
+        data["short_title"] || data["title"]
     );
     titleElement.innerText = data["title"];
 

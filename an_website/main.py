@@ -450,15 +450,11 @@ def setup_apm(app: Application) -> None:
         f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}',"
         "})"
     )
-    app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = (
-        base64.encodebytes(
-            sha256(
-                app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("utf-8")
-            ).digest()
-        )
-        .decode("utf-8")
-        .removesuffix("\n")
-    )
+    app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = base64.b64encode(
+        sha256(
+            app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("utf-8")
+        ).digest()
+    ).decode("ascii")
     app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
 
 

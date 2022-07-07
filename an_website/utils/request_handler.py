@@ -42,7 +42,6 @@ import orjson as json
 import yaml
 from accept_types import get_best_match  # type: ignore
 from ansi2html import Ansi2HTMLConverter  # type: ignore
-from blake3 import blake3  # type: ignore
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
@@ -70,6 +69,7 @@ from .utils import (
     anonymize_ip,
     bool_to_str,
     geoip,
+    hash_bytes_b64,
     normalized_levenshtein,
     replace_umlauts,
     str_to_bool,
@@ -513,9 +513,9 @@ class BaseRequestHandler(RequestHandler):
             or self.is_authorized(Permission.RATELIMITS)
         ):
             return False
-        remote_ip = blake3(
+        remote_ip = hash_bytes_b64(
             cast(str, self.request.remote_ip).encode("ascii")
-        ).hexdigest()
+        )
         method = self.request.method
         if method == "HEAD":
             method = "GET"
@@ -573,8 +573,7 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("X-RateLimit-Reset", str(time.time() + reset_after))
             self.set_header("X-RateLimit-Reset-After", str(reset_after))
             self.set_header(
-                "X-RateLimit-Bucket",
-                blake3(bucket.encode("ascii")).hexdigest(),
+                "X-RateLimit-Bucket", hash_bytes_b64(bucket.encode("ascii")),
             )
         # fmt: on
         if result[0]:

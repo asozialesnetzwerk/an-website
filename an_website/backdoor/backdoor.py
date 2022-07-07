@@ -222,7 +222,7 @@ class Backdoor(APIRequestHandler):
             )
             if session_pickle:
                 session = pickle.loads(
-                    base64.decodebytes(session_pickle.encode("utf-8"))
+                    base64.b64decode(session_pickle.encode("utf-8"))
                 )
                 for key, value in session.items():
                     try:
@@ -262,7 +262,7 @@ class Backdoor(APIRequestHandler):
             await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                base64.encodebytes(pickle.dumps(session, PICKLE_PROTOCOL)),
+                base64.b64encode(pickle.dumps(session, PICKLE_PROTOCOL)),
             )
         )
 

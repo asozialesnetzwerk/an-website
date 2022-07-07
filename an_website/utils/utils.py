@@ -20,13 +20,14 @@ import os
 import random
 import re
 import time
+from base64 import urlsafe_b64encode
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import ip_address, ip_network
-from typing import IO, Any, TypeVar, Union, cast
+from typing import IO, Any, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
@@ -398,16 +399,17 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
+def hash_bytes_b64(text: bytes, size: int = 32) -> str:
+    """Hash bytes with blake and return the url-safe base64 representation."""
+    hash_: bytes = blake3(text).digest(size)
+    return urlsafe_b64encode(hash_).decode("ascii")
+
+
 def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
     """Hash an IP address."""
-    return cast(
-        str,
-        blake3(
-            ip.encode("ascii")
-            + blake3(
-                datetime.utcnow().date().isoformat().encode("ascii")
-            ).digest()
-        ).hexdigest(),
+    return hash_bytes_b64(
+        ip.encode("ascii")
+        + blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
     )
 
 

@@ -2,10 +2,10 @@
     color: var(--secondary-text-color) !important;
 }
 
-h1:hover .header-id-link:before,
-  h1:focus-within .header-id-link:before,
-  h2:hover .header-id-link:before,
-  h2:focus-within .header-id-link:before {
+h1:hover .header-id-link::before,
+  h1:focus-within .header-id-link::before,
+  h2:hover .header-id-link::before,
+  h2:focus-within .header-id-link::before {
     content: "🔗";
 }
 
