@@ -1150,7 +1150,8 @@ class NotFoundHandler(HTMLRequestHandler):
             "/wp-login",
             "/wp-upload",
         }:
-            raise HTTPError(469, reason="Nice Try")
+            self.set_status(469, reason="Nice Try")
+            return self.write_error(469)
 
         if new_path != self.request.path:
             return self.redirect(self.fix_url(new_path=new_path), True)
@@ -1205,10 +1206,15 @@ class ErrorPage(HTMLRequestHandler):
     async def get(self, code: str) -> None:
         """Show the error page."""
         status_code: int = int(code)
-        reason: str = responses.get(status_code, "")  # get the reason
-        # set the status code if Tornado doesn't raise an error if it is set
+        if status_code == 420:
+            reason = "Enhance Your Calm"
+        elif status_code == 469:
+            reason = "Nice Try"
+        else:
+            reason = responses.get(status_code, "")
+        # set the status code if it is allowed
         if status_code not in (204, 304) and not 100 <= status_code < 200:
-            self.set_status(status_code)  # set the status code
+            self.set_status(status_code, reason)
         return await self.render(
             "error.html",
             status=status_code,
