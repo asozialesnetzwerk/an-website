@@ -92,11 +92,14 @@ function dynLoadReplaceHrefOnAnchor(anchor) {
 }
 
 function dynLoadFixHref(anchor) {
+    if (anchor.target === "_blank") return;
+
     const href = (
         anchor.href.startsWith("/")
         ? (w.location.origin + anchor.href)
         : anchor.href
     ).trim();
+
     const hrefWithoutQuery = href.split("?")[0];
     if (
         // link is to different domain

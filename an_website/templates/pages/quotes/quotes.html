@@ -6,9 +6,13 @@
         <article id="top" quote-id="{{wrong_quote.get_id_as_str()}}">
             <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
                class="no-style-a quote-text"
+               target="_blank"
+               rel="noopener"
                id="quote">»{{wrong_quote.quote}}«</a>
             <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
                class="no-style-a quote-author"
+               target="_blank"
+               rel="noopener"
                id="author">- {{wrong_quote.author}}</a>
         </article>
         <div id="rating-container" tooltip="Die Bewertung des Zitats">
@@ -43,7 +47,8 @@
                tooltip="Teile das Zitat in den Sozialen Medien."
                tooltip-position="bottom"
                href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
-               rel="nofollow">
+               target="_blank"
+               rel="nofollow noopener">
                 <img class="button-img"
                      src="{{fix_static('img/share.svg')}}"
                      alt="Zitat teilen.">
