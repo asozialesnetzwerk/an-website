@@ -24,11 +24,8 @@ from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
 
 from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME
-from ..utils.request_handler import (
-    APIRequestHandler,
-    BaseRequestHandler,
-    HTMLRequestHandler,
-)
+from ..utils.base_request_handler import BaseRequestHandler
+from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)

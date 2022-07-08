@@ -22,7 +22,7 @@ import re
 from tornado.web import Application
 
 from an_website import main, patches
-from an_website.utils.request_handler import BaseRequestHandler
+from an_website.utils.base_request_handler import BaseRequestHandler
 from an_website.utils.utils import ModuleInfo
 
 from . import PARENT_DIR, FetchCallable, app, assert_valid_redirect, fetch

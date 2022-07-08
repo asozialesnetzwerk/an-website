@@ -64,13 +64,15 @@ from . import (
 from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
-from .utils.request_handler import BaseRequestHandler, NotFoundHandler
+from .utils.base_request_handler import BaseRequestHandler
+from .utils.request_handler import NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
 
 IGNORED_MODULES = [
     "patches.*",
     "static.*",
     "templates.*",
+    "utils.base_request_handler",
     "utils.utils",
     "utils.static_file_handling",
     "swapped_words.sw_config_file",

@@ -54,6 +54,7 @@ def get_module_info() -> ModuleInfo:
         short_name="Host-Info",
         description="Informationen über den Host-Server dieser Webseite",
         path="/host-info",
+        aliases=("/server-info",),
         sub_pages=(
             PageInfo(
                 name="Howost-Infowmationyen",
