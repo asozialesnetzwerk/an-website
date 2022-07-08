@@ -162,7 +162,7 @@ class AvailabilityChartHandler(BaseRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
-        availability = self.get_argument("a", default=None)
+        availability = self.get_argument("a", None)
         if not availability:
             if not EVENT_ELASTICSEARCH.is_set():
                 raise HTTPError(503)

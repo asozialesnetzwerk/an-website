@@ -24,6 +24,7 @@ if sys.flags.dev_mode and not (
 ):
     warnings.simplefilter("error", DeprecationWarning)
 warnings.filterwarnings("ignore", module="defusedxml")
+warnings.filterwarnings("default", module="aioredis.connection")
 
 
 from . import patches

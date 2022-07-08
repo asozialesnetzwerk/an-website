@@ -55,7 +55,7 @@ def get_module_info() -> ModuleInfo:
 
 
 # the max char count of the text to process
-MAX_CHAR_COUNT: int = 32768
+MAX_CHAR_COUNT = 32768
 
 with open(os.path.join(DIR, "config.sw"), encoding="utf-8") as file:
     DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
@@ -87,8 +87,8 @@ class SwappedWords(HTMLRequestHandler):
 
         if config_str is None:
             cookie = self.get_cookie(
-                name="swapped-words-config",
-                default=None,
+                "swapped-words-config",
+                None,
             )
             if cookie is not None:
                 # decode the base64 text
@@ -140,17 +140,17 @@ class SwappedWords(HTMLRequestHandler):
     ) -> None:
         """Handle GET requests to the swapped words page."""
         await self.handle_text(
-            self.get_argument("text", default=None) or "",
-            self.get_argument("config", default=None),
-            self.get_bool_argument("reset", default=False),
+            self.get_argument("text", ""),
+            self.get_argument("config", None),
+            self.get_bool_argument("reset", False),
         )
 
     async def post(self) -> None:
         """Handle POST requests to the swapped words page."""
         await self.handle_text(
             self.get_argument("text"),
-            self.get_argument("config", default=None),
-            self.get_bool_argument("reset", default=False),
+            self.get_argument("config", None),
+            self.get_bool_argument("reset", False),
         )
 
 
@@ -163,11 +163,11 @@ class SwappedWordsAPI(APIRequestHandler):
         self, *, head: bool = False  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests to the swapped words API."""
-        text = self.get_argument("text", default=None) or ""
+        text = self.get_argument("text", "")
 
         check_text_too_long(text)
 
-        config_str = self.get_argument("config", default=None)
+        config_str = self.get_argument("config", None)
         return_config = self.get_bool_argument("return_config", False)
         try:
             sw_config = (
@@ -178,9 +178,7 @@ class SwappedWordsAPI(APIRequestHandler):
 
             if return_config:
 
-                minify_config = self.get_bool_argument(
-                    "minify_config", default=True
-                )
+                minify_config = self.get_bool_argument("minify_config", True)
                 return await self.finish_dict(
                     text=text,
                     return_config=True,

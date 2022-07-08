@@ -122,7 +122,7 @@ class UwUHostInfo(HTMLRequestHandler):
         Use UwUFetch to genyewate the page.
         """
         cache_enabwed = int(
-            head or not self.get_bool_argument("cache_disabled", default=False)
+            head or not self.get_bool_argument("cache_disabled", False)
         )
 
         if UWUFETCH_PATH:

@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+from typing import cast
 from urllib.parse import urlencode, urlsplit
 
 from ..utils.request_handler import HTMLRequestHandler
@@ -37,14 +38,14 @@ def get_module_info() -> ModuleInfo:
 class Troeter(HTMLRequestHandler):
     """The request handler that makes tooting easier."""
 
-    def saved_mastodon_instance(self) -> None | str:
+    def saved_mastodon_instance(self) -> str:
         """Get the mastodon instance saved in a cookie."""
-        return self.get_cookie("mastodon-instance")
+        return cast(str, self.get_cookie("mastodon-instance", ""))
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the page."""
-        text: str = self.get_argument("text", default="") or ""
-        instance: None | str = self.get_argument("instance", default=None)
+        text: str = self.get_argument("text", "")
+        instance: str = self.get_argument("instance", "")
         save: bool = self.get_bool_argument("save", False)
 
         if not instance:
@@ -75,6 +76,6 @@ class Troeter(HTMLRequestHandler):
         await self.render(
             "pages/troet.html",
             text=text,
-            instance=instance or "",
+            instance=instance,
             save=save,
         )

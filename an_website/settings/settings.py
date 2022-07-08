@@ -64,7 +64,7 @@ class SettingsPage(HTMLRequestHandler):
         dynload: bool = self.get_bool_argument("dynload", False)
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
 
-        token = self.get_argument("access_token", None)
+        token = self.get_argument("access_token", "")
         access_token: None | str = (
             b64encode(token.encode("utf-8")).decode("ascii") if token else None
         )
@@ -105,5 +105,5 @@ class SettingsPage(HTMLRequestHandler):
             dynload=dynload,
             save_in_cookie=save_in_cookie,
             show_token_input=token or self.get_bool_argument("auth", False),
-            token=token or "",
+            token=token,
         )

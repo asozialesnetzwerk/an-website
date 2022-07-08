@@ -15,14 +15,13 @@
 
 from __future__ import annotations
 
-import binascii
 import io
 import logging
 import pydoc
 import traceback
 from ast import PyCF_ALLOW_TOP_LEVEL_AWAIT, PyCF_ONLY_AST, PyCF_TYPE_COMMENTS
 from asyncio import Future
-from base64 import b64decode, b85decode, b85encode
+from base64 import b85decode, b85encode
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
@@ -205,7 +204,6 @@ class Backdoor(APIRequestHandler):
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
-        # pylint: disable=too-complex
         session_id: None | str = self.request.headers.get("X-Backdoor-Session")
         if not session_id:
             session: dict[str, Any] = {
@@ -223,12 +221,7 @@ class Backdoor(APIRequestHandler):
                 else None
             )
             if session_pickle:
-                try:
-                    session = pickle.loads(
-                        b64decode(session_pickle, validate=True)
-                    )
-                except binascii.Error:
-                    session = pickle.loads(b85decode(session_pickle))
+                session = pickle.loads(b85decode(session_pickle))
                 for key, value in session.items():
                     try:
                         session[key] = pickle.loads(value)

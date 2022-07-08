@@ -48,7 +48,7 @@ def test_bool_str_conversion() -> None:
     with pytest.raises(ValueError):
         utils.str_to_bool("Invalid bool value")
 
-    assert utils.str_to_bool("Invalid bool value", default=True) is True
+    assert utils.str_to_bool("Invalid bool value", True) is True
 
 
 def test_country_code_to_flag() -> None:

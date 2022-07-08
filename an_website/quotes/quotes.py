@@ -156,6 +156,10 @@ SMART_RATING_FILTERS = (
 class QuoteBaseHandler(QuoteReadyCheckHandler):
     """The base request handler for the quotes package."""
 
+    RATELIMIT_GET_LIMIT = 20
+    RATELIMIT_GET_COUNT_PER_PERIOD = 20
+    RATELIMIT_GET_PERIOD = 10
+
     TASK_REFERENCES: set[Task[Any]] = set()
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -169,7 +173,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         self,
     ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
         """Get a rating filter."""
-        rating_filter = self.get_argument("r", default="smart")
+        rating_filter = self.get_argument("r", "smart")
         if rating_filter == "w":
             return "w"
         if rating_filter == "n":
@@ -184,7 +188,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     def get_show_rating(self) -> bool:
         """Return whether the user wants to see the rating."""
-        return self.get_bool_argument("show-rating", default=False)
+        return self.get_bool_argument("show-rating", False)
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
@@ -314,18 +318,15 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
-    RATELIMIT_GET_LIMIT = 10
-    RATELIMIT_GET_COUNT_PER_PERIOD = 15
-    RATELIMIT_GET_PERIOD = 10
-
-    RATELIMIT_POST_LIMIT = 15
-    RATELIMIT_POST_COUNT_PER_PERIOD = 20
-    RATELIMIT_POST_PERIOD = 45
+    RATELIMIT_POST_LIMIT = 10
+    RATELIMIT_POST_COUNT_PER_PERIOD = 5
+    RATELIMIT_POST_PERIOD = 10
 
     POSSIBLE_CONTENT_TYPES = (
         *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
         *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
+
     LONG_PATH = "/zitate/%d-%d"
 
     async def get(
@@ -366,7 +367,7 @@ class QuoteById(QuoteBaseHandler):
         quote_id = int(quote_id_str)
         author_id = int(author_id_str)
 
-        new_vote_str = self.get_argument("vote", default=None)
+        new_vote_str = self.get_argument("vote", None)
 
         if not new_vote_str:
             return await self.render_quote(quote_id, author_id)
@@ -495,15 +496,13 @@ class QuoteById(QuoteBaseHandler):
 class QuoteAPIHandler(APIRequestHandler, QuoteById):
     """API request handler for the quotes page."""
 
-    RATELIMIT_GET_PERIOD = 10
-    RATELIMIT_GET_COUNT_PER_PERIOD = 20
-
     ALLOWED_METHODS = ("GET", "POST")
 
     POSSIBLE_CONTENT_TYPES = (
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
         *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
+
     LONG_PATH = "/api/zitate/%d-%d"
 
     async def render_wrong_quote(

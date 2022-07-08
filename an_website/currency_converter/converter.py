@@ -171,7 +171,6 @@ async def continuation_string(
 
 
 ValueDict = dict[str, str | int | bool]
-#                  euro,mark, ost, schwarz
 ValuesTuple = tuple[int, int, int, int]
 
 
@@ -242,7 +241,7 @@ class CurrencyConverter(HTMLRequestHandler):
         arg_list: list[tuple[int, str, str]] = []
 
         for _i, key in enumerate(KEYS):
-            num_str = self.get_argument(name=key, default=None)
+            num_str = self.get_argument(key, None)
             if num_str is not None:
                 arg_list.append((_i, key, num_str))
         # print(arg_list)

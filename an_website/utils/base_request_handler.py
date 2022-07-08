@@ -721,7 +721,7 @@ class BaseRequestHandler(RequestHandler):
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""
         return self.get_bool_argument(
-            "no_3rd_party", default=self.get_saved_no_3rd_party()
+            "no_3rd_party", self.get_saved_no_3rd_party()
         )
 
     def get_saved_dynload(self) -> bool:
@@ -745,7 +745,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_theme(self) -> str:
         """Get the theme currently selected."""
-        theme = self.get_argument("theme", default=None)
+        theme = self.get_argument("theme", None)
         if theme in THEMES:
             return theme
         return self.get_saved_theme()
@@ -800,7 +800,7 @@ class BaseRequestHandler(RequestHandler):
     ) -> bool:
         """Get an argument parsed as boolean."""
         if default is not None:
-            return str_to_bool(self.get_argument(name, None) or "", default)
+            return str_to_bool(self.get_argument(name, ""), default)
         value = str(self.get_argument(name))
         try:
             return str_to_bool(value)
@@ -824,10 +824,10 @@ class BaseRequestHandler(RequestHandler):
             ),
             *(keydecode(_) for _ in self.get_arguments("access_token")),
             *self.get_arguments("key"),
-            keydecode(cast(str, self.get_cookie("access_token", default="")))
+            keydecode(cast(str, self.get_cookie("access_token", "")))
             if self.ALLOW_COOKIE_AUTHENTICATION
             else None,
-            self.get_cookie("key", default=None)
+            self.get_cookie("key", None)
             if self.ALLOW_COOKIE_AUTHENTICATION
             else None,
         )

@@ -206,8 +206,8 @@ class CreatePage1(QuoteReadyCheckHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""
-        quote_str = self.get_argument("quote-1", default=None)
-        fake_author_str = self.get_argument("fake-author-1", default=None)
+        quote_str = self.get_argument("quote-1", None)
+        fake_author_str = self.get_argument("fake-author-1", None)
         if not (quote_str and fake_author_str):
             raise HTTPError(
                 400,
@@ -228,7 +228,7 @@ class CreatePage1(QuoteReadyCheckHandler):
 
         if not quote:
             # TODO: search for real author, to reduce work for users
-            real_author_str = self.get_argument("real-author-1", default=None)
+            real_author_str = self.get_argument("real-author-1", None)
             if not real_author_str:
                 raise HTTPError(
                     400, reason="Missing arguments. real-author-1 is needed."
@@ -270,10 +270,10 @@ class CreatePage2(QuoteReadyCheckHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""
-        quote_str = self.get_argument("quote-2", default=None)
+        quote_str = self.get_argument("quote-2", None)
         if not quote_str:
             raise MissingArgumentError("quote-2")
-        fake_author_str = self.get_argument("fake-author-2", default=None)
+        fake_author_str = self.get_argument("fake-author-2", None)
         if not fake_author_str:
             raise MissingArgumentError("fake-author-2")
 
@@ -286,7 +286,7 @@ class CreatePage2(QuoteReadyCheckHandler):
                 self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
             )
 
-        real_author = self.get_argument("real-author-2", default=None)
+        real_author = self.get_argument("real-author-2", None)
         if not real_author:
             raise MissingArgumentError("real-author-2")
 

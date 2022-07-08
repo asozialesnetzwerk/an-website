@@ -226,7 +226,7 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             return persons_list, None
 
         if path in {"search", "suche"}:
-            query = self.get_argument("q", default="")
+            query = self.get_argument("q", "")
             if not query:
                 return MAIN_PAGE_INFO, query
 

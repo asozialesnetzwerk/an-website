@@ -100,9 +100,9 @@ class WordgameSolver(HTMLRequestHandler):
         """Handle GET requests to the wordgame solver page."""
         if head:
             return
-        word: str = str(self.get_argument("word", default="")).lower()
+        word: str = str(self.get_argument("word", "")).lower()
 
-        before_str: str = str(self.get_argument("before", default=""))
+        before_str: str = str(self.get_argument("before", ""))
 
         before = [
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
@@ -132,9 +132,9 @@ class WordgameSolverAPI(APIRequestHandler):
         """Handle GET requests to the wordgame solver API."""
         if head:
             return
-        word: str = str(self.get_argument("word", default="")).lower()
+        word: str = str(self.get_argument("word", "")).lower()
 
-        before_str: str = str(self.get_argument("before", default=""))
+        before_str: str = str(self.get_argument("before", ""))
 
         before = [
             _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0

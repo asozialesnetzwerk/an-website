@@ -123,4 +123,4 @@ jobs:
       - name: Install Pylint + stuff required for checking the tests and other stuff
         run: grep -E "^(pylint|pytest|html5lib|rcssmin|rjsmin)" requirements-dev.txt | xargs pip install
       - name: Run Pylint
-        run: pylint -d fixme,too-many-lines ./*.py an_website tests
+        run: pylint -d fixme ./*.py an_website tests
