@@ -10,6 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=wrong-import-position
 
 """Nobody inspects the spammish repetition."""
 
@@ -18,16 +19,18 @@ from __future__ import annotations
 import sys
 import warnings
 
-if sys.flags.dev_mode and not sys.warnoptions:
+if sys.flags.dev_mode and not (
+    "-Wdefault" in sys.orig_argv or sys.warnoptions[1:]
+):
     warnings.simplefilter("error", DeprecationWarning)
 warnings.filterwarnings("ignore", module="defusedxml")
 
 
-from . import patches  # pylint: disable=wrong-import-position  # noqa: E402
+from . import patches
 
 patches.apply()
 
 
-from .main import main  # pylint: disable=wrong-import-position  # noqa: E402
+from .main import main
 
 sys.exit(main())

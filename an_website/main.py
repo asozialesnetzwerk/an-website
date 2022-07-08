@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 import asyncio
-import base64
 import configparser
 import importlib
 import logging
@@ -28,6 +27,7 @@ import ssl
 import sys
 import types
 from asyncio.runners import _cancel_all_tasks  # type: ignore
+from base64 import b64encode
 from collections.abc import Callable, Coroutine
 from hashlib import sha256
 from multiprocessing import process
@@ -452,9 +452,9 @@ def setup_apm(app: Application) -> None:
         f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}',"
         "})"
     )
-    app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = base64.b64encode(
+    app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = b64encode(
         sha256(
-            app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("utf-8")
+            app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ascii")
         ).digest()
     ).decode("ascii")
     app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client

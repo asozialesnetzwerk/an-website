@@ -12,7 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-The base request handlers used by other modules.
+The base request handler used by other modules.
 
 This should only contain the BaseRequestHandler class.
 """
@@ -54,7 +54,7 @@ from .utils import (
     anonymize_ip,
     bool_to_str,
     geoip,
-    hash_bytes_b64,
+    hash_bytes,
     str_to_bool,
 )
 
@@ -169,7 +169,7 @@ class BaseRequestHandler(RequestHandler):
         )
 
     def get_reporting_api_endpoint(self) -> None | str:
-        """Get the endpoint for the reporting API."""
+        """Get the endpoint for the Reporting API™️."""
         if not self.settings.get("REPORTING"):
             return None
         endpoint = self.settings.get("REPORTING_ENDPOINT")
@@ -393,7 +393,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_content_type_header()
 
     def elastic_apm_enabled(self) -> bool:
-        """Return whether elastic apm is enabled."""
+        """Return whether Elastic APM is enabled."""
         return (
             "ELASTIC_APM" in self.settings
             and self.settings["ELASTIC_APM"]["ENABLED"]
@@ -479,7 +479,7 @@ class BaseRequestHandler(RequestHandler):
             or self.is_authorized(Permission.RATELIMITS)
         ):
             return False
-        remote_ip = hash_bytes_b64(
+        remote_ip = hash_bytes(
             cast(str, self.request.remote_ip).encode("ascii")
         )
         method = self.request.method
@@ -539,7 +539,7 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("X-RateLimit-Reset", str(time.time() + reset_after))
             self.set_header("X-RateLimit-Reset-After", str(reset_after))
             self.set_header(
-                "X-RateLimit-Bucket", hash_bytes_b64(bucket.encode("ascii")),
+                "X-RateLimit-Bucket", hash_bytes(bucket.encode("ascii")),
             )
         # fmt: on
         if result[0]:

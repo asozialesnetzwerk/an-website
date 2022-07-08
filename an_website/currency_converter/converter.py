@@ -225,8 +225,7 @@ class CurrencyConverter(HTMLRequestHandler):
                 },
             )
             if replace_url_with != self.request.full_url():
-                self.redirect(replace_url_with)
-                return
+                return self.redirect(replace_url_with)
 
         await self.render(
             "pages/converter.html",

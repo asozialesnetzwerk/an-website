@@ -10,36 +10,50 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=wrong-import-position, wrong-import-order
 
 """Utilities used by the tests of an-website."""
 
 from __future__ import annotations
 
-import configparser
 import os
+import sys
+
+# add parent dir to sys.path
+# this makes importing an_website possible
+DIR = os.path.dirname(__file__)
+PARENT_DIR = os.path.dirname(DIR)
+sys.path.append(PARENT_DIR)
+
+
+import warnings
+
+warnings.filterwarnings("ignore", module="defusedxml")
+
+
+from an_website import patches
+
+patches.apply()
+
+
+import configparser
 import re
 import socket
-import sys
 import urllib.parse
-import warnings
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, cast
 
 import orjson as json
 import pytest
 import tornado.httpclient
 import tornado.web
 import yaml
+from blake3 import blake3  # type: ignore
 from lxml import etree  # type: ignore
 from lxml.html import document_fromstring  # type: ignore
 from lxml.html.html5parser import HTMLParser  # type: ignore
 
-from an_website.utils.utils import hash_bytes_b64
-
-warnings.filterwarnings("ignore", module="defusedxml")
-
-DIR = os.path.dirname(__file__)
-PARENT_DIR = os.path.dirname(DIR)
+from an_website import main, quotes  # pylint: disable=ungrouped-imports
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -63,17 +77,6 @@ WRONG_QUOTE_DATA = {
     "showed": 216,
     "voted": 129,
 }
-
-# add parent dir to sys.path
-# this makes importing an_website possible
-sys.path.append(PARENT_DIR)
-
-# pylint: disable=wrong-import-position
-from an_website import main  # noqa: E402
-from an_website import quotes  # noqa: E402
-from an_website.patches import apply  # noqa: E402
-
-apply()
 
 FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
 
@@ -271,7 +274,7 @@ async def check_html_page(
                 != "text/html;charset=utf-8"
             ):
                 # check if static file is linked with correct hash as v
-                file_hash = hash_bytes_b64(_response.body, 12)
+                file_hash = cast(str, blake3(_response.body).hexdigest(8))
                 assert_url_query(link, v=file_hash)
     assert found_ref_to_body or print(url)
     for _r in responses_to_check:

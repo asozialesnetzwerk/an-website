@@ -31,7 +31,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 import html2text
-from ansi2html import Ansi2HTMLConverter  # type: ignore
+from ansi2html import Ansi2HTMLConverter
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from sympy.ntheory import isprime
@@ -374,13 +374,10 @@ class ErrorPage(HTMLRequestHandler):
 
     async def get(self, code: str) -> None:
         """Show the error page."""
-        status_code: int = int(code)
-        if status_code == 420:
-            reason = "Enhance Your Calm"
-        elif status_code == 469:
-            reason = "Nice Try"
-        else:
-            reason = responses.get(status_code, "")
+        status_code = int(code)
+        reason = (
+            "Nice Try" if status_code == 469 else responses.get(status_code, "")
+        )
         # set the status code if it is allowed
         if status_code not in (204, 304) and not 100 <= status_code < 200:
             self.set_status(status_code, reason)

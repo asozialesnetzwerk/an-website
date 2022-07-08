@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import os
+from asyncio import Future
 
 from tornado.web import HTTPError
 
@@ -80,7 +81,7 @@ class SwappedWords(HTMLRequestHandler):
 
     def handle_text(
         self, text: str, config_str: None | str, use_default_config: bool
-    ) -> None:
+    ) -> Future[None]:
         """Use the text to display the HTML page."""
         check_text_too_long(text)
 
@@ -116,7 +117,7 @@ class SwappedWords(HTMLRequestHandler):
             )
         except InvalidConfigError as exc:
             self.set_status(400)
-            self.render(
+            return self.render(
                 "pages/swapped_words.html",
                 text=text,
                 output="",
@@ -125,7 +126,7 @@ class SwappedWords(HTMLRequestHandler):
                 error_msg=str(exc),
             )
         else:  # everything went well
-            self.render(
+            return self.render(
                 "pages/swapped_words.html",
                 text=text,
                 output=sw_config.swap_words(text),
@@ -134,20 +135,20 @@ class SwappedWords(HTMLRequestHandler):
                 error_msg=None,
             )
 
-    def get(
+    async def get(
         self, *, head: bool = False  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests to the swapped words page."""
-        self.handle_text(
+        await self.handle_text(
             self.get_argument("text", default=None) or "",
             self.get_argument("config", default=None),
             self.get_bool_argument("reset", default=False),
         )
 
-    def post(self) -> None:
+    async def post(self) -> None:
         """Handle POST requests to the swapped words page."""
-        self.handle_text(
-            self.get_argument("text") or "",
+        await self.handle_text(
+            self.get_argument("text"),
             self.get_argument("config", default=None),
             self.get_bool_argument("reset", default=False),
         )

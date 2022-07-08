@@ -7,12 +7,10 @@
             <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
                class="no-style-a quote-text"
                target="_blank"
-               rel="noopener"
                id="quote">»{{wrong_quote.quote}}«</a>
             <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
                class="no-style-a quote-author"
                target="_blank"
-               rel="noopener"
                id="author">- {{wrong_quote.author}}</a>
         </article>
         <div id="rating-container" tooltip="Die Bewertung des Zitats">
@@ -46,9 +44,9 @@
             <a id="share"
                tooltip="Teile das Zitat in den Sozialen Medien."
                tooltip-position="bottom"
-               href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}/')}}"
+               href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}')}}"
                target="_blank"
-               rel="nofollow noopener">
+               rel="nofollow">
                 <img class="button-img"
                      src="{{fix_static('img/share.svg')}}"
                      alt="Zitat teilen.">
@@ -97,7 +95,7 @@
 
         <a id="add-quote"
            tooltip="Neues Zitat hinzufügen"
-           href="{{fix_url('/zitate/erstellen/')}}">
+           href="{{fix_url('/zitate/erstellen')}}">
             <img class="button-img" alt="Zitat hinzufügen."
                  src="{{fix_static('img/plus.svg')}}">
         </a>
@@ -142,7 +140,7 @@
     <span data-elastic-exclude>
         Der/die richtige Autor/-in dieses Zitats ist vermutlich
         „<a class="no-style-a-in"
-            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}/')}}"
+            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}')}}"
             id="real-author-name">{{wrong_quote.quote.author}}</a>“.
         <br><br>
         Wenn dein Browser JavaScript unterstützt (und es aktiviert ist),

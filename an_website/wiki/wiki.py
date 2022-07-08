@@ -41,11 +41,11 @@ def get_module_info() -> ModuleInfo:
 class WikiHandler(HTMLRequestHandler):
     """The request handler for the wiki page."""
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requestss to the wiki page."""
         if head:
             return
-        self.render(
+        await self.render(
             "pages/redirect.html",
             send_referrer=True,
             redirect_url="https://wiki.asozial.org",

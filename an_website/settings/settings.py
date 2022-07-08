@@ -40,11 +40,11 @@ def get_module_info() -> ModuleInfo:
 class SettingsPage(HTMLRequestHandler):
     """The request handler for the settings page."""
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the settings page."""
         if head:
             return
-        self.render(
+        await self.render(
             "pages/settings.html",
             theme_name=self.get_theme(),
             themes=THEMES,
@@ -55,7 +55,7 @@ class SettingsPage(HTMLRequestHandler):
             token="",
         )
 
-    def post(self) -> None:
+    async def post(self) -> None:
         """Handle POST requests to the settings page."""
         theme: str = self.get_argument("theme", None) or "default"
         no_3rd_party: bool = self.get_bool_argument(
@@ -66,7 +66,7 @@ class SettingsPage(HTMLRequestHandler):
 
         token = self.get_argument("access_token", None)
         access_token: None | str = (
-            b64encode(token.encode("utf-8")).decode("utf-8") if token else None
+            b64encode(token.encode("utf-8")).decode("ascii") if token else None
         )
 
         if save_in_cookie:
@@ -94,10 +94,9 @@ class SettingsPage(HTMLRequestHandler):
             )
 
         if replace_url_with != self.request.full_url():
-            self.redirect(replace_url_with)
-            return
+            return self.redirect(replace_url_with)
 
-        self.render(
+        await self.render(
             "pages/settings.html",
             theme_name=theme,
             themes=THEMES,

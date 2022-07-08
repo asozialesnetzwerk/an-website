@@ -12,7 +12,7 @@
                 "score", String(result["score"])
             );
             resultElement.innerHTML = (
-                `<a rel="noreferrer" href='${fixHref(result.url)}'>`
+                `<a href='${fixHref(result.url)}'>`
                 + `${result.title}</a> ${result.description}`
             );
             resultsList.appendChild(resultElement);

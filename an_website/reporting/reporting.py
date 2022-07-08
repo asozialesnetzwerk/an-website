@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import logging
-import re
 from datetime import timedelta
 from typing import Any, cast
 
@@ -53,7 +52,6 @@ async def get_reports(  # pylint: disable=too-many-arguments
     elasticsearch: AsyncElasticsearch,
     prefix: str,
     domain: None | str = None,
-    source: None | str = None,
     type_: None | str = None,
     from_: int = 0,
     size: int = 10,
@@ -61,22 +59,16 @@ async def get_reports(  # pylint: disable=too-many-arguments
     """Get the reports from Elasticsearch."""
     query: dict[str, dict[str, list[dict[str, dict[str, Any]]]]]
     query = {"bool": {"filter": [{"range": {"@timestamp": {"gte": "now-1M"}}}]}}
+    query["bool"]["must_not"] = []
+    query["bool"]["must_not"].append(
+        {"term": {"body.source-file": {"value": "moz-extension"}}}
+    )
     if domain:
         query["bool"]["filter"].append(
             {
                 "simple_query_string": {
                     "query": domain,
                     "fields": ["url.domain"],
-                    "flags": "AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|WHITESPACE",
-                }
-            }
-        )
-    if source:
-        query["bool"]["filter"].append(
-            {
-                "simple_query_string": {
-                    "query": source,
-                    "fields": ["body.sourceFile"],
                     "flags": "AND|ESCAPE|NOT|OR|PHRASE|PRECEDENCE|WHITESPACE",
                 }
             }
@@ -127,7 +119,6 @@ class ReportingAPI(APIRequestHandler):
             return
 
         domain = self.get_argument("domain", None)
-        source = self.get_argument("source", "-moz-extension")
         type_ = self.get_argument("type", None)
         from_ = self.get_int_argument("from", 0, min_=0)
         size = self.get_int_argument("size", 10, min_=0)
@@ -141,7 +132,6 @@ class ReportingAPI(APIRequestHandler):
                 self.elasticsearch,
                 self.elasticsearch_prefix,
                 domain,
-                source,
                 type_,
                 from_,
                 size,
@@ -180,15 +170,17 @@ class ReportingAPI(APIRequestHandler):
             body = data.get("csp-report")
             if not isinstance(body, dict):
                 raise HTTPError(400)
-
-            for key in tuple(body.keys()):  # 🥙 → 🐪
-                if re.fullmatch(r"[a-z]+(?:-[a-z]+)+", key):
-                    camel = "".join(
-                        (spam.title() if title else spam)
-                        for title, spam in enumerate(key.split("-"))
-                    )
-                    body[camel] = body.pop(key)
-
+            for camel, kebab in (
+                ("blockedURL", "blocked-uri"),
+                ("documentURL", "document-uri"),
+                ("effectiveDirective", "effective-directive"),
+                ("originalPolicy", "original-policy"),
+                ("sample", "script-sample"),
+                ("statusCode", "status-code"),
+                ("violatedDirective", "violated-directive"),
+            ):
+                if kebab in body:
+                    body[camel] = body.pop(kebab)  # 🥙 → 🐪
             report = {
                 "age": 0,
                 "body": body,

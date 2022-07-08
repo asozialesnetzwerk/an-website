@@ -2,67 +2,67 @@
 python_version = "3.10"
 
 [packages]
-accept-types = {version = "<2"}
+accept-types = "<2"
 aiohttp = {version = "==3.*", extras = ["speedups"]}
-ansi2html = {version = "==1.*"}
-beautifulsoup4 = {version = "==4.*"}
-blake3 = {version = "<2"}
-#defity = {version = "<2"}
-defusedxml = {version = "<2"}
-dill = {version = "<2"}
-ecs-logging = {version = "==1.*"}
-elastic-apm = {version = "==6.*"}
-elastic-enterprise-search = {version = "==7.*"}
+ansi2html = "==1.*"
+beautifulsoup4 = "==4.*"
+blake3 = "<2"
+#defity = "<2"
+defusedxml = "<2"
+dill = "<2"
+ecs-logging = "==1.*"
+elastic-apm = "==6.*"
+elastic-enterprise-search = "==7.*"
 elasticsearch = {version = "==7.*", extras = ["async"]}
-emoji = {version = "==1.*"}
-frozendict = {version = "==2.*"}
-get_version = {version = "==3.*"}
-html2text = {version = "*"}
-hyrule = {version = "<2"}
-jxlpy = {version = "<2"}
-lxml = {version = "==4.*"}
-namedthreads = {version = "*"}
-numpy = {version = "==1.*"}
-orjson = {version = "==3.*"}
-Pillow = {version = "==9.*"}
-pycryptodome = {version = "==3.*"}
-pycurl = {version = "*"}
-python-dateutil = {version = "==2.*"}
-python-Levenshtein = {version = "<2"}
-PyYAML = {version = "==6.*"}
+emoji = "==1.*"
+frozendict = "==2.*"
+get_version = "==3.*"
+html2text = "*"
+hyrule = "<2"
+jxlpy = "<2"
+lxml = "==4.*"
+namedthreads = "*"
+numpy = "==1.*"
+orjson = "==3.*"
+Pillow = "==9.*"
+pycryptodome = "==3.*"
+pycurl = "*"
+python-dateutil = "==2.*"
+python-Levenshtein = "<2"
+PyYAML = "==6.*"
 redis = {version = "==4.*", extras = ["hiredis"]}
-#regex = {version = "*"}
-sympy = {version = "==1.*"}
-tornado = {version = "==6.*"}
-tzdata = {version = "==2022.1"}
-UltraDict = {version = "<2"}
-uvloop = {version = "<2"}
+#regex = "*"
+sympy = "==1.*"
+tornado = "==6.*"
+tzdata = "==2022.1"
+UltraDict = "<2"
+uvloop = "<2"
 
 [dev-packages]
-autoflake = {version = "==1.*"}
-black = {version = "==22.*"}
-coverage = {version = "==6.*"}
-flake8 = {version = "==4.*"}
-flake8-bugbear = {version = "*"}
-flake8-docstrings = {version = "==1.*"}
-flake8-no-pep420 = {version = "==2.*"}
-html5lib = {version = "==1.*"}
-isort = {version = "==5.*"}
-mypy = {version = "<2"}
-pep8-naming = {version = "<2"}
-pipenv = {version = "*"}
-pre-commit = {version = "==2.*"}
-pylint = {version = "==2.*"}
+autoflake = "==1.*"
+black = "==22.*"
+coverage = "==6.*"
+flake8 = "==4.*"
+flake8-bugbear = "*"
+flake8-docstrings = "==1.*"
+flake8-no-pep420 = "==2.*"
+html5lib = "==1.*"
+isort = "==5.*"
+mypy = "<2"
+pep8-naming = "<2"
+pipenv = "*"
+pre-commit = "==2.*"
+pylint = "==2.*"
 pyrepl = {git = "git+https://github.com/blueyed/pyrepl.git", ref = "release-0.10.0"}
 pysocks = {git = "git+https://github.com/urllib3/PySocks.git", ref = "main"}
-pytest = {version = "==7.*"}
-pytest-cov = {version = "==3.*"}
-pytest-tornasync = {version = "<2"}
-rcssmin = {version = "==1.*"}
-rjsmin = {version = "==1.*"}
-types-beautifulsoup4 = {version = "==4.*"}
-types-orjson = {version = "==3.*"}
-types-Pillow = {version = "==9.*"}
-types-python-dateutil = {version = "==2.*"}
-types-PyYAML = {version = "==6.*"}
-types-redis = {version = "==4.*"}
+pytest = "==7.*"
+pytest-cov = "==3.*"
+pytest-tornasync = "<2"
+rcssmin = "==1.*"
+rjsmin = "==1.*"
+types-beautifulsoup4 = "==4.*"
+types-orjson = "==3.*"
+types-Pillow = "==9.*"
+types-python-dateutil = "==2.*"
+types-PyYAML = "==6.*"
+types-redis = "==4.*"

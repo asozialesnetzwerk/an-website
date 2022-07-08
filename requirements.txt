@@ -2,7 +2,7 @@ accept-types==0.4.1
 aiodns==3.0.0
 aiohttp[speedups]==3.8.1
 aiosignal==1.2.0
-ansi2html==1.7.0
+ansi2html==1.8.0
 async-timeout==4.0.2
 attrs==21.4.0
 beautifulsoup4==4.11.1
@@ -39,7 +39,7 @@ mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
 numpy==1.23.0
-orjson==3.7.6
+orjson==3.7.7
 packaging==21.3
 pillow==9.2.0
 pycares==4.2.1
@@ -59,7 +59,7 @@ sympy==1.10.1
 tornado==6.2
 tzdata==2022.1
 ultradict==0.0.4
-urllib3==1.26.9
+urllib3==1.26.10
 uvloop==0.16.0
 wrapt==1.14.1
 yarl==1.7.2

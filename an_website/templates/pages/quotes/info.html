@@ -13,7 +13,7 @@
                     <ol>
                         {% for wq in wrong_quotes %}
                             <li>
-                                <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}/')}}"
+                                <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}')}}"
                                    class="wrong-quote-a">{{str(wq)}}</a>
                                 (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
                                                 >{{wq.rating}}</div>)

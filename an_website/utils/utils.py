@@ -20,13 +20,13 @@ import os
 import random
 import re
 import time
-from base64 import urlsafe_b64encode
+from base64 import b85encode
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
 from functools import cache
-from ipaddress import ip_address, ip_network
+from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 from typing import IO, Any, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
@@ -399,17 +399,19 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def hash_bytes_b64(text: bytes, size: int = 32) -> str:
-    """Hash bytes with blake and return the url-safe base64 representation."""
-    hash_: bytes = blake3(text).digest(size)
-    return urlsafe_b64encode(hash_).decode("ascii")
+def hash_bytes(text: bytes, size: int = 32) -> str:
+    """Hash bytes with BLAKE3 and return the Base85 representation."""
+    digest: bytes = blake3(text).digest(size)
+    return b85encode(digest).decode("ascii")
 
 
-def hash_ip(ip: str) -> str:  # pylint: disable=invalid-name
+def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
     """Hash an IP address."""
-    return hash_bytes_b64(
-        ip.encode("ascii")
-        + blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
+    if not isinstance(address, IPv4Address | IPv6Address):
+        address = ip_address(address)
+    return hash_bytes(
+        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
+        + address.packed
     )
 
 

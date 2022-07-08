@@ -44,11 +44,11 @@ def get_module_info() -> ModuleInfo:
 class KangarooComicsRedirect(HTMLRequestHandler):
     """Request handler for the kangaroo comics redirect."""
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the kangaroo comics page."""
         if head:
             return
-        self.render(
+        await self.render(
             "pages/redirect.html",
             send_referrer=False,
             redirect_url="https://www.zeit.de/serie/die-kaenguru-comics",
@@ -61,8 +61,8 @@ class KangarooComicsRedirect(HTMLRequestHandler):
 class KangarooComics(HTMLRequestHandler):
     """Request handler for the kangaroo comics page."""
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the kangaroo comics page."""
         if head:
             return
-        self.render("pages/kangaroo_comics.html")
+        await self.render("pages/kangaroo_comics.html")

@@ -11,3 +11,5 @@ per-file-ignores =
     hash_files.py,minify_css.py,minify_js.py,setup.py:INP001
     an_website/hangman_solver/words/*:INP001
     an_website/patches/json.py:B950
+    an_website/__main__.py:E402
+    tests/__init__.py:E402

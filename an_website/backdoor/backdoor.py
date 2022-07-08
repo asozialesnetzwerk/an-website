@@ -15,13 +15,14 @@
 
 from __future__ import annotations
 
-import base64
+import binascii
 import io
 import logging
 import pydoc
 import traceback
 from ast import PyCF_ALLOW_TOP_LEVEL_AWAIT, PyCF_ONLY_AST, PyCF_TYPE_COMMENTS
 from asyncio import Future
+from base64 import b64decode, b85decode, b85encode
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
@@ -204,6 +205,7 @@ class Backdoor(APIRequestHandler):
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
+        # pylint: disable=too-complex
         session_id: None | str = self.request.headers.get("X-Backdoor-Session")
         if not session_id:
             session: dict[str, Any] = {
@@ -221,9 +223,12 @@ class Backdoor(APIRequestHandler):
                 else None
             )
             if session_pickle:
-                session = pickle.loads(
-                    base64.b64decode(session_pickle.encode("utf-8"))
-                )
+                try:
+                    session = pickle.loads(
+                        b64decode(session_pickle, validate=True)
+                    )
+                except binascii.Error:
+                    session = pickle.loads(b85decode(session_pickle))
                 for key, value in session.items():
                     try:
                         session[key] = pickle.loads(value)
@@ -262,7 +267,7 @@ class Backdoor(APIRequestHandler):
             await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                base64.b64encode(pickle.dumps(session, PICKLE_PROTOCOL)),
+                b85encode(pickle.dumps(session, PICKLE_PROTOCOL)),
             )
         )
 

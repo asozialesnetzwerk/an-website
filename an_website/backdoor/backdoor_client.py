@@ -300,7 +300,7 @@ def lisp_always_active() -> bool:
     return (
         hy
         and not hy.eval(
-            hy.read_str(
+            hy.read(
                 '(* (- (* (+ 0 1) 2 3 4 5) (+ 6 7 8 9 10 11)) '  # fmt: skip
                 '(int (= (. (__import__ "os.path") sep) "/")))'
             )
@@ -336,7 +336,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     """Run the code and print the output."""
     start_time = time.monotonic()
     if lisp or lisp_always_active():
-        code = hy.disassemble(hy.read_str(code), True)
+        code = hy.disassemble(hy.read(code), True)
     try:
         response = send(
             url,

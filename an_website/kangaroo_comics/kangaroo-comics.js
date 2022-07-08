@@ -268,7 +268,6 @@ administratives/kaenguru-comics/kaenguru-045/original
 
             const listItem = d.createElement("li");
             const header = d.createElement("a");
-            header.rel = "noreferrer";
             header.classList.add("comic-header");
             header.innerText = getDateString(date) + ":";
             header.href = link;

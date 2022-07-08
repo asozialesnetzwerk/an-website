@@ -92,11 +92,11 @@ SERVICES: tuple[Service, ...] = (
 class ServicesHandler(HTMLRequestHandler):
     """The request handler for this page."""
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the service list page."""
         if head:
             return
-        self.render(
+        await self.render(
             "pages/services.html",
             services=SERVICES,
         )

@@ -178,7 +178,7 @@ class ContactPage(HTMLRequestHandler):
 
     ACCESS_LOG: dict[str, float] = {}
 
-    def get(self, *, head: bool = False) -> None:
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the contact page."""
         if not self.settings.get("CONTACT_USE_FORM"):
             raise HTTPError(503)
@@ -194,7 +194,7 @@ class ContactPage(HTMLRequestHandler):
 
         self.ACCESS_LOG[str(self.request.remote_ip)] = curr_time
 
-        self.render(
+        await self.render(
             "pages/contact.html",
             subject=self.get_argument("subject", ""),
             message=self.get_argument("message", ""),
