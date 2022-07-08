@@ -36,7 +36,7 @@
                                {% end %}
                             >{{info.name}}</a>
                             {% if info.sub_pages is not None %}
-                                <ul>
+                                <ul class="sub-list">
                                     {% for page_info in info.sub_pages %}
                                         {% if not page_info.hidden and page_info.path is not None %}
                                             <li>
