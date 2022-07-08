@@ -28,7 +28,6 @@ from jxlpy import (  # type: ignore  # noqa  # pylint: disable=unused-import
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
-from ..utils.utils import str_to_bool
 from . import DIR, QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 
 logger = logging.getLogger(__name__)
@@ -331,10 +330,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
         )
 
-        if file_type == "gif" and str_to_bool(
-            self.get_argument("small", "False"),
-            False,
-        ):
+        if file_type == "gif" and self.get_bool_argument("small", False):
             file_type = "4-color-gif"
         return await self.finish(
             create_image(
