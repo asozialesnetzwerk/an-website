@@ -135,13 +135,13 @@ class UwUHostInfo(HTMLRequestHandler):
         if not UWUFETCH_PATH or wetuwn_code == 127:
             raise HTTPEwwow(
                 503,
-                reason="Sowwy. This sewvew h-hasn't instawwed UwUFetch.",
+                reason="This sewvew h-hasn't instawwed UwUFetch",
             )
 
         if wetuwn_code:
             raise HTTPEwwow(
                 500,
-                reason=f"UwUFetch has exited with wetuwn code {wetuwn_code}.",
+                reason=f"UwUFetch has exited with wetuwn code {wetuwn_code}",
             )
         if head:
             return

@@ -617,7 +617,7 @@ async def get_wrong_quote(
     if result:
         return parse_wrong_quote(result[0])
 
-    raise HTTPError(404, reason="Falsches Zitat nicht gefunden.")
+    raise HTTPError(404, reason="Falsches Zitat nicht gefunden")
 
 
 async def get_rating_by_id(quote_id: int, author_id: int) -> int:
@@ -680,7 +680,7 @@ class QuoteReadyCheckHandler(HTMLRequestHandler):
         if not WRONG_QUOTES_CACHE:
             # should work in a few seconds, the quotes just haven't loaded yet
             self.set_header("Retry-After", "5")
-            raise HTTPError(503, reason="Service available in a few seconds.")
+            raise HTTPError(503, reason="Service available in a few seconds")
 
     async def prepare(self) -> None:
         await super().prepare()

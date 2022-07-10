@@ -312,10 +312,11 @@ class BaseRequestHandler(RequestHandler):
             return lambda spam: json.dumps(spam, option=option)
 
         if self.content_type == "application/yaml":
-            return lambda spam: yaml.dump(  # type: ignore[no-any-return]
-                spam,
-                width=self.get_int_argument(
-                    "yaml_width", sys.maxsize, min_=80, max_=sys.maxsize
+            return lambda spam: cast(
+                str,
+                yaml.dump(
+                    spam,
+                    width=self.get_int_argument("yaml_width", 80, min_=80),
                 ),
             )
 

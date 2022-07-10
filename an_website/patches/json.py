@@ -42,19 +42,13 @@ def get_caller_name() -> None | str:  # noqa: D103
             return None
         name = frame.f_globals["__name__"]
         while (  # pylint: disable=while-used
-            frame
-            and "__name__" in frame.f_globals
-            and frame.f_globals["__name__"] == name
+            frame and frame.f_globals.get("__name__") == name
         ):
             frame = frame.f_back
-        caller = (
-            frame.f_globals["__name__"]
-            if frame and "__name__" in frame.f_globals
-            else None
-        )
+        caller = frame.f_globals.get("__name__") if frame else None
     finally:
         del frame
-    return caller  # type: ignore[no-any-return]
+    return caller
 
 
 def dumps(  # noqa: C901, D103

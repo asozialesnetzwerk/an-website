@@ -1,4 +1,4 @@
-astroid==2.11.6
+astroid==2.11.7
 attrs==21.4.0
 autoflake==1.4
 black==22.6.0
@@ -99,7 +99,7 @@ lxml==4.9.1
 mpmath==1.2.1
 multidict==6.0.2
 namedthreads==1.0
-numpy==1.23.0
+numpy==1.23.1
 orjson==3.7.7
 pillow==9.2.0
 pycares==4.2.1

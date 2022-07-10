@@ -269,5 +269,5 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
                 found=True,
                 rss_str=rss_str,
             )
-        self.set_status(404, reason="Feed not found.")
+        self.set_status(404, reason="Feed not found")
         return await self.render("rss/soundboard.xml", found=False, rss_str="")

@@ -572,13 +572,13 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 continue
 
             body = orjson.loads(
-                path.read_text("utf-8").replace("{prefix}", prefix)
+                path.read_bytes().replace(b"{prefix}", prefix.encode("ascii"))
             )
 
             name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
             try:
-                if i == 0:  # pylint: disable=compare-to-zero
+                if what == "ingest_pipelines":
                     current = await get(id=name)
                     current_version = current[name].get("version", 1)
                 else:
@@ -591,13 +591,13 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 current_version = 0
 
             if current_version < body.get("version", 1):
-                if i == 0:  # pylint: disable=compare-to-zero
+                if what == "ingest_pipelines":
                     await put(id=name, body=body)
                 else:
                     await put(name=name, body=body)
             elif current_version > body.get("version", 1):
                 logger.warning(
-                    "%s has older version %s. Current version is %s!",
+                    "%s has version %s. The version in Elasticsearch is %s!",
                     path,
                     body.get("version", 1),
                     current_version,

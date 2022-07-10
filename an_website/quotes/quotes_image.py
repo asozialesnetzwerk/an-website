@@ -310,7 +310,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 status_code=400,
                 reason=(
                     f"Unsupported file extension: {file_extension} "
-                    f"(supported: {', '.join(FILE_EXTENSIONS.keys())})."
+                    f"(supported: {', '.join(FILE_EXTENSIONS.keys())})"
                 ),
             )
         file_type = FILE_EXTENSIONS[file_extension]
@@ -326,7 +326,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             )[0]
         )
         if wrong_quote is None:
-            raise HTTPError(404, reason="Falsches Zitat nicht gefunden.")
+            raise HTTPError(404, reason="Falsches Zitat nicht gefunden")
 
         self.set_header(
             "Content-Disposition",
