@@ -1,43 +1,60 @@
 #!/bin/sh
 
 if [ -d venv ]; then
-  . venv/bin/activate
+  if ! . venv/bin/activate; then
+    echo "Activating venv failed."
+    echo "You have a venv directory, but it isn't a valid python venv."
+    echo 'Either run "rm -r venv" or run "python -m venv venv".'
+    exit 1
+  fi
 fi
 
-set -e
-python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet "pip>=22.0"
-python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet -r requirements-dev.txt
-set +e
+pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
+if ! $pip_install "pip>=22.0"; then
+  echo "Installing pip>=22.0 failed."
+  exit 1
+fi
+if ! $pip_install -r requirements-dev.txt; then
+  echo "Installing requirements in requirements-dev.txt failed."
+  exit 1
+fi
 
 # install pre-commit hooks
 pre-commit install
 
+FAILED=0
+
 # sort imports
 echo isort:
-isort .
+isort . || FAILED=$(( 2 | FAILED ))
 
 # check formatting
 echo Black:
-black --check --diff --color . || echo 'Run "black ." to reformat'
-
+if ! black --check --diff --color .; then
+  echo 'Run "black ." to reformat'
+  FAILED=$(( 4 | FAILED ))
+fi
 # check types
 echo mypy:
-mypy --pretty -p an_website -p tests
+mypy --pretty -p an_website -p tests || FAILED=$(( 8 | FAILED ))
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D102 ./*.py an_website tests
+flake8 --extend-ignore=D102 ./*.py an_website tests || FAILED=$(( 16 | FAILED ))
 echo Pylint:
-pylint --output-format=colorized ./*.py an_website tests
+pylint --output-format=colorized ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
 
 if [ -n "$1" ]; then
+  pytest="pytest --durations=0 --durations-min=0.5"
   if [ "$1" = "test" ]; then
     echo Tests:
-    pytest --durations=0 --durations-min=0.5 tests
+    $pytest tests || FAILED=$(( 64 | FAILED ))
   elif [ "$1" = "test-cov" ]; then
     echo Tests:
-    pytest --durations=0 --durations-min=0.5 --cov=an_website --cov-report= tests
+    $pytest --cov=an_website --cov-report= tests || FAILED=$(( 64 | FAILED ))
     echo Coverage:
     coverage report --precision=3 --sort=cover --skip-covered
   fi
 fi
+
+exit "$FAILED"

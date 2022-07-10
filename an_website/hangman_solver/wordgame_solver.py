@@ -33,7 +33,7 @@ def get_module_info() -> ModuleInfo:
         ),
         name="Wortspiel-Helfer",
         description=(
-            "Findet Worte, die nur eine Änderung von einander entfernt sind."
+            "Findet Worte, die nur eine Änderung voneinander entfernt sind."
         ),
         path="/wortspiel-helfer",
         keywords=("Wortspiel", "Helfer", "Hilfe", "Worte"),
@@ -100,18 +100,10 @@ class WordgameSolver(HTMLRequestHandler):
         """Handle GET requests to the wordgame solver page."""
         if head:
             return
-        word: str = str(self.get_argument("word", "")).lower()
-
-        before_str: str = str(self.get_argument("before", ""))
-
-        before = [
-            _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
-        ]
-
-        # get the new_before as set with only unique words
-        new_before = (
-            before if not word and word not in before else [*before, word]
-        )
+        word = self.get_argument("word", "").lower()
+        before_str = self.get_argument("before", "")
+        before = [_w.strip() for _w in before_str.split(",") if _w.strip()]
+        new_before = [*before, word] if word and word not in before else before
 
         await self.render(
             "pages/wordgame_solver.html",
@@ -132,13 +124,9 @@ class WordgameSolverAPI(APIRequestHandler):
         """Handle GET requests to the wordgame solver API."""
         if head:
             return
-        word: str = str(self.get_argument("word", "")).lower()
-
-        before_str: str = str(self.get_argument("before", ""))
-
-        before = [
-            _w.strip() for _w in before_str.split(",") if len(_w.strip()) > 0
-        ]
+        word: str = self.get_argument("word", "").lower()
+        before_str: str = self.get_argument("before", "")
+        before = [_w.strip() for _w in before_str.split(",") if _w.strip()]
         return await self.finish_dict(
             before=before,
             word=word,

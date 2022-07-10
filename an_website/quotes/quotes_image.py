@@ -19,6 +19,7 @@ import io
 import logging
 import math
 import os
+import sys
 import textwrap
 from typing import Any
 
@@ -34,6 +35,8 @@ logger = logging.getLogger(__name__)
 
 AUTHOR_MAX_WIDTH: int = 686
 QUOTE_MAX_WIDTH: int = 900
+DEBUG_COLOR: tuple[int, int, int] = 245, 53, 170
+DEBUG_COLOR2: tuple[int, int, int] = 224, 231, 34
 TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
 FONT = ImageFont.truetype(
     font=os.path.join(DIR, "files/oswald.regular.ttf"),
@@ -75,10 +78,10 @@ def get_lines_and_max_height(
     max_line_length = max_width + 1
     while max_line_length > max_width:  # pylint: disable=while-used
         lines = textwrap.wrap(text, width=column_count)
-        max_line_length = max(font.getsize(line)[0] for line in lines)
+        max_line_length = max(font.getlength(line) for line in lines)
         column_count -= 1
 
-    return lines, max(font.getsize(line)[1] for line in lines)
+    return lines, max(font.getbbox(line)[3] for line in lines)
 
 
 def draw_text(  # pylint: disable=too-many-arguments
@@ -88,6 +91,8 @@ def draw_text(  # pylint: disable=too-many-arguments
     y: int,  # pylint: disable=invalid-name
     font: ImageFont.FreeTypeFont,
     stroke_width: int = 0,
+    *,
+    display_bounds: bool = sys.flags.dev_mode,
 ) -> None:
     """Draw a text on an image."""
     image.text(
@@ -99,6 +104,14 @@ def draw_text(  # pylint: disable=too-many-arguments
         stroke_width=stroke_width,
         spacing=54,
     )
+    if display_bounds:
+        x_off, y_off, right, bottom = font.getbbox(
+            text, stroke_width=stroke_width
+        )
+        image.rectangle((x, y, x + right, y + bottom), outline=DEBUG_COLOR)
+        image.rectangle(
+            (x + x_off, y + y_off, x + right, y + bottom), outline=DEBUG_COLOR2
+        )
 
 
 def draw_lines(  # pylint: disable=too-many-arguments
@@ -113,7 +126,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
 ) -> int:
     """Draw the lines on the image and return the last y position."""
     for line in lines:
-        width = font.getsize(line)[0]
+        width = font.getlength(line)
         draw_text(
             image=image,
             text=line,
@@ -142,7 +155,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     # draw quote
     quote_str = f"»{quote}«"
-    width, max_line_height = font.getsize(quote_str)
+    width, max_line_height = font.getbbox(quote_str)[2:]
     if width <= AUTHOR_MAX_WIDTH:
         quote_lines = [quote_str]
     else:
@@ -169,7 +182,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     # draw author
     author_str = f"- {author}"
-    width, max_line_height = font.getsize(author_str)
+    width, max_line_height = font.getbbox(author_str)[2:]
     if width <= AUTHOR_MAX_WIDTH:
         author_lines = [author_str]
     else:
@@ -202,7 +215,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     # draw rating
     if rating:
-        width, height = FONT_SMALLER.getsize(str(rating))
+        _, y_off, width, height = FONT_SMALLER.getbbox(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(
             image=draw,
@@ -218,14 +231,14 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             icon,
             box=(
                 25 + 5 + width,
-                y_rating + 8,  # 8 is a magic number 🧝
+                y_rating + y_off // 2,
             ),
             mask=icon,
         )
 
     # draw host name
     if source:
-        width, height = HOST_NAME_FONT.getsize(source)
+        width, height = HOST_NAME_FONT.getbbox(source)[2:]
         draw_text(
             image=draw,
             text=source,
