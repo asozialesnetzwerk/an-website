@@ -68,18 +68,19 @@ from .utils.base_request_handler import BaseRequestHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
 
-IGNORED_MODULES = [
+IGNORED_MODULES = {
+    "backdoor.backdoor_client",
     "patches.*",
-    "static.*",
-    "templates.*",
-    "utils.base_request_handler",
-    "utils.utils",
-    "utils.static_file_handling",
-    "swapped_words.sw_config_file",
     "quotes.quotes_image",
     "quotes.share_page",
-    "backdoor.backdoor_client",
-]
+    "static.*",
+    "swapped_words.sw_config_file",
+    "templates.*",
+    "utils.base_request_handler",
+    "utils.braille",
+    "utils.static_file_handling",
+    "utils.utils",
+}
 
 CONFIG = configparser.ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="utf-8")
@@ -721,7 +722,7 @@ def main() -> None | int | str:  # noqa: C901
     ).split(","):
         module_name = module_name.strip()  # pylint: disable=redefined-loop-name
         if len(module_name) > 0:
-            IGNORED_MODULES.append(module_name)
+            IGNORED_MODULES.add(module_name)
 
     app = make_app()
     if isinstance(app, str):
