@@ -55,7 +55,7 @@ def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
         (
-            r"/(robots\.txt|favicon\.ico|\.env)",
+            r"/((?:robots|humans)\.txt|favicon\.ico|\.env)",
             StaticFileHandler,
             {"path": STATIC_DIR},
         )
@@ -87,7 +87,7 @@ def get_handlers() -> list[Handler]:
                     if file.endswith(".js")
                 )
 
-    # static files in /static/, add it here, so it is after the JS handlers
+    # static files in "/static/"; add it here (after the CSS & JS handlers)
     handlers.append(
         (r"/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
     )

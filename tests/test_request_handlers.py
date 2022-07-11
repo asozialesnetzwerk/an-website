@@ -237,6 +237,8 @@ async def test_request_handlers(
     )
     assert b"https://example.org" in response.body
 
+    assert_valid_response(await fetch("/humans.txt"), "text/plain")
+    assert_valid_response(await fetch("/static/humans.txt"), "text/plain")
     assert_valid_response(await fetch("/robots.txt"), "text/plain")
     assert_valid_response(await fetch("/static/robots.txt"), "text/plain")
     assert_valid_response(

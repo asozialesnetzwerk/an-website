@@ -1,0 +1,13 @@
+/* TEAM */
+	Full-stack developer: Joshix
+	Email: joshix@asozial.org
+	Location: NRW, Germany
+
+	Backend developer: Das Gürteltier
+	Email: guerteltier@asozial.org
+	Location: Germany
+
+/* THANKS */
+	CSS wizard: h4ckerle
+
+	README destroyer: Jimi

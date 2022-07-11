@@ -24,6 +24,7 @@ repos:
     rev: v1.1.13
     hooks:
       - id: remove-tabs
+        exclude: ^an_website/static/humans.txt$
       - id: insert-license
         files: ^.+\.py$
         args:
