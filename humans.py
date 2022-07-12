@@ -23,7 +23,7 @@ from pathlib import Path
 from subprocess import run
 
 DIR = abspath(dirname(__file__))
-HUMANS_TXT = Path("an_website/static/humans.txt")
+HUMANS_TXT = Path(DIR, "an_website/static/humans.txt")
 
 # edit these 3 to change humans.txt
 BOTS: set[str] = {"ImgBotApp", "snyk-bot"}

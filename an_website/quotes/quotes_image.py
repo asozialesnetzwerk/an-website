@@ -295,6 +295,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
     )
     RATELIMIT_GET_LIMIT = 15
+    IS_NOT_HTML = True
 
     async def get(
         self,
@@ -306,13 +307,13 @@ class QuoteAsImage(QuoteReadyCheckHandler):
     ) -> None:
         """Handle GET requests to this page and render the quote as image."""
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
-            raise HTTPError(
-                status_code=400,
-                reason=(
-                    f"Unsupported file extension: {file_extension} "
-                    f"(supported: {', '.join(FILE_EXTENSIONS.keys())})"
-                ),
+            reason = (
+                f"Unsupported file extension: {file_extension} "
+                f"(supported: {', '.join(FILE_EXTENSIONS.keys())})"
             )
+            self.set_status(400, reason=reason)
+            self.content_type = "text/plain"
+            return await self.finish(reason)
         file_type = FILE_EXTENSIONS[file_extension]
         self.handle_accept_header((f"image/{file_type}",))
         self.set_header("Content-Type", f"image/{file_type}")
