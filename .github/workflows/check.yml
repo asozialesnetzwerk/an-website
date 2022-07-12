@@ -38,8 +38,7 @@ jobs:
       - name: Minify CSS files
         run: ./minify_css.py --clean
       - name: Generate humans.txt
-        run: |
-          # ./humans.py  # TODO: make this work
+        run: ./humans.py
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

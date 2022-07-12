@@ -51,7 +51,9 @@ CONTRIBUTORS: dict[str, dict[str, str]] = {
 
 def generate_humans_txt() -> str:
     """Generate the contents of the humans.txt file."""
-    result = run(["git", "shortlog", "-s"], capture_output=True, check=True)
+    result = run(
+        ["git", "shortlog", "-s", "HEAD"], capture_output=True, check=True
+    )
 
     people: dict[str, int] = {}
 
