@@ -55,10 +55,20 @@ def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
         (
-            r"/((?:robots|humans)\.txt|favicon\.ico|\.env)",
-            StaticFileHandler,
-            {"path": STATIC_DIR},
-        )
+            r"/(?:static/)?(robots\.txt|\.env)",
+            ContentTypeStaticFileHandler,
+            {"path": STATIC_DIR, "content_type": "text/plain;charset=ascii"},
+        ),
+        (
+            r"/(?:static/)?(humans\.txt)",
+            ContentTypeStaticFileHandler,
+            {"path": STATIC_DIR, "content_type": "text/plain;charset=utf-8"},
+        ),
+        (
+            r"/(?:static/)?(favicon\.ico)",
+            CachedStaticFileHandler,
+            {"path": STATIC_DIR, "content_type": "image/x-icon"},
+        ),
     ]
     if sys.flags.dev_mode:
         # add handlers for the not minified CSS files
@@ -98,16 +108,43 @@ def get_handlers() -> list[Handler]:
 def fix_static_url(url: str) -> str:
     """Fix the URL for static files."""
     if not url.startswith("/static/"):
-        url = f"/static/{url.lstrip('/')}"
+        url = f"/static/{url}"
     if "?" in url:
         url = url.split("?")[0]
     if url in FILE_HASHES_DICT:
-        return f"{url}?v={FILE_HASHES_DICT[url]}"
+        hash_ = FILE_HASHES_DICT[url]
+        if url == "/static/favicon.ico":
+            return f"/favicon.ico?v={hash_}"
+        return f"{url}?v={hash_}"
     logger.warning("%s not in FILE_HASHES_DICT", url)
     return url
 
 
-class CachedStaticFileHandler(StaticFileHandler):
+class ContentTypeStaticFileHandler(StaticFileHandler):
+    """A StaticFileHandler with customizable Content-Type header."""
+
+    content_type: str | None
+
+    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
+        pass
+
+    def initialize(
+        self,
+        path: str,
+        default_filename: str | None = None,
+        content_type: str | None = None,
+    ) -> None:
+        """Initialize the Handler."""
+        super().initialize(path, default_filename)
+        self.content_type = content_type
+
+    def set_extra_headers(self, _: str) -> None:
+        """Reset the content type header if we know it better."""
+        if self.content_type is not None:
+            self.set_header("Content-Type", self.content_type)
+
+
+class CachedStaticFileHandler(ContentTypeStaticFileHandler):
     """A static file handler that sets a smarter Cache-Control header."""
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:

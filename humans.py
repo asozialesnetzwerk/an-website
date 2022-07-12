@@ -125,4 +125,4 @@ def add_data_to_output(
 
 
 if __name__ == "__main__":
-    HUMANS_TXT.write_text(generate_humans_txt(), "cp1252")
+    HUMANS_TXT.write_text(generate_humans_txt(), "utf-8")

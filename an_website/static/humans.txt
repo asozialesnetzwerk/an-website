@@ -3,7 +3,7 @@
 	Email: joshix@asozial.org
 	Location: NRW, Germany
 
-	Backend developer: Das Gürteltier
+	Backend developer: Das GÃ¼rteltier
 	Email: guerteltier@asozial.org
 	Location: NRW, Germany
 
