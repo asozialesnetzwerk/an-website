@@ -10,6 +10,7 @@ select = B,B9,C,D,E,F,N8,W,INP
 per-file-ignores =
     hash_files.py,humans.py,minify_css.py,minify_js.py,setup.py:INP001
     an_website/hangman_solver/words/*:INP001
+    an_website/patches/braille.py:D103,D400
     an_website/patches/json.py:B950
     an_website/__main__.py:E402
     tests/__init__.py:E402

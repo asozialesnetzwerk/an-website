@@ -43,8 +43,8 @@ echo Flake8:
 flake8 --extend-ignore=D102 ./*.py an_website tests || FAILED=$(( 16 | FAILED ))
 echo Pylint:
 pylint="pylint --output-format=colorized"
-$pylint --disable=all --enable=W0511 -sn --persistent=n ./*.py an_website tests
-$pylint --disable=W0511 ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
+$pylint -d all -e W0511 --score=no --persistent=no ./*.py an_website tests
+$pylint -d W0511 ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
 
 if [ -n "$1" ]; then
   pytest="pytest --durations=0 --durations-min=0.5"

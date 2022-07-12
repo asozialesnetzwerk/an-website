@@ -23,7 +23,6 @@ from typing import cast
 
 from .. import DIR as ROOT_DIR
 from .. import VERSION
-from ..utils import braille
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -48,7 +47,7 @@ def get_module_info() -> ModuleInfo:
 
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
-    return braille.encode(new("ripemd160", data).digest())
+    return new("ripemd160", data).digest().decode("braille")
 
 
 def hash_all_files() -> str:

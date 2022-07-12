@@ -35,7 +35,7 @@ import yaml
 from tornado.httputil import parse_body_arguments as _parse_body_arguments
 
 from .. import DIR as ROOT_DIR
-from . import json  # pylint: disable=reimported
+from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 

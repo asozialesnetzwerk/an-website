@@ -5,7 +5,7 @@
 
 {% block body %}
 
-<pre style="{% if full %}max-width: 100%; overflow: scroll{% else %}font-size: 1rem{% end %}">
+<pre style="{% if full %}max-width: 100%; overflow: scroll; scrollbar-width: none{% else %}font-size: 1rem{% end %}">
 Version: {{ version }}
     {% if no_3rd_party %}
 <a href="{{fix_url(f'{GH_PAGES_URL}/coverage')}}"

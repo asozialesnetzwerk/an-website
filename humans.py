@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Generate a humans.txt file."""
+"""Generates a humans.txt file."""
 
 from __future__ import annotations
 
@@ -38,7 +38,7 @@ MAINTAINERS: dict[str, dict[str, str]] = {
         "__role": "Full-stack developer",
     },
     "Das Gürteltier": {
-        "Location": "Germany",
+        "Location": "NRW, Germany",
         "Email": "guerteltier@asozial.org",
         "__role": "Backend developer",
     },
@@ -123,4 +123,4 @@ def add_data_to_output(
 
 
 if __name__ == "__main__":
-    HUMANS_TXT.write_text(generate_humans_txt(), "utf-8")
+    HUMANS_TXT.write_text(generate_humans_txt(), "cp1252")
