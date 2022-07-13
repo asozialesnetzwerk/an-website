@@ -103,19 +103,25 @@ class ChatHandler(BaseRequestHandler):
         name = self.get_argument("name")
         message = self.get_argument("message")
 
+        if not name:
+            raise HTTPError(400, reason="Empty name not allowed.")
         if not name or not check_only_emojis(name):
             raise HTTPError(400, reason="Name needs to contain only emojis.")
-
         if len(name) > MAX_AUTHOR_LENGTH:
-            raise HTTPError(400, reason="Name too long.")
+            raise HTTPError(
+                400, reason=f"Name longer than {MAX_AUTHOR_LENGTH} chars."
+            )
 
-        if not message or not check_only_emojis(message.replace(" ", "")):
+        if not message:
+            raise HTTPError(400, reason="Empty message not allowed.")
+        if not check_only_emojis(message.replace(" ", "")):
             raise HTTPError(
                 400, reason="Message needs to contain only emojis or spaces."
             )
-
         if len(message) > MAX_MESSAGE_LENGTH:
-            raise HTTPError(400, reason="Message too long.")
+            raise HTTPError(
+                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} chars."
+            )
 
         await save_new_message(
             f"{name}: {message}",
