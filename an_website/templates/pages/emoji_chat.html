@@ -1,0 +1,24 @@
+{% whitespace oneline %}
+{% extends "../base.html" %}
+
+{% block body %}
+    {% for message in messages %}
+<div>{{message}}</div>
+    {% end %}
+    <style>
+        label{display:inline-block}
+        input,button{display:inline-block;width:auto!important;}
+    </style>
+
+    <form method="post">
+        <label>Name: <input type="text" name="name"></label>
+        <label>Nachricht: <input type="text" name="message"></label>
+        <button type="submit">Senden!</button>
+    </form>
+{% end %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+
+{% end %}
