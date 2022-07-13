@@ -23,8 +23,8 @@ from functools import cache
 from pathlib import Path
 from typing import Any, cast
 
+import tornado.web
 from blake3 import blake3  # type: ignore
-from tornado.web import StaticFileHandler
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
@@ -56,12 +56,12 @@ def get_handlers() -> list[Handler]:
     handlers: list[Handler] = [
         (
             r"/(?:static/)?(robots\.txt|\.env)",
-            ContentTypeStaticFileHandler,
+            StaticFileHandler,
             {"path": STATIC_DIR, "content_type": "text/plain;charset=ascii"},
         ),
         (
             r"/(?:static/)?(humans\.txt)",
-            ContentTypeStaticFileHandler,
+            StaticFileHandler,
             {"path": STATIC_DIR, "content_type": "text/plain;charset=utf-8"},
         ),
         (
@@ -120,10 +120,10 @@ def fix_static_url(url: str) -> str:
     return url
 
 
-class ContentTypeStaticFileHandler(StaticFileHandler):
+class StaticFileHandler(tornado.web.StaticFileHandler):
     """A StaticFileHandler with customizable Content-Type header."""
 
-    content_type: str | None
+    content_type: None | str
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass
@@ -131,20 +131,20 @@ class ContentTypeStaticFileHandler(StaticFileHandler):
     def initialize(
         self,
         path: str,
-        default_filename: str | None = None,
-        content_type: str | None = None,
+        default_filename: None | str = None,
+        content_type: None | str = None,
     ) -> None:
-        """Initialize the Handler."""
+        """Initialize the handler."""
         super().initialize(path, default_filename)
         self.content_type = content_type
 
     def set_extra_headers(self, _: str) -> None:
-        """Reset the content type header if we know it better."""
-        if self.content_type is not None:
+        """Reset the Content-Type header if we know it better."""
+        if self.content_type:
             self.set_header("Content-Type", self.content_type)
 
 
-class CachedStaticFileHandler(ContentTypeStaticFileHandler):
+class CachedStaticFileHandler(StaticFileHandler):
     """A static file handler that sets a smarter Cache-Control header."""
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
@@ -160,9 +160,6 @@ class CachedStaticFileHandler(ContentTypeStaticFileHandler):
     def set_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_headers()
-        if self.settings.get("HSTS"):
-            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
-            self.set_header("Strict-Transport-Security", "max-age=63072000")
         if not sys.flags.dev_mode and "v" in self.request.arguments:
             self.set_header(  # never changes
                 "Cache-Control",

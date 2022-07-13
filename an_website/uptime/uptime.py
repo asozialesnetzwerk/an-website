@@ -19,6 +19,7 @@ import logging
 import math
 import re
 import time
+from typing import TypedDict
 
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
@@ -29,6 +30,14 @@ from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 logger = logging.getLogger(__name__)
+
+
+class AvailabilityDict(TypedDict):  # noqa: D101
+    # pylint: disable=missing-class-docstring
+    up: int
+    down: int
+    total: int
+    percentage: None | float
 
 
 def get_module_info() -> ModuleInfo:
@@ -103,7 +112,7 @@ async def get_availability_data(
     )
 
 
-def get_availability_dict(up: int, down: int) -> dict[str, int | float | None]:
+def get_availability_dict(up: int, down: int) -> AvailabilityDict:
     """Get the availability data as a dict."""
     # pylint: disable=invalid-name
     return {

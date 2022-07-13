@@ -4,31 +4,31 @@
         {% if as_html %}
             <title>{{title}}</title>
             <meta charset="UTF-8">
-            <meta name="theme-color" content="#8B0000">
-            <meta property="og:locale" content="de_DE">
-            <meta property="og:url" content="{{canonical_url}}">
-            <meta property="og:type" content="website">
-            <meta property="og:title" content="{{title}}">
-            <meta property="og:site_name" content="Asoziale Webseite">
-            <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
             <meta name="description" content="{{ description }}">
             <meta name="keywords" content="{{keywords}}">
+            <meta name="theme-color" content="#8B0000">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            {% if apm_script %}
-                <script src="{{fix_url(elastic_rum_url)}}"></script>
-                <script>{% raw apm_script %}</script>
-            {% end %}
-            {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
-            <link rel="icon" href="{{fix_static('favicon.ico')}}" type="image/x-icon">
+            <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
+            <meta property="og:locale" content="de_DE">
+            <meta property="og:site_name" content="Asoziale Webseite">
+            <meta property="og:title" content="{{title}}">
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="{{canonical_url}}">
+            <link rel="author" type="text/plain" href="{{fix_url('/humans.txt')}}">
             <link rel="canonical" href="{{canonical_url}}">
-            <link type="text/plain" rel="author" href="{{fix_url('/humans.txt')}}">
-            <link rel="stylesheet" type="text/css" href="{{fix_static(f'style/themes/{theme}.css')}}">
+            <link rel="icon" type="image/x-icon" href="{{fix_static('favicon.ico')}}">
             <link rel="stylesheet" type="text/css" href="{{fix_static('style/base.css')}}">
+            {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
+            <link rel="stylesheet" type="text/css" href="{{fix_static(f'style/themes/{theme}.css')}}">
             <link rel="stylesheet" type="text/css" href="{{fix_static('style/tooltip.css')}}">
-            <script defer src="{{fix_static('js/utils.js')}}"></script>
             <script defer src="{{fix_static('js/better_ui.js')}}"></script>
             {% if dynload %}
                 <script defer src="{{fix_static('js/dynamically_load.js')}}"></script>
+            {% end %}
+            <script defer src="{{fix_static('js/utils.js')}}"></script>
+            {% if apm_script %}
+                <script src="{{fix_url(elastic_rum_url)}}"></script>
+                <script>{% raw apm_script %}</script>
             {% end %}
         {% end %}
         {% block head %} {% end %}

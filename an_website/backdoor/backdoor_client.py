@@ -68,7 +68,7 @@ E = eval(  # pylint: disable=eval-used
 class Response(TypedDict):  # noqa: D101
     success: bool | EllipsisType
     output: None | str
-    result: None | tuple[str, bytes | None] | SystemExit
+    result: None | tuple[str, None | bytes] | SystemExit
 
 
 async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
