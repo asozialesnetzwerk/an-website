@@ -442,6 +442,14 @@ def name_to_id(val: str) -> str:
     ).strip("-")
 
 
+def remove_suffix_ignore_case(string: str, suffix: str, /) -> str:
+    """Remove a suffix without caring about the case."""
+    if string.lower().endswith(suffix.lower()):
+        return string[: -len(suffix)]
+
+    return string
+
+
 def normalized_levenshtein(string1: str, string2: str) -> float:
     """Calculate the normalized Levenshtein distance between two strings."""
     return float(distance(string1, string2)) / max(len(string1), len(string2))

@@ -47,6 +47,7 @@ from .utils import (
     Permission,
     bool_to_str,
     normalized_levenshtein,
+    remove_suffix_ignore_case,
     replace_umlauts,
     str_to_bool,
 )
@@ -284,13 +285,14 @@ class NotFoundHandler(HTMLRequestHandler):
 
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
-        if self.request.method not in ("GET", "HEAD"):
+        if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)
         new_path = re.sub(r"/+", "/", self.request.path.rstrip("/")).replace(
             "_", "-"
         )
         for ext in (".html", ".htm", ".php"):
-            new_path = new_path.removesuffix(f"/index{ext}").removesuffix(ext)
+            new_path = remove_suffix_ignore_case(new_path, f"/index{ext}")
+            new_path = remove_suffix_ignore_case(new_path, ext)
 
         new_path = replace_umlauts(new_path)
 
@@ -324,9 +326,9 @@ class NotFoundHandler(HTMLRequestHandler):
         if new_path != self.request.path:
             return self.redirect(self.fix_url(new_path=new_path), True)
 
-        this_path_stripped = unquote(new_path).strip("/")  # "/%20/" → " "
+        this_path_normalized = unquote(new_path).strip("/").lower()
 
-        if len(this_path_stripped) == 1:
+        if len(this_path_normalized) == 1:
             return self.redirect(self.fix_url(new_path="/"))
 
         distances: list[tuple[float, str]] = []
@@ -335,7 +337,9 @@ class NotFoundHandler(HTMLRequestHandler):
         for module_info in self.get_module_infos():
             if module_info.path is not None:
                 dist = min(  # get the smallest distance with the aliases
-                    normalized_levenshtein(this_path_stripped, path.strip("/"))
+                    normalized_levenshtein(
+                        this_path_normalized, path.strip("/").lower()
+                    )
                     for path in (*module_info.aliases, module_info.path)
                     if path != "/z"  # do not redirect to /z
                 )
@@ -346,7 +350,8 @@ class NotFoundHandler(HTMLRequestHandler):
                 distances.extend(
                     (
                         normalized_levenshtein(
-                            this_path_stripped, sub_page.path.strip("/")
+                            this_path_normalized,
+                            sub_page.path.strip("/").lower(),
                         ),
                         sub_page.path,
                     )
@@ -361,9 +366,6 @@ class NotFoundHandler(HTMLRequestHandler):
             # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:
                 return self.redirect(self.fix_url(new_path=path), False)
-
-        if len(this_path_stripped) == 1:
-            return self.redirect(self.fix_url(new_path="/"), False)
 
         self.set_status(404)
         self.write_error(404)
