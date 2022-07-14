@@ -50,6 +50,7 @@ class SettingsPage(HTMLRequestHandler):
             themes=THEMES,
             no_3rd_party_default=self.get_no_3rd_party_default(),
             dynload=self.get_dynload(),
+            openmoji=self.get_openmoji(),
             save_in_cookie=self.get_bool_argument("save_in_cookie", True),
             show_token_input=self.get_bool_argument("auth", False),
             token="",
@@ -63,6 +64,7 @@ class SettingsPage(HTMLRequestHandler):
         )
         dynload: bool = self.get_bool_argument("dynload", False)
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
+        openmoji: bool = self.get_bool_argument("openmoji", False)
 
         token = self.get_argument("access_token", "")
         access_token: None | str = (
@@ -75,6 +77,7 @@ class SettingsPage(HTMLRequestHandler):
             self.set_cookie("theme", theme)
             self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
             self.set_cookie("dynload", bool_to_str(dynload))
+            self.set_cookie("openmoji", bool_to_str(openmoji))
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 dynload=None,
@@ -82,12 +85,14 @@ class SettingsPage(HTMLRequestHandler):
                 theme=None,
                 save_in_cookie=None,
                 access_token=None,
+                openmoji=None,
             )
         else:
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 dynload=dynload,
                 no_3rd_party=no_3rd_party,
+                openmoji=openmoji,
                 theme=theme,
                 save_in_cookie=False,
                 access_token=access_token,
@@ -103,6 +108,7 @@ class SettingsPage(HTMLRequestHandler):
             no_3rd_party=no_3rd_party,
             no_3rd_party_default=self.get_no_3rd_party_default(),
             dynload=dynload,
+            openmoji=openmoji,
             save_in_cookie=save_in_cookie,
             show_token_input=token or self.get_bool_argument("auth", False),
             token=token,

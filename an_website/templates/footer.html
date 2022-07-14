@@ -70,4 +70,14 @@
         {% raw emoji2html("🖤") %}
     {% end %}
     <a href="{{fix_url(GH_REPO_URL)}}">Asoziales Netzwerk: Sektion GitHub</a>
+    <br>
+    <br>
+    {% if openmoji %}
+        <div id="open-moji-attribution">
+            All emojis {% raw emoji2html("🥳") %} designed by
+            <a href="{{fix_url('https://openmoji.org')}}">OpenMoji</a>
+            – the open-source emoji and icon project.
+            License: <a href="{{fix_url('https://creativecommons.org/licenses/by-sa/4.0/')}}">CC BY-SA 4.0</a>
+        </div>
+    {% end %}
 </footer>

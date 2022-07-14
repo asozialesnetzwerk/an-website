@@ -687,17 +687,22 @@ class BaseRequestHandler(RequestHandler):
             url = urlsplit(f"/redirect?to={quote(url.geturl())}")
         path = url.path if new_path is None else new_path  # the path of the url
         if path.startswith(("/static/", "/soundboard/files/")):
-            query_args.update(no_3rd_party=None, theme=None, dynload=None)
+            query_args.update(
+                no_3rd_party=None, theme=None, dynload=None, openmoji=None
+            )
         else:
             query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
             query_args.setdefault("theme", self.get_theme())
             query_args.setdefault("dynload", self.get_dynload())
+            query_args.setdefault("openmoji", self.get_openmoji())
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
             if query_args["theme"] == self.get_saved_theme():
                 query_args["theme"] = None
             if query_args["dynload"] == self.get_saved_dynload():
                 query_args["dynload"] = None
+            if query_args["openmoji"] == self.get_saved_openmoji():
+                query_args["openmoji"] = None
 
         return add_args_to_url(
             urlunsplit(
@@ -732,7 +737,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""
-        default = False  # TODO: change this
+        default = False
         dynload = self.get_cookie("dynload")
         if dynload is None:
             return default
@@ -741,6 +746,18 @@ class BaseRequestHandler(RequestHandler):
     def get_dynload(self) -> bool:
         """Return the dynload query argument as boolean."""
         return self.get_bool_argument("dynload", self.get_saved_dynload())
+
+    def get_saved_openmoji(self) -> bool:
+        """Get the saved value for openmoji."""
+        default = False
+        openmoji = self.get_cookie("openmoji")
+        if openmoji is None:
+            return default
+        return str_to_bool(openmoji, default)
+
+    def get_openmoji(self) -> bool:
+        """Return the openmoji query argument as boolean."""
+        return self.get_bool_argument("openmoji", self.get_saved_openmoji())
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""

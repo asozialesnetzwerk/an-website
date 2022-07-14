@@ -8,6 +8,9 @@ img.emoji {
     -o-object-fit: contain;
     object-fit: contain;
 }
+#open-moji-attribution {
+    font-size: 0.69rem;
+}
 /* OpenMoji END */
 
 /* base */

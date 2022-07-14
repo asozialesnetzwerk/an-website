@@ -26,6 +26,16 @@
         {% end %}
 
         <label class="form-element">
+            Nutze coole Emojis von OpenMoji
+            <input type="checkbox"
+               name="openmoji"
+                {% if openmoji %}
+                   checked
+                {% end %}
+               value="sure">
+        </label>
+
+        <label class="form-element">
             Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
             <input type="checkbox"
                name="dynload"
@@ -53,7 +63,7 @@
         {% end %}
 
         <label class="form-element">
-           Speicher in Cookies 🍪 (empfohlen)
+           Speicher in Cookies {% raw emoji2html("🍪") %} (empfohlen)
             <input type="checkbox"
                 name="save_in_cookie"
                 {% if save_in_cookie %}

@@ -149,12 +149,19 @@ class HTMLRequestHandler(BaseRequestHandler):
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda url: self.fix_url(fix_static_url(url)),
             fix_url=self.fix_url,
-            emoji2html=lambda emoji: create_emoji_html(
-                emoji,
-                self.fix_url(
-                    fix_static_url(f"img/openmoji-svg/{emoji2code(emoji)}.svg")
-                ),
-            ),
+            openmoji=self.get_openmoji(),
+            emoji2html=(
+                lambda emoji: create_emoji_html(
+                    emoji,
+                    self.fix_url(
+                        fix_static_url(
+                            f"img/openmoji-svg/{emoji2code(emoji)}.svg"
+                        )
+                    ),
+                )
+            )
+            if self.get_openmoji()
+            else lambda spam: spam,  # type: ignore[no-any-return]
             form_appendix=self.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
             GH_PAGES_URL=GH_PAGES_URL,
