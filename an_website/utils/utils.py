@@ -478,6 +478,16 @@ def replace_umlauts(string: str) -> str:
     )
 
 
+def emoji2code(emoji: str) -> str:
+    """Convert an emoji to the hexcodes of it."""
+    return "-".join(f"{ord(c):x}" for c in emoji).upper()
+
+
+def create_emoji_html(emoji: str, emoji_url: str) -> str:
+    """Create a html element that can be used to display an emoji."""
+    return f'<img src="{emoji_url}" alt="{emoji}" class="emoji">'
+
+
 async def run(
     program: str,
     *args: str,

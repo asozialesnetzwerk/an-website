@@ -1,7 +1,7 @@
 @font-face {
     font-family: "comic";
     font-style: normal;
-    /* https://www.wfonts.com/font/comic-sans-ms */
+    /*! See: /static/fonts/README_FONT_LICENSES */
     src: url("/static/fonts/comic.woff2?v=0") format("woff2");
 }
 
@@ -12,7 +12,7 @@
 @font-face {
     font-family: "comic-mono";
     font-style: normal;
-    /* font stolen from: https://dtinth.github.io/comic-mono-font/ */
+    /*! See: /static/fonts/README_FONT_LICENSES */
     src: url("/static/fonts/ComicMono.woff2?v=0") format("woff2");
 }
 

@@ -1,3 +1,15 @@
+/* OpenMoji css */
+img.emoji {
+    display: inline;
+    /* stolen from discord lol */
+    vertical-align: bottom;
+    width: 1.375em;
+    height: 1.375em;
+    -o-object-fit: contain;
+    object-fit: contain;
+}
+/* OpenMoji END */
+
 /* base */
 :root {
     accent-color: var(--main);
@@ -38,6 +50,7 @@ body {
 }
 
 body * {
+    font-family: sans-serif;
     color: var(--text-color);
     background: transparent;
 }

@@ -46,6 +46,8 @@ from .utils import (
     ModuleInfo,
     Permission,
     bool_to_str,
+    create_emoji_html,
+    emoji2code,
     normalized_levenshtein,
     remove_suffix_ignore_case,
     replace_umlauts,
@@ -147,6 +149,12 @@ class HTMLRequestHandler(BaseRequestHandler):
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda url: self.fix_url(fix_static_url(url)),
             fix_url=self.fix_url,
+            emoji2html=lambda emoji: create_emoji_html(
+                emoji,
+                self.fix_url(
+                    fix_static_url(f"img/openmoji-svg/{emoji2code(emoji)}.svg")
+                ),
+            ),
             form_appendix=self.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
             GH_PAGES_URL=GH_PAGES_URL,

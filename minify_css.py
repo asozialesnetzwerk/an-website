@@ -59,7 +59,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                 os.path.join(folder, file_name), encoding="utf-8"
             ) as file:
                 original = file.read()
-            minified = rcssmin.cssmin(original) + "\n"
+            minified = rcssmin.cssmin(original, keep_bang_comments=True) + "\n"
             new_file = os.path.join(new_dir, file_name)
             if os.path.isfile(new_file):
                 with open(new_file, encoding="utf-8") as file:

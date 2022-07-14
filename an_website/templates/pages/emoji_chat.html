@@ -2,17 +2,16 @@
 {% extends "../base.html" %}
 
 {% block body %}
-    {% for message in messages %}
-<div>{{message}}</div>
+    {% for name, msg in messages %}
+<div>
+    {% for emoji in name %}{% raw emoji2html(emoji) %}{% end %}:
+    {% for emoji in msg %}{% raw emoji2html(emoji) %}{% end %}
+</div>
     {% end %}
-    <style>
-        label{display:inline-block}
-        input,button{display:inline-block;width:auto!important;}
-    </style>
 
     <form method="post">
-        <label>Name: <input type="text" name="name"></label>
-        <label>Nachricht: <input type="text" name="message"></label>
+        Du bist: {% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}
+        <input type="text" name="message">
         <button type="submit">Senden!</button>
     </form>
 {% end %}
@@ -20,5 +19,4 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
-
 {% end %}

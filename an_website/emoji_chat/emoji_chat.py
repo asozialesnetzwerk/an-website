@@ -15,15 +15,18 @@
 
 from __future__ import annotations
 
+import random
 from typing import Any
 
-import emoji  # type: ignore
+from emoji import EMOJI_DATA, demojize, emoji_list, emojize  # type: ignore
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
+
+EMOJIS = tuple(EMOJI_DATA)
 
 
 def get_module_info() -> ModuleInfo:
@@ -43,7 +46,6 @@ def get_module_info() -> ModuleInfo:
 
 MAX_MESSAGE_SAVE_COUNT = 15
 MAX_MESSAGE_LENGTH = 255
-MAX_AUTHOR_LENGTH = 31
 
 MESSAGES: list[str] = []
 
@@ -81,9 +83,14 @@ def check_only_emojis(string: str) -> bool:
         for i in range(emj_data["match_start"], emj_data["match_end"]):
             is_emoji[i] = True
 
-    emoji.demojize(string, language="en", version=-1, handle_version=set_emojis)
+    demojize(string, language="en", version=-1, handle_version=set_emojis)
 
     return False not in is_emoji
+
+
+def normalize_emojis(string: str) -> str:
+    """Normalize emojis in a string."""
+    return emojize(demojize(string))  # type: ignore[no-any-return]
 
 
 class ChatHandler(BaseRequestHandler):
@@ -100,17 +107,7 @@ class ChatHandler(BaseRequestHandler):
 
     async def post(self) -> None:
         """Let users send messages and show the users the current messages."""
-        name = self.get_argument("name")
         message = self.get_argument("message")
-
-        if not name:
-            raise HTTPError(400, reason="Empty name not allowed.")
-        if not name or not check_only_emojis(name):
-            raise HTTPError(400, reason="Name needs to contain only emojis.")
-        if len(name) > MAX_AUTHOR_LENGTH:
-            raise HTTPError(
-                400, reason=f"Name longer than {MAX_AUTHOR_LENGTH} chars."
-            )
 
         if not message:
             raise HTTPError(400, reason="Empty message not allowed.")
@@ -122,6 +119,8 @@ class ChatHandler(BaseRequestHandler):
             raise HTTPError(
                 400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} chars."
             )
+        message = normalize_emojis(message)
+        name = await self.get_name()
 
         await save_new_message(
             f"{name}: {message}",
@@ -130,6 +129,37 @@ class ChatHandler(BaseRequestHandler):
         )
 
         await self.render_chat(MESSAGES)
+
+    async def get_random_name(self) -> str:
+        """Get a random name as default."""
+        return normalize_emojis(
+            "".join(random.choice(EMOJIS) for _ in range(4))
+            + (await self.geoip() or {}).get("country_flag", "🏴‍☠")
+        )
+
+    async def get_name(self) -> str:
+        """Get the name of the user."""
+        name: None | bytes = self.get_secure_cookie(
+            "emoji-chat-name",
+            max_age_days=90,
+            min_version=2,
+        )
+        if not name:
+            name = (await self.get_random_name()).encode("utf-8")
+
+        # save it in cookie or reset expiry date
+        if not self.get_secure_cookie(
+            "emoji-chat-name", max_age_days=30, min_version=2
+        ):
+            self.set_secure_cookie(
+                "emoji-chat-name",
+                name,
+                expires_days=90,
+                path="/",
+                samesite="Strict",
+            )
+
+        return normalize_emojis(name.decode("utf-8"))
 
     async def render_chat(self, messages: list[str]) -> None:
         """Render the chat."""
@@ -140,7 +170,24 @@ class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
 
     async def render_chat(self, messages: list[str]) -> None:
         """Render the chat."""
-        await self.render("pages/emoji_chat.html", messages=messages)
+        name_msgs: list[tuple[tuple[str, ...], tuple[str, ...]]] = []
+
+        for message in messages:
+            name, msg = message.split(": ")
+            name_msgs.append(
+                (
+                    tuple(emoji["emoji"] for emoji in emoji_list(name)),
+                    tuple(emoji["emoji"] for emoji in emoji_list(msg)),
+                )
+            )
+
+        await self.render(
+            "pages/emoji_chat.html",
+            messages=name_msgs,
+            user_name=(
+                emoji["emoji"] for emoji in emoji_list(await self.get_name())
+            ),
+        )
 
 
 class APIChatHandler(ChatHandler, APIRequestHandler):

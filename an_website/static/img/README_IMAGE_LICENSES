@@ -1,0 +1,41 @@
+The files in this directory and subdirectories aren't licensed under AGPLv3.
+
+openmoji-svg/*:
+- Source: https://openmoji.org, https://github.com/hfg-gmuend/openmoji/releases/tag/14.0.0
+- Changes: visually unmodified, just minified with scour (size reduced by ~1M)
+- Creator:  HfG Schwäbisch Gmünd
+- License:  CC-BY-SA-4.0 license
+
+2020-11-03.jpg:
+- Creator: Marc-Uwe Kling and Bernd Kissel created for Zeit ONLINE
+
+arrow.svg,
+close.svg,
+hamburger-menu-icon.svg,
+plus.svg,
+save.svg,
+share.svg,
+report.svg:
+- Creator: Joshix (for this website)
+
+rss.svg:
+- Source: https://www.flaticon.com/free-icon/rss_124033
+- Creator: Freepik
+- License: Flaticon Editorial License
+
+StempelWitzig.svg,
+StempelNichtWitzig.svg:
+- Creator: ¯\_(ツ)_/¯
+
+StempelWitzigKlein.svg,
+StempelNichtWitzigKlein.svg:
+- Creator: ¯\_(ツ)_/¯
+- Changes: junk removed, optimized and minified
+
+KangarooFace.svg:
+- Creator: ¯\_(ツ)_/¯
+
+netcup-oekostrom2.png:
+- Source: https://www.netcup-wiki.de/wiki/Werbemittel
+- Owner: netcup GmbH
+- Licence: Modification without permission prohibited
