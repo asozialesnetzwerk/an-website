@@ -23,10 +23,10 @@ import sys
 
 import rcssmin  # type: ignore
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIR = os.path.abspath(os.path.dirname(__file__))
 
-STATIC_DIR = os.path.join(REPO_ROOT, "an_website/static/style")
-STYLE_DIR = os.path.join(REPO_ROOT, "style")
+STATIC_DIR = os.path.join(DIR, "an_website/static/style")
+STYLE_DIR = os.path.join(DIR, "style")
 
 
 def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
@@ -66,8 +66,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                     if file.read() == minified:
                         continue
             print(
-                f"{file.name.removeprefix(f'{REPO_ROOT}/')}: "
-                f"{len(original)} -> {len(minified)} characters "
+                f"{file.name}: {len(original)} -> {len(minified)} characters "
                 f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1

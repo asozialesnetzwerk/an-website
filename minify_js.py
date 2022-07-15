@@ -23,10 +23,9 @@ import sys
 
 import rjsmin  # type: ignore
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIR = os.path.abspath(os.path.dirname(__file__))
 
-STATIC_DIR = os.path.join(REPO_ROOT, "an_website/static/js")
-VENDORED_JS_DIR = os.path.join(REPO_ROOT, "an_website/static/vendored-js")
+STATIC_DIR = os.path.join(DIR, "an_website/static/js")
 
 
 def get_license_str(file_content: str) -> None | str:
@@ -49,12 +48,12 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
     file_counter, minified_counter = 0, 0
 
     for folder, _, files in os.walk(
-        os.path.join(REPO_ROOT, "an_website"),
+        os.path.join(DIR, "an_website"),
         topdown=True,
         onerror=None,
         followlinks=False,
     ):
-        if folder in {STATIC_DIR, VENDORED_JS_DIR}:
+        if folder == STATIC_DIR:
             continue
         for file_name in files:
             if not file_name.endswith(".js"):
@@ -78,8 +77,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return  # noqa: D103
                     if file.read() == minified:
                         continue
             print(
-                f"{file.name.removeprefix(f'{REPO_ROOT}/')}: "
-                f"{len(original)} -> {len(minified)} characters "
+                f"{file.name}: {len(original)} -> {len(minified)} characters "
                 f"({(len(minified) - len(original)) / len(original) * 100:.2f} %)"
             )
             minified_counter += 1
