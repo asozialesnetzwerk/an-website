@@ -59,10 +59,24 @@ async def get_reports(  # pylint: disable=too-many-arguments
     """Get the reports from Elasticsearch."""
     query: dict[str, dict[str, list[dict[str, dict[str, Any]]]]]
     query = {"bool": {"filter": [{"range": {"@timestamp": {"gte": "now-1M"}}}]}}
-    query["bool"]["must_not"] = []
-    query["bool"]["must_not"].append(
-        {"term": {"body.source-file": {"value": "moz-extension"}}}
-    )
+    query["bool"]["must_not"] = [
+        {
+            "bool": {
+                "filter": [
+                    {"term": {"type": {"value": "network-error"}}},
+                    {"term": {"body.type": {"value": "abandoned"}}},
+                ]
+            }
+        },
+        {
+            "bool": {
+                "filter": [
+                    {"term": {"type": {"value": "csp-violation"}}},
+                    {"term": {"body.source-file": {"value": "moz-extension"}}},
+                ]
+            }
+        },
+    ]
     if domain:
         query["bool"]["filter"].append(
             {

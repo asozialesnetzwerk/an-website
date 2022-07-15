@@ -21,7 +21,7 @@ import os
 import shutil
 import sys
 
-import rcssmin  # type: ignore[import]
+import rcssmin  # type: ignore
 
 DIR = os.path.dirname(__file__)
 

@@ -9,7 +9,10 @@
 ![Total lines](https://img.shields.io/tokei/lines/github/asozialesnetzwerk/an-website?label=Total%20lines)\
 [![Check](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
 [![Deploy](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml)
-[![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)
+[![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)\
+[![Downloads](https://pepy.tech/badge/an-website)](https://pepy.tech/project/an-website)
+[![Downloads](https://pepy.tech/badge/an-website/month)](https://pepy.tech/project/an-website)
+[![Downloads](https://pepy.tech/badge/an-website/week)](https://pepy.tech/project/an-website)
 
 ## How to develop
 You need:

@@ -484,7 +484,7 @@ def emoji2code(emoji: str) -> str:
 
 
 def create_emoji_html(emoji: str, emoji_url: str) -> str:
-    """Create a html element that can be used to display an emoji."""
+    """Create an HTML element that can be used to display an emoji."""
     return f'<img src="{emoji_url}" alt="{emoji}" class="emoji">'
 
 

@@ -6,7 +6,7 @@ openmoji-svg/*:
   - visually unmodified, just minified with scour (size reduced by ~1M)
   - renamed 203C.svg to 203C-FE0F.svg
 - Creator:  HfG Schwäbisch Gmünd
-- License:  CC-BY-SA-4.0 license
+- License:  CC-BY-SA-4.0
 
 2020-11-03.jpg:
 - Creator: Marc-Uwe Kling and Bernd Kissel created for Zeit ONLINE
@@ -19,6 +19,7 @@ save.svg,
 share.svg,
 report.svg:
 - Creator: Joshix (for this website)
+- License: CC-BY-SA-4.0
 
 rss.svg:
 - Source: https://www.flaticon.com/free-icon/rss_124033
@@ -27,17 +28,17 @@ rss.svg:
 
 StempelWitzig.svg,
 StempelNichtWitzig.svg:
-- Creator: ¯\_(ツ)_/¯
+- Creator: UNKNOWN
 
 StempelWitzigKlein.svg,
 StempelNichtWitzigKlein.svg:
-- Creator: ¯\_(ツ)_/¯
+- Creator: UNKNOWN
 - Changes: junk removed, optimized and minified
 
 KangarooFace.svg:
-- Creator: ¯\_(ツ)_/¯
+- Creator: UNKNOWN
 
 netcup-oekostrom2.png:
 - Source: https://www.netcup-wiki.de/wiki/Werbemittel
 - Owner: netcup GmbH
-- Licence: Modification without permission prohibited
+- License: Modification without permission prohibited

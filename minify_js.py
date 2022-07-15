@@ -21,7 +21,7 @@ import os
 import shutil
 import sys
 
-import rjsmin  # type: ignore[import]
+import rjsmin  # type: ignore
 
 DIR = os.path.dirname(__file__)
 

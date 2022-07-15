@@ -105,7 +105,7 @@ class HeaderInfo(Info):
         query: None | str = None,
     ) -> str:
         """
-        Return a HTML element with the tag and the content of the HeaderInfo.
+        Return an HTML element with the tag and the content of the HeaderInfo.
 
         The HTML element gets an id and a href with a # to
         itself based on the text content.

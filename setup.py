@@ -17,10 +17,19 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from get_version import get_version
-from setuptools import setup  # type: ignore[import]
+from setuptools import setup  # type: ignore
+
+
+def read(filename):
+    """Load the contents of a file."""
+    root_dir = os.path.dirname(__file__)
+    filepath = os.path.join(root_dir, filename)
+    return Path(filepath).read_text("utf-8")
+
 
 setup(
     name="an-website",
@@ -30,7 +39,7 @@ setup(
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
     long_description_content_type="text/markdown",
-    long_description=Path("README.md").read_text("utf-8"),
+    long_description=read("README.md"),
     version=get_version(__file__, vcs="git", dist_name="an-website"),
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=[
