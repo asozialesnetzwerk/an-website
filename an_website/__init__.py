@@ -29,6 +29,7 @@ DIR = os.path.dirname(__file__)
 START_TIME = time.monotonic()
 
 EPOCH = 1651075200
+EPOCH_MS = EPOCH * 1000
 
 NAME = "an-website"
 VERSION = get_version(__file__, vcs="git")

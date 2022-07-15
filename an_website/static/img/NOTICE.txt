@@ -5,6 +5,7 @@ openmoji-svg/*:
 - Changes:
   - visually unmodified, just minified with scour (size reduced by ~1M)
   - renamed 203C.svg to 203C-FE0F.svg
+  - renamed 2049.svg to 2049-FE0F.svg
 - Creator:  HfG Schwäbisch Gmünd
 - License:  CC-BY-SA-4.0
 

@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import random
+import time
 from typing import Any
 
 import orjson as json
@@ -23,7 +24,7 @@ from emoji import EMOJI_DATA, demojize, emoji_list, emojize  # type: ignore
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
-from .. import EVENT_REDIS, ORJSON_OPTIONS
+from .. import EPOCH_MS, EVENT_REDIS, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -56,19 +57,12 @@ async def save_new_message(
     redis_prefix: str,
 ) -> None:
     """Save a new message."""
-    if (
-        await redis.type(  # type: ignore[no-untyped-call]
-            f"{redis_prefix}:emoji-chat:messages"
-        )
-        != "list"
-    ):
-        await redis.delete(f"{redis_prefix}:emoji-chat:messages")
     await redis.rpush(
-        f"{redis_prefix}:emoji-chat:messages",
+        f"{redis_prefix}:emoji-chat:message-list",
         json.dumps(message, option=ORJSON_OPTIONS),
     )
     await redis.ltrim(
-        f"{redis_prefix}:emoji-chat:messages", -MAX_MESSAGE_SAVE_COUNT, -1
+        f"{redis_prefix}:emoji-chat:message-list", -MAX_MESSAGE_SAVE_COUNT, -1
     )
 
 
@@ -80,7 +74,7 @@ async def get_messages(
 ) -> list[dict[str, Any]]:
     """Get the messages."""
     messages = await redis.lrange(
-        f"{redis_prefix}:emoji-chat:messages", start, stop
+        f"{redis_prefix}:emoji-chat:message-list", start, stop
     )
     return [json.loads(message) for message in messages]
 
@@ -110,6 +104,16 @@ def normalize_emojis(string: str) -> str:
 class ChatHandler(BaseRequestHandler):
     """The request handler for the emoji chat."""
 
+    RATELIMIT_GET_BUCKET = "emoji-chat-get-messages"
+    RATELIMIT_GET_LIMIT = 10
+    RATELIMIT_GET_COUNT_PER_PERIOD = 10
+    RATELIMIT_GET_PERIOD = 1
+
+    RATELIMIT_POST_BUCKET = "emoji-chat-send-message"
+    RATELIMIT_POST_LIMIT = 5
+    RATELIMIT_POST_COUNT_PER_PERIOD = 5
+    RATELIMIT_POST_PERIOD = 5
+
     async def get(
         self,
         *,
@@ -129,23 +133,22 @@ class ChatHandler(BaseRequestHandler):
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        message = self.get_argument("message")
+        message = normalize_emojis(self.get_argument("message"))
 
         if not message:
             raise HTTPError(400, reason="Empty message not allowed.")
         if not check_only_emojis(message.replace(" ", "")):
+            raise HTTPError(400, reason="Message can only contain emojis.")
+        if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
             raise HTTPError(
-                400, reason="Message needs to contain only emojis or spaces."
-            )
-        if len(message) > MAX_MESSAGE_LENGTH:
-            raise HTTPError(
-                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} chars."
+                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
             )
 
         await save_new_message(
             {
                 "author": await self.get_name(),
-                "content": normalize_emojis(message),
+                "content": message,
+                "timestamp": time.time_ns() // 1_000_000 - EPOCH_MS,
             },
             redis=self.redis,
             redis_prefix=self.redis_prefix,
