@@ -43,7 +43,7 @@ def get_module_info() -> ModuleInfo:
 
 
 async def generate_art(
-    redis: Redis,  # type: ignore[type-arg]
+    redis: Redis[str],
     args: None | str = None,
     head: bool = False,
 ) -> None | str:

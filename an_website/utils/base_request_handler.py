@@ -118,9 +118,9 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     @property
-    def redis(self) -> Redis:  # type: ignore[type-arg]
+    def redis(self) -> Redis[str]:
         """Get the Redis client from the settings."""
-        return cast(Redis, self.settings.get("REDIS"))  # type: ignore[type-arg]
+        return cast("Redis[str]", self.settings.get("REDIS"))
 
     @property
     def redis_prefix(self) -> str:

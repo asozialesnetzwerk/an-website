@@ -34,6 +34,7 @@ if ! black --check --diff --color .; then
   echo 'Run "black ." to reformat'
   FAILED=$(( 4 | FAILED ))
 fi
+
 # check types
 echo mypy:
 mypy --pretty -p an_website -p tests || FAILED=$(( 8 | FAILED ))
@@ -43,8 +44,8 @@ echo Flake8:
 flake8 --extend-ignore=D102 ./*.py an_website tests || FAILED=$(( 16 | FAILED ))
 echo Pylint:
 pylint="pylint --output-format=colorized"
-$pylint -d all -e W0511 --score=no --persistent=no ./*.py an_website tests
-$pylint -d W0511 ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
+$pylint -d all -e fixme --score=no --persistent=no ./*.py an_website tests
+$pylint -d fixme ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
 
 if [ -n "$1" ]; then
   pytest="pytest --durations=0 --durations-min=0.5"

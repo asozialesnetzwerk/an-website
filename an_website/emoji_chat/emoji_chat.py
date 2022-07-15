@@ -18,10 +18,12 @@ from __future__ import annotations
 import random
 from typing import Any
 
+import orjson as json
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize  # type: ignore
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
+from .. import EVENT_REDIS, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -44,31 +46,43 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-MAX_MESSAGE_SAVE_COUNT = 15
-MAX_MESSAGE_LENGTH = 255
-
-MESSAGES: list[str] = []
+MAX_MESSAGE_SAVE_COUNT = 20
+MAX_MESSAGE_LENGTH = 100
 
 
 async def save_new_message(
-    message: str,
-    *,
-    redis: None | Redis = None,  # type: ignore[type-arg]
-    redis_prefix: None | str = None,
+    message: dict[str, Any],
+    redis: Redis[str],
+    redis_prefix: str,
 ) -> None:
     """Save a new message."""
-    MESSAGES.append(message)
-    if len(MESSAGES) > MAX_MESSAGE_SAVE_COUNT:
-        MESSAGES.pop(0)
-    if redis is None:
-        return
-    await redis.set(f"{redis_prefix}:emoji-chat:messages", ",".join(MESSAGES))
+    if (
+        await redis.type(  # type: ignore[no-untyped-call]
+            f"{redis_prefix}:emoji-chat:messages"
+        )
+        != "list"
+    ):
+        await redis.delete(f"{redis_prefix}:emoji-chat:messages")
+    await redis.rpush(
+        f"{redis_prefix}:emoji-chat:messages",
+        json.dumps(message, option=ORJSON_OPTIONS),
+    )
+    await redis.ltrim(
+        f"{redis_prefix}:emoji-chat:messages", -MAX_MESSAGE_SAVE_COUNT, -1
+    )
 
 
-def parse_messages(string: str) -> None:
-    """Reset MESSAGES to the messages saved in the string."""
-    MESSAGES.clear()
-    MESSAGES.extend(spam.strip() for spam in string.split(","))
+async def get_messages(
+    redis: Redis[str],
+    redis_prefix: str,
+    start: int = -MAX_MESSAGE_SAVE_COUNT,
+    stop: int = -1,
+) -> list[dict[str, Any]]:
+    """Get the messages."""
+    messages = await redis.lrange(
+        f"{redis_prefix}:emoji-chat:messages", start, stop
+    )
+    return [json.loads(message) for message in messages]
 
 
 def check_only_emojis(string: str) -> bool:
@@ -97,16 +111,24 @@ class ChatHandler(BaseRequestHandler):
     """The request handler for the emoji chat."""
 
     async def get(
-        # pylint: disable=unused-argument
         self,
         *,
         head: bool = False,
     ) -> None:
         """Show the users the current messages."""
-        await self.render_chat(MESSAGES)
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+        if head:
+            return
+        await self.render_chat(
+            await get_messages(self.redis, self.redis_prefix)
+        )
 
     async def post(self) -> None:
         """Let users send messages and show the users the current messages."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+
         message = self.get_argument("message")
 
         if not message:
@@ -119,16 +141,19 @@ class ChatHandler(BaseRequestHandler):
             raise HTTPError(
                 400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} chars."
             )
-        message = normalize_emojis(message)
-        name = await self.get_name()
 
         await save_new_message(
-            f"{name}: {message}",
+            {
+                "author": await self.get_name(),
+                "content": normalize_emojis(message),
+            },
             redis=self.redis,
             redis_prefix=self.redis_prefix,
         )
 
-        await self.render_chat(MESSAGES)
+        await self.render_chat(
+            await get_messages(self.redis, self.redis_prefix)
+        )
 
     async def get_random_name(self) -> str:
         """Get a random name as default."""
@@ -161,23 +186,24 @@ class ChatHandler(BaseRequestHandler):
 
         return normalize_emojis(name.decode("utf-8"))
 
-    async def render_chat(self, messages: list[str]) -> None:
+    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
+        raise NotImplementedError
 
 
 class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
     """The HTML request handler for the emoji chat."""
 
-    async def render_chat(self, messages: list[str]) -> None:
+    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
         name_msgs: list[tuple[tuple[str, ...], tuple[str, ...]]] = []
 
         for message in messages:
-            name, msg = message.split(": ")
+            author, content = message["author"], message["content"]
             name_msgs.append(
                 (
-                    tuple(emoji["emoji"] for emoji in emoji_list(name)),
-                    tuple(emoji["emoji"] for emoji in emoji_list(msg)),
+                    tuple(emoji["emoji"] for emoji in emoji_list(author)),
+                    tuple(emoji["emoji"] for emoji in emoji_list(content)),
                 )
             )
 
@@ -193,6 +219,6 @@ class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
 class APIChatHandler(ChatHandler, APIRequestHandler):
     """The API request handler for the emoji chat."""
 
-    async def render_chat(self, messages: list[str]) -> None:
+    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
         await self.finish({"messages": messages})

@@ -451,7 +451,7 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
     except asyncio.TimeoutError:
         pass
-    redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
+    redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     apm: None | elasticapm.Client
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
@@ -524,7 +524,7 @@ async def update_cache(
 ) -> None:
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache...")
-    redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
+    redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     redis_available = EVENT_REDIS.is_set()
 

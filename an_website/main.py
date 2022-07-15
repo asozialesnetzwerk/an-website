@@ -662,7 +662,7 @@ def setup_redis(app: Application) -> None:
 async def check_redis(app: Application) -> None:
     """Check Redis."""
     while True:  # pylint: disable=while-used
-        redis: Redis = cast(Redis, app.settings.get("REDIS"))  # type: ignore[type-arg]
+        redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
         try:
             await redis.ping()
         except Exception as exc:  # pylint: disable=broad-except
