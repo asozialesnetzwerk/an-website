@@ -155,7 +155,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                     emoji,
                     self.fix_url(
                         fix_static_url(
-                            f"img/openmoji-svg/{emoji2code(emoji)}.svg"
+                            f"img/openmoji-svg-14.0/{emoji2code(emoji)}.svg"
                         )
                     ),
                 )

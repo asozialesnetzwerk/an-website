@@ -6,7 +6,7 @@
 
     function appendMessage(msg) {
         let el = document.createElement("div");
-        if (usingOpenMoji) {  // TODO: do something about caching
+        if (usingOpenMoji) {
             for (let emoji of msg.author) {
                 el.append(emojiToIMG(emoji));
             }
@@ -27,7 +27,7 @@
 
         let imgEl = document.createElement("img");
 
-        imgEl.src = `/static/img/openmoji-svg/${emoji_code}.svg`;
+        imgEl.src = `/static/img/openmoji-svg-14.0/${emoji_code}.svg`;
         imgEl.classList.add("emoji")
         imgEl.alt = emoji;
 

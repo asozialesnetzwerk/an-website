@@ -2,7 +2,7 @@
 (()=>{const messageInput=elById("message-input");const messageSection=elById("message-section");const usingOpenMoji=elById("open-moji-attribution");function appendMessage(msg){let el=document.createElement("div");if(usingOpenMoji){for(let emoji of msg.author){el.append(emojiToIMG(emoji));}
 el.innerHTML+=": ";for(let emoji of msg.content){el.append(emojiToIMG(emoji));}}else{el.innerText=`${msg.author.join('')}: ${msg.content.join('')}`;}
 el.setAttribute("timestamp",msg.timestamp);messageSection.append(el);}
-function emojiToIMG(emoji){let emoji_code=[...emoji].map(e=>e.codePointAt(0).toString(16)).join(`-`).toUpperCase();let imgEl=document.createElement("img");imgEl.src=`/static/img/openmoji-svg/${emoji_code}.svg`;imgEl.classList.add("emoji")
+function emojiToIMG(emoji){let emoji_code=[...emoji].map(e=>e.codePointAt(0).toString(16)).join(`-`).toUpperCase();let imgEl=document.createElement("img");imgEl.src=`/static/img/openmoji-svg-14.0/${emoji_code}.svg`;imgEl.classList.add("emoji")
 imgEl.alt=emoji;return imgEl;}
 let ws=new WebSocket((w.location.protocol==="https:"?"wss:":"ws:")
 +`//${w.location.host}/websocket/emoji-chat`);ws.onclose=(event)=>{if(event.wasClean){console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);}else{alert("Connection died, pls reload the page.");}};setInterval(()=>ws.send(""),10_000)

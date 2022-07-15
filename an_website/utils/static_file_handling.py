@@ -45,7 +45,7 @@ def create_file_hashes_dict() -> dict[str, str]:
     return {
         str(path).removeprefix(ROOT_DIR): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
-        if path.is_file()
+        if path.is_file() and "img/openmoji-svg-" not in str(path)
     }
 
 
@@ -187,6 +187,8 @@ def fix_static_url(url: str) -> str:
         url = f"/static/{url}"
     if "?" in url:
         url = url.split("?")[0]
+    if url.startswith("/static/img/openmoji-svg-"):
+        return url
     if url in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[url]
         if url == "/static/favicon.png":
@@ -256,7 +258,11 @@ class CachedStaticFileHandler(StaticFileHandler):
     def set_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_headers()
-        if not sys.flags.dev_mode and "v" in self.request.arguments:
+        if not sys.flags.dev_mode and (
+            "v" in self.request.arguments
+            # guaranteed uniqueness is done via the 14.0 in the folder name
+            or self.path.startswith("/static/img/openmoji-svg-")
+        ):
             self.set_header(  # never changes
                 "Cache-Control",
                 f"public, immutable, min-fresh={10 * 365 * 24 * 60 * 60}",
