@@ -73,7 +73,8 @@
     {% if openmoji %}
         <br>
         <br>
-        <div id="open-moji-attribution">
+        <div id="open-moji-attribution"
+             type="{{openmoji if openmoji else 'nope'}}">
             All emojis {% raw emoji2html("🥳") %} designed by
             <a href="{{fix_url('https://openmoji.org')}}">OpenMoji</a>
             – the open-source emoji and icon project.

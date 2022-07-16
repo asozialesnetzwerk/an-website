@@ -160,7 +160,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                     ),
                 )
             )
-            if self.get_openmoji()
+            if self.get_openmoji() == "img"
             else lambda spam: spam,  # type: ignore[no-any-return]
             form_appendix=self.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,

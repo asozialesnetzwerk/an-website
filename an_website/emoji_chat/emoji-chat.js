@@ -6,7 +6,7 @@
 
     function appendMessage(msg) {
         let el = document.createElement("div");
-        if (usingOpenMoji) {
+        if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
             for (let emoji of msg.author) {
                 el.append(emojiToIMG(emoji));
             }
@@ -23,11 +23,11 @@
     }
 
     function emojiToIMG(emoji) {
-        let emoji_code = [...emoji].map(e => e.codePointAt(0).toString(16)).join(`-`).toUpperCase();
+        let emojiCode = [...emoji].map(e => e.codePointAt(0).toString(16)).join(`-`).toUpperCase();
 
         let imgEl = document.createElement("img");
 
-        imgEl.src = `/static/img/openmoji-svg-14.0/${emoji_code}.svg`;
+        imgEl.src = `/static/img/openmoji-svg-14.0/${emojiCode}.svg`;
         imgEl.classList.add("emoji")
         imgEl.alt = emoji;
 

@@ -16,3 +16,10 @@ CursedTimerUlil-Aznm.woff2:
 - Font name: Cursed Timer ULiL Font
 - Creator: heaven castro
 - License: Freeware
+
+OpenMoji-Color_14-0.woff:
+- Source: https://openmoji.org, https://github.com/hfg-gmuend/openmoji/releases/tag/14.0.0
+- Changes:
+  - visually unmodified, just converted from tff to woff (to reduce size)
+- Creator:  HfG Schwäbisch Gmünd
+- License:  CC-BY-SA-4.0

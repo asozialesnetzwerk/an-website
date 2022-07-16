@@ -35,7 +35,7 @@ async def test_setting_stuff_without_cookies(
                 "theme": "pink",
                 "no_3rd_party": "sure",
                 "dynload": "sure",
-                "openmoji": "sure",
+                "openmoji": "img",
             }
         ),
         json.dumps(
@@ -43,18 +43,18 @@ async def test_setting_stuff_without_cookies(
                 "theme": "pink",
                 "no_3rd_party": "sure",
                 "dynload": "sure",
-                "openmoji": "sure",
+                "openmoji": "img",
                 "save_in_cookie": "nope",
             }
         ),
-        "theme=pink&no_3rd_party=sure&dynload=sure&openmoji=sure",
-        "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=n&openmoji=s",
+        "theme=pink&no_3rd_party=sure&dynload=sure&openmoji=img",
+        "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=n&openmoji=i",
         "",
     ):
         response = await fetch(
             "/einstellungen"
             if request_body
-            else "/einstellungen?theme=pink&no_3rd_party=s&dynload=s&openmoji=s",
+            else "/einstellungen?theme=pink&no_3rd_party=s&dynload=s&openmoji=i",
             method="POST",
             headers={"Content-Type": "application/json"}
             if isinstance(request_body, bytes)
@@ -68,7 +68,7 @@ async def test_setting_stuff_without_cookies(
             theme="pink",
             no_3rd_party="sure",
             dynload="sure",
-            openmoji="sure",
+            openmoji="img",
             save_in_cookie="nope",
         )
 
@@ -92,16 +92,16 @@ async def test_setting_stuff_and_saving_to_cookies(
                 "no_3rd_party": "sure",
                 "dynload": "sure",
                 "save_in_cookie": "sure",
-                "openmoji": "sure",
+                "openmoji": "img",
             }
         ),
-        "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=s&openmoji=s",
+        "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=s&openmoji=i",
         "",
     ):
         response = await fetch(
             "/einstellungen"
             + (
-                "?theme=pink&no_3rd_party=s&dynload=s&openmoji=s&save_in_cookie=s"
+                "?theme=pink&no_3rd_party=s&dynload=s&openmoji=i&save_in_cookie=s"
                 if not request_body
                 else ""
             ),
@@ -131,4 +131,9 @@ async def test_setting_stuff_and_saving_to_cookies(
                 "dynload",
                 "openmoji",
             }
-            assert morsel.value == ("pink" if morsel.key == "theme" else "sure")
+            if morsel.key == "theme":
+                assert morsel.value == "pink"
+            elif morsel.key == "openmoji":
+                assert morsel.value == "img"
+            else:
+                assert morsel.value == "sure"
