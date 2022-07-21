@@ -25,6 +25,7 @@ from typing import Any, cast
 
 import tornado.web
 from blake3 import blake3  # type: ignore
+from tornado.web import GZipContentEncoding, OutputTransform
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
@@ -74,7 +75,7 @@ def get_handlers() -> list[Handler]:
         # add handlers for the not minified CSS files
         handlers.append(
             (
-                "/static/style/(.+.css)",
+                r"/static/style/(.+\.css)",
                 StaticFileHandler,
                 {"path": os.path.join(os.path.dirname(ROOT_DIR), "style")},
             )
@@ -120,10 +121,14 @@ def fix_static_url(url: str) -> str:
     return url
 
 
+GZipContentEncoding.MIN_LENGTH = 666  # from my tests this seems to be better 👿
+
+
 class StaticFileHandler(tornado.web.StaticFileHandler):
-    """A StaticFileHandler with customizable Content-Type header."""
+    """A StaticFileHandler with customizable Content-Type header and gzip."""
 
     content_type: None | str
+    transforms: list[OutputTransform]
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass
@@ -135,13 +140,32 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         content_type: None | str = None,
     ) -> None:
         """Initialize the handler."""
-        super().initialize(path, default_filename)
+        super().initialize(path=path, default_filename=default_filename)
         self.content_type = content_type
+        self.transforms = [GZipContentEncoding(self.request)]
+
+    def head(self, path: str) -> Awaitable[None]:
+        """Handle head requests correct but slow."""
+        return self.get(path)
 
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
         if self.content_type:
             self.set_header("Content-Type", self.content_type)
+
+    @property  # type: ignore
+    def _transforms(self) -> list["OutputTransform"]:  # type: ignore
+        """Enable gzip encoding for this handler."""
+        return self.transforms
+
+    @_transforms.setter
+    def _transforms(
+        # pylint: disable=no-self-use
+        self,
+        transforms: list["OutputTransform"],
+    ) -> None:
+        """Prevent the transforms from being overwritten."""
+        assert not transforms
 
 
 class CachedStaticFileHandler(StaticFileHandler):
@@ -165,3 +189,7 @@ class CachedStaticFileHandler(StaticFileHandler):
                 "Cache-Control",
                 f"public, immutable, min-fresh={10 * 365 * 24 * 60 * 60}",
             )
+
+    def compute_etag(self) -> None | str:
+        """Don't compute etag, because it isn't necessary."""
+        return None
