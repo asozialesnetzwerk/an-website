@@ -106,6 +106,7 @@ async def get_availability_data(
             "down": {"sum": {"field": "summary.down"}},
         },
     )
+    data.setdefault("aggregations", {"up": {"value": 0}, "down": {"value": 0}})
     return (
         int(data["aggregations"]["up"]["value"]),
         int(data["aggregations"]["down"]["value"]),

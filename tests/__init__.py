@@ -111,7 +111,7 @@ def app() -> tornado.web.Application:
     es = main.setup_elasticsearch(app)  # pylint: disable=invalid-name
     redis = main.setup_redis(app)
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop_policy().get_event_loop()
 
     if es:
         try:
@@ -134,8 +134,6 @@ def app() -> tornado.web.Application:
             EVENT_REDIS.clear()
         else:
             EVENT_REDIS.set()
-
-    loop.close()
 
     return app
 
