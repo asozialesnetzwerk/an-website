@@ -136,12 +136,12 @@ class ChatHandler(BaseRequestHandler):
         message = normalize_emojis(self.get_argument("message"))
 
         if not message:
-            raise HTTPError(400, reason="Empty message not allowed.")
+            raise HTTPError(400, reason="Empty message not allowed")
         if not check_only_emojis(message.replace(" ", "")):
-            raise HTTPError(400, reason="Message can only contain emojis.")
+            raise HTTPError(400, reason="Message can only contain emojis")
         if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
             raise HTTPError(
-                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
+                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} emojis"
             )
 
         await save_new_message(

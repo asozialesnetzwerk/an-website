@@ -24,6 +24,15 @@ from asyncio import Event
 import orjson
 from get_version import get_version
 
+try:
+    from pytest_is_running import is_running as pytest_is_running
+except ImportError:
+
+    def pytest_is_running() -> bool:  # noqa: D103
+        # pylint: disable=missing-function-docstring
+        return "pytest" in sys.modules
+
+
 DIR = os.path.dirname(__file__)
 
 START_TIME = time.monotonic()
@@ -44,9 +53,11 @@ ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
 
-CONTAINERIZED = bool(os.getenv("container") or os.path.exists("/.dockerenv"))
+CONTAINERIZED = "container" in os.environ or os.path.exists("/.dockerenv")
 
-if sys.flags.dev_mode:
+if pytest_is_running():
+    NAME += "-test"
+elif sys.flags.dev_mode:
     NAME += "-dev"
 
 EVENT_SHUTDOWN = multiprocessing.Event()

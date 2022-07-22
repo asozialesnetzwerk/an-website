@@ -59,7 +59,7 @@ async def test_parsing_module_infos(
             assert module_info.path.isascii()
             assert module_info.path.strip() == module_info.path
             assert not module_info.path.endswith("/") or module_info.path == "/"
-            assert module_info.path == module_info.path.lower()
+            assert module_info.path in {module_info.path.lower(), "/LOLWUT"}
 
             for alias in module_info.aliases:
                 assert alias.startswith("/")
@@ -84,16 +84,18 @@ async def test_parsing_module_infos(
                 head_response = await fetch(
                     module_info.path,
                     method="HEAD",
-                    raise_error=True,
+                    raise_error=False,
                     follow_redirects=module_info.path == "/redirect",
                 )
+                assert head_response.code != 500
                 assert head_response.body == b""
                 get_response = await fetch(
                     module_info.path,
                     method="GET",
-                    raise_error=True,
+                    raise_error=False,
                     follow_redirects=module_info.path == "/redirect",
                 )
+                assert get_response.code != 500
                 assert get_response.body != b""
                 for header in (
                     "Content-Type",

@@ -16,11 +16,14 @@
 
 from __future__ import annotations
 
+import os
 import sys
 import warnings
 
 if sys.flags.dev_mode and not (
-    "-Wdefault" in sys.orig_argv or sys.warnoptions[1:]
+    len(sys.warnoptions) > 1
+    or "PYTHONWARNINGS" in os.environ
+    or " -W" in " ".join(sys.orig_argv)
 ):
     warnings.simplefilter("error", DeprecationWarning)
 warnings.filterwarnings("ignore", module="defusedxml")
@@ -34,4 +37,5 @@ patches.apply()
 
 from .main import main
 
-sys.exit(main())
+if __name__ == "__main__":
+    sys.exit(main())

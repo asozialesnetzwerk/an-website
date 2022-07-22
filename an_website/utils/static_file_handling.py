@@ -23,9 +23,9 @@ from functools import cache
 from pathlib import Path
 from typing import Any, cast
 
+import defity
 import tornado.web
 from blake3 import blake3  # type: ignore
-from tornado.web import GZipContentEncoding, OutputTransform
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
@@ -49,7 +49,92 @@ def create_file_hashes_dict() -> dict[str, str]:
     }
 
 
-FILE_HASHES_DICT: dict[str, str] = create_file_hashes_dict()
+FILE_HASHES_DICT = create_file_hashes_dict()
+
+# https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+# modified to add ATOM, RSS, and WASM
+CONTENT_TYPES = {
+    "3g2": "video/3gpp2",
+    "3gp": "video/3gpp",
+    "7z": "application/x-7z-compressed",
+    "aac": "audio/aac",
+    "abw": "application/x-abiword",
+    "arc": "application/x-freearc",
+    "atom": "application/atom+xml",
+    "avi": "video/x-msvideo",
+    "avif": "image/avif",
+    "azw": "application/vnd.amazon.ebook",
+    "bin": "application/octet-stream",
+    "bmp": "image/bmp",
+    "bz": "application/x-bzip",
+    "bz2": "application/x-bzip2",
+    "cda": "application/x-cdf",
+    "csh": "application/x-csh",
+    "css": "text/css",
+    "csv": "text/csv",
+    "doc": "application/msword",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "eot": "application/vnd.ms-fontobject",
+    "epub": "application/epub+zip",
+    "gif": "image/gif",
+    "gz": "application/gzip",
+    "htm": "text/html",
+    "html": "text/html",
+    "ico": "image/vnd.microsoft.icon",
+    "ics": "text/calendar",
+    "jar": "application/java-archive",
+    "jpeg": "image/jpeg",
+    "jpg": "image/jpeg",
+    "js": "text/javascript",
+    "json": "application/json",
+    "jsonld": "application/ld+json",
+    "mid": "audio/midi",
+    "midi": "audio/midi",
+    "mjs": "text/javascript",
+    "mp3": "audio/mpeg",
+    "mp4": "video/mp4",
+    "mpeg": "video/mpeg",
+    "mpkg": "application/vnd.apple.installer+xml",
+    "odp": "application/vnd.oasis.opendocument.presentation",
+    "ods": "application/vnd.oasis.opendocument.spreadsheet",
+    "odt": "application/vnd.oasis.opendocument.text",
+    "oga": "audio/ogg",
+    "ogv": "video/ogg",
+    "ogx": "application/ogg",
+    "opus": "audio/opus",
+    "otf": "font/otf",
+    "pdf": "application/pdf",
+    "php": "application/x-httpd-php",
+    "png": "image/png",
+    "ppt": "application/vnd.ms-powerpoint",
+    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "rar": "application/vnd.rar",
+    "rss": "application/rss+xml",
+    "rtf": "application/rtf",
+    "sh": "application/x-sh",
+    "svg": "image/svg+xml",
+    "swf": "application/x-shockwave-flash",
+    "tar": "application/x-tar",
+    "tif": "image/tiff",
+    "tiff": "image/tiff",
+    "ts": "video/mp2t",
+    "ttf": "font/ttf",
+    "txt": "text/plain",
+    "vsd": "application/vnd.visio",
+    "wasm": "application/wasm",
+    "wav": "audio/wav",
+    "weba": "audio/webm",
+    "webm": "video/webm",
+    "webp": "image/webp",
+    "woff": "font/woff",
+    "woff2": "font/woff2",
+    "xhtml": "application/xhtml+xml",
+    "xls": "application/vnd.ms-excel",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "xml": "application/xml",
+    "xul": "application/vnd.mozilla.xul+xml",
+    "zip": "application/zip",
+}
 
 
 def get_handlers() -> list[Handler]:
@@ -58,17 +143,17 @@ def get_handlers() -> list[Handler]:
         (
             r"/(?:static/)?(robots\.txt|\.env)",
             StaticFileHandler,
-            {"path": STATIC_DIR, "content_type": "text/plain;charset=ascii"},
+            {"path": STATIC_DIR},
         ),
         (
             r"/(?:static/)?(humans\.txt)",
             StaticFileHandler,
-            {"path": STATIC_DIR, "content_type": "text/plain;charset=utf-8"},
+            {"path": STATIC_DIR},
         ),
         (
             r"/(?:static/)?(favicon\.ico)",
             CachedStaticFileHandler,
-            {"path": STATIC_DIR, "content_type": "image/x-icon"},
+            {"path": STATIC_DIR},
         ),
     ]
     if sys.flags.dev_mode:
@@ -121,14 +206,10 @@ def fix_static_url(url: str) -> str:
     return url
 
 
-GZipContentEncoding.MIN_LENGTH = 666  # from my tests this seems to be better 👿
-
-
 class StaticFileHandler(tornado.web.StaticFileHandler):
-    """A StaticFileHandler with customizable Content-Type header and gzip."""
+    """A StaticFileHandler with smart Content-Type."""
 
     content_type: None | str
-    transforms: list[OutputTransform]
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass
@@ -142,30 +223,31 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         """Initialize the handler."""
         super().initialize(path=path, default_filename=default_filename)
         self.content_type = content_type
-        self.transforms = [GZipContentEncoding(self.request)]
 
     def head(self, path: str) -> Awaitable[None]:
-        """Handle head requests correct but slow."""
+        """Handle HEAD requests."""
         return self.get(path)
+
+    def validate_absolute_path(
+        self, root: str, absolute_path: str
+    ) -> None | str:
+        """Validate the path and detect the content type."""
+        if path := super().validate_absolute_path(root, absolute_path):
+            if not self.content_type:
+                self.content_type = CONTENT_TYPES.get(path.rsplit(".", 1)[-1])
+                if not self.content_type:
+                    self.content_type = defity.from_file(path)
+        return path
 
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
         if self.content_type:
-            self.set_header("Content-Type", self.content_type)
-
-    @property  # type: ignore
-    def _transforms(self) -> list["OutputTransform"]:  # type: ignore
-        """Enable gzip encoding for this handler."""
-        return self.transforms
-
-    @_transforms.setter
-    def _transforms(
-        # pylint: disable=no-self-use
-        self,
-        transforms: list["OutputTransform"],
-    ) -> None:
-        """Prevent the transforms from being overwritten."""
-        assert not transforms
+            if self.content_type.startswith("text/"):  # RFC2616 3.7.1
+                self.set_header(
+                    "Content-Type", f"{self.content_type};charset=utf-8"
+                )
+            else:
+                self.set_header("Content-Type", self.content_type)
 
 
 class CachedStaticFileHandler(StaticFileHandler):

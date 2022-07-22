@@ -42,11 +42,15 @@ from accept_types import get_best_match  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
-from tornado.web import HTTPError, MissingArgumentError, RequestHandler
+from tornado.web import (
+    GZipContentEncoding,
+    HTTPError,
+    MissingArgumentError,
+    RequestHandler,
+)
 
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
 from .utils import (
-    TEXT_CONTENT_TYPES,
     THEMES,
     ModuleInfo,
     Permission,
@@ -60,6 +64,14 @@ from .utils import (
 
 logger = logging.getLogger(__name__)
 
+TEXT_CONTENT_TYPES = {
+    "application/javascript",
+    "application/json",
+    "application/x-ndjson",
+    "application/xml",
+    "application/yaml",
+}
+
 
 class BaseRequestHandler(RequestHandler):
     """The base request handler used by every page and API."""
@@ -71,6 +83,7 @@ class BaseRequestHandler(RequestHandler):
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
+    ALLOW_COMPRESSION = True
     MAX_BODY_SIZE: None | int = None
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
@@ -356,8 +369,13 @@ class BaseRequestHandler(RequestHandler):
         if chunk is not None:
             self.write(chunk)
 
-        if (
-            self.content_type in TEXT_CONTENT_TYPES
+        if (  # pylint: disable=too-many-boolean-expressions
+            (content_type := self.content_type)
+            and (
+                content_type in TEXT_CONTENT_TYPES
+                or content_type.startswith("text/")
+                or content_type.endswith(("+xml", "+json"))
+            )
             and self._write_buffer
             and not self._write_buffer[-1].endswith(b"\n")
         ):
@@ -409,7 +427,13 @@ class BaseRequestHandler(RequestHandler):
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex
+        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
+        if not self.ALLOW_COMPRESSION:
+            for transform in self._transforms:
+                if isinstance(transform, GZipContentEncoding):
+                    # pylint: disable=protected-access
+                    transform._gzipping = False
+
         self.now = await self.get_time()
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 

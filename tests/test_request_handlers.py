@@ -83,7 +83,7 @@ async def test_not_found_handler(
     fetch: FetchCallable,
 ) -> None:
     """Check if the not found handler works."""
-    await check_html_page(fetch, "/qwertzuiop", 404)
+    assert_valid_html_response(await fetch("/qwertzuiop"), {404})
 
     await assert_valid_redirect(fetch, "/services.html", "/services", {308})
     await assert_valid_redirect(fetch, "/services/", "/services", {308})
@@ -103,10 +103,10 @@ async def test_not_found_handler(
         await fetch(
             "/index.php", method="POST", allow_nonstandard_methods=True
         ),
-        404,
+        {404},
     )
 
-    assert_valid_html_response(await fetch("/wp-login.php"), 469)
+    assert_valid_html_response(await fetch("/wp-login.php"), {469})
 
 
 async def test_page_crawling(
@@ -122,7 +122,10 @@ async def test_page_crawling(
 
     urls_theme: set[str] = set()
     await check_html_page(
-        fetch, "/?theme=pink", recursive=6, checked_urls=urls_theme
+        fetch,
+        "/?theme=pink",
+        recursive=6,
+        checked_urls=urls_theme,
     )
     for url in urls_theme:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
@@ -132,7 +135,10 @@ async def test_page_crawling(
 
     urls_3rd_party: set[str] = set()
     await check_html_page(
-        fetch, "/?no_3rd_party=sure", recursive=6, checked_urls=urls_3rd_party
+        fetch,
+        "/?no_3rd_party=sure",
+        recursive=6,
+        checked_urls=urls_3rd_party,
     )
     for url in urls_3rd_party:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
@@ -142,7 +148,10 @@ async def test_page_crawling(
 
     urls_dynload: set[str] = set()
     await check_html_page(
-        fetch, "/?dynload=sure", recursive=6, checked_urls=urls_dynload
+        fetch,
+        "/?dynload=sure",
+        recursive=6,
+        checked_urls=urls_dynload,
     )
     for url in urls_dynload:
         if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
@@ -167,7 +176,7 @@ async def test_request_handlers2(
     assert_valid_html_response(response, effective_url="http://test.onion")
 
     assert_valid_response(
-        await fetch("/", headers={"Accept": "text/spam"}), None, 406
+        await fetch("/", headers={"Accept": "text/spam"}), None, {406}
     )
 
     await assert_valid_redirect(
@@ -193,7 +202,7 @@ async def test_request_handlers2(
         "/redirect?theme=blue",
         "/?theme=blue",
     )
-    # no redirect:
+    # no redirect
     assert "https://evil.com" in assert_valid_html_response(
         await fetch(
             "/redirect?theme=blue&from=/&to=https://evil.com",
@@ -244,13 +253,17 @@ async def test_request_handlers(
         await fetch("/static/humans.txt"), "text/plain;charset=utf-8"
     )
     assert_valid_response(
-        await fetch("/robots.txt"), "text/plain;charset=ascii"
+        await fetch("/robots.txt"), "text/plain;charset=utf-8"
     )
     assert_valid_response(
-        await fetch("/static/robots.txt"), "text/plain;charset=ascii"
+        await fetch("/static/robots.txt"), "text/plain;charset=utf-8"
     )
-    assert_valid_response(await fetch("/favicon.ico"), "image/x-icon")
-    assert_valid_response(await fetch("/static/favicon.ico"), "image/x-icon")
+    assert_valid_response(
+        await fetch("/favicon.ico"), "image/vnd.microsoft.icon"
+    )
+    assert_valid_response(
+        await fetch("/static/favicon.ico"), "image/vnd.microsoft.icon"
+    )
 
     await check_html_page(fetch, "/betriebszeit")
     await check_html_page(fetch, "/discord")
@@ -344,19 +357,19 @@ async def test_request_handlers(
 
     response = await fetch("/host-info/uwu")
     assert response.code in {200, 503}
-    assert_valid_html_response(response, response.code)
+    assert_valid_html_response(response, {response.code})
 
     assert_valid_rss_response(await fetch("/soundboard/feed"))
     assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
-    assert_valid_rss_response(await fetch("/soundboard/qwertzuiop/feed"), 404)
+    assert_valid_rss_response(await fetch("/soundboard/qwertzuiop/feed"), {404})
 
     await check_html_page(fetch, "/soundboard/muk")
-    await check_html_page(fetch, "/soundboard/qwertzuiop", 404)
+    assert_valid_html_response(await fetch("/soundboard/qwertzuiop"), {404})
 
     assert_valid_response(
         await fetch("/api/backdoor/exec"),
         "application/vnd.python.pickle",
-        401,
+        {401},
     )
 
     response = assert_valid_response(
@@ -380,4 +393,4 @@ async def test_request_handlers(
 
     for code in range(200, 599):
         if code not in (204, 304):
-            assert_valid_html_response(await fetch(f"/{code}.html"), code)
+            assert_valid_html_response(await fetch(f"/{code}.html"), {code})

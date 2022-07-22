@@ -10,7 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# pylint: disable=wrong-import-position, wrong-import-order
+# pylint: disable=wrong-import-order, wrong-import-position
 
 """Utilities used by the tests of an-website."""
 
@@ -36,11 +36,12 @@ from an_website import patches
 patches.apply()
 
 
+import asyncio
 import configparser
 import re
 import socket
 import urllib.parse
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Set
 from typing import Any, cast
 
 import orjson as json
@@ -53,7 +54,8 @@ from lxml import etree  # type: ignore
 from lxml.html import document_fromstring  # type: ignore
 from lxml.html.html5parser import HTMLParser  # type: ignore
 
-from an_website import main, quotes  # pylint: disable=ungrouped-imports
+# pylint: disable=ungrouped-imports
+from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main, quotes
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -84,6 +86,8 @@ FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
+    assert NAME.endswith("-test")
+
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
 
@@ -104,6 +108,34 @@ def app() -> tornado.web.Application:
     app.settings["TESTING"] = True
 
     main.apply_config_to_app(app, config)
+    es = main.setup_elasticsearch(app)  # pylint: disable=invalid-name
+    redis = main.setup_redis(app)
+
+    loop = asyncio.new_event_loop()
+
+    if es:
+        try:
+            loop.run_until_complete(es.transport.perform_request("HEAD", "/"))
+        except Exception:  # pylint: disable=broad-except
+            EVENT_ELASTICSEARCH.clear()
+        else:
+            if not EVENT_ELASTICSEARCH.is_set():
+                loop.run_until_complete(
+                    main.setup_elasticsearch_configs(
+                        es, app.settings["ELASTICSEARCH_PREFIX"]
+                    )
+                )
+            EVENT_ELASTICSEARCH.set()
+
+    if redis:
+        try:
+            loop.run_until_complete(redis.ping())
+        except Exception:  # pylint: disable=broad-except
+            EVENT_REDIS.clear()
+        else:
+            EVENT_REDIS.set()
+
+    loop.close()
 
     return app
 
@@ -144,12 +176,12 @@ async def assert_valid_redirect(
     _fetch: FetchCallable,
     path: str,
     new_path: str,
-    codes: frozenset[int] | set[int] = frozenset({307, 308}),
+    codes: Set[int] = frozenset({307, 308}),
     **kwargs: Any,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid redirect to a new url."""
     response = await _fetch(path, **kwargs)
-    assert response.code in codes or print(response.code, path, codes)
+    assert response.code in codes or print(path, codes, response.code)
 
     base_url = response.request.url.removesuffix(path)
 
@@ -164,7 +196,7 @@ async def assert_valid_redirect(
 def assert_valid_response(
     response: tornado.httpclient.HTTPResponse,
     content_type: None | str,
-    code: int = 200,
+    codes: Set[int] = frozenset({200, 404, 503}),
     headers: None | dict[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
@@ -173,7 +205,9 @@ def assert_valid_response(
     if url.startswith("https://"):
         return response
 
-    assert response.code == code or print(code, url, response)
+    assert response.code in codes or print(
+        url, codes, response.code, response.body
+    )
 
     if (
         "Content-Type" in response.headers
@@ -201,7 +235,7 @@ def assert_valid_response(
 async def check_html_page(
     _fetch: FetchCallable,
     url: str | tornado.httpclient.HTTPResponse,
-    code: int = 200,
+    codes: Set[int] = frozenset({200, 404, 503}),
     *,
     recursive: int = 0,
     checked_urls: set[str] = set(),  # noqa: B006
@@ -212,7 +246,7 @@ async def check_html_page(
     else:
         response = url
         url = response.effective_url
-    assert_valid_html_response(response, code)
+    assert_valid_html_response(response, codes)
 
     html = document_fromstring(
         response.body.decode("utf-8"), base_url=response.effective_url
@@ -260,6 +294,7 @@ async def check_html_page(
             _response = assert_valid_response(
                 await _fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type
+                codes=codes,
             )
             if (
                 _response.headers["Content-Type"] == "text/html;charset=utf-8"
@@ -283,17 +318,18 @@ async def check_html_page(
             _r,
             recursive=recursive - 1,
             checked_urls=checked_urls,
+            codes=codes,
         )
     return response
 
 
 def assert_valid_html_response(
     response: tornado.httpclient.HTTPResponse,
-    code: int = 200,
+    codes: Set[int] = frozenset({200, 404, 503}),
     effective_url: None | str = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "text/html;charset=utf-8", code)
+    assert_valid_response(response, "text/html;charset=utf-8", codes)
     body = response.body.decode("utf-8")
     # check if body is valid html5
     root: etree.ElementTree = HTMLParser(
@@ -313,10 +349,11 @@ def assert_valid_html_response(
 
 
 def assert_valid_rss_response(
-    response: tornado.httpclient.HTTPResponse, code: int = 200
+    response: tornado.httpclient.HTTPResponse,
+    codes: Set[int] = frozenset({200, 404, 503}),
 ) -> etree.ElementTree:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "application/rss+xml", code)
+    assert_valid_response(response, "application/rss+xml", codes)
     body = response.body
     parsed_xml: etree.ElementTree = etree.fromstring(
         body,
@@ -327,20 +364,22 @@ def assert_valid_rss_response(
 
 
 def assert_valid_yaml_response(
-    response: tornado.httpclient.HTTPResponse, code: int = 200
+    response: tornado.httpclient.HTTPResponse,
+    codes: Set[int] = frozenset({200, 404, 503}),
 ) -> Any:
     """Assert a valid yaml response with the given code."""
-    assert_valid_response(response, "application/yaml", code)
+    assert_valid_response(response, "application/yaml", codes)
     parsed = yaml.full_load(response.body)
     assert parsed
     return parsed
 
 
 def assert_valid_json_response(
-    response: tornado.httpclient.HTTPResponse, code: int = 200
+    response: tornado.httpclient.HTTPResponse,
+    codes: Set[int] = frozenset({200, 404, 503}),
 ) -> Any:
     """Assert a valid html response with the given code."""
-    assert_valid_response(response, "application/json", code)
+    assert_valid_response(response, "application/json", codes)
     parsed_json = json.loads(response.body)
     assert parsed_json
     return parsed_json

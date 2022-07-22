@@ -97,20 +97,20 @@ async def test_permissions(
         assert_valid_response(
             await fetch("/api/ping", headers={"Authorization": key}),
             "text/plain;charset=utf-8",
-            200,
+            {200},
             headers=headers,
         )
         assert_valid_response(
             await fetch(f"/api/ping?key={key.replace('#', '%23')}"),
             "text/plain;charset=utf-8",
-            200,
+            {200},
             headers=headers,
         )
 
     assert_valid_response(
         await fetch("/api/ping?key=s3", headers={"Authorization": "s4"}),
         "text/plain;charset=utf-8",
-        200,
+        {200},
         headers={
             "X-Permission-Backdoor": "sure",
             "X-Permission-Ratelimits": "sure",
@@ -167,10 +167,10 @@ async def test_permissions_with_backdoor(
     assert_valid_response(
         await fetch("/api/backdoor/exec", headers={"Authorization": "unknown"}),
         None,
-        401,  # unauthenticated request
+        {401},  # unauthenticated request
     )
     assert_valid_response(
         await fetch("/api/backdoor/exec", headers={"Authorization": "s3"}),
         None,
-        403,  # unauthorized request
+        {403},  # unauthorized request
     )

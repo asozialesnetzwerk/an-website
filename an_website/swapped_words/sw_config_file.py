@@ -14,9 +14,9 @@
 """Config file for the page that swaps words."""
 from __future__ import annotations
 
-import functools
 import re
 from dataclasses import dataclass, field
+from functools import lru_cache
 from re import Match, Pattern
 
 
@@ -206,7 +206,7 @@ LINE_REGEX: Pattern[str] = re.compile(
 )
 
 
-@functools.lru_cache(maxsize=20)
+@lru_cache(20)
 def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
     line: str, line_num: int = -1
 ) -> ConfigLine:
@@ -219,14 +219,14 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
     # print(len(line.strip()), f"'{line.strip()}'")
 
-    if _m := re.fullmatch(COMMENT_LINE_REGEX, line):
-        return Comment(_m.group(1))
+    if match := re.fullmatch(COMMENT_LINE_REGEX, line):
+        return Comment(match[1])
 
-    _m = re.fullmatch(LINE_REGEX, line)
-    if _m is None:
+    match = re.fullmatch(LINE_REGEX, line)
+    if match is None:
         raise InvalidConfigError(line_num, line, "Line is invalid.")
 
-    left, separator, right = _m.group(1), _m.group(2), _m.group(3)
+    left, separator, right = match[1], match[2], match[3]
     if not left:
         raise InvalidConfigError(line_num, line, "Left of separator is empty.")
     if separator not in ("<=>", "=>"):
@@ -239,19 +239,19 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
     try:
         # compile to make sure it doesn't break later
         left_re = re.compile(left)
-    except re.error as _e:
+    except re.error as exc:
         raise InvalidConfigError(
-            line_num, line, f"Left is invalid regex: {_e}"
-        ) from _e
+            line_num, line, f"Left is invalid regex: {exc}"
+        ) from exc
 
     if separator == "<=>":
         try:
             # compile to make sure it doesn't break later
             right_re = re.compile(right)
-        except re.error as _e:
+        except re.error as exc:
             raise InvalidConfigError(
-                line_num, line, f"Right is invalid regex: {_e}"
-            ) from _e
+                line_num, line, f"Right is invalid regex: {exc}"
+            ) from exc
         return TwoWayPair(left_re.pattern, right_re.pattern)
     if separator == "=>":
         return OneWayPair(left_re.pattern, right)
@@ -338,7 +338,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
             if isinstance(word, str) and key.startswith("n"):
                 return self.get_replacement_by_group_name(key, word)
         # if an unknown error happens return the match to change nothing:
-        return match.group()
+        return match[0]
 
     def swap_words(self, text: str) -> str:
         """Swap the words in the text."""

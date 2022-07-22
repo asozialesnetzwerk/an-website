@@ -10,6 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=protected-access
 
 """Patches that improve everything."""
 
@@ -39,7 +40,10 @@ from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 
-# pylint: disable=protected-access
+try:
+    from jxlpy import JXLImagePlugin  # type: ignore  # noqa: F401
+except ImportError:
+    pass
 
 
 def apply() -> None:

@@ -38,20 +38,6 @@ from tornado.web import HTTPError, RequestHandler
 
 from .. import STATIC_DIR
 
-# All the text content types used by the website
-TEXT_CONTENT_TYPES = {
-    "application/javascript",
-    "application/json",
-    "application/rss+xml",
-    "application/x-ndjson",
-    "application/xml",
-    "application/yaml",
-    "image/svg+xml",
-    "text/html",
-    "text/markdown",
-    "text/plain",
-}
-
 T = TypeVar("T")
 
 # pylint: disable=consider-alternative-union-syntax
@@ -307,12 +293,10 @@ def emojify(string: str) -> str:
     """Emojify a given string."""
     string = re.sub(
         r"[a-zA-Z]+",
-        lambda match: "\u200C".join(country_code_to_flag(match.group(0))),
+        lambda match: "\u200C".join(country_code_to_flag(match[0])),
         replace_umlauts(string),
     )
-    string = re.sub(
-        r"[0-9#*]+", lambda match: f"{'⃣'.join(match.group(0))}⃣", string
-    )
+    string = re.sub(r"[0-9#*]+", lambda match: f"{'⃣'.join(match[0])}⃣", string)
     return (
         string.replace("!?", "⁉")
         .replace("!!", "‼")
@@ -415,9 +399,9 @@ def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
     )
 
 
-def length_of_match(_m: re.Match[str]) -> int:
+def length_of_match(match: re.Match[str]) -> int:
     """Calculate the length of the regex match and return it."""
-    span = _m.span()
+    span = match.span()
     return span[1] - span[0]
 
 

@@ -36,14 +36,51 @@ jobs:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version:
+          - "3.10"
+          #- 3.11
+          #- 3.12
+        stack-version:
+          - 7.17.5
+          - 8.3.2
+        #license:
+        #  - basic
+        #  - trial
+    services:
+      redis:
+        image: redis/redis-stack-server:6.2.2-v5
+        ports:
+          - 6379:6379
     steps:
+      - name: Configure sysctl limits
+        run: |
+          sudo swapoff -a
+          sudo sysctl -w vm.swappiness=1
+          sudo sysctl -w fs.file-max=262144
+          sudo sysctl -w vm.max_map_count=262144
+      - name: Start Elasticsearch
+        uses: elastic/elastic-github-actions/elasticsearch@master
+        with:
+          stack-version: ${{ matrix.stack-version }}
+          security-enabled: false
+          nodes: 3
+          #license: ${{ matrix.license }}
+          plugins: |
+            analysis-icu
+            analysis-phonetic
+            ingest-attachment
+            mapper-size
+            mapper-murmur3
+            mapper-annotated-text
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: "3.10"
-          cache: "pip"
+          python-version: ${{ matrix.python-version }}
+          cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: |
@@ -52,7 +89,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install pytest, coverage and html5lib (needed for the tests)
-        run: grep -E "^(pytest|coverage|html5lib)" requirements-dev.txt | xargs pip install
+        run: grep -E "^(pytest|coverage|html5lib)" requirements-ci.txt | xargs pip install
       - name: Run pytest
         run: pytest --durations=0 --verbose --cov=an_website --cov-config=.coveragerc tests
       - name: Upload coverage as artifact
@@ -111,7 +148,7 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.10"
-          cache: "pip"
+          cache: pip
           cache-dependency-path: requirements*.txt
       - name: Download artifacts
         uses: actions/download-artifact@v3
@@ -122,7 +159,7 @@ jobs:
           mv coverage/.coverage .
       - name: Create coverage files
         run: |
-          grep "^coverage" requirements-dev.txt | xargs pip install
+          grep "^coverage" requirements-ci.txt | xargs pip install
           coverage report --precision=3 --sort=cover --skip-covered
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"

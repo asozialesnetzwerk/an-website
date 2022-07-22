@@ -49,7 +49,7 @@ from redis.asyncio import (
 )
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
-from tornado.web import Application, RedirectHandler, StaticFileHandler
+from tornado.web import Application, RedirectHandler
 
 from . import (
     CONTAINERIZED,
@@ -66,6 +66,7 @@ from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
 from .utils.request_handler import NotFoundHandler
+from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
 
 IGNORED_MODULES = {
@@ -280,6 +281,10 @@ def apply_config_to_app(
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
+    app.settings["compress_response"] = config.getboolean(
+        "GENERAL", "COMPRESS_RESPONSE", fallback=False
+    )
+
     app.settings["cookie_secret"] = config.get(
         "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
     )
@@ -480,13 +485,13 @@ def setup_app_search(app: Application) -> None:
     )
 
 
-def setup_elasticsearch(app: Application) -> None:
+def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
     if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         app.settings["ELASTICSEARCH"] = None
-        return
-    app.settings["ELASTICSEARCH"] = AsyncElasticsearch(
+        return None
+    elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         hosts=tuple(
             host.strip()
@@ -517,6 +522,8 @@ def setup_elasticsearch(app: Application) -> None:
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
+    app.settings["ELASTICSEARCH"] = elasticsearch
+    return elasticsearch
 
 
 async def check_elasticsearch(app: Application) -> None:
@@ -605,12 +612,12 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 )
 
 
-def setup_redis(app: Application) -> None:
+def setup_redis(app: Application) -> None | Redis[str]:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
     if not config.getboolean("REDIS", "ENABLED", fallback=False):
         app.settings["REDIS"] = None
-        return
+        return None
     kwargs = {
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
@@ -654,9 +661,9 @@ def setup_redis(app: Application) -> None:
                     ),
                 }
             )
-    app.settings["REDIS"] = Redis(
-        connection_pool=BlockingConnectionPool(**kwargs)
-    )
+    redis: Redis[str] = Redis(connection_pool=BlockingConnectionPool(**kwargs))
+    app.settings["REDIS"] = redis
+    return redis
 
 
 async def check_redis(app: Application) -> None:
@@ -687,6 +694,8 @@ def signal_handler(  # noqa: D103
 ) -> None:
     # pylint: disable=unused-argument, missing-function-docstring
     if signalnum in {signal.SIGINT, signal.SIGTERM}:
+        EVENT_SHUTDOWN.set()
+    if hasattr(signal, "SIGHUP") and signalnum == signal.SIGHUP:
         EVENT_SHUTDOWN.set()
 
 

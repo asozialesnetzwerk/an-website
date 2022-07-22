@@ -10,8 +10,8 @@ if [ -d venv ]; then
 fi
 
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
-if ! $pip_install "pip>=22.0"; then
-  echo "Installing pip>=22.0 failed."
+if ! $pip_install "pip>=22.2"; then
+  echo "Installing pip>=22.2 failed."
   exit 1
 fi
 if ! $pip_install -r requirements-dev.txt; then
@@ -31,7 +31,7 @@ isort . || FAILED=$(( 2 | FAILED ))
 # check formatting
 echo Black:
 if ! black --check --diff --color .; then
-  echo 'Run "black ." to reformat'
+  echo 'Run "black ." to reformat.'
   FAILED=$(( 4 | FAILED ))
 fi
 

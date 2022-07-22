@@ -188,7 +188,7 @@ async def test_sw_html_request_handlers(
             method="POST",
             body="reset=nope&text=" + "x" * (swap.MAX_CHAR_COUNT + 1),
         ),
-        413,  # text too long
+        {413},  # text too long
     )
     assert_valid_html_response(
         await fetch(
@@ -196,7 +196,7 @@ async def test_sw_html_request_handlers(
             method="POST",
             body="",
         ),
-        400,  # missing argument
+        {400},  # missing argument
     )
     assert_valid_html_response(
         await fetch(
@@ -204,7 +204,7 @@ async def test_sw_html_request_handlers(
             method="POST",
             body="reset=nope&text=x&config=xyz",
         ),
-        400,  # invalid config
+        {400},  # invalid config
     )
     # everything ok:
     assert_valid_html_response(
@@ -308,7 +308,7 @@ async def test_sw_json_request_handlers(
                 }
             ),
         ),
-        400,
+        {400},
     )
     assert response["line"] == "z <> o"
     assert response["line_num"] == 1
@@ -324,7 +324,7 @@ async def test_sw_json_request_handlers(
                 }
             ),
         ),
-        400,
+        {400},
     )
     assert response["line"] == "a == b"
     assert response["line_num"] == 2

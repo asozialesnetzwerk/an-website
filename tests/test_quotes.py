@@ -151,7 +151,7 @@ async def test_argument_checking_create_pages(
         "x=y",
     ):
         assert_valid_html_response(
-            await fetch("/zitate/erstellen", method="POST", body=data), 400
+            await fetch("/zitate/erstellen", method="POST", body=data), {400}
         )
 
     for data in (
@@ -162,7 +162,7 @@ async def test_argument_checking_create_pages(
     ):
         assert_valid_html_response(
             await fetch("/zitate/create-wrong-quote", method="POST", body=data),
-            400,
+            {400},
         )
 
     for num in (1, 2):

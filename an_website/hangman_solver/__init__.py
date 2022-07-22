@@ -57,7 +57,7 @@ def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
 FILE_NAMES, LANGUAGES = get_file_names_and_languages()
 
 
-@lru_cache(8)
+@lru_cache(10)
 def get_words(file_name: str) -> frozenset[str]:
     """Get the words with the file_name and return them."""
     with open(
@@ -66,7 +66,7 @@ def get_words(file_name: str) -> frozenset[str]:
         return frozenset(file.read().splitlines())
 
 
-@lru_cache(8)
+@lru_cache(10)
 def get_letters(file_name: str) -> dict[str, int]:
     """Get the letters dict with the file_name and return it."""
     with open(

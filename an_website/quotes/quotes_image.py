@@ -23,12 +23,10 @@ import sys
 import textwrap
 from typing import Any
 
-from jxlpy import (  # type: ignore  # noqa  # pylint: disable=unused-import
-    JXLImagePlugin,
-)
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
+from .. import patches
 from . import DIR, QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 
 logger = logging.getLogger(__name__)
@@ -279,13 +277,15 @@ FILE_EXTENSIONS = {
     "jpg": "jpeg",
     "jfif": "jpeg",
     "jpe": "jpeg",
-    "jxl": "jxl",
     "webp": "webp",
     "bmp": "bmp",
     "pdf": "pdf",
     "spi": "spider",
     "tiff": "tiff",
 }
+
+if hasattr(patches, "JXLImagePlugin"):
+    FILE_EXTENSIONS["jxl"] = "jxl"
 
 
 class QuoteAsImage(QuoteReadyCheckHandler):

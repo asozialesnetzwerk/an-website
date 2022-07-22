@@ -18,10 +18,13 @@
 from __future__ import annotations
 
 import os
+import warnings
 from pathlib import Path
 
 from get_version import get_version
 from setuptools import setup  # type: ignore
+
+warnings.filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 
 def read(filename):
@@ -58,7 +61,14 @@ setup(
     ],
     packages=["an_website"],
     python_requires=">=3.10",
-    install_requires=Path("requirements.txt").read_text("utf-8").split("\n"),
+    install_requires=read("requirements.txt").split("\n"),
+    extras_require={"jxl": ["jxlpy~=0.9"]},
     include_package_data=True,
     zip_safe=False,
+    entry_points={
+        "console_scripts": [
+            "an-website = an_website.__main__:main",
+            "an-backdoor-client = an_website.backdoor.backdoor_client:main",
+        ]
+    },
 )
