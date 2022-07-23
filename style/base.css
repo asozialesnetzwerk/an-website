@@ -7,14 +7,6 @@ img.emoji {
     height: 1.375em;
     -o-object-fit: contain;
     object-fit: contain;
-
-    /* TOOLTIP STUFF */
-    /* offset moves tooltip to the center of the parent */
-    --tp-offset: -0.15rem;
-    /* make stuff easier for people that steal this CSS file */
-    --tp-border-color: var(--main-2);
-    --tp-bg-color: var(--bg);
-    --tp-text-color: var(--text-color);
 }
 #open-moji-attribution {
     font-size: 0.69rem;
@@ -27,6 +19,14 @@ img.emoji {
     font-family: sans-serif;
     /* other useful stuff: */
     --header-height: 4rem;
+
+    /* TOOLTIP STUFF */
+    /* offset moves tooltip to the center of the parent */
+    --tp-offset: -0.15rem;
+    /* make stuff easier for people that steal this CSS file */
+    --tp-border-color: var(--main-2);
+    --tp-bg-color: var(--bg);
+    --tp-text-color: var(--text-color);
 }
 
 #skip-to-content {
@@ -379,6 +379,7 @@ header {
     text-align: center;
     white-space: pre-line;
     padding: 0.4rem;
+    opacity: 1;
 
     background-color: var(--tp-bg-color);
     color: var(--tp-text-color);
