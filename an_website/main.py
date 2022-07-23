@@ -47,9 +47,10 @@ from redis.asyncio import (
     SSLConnection,
     UnixDomainSocketConnection,
 )
+from tornado import httputil
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
-from tornado.web import Application, RedirectHandler
+from tornado.web import Application, GZipContentEncoding, RedirectHandler
 
 from . import (
     CONTAINERIZED,
@@ -64,7 +65,7 @@ from . import (
 from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
-from .utils.base_request_handler import BaseRequestHandler
+from .utils.base_request_handler import TEXT_CONTENT_TYPES, BaseRequestHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
@@ -281,9 +282,27 @@ def apply_config_to_app(
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
-    app.settings["compress_response"] = config.getboolean(
-        "GENERAL", "COMPRESS_RESPONSE", fallback=False
-    )
+    if config.getboolean("GENERAL", "COMPRESS_RESPONSE", fallback=False):
+
+        class GZIP(GZipContentEncoding):
+            """Patched gzip encoding transform."""
+
+            CONTENT_TYPES = {
+                *GZipContentEncoding.CONTENT_TYPES,
+                *TEXT_CONTENT_TYPES,
+            }
+            MIN_LENGTH = 666
+
+            def __init__(self, request: httputil.HTTPServerRequest) -> None:
+                super().__init__(request)
+                if (
+                    self._gzipping
+                    and isinstance(request, BaseRequestHandler)
+                    and not request.ALLOW_COMPRESSION
+                ):
+                    self._gzipping = False
+
+        app.add_transform(GZIP)
 
     app.settings["cookie_secret"] = config.get(
         "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"

@@ -42,12 +42,7 @@ from accept_types import get_best_match  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
-from tornado.web import (
-    GZipContentEncoding,
-    HTTPError,
-    MissingArgumentError,
-    RequestHandler,
-)
+from tornado.web import HTTPError, MissingArgumentError, RequestHandler
 
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
 from .utils import (
@@ -67,9 +62,12 @@ logger = logging.getLogger(__name__)
 TEXT_CONTENT_TYPES = {
     "application/javascript",
     "application/json",
+    "application/reports+json",
+    "application/rss+xml",
     "application/x-ndjson",
     "application/xml",
     "application/yaml",
+    "image/svg+xml",
 }
 
 
@@ -427,13 +425,7 @@ class BaseRequestHandler(RequestHandler):
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
-        if not self.ALLOW_COMPRESSION:
-            for transform in self._transforms:
-                if isinstance(transform, GZipContentEncoding):
-                    # pylint: disable=protected-access
-                    transform._gzipping = False
-
+        # pylint: disable=invalid-overridden-method, too-complex
         self.now = await self.get_time()
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
