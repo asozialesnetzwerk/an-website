@@ -31,7 +31,7 @@ assert fetch and app
 
 
 async def test_parsing_module_infos(
-    # pylint: disable=redefined-outer-name
+    # pylint: disable=redefined-outer-name, too-complex, too-many-locals
     fetch: FetchCallable,
     app: Application,
 ) -> None:
@@ -84,13 +84,16 @@ async def test_parsing_module_infos(
                     "/redirect",
                     "/zitat-des-tages",
                 }
+                valid_response_codes = {200, 503}
+                if module_info.path == "/api/reports":
+                    valid_response_codes.add(404)
                 head_response = await fetch(
                     module_info.path,
                     method="HEAD",
                     raise_error=False,
                     follow_redirects=follow_redirects,
                 )
-                assert head_response.code in {200, 503}
+                assert head_response.code in valid_response_codes
                 assert head_response.body == b""
                 get_response = await fetch(
                     module_info.path,
@@ -98,7 +101,7 @@ async def test_parsing_module_infos(
                     raise_error=False,
                     follow_redirects=follow_redirects,
                 )
-                assert get_response.code in {200, 503}
+                assert get_response.code in valid_response_codes
                 assert get_response.body != b""
                 for header in (
                     "Content-Type",
