@@ -80,22 +80,25 @@ async def test_parsing_module_infos(
                 "/chat",  # head not supported
                 "/api/update",
             }:
-                print(module_info.path)
+                follow_redirects = module_info.path in {
+                    "/redirect",
+                    "/zitat-des-tages",
+                }
                 head_response = await fetch(
                     module_info.path,
                     method="HEAD",
                     raise_error=False,
-                    follow_redirects=module_info.path == "/redirect",
+                    follow_redirects=follow_redirects,
                 )
-                assert head_response.code != 500
+                assert head_response.code in {200, 503}
                 assert head_response.body == b""
                 get_response = await fetch(
                     module_info.path,
                     method="GET",
                     raise_error=False,
-                    follow_redirects=module_info.path == "/redirect",
+                    follow_redirects=follow_redirects,
                 )
-                assert get_response.code != 500
+                assert get_response.code in {200, 503}
                 assert get_response.body != b""
                 for header in (
                     "Content-Type",

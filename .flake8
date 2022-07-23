@@ -8,7 +8,7 @@ max-complexity = 12
 ignore = E501,W503
 select = B,B9,C,D,E,F,N8,W,INP
 per-file-ignores =
-    hash_files.py,humans.py,minify_css.py,minify_js.py,setup.py:INP001
+    setup.py:INP001
     an_website/hangman_solver/words/*:INP001
     an_website/patches/braille.py:D103,D400
     an_website/patches/json.py:B950

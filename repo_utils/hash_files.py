@@ -19,9 +19,11 @@ from __future__ import annotations
 
 import sys
 from hashlib import new
+from os.path import abspath, dirname
 from pathlib import Path
 
-PATH = Path("an_website").absolute()
+REPO_ROOT = dirname(dirname(abspath(__file__)))
+PATH = Path(REPO_ROOT, "an_website").absolute()
 
 
 def hash_bytes(data: bytes) -> str:

@@ -37,7 +37,7 @@ fi
 
 # check types
 echo mypy:
-mypy --pretty -p an_website -p tests || FAILED=$(( 8 | FAILED ))
+mypy --pretty -p an_website -p tests -p repo_utils || FAILED=$(( 8 | FAILED ))
 
 # lint
 echo Flake8:

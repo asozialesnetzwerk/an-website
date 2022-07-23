@@ -141,18 +141,8 @@ def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
         (
-            r"/(?:static/)?(robots\.txt|\.env)",
+            r"/(?:static/)?(\.env|favicon\.png|humans\.txt|robots\.txt)",
             StaticFileHandler,
-            {"path": STATIC_DIR},
-        ),
-        (
-            r"/(?:static/)?(humans\.txt)",
-            StaticFileHandler,
-            {"path": STATIC_DIR},
-        ),
-        (
-            r"/(?:static/)?(favicon\.ico)",
-            CachedStaticFileHandler,
             {"path": STATIC_DIR},
         ),
     ]
@@ -199,8 +189,8 @@ def fix_static_url(url: str) -> str:
         url = url.split("?")[0]
     if url in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[url]
-        if url == "/static/favicon.ico":
-            return f"/favicon.ico?v={hash_}"
+        if url == "/static/favicon.png":
+            return f"/favicon.png?v={hash_}"
         return f"{url}?v={hash_}"
     logger.warning("%s not in FILE_HASHES_DICT", url)
     return url

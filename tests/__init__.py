@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import os
 import sys
+from datetime import datetime
 
 # add parent dir to sys.path
 # this makes importing an_website possible
@@ -134,6 +135,13 @@ def app() -> tornado.web.Application:
             EVENT_REDIS.clear()
         else:
             EVENT_REDIS.set()
+            loop.run_until_complete(
+                redis.set(
+                    f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
+                    f"by-date:{datetime.now().date().isoformat()}",
+                    "1-2",
+                )
+            )
 
     return app
 
@@ -194,7 +202,7 @@ async def assert_valid_redirect(
 def assert_valid_response(
     response: tornado.httpclient.HTTPResponse,
     content_type: None | str,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
     headers: None | dict[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given code and content type header."""
@@ -233,7 +241,7 @@ def assert_valid_response(
 async def check_html_page(
     _fetch: FetchCallable,
     url: str | tornado.httpclient.HTTPResponse,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
     *,
     recursive: int = 0,
     checked_urls: set[str] = set(),  # noqa: B006
@@ -323,7 +331,7 @@ async def check_html_page(
 
 def assert_valid_html_response(
     response: tornado.httpclient.HTTPResponse,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
     effective_url: None | str = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid html response with the given code."""
@@ -348,7 +356,7 @@ def assert_valid_html_response(
 
 def assert_valid_rss_response(
     response: tornado.httpclient.HTTPResponse,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
 ) -> etree.ElementTree:
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "application/rss+xml", codes)
@@ -363,7 +371,7 @@ def assert_valid_rss_response(
 
 def assert_valid_yaml_response(
     response: tornado.httpclient.HTTPResponse,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
 ) -> Any:
     """Assert a valid yaml response with the given code."""
     assert_valid_response(response, "application/yaml", codes)
@@ -374,7 +382,7 @@ def assert_valid_yaml_response(
 
 def assert_valid_json_response(
     response: tornado.httpclient.HTTPResponse,
-    codes: Set[int] = frozenset({200, 404, 503}),
+    codes: Set[int] = frozenset({200, 503}),
 ) -> Any:
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "application/json", codes)

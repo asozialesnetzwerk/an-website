@@ -34,11 +34,11 @@ jobs:
       - name: Run Black
         run: black .
       - name: Minify JS files
-        run: ./minify_js.py --clean
+        run: ./repo_utils/minify_js.py --clean
       - name: Minify CSS files
-        run: ./minify_css.py --clean
+        run: ./repo_utils/minify_css.py --clean
       - name: Generate humans.txt
-        run: ./humans.py
+        run: ./repo_utils/humans.py
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

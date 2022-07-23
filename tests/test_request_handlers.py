@@ -258,12 +258,8 @@ async def test_request_handlers(
     assert_valid_response(
         await fetch("/static/robots.txt"), "text/plain;charset=utf-8"
     )
-    assert_valid_response(
-        await fetch("/favicon.ico"), "image/vnd.microsoft.icon"
-    )
-    assert_valid_response(
-        await fetch("/static/favicon.ico"), "image/vnd.microsoft.icon"
-    )
+    assert_valid_response(await fetch("/favicon.png"), "image/png")
+    assert_valid_response(await fetch("/static/favicon.png"), "image/png")
 
     await check_html_page(fetch, "/betriebszeit")
     await check_html_page(fetch, "/discord")

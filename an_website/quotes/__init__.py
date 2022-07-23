@@ -35,6 +35,7 @@ from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore
 
 from .. import DIR as ROOT_DIR
+from .. import pytest_is_running  # type: ignore[attr-defined]
 from .. import EVENT_REDIS, ORJSON_OPTIONS
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import emojify
@@ -304,6 +305,8 @@ async def make_api_request(
     body: None | str = None,
 ) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
+    if pytest_is_running():
+        return None
     response = await AsyncHTTPClient().fetch(
         f"{API_URL}/{endpoint}?{args}",
         method=method,

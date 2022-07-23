@@ -110,7 +110,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Hash files
-        run: ./hash_files.py > hashes
+        run: ./repo_utils/hash_files.py > hashes
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:

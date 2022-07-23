@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+from functools import cache
+
 import orjson as json
 import pytest
 
@@ -38,22 +40,15 @@ from . import (
 assert app and fetch
 
 
-def patch_stuff() -> quotes.WrongQuote:
+@cache
+def get_wrong_quote() -> quotes.WrongQuote:
     """Patch stuff."""
-
-    async def patch(*args, **kwargs) -> None:  # type: ignore[no-untyped-def]
-        print("Called make_api_request", args, kwargs)
-        return None
-
-    # this stops requests to the quote API from happening
-    quotes.make_api_request = patch
-
     return quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
 
 async def test_parsing_wrong_quotes() -> None:
     """Test parsing wrong_quotes."""
-    wrong_quote = patch_stuff()
+    wrong_quote = get_wrong_quote()
 
     assert wrong_quote.id == 1
     # quote_id (1) - author_id (2)
@@ -83,7 +78,7 @@ async def test_parsing_wrong_quotes() -> None:
 
 def test_author_updating() -> None:
     """Test updating the author."""
-    patch_stuff()
+    get_wrong_quote()
 
     assert (author := quotes.get_author_updated_with(1, "test")).name == "test"
 
@@ -94,7 +89,7 @@ def test_author_updating() -> None:
 
 async def test_create() -> None:
     """Test some functions in the quote create module."""
-    wrong_quote = patch_stuff()
+    wrong_quote = get_wrong_quote()
 
     assert wrong_quote.quote.author is create.get_author_by_name(
         "Abraham Lincoln"
@@ -140,7 +135,7 @@ async def test_argument_checking_create_pages(
     fetch: FetchCallable,
 ) -> None:
     """Test whether the create handlers complain because of missing args."""
-    wrong_quote = patch_stuff()
+    wrong_quote = get_wrong_quote()
 
     await quotes.make_api_request("/test")
 
@@ -197,7 +192,7 @@ async def test_argument_checking_create_pages(
 
 async def test_quote_updating() -> None:
     """Test updating the quote."""
-    patch_stuff()
+    get_wrong_quote()
 
     quote = await quotes.get_quote_by_id(1)
 
@@ -222,7 +217,7 @@ async def test_quote_request_handlers(
     fetch: FetchCallable,
 ) -> None:
     """Test the request handlers for the quotes page."""
-    patch_stuff()  # add data to cache
+    get_wrong_quote()  # add data to cache
     await check_html_page(fetch, "/zitate")
     await check_html_page(fetch, "/zitate/1-1")
     await check_html_page(fetch, "/zitate/1-2")
@@ -316,20 +311,22 @@ async def test_quote_apis(
     fetch: FetchCallable,
 ) -> None:
     """Test the quote APIs."""
-    wrong_quote = patch_stuff()
+    wrong_quote = get_wrong_quote()
 
     response = assert_valid_json_response(
-        await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}")
+        await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}?show-rating=s")
     )
     assert response["id"] == wrong_quote.get_id_as_str()
     assert response["quote"] == wrong_quote.quote.quote
     assert response["author"] == wrong_quote.author.name
     assert response["real_author"] == wrong_quote.quote.author.name
     assert response["real_author_id"] == wrong_quote.quote.author.id
-    # assert int(response["rating"]) == wrong_quote.rating  # FIXME: ???
+    assert int(response["rating"]) == wrong_quote.rating
 
     response = assert_valid_json_response(
-        await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}/full")
+        await fetch(
+            f"/api/zitate/{wrong_quote.get_id_as_str()}/full?show-rating=sure"
+        )
     )
     assert response["wrong_quote"] == wrong_quote.to_json()
     response = response["wrong_quote"]
@@ -337,7 +334,7 @@ async def test_quote_apis(
     assert response["quote"] == wrong_quote.quote.to_json()
     assert response["author"] == wrong_quote.author.to_json()
     assert response["path"] == f"/zitate/{wrong_quote.get_id_as_str()}"
-    # assert int(response["rating"]) == wrong_quote.rating  # FIXME: ???
+    assert int(response["rating"]) == wrong_quote.rating
 
     for count in (6, 2, 1):
         response = assert_valid_json_response(

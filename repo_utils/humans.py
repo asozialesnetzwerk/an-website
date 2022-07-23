@@ -22,8 +22,8 @@ from os.path import abspath, dirname
 from pathlib import Path
 from subprocess import run
 
-DIR = abspath(dirname(__file__))
-HUMANS_TXT = Path(DIR, "an_website/static/humans.txt")
+REPO_ROOT = dirname(dirname(abspath(__file__)))
+HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 3 to change humans.txt
 BOTS: set[str] = {"ImgBotApp", "snyk-bot"}
@@ -105,9 +105,11 @@ def generate_humans_txt() -> str:
 
     output_lines: list[str] = ["/* TEAM */"]
     add_data_to_output(maintainers, output_lines)
+    # print("Maintainers:\t", [person[0][1] for _, person in maintainers])
 
     output_lines.append("/* THANKS */")
     add_data_to_output(contributors, output_lines)
+    # print("Contributors:\t", [person[0][1] for _, person in contributors])
 
     return "\n".join(output_lines).strip() + "\n"
 
