@@ -162,7 +162,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             return None
 
         if isinstance(wq_date, str):
-            wq_date = date(*tuple(int(x) for x in wq_date.split("-")))
+            wq_date = date.fromisoformat(wq_date)
 
         wq_id = await self.redis.get(self.get_redis_quote_date_key(wq_date))
         if not wq_id:
@@ -179,7 +179,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         """Get the quote for today."""
         if not EVENT_REDIS.is_set():
             return None
-        today = datetime.now(tz=timezone.utc).date()
+        today = datetime.utcnow().date()
         quote_data = await self.get_quote_by_date(today)
         if quote_data:  # if was saved already
             return quote_data
@@ -219,12 +219,12 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
         """Handle GET requests."""
         if head:
             return
-        today = datetime.now(tz=timezone.utc).date()
+        today = datetime.utcnow().date()
         quotes = (
             await self.get_quote_of_today(),
             *[
                 await self.get_quote_by_date(today - timedelta(days=i))
-                for i in range(1, 5)
+                for i in range(1, 8)
             ],
         )
         await self.render(
@@ -243,6 +243,9 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+
         quote_data = await (
             self.get_quote_by_date(date_str)
             if date_str
@@ -276,6 +279,9 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+
         wrong_quote_data = await (
             self.get_quote_by_date(date_str)
             if date_str

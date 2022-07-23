@@ -127,11 +127,12 @@ async def test_parsing_module_infos(
 def test_making_app() -> None:
     """Run the app making functions, to make sure they don't fail."""
     patches.apply()
-    application = main.make_app()
 
     # read the example config, because it is always the same and should always work
     config = configparser.ConfigParser(interpolation=None)
     config.read(os.path.join(PARENT_DIR, "config.ini.example"))
+
+    application = main.make_app(config)
 
     main.apply_config_to_app(application, config)  # type: ignore[arg-type]
 

@@ -11,7 +11,7 @@ img.emoji {
     /* TOOLTIP STUFF */
     /* offset moves tooltip to the center of the parent */
     --tp-offset: -0.15rem;
-    /* make stuff easier for people that steal this css file */
+    /* make stuff easier for people that steal this CSS file */
     --tp-border-color: var(--main-2);
     --tp-bg-color: var(--bg);
     --tp-text-color: var(--text-color);
