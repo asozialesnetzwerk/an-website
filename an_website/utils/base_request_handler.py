@@ -159,8 +159,11 @@ class BaseRequestHandler(RequestHandler):
         """Set the Content-Security-Policy header."""
         script_src = ["'self'"]
         if self.elastic_apm_enabled():
-            script_src.append(
-                f"'sha256-{self.settings['ELASTIC_APM']['INLINE_SCRIPT_HASH']}'"
+            script_src.extend(
+                (
+                    f"'sha256-{self.settings['ELASTIC_APM']['INLINE_SCRIPT_HASH']}'",
+                    "'unsafe-inline'",  # for browsers that don't support hash
+                )
             )
         self.set_header(
             "Content-Security-Policy",
