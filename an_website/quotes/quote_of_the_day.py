@@ -253,7 +253,7 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
         )
 
         if not quote_data:
-            raise HTTPError(404)
+            raise HTTPError(404 if date_str else 503)
 
         if self.request.path.endswith("/full"):
             return await self.finish(quote_data.to_json())
@@ -289,7 +289,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
         )
 
         if not wrong_quote_data:
-            raise HTTPError(404)
+            raise HTTPError(404 if date_str else 503)
 
         self.redirect(
             self.fix_url(
