@@ -7,6 +7,14 @@ img.emoji {
     height: 1.375em;
     -o-object-fit: contain;
     object-fit: contain;
+
+    /* TOOLTIP STUFF */
+    /* offset moves tooltip to the center of the parent */
+    --tp-offset: -0.15rem;
+    /* make stuff easier for people that steal this css file */
+    --tp-border-color: var(--main-2);
+    --tp-bg-color: var(--bg);
+    --tp-text-color: var(--text-color);
 }
 #open-moji-attribution {
     font-size: 0.69rem;
@@ -304,3 +312,140 @@ header {
     max-width: 85%;
 }
 /* header end */
+
+/* TOOLTIP START */
+[tooltip] {
+    position: relative;
+}
+
+[tooltip]::before, [tooltip]::after {
+    /* position */
+    position: absolute;
+    /* on top of everything */
+    z-index: 1000000000;
+    /* make invisible */
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    /* ignore hover over tooltip so it disappears when leaving parent */
+    pointer-events: none;
+    /* reset font size, so it doesn't depend on parent */
+    font-size: 1rem;
+}
+
+[tooltip]:hover::after,
+[tooltip]:hover::before,
+[tooltip]:focus::after,
+[tooltip]:focus::before {
+    /* make tooltip and triangle visible */
+    display: inherit;
+    opacity: 1;
+    transition: all 0.05s ease 0.1s;
+    visibility: visible;
+}
+
+/* top tooltip after and before */
+[tooltip][tooltip-position=top]::after,
+[tooltip][tooltip-position=top]::before,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::after,
+[tooltip]:not([tooltip-position])::before,
+/* bottom tooltip after and before */
+[tooltip][tooltip-position=bottom]::after,
+[tooltip][tooltip-position=bottom]::before {
+    /* if position top or bottom center tooltip horizontally */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* left tooltip after and before */
+[tooltip][tooltip-position=left]::after,
+[tooltip][tooltip-position=left]::before,
+/* right tooltip after and before  */
+[tooltip][tooltip-position=right]::after,
+[tooltip][tooltip-position=right]::before {
+    /* if position left or right center tooltip vertically */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* the tooltip */
+[tooltip]::after {
+    /* the tooltip */
+    content: attr(tooltip);
+
+    hyphens: initial;
+    letter-spacing: normal;
+    text-align: center;
+    white-space: pre-line;
+    padding: 0.4rem;
+
+    background-color: var(--tp-bg-color);
+    color: var(--tp-text-color);
+
+    width: max-content;
+    max-width: max(100%, 8.8rem);
+
+    border-radius: 0.4rem;
+    border-style: solid;
+    border-color: var(--tp-border-color);
+    border-width: thin;
+}
+
+[tooltip][tooltip-position=top]::after,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::after {
+    /* if position top move the tooltip above the parent*/
+    bottom: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position=bottom]::after {
+    /* if position bottom move the tooltip below the parent */
+    top: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position=left]::after {
+    /* if position left move the tooltip left of the parent */
+    right: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position=right]::after {
+    /* if position right move the tooltip right of the parent */
+    left: calc(100% - var(--tp-offset));
+}
+
+/* the triangle that points from tooltip to parent */
+[tooltip]::before {
+    content: " ";
+    border-width: 0.3125rem;
+    border-style: solid;
+    /* set border-color defaults to override for each position */
+    border-color: transparent transparent transparent transparent;
+}
+
+[tooltip][tooltip-position=top]::before,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::before {
+    /* position top */
+    top: var(--tp-offset);
+    border-top-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position=bottom]::before {
+    /* position bottom */
+    bottom: var(--tp-offset);
+    border-bottom-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position=left]::before {
+    /* position left */
+    left: var(--tp-offset);
+    border-left-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position=right]::before {
+    /* position right */
+    right: var(--tp-offset);
+    border-right-color: var(--tp-border-color);
+}
+/* TOOLTIP END */
