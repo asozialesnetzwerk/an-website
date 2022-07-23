@@ -75,6 +75,12 @@ def apply() -> None:
     tornado.web.RequestHandler.propfind = _  # type: ignore[attr-defined]
     tornado.web.RequestHandler.brew = _  # type: ignore[attr-defined]
     tornado.web.RequestHandler.when = _  # type: ignore[attr-defined]
+    tornado.web.GZipContentEncoding._compressible_type = (  # type: ignore[assignment]
+        lambda self, ctype: ctype in self.CONTENT_TYPES
+        or ctype in {"application/x-ndjson", "application/yaml"}
+        or ctype.endswith(("+xml", "+json"))
+        or ctype.startswith("text/")
+    )
     http.client.responses[420] = "Enhance Your Calm"
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()

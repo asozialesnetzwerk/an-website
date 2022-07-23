@@ -87,6 +87,7 @@ FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
+    # pylint: disable=too-complex
     assert NAME.endswith("-test")
 
     config = configparser.ConfigParser(interpolation=None)
@@ -101,7 +102,7 @@ def app() -> tornado.web.Application:
         if len(module_name) > 0:
             main.IGNORED_MODULES.add(module_name)
 
-    app = main.make_app()  # pylint: disable=redefined-outer-name
+    app = main.make_app(config)  # pylint: disable=redefined-outer-name
 
     assert isinstance(app, tornado.web.Application)
 
@@ -134,14 +135,16 @@ def app() -> tornado.web.Application:
         except Exception:  # pylint: disable=broad-except
             EVENT_REDIS.clear()
         else:
-            EVENT_REDIS.set()
-            loop.run_until_complete(
-                redis.set(
-                    f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
-                    f"by-date:{datetime.now().date().isoformat()}",
-                    "1-2",
+            if not EVENT_REDIS.is_set():
+                loop.run_until_complete(
+                    redis.setex(
+                        f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
+                        f"by-date:{datetime.utcnow().date().isoformat()}",
+                        300,
+                        "1-2",
+                    )
                 )
-            )
+            EVENT_REDIS.set()
 
     return app
 

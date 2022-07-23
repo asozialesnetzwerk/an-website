@@ -37,15 +37,15 @@ fi
 
 # check types
 echo mypy:
-mypy --pretty -p an_website -p tests -p repo_utils || FAILED=$(( 8 | FAILED ))
+mypy --pretty -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D102 ./*.py an_website tests || FAILED=$(( 16 | FAILED ))
+flake8 --extend-ignore=D102 setup.py an_website tests scripts || FAILED=$(( 16 | FAILED ))
 echo Pylint:
 pylint="pylint --output-format=colorized"
-$pylint -d all -e fixme --score=no --persistent=no ./*.py an_website tests
-$pylint -d fixme ./*.py an_website tests || FAILED=$(( 32 | FAILED ))
+$pylint -d all -e fixme --score=no --persistent=no setup.py an_website tests scripts
+$pylint -d fixme setup.py an_website tests scripts || FAILED=$(( 32 | FAILED ))
 
 if [ -n "$1" ]; then
   pytest="pytest --durations=0 --durations-min=0.5"

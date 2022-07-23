@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""In this package are useful scripts for dealing with the repo.
+"""
+This package contains useful scripts for dealing with the repo.
 
-They generate useful information or files.
+They generate useful information and files.
 """
