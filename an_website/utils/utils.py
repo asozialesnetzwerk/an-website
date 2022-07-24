@@ -383,9 +383,12 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def hash_bytes(text: bytes, size: int = 32) -> str:
+def hash_bytes(*args: bytes, size: int = 32) -> str:
     """Hash bytes with BLAKE3 and return the Base85 representation."""
-    digest: bytes = blake3(text).digest(size)
+    hasher = blake3()
+    for spam in args:
+        hasher.update(spam)
+    digest: bytes = hasher.digest(size)
     return b85encode(digest).decode("ascii")
 
 
@@ -394,8 +397,8 @@ def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
     if not isinstance(address, IPv4Address | IPv6Address):
         address = ip_address(address)
     return hash_bytes(
-        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
-        + address.packed
+        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest(),
+        address.packed,
     )
 
 

@@ -84,6 +84,7 @@ class BaseRequestHandler(RequestHandler):
     )
 
     ALLOW_COMPRESSION = True
+    COMPUTE_ETAG = True
     MAX_BODY_SIZE: None | int = None
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
@@ -130,6 +131,12 @@ class BaseRequestHandler(RequestHandler):
 
     def data_received(self, chunk: Any) -> None:
         """Do nothing."""
+
+    def compute_etag(self) -> None | str:
+        """Compute etag with b85 encoding."""
+        if not self.COMPUTE_ETAG:
+            return None
+        return f'"{hash_bytes(*self._write_buffer)}"'
 
     @property
     def redis(self) -> Redis[str]:

@@ -117,12 +117,11 @@ class HeaderInfo(Info):
             if self.type == Book
             else mark_query(self.text, query)
         )
-        return f"""
-<{self.tag} id="{_id}">
-    <a no-dynload href="#{_id}" class="header-id-link"></a>
-    {text}
-</{self.tag}>
-        """.strip()
+        return (
+            f'<{self.tag} id="{_id}">'
+            f'{text}<a no-dynload href="#{_id}" class="header-id-link"></a>'
+            f"</{self.tag}>"
+        )
 
 
 @dataclass(frozen=True)
