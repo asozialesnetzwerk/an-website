@@ -269,5 +269,5 @@ class CachedStaticFileHandler(StaticFileHandler):
             )
 
     def compute_etag(self) -> None | str:
-        """Don't compute etag, because it isn't necessary."""
+        """Don't compute ETag, because it isn't necessary."""
         return None

@@ -85,8 +85,8 @@ class BaseRequestHandler(RequestHandler):
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
-    ALLOW_COMPRESSION = True
     COMPUTE_ETAG = True
+    ALLOW_COMPRESSION = True
     MAX_BODY_SIZE: None | int = None
     ALLOWED_METHODS: tuple[str, ...] = ("GET",)
     POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
@@ -100,8 +100,8 @@ class BaseRequestHandler(RequestHandler):
     short_title: str = "Asoziales Netzwerk"
     description: str = "Die tolle Webseite des Asozialen Netzwerkes"
 
-    content_type: None | str = None
     active_origin_trials: set[bytes]
+    content_type: None | str = None
     auth_failed: bool = False
     apm_script: None | str
     now: datetime
@@ -135,7 +135,7 @@ class BaseRequestHandler(RequestHandler):
         """Do nothing."""
 
     def compute_etag(self) -> None | str:
-        """Compute etag with b85 encoding."""
+        """Compute ETag with Base85 encoding."""
         if not self.COMPUTE_ETAG:
             return None
         return f'"{hash_bytes(*self._write_buffer)}"'
@@ -906,7 +906,7 @@ class BaseRequestHandler(RequestHandler):
         self,
         ip: None | str = None,  # pylint: disable=invalid-name
         database: str = geoip.__defaults__[0],  # type: ignore
-    ) -> Coroutine[Any, Any, None | dict[str, Any]]:
+    ) -> Coroutine[None, None, None | dict[str, Any]]:
         """Get GeoIP information."""
         if not ip:
             ip = str(self.request.remote_ip)

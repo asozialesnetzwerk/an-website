@@ -75,9 +75,10 @@ def apply() -> None:
     tornado.web.RequestHandler.propfind = _  # type: ignore[attr-defined]
     tornado.web.RequestHandler.brew = _  # type: ignore[attr-defined]
     tornado.web.RequestHandler.when = _  # type: ignore[attr-defined]
+    tornado.web.GZipContentEncoding.CONTENT_TYPES.add("application/x-ndjson")
+    tornado.web.GZipContentEncoding.CONTENT_TYPES.add("application/yaml")
     tornado.web.GZipContentEncoding._compressible_type = (  # type: ignore[assignment]
         lambda self, ctype: ctype in self.CONTENT_TYPES
-        or ctype in {"application/x-ndjson", "application/yaml"}
         or ctype.endswith(("+xml", "+json"))
         or ctype.startswith("text/")
     )
