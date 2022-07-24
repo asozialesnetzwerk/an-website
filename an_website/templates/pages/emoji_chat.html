@@ -3,10 +3,10 @@
 
 {% block body %}
 <section id="message-section">
-    {% for name, msg in messages %}
+    {% for msg in messages %}
         <div class="message">
-            {% for emoji in name %}{% raw emoji2html(emoji) %}{% end %}:
-            {% for emoji in msg %}{% raw emoji2html(emoji) %}{% end %}
+            {% for emoji in msg["author"] %}{% raw emoji2html(emoji) %}{% end %}:
+            {% for emoji in msg["content"] %}{% raw emoji2html(emoji) %}{% end %}
         </div>
     {% end %}
 </section>

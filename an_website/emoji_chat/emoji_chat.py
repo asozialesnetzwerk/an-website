@@ -315,6 +315,10 @@ class ChatHandler(BaseRequestHandler):
 
         return normalize_emojis(name.decode("utf-8"))
 
+    async def get_name_as_list(self) -> list[str]:
+        """Return the name as list of emojis."""
+        return [emoji["emoji"] for emoji in emoji_list(await self.get_name())]
+
     async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
         raise NotImplementedError
@@ -325,23 +329,10 @@ class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
 
     async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
-        name_msgs: list[tuple[tuple[str, ...], tuple[str, ...]]] = []
-
-        for message in messages:
-            author, content = message["author"], message["content"]
-            name_msgs.append(
-                (
-                    tuple(emoji["emoji"] for emoji in emoji_list(author)),
-                    tuple(emoji["emoji"] for emoji in emoji_list(content)),
-                )
-            )
-
         await self.render(
             "pages/emoji_chat.html",
-            messages=name_msgs,
-            user_name=(
-                emoji["emoji"] for emoji in emoji_list(await self.get_name())
-            ),
+            messages=messages,
+            user_name=await self.get_name_as_list(),
         )
 
 
@@ -350,4 +341,9 @@ class APIChatHandler(ChatHandler, APIRequestHandler):
 
     async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
-        await self.finish({"messages": messages})
+        await self.finish(
+            {
+                "current_user": await self.get_name_as_list(),
+                "messages": messages,
+            }
+        )
