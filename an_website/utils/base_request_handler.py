@@ -53,12 +53,14 @@ from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
 from .utils import (
     THEMES,
     ModuleInfo,
+    OpenMojiValue,
     Permission,
     add_args_to_url,
     anonymize_ip,
     bool_to_str,
     geoip,
     hash_bytes,
+    parse_openmoji_arg,
     str_to_bool,
 )
 
@@ -782,17 +784,17 @@ class BaseRequestHandler(RequestHandler):
         """Return the dynload query argument as boolean."""
         return self.get_bool_argument("dynload", self.get_saved_dynload())
 
-    def get_saved_openmoji(self) -> bool:
+    def get_saved_openmoji(self) -> OpenMojiValue:
         """Get the saved value for openmoji."""
-        default = False
-        openmoji = self.get_cookie("openmoji")
-        if openmoji is None:
-            return default
-        return str_to_bool(openmoji, default)
+        return parse_openmoji_arg(
+            cast(str, self.get_cookie("openmoji", "")), False
+        )
 
-    def get_openmoji(self) -> bool:
+    def get_openmoji(self) -> OpenMojiValue:
         """Return the openmoji query argument as boolean."""
-        return self.get_bool_argument("openmoji", self.get_saved_openmoji())
+        return parse_openmoji_arg(
+            self.get_argument("openmoji", ""), self.get_saved_openmoji()
+        )
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""

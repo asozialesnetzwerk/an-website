@@ -15,16 +15,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import random
 import time
-from typing import Any
+from collections.abc import Awaitable
+from typing import Any, Literal, cast
 
 import orjson as json
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize  # type: ignore
 from redis.asyncio import Redis
 from tornado.web import HTTPError
+from tornado.websocket import WebSocketHandler
 
-from .. import EPOCH_MS, EVENT_REDIS, ORJSON_OPTIONS
+from .. import EPOCH_MS, EVENT_REDIS, NAME, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -38,6 +41,7 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (r"/emoji-chat", HTMLChatHandler),
             (r"/api/emoji-chat", APIChatHandler),
+            (r"/websocket/emoji-chat", ChatWebSocketHandler),
         ),
         name="Emoji-Chat",
         description="Ein 😎er Chat.",
@@ -51,18 +55,40 @@ MAX_MESSAGE_SAVE_COUNT = 20
 MAX_MESSAGE_LENGTH = 100
 
 
+def get_ms_timestamp() -> int:
+    """Get the current time in ms."""
+    return time.time_ns() // 1_000_000 - EPOCH_MS
+
+
 async def save_new_message(
-    message: dict[str, Any],
+    author: str,
+    message: str,
     redis: Redis[str],
     redis_prefix: str,
 ) -> None:
     """Save a new message."""
+    message_dict = {
+        "author": [data["emoji"] for data in emoji_list(author)],
+        "content": [data["emoji"] for data in emoji_list(message)],
+        "timestamp": get_ms_timestamp(),
+    }
     await redis.rpush(
         f"{redis_prefix}:emoji-chat:message-list",
-        json.dumps(message, option=ORJSON_OPTIONS),
+        json.dumps(message_dict, option=ORJSON_OPTIONS),
     )
     await redis.ltrim(
         f"{redis_prefix}:emoji-chat:message-list", -MAX_MESSAGE_SAVE_COUNT, -1
+    )
+    await asyncio.gather(
+        *[
+            conn.write_message(
+                {
+                    "type": "message",
+                    "message": message_dict,
+                }
+            )
+            for conn in OPEN_CONNECTIONS
+        ]
     )
 
 
@@ -77,6 +103,20 @@ async def get_messages(
         f"{redis_prefix}:emoji-chat:message-list", start, stop
     )
     return [json.loads(message) for message in messages]
+
+
+def check_message_invalid(message: str) -> Literal[False] | str:
+    """Check if a message is an invalid message."""
+    if not message:
+        return "Empty message not allowed."
+
+    if not check_only_emojis(message):
+        return "Message can only contain emojis."
+
+    if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
+        return f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
+
+    return False
 
 
 def check_only_emojis(string: str) -> bool:
@@ -99,6 +139,101 @@ def check_only_emojis(string: str) -> bool:
 def normalize_emojis(string: str) -> str:
     """Normalize emojis in a string."""
     return emojize(demojize(string))  # type: ignore[no-any-return]
+
+
+OPEN_CONNECTIONS: list[ChatWebSocketHandler] = []
+
+
+class ChatWebSocketHandler(WebSocketHandler):
+    """The handler for the chat WebSocket."""
+
+    name: str
+    connection_time: int
+
+    def data_received(self, chunk: bytes) -> Awaitable[None] | None:
+        pass
+
+    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
+        """Handle an opened WebsocketConnection."""
+        print("WebSocket opened")
+        name = self.get_secure_cookie(
+            "emoji-chat-name",
+            max_age_days=90,
+            min_version=2,
+        )
+        if not name:
+            raise HTTPError(400, reason="No name cookie set.")
+        self.name = name.decode("utf-8")
+        self.connection_time = get_ms_timestamp()
+        OPEN_CONNECTIONS.append(self)
+        for conn in OPEN_CONNECTIONS:
+            conn.send_users()
+
+        return self.send_messages()
+
+    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
+        """Respond to an incoming message."""
+        if not _msg:
+            return None
+        message: dict[str, Any] = json.loads(_msg)
+        if message["type"] == "message":
+            if msg_text := message.get("message"):
+                msg_text = normalize_emojis(msg_text).strip()
+                if err := check_message_invalid(msg_text):
+                    return self.write_message({"type": "error", "error": err})
+                return save_new_message(
+                    self.name, msg_text, self.redis, self.redis_prefix
+                )
+            return self.write_message(
+                {"type": "error", "error": "Invalid message."}
+            )
+        return self.write_message(
+            {"type": "error", "error": "Invalid message."}
+        )
+
+    def on_close(self) -> None:
+        print("WebSocket closed")
+        OPEN_CONNECTIONS.remove(self)
+        for conn in OPEN_CONNECTIONS:
+            conn.send_users()
+
+    def send_users(self) -> None:
+        """Send this WebSocket all current users."""
+        self.write_message(
+            {
+                "type": "users",
+                "users": [
+                    {
+                        "name": conn.name,
+                        "joined_at": conn.connection_time,
+                    }
+                    for conn in OPEN_CONNECTIONS
+                ],
+                "current_user": {
+                    "name": self.name,
+                    "joined_at": self.connection_time,
+                },
+            }
+        )
+
+    async def send_messages(self) -> None:
+        """Send this WebSocket all current messages."""
+        return await self.write_message(
+            {
+                "type": "messages",
+                "messages": await get_messages(self.redis, self.redis_prefix),
+            },
+        )
+
+    @property
+    def redis(self) -> Redis[str]:
+        """Get the Redis client from the settings."""
+        return cast("Redis[str]", self.settings.get("REDIS"))
+
+    @property
+    def redis_prefix(self) -> str:
+        """Get the Redis prefix from the settings."""
+        return self.settings.get("REDIS_PREFIX", NAME)
 
 
 class ChatHandler(BaseRequestHandler):
@@ -135,21 +270,12 @@ class ChatHandler(BaseRequestHandler):
 
         message = normalize_emojis(self.get_argument("message"))
 
-        if not message:
-            raise HTTPError(400, reason="Empty message not allowed")
-        if not check_only_emojis(message.replace(" ", "")):
-            raise HTTPError(400, reason="Message can only contain emojis")
-        if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
-            raise HTTPError(
-                400, reason=f"Message longer than {MAX_MESSAGE_LENGTH} emojis"
-            )
+        if err := check_message_invalid(message):
+            raise HTTPError(400, reason=err)
 
         await save_new_message(
-            {
-                "author": await self.get_name(),
-                "content": message,
-                "timestamp": time.time_ns() // 1_000_000 - EPOCH_MS,
-            },
+            await self.get_name(),
+            message,
             redis=self.redis,
             redis_prefix=self.redis_prefix,
         )

@@ -27,7 +27,7 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import IO, Any, TypeVar, Union
+from typing import IO, Any, Literal, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
@@ -305,6 +305,21 @@ def emojify(string: str) -> str:
         .replace("-", "➖")
         .replace("+", "➕")
     )
+
+
+OpenMojiValue = Literal[False, "img"]  # , "font"]
+
+
+def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
+    """Parse the openmoji arg into a Literal."""
+    value = value.lower()
+    # if value in {"f", "font"}:
+    #     return "font"
+    if value in {"i", "img"}:
+        return "img"
+    if value in {"n", "nope"}:
+        return False
+    return default
 
 
 async def geoip(

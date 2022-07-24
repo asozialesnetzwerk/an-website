@@ -18,7 +18,7 @@ from __future__ import annotations
 from base64 import b64encode
 
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import THEMES, ModuleInfo, bool_to_str
+from ..utils.utils import THEMES, ModuleInfo, bool_to_str, parse_openmoji_arg
 
 
 def get_module_info() -> ModuleInfo:
@@ -64,7 +64,7 @@ class SettingsPage(HTMLRequestHandler):
         )
         dynload: bool = self.get_bool_argument("dynload", False)
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
-        openmoji: bool = self.get_bool_argument("openmoji", False)
+        openmoji = parse_openmoji_arg(self.get_argument("openmoji", ""), False)
 
         token = self.get_argument("access_token", "")
         access_token: None | str = (
@@ -77,7 +77,7 @@ class SettingsPage(HTMLRequestHandler):
             self.set_cookie("theme", theme)
             self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
             self.set_cookie("dynload", bool_to_str(dynload))
-            self.set_cookie("openmoji", bool_to_str(openmoji))
+            self.set_cookie("openmoji", openmoji if openmoji else "nope")
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 dynload=None,

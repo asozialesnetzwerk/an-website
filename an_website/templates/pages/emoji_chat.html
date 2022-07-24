@@ -2,16 +2,18 @@
 {% extends "../base.html" %}
 
 {% block body %}
+<section id="message-section">
     {% for name, msg in messages %}
-<div>
-    {% for emoji in name %}{% raw emoji2html(emoji) %}{% end %}:
-    {% for emoji in msg %}{% raw emoji2html(emoji) %}{% end %}
-</div>
+        <div class="message">
+            {% for emoji in name %}{% raw emoji2html(emoji) %}{% end %}:
+            {% for emoji in msg %}{% raw emoji2html(emoji) %}{% end %}
+        </div>
     {% end %}
+</section>
 
     <form method="post">
         Du bist: {% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}
-        <input type="text" name="message">
+        <input id="message-input" type="text" name="message">
         <button type="submit">Senden!</button>
     </form>
 {% end %}
@@ -19,4 +21,5 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
+    <script defer src="{{fix_static('js/emoji-chat.js')}}"></script>
 {% end %}

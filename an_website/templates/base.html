@@ -26,6 +26,9 @@
             {% if dynload %}
                 <script defer src="{{fix_static('js/dynamically_load.js')}}"></script>
             {% end %}
+            {% if openmoji == "font" %}
+                <style>:root {font-family:OpenMojiColor,sans-serif}</style>
+            {% end %}
             {% if apm_script %}
                 <script src="{{fix_url(elastic_rum_url)}}"></script>
                 <script>{% raw apm_script %}</script>

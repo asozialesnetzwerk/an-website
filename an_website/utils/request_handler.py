@@ -155,12 +155,12 @@ class HTMLRequestHandler(BaseRequestHandler):
                     emoji,
                     self.fix_url(
                         fix_static_url(
-                            f"img/openmoji-svg/{emoji2code(emoji)}.svg"
+                            f"img/openmoji-svg-14.0/{emoji2code(emoji)}.svg"
                         )
                     ),
                 )
             )
-            if self.get_openmoji()
+            if self.get_openmoji() == "img"
             else lambda spam: spam,  # type: ignore[no-any-return]
             form_appendix=self.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,

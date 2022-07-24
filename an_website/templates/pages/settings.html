@@ -27,12 +27,13 @@
 
         <label class="form-element">
             Nutze coole Emojis von OpenMoji
-            <input type="checkbox"
-               name="openmoji"
-                {% if openmoji %}
-                   checked
-                {% end %}
-               value="sure">
+            <select name="openmoji">
+                <option {% if not openmoji %}selected{% end %}
+                        value="nope">Deaktiviert</option>
+{# <option {% if openmoji == "font" %}selected{% end %} value="font">Als Font (Firefox)</option> #}
+                <option {% if openmoji == "img" %}selected{% end %}
+                        value="img">Als SVGs (funktioniert)</option>
+            </select>
         </label>
 
         <label class="form-element">
