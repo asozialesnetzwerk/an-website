@@ -4,8 +4,7 @@
 {% block body %}
     {% for ep in endpoints %}
 <h2 id="{{name_to_id(ep['name'])}}">
-    <a no-dynload href="#{{name_to_id(ep['name'])}}"
-       class="header-id-link"></a>{{ep["name"]}}
+{{ep["name"]}}<a no-dynload href="#{{name_to_id(ep['name'])}}" class="header-id-link"></a>
 </h2>
 <p>{{ep["description"]}}</p>
 <table class="table">

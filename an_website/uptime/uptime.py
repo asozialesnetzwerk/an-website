@@ -146,6 +146,8 @@ AVAILABILITY_CHART = re.sub(
 class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
+    COMPUTE_ETAG = False
+
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         self.set_header("Cache-Control", "no-cache")
@@ -169,6 +171,7 @@ class AvailabilityChartHandler(BaseRequestHandler):
     """The request handler for the availability chart."""
 
     POSSIBLE_CONTENT_TYPES = ("image/svg+xml",)
+    COMPUTE_ETAG = False
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
@@ -206,6 +209,8 @@ class AvailabilityChartHandler(BaseRequestHandler):
 
 class UptimeAPIHandler(APIRequestHandler):
     """The request handler for the uptime API."""
+
+    COMPUTE_ETAG = False
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
