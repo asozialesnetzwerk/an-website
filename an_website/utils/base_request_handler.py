@@ -513,54 +513,40 @@ class BaseRequestHandler(RequestHandler):
         )
         return True
 
-    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
-        """Take b1nzy to space using Redis."""
-        # pylint: disable=too-complex
+    async def _ratelimit(
+        self,
+        *,
+        bucket: None | str,
+        max_burst: int,
+        count_per_period: int,
+        period: int,
+        tokens: int,
+        global_ratelimit: bool = False,
+    ) -> tuple[bool, dict[str, str]]:
+        """Ratelimit implementation."""
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
             or self.is_authorized(Permission.RATELIMITS)
         ):
-            return False
-        remote_ip = hash_bytes(
-            cast(str, self.request.remote_ip).encode("ascii")
-        )
-        method = self.request.method
-        if method == "HEAD":
-            method = "GET"
-        if global_ratelimit:
-            key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
-            max_burst = 99  # limit = 100
-            count_per_period = 20  # 20 requests per second
-            period = 1
-            tokens = 10 if self.settings.get("UNDER_ATTACK") else 1
-        else:
-            bucket = getattr(
-                self,
-                f"RATELIMIT_{method}_BUCKET",
-                self.__class__.__name__.lower(),
-            )
-            limit = getattr(self, f"RATELIMIT_{method}_LIMIT", 0)
-            if not limit:
-                return False
-            key = f"{self.redis_prefix}:ratelimit:{remote_ip}:{bucket}"
-            max_burst = limit - 1
-            count_per_period = getattr(  # request count per period
-                self,
-                f"RATELIMIT_{method}_COUNT_PER_PERIOD",
-                30,
-            )
-            period = getattr(
-                self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
-            )
-            tokens = 1 if self.request.method != "HEAD" else 0
+            return False, {}
+
         if not EVENT_REDIS.is_set():
             logger.warning(
                 "Ratelimits are enabled, but Redis is not available. "
                 "This can happen shortly after starting the website.",
             )
             raise HTTPError(503)
-        result = await self.redis.execute_command(  # type: ignore[no-untyped-call]
+
+        remote_ip = hash_bytes(
+            cast(str, self.request.remote_ip).encode("ascii")
+        )
+        key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
+        if not global_ratelimit:
+            key = f"{key}:{bucket}"
+
+        result = await self.redis.execute_command(
+            # type: ignore[no-untyped-call]
             "CL.THROTTLE",
             key,
             max_burst,
@@ -570,29 +556,70 @@ class BaseRequestHandler(RequestHandler):
         )
         # fmt: off
         # pylint: disable=line-too-long
+        headers: dict[str, str] = {}
         if result[0]:
             retry_after = result[3] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
-            self.set_header("Retry-After", retry_after)
+            headers["Retry-After"] = str(retry_after)
             if global_ratelimit:
-                self.set_header("X-RateLimit-Global", "true")
+                headers["X-RateLimit-Global"] = "true"
         if not global_ratelimit:
             reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
-            self.set_header("X-RateLimit-Limit", str(result[1]))
-            self.set_header("X-RateLimit-Remaining", str(result[2]))
-            self.set_header("X-RateLimit-Reset", str(time.time() + reset_after))
-            self.set_header("X-RateLimit-Reset-After", str(reset_after))
-            self.set_header(
-                "X-RateLimit-Bucket", hash_bytes(bucket.encode("ascii")),
-            )
+            headers["X-RateLimit-Limit"] = str(result[1])
+            headers["X-RateLimit-Remaining"] = str(result[2])
+            headers["X-RateLimit-Reset"] = str(time.time() + reset_after)
+            headers["X-RateLimit-Reset-After"] = str(reset_after)
+            headers["X-RateLimit-Bucket"] = hash_bytes(str(bucket).encode("ascii"))
         # fmt: on
-        if result[0]:
+        return bool(result[0]), headers
+
+    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
+        """Take b1nzy to space using Redis."""
+        if global_ratelimit:
+            ratelimit, headers = await self._ratelimit(
+                bucket=None,
+                max_burst=99,  # limit = 100
+                count_per_period=20,  # 20 requests per second
+                period=1,
+                tokens=10 if self.settings.get("UNDER_ATTACK") else 1,
+                global_ratelimit=True,
+            )
+        else:
+            method = (
+                "GET" if self.request.method == "HEAD" else self.request.method
+            )
+            limit = getattr(self, f"RATELIMIT_{method}_LIMIT", 0)
+            if not limit:
+                return False
+            ratelimit, headers = await self._ratelimit(
+                bucket=getattr(
+                    self,
+                    f"RATELIMIT_{method}_BUCKET",
+                    self.__class__.__name__.lower(),
+                ),
+                max_burst=limit - 1,
+                count_per_period=getattr(  # request count per period
+                    self,
+                    f"RATELIMIT_{method}_COUNT_PER_PERIOD",
+                    30,
+                ),
+                period=getattr(
+                    self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
+                ),
+                tokens=1 if self.request.method != "HEAD" else 0,
+            )
+
+        for header, value in headers.items():
+            self.set_header(header, value)
+
+        if ratelimit:
             if self.now.date() == date(self.now.year, 4, 20):
                 self.set_status(420)
                 self.write_error(420)
             else:
                 self.set_status(429)
                 self.write_error(429)
-        return bool(result[0])
+
+        return ratelimit
 
     @classmethod
     def supports_head(cls) -> bool:

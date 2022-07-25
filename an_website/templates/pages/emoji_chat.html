@@ -12,7 +12,11 @@
 </section>
 
     <form method="post">
-        Du bist: {% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}
+        <div tooltip="Nicht mit Websocket verbunden (kein JS verfügbar)"
+             tooltip-position="right"
+             state="disconnected"
+             id="connection-state"></div>
+        Du bist: <div id="current-user">{% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}</div>
         <input id="message-input" type="text" name="message">
         <button type="submit">Senden!</button>
     </form>
@@ -21,5 +25,7 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/emoji-chat.css')}}">
     <script defer src="{{fix_static('js/emoji-chat.js')}}"></script>
 {% end %}

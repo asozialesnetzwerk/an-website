@@ -1,0 +1,1 @@
+#connection-state{width:1.375em;height:1.375em;display:inline-block;border-radius:50%;vertical-align:bottom}#connection-state[state=disconnected]{background-color:red}#connection-state[state=connected]{background-color:green}#connection-state[state=connecting]{background-color:orange}#current-user{display:inline}

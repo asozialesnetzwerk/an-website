@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import random
+import sys
 import time
 from collections.abc import Awaitable
 from typing import Any, Literal, cast
@@ -27,7 +28,7 @@ from redis.asyncio import Redis
 from tornado.web import HTTPError
 from tornado.websocket import WebSocketHandler
 
-from .. import EPOCH_MS, EVENT_REDIS, NAME, ORJSON_OPTIONS
+from .. import EPOCH_MS, EVENT_REDIS, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -138,102 +139,7 @@ def check_only_emojis(string: str) -> bool:
 
 def normalize_emojis(string: str) -> str:
     """Normalize emojis in a string."""
-    return emojize(demojize(string))  # type: ignore[no-any-return]
-
-
-OPEN_CONNECTIONS: list[ChatWebSocketHandler] = []
-
-
-class ChatWebSocketHandler(WebSocketHandler):
-    """The handler for the chat WebSocket."""
-
-    name: str
-    connection_time: int
-
-    def data_received(self, chunk: bytes) -> Awaitable[None] | None:
-        pass
-
-    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
-        """Handle an opened WebsocketConnection."""
-        print("WebSocket opened")
-        name = self.get_secure_cookie(
-            "emoji-chat-name",
-            max_age_days=90,
-            min_version=2,
-        )
-        if not name:
-            raise HTTPError(400, reason="No name cookie set.")
-        self.name = name.decode("utf-8")
-        self.connection_time = get_ms_timestamp()
-        OPEN_CONNECTIONS.append(self)
-        for conn in OPEN_CONNECTIONS:
-            conn.send_users()
-
-        return self.send_messages()
-
-    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
-        """Respond to an incoming message."""
-        if not _msg:
-            return None
-        message: dict[str, Any] = json.loads(_msg)
-        if message["type"] == "message":
-            if msg_text := message.get("message"):
-                msg_text = normalize_emojis(msg_text).strip()
-                if err := check_message_invalid(msg_text):
-                    return self.write_message({"type": "error", "error": err})
-                return save_new_message(
-                    self.name, msg_text, self.redis, self.redis_prefix
-                )
-            return self.write_message(
-                {"type": "error", "error": "Invalid message."}
-            )
-        return self.write_message(
-            {"type": "error", "error": "Invalid message."}
-        )
-
-    def on_close(self) -> None:
-        print("WebSocket closed")
-        OPEN_CONNECTIONS.remove(self)
-        for conn in OPEN_CONNECTIONS:
-            conn.send_users()
-
-    def send_users(self) -> None:
-        """Send this WebSocket all current users."""
-        self.write_message(
-            {
-                "type": "users",
-                "users": [
-                    {
-                        "name": conn.name,
-                        "joined_at": conn.connection_time,
-                    }
-                    for conn in OPEN_CONNECTIONS
-                ],
-                "current_user": {
-                    "name": self.name,
-                    "joined_at": self.connection_time,
-                },
-            }
-        )
-
-    async def send_messages(self) -> None:
-        """Send this WebSocket all current messages."""
-        return await self.write_message(
-            {
-                "type": "messages",
-                "messages": await get_messages(self.redis, self.redis_prefix),
-            },
-        )
-
-    @property
-    def redis(self) -> Redis[str]:
-        """Get the Redis client from the settings."""
-        return cast("Redis[str]", self.settings.get("REDIS"))
-
-    @property
-    def redis_prefix(self) -> str:
-        """Get the Redis prefix from the settings."""
-        return self.settings.get("REDIS_PREFIX", NAME)
+    return cast(str, emojize(demojize(string)))
 
 
 class ChatHandler(BaseRequestHandler):
@@ -346,4 +252,114 @@ class APIChatHandler(ChatHandler, APIRequestHandler):
                 "current_user": await self.get_name_as_list(),
                 "messages": messages,
             }
+        )
+
+
+OPEN_CONNECTIONS: list[ChatWebSocketHandler] = []
+
+
+class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
+    """The handler for the chat WebSocket."""
+
+    name: str
+    connection_time: int
+
+    async def prepare(self) -> None:
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+        self.name = await self.get_name()
+
+        if not await self.ratelimit(True):
+            await self.ratelimit()
+
+    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+        """Render the chat."""
+        raise NotImplementedError
+
+    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
+        """Handle an opened WebsocketConnection."""
+        print("WebSocket opened")
+        self.write_message(
+            {
+                "type": "init",
+                "current_user": [
+                    emoji["emoji"] for emoji in emoji_list(self.name)
+                ],
+            }
+        )
+
+        self.connection_time = get_ms_timestamp()
+        OPEN_CONNECTIONS.append(self)
+        for conn in OPEN_CONNECTIONS:
+            conn.send_users()
+
+        return self.send_messages()
+
+    async def save_new_message(self, msg_text: str) -> None:
+        """Save a new message."""
+        msg_text = normalize_emojis(msg_text).strip()
+        if err := check_message_invalid(msg_text):
+            return await self.write_message({"type": "error", "error": err})
+
+        ratelimit, headers = await self._ratelimit(
+            bucket=self.RATELIMIT_POST_BUCKET,
+            max_burst=self.RATELIMIT_POST_LIMIT - 1,
+            count_per_period=self.RATELIMIT_POST_COUNT_PER_PERIOD,
+            period=self.RATELIMIT_POST_PERIOD,
+            tokens=1,
+        )
+        if ratelimit:
+            return await self.write_message({"type": "ratelimit", **headers})
+        return await save_new_message(
+            self.name, msg_text, self.redis, self.redis_prefix
+        )
+
+    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
+        """Respond to an incoming message."""
+        if not _msg:
+            return None
+        message: dict[str, Any] = json.loads(_msg)
+        if message["type"] == "message":
+            if "message" not in message:
+                return self.write_message(
+                    {
+                        "type": "error",
+                        "error": "Message needs message key with the message.",
+                    }
+                )
+            return self.save_new_message(message["message"])
+
+        return self.write_message(
+            {"type": "error", "error": f"Unknown type {message['type']}."}
+        )
+
+    def on_close(self) -> None:
+        print("WebSocket closed")
+        OPEN_CONNECTIONS.remove(self)
+        for conn in OPEN_CONNECTIONS:
+            conn.send_users()
+
+    def send_users(self) -> None:
+        """Send this WebSocket all current users."""
+        if sys.flags.dev_mode:
+            self.write_message(
+                {
+                    "type": "users",
+                    "users": [
+                        {
+                            "name": conn.name,
+                            "joined_at": conn.connection_time,
+                        }
+                        for conn in OPEN_CONNECTIONS
+                    ],
+                }
+            )
+
+    async def send_messages(self) -> None:
+        """Send this WebSocket all current messages."""
+        return await self.write_message(
+            {
+                "type": "messages",
+                "messages": await get_messages(self.redis, self.redis_prefix),
+            },
         )
