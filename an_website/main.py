@@ -250,6 +250,16 @@ def get_all_handlers(
     return handlers
 
 
+def ignore_modules(config: configparser.ConfigParser) -> None:
+    """Read ignored modules from the config."""
+    for module_name in config.get(
+        "GENERAL", "IGNORED_MODULES", fallback=""
+    ).split(","):
+        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
+        if len(module_name) > 0:
+            IGNORED_MODULES.add(module_name)
+
+
 def make_app(config: configparser.ConfigParser) -> str | Application:
     """Create the Tornado application and return it."""
     module_infos, duration = time_function(get_module_infos)
@@ -724,13 +734,7 @@ def main() -> None | int | str:  # noqa: C901
             "Please note that running on Windows is not officially supported."
         )
 
-    # read ignored modules from the config
-    for module_name in CONFIG.get(
-        "GENERAL", "IGNORED_MODULES", fallback=""
-    ).split(","):
-        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
-        if len(module_name) > 0:
-            IGNORED_MODULES.add(module_name)
+    ignore_modules(CONFIG)
 
     app = make_app(CONFIG)
     if isinstance(app, str):

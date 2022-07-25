@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import random
 import sys
 import time
@@ -31,7 +32,9 @@ from tornado.websocket import WebSocketHandler
 from .. import EPOCH_MS, EVENT_REDIS, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, Permission, ratelimit
+
+logger = logging.getLogger(__name__)
 
 EMOJIS = tuple(EMOJI_DATA)
 
@@ -163,8 +166,10 @@ class ChatHandler(BaseRequestHandler):
         """Show the users the current messages."""
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
+
         if head:
             return
+
         await self.render_chat(
             await get_messages(self.redis, self.redis_prefix)
         )
@@ -267,6 +272,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
     async def prepare(self) -> None:
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
+
         self.name = await self.get_name()
 
         if not await self.ratelimit(True):
@@ -278,7 +284,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
 
     def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
         """Handle an opened WebsocketConnection."""
-        print("WebSocket opened")
+        logger.info("WebSocket opened")
         self.write_message(
             {
                 "type": "init",
@@ -301,15 +307,26 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         if err := check_message_invalid(msg_text):
             return await self.write_message({"type": "error", "error": err})
 
-        ratelimit, headers = await self._ratelimit(
-            bucket=self.RATELIMIT_POST_BUCKET,
-            max_burst=self.RATELIMIT_POST_LIMIT - 1,
-            count_per_period=self.RATELIMIT_POST_COUNT_PER_PERIOD,
-            period=self.RATELIMIT_POST_PERIOD,
-            tokens=1,
-        )
-        if ratelimit:
+        if self.settings.get("RATELIMITS") and not self.is_authorized(
+            Permission.RATELIMITS
+        ):
+            if not EVENT_REDIS.is_set():
+                return await self.write_message({"type": "ratelimit"})
+
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
+                bucket=self.RATELIMIT_POST_BUCKET,
+                max_burst=self.RATELIMIT_POST_LIMIT - 1,
+                count_per_period=self.RATELIMIT_POST_COUNT_PER_PERIOD,
+                period=self.RATELIMIT_POST_PERIOD,
+                tokens=1,
+            )
+
+        if ratelimited:
             return await self.write_message({"type": "ratelimit", **headers})
+
         return await save_new_message(
             self.name, msg_text, self.redis, self.redis_prefix
         )
@@ -334,7 +351,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         )
 
     def on_close(self) -> None:
-        print("WebSocket closed")
+        logger.info("WebSocket closed")
         OPEN_CONNECTIONS.remove(self)
         for conn in OPEN_CONNECTIONS:
             conn.send_users()

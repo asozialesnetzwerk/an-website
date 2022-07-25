@@ -87,7 +87,6 @@ FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
 @pytest.fixture
 def app() -> tornado.web.Application:
     """Create the application."""
-    # pylint: disable=too-complex
     assert NAME.endswith("-test")
 
     config = configparser.ConfigParser(interpolation=None)
@@ -95,12 +94,7 @@ def app() -> tornado.web.Application:
 
     main.setup_logging(config)
 
-    for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=""
-    ).split(","):
-        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
-        if len(module_name) > 0:
-            main.IGNORED_MODULES.add(module_name)
+    main.ignore_modules(config)
 
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
 

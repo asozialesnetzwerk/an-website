@@ -21,4 +21,4 @@ RUN mkdir /data
 WORKDIR /data
 VOLUME /data
 EXPOSE 8888
-CMD ["/opt/an-website/bin/python", "-m", "an_website"]
+CMD ["/opt/an-website/bin/an-website"]

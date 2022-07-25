@@ -34,6 +34,7 @@ import elasticapm  # type: ignore
 from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
+from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 
 from .. import STATIC_DIR
@@ -46,6 +47,8 @@ Handler = Union[
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
+
+OpenMojiValue = Literal[False, "img"]  # , "font"]
 
 
 # sortable so the pages can be linked in an order
@@ -289,6 +292,16 @@ def country_code_to_flag(code: str) -> str:
     return "".join(chr(ord(char) + 23 * 29 * 191) for char in code.upper())
 
 
+def create_emoji_html(emoji: str, emoji_url: str) -> str:
+    """Create an HTML element that can be used to display an emoji."""
+    return f'<img src="{emoji_url}" alt="{emoji}" class="emoji">'
+
+
+def emoji2code(emoji: str) -> str:
+    """Convert an emoji to the hexcodes of it."""
+    return "-".join(f"{ord(c):x}" for c in emoji).upper()
+
+
 def emojify(string: str) -> str:
     """Emojify a given string."""
     string = re.sub(
@@ -305,21 +318,6 @@ def emojify(string: str) -> str:
         .replace("-", "➖")
         .replace("+", "➕")
     )
-
-
-OpenMojiValue = Literal[False, "img"]  # , "font"]
-
-
-def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
-    """Parse the openmoji arg into a Literal."""
-    value = value.lower()
-    # if value in {"f", "font"}:
-    #     return "font"
-    if value in {"i", "img"}:
-        return "img"
-    if value in {"n", "nope"}:
-        return False
-    return default
 
 
 async def geoip(
@@ -444,17 +442,78 @@ def name_to_id(val: str) -> str:
     ).strip("-")
 
 
-def remove_suffix_ignore_case(string: str, suffix: str, /) -> str:
-    """Remove a suffix without caring about the case."""
-    if string.lower().endswith(suffix.lower()):
-        return string[: -len(suffix)]
-
-    return string
-
-
 def normalized_levenshtein(string1: str, string2: str) -> float:
     """Calculate the normalized Levenshtein distance between two strings."""
     return float(distance(string1, string2)) / max(len(string1), len(string2))
+
+
+def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
+    """Parse the openmoji arg into a Literal."""
+    value = value.lower()
+    # if value in {"f", "font"}:
+    #     return "font"
+    if value in {"i", "img"}:
+        return "img"
+    if value in {"n", "nope"}:
+        return False
+    return default
+
+
+async def ratelimit(
+    redis: Redis[str],
+    redis_prefix: str,
+    remote_ip: str,
+    *,
+    bucket: None | str,
+    max_burst: int,
+    count_per_period: int,
+    period: int,
+    tokens: int,
+) -> tuple[bool, dict[str, str]]:
+    """Take b1nzy to space using Redis."""
+    remote_ip = hash_bytes(remote_ip.encode("ascii"))
+    key = f"{redis_prefix}:ratelimit:{remote_ip}"
+    if bucket:
+        key = f"{key}:{bucket}"
+
+    result = await redis.execute_command(
+        # type: ignore[no-untyped-call]
+        "CL.THROTTLE",
+        key,
+        max_burst,
+        count_per_period,
+        period,
+        tokens,
+    )
+
+    headers: dict[str, str] = {}
+
+    # fmt: off
+    # pylint: disable=line-too-long
+    if result[0]:
+        retry_after = result[3] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
+        headers["Retry-After"] = str(retry_after)
+        if not bucket:
+            headers["X-RateLimit-Global"] = "true"
+
+    if bucket:
+        assert bucket is not None
+        reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
+        headers["X-RateLimit-Limit"] = str(result[1])
+        headers["X-RateLimit-Remaining"] = str(result[2])
+        headers["X-RateLimit-Reset"] = str(time.time() + reset_after)
+        headers["X-RateLimit-Reset-After"] = str(reset_after)
+        headers["X-RateLimit-Bucket"] = hash_bytes(bucket.encode("ascii"))
+    # fmt: on
+
+    return bool(result[0]), headers
+
+
+def remove_suffix_ignore_case(string: str, suffix: str) -> str:
+    """Remove a suffix without caring about the case."""
+    if string.lower().endswith(suffix.lower()):
+        return string[: -len(suffix)]
+    return string
 
 
 def replace_umlauts(string: str) -> str:
@@ -478,16 +537,6 @@ def replace_umlauts(string: str) -> str:
         .replace("Ü", "Ue")
         .replace("ẞ", "SS")
     )
-
-
-def emoji2code(emoji: str) -> str:
-    """Convert an emoji to the hexcodes of it."""
-    return "-".join(f"{ord(c):x}" for c in emoji).upper()
-
-
-def create_emoji_html(emoji: str, emoji_url: str) -> str:
-    """Create an HTML element that can be used to display an emoji."""
-    return f'<img src="{emoji_url}" alt="{emoji}" class="emoji">'
 
 
 async def run(

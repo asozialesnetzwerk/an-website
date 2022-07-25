@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import re
+import sys
 from os.path import abspath, dirname
 from pathlib import Path
 from subprocess import run
@@ -126,5 +127,12 @@ def add_data_to_output(
         output.append("")
 
 
-if __name__ == "__main__":
+def main() -> None | int | str:  # pylint: disable=useless-return
+    """Write the humans.txt file."""
     HUMANS_TXT.write_text(generate_humans_txt(), "utf-8")
+
+    return None
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -24,7 +24,6 @@ import logging
 import random
 import re
 import sys
-import time
 import traceback
 import uuid
 from asyncio import Future
@@ -61,6 +60,7 @@ from .utils import (
     geoip,
     hash_bytes,
     parse_openmoji_arg,
+    ratelimit,
     str_to_bool,
 )
 
@@ -513,23 +513,14 @@ class BaseRequestHandler(RequestHandler):
         )
         return True
 
-    async def _ratelimit(
-        self,
-        *,
-        bucket: None | str,
-        max_burst: int,
-        count_per_period: int,
-        period: int,
-        tokens: int,
-        global_ratelimit: bool = False,
-    ) -> tuple[bool, dict[str, str]]:
-        """Ratelimit implementation."""
+    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
+        """Take b1nzy to space using Redis."""
         if (
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
             or self.is_authorized(Permission.RATELIMITS)
         ):
-            return False, {}
+            return False
 
         if not EVENT_REDIS.is_set():
             logger.warning(
@@ -538,50 +529,16 @@ class BaseRequestHandler(RequestHandler):
             )
             raise HTTPError(503)
 
-        remote_ip = hash_bytes(
-            cast(str, self.request.remote_ip).encode("ascii")
-        )
-        key = f"{self.redis_prefix}:ratelimit:{remote_ip}"
-        if not global_ratelimit:
-            key = f"{key}:{bucket}"
-
-        result = await self.redis.execute_command(
-            # type: ignore[no-untyped-call]
-            "CL.THROTTLE",
-            key,
-            max_burst,
-            count_per_period,
-            period,
-            tokens,
-        )
-        # fmt: off
-        # pylint: disable=line-too-long
-        headers: dict[str, str] = {}
-        if result[0]:
-            retry_after = result[3] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
-            headers["Retry-After"] = str(retry_after)
-            if global_ratelimit:
-                headers["X-RateLimit-Global"] = "true"
-        if not global_ratelimit:
-            reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
-            headers["X-RateLimit-Limit"] = str(result[1])
-            headers["X-RateLimit-Remaining"] = str(result[2])
-            headers["X-RateLimit-Reset"] = str(time.time() + reset_after)
-            headers["X-RateLimit-Reset-After"] = str(reset_after)
-            headers["X-RateLimit-Bucket"] = hash_bytes(str(bucket).encode("ascii"))
-        # fmt: on
-        return bool(result[0]), headers
-
-    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
-        """Take b1nzy to space using Redis."""
         if global_ratelimit:
-            ratelimit, headers = await self._ratelimit(
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
                 bucket=None,
                 max_burst=99,  # limit = 100
                 count_per_period=20,  # 20 requests per second
                 period=1,
                 tokens=10 if self.settings.get("UNDER_ATTACK") else 1,
-                global_ratelimit=True,
             )
         else:
             method = (
@@ -590,7 +547,10 @@ class BaseRequestHandler(RequestHandler):
             limit = getattr(self, f"RATELIMIT_{method}_LIMIT", 0)
             if not limit:
                 return False
-            ratelimit, headers = await self._ratelimit(
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
                 bucket=getattr(
                     self,
                     f"RATELIMIT_{method}_BUCKET",
@@ -611,7 +571,7 @@ class BaseRequestHandler(RequestHandler):
         for header, value in headers.items():
             self.set_header(header, value)
 
-        if ratelimit:
+        if ratelimited:
             if self.now.date() == date(self.now.year, 4, 20):
                 self.set_status(420)
                 self.write_error(420)
@@ -619,7 +579,7 @@ class BaseRequestHandler(RequestHandler):
                 self.set_status(429)
                 self.write_error(429)
 
-        return ratelimit
+        return ratelimited
 
     @classmethod
     def supports_head(cls) -> bool:
