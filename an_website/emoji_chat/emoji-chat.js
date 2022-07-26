@@ -9,6 +9,10 @@
     let reconnectTries = 0;
     let lastMessage = "";
 
+    const timeStampToText = (timestamp) => {
+        return new Date(timestamp + 1_651_075_200_000).toLocaleString();
+    }
+
     const appendMessage = (msg) => {
         let el = document.createElement("div");
         if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
@@ -16,14 +20,13 @@
                 el.append(emojiToIMG(emoji));
             }
             el.innerHTML += ": ";
-            for (let emoji of msg.content) {
+            for (let emoji of msg.content)
                 el.append(emojiToIMG(emoji));
-            }
         } else {
             el.innerText = `${msg.author.join("")}: ${msg.content.join("")}`;
         }
 
-        el.setAttribute("timestamp", msg.timestamp);
+        el.setAttribute("tooltip", timeStampToText(msg.timestamp));
         messageSection.append(el);
     }
 
@@ -33,7 +36,7 @@
             for (let emoji of name) {
                 currentUser.append(emojiToIMG(emoji));
             }
-            return
+            return;
         }
         currentUser.innerText = name.join("");
     }
@@ -66,10 +69,15 @@
             tooltip = "Mit Websocket verbunden!";
         } else if (state === "disconnected") {
             tooltip = "Verbindung getrennt. Drücke hier um erneut zu versuchen.";
-            connectionIndicator.onclick = () => openWS();
+            connectionIndicator.onclick = () => {
+                reconnectTries = 0;
+                reconnectTimeout = 500;
+                connectionIndicator.onclick = () => {};
+                openWS();
+            }
         } else {
             console.error("invalid state", state);
-            return
+            return;
         }
         connectionIndicator.setAttribute("state", state);
         connectionIndicator.setAttribute("tooltip", tooltip);
@@ -131,17 +139,17 @@
         ws.onclose = (event) => {
             messageInput.form.onsubmit = () => {};
             if (event.wasClean) {
-                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                console.debug(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
                 setConnectionState("disconnected");
                 return;
             }
-            console.log(`Connection closed, reconnecting in ${reconnectTimeout}ms`);
+            console.debug(`Connection closed, reconnecting in ${reconnectTimeout}ms`);
             setConnectionState("connecting");
             clearInterval(pingInterval);
             if (reconnectTries > 20) {
                  // ~3 minutes not connected, just give up
                 setConnectionState("disconnected");
-                return
+                return;
             }
             setTimeout(
                 () => {
@@ -158,9 +166,7 @@
                 reconnectTimeout
             )
         };
-        ws.onopen = (event) => {
-            console.log("Opened WebSocket", event);
-        };
+        ws.onopen = (event) => console.debug("Opened WebSocket", event);
         ws.onmessage = handleWebsocketData;
 
         messageInput.form.onsubmit = (event) => {

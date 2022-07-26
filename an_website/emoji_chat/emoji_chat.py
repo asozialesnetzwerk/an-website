@@ -51,7 +51,6 @@ def get_module_info() -> ModuleInfo:
         description="Ein 😎er Chat.",
         path="/emoji-chat",
         keywords=("Emoji Chat",),
-        hidden=True,
     )
 
 
@@ -324,8 +323,8 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
                 tokens=1,
             )
 
-        if ratelimited:
-            return await self.write_message({"type": "ratelimit", **headers})
+            if ratelimited:
+                return await self.write_message({"type": "ratelimit", **headers})
 
         return await save_new_message(
             self.name, msg_text, self.redis, self.redis_prefix
