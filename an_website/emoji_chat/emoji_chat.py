@@ -324,7 +324,9 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
             )
 
             if ratelimited:
-                return await self.write_message({"type": "ratelimit", **headers})
+                return await self.write_message(
+                    {"type": "ratelimit", **headers}
+                )
 
         return await save_new_message(
             self.name, msg_text, self.redis, self.redis_prefix
