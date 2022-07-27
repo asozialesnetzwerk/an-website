@@ -243,6 +243,13 @@ class HangmanSolver(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 10
 
+    async def get(self, *, head: bool = False) -> None:
+        """Handle GET requests to the hangman solver page."""
+        if head:
+            return
+        hangman = await self.get_hangman_obj()
+        await self.render("pages/hangman_solver.html", **asdict(hangman))
+
     async def get_hangman_obj(self) -> Hangman:
         """Get the information and return the Hangman object."""
         max_words = self.get_int_argument("max_words", 20, min_=0, max_=100)
@@ -259,13 +266,6 @@ class HangmanSolver(HTMLRequestHandler):
             input_str=input_str,
             invalid=invalid,
         )
-
-    async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests to the hangman solver page."""
-        if head:
-            return
-        hangman = await self.get_hangman_obj()
-        await self.render("pages/hangman_solver.html", **asdict(hangman))
 
 
 class HangmanSolverAPI(APIRequestHandler, HangmanSolver):

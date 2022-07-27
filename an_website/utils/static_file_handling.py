@@ -206,6 +206,10 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass
 
+    def head(self, path: str) -> Awaitable[None]:
+        """Handle HEAD requests."""
+        return self.get(path)
+
     def initialize(
         self,
         path: str,
@@ -216,9 +220,15 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         super().initialize(path=path, default_filename=default_filename)
         self.content_type = content_type
 
-    def head(self, path: str) -> Awaitable[None]:
-        """Handle HEAD requests."""
-        return self.get(path)
+    def set_extra_headers(self, _: str) -> None:
+        """Reset the Content-Type header if we know it better."""
+        if self.content_type:
+            if self.content_type.startswith("text/"):  # RFC2616 3.7.1
+                self.set_header(
+                    "Content-Type", f"{self.content_type};charset=utf-8"
+                )
+            else:
+                self.set_header("Content-Type", self.content_type)
 
     def validate_absolute_path(
         self, root: str, absolute_path: str
@@ -231,19 +241,13 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
                     self.content_type = defity.from_file(path)
         return path
 
-    def set_extra_headers(self, _: str) -> None:
-        """Reset the Content-Type header if we know it better."""
-        if self.content_type:
-            if self.content_type.startswith("text/"):  # RFC2616 3.7.1
-                self.set_header(
-                    "Content-Type", f"{self.content_type};charset=utf-8"
-                )
-            else:
-                self.set_header("Content-Type", self.content_type)
-
 
 class CachedStaticFileHandler(StaticFileHandler):
     """A static file handler that sets a smarter Cache-Control header."""
+
+    def compute_etag(self) -> None | str:
+        """Don't compute ETag, because it isn't necessary."""
+        return None
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         pass
@@ -267,7 +271,3 @@ class CachedStaticFileHandler(StaticFileHandler):
                 "Cache-Control",
                 f"public, immutable, min-fresh={10 * 365 * 24 * 60 * 60}",
             )
-
-    def compute_etag(self) -> None | str:
-        """Don't compute ETag, because it isn't necessary."""
-        return None

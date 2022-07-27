@@ -102,10 +102,6 @@ class WordPair(ConfigLine):
         """Get the replacement for a given word with the same case."""
         raise NotImplementedError()
 
-    def to_pattern_str(self) -> str:
-        """Get the pattern that matches the replaceable words."""
-        raise NotImplementedError()
-
     def len_of_left(self) -> int:
         """Get the length to the left of the separator."""
         return len(self.word1)
@@ -122,6 +118,10 @@ class WordPair(ConfigLine):
             + " "
             + right
         )
+
+    def to_pattern_str(self) -> str:
+        """Get the pattern that matches the replaceable words."""
+        raise NotImplementedError()
 
 
 @dataclass(frozen=True)
@@ -278,6 +278,12 @@ class InvalidConfigError(Exception):
 class SwappedWordsConfig:  # pylint: disable=eq-without-hash
     """SwappedWordsConfig class used to swap words in strings."""
 
+    def __eq__(self, other: object) -> bool:
+        """Check equality based on the lines."""
+        if not isinstance(other, SwappedWordsConfig):
+            return NotImplemented
+        return self.lines == other.lines
+
     def __init__(self, config: str):
         """Parse a config string to a instance of this class."""
         self.lines: WORDS_TUPLE = tuple(
@@ -298,6 +304,29 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
             ),
             re.IGNORECASE | re.UNICODE,
         )
+
+    def get_replaced_word(self, match: Match[str]) -> str:
+        """Get the replaced word with the same case as the match."""
+        for key, word in match.groupdict().items():
+            if isinstance(word, str) and key.startswith("n"):
+                return self.get_replacement_by_group_name(key, word)
+        # if an unknown error happens return the match to change nothing:
+        return match[0]
+
+    def get_replacement_by_group_name(self, group_name: str, word: str) -> str:
+        """Get the replacement of a word by the group name it matched."""
+        if not group_name.startswith("n") or group_name == "n":
+            return word
+        index = int(group_name[1:])
+        config_line = self.lines[index]
+        if isinstance(config_line, WordPair):
+            return config_line.get_replacement(word)
+
+        return word
+
+    def swap_words(self, text: str) -> str:
+        """Swap the words in the text."""
+        return self.get_regex().sub(self.get_replaced_word, text)
 
     def to_config_str(self, minified: bool = False) -> str:
         """Create a readable config str from this."""
@@ -320,35 +349,6 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
         return "\n".join(
             word_pair.to_conf_line(max_len) for word_pair in self.lines
         )
-
-    def get_replacement_by_group_name(self, group_name: str, word: str) -> str:
-        """Get the replacement of a word by the group name it matched."""
-        if not group_name.startswith("n") or group_name == "n":
-            return word
-        index = int(group_name[1:])
-        config_line = self.lines[index]
-        if isinstance(config_line, WordPair):
-            return config_line.get_replacement(word)
-
-        return word
-
-    def get_replaced_word(self, match: Match[str]) -> str:
-        """Get the replaced word with the same case as the match."""
-        for key, word in match.groupdict().items():
-            if isinstance(word, str) and key.startswith("n"):
-                return self.get_replacement_by_group_name(key, word)
-        # if an unknown error happens return the match to change nothing:
-        return match[0]
-
-    def swap_words(self, text: str) -> str:
-        """Swap the words in the text."""
-        return self.get_regex().sub(self.get_replaced_word, text)
-
-    def __eq__(self, other: object) -> bool:
-        """Check equality based on the lines."""
-        if not isinstance(other, SwappedWordsConfig):
-            return NotImplemented
-        return self.lines == other.lines
 
 
 def minify(config: str) -> str:

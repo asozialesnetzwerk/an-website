@@ -66,8 +66,14 @@ class UpdateAPI(APIRequestHandler):
 
     queue: SimpleQueue[None | bytes]
 
+    def data_received(self, chunk: bytes) -> None:
+        self.queue.put(chunk)
+
+    def on_finish(self) -> None:
+        self.queue.put(None)
+
     async def prepare(self) -> None:
-        # pylint: disable=attribute-defined-outside-init, consider-using-with
+        # pylint: disable=attribute-defined-outside-init
         await super().prepare()
         loop = asyncio.get_running_loop()
         self.dir = TemporaryDirectory()
@@ -76,12 +82,6 @@ class UpdateAPI(APIRequestHandler):
         self.future = loop.run_in_executor(
             None, write_from_queue, self.file, self.queue
         )
-
-    def data_received(self, chunk: bytes) -> None:
-        self.queue.put(chunk)
-
-    def on_finish(self) -> None:
-        self.queue.put(None)
 
     async def put(self, filename: str) -> None:
         """Handle PUT requests to the update API."""

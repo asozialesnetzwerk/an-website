@@ -200,6 +200,37 @@ async def get_value_dict(
 class CurrencyConverter(HTMLRequestHandler):
     """Request handler for the currency converter page."""
 
+    async def create_value_dict(self) -> None | ValueDict:
+        """
+        Parse the arguments to get the value dict and return it.
+
+        Return None if no argument is given.
+        """
+        arg_list: list[tuple[int, str, str]] = []
+
+        for _i, key in enumerate(KEYS):
+            num_str = self.get_argument(key, None)
+            if num_str is not None:
+                arg_list.append((_i, key, num_str))
+        # print(arg_list)
+        too_many_params: bool = len(arg_list) > 1
+
+        for _i, key, num_str in arg_list:
+            euro = string_to_num(num_str, MULTIPLIERS[_i])
+
+            if euro is not None:
+                value_dict: ValueDict = await get_value_dict(
+                    euro, ins_kino_gehen=self.get_argument("text", None)
+                )
+
+                if too_many_params:
+                    value_dict["too_many_params"] = True
+
+                value_dict["key_used"] = key
+
+                return value_dict
+        return None
+
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the currency converter page."""
         value_dict = await self.create_value_dict()
@@ -231,37 +262,6 @@ class CurrencyConverter(HTMLRequestHandler):
             **value_dict,
             description=description,
         )
-
-    async def create_value_dict(self) -> None | ValueDict:
-        """
-        Parse the arguments to get the value dict and return it.
-
-        Return None if no argument is given.
-        """
-        arg_list: list[tuple[int, str, str]] = []
-
-        for _i, key in enumerate(KEYS):
-            num_str = self.get_argument(key, None)
-            if num_str is not None:
-                arg_list.append((_i, key, num_str))
-        # print(arg_list)
-        too_many_params: bool = len(arg_list) > 1
-
-        for _i, key, num_str in arg_list:
-            euro = string_to_num(num_str, MULTIPLIERS[_i])
-
-            if euro is not None:
-                value_dict: ValueDict = await get_value_dict(
-                    euro, ins_kino_gehen=self.get_argument("text", None)
-                )
-
-                if too_many_params:
-                    value_dict["too_many_params"] = True
-
-                value_dict["key_used"] = key
-
-                return value_dict
-        return None
 
 
 class CurrencyConverterAPI(APIRequestHandler, CurrencyConverter):

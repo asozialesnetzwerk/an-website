@@ -53,13 +53,13 @@ def get_module_info() -> ModuleInfo:
 class PrintWrapper:  # pylint: disable=too-few-public-methods
     """Wrapper for print()."""
 
-    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
-        self._output: io.TextIOBase = output
-
     def __call__(self, *args: Any, **kwargs: Any) -> None:
         if "file" not in kwargs:
             kwargs["file"] = self._output
         print(*args, **kwargs)
+
+    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
+        self._output: io.TextIOBase = output
 
 
 class Backdoor(APIRequestHandler):
@@ -72,6 +72,82 @@ class Backdoor(APIRequestHandler):
     ALLOW_COOKIE_AUTHENTICATION: bool = False
 
     sessions: dict[str, dict[str, Any]] = {}
+
+    async def backup_session(self) -> bool:
+        """Backup a session using Redis and return whether it succeeded."""
+        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
+        if not (EVENT_REDIS.is_set() and session_id in self.sessions):
+            return False
+        session: dict[str, Any] = self.sessions[session_id].copy()
+        session["self"] = None
+        session["app"] = None
+        session["settings"] = None
+        for key, value in tuple(session.items()):
+            try:
+                session[key] = pickle.dumps(value, PICKLE_PROTOCOL)
+            except Exception:  # pylint: disable=broad-except
+                del session[key]
+        return bool(
+            await self.redis.setex(
+                f"{self.redis_prefix}:backdoor-session:{session_id}",
+                60 * 60 * 24 * 7,  # time to live in seconds (1 week)
+                b85encode(pickle.dumps(session, PICKLE_PROTOCOL)),
+            )
+        )
+
+    def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
+        """Finish with a pickled dictionary."""
+        return self.finish(pickle.dumps(kwargs, PICKLE_PROTOCOL))
+
+    def get_flags(self, flags: int) -> int:
+        """Get compiler flags."""
+        import __future__  # pylint: disable=import-outside-toplevel
+
+        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
+            if (feature := ftr.strip()) in __future__.all_feature_names:
+                flags |= getattr(__future__, feature).compiler_flag
+
+        return flags
+
+    async def load_session(self) -> dict[str, Any]:
+        """Load the backup of a session or create a new one."""
+        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
+        if not session_id:
+            session: dict[str, Any] = {
+                "__builtins__": __builtins__,
+                "__name__": "this",
+            }
+        elif session_id in self.sessions:
+            session = self.sessions[session_id]
+        else:
+            session_pickle = (
+                await self.redis.get(
+                    f"{self.redis_prefix}:backdoor-session:{session_id}"
+                )
+                if EVENT_REDIS.is_set()
+                else None
+            )
+            if session_pickle:
+                session = pickle.loads(b85decode(session_pickle))
+                for key, value in session.items():
+                    try:
+                        session[key] = pickle.loads(value)
+                    except Exception as exc:  # pylint: disable=broad-except
+                        logger.exception(exc)
+                        apm: None | elasticapm.Client = self.settings.get(
+                            "ELASTIC_APM_CLIENT"
+                        )
+                        if apm:
+                            apm.capture_exception()
+            else:
+                session = {
+                    "__builtins__": __builtins__,
+                    "__name__": "this",
+                }
+                if self.settings.get("TESTING"):
+                    session["session_id"] = session_id
+            self.sessions[session_id] = session
+        return self.update_session(session)
 
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
@@ -183,86 +259,10 @@ class Backdoor(APIRequestHandler):
             else result_tuple,
         )
 
-    def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
-        """Finish with a pickled dictionary."""
-        return self.finish(pickle.dumps(kwargs, PICKLE_PROTOCOL))
-
-    def get_flags(self, flags: int) -> int:
-        """Get compiler flags."""
-        import __future__  # pylint: disable=import-outside-toplevel
-
-        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
-            if (feature := ftr.strip()) in __future__.all_feature_names:
-                flags |= getattr(__future__, feature).compiler_flag
-
-        return flags
-
     def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
         """Add request-specific stuff to the session."""
         session.update(self=self, app=self.application, settings=self.settings)
         return session
-
-    async def load_session(self) -> dict[str, Any]:
-        """Load the backup of a session or create a new one."""
-        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
-        if not session_id:
-            session: dict[str, Any] = {
-                "__builtins__": __builtins__,
-                "__name__": "this",
-            }
-        elif session_id in self.sessions:
-            session = self.sessions[session_id]
-        else:
-            session_pickle = (
-                await self.redis.get(
-                    f"{self.redis_prefix}:backdoor-session:{session_id}"
-                )
-                if EVENT_REDIS.is_set()
-                else None
-            )
-            if session_pickle:
-                session = pickle.loads(b85decode(session_pickle))
-                for key, value in session.items():
-                    try:
-                        session[key] = pickle.loads(value)
-                    except Exception as exc:  # pylint: disable=broad-except
-                        logger.exception(exc)
-                        apm: None | elasticapm.Client = self.settings.get(
-                            "ELASTIC_APM_CLIENT"
-                        )
-                        if apm:
-                            apm.capture_exception()
-            else:
-                session = {
-                    "__builtins__": __builtins__,
-                    "__name__": "this",
-                }
-                if self.settings.get("TESTING"):
-                    session["session_id"] = session_id
-            self.sessions[session_id] = session
-        return self.update_session(session)
-
-    async def backup_session(self) -> bool:
-        """Backup a session using Redis and return whether it succeeded."""
-        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
-        if not (EVENT_REDIS.is_set() and session_id in self.sessions):
-            return False
-        session: dict[str, Any] = self.sessions[session_id].copy()
-        session["self"] = None
-        session["app"] = None
-        session["settings"] = None
-        for key, value in tuple(session.items()):
-            try:
-                session[key] = pickle.dumps(value, PICKLE_PROTOCOL)
-            except Exception:  # pylint: disable=broad-except
-                del session[key]
-        return bool(
-            await self.redis.setex(
-                f"{self.redis_prefix}:backdoor-session:{session_id}",
-                60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                b85encode(pickle.dumps(session, PICKLE_PROTOCOL)),
-            )
-        )
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""

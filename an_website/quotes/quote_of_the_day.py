@@ -79,23 +79,6 @@ class QuoteOfTheDayData:
     wrong_quote: WrongQuote
     url_without_path: str
 
-    def get_quote_as_str(self, new_line_char: str = "\n") -> str:
-        """Get the quote as a string with new line."""
-        return (
-            f"»{self.wrong_quote.quote}«{new_line_char}"
-            f"- {self.wrong_quote.author}"
-        )
-
-    def get_quote_url(self) -> str:
-        """Get the URL of the quote."""
-        return (
-            f"{self.url_without_path}/zitate/{self.wrong_quote.get_id_as_str()}"
-        )
-
-    def get_quote_image_url(self) -> str:
-        """Get the URL of the image of the quote."""
-        return self.get_quote_url() + ".gif"
-
     def get_date_for_rss(self) -> str:
         """Get the date as specified in RFC 2822."""
         return email.utils.format_datetime(
@@ -106,6 +89,23 @@ class QuoteOfTheDayData:
                 tzinfo=timezone.utc,
             ),
             True,
+        )
+
+    def get_quote_as_str(self, new_line_char: str = "\n") -> str:
+        """Get the quote as a string with new line."""
+        return (
+            f"»{self.wrong_quote.quote}«{new_line_char}"
+            f"- {self.wrong_quote.author}"
+        )
+
+    def get_quote_image_url(self) -> str:
+        """Get the URL of the image of the quote."""
+        return self.get_quote_url() + ".gif"
+
+    def get_quote_url(self) -> str:
+        """Get the URL of the quote."""
+        return (
+            f"{self.url_without_path}/zitate/{self.wrong_quote.get_id_as_str()}"
         )
 
     def get_title(self) -> str:
@@ -124,35 +124,6 @@ class QuoteOfTheDayData:
 
 class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
     """The base request handler for the quote of the day."""
-
-    def get_redis_used_key(self, wq_id: str) -> str:
-        """Get the Redis used key."""
-        return f"{self.redis_prefix}:quote-of-the-day:used:{wq_id}"
-
-    def get_redis_quote_date_key(self, wq_date: date) -> str:
-        """Get the Redis key for getting quotes by date."""
-        return f"{self.redis_prefix}:quote-of-the-day:by-date:{wq_date.isoformat()}"
-
-    async def has_been_used(self, wq_id: str) -> None | bool:
-        """Check with Redis here."""
-        if not EVENT_REDIS.is_set():
-            return None
-        return bool(await self.redis.get(self.get_redis_used_key(wq_id)))
-
-    async def set_used(self, wq_id: str) -> None:
-        """Set Redis key with used state and TTL here."""
-        if not EVENT_REDIS.is_set():
-            return
-        await self.redis.setex(
-            self.get_redis_used_key(wq_id),
-            #  we have over 720 funny wrong quotes, so 420 should be ok
-            420 * 24 * 60 * 60,  # TTL
-            1,  # True
-        )
-
-    def get_scheme_and_netloc(self) -> str:
-        """Get the beginning of the URL."""
-        return f"{self.request.protocol}://{self.request.host}"
 
     async def get_quote_by_date(
         self, wq_date: date | str
@@ -207,6 +178,35 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
                     today, quote, self.get_scheme_and_netloc()
                 )
         return None
+
+    def get_redis_quote_date_key(self, wq_date: date) -> str:
+        """Get the Redis key for getting quotes by date."""
+        return f"{self.redis_prefix}:quote-of-the-day:by-date:{wq_date.isoformat()}"
+
+    def get_redis_used_key(self, wq_id: str) -> str:
+        """Get the Redis used key."""
+        return f"{self.redis_prefix}:quote-of-the-day:used:{wq_id}"
+
+    def get_scheme_and_netloc(self) -> str:
+        """Get the beginning of the URL."""
+        return f"{self.request.protocol}://{self.request.host}"
+
+    async def has_been_used(self, wq_id: str) -> None | bool:
+        """Check with Redis here."""
+        if not EVENT_REDIS.is_set():
+            return None
+        return bool(await self.redis.get(self.get_redis_used_key(wq_id)))
+
+    async def set_used(self, wq_id: str) -> None:
+        """Set Redis key with used state and TTL here."""
+        if not EVENT_REDIS.is_set():
+            return
+        await self.redis.setex(
+            self.get_redis_used_key(wq_id),
+            #  we have over 720 funny wrong quotes, so 420 should be ok
+            420 * 24 * 60 * 60,  # TTL
+            1,  # True
+        )
 
 
 class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):

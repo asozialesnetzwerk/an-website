@@ -173,34 +173,6 @@ class ChatHandler(BaseRequestHandler):
             await get_messages(self.redis, self.redis_prefix)
         )
 
-    async def post(self) -> None:
-        """Let users send messages and show the users the current messages."""
-        if not EVENT_REDIS.is_set():
-            raise HTTPError(503)
-
-        message = normalize_emojis(self.get_argument("message"))
-
-        if err := check_message_invalid(message):
-            raise HTTPError(400, reason=err)
-
-        await save_new_message(
-            await self.get_name(),
-            message,
-            redis=self.redis,
-            redis_prefix=self.redis_prefix,
-        )
-
-        await self.render_chat(
-            await get_messages(self.redis, self.redis_prefix)
-        )
-
-    async def get_random_name(self) -> str:
-        """Get a random name as default."""
-        return normalize_emojis(
-            "".join(random.choice(EMOJIS) for _ in range(4))
-            + (await self.geoip() or {}).get("country_flag", "🏴‍☠")
-        )
-
     async def get_name(self) -> str:
         """Get the name of the user."""
         name: None | bytes = self.get_secure_cookie(
@@ -228,6 +200,34 @@ class ChatHandler(BaseRequestHandler):
     async def get_name_as_list(self) -> list[str]:
         """Return the name as list of emojis."""
         return [emoji["emoji"] for emoji in emoji_list(await self.get_name())]
+
+    async def get_random_name(self) -> str:
+        """Get a random name as default."""
+        return normalize_emojis(
+            "".join(random.choice(EMOJIS) for _ in range(4))
+            + (await self.geoip() or {}).get("country_flag", "🏴‍☠")
+        )
+
+    async def post(self) -> None:
+        """Let users send messages and show the users the current messages."""
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+
+        message = normalize_emojis(self.get_argument("message"))
+
+        if err := check_message_invalid(message):
+            raise HTTPError(400, reason=err)
+
+        await save_new_message(
+            await self.get_name(),
+            message,
+            redis=self.redis,
+            redis_prefix=self.redis_prefix,
+        )
+
+        await self.render_chat(
+            await get_messages(self.redis, self.redis_prefix)
+        )
 
     async def render_chat(self, messages: list[dict[str, Any]]) -> None:
         """Render the chat."""
@@ -268,18 +268,30 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
     name: str
     connection_time: int
 
-    async def prepare(self) -> None:
-        if not EVENT_REDIS.is_set():
-            raise HTTPError(503)
+    def on_close(self) -> None:
+        logger.info("WebSocket closed")
+        OPEN_CONNECTIONS.remove(self)
+        for conn in OPEN_CONNECTIONS:
+            conn.send_users()
 
-        self.name = await self.get_name()
+    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
+        """Respond to an incoming message."""
+        if not _msg:
+            return None
+        message: dict[str, Any] = json.loads(_msg)
+        if message["type"] == "message":
+            if "message" not in message:
+                return self.write_message(
+                    {
+                        "type": "error",
+                        "error": "Message needs message key with the message.",
+                    }
+                )
+            return self.save_new_message(message["message"])
 
-        if not await self.ratelimit(True):
-            await self.ratelimit()
-
-    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
-        """Render the chat."""
-        raise NotImplementedError
+        return self.write_message(
+            {"type": "error", "error": f"Unknown type {message['type']}."}
+        )
 
     def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
         """Handle an opened WebsocketConnection."""
@@ -299,6 +311,19 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
             conn.send_users()
 
         return self.send_messages()
+
+    async def prepare(self) -> None:
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+
+        self.name = await self.get_name()
+
+        if not await self.ratelimit(True):
+            await self.ratelimit()
+
+    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+        """Render the chat."""
+        raise NotImplementedError
 
     async def save_new_message(self, msg_text: str) -> None:
         """Save a new message."""
@@ -332,30 +357,14 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
             self.name, msg_text, self.redis, self.redis_prefix
         )
 
-    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
-        """Respond to an incoming message."""
-        if not _msg:
-            return None
-        message: dict[str, Any] = json.loads(_msg)
-        if message["type"] == "message":
-            if "message" not in message:
-                return self.write_message(
-                    {
-                        "type": "error",
-                        "error": "Message needs message key with the message.",
-                    }
-                )
-            return self.save_new_message(message["message"])
-
-        return self.write_message(
-            {"type": "error", "error": f"Unknown type {message['type']}."}
+    async def send_messages(self) -> None:
+        """Send this WebSocket all current messages."""
+        return await self.write_message(
+            {
+                "type": "messages",
+                "messages": await get_messages(self.redis, self.redis_prefix),
+            },
         )
-
-    def on_close(self) -> None:
-        logger.info("WebSocket closed")
-        OPEN_CONNECTIONS.remove(self)
-        for conn in OPEN_CONNECTIONS:
-            conn.send_users()
 
     def send_users(self) -> None:
         """Send this WebSocket all current users."""
@@ -372,12 +381,3 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
                     ],
                 }
             )
-
-    async def send_messages(self) -> None:
-        """Send this WebSocket all current messages."""
-        return await self.write_message(
-            {
-                "type": "messages",
-                "messages": await get_messages(self.redis, self.redis_prefix),
-            },
-        )

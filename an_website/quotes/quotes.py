@@ -169,39 +169,6 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             Generator[Any, None, Any] | Coroutine[Any, Any, Any]
         ] = []
 
-    def rating_filter(
-        self,
-    ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
-        """Get a rating filter."""
-        rating_filter = self.get_argument("r", "smart")
-        if rating_filter == "w":
-            return "w"
-        if rating_filter == "n":
-            return "n"
-        if rating_filter == "unrated":
-            return "unrated"
-        if rating_filter == "rated":
-            return "rated"
-        if rating_filter == "all":
-            return "all"
-        return "smart"
-
-    def get_show_rating(self) -> bool:
-        """Return whether the user wants to see the rating."""
-        return self.get_bool_argument("show-rating", False)
-
-    def get_next_url(self) -> str:
-        """Get the URL of the next quote."""
-        next_q, next_a = self.get_next_id()
-
-        return self.fix_url(
-            f"/zitate/{next_q}-{next_a}",
-            r=None
-            if (rating_filter := self.rating_filter()) == "smart"
-            else rating_filter,
-            **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
-        )
-
     def get_next_id(self, rating_filter: None | str = None) -> tuple[int, int]:
         """Get the id of the next quote."""
         if rating_filter is None:
@@ -237,6 +204,22 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
         return random.choice(wrong_quotes).get_id()
 
+    def get_next_url(self) -> str:
+        """Get the URL of the next quote."""
+        next_q, next_a = self.get_next_id()
+
+        return self.fix_url(
+            f"/zitate/{next_q}-{next_a}",
+            r=None
+            if (rating_filter := self.rating_filter()) == "smart"
+            else rating_filter,
+            **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
+        )
+
+    def get_show_rating(self) -> bool:
+        """Return whether the user wants to see the rating."""
+        return self.get_bool_argument("show-rating", False)
+
     def on_finish(self) -> None:
         """
         Request the data for the next quote, to improve performance.
@@ -254,6 +237,23 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             task = asyncio.create_task(awaitable)
             self.TASK_REFERENCES.add(task)
             task.add_done_callback(self.TASK_REFERENCES.discard)
+
+    def rating_filter(
+        self,
+    ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
+        """Get a rating filter."""
+        rating_filter = self.get_argument("r", "smart")
+        if rating_filter == "w":
+            return "w"
+        if rating_filter == "n":
+            return "n"
+        if rating_filter == "unrated":
+            return "unrated"
+        if rating_filter == "rated":
+            return "rated"
+        if rating_filter == "all":
+            return "all"
+        return "smart"
 
 
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
@@ -358,6 +358,62 @@ class QuoteById(QuoteBaseHandler):
             return
         await self.render_quote(int_quote_id, int(author_id))
 
+    async def get_old_vote(
+        self, quote_id: int, author_id: int
+    ) -> Literal[-1, 0, 1]:
+        """Get the old vote from the saved vote."""
+        old_vote = await self.get_saved_vote(quote_id, author_id)
+        if old_vote is None:
+            return 0
+        return old_vote
+
+    async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
+        """Get the rating str to display on the page."""
+        if wrong_quote.id in {None, -1}:
+            return "---"
+        if (
+            not self.get_show_rating()  # don't hide the rating on wish of user
+            and self.rating_filter() == "smart"
+            and self.request.method
+            and self.request.method.upper() == "GET"
+            and await self.get_saved_vote(
+                wrong_quote.quote.id, wrong_quote.author.id
+            )
+            is None
+        ):
+            return "???"
+        return str(wrong_quote.rating)
+
+    def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
+        """Get the key to save the votes with Redis."""
+        return (
+            f"{self.redis_prefix}:quote-votes:"
+            f"{self.get_user_id()}:{quote_id}-{author_id}"
+        )
+
+    async def get_saved_vote(
+        self, quote_id: int, author_id: int
+    ) -> None | Literal[-1, 0, 1]:
+        """
+        Get the vote of the current user saved with Redis.
+
+        Use the quote_id and author_id to query the vote.
+        Return None if nothing is saved.
+        """
+        if not EVENT_REDIS.is_set():
+            logger.warning("No Redis connection")
+            return 0
+        result = await self.redis.get(
+            self.get_redis_votes_key(quote_id, author_id)
+        )
+        if result == "-1":
+            return -1
+        if result == "0":
+            return 0
+        if result == "1":
+            return 1
+        return None
+
     async def post(self, quote_id_str: str, author_id_str: str) -> None:
         """
         Handle POST requests to this page and render the quote.
@@ -397,6 +453,13 @@ class QuoteById(QuoteBaseHandler):
 
         await self.render_wrong_quote(wrong_quote, new_vote)
 
+    async def render_quote(self, quote_id: int, author_id: int) -> None:
+        """Get and render a wrong quote based on author id and author id."""
+        await self.render_wrong_quote(
+            await get_wrong_quote(quote_id, author_id),
+            await self.get_old_vote(quote_id, author_id),
+        )
+
     async def render_wrong_quote(
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
@@ -414,37 +477,6 @@ class QuoteById(QuoteBaseHandler):
             vote=vote,
         )
 
-    async def get_rating_str(self, wrong_quote: WrongQuote) -> str:
-        """Get the rating str to display on the page."""
-        if wrong_quote.id in {None, -1}:
-            return "---"
-        if (
-            not self.get_show_rating()  # don't hide the rating on wish of user
-            and self.rating_filter() == "smart"
-            and self.request.method
-            and self.request.method.upper() == "GET"
-            and await self.get_saved_vote(
-                wrong_quote.quote.id, wrong_quote.author.id
-            )
-            is None
-        ):
-            return "???"
-        return str(wrong_quote.rating)
-
-    async def render_quote(self, quote_id: int, author_id: int) -> None:
-        """Get and render a wrong quote based on author id and author id."""
-        await self.render_wrong_quote(
-            await get_wrong_quote(quote_id, author_id),
-            await self.get_old_vote(quote_id, author_id),
-        )
-
-    def get_redis_votes_key(self, quote_id: int, author_id: int) -> str:
-        """Get the key to save the votes with Redis."""
-        return (
-            f"{self.redis_prefix}:quote-votes:"
-            f"{self.get_user_id()}:{quote_id}-{author_id}"
-        )
-
     async def update_saved_votes(
         self, quote_id: int, author_id: int, vote: int
     ) -> None:
@@ -459,38 +491,6 @@ class QuoteById(QuoteBaseHandler):
         if not result:
             logger.warning("Could not save vote in Redis: %s", result)
             raise HTTPError(500, "Could not save vote in Redis")
-
-    async def get_old_vote(
-        self, quote_id: int, author_id: int
-    ) -> Literal[-1, 0, 1]:
-        """Get the old vote from the saved vote."""
-        old_vote = await self.get_saved_vote(quote_id, author_id)
-        if old_vote is None:
-            return 0
-        return old_vote
-
-    async def get_saved_vote(
-        self, quote_id: int, author_id: int
-    ) -> None | Literal[-1, 0, 1]:
-        """
-        Get the vote of the current user saved with Redis.
-
-        Use the quote_id and author_id to query the vote.
-        Return None if nothing is saved.
-        """
-        if not EVENT_REDIS.is_set():
-            logger.warning("No Redis connection")
-            return 0
-        result = await self.redis.get(
-            self.get_redis_votes_key(quote_id, author_id)
-        )
-        if result == "-1":
-            return -1
-        if result == "0":
-            return 0
-        if result == "1":
-            return 1
-        return None
 
 
 class QuoteAPIHandler(APIRequestHandler, QuoteById):

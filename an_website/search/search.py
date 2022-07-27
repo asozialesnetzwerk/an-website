@@ -44,34 +44,6 @@ def get_module_info() -> ModuleInfo:
 class Search(HTMLRequestHandler):
     """The request handler for the search page."""
 
-    async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests to the search page."""
-        if head:
-            return
-        await self.render(
-            "pages/search.html",
-            query=self.get_query(),
-            results=await self.search(),
-        )
-
-    def get_query(self) -> str:
-        """Return the query."""
-        return str(self.get_argument("q", ""))
-
-    async def search(self) -> list[dict[str, float | str]]:
-        """Search the website."""
-        if query := self.get_query():
-            try:
-                return await self.app_search(query)
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception(exc)
-                apm: None | elasticapm.Client = self.settings.get(
-                    "ELASTIC_APM_CLIENT"
-                )
-                if apm:
-                    apm.capture_exception()
-        return await self.old_fallback_search(query)
-
     async def app_search(self, query: str) -> list[dict[str, float | str]]:
         """Search the website using Elastic App Search."""
         return [
@@ -116,6 +88,20 @@ class Search(HTMLRequestHandler):
             )["results"]
         ]
 
+    async def get(self, *, head: bool = False) -> None:
+        """Handle GET requests to the search page."""
+        if head:
+            return
+        await self.render(
+            "pages/search.html",
+            query=self.get_query(),
+            results=await self.search(),
+        )
+
+    def get_query(self) -> str:
+        """Return the query."""
+        return str(self.get_argument("q", ""))
+
     async def old_fallback_search(
         self, query: str
     ) -> list[dict[str, float | str]]:
@@ -154,6 +140,20 @@ class Search(HTMLRequestHandler):
         page_infos.sort(reverse=True)
 
         return [dict(info) for _, info in page_infos]
+
+    async def search(self) -> list[dict[str, float | str]]:
+        """Search the website."""
+        if query := self.get_query():
+            try:
+                return await self.app_search(query)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(exc)
+                apm: None | elasticapm.Client = self.settings.get(
+                    "ELASTIC_APM_CLIENT"
+                )
+                if apm:
+                    apm.capture_exception()
+        return await self.old_fallback_search(query)
 
 
 class SearchAPIHandler(APIRequestHandler, Search):

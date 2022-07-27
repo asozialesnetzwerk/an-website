@@ -62,14 +62,14 @@ class QuotesObjBase:
     __slots__ = ("id",)
     id: int  # pylint: disable=invalid-name
 
+    async def fetch_new_data(self) -> QuotesObjBase:
+        """Fetch new data from the API."""
+        raise NotImplementedError
+
     # pylint: disable=unused-argument
     def get_id_as_str(self, minify: bool = False) -> str:
         """Get the id of the object as a string."""
         return str(self.id)
-
-    async def fetch_new_data(self) -> QuotesObjBase:
-        """Fetch new data from the API."""
-        raise NotImplementedError
 
 
 @dataclass
@@ -81,13 +81,13 @@ class Author(QuotesObjBase):
     # tuple(url_to_info, info_str, creation_date)
     info: None | tuple[str, None | str, date]
 
-    def update_name(self, name: str) -> None:
-        """Update author data with another author."""
-        name = fix_author_name(name)
-        if self.name != name:
-            # name changed -> info should change too
-            self.info = None
-            self.name = name
+    def __str__(self) -> str:
+        """Return the name of the author."""
+        return (
+            emojify(self.name.strip())
+            if (now := datetime.utcnow()).day == 1 and now.month == 4
+            else self.name.strip()
+        )
 
     async def fetch_new_data(self) -> Author:
         """Fetch new data from the API."""
@@ -108,13 +108,13 @@ class Author(QuotesObjBase):
             else None,
         }
 
-    def __str__(self) -> str:
-        """Return the name of the author."""
-        return (
-            emojify(self.name.strip())
-            if (now := datetime.utcnow()).day == 1 and now.month == 4
-            else self.name.strip()
-        )
+    def update_name(self, name: str) -> None:
+        """Update author data with another author."""
+        name = fix_author_name(name)
+        if self.name != name:
+            # name changed -> info should change too
+            self.info = None
+            self.name = name
 
 
 @dataclass
@@ -125,15 +125,13 @@ class Quote(QuotesObjBase):
     quote: str
     author: Author
 
-    def update_quote(
-        self, quote: str, author_id: int, author_name: str
-    ) -> None:
-        """Update quote data with new data."""
-        self.quote = fix_quote_str(quote)
-        if self.author.id == author_id:
-            self.author.update_name(author_name)
-            return
-        self.author = get_author_updated_with(author_id, author_name)
+    def __str__(self) -> str:
+        """Return the content of the quote."""
+        return (
+            emojify(self.quote.strip())
+            if (now := datetime.utcnow()).day == 1 and now.month == 4
+            else self.quote.strip()
+        )
 
     async def fetch_new_data(self) -> Quote:
         """Fetch new data from the API."""
@@ -148,13 +146,15 @@ class Quote(QuotesObjBase):
             "path": f"/zitate/info/z/{self.id}",
         }
 
-    def __str__(self) -> str:
-        """Return the content of the quote."""
-        return (
-            emojify(self.quote.strip())
-            if (now := datetime.utcnow()).day == 1 and now.month == 4
-            else self.quote.strip()
-        )
+    def update_quote(
+        self, quote: str, author_id: int, author_name: str
+    ) -> None:
+        """Update quote data with new data."""
+        self.quote = fix_quote_str(quote)
+        if self.author.id == author_id:
+            self.author.update_name(author_name)
+            return
+        self.author = get_author_updated_with(author_id, author_name)
 
 
 @dataclass
@@ -165,6 +165,29 @@ class WrongQuote(QuotesObjBase):
     quote: Quote
     author: Author
     rating: int
+
+    def __str__(self) -> str:
+        r"""
+        Return the wrong quote.
+
+        like: '»quote« - author'.
+        """
+        return f"»{self.quote}« - {self.author}"
+
+    async def fetch_new_data(self) -> WrongQuote:
+        """Fetch new data from the API."""
+        if self.id == -1:
+            api_data = await make_api_request(
+                "wrongquotes",
+                f"quote={self.quote.id}&author={self.author.id}&simulate=true",
+            )
+            if api_data:
+                api_data = api_data[0]
+        else:
+            api_data = await make_api_request(f"wrongquotes/{self.id}")
+        if not api_data:
+            return self
+        return parse_wrong_quote(api_data, self)
 
     def get_id(self) -> tuple[int, int]:
         """
@@ -184,20 +207,15 @@ class WrongQuote(QuotesObjBase):
             return str(self.id)
         return f"{self.quote.id}-{self.author.id}"
 
-    async def fetch_new_data(self) -> WrongQuote:
-        """Fetch new data from the API."""
-        if self.id == -1:
-            api_data = await make_api_request(
-                "wrongquotes",
-                f"quote={self.quote.id}&author={self.author.id}&simulate=true",
-            )
-            if api_data:
-                api_data = api_data[0]
-        else:
-            api_data = await make_api_request(f"wrongquotes/{self.id}")
-        if not api_data:
-            return self
-        return parse_wrong_quote(api_data, self)
+    def to_json(self) -> dict[str, Any]:
+        """Get the wrong quote as JSON."""
+        return {
+            "id": self.get_id_as_str(),
+            "quote": self.quote.to_json(),
+            "author": self.author.to_json(),
+            "rating": self.rating,
+            "path": f"/zitate/{self.get_id_as_str()}",
+        }
 
     async def vote(
         # pylint: disable=unused-argument
@@ -224,24 +242,6 @@ class WrongQuote(QuotesObjBase):
             ),
             self,
         )
-
-    def to_json(self) -> dict[str, Any]:
-        """Get the wrong quote as JSON."""
-        return {
-            "id": self.get_id_as_str(),
-            "quote": self.quote.to_json(),
-            "author": self.author.to_json(),
-            "rating": self.rating,
-            "path": f"/zitate/{self.get_id_as_str()}",
-        }
-
-    def __str__(self) -> str:
-        r"""
-        Return the wrong quote.
-
-        like: '»quote« - author'.
-        """
-        return f"»{self.quote}« - {self.author}"
 
 
 def get_wrong_quotes(

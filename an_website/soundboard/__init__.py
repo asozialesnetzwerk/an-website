@@ -132,18 +132,6 @@ class SoundInfo(Info):
     chapter: Chapter
     person: Person
 
-    def get_text(self) -> str:
-        """Parse the text to only return the quote."""
-        return self.text.split("-", 1)[1]
-
-    def get_file_name(self) -> str:
-        """Parse the text to return the name of the file."""
-        return re.sub(
-            r"[^a-z0-9_-]+",
-            "",
-            replace_umlauts(self.text.lower().replace(" ", "_")),
-        )
-
     def contains(self, string: None | str) -> bool:
         """Check whether this sound info contains a given string."""
         if string is None:
@@ -156,6 +144,18 @@ class SoundInfo(Info):
             word not in content
             for word in replace_umlauts(string.lower()).split(" ")
         )
+
+    def get_file_name(self) -> str:
+        """Parse the text to return the name of the file."""
+        return re.sub(
+            r"[^a-z0-9_-]+",
+            "",
+            replace_umlauts(self.text.lower().replace(" ", "_")),
+        )
+
+    def get_text(self) -> str:
+        """Parse the text to only return the quote."""
+        return self.text.split("-", 1)[1]
 
     def to_html(
         self,

@@ -38,10 +38,6 @@ def get_module_info() -> ModuleInfo:
 class Troeter(HTMLRequestHandler):
     """The request handler that makes tooting easier."""
 
-    def saved_mastodon_instance(self) -> str:
-        """Get the mastodon instance saved in a cookie."""
-        return cast(str, self.get_cookie("mastodon-instance", ""))
-
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the page."""
         text: str = self.get_argument("text", "")
@@ -79,3 +75,7 @@ class Troeter(HTMLRequestHandler):
             instance=instance,
             save=save,
         )
+
+    def saved_mastodon_instance(self) -> str:
+        """Get the mastodon instance saved in a cookie."""
+        return cast(str, self.get_cookie("mastodon-instance", ""))

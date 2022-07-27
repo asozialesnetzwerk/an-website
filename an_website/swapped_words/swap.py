@@ -79,6 +79,16 @@ def check_text_too_long(text: str) -> None:
 class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
+    async def get(
+        self, *, head: bool = False  # pylint: disable=unused-argument
+    ) -> None:
+        """Handle GET requests to the swapped words page."""
+        await self.handle_text(
+            self.get_argument("text", ""),
+            self.get_argument("config", None),
+            self.get_bool_argument("reset", False),
+        )
+
     def handle_text(
         self, text: str, config_str: None | str, use_default_config: bool
     ) -> Future[None]:
@@ -134,16 +144,6 @@ class SwappedWords(HTMLRequestHandler):
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
-
-    async def get(
-        self, *, head: bool = False  # pylint: disable=unused-argument
-    ) -> None:
-        """Handle GET requests to the swapped words page."""
-        await self.handle_text(
-            self.get_argument("text", ""),
-            self.get_argument("config", None),
-            self.get_bool_argument("reset", False),
-        )
 
     async def post(self) -> None:
         """Handle POST requests to the swapped words page."""

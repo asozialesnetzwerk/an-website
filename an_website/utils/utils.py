@@ -128,6 +128,14 @@ class ModuleInfo(PageInfo):
     sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
     aliases: tuple[str, ...] = field(default_factory=tuple)
 
+    def get_keywords_as_str(self, path: str) -> str:
+        """Get the keywords as comma-seperated string."""
+        page_info = self.get_page_info(path)
+        if self != page_info:
+            return ", ".join((*self.keywords, *page_info.keywords))
+
+        return ", ".join(self.keywords)
+
     def get_page_info(self, path: str) -> PageInfo:
         """Get the PageInfo of the specified path."""
         if self.path == path:
@@ -138,14 +146,6 @@ class ModuleInfo(PageInfo):
                 return page_info
 
         return self
-
-    def get_keywords_as_str(self, path: str) -> str:
-        """Get the keywords as comma-seperated string."""
-        page_info = self.get_page_info(path)
-        if self != page_info:
-            return ", ".join((*self.keywords, *page_info.keywords))
-
-        return ", ".join(self.keywords)
 
     def search(self, query: str | Sequence[str]) -> float:
         score = super().search(query)
@@ -167,6 +167,17 @@ class Timer:
         self._execution_time: None | float = None
         self._start_time: float = time.perf_counter()
 
+    @property
+    def execution_time(self) -> float:
+        """
+        Get the execution time in seconds and return it.
+
+        If the timer wasn't stopped yet a ValueError gets raised.
+        """
+        if self._execution_time is None:
+            raise ValueError("Timer wasn't stopped yet.")
+        return self._execution_time
+
     def stop(self) -> float:
         """
         Stop the timer and return the execution time in seconds.
@@ -178,17 +189,6 @@ class Timer:
         self._execution_time = time.perf_counter() - self._start_time
 
         del self._start_time
-        return self._execution_time
-
-    @property
-    def execution_time(self) -> float:
-        """
-        Get the execution time in seconds and return it.
-
-        If the timer wasn't stopped yet a ValueError gets raised.
-        """
-        if self._execution_time is None:
-            raise ValueError("Timer wasn't stopped yet.")
         return self._execution_time
 
 

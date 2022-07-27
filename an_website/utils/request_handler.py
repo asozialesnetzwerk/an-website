@@ -90,6 +90,65 @@ class HTMLRequestHandler(BaseRequestHandler):
     )
     used_render = False
 
+    def finish(
+        self, chunk: None | str | bytes | dict[Any, Any] = None
+    ) -> Future[None]:
+        """Finish the request."""
+        as_json: bool = self.content_type == "application/json"
+        as_plain_text: bool = self.content_type == "text/plain"
+        as_markdown: bool = self.content_type == "text/markdown"
+        if (
+            not isinstance(chunk, bytes | str)
+            or not self.used_render
+            or getattr(self, "IS_NOT_HTML", False)
+            or not (as_json or as_plain_text or as_markdown)
+        ):
+            return super().finish(chunk)
+
+        chunk = chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
+
+        if as_markdown:
+            return super().finish(
+                f"# {self.title}\n\n"
+                + html2text.html2text(chunk, self.request.full_url()).strip()
+            )
+
+        soup = BeautifulSoup(chunk, features="lxml")
+        if as_plain_text:
+            return super().finish(soup.get_text("\n", True))
+
+        dictionary: dict[str, Any] = dict(
+            url=self.fix_url(),  # request url
+            title=self.title,
+            short_title=self.short_title
+            if self.title != self.short_title
+            else None,
+            body="".join(
+                str(_el)
+                for _el in soup.find_all(name="main", id="body")[0].contents
+            ).strip(),
+            scripts=[
+                {
+                    "src": _s.get("src"),
+                    # "script": _s.string,  # not in use because of csp
+                    # "onload": _s.get("onload"),  # not in use because of csp
+                }
+                for _s in soup.find_all("script")
+            ]
+            if soup.head
+            else [],
+            stylesheets=[
+                str(_s.get("href")).strip()
+                for _s in soup.find_all("link", rel="stylesheet")
+            ]
+            if soup.head
+            else [],
+            css="\n".join(str(_s.string or "") for _s in soup.find_all("style"))
+            if soup.head
+            else "",
+        )
+        return super().finish(dictionary)
+
     def get_form_appendix(self) -> str:
         """Get HTML to add to forms to keep important query args."""
         form_appendix = (
@@ -109,21 +168,6 @@ class HTMLRequestHandler(BaseRequestHandler):
                 f"<input name='theme' class='hidden' value='{theme}'>"
             )
         return form_appendix
-
-    def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Render the error page with the status_code as a HTML page."""
-        self.render(
-            "error.html",
-            status=status_code,
-            reason=self.get_error_message(**kwargs),
-            description=self.get_error_page_description(status_code),
-            is_traceback="exc_info" in kwargs
-            and not issubclass(kwargs["exc_info"][0], HTTPError)
-            and (
-                self.settings.get("serve_traceback")
-                or self.is_authorized(Permission.TRACEBACK)
-            ),
-        )
 
     def get_template_namespace(self) -> dict[str, Any]:
         """
@@ -200,64 +244,20 @@ class HTMLRequestHandler(BaseRequestHandler):
         self.used_render = True
         return super().render(template_name, **kwargs)
 
-    def finish(
-        self, chunk: None | str | bytes | dict[Any, Any] = None
-    ) -> Future[None]:
-        """Finish the request."""
-        as_json: bool = self.content_type == "application/json"
-        as_plain_text: bool = self.content_type == "text/plain"
-        as_markdown: bool = self.content_type == "text/markdown"
-        if (
-            not isinstance(chunk, bytes | str)
-            or not self.used_render
-            or getattr(self, "IS_NOT_HTML", False)
-            or not (as_json or as_plain_text or as_markdown)
-        ):
-            return super().finish(chunk)
-
-        chunk = chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
-
-        if as_markdown:
-            return super().finish(
-                f"# {self.title}\n\n"
-                + html2text.html2text(chunk, self.request.full_url()).strip()
-            )
-
-        soup = BeautifulSoup(chunk, features="lxml")
-        if as_plain_text:
-            return super().finish(soup.get_text("\n", True))
-
-        dictionary: dict[str, Any] = dict(
-            url=self.fix_url(),  # request url
-            title=self.title,
-            short_title=self.short_title
-            if self.title != self.short_title
-            else None,
-            body="".join(
-                str(_el)
-                for _el in soup.find_all(name="main", id="body")[0].contents
-            ).strip(),
-            scripts=[
-                {
-                    "src": _s.get("src"),
-                    # "script": _s.string,  # not in use because of csp
-                    # "onload": _s.get("onload"),  # not in use because of csp
-                }
-                for _s in soup.find_all("script")
-            ]
-            if soup.head
-            else [],
-            stylesheets=[
-                str(_s.get("href")).strip()
-                for _s in soup.find_all("link", rel="stylesheet")
-            ]
-            if soup.head
-            else [],
-            css="\n".join(str(_s.string or "") for _s in soup.find_all("style"))
-            if soup.head
-            else "",
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        """Render the error page with the status_code as a HTML page."""
+        self.render(
+            "error.html",
+            status=status_code,
+            reason=self.get_error_message(**kwargs),
+            description=self.get_error_page_description(status_code),
+            is_traceback="exc_info" in kwargs
+            and not issubclass(kwargs["exc_info"][0], HTTPError)
+            and (
+                self.settings.get("serve_traceback")
+                or self.is_authorized(Permission.TRACEBACK)
+            ),
         )
-        return super().finish(dictionary)
 
 
 class APIRequestHandler(BaseRequestHandler):

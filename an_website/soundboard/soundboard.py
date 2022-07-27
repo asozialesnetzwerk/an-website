@@ -164,28 +164,6 @@ async def search_main_page_info(
 class SoundboardHTMLHandler(HTMLRequestHandler):
     """The request handler for the HTML pages."""
 
-    def update_title_and_desc(self, path: str) -> None:
-        """Update the title and description of the page."""
-        if path not in PERSON_SHORTS:
-            return
-        name = Person[path].value
-        if name.startswith("Das ") or name.startswith("Der "):
-            von_name = f"dem{name[3:]}"
-            no_article_name = name[4:]
-        elif name.startswith("Die "):
-            von_name = f"der{name[3:]}"
-            no_article_name = name[4:]
-        else:
-            von_name = name
-            no_article_name = name
-
-        self.short_title = f"Soundboard ({path.upper()})"
-        self.title = f"{no_article_name.replace(' ', '-')}-Soundboard"
-        self.description = (
-            "Ein Soundboard mit coolen Sprüchen und Sounds von "
-            f"{von_name} aus den Känguru-Chroniken"
-        )
-
     async def get(self, path: str = "/", *, head: bool = False) -> None:
         """Handle GET requests and generate the page content."""
         if path is not None:
@@ -243,6 +221,28 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             )
 
         return None
+
+    def update_title_and_desc(self, path: str) -> None:
+        """Update the title and description of the page."""
+        if path not in PERSON_SHORTS:
+            return
+        name = Person[path].value
+        if name.startswith("Das ") or name.startswith("Der "):
+            von_name = f"dem{name[3:]}"
+            no_article_name = name[4:]
+        elif name.startswith("Die "):
+            von_name = f"der{name[3:]}"
+            no_article_name = name[4:]
+        else:
+            von_name = name
+            no_article_name = name
+
+        self.short_title = f"Soundboard ({path.upper()})"
+        self.title = f"{no_article_name.replace(' ', '-')}-Soundboard"
+        self.description = (
+            "Ein Soundboard mit coolen Sprüchen und Sounds von "
+            f"{von_name} aus den Känguru-Chroniken"
+        )
 
 
 class SoundboardRSSHandler(SoundboardHTMLHandler):
