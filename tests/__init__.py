@@ -38,11 +38,11 @@ patches.apply()
 
 
 import asyncio
-import configparser
 import re
 import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
+from configparser import ConfigParser
 from typing import Any, cast
 
 import orjson as json
@@ -89,10 +89,8 @@ def app() -> tornado.web.Application:
     """Create the application."""
     assert NAME.endswith("-test")
 
-    config = configparser.ConfigParser(interpolation=None)
+    config = ConfigParser(interpolation=None)
     config.read(os.path.join(DIR, "config.ini"))
-
-    main.setup_logging(config)
 
     main.ignore_modules(config)
 

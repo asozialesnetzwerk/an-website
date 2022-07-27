@@ -17,7 +17,6 @@
 from __future__ import annotations
 
 import asyncio
-import configparser
 import importlib
 import logging
 import os
@@ -29,6 +28,7 @@ import types
 from asyncio.runners import _cancel_all_tasks  # type: ignore
 from base64 import b64encode
 from collections.abc import Callable, Coroutine
+from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
@@ -83,7 +83,7 @@ IGNORED_MODULES = {
     "utils.utils",
 }
 
-CONFIG = configparser.ConfigParser(interpolation=None)
+CONFIG = ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="utf-8")
 
 logger = logging.getLogger(__name__)
@@ -190,9 +190,7 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
             break
 
 
-def get_all_handlers(
-    module_infos: tuple[ModuleInfo, ...],
-) -> list[Handler]:
+def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
     """
     Parse the module information and return the handlers in a tuple.
 
@@ -250,7 +248,7 @@ def get_all_handlers(
     return handlers
 
 
-def ignore_modules(config: configparser.ConfigParser) -> None:
+def ignore_modules(config: ConfigParser) -> None:
     """Read ignored modules from the config."""
     for module_name in config.get(
         "GENERAL", "IGNORED_MODULES", fallback=""
@@ -260,7 +258,7 @@ def ignore_modules(config: configparser.ConfigParser) -> None:
             IGNORED_MODULES.add(module_name)
 
 
-def make_app(config: configparser.ConfigParser) -> str | Application:
+def make_app(config: ConfigParser) -> str | Application:
     """Create the Tornado application and return it."""
     module_infos, duration = time_function(get_module_infos)
     if isinstance(module_infos, str):
@@ -288,9 +286,7 @@ def make_app(config: configparser.ConfigParser) -> str | Application:
     )
 
 
-def apply_config_to_app(
-    app: Application, config: configparser.ConfigParser
-) -> None:
+def apply_config_to_app(app: Application, config: ConfigParser) -> None:
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
@@ -361,8 +357,8 @@ def apply_config_to_app(
     apply_contact_stuff_to_app(app, config)
 
 
-def get_ssl_context(
-    config: configparser.ConfigParser,
+def get_ssl_context(  # pragma: no cover
+    config: ConfigParser,
 ) -> None | ssl.SSLContext:
     """Create SSL context and configure using the config."""
     if config.getboolean("TLS", "ENABLED", fallback=False):
@@ -376,10 +372,10 @@ def get_ssl_context(
     return None
 
 
-def setup_logging(
-    config: configparser.ConfigParser, *, force: bool = False
+def setup_logging(  # pragma: no cover
+    config: ConfigParser, *, force: bool = False
 ) -> None:
-    """Configure logging."""
+    """Setup logging."""  # noqa: D401
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
     path = config.get("LOGGING", "PATH", fallback=None)
 
@@ -422,7 +418,7 @@ def setup_logging(
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
-def setup_apm(app: Application) -> None:
+def setup_apm(app: Application) -> None:  # pragma: no cover
     """Setup APM."""  # noqa: D401
     config = app.settings["CONFIG"]
     app.settings["ELASTIC_APM"] = {
@@ -475,7 +471,7 @@ def setup_apm(app: Application) -> None:
     app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
 
 
-def setup_app_search(app: Application) -> None:
+def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
     config = app.settings["CONFIG"]
     app.settings["APP_SEARCH"] = AppSearch(
@@ -535,7 +531,7 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     return elasticsearch
 
 
-async def check_elasticsearch(app: Application) -> None:
+async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
     """Check Elasticsearch."""
     # pylint: disable=invalid-name
     while True:  # pylint: disable=while-used
@@ -675,7 +671,7 @@ def setup_redis(app: Application) -> None | Redis[str]:
     return redis
 
 
-async def check_redis(app: Application) -> None:
+async def check_redis(app: Application) -> None:  # pragma: no cover
     """Check Redis."""
     while True:  # pylint: disable=while-used
         redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
@@ -690,7 +686,7 @@ async def check_redis(app: Application) -> None:
         await asyncio.sleep(20)
 
 
-async def wait_for_shutdown() -> None:
+async def wait_for_shutdown() -> None:  # pragma: no cover
     """Wait for the shutdown event."""
     loop = asyncio.get_running_loop()
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
@@ -698,7 +694,7 @@ async def wait_for_shutdown() -> None:
     loop.stop()
 
 
-def signal_handler(  # noqa: D103
+def signal_handler(  # noqa: D103  # pragma: no cover
     signalnum: int, frame: None | types.FrameType
 ) -> None:
     # pylint: disable=unused-argument, missing-function-docstring
@@ -708,13 +704,13 @@ def signal_handler(  # noqa: D103
         EVENT_SHUTDOWN.set()
 
 
-def install_signal_handler() -> None:
+def install_signal_handler() -> None:  # pragma: no cover
     """Install the signal handler."""
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
 
-def main() -> None | int | str:  # noqa: C901
+def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     Start everything.
 
