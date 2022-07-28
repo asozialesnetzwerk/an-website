@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Sort all the python code in this module."""
+"""Sort all the python code in this repo."""
 
 from __future__ import annotations
 
@@ -21,27 +21,40 @@ import ast
 import os
 import re
 import sys
+from os import PathLike
 from pathlib import Path
-from typing import NamedTuple, cast
+from traceback import format_exception_only
+from typing import Any, NamedTuple, cast
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CODE_ROOT = Path(REPO_ROOT, "an_website")
+
+FunctionOrClassDef = (
+    # ast.AnnAssign
+    # | ast.Assign
+    ast.AsyncFunctionDef
+    | ast.ClassDef
+    | ast.FunctionDef
+)
 
 
-def main() -> int | str:
+def main() -> None | int | str:
     """Sort the code in the an_website module."""
     errors = []
     changed_count = 0
     file_count = 0
-    for file in CODE_ROOT.rglob("*.py"):
-        if not file.is_file():
-            print(file, "is no file.")
-            continue
-        file_count += 1
-        if isinstance(changed := sort_file(file), str):
-            errors.append((file, changed))
-        elif changed:
-            changed_count += 1
+    for root in (
+        Path(REPO_ROOT, "an_website"),
+        Path(REPO_ROOT, "scripts"),
+        Path(REPO_ROOT, "tests"),
+    ):
+        for file in root.rglob("*.py"):
+            if not file.is_file():
+                continue
+            file_count += 1
+            if isinstance(changed := sort_file(file), str):
+                errors.append((file.relative_to(REPO_ROOT), changed))
+            elif changed:
+                changed_count += 1
 
     print(
         f"Sorted {changed_count}/{file_count} files "
@@ -51,22 +64,26 @@ def main() -> int | str:
     return "\n".join(f"{file}: {err}" for file, err in errors) if errors else 0
 
 
-def sort_file(path: Path) -> str | bool:
+def sort_file(file: Path) -> str | bool:
     """Sort a given file."""
-    code = path.read_text("utf-8")
+    code = file.read_text("utf-8")
 
     try:
-        new_code = sort_classes(code.strip(), path.name).strip() + "\n"
+        new_code = sort_classes(code.strip(), file).strip() + "\n"
     except Exception as exc:  # pylint: disable=broad-except
-        return f"Sorting failed with {exc} ({type(exc).__name__})"
+        error = format_exception_only(exc)[-1].strip()  # type: ignore[arg-type]
+        return f"Sorting failed with: {error}"
+
     try:
-        compile(code, path.name, mode="exec", _feature_version=10)
+        compile(new_code, file, "exec")
     except Exception as exc:  # pylint: disable=broad-except
-        return f"Sorting destroyed code: {exc}"
+        error = format_exception_only(exc)[-1].strip()  # type: ignore[arg-type]
+        return f"Sorting destroyed code: {error}"
 
     if code != new_code:
-        path.write_text(new_code, "utf-8")
+        file.write_text(new_code, "utf-8")
         return True
+
     return False
 
 
@@ -75,15 +92,6 @@ class Position(NamedTuple):
 
     line: int
     col: int
-
-
-FunctionOrClassDef = (
-    ast.FunctionDef
-    | ast.ClassDef
-    | ast.AsyncFunctionDef
-    # | ast.Assign
-    # | ast.AnnAssign
-)
 
 
 class BlockOfCode:
@@ -126,7 +134,7 @@ class BlockOfCode:
         #     ].strip()
         #     self.defines = (self.name,)
         # el
-        if isinstance(node, FunctionOrClassDef):  # type: ignore
+        if isinstance(node, FunctionOrClassDef):  # type: ignore[arg-type, misc]
             self.name = cast(FunctionOrClassDef, node).name.strip()
             self.defines = (self.name,)
         else:
@@ -161,14 +169,14 @@ class BlockOfCode:
         return any(def_ in code for def_ in other.defines)
 
 
-def sort_class(code_of_class: str, file_name: str) -> list[str]:
+def sort_class(
+    code: str, filename: str | bytes | PathLike[Any] = "<unknown>"
+) -> list[str]:
     """Sort the methods of a class and return the code as lines."""
-    class_ = ast.parse(
-        code_of_class, file_name, type_comments=True, feature_version=10
-    ).body[0]
+    class_ = compile(code, filename, "exec", ast.PyCF_ONLY_AST).body[0]
     assert isinstance(class_, ast.ClassDef)
 
-    lines = code_of_class.split("\n")
+    lines = code.split("\n")
 
     functions = [  # get all the functions in the class
         BlockOfCode(
@@ -180,7 +188,7 @@ def sort_class(code_of_class: str, file_name: str) -> list[str]:
             ),
         )
         for node in class_.body
-        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+        if isinstance(node, ast.AsyncFunctionDef | ast.FunctionDef)
     ]
 
     for function in sorted(
@@ -199,9 +207,11 @@ def sort_class(code_of_class: str, file_name: str) -> list[str]:
     return lines
 
 
-def sort_classes(code: str, file_name: str) -> str:
+def sort_classes(
+    code: str, filename: str | bytes | PathLike[Any] = "<unknown>"
+) -> str:
     """Sort the classes and functions in a list."""
-    nodes = ast.parse(code, file_name, feature_version=10).body
+    nodes = compile(code, filename, "exec", ast.PyCF_ONLY_AST).body
 
     lines = code.split("\n")
 
@@ -224,7 +234,7 @@ def sort_classes(code: str, file_name: str) -> str:
     for class_ in classes:
         class_lines = sort_class(
             class_.code,
-            file_name,
+            filename,
         )
         assert len(class_.code.split("\n")) == len(class_lines)
         for i, line in enumerate(class_lines):

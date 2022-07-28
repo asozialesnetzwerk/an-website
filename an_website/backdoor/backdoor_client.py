@@ -71,7 +71,7 @@ class Response(TypedDict):  # noqa: D101
     result: None | tuple[str, None | bytes] | SystemExit
 
 
-async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
+async def create_socket(  # noqa: C901  # pylint: disable=too-many-arguments
     addr: str,
     port: int | str,
     proxy_type: None | int = None,
@@ -139,11 +139,9 @@ async def create_socket(  # pylint: disable=too-many-arguments  # noqa: C901
             raise
     if len(exceptions) == 1:
         raise exceptions[0]
-    # If they all have the same str(), raise one
     model = str(exceptions[0])
     if all(str(exc) == model for exc in exceptions):
         raise exceptions[0]
-    # Raise a combined exception so the user can see all the various error messages
     raise OSError(
         f"Multiple exceptions: {', '.join(str(exc) for exc in exceptions)}"
     )
@@ -354,7 +352,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     except SyntaxError as exc:
         print(
             "".join(
-                traceback.format_exception_only(exc)  # type: ignore
+                traceback.format_exception_only(exc)  # type: ignore[arg-type]
             ).strip()
         )
         return

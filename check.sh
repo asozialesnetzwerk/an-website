@@ -3,18 +3,20 @@
 if [ -d venv ]; then
   if ! . venv/bin/activate; then
     echo "Activating venv failed."
-    echo "You have a venv directory, but it isn't a valid python venv."
+    echo "You have a venv directory, but it isn't a valid Python virtual environment."
     echo 'Either run "rm -r venv" or run "python -m venv venv".'
     exit 1
   fi
 fi
 
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
-if ! $pip_install "pip>=22.2"; then
+$pip_install "pip>=22.2"
+if [ $? -ne 0 -a $? -ne 3 ]; then
   echo "Installing pip>=22.2 failed."
   exit 1
 fi
-if ! $pip_install -r requirements-dev.txt; then
+$pip_install -r requirements-dev.txt
+if [ $? -ne 0 -a $? -ne 3 ]; then
   echo "Installing requirements in requirements-dev.txt failed."
   exit 1
 fi

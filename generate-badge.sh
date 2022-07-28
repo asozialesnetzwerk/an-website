@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 ###
 # This script is used in the GitHub Actions workflows "Deploy" and "Release"

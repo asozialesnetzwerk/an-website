@@ -1,5 +1,4 @@
 [flake8]
-exclude = __pycache__
 show-source = True
 statistics = True
 doctests = True
