@@ -24,8 +24,6 @@ import sys
 from pathlib import Path
 from typing import NamedTuple, cast
 
-# import black
-
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CODE_ROOT = Path(REPO_ROOT, "an_website")
 
@@ -33,47 +31,43 @@ CODE_ROOT = Path(REPO_ROOT, "an_website")
 def main() -> int | str:
     """Sort the code in the an_website module."""
     errors = []
+    changed_count = 0
     file_count = 0
     for file in CODE_ROOT.rglob("*.py"):
         if not file.is_file():
             print(file, "is no file.")
             continue
         file_count += 1
-        if err := sort_file(file):
-            errors.append((file, err))
+        if isinstance(changed := sort_file(file), str):
+            errors.append((file, changed))
+        elif changed:
+            changed_count += 1
 
-    print(f"Sorted {file_count} files and encountered {len(errors)} errors.")
+    print(
+        f"Sorted {changed_count}/{file_count} files "
+        f"and encountered {len(errors)} errors."
+    )
 
     return "\n".join(f"{file}: {err}" for file, err in errors) if errors else 0
 
 
-def sort_file(path: Path) -> None | str:
+def sort_file(path: Path) -> str | bool:
     """Sort a given file."""
     code = path.read_text("utf-8")
 
     try:
-        new_code = sort(code.strip(), path.name)
+        new_code = sort_classes(code.strip(), path.name).strip() + "\n"
     except Exception as exc:  # pylint: disable=broad-except
-        return f"Sorting failed with {exc}"
+        return f"Sorting failed with {exc} ({type(exc).__name__})"
     try:
         compile(code, path.name, mode="exec", _feature_version=10)
     except Exception as exc:  # pylint: disable=broad-except
         return f"Sorting destroyed code: {exc}"
 
-    # new_code = black.format_str(
-    #     new_code,
-    #     mode=black.Mode(
-    #         target_versions={
-    #             black.TargetVersion.PY310,
-    #             black.TargetVersion.PY311,
-    #         },
-    #         line_length=80,
-    #         string_normalization=False,
-    #         is_pyi=False,
-    #     ),
-    # )
-    path.write_text(new_code.strip() + "\n", "utf-8")
-    return None
+    if code != new_code:
+        path.write_text(new_code, "utf-8")
+        return True
+    return False
 
 
 class Position(NamedTuple):
@@ -93,7 +87,7 @@ FunctionOrClassDef = (
 
 
 class BlockOfCode:
-    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-many-instance-attributes, too-few-public-methods
     """A block of some sort of code."""
 
     name: None | str
@@ -166,42 +160,52 @@ class BlockOfCode:
         code = re.sub(r'"""(.|\n)+"""', "", (self.unparsed_code or self.code))
         return any(def_ in code for def_ in other.defines)
 
-    def __lt__(self, other: BlockOfCode) -> bool:
-        """Return whether self goes before the other."""
-        if not self.name:  # self.uses(other) or
-            return False
-        if not other.name:  # other.uses(self) or
-            return True
-        # if (
-        #    isinstance(self.node, ast.Assign | ast.AnnAssign)
-        #    and not isinstance(other.node, ast.Assign | ast.AnnAssign)
-        # ):
-        #     return True
-        # if (
-        #    isinstance(other.node, ast.Assign | ast.AnnAssign)
-        #    and not isinstance(self.node, ast.Assign | ast.AnnAssign)
-        # ):
-        #     return False
-        return self.name.lower() < other.name.lower()
+
+def sort_class(code_of_class: str, file_name: str) -> list[str]:
+    """Sort the methods of a class and return the code as lines."""
+    class_ = ast.parse(
+        code_of_class, file_name, type_comments=True, feature_version=10
+    ).body[0]
+    assert isinstance(class_, ast.ClassDef)
+
+    lines = code_of_class.split("\n")
+
+    functions = [  # get all the functions in the class
+        BlockOfCode(
+            lines.copy(),
+            node,
+            Position(node.lineno - 1, node.col_offset),
+            Position(
+                cast(int, node.end_lineno) - 1, cast(int, node.end_col_offset)
+            ),
+        )
+        for node in class_.body
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
+    ]
+
+    for function in sorted(
+        functions, key=lambda func: func.pos.line, reverse=True
+    ):  # remove functions from lines
+        lines = (
+            lines[: function.pos.line]
+            + lines[1 + function.end_pos.line :]  # noqa: E203
+        )
+
+    for function in sorted(
+        functions, key=lambda func: cast(str, func.name).lower()
+    ):
+        lines.extend(function.code.split("\n"))
+
+    return lines
 
 
-def sort(code: str, file_name: str, is_class: bool = False) -> str:
-    # pylint: disable=too-complex
+def sort_classes(code: str, file_name: str) -> str:
     """Sort the classes and functions in a list."""
-    if is_class:
-        class_ = ast.parse(
-            code, file_name, type_comments=True, feature_version=10
-        ).body[0]
-        assert isinstance(class_, ast.ClassDef)
-        nodes = class_.body
-    else:
-        nodes = ast.parse(
-            code, file_name, type_comments=True, feature_version=10
-        ).body
+    nodes = ast.parse(code, file_name, feature_version=10).body
 
     lines = code.split("\n")
 
-    blocks_of_code: list[BlockOfCode] = [
+    classes: list[BlockOfCode] = [
         BlockOfCode(
             lines.copy(),
             node,
@@ -211,93 +215,20 @@ def sort(code: str, file_name: str, is_class: bool = False) -> str:
             ),
         )
         for node in nodes
-        # if isinstance(node, FunctionOrClassDef)
-        if isinstance(
-            node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef
-        )  # or not is_class
+        if isinstance(node, ast.ClassDef)
     ]
 
-    if not blocks_of_code:
+    if not classes:
         return code
 
-    if is_class:
-        for code_block in sorted(
-            blocks_of_code, key=lambda func: func.pos.line, reverse=True
-        ):
-            if len(lines) > code_block.end_pos.line + 1:
-                start_line = lines[code_block.end_pos.line + 1]
-                # if start_line not in {
-                #     'if __name__ == "__main__":',
-                #     "if __name__ == '__main__':",
-                #     'if "__main__" == __name__:',
-                #     "if '__main__' == __name__:",
-                # }:
-                blocks_of_code.append(
-                    BlockOfCode(
-                        lines.copy(),
-                        None,
-                        Position(
-                            code_block.end_pos.line + 1,
-                            len(start_line) - len(start_line.lstrip()),
-                        ),
-                        Position(
-                            len(lines) - 1, len(lines[len(lines) - 1]) - 1
-                        ),
-                    )
-                )
-            lines = lines[: code_block.pos.line]
-
-        blocks_of_code = sorted(blocks_of_code)
-
-    # if not is_class:
-    #     for code_block in blocks_of_code.copy():
-    #         while any(
-    #             dependencies := [
-    #                 other
-    #                 for other in blocks_of_code[blocks_of_code.index(code_block):]
-    #                 if code_block.uses(other) and other is not code_block
-    #             ]
-    #         ):
-    #             for other in dependencies:
-    #                 blocks_of_code.remove(other)
-    #                 blocks_of_code.insert(blocks_of_code.index(code_block), other)
-    #                 if file_name == "utils.py":
-    #                     pass
-    #     end: list[str] = []
-    #     for i, line in enumerate(lines):
-    #         if line.strip() in {
-    #             'if __name__ == "__main__":',
-    #             "if __name__ == '__main__':",
-    #             'if "__main__" == __name__:',
-    #             "if '__main__' == __name__:",
-    #         }:
-    #             start = i
-    #             while start:
-    #                 if lines[start - 1].strip():
-    #                     break
-    #                 start -= 1
-    #             end.extend(lines[start:])
-    #             lines = lines[:start]
-    #             break
-
-    for code_block in blocks_of_code:
-        if isinstance(code_block.node, ast.ClassDef):
-            code_block.code = sort(
-                code_block.code,
-                file_name,
-                is_class=True,
-            )
-            code_lines = code_block.code.split("\n")
-            if not is_class:
-                for i in range(
-                    code_block.pos.line, code_block.end_pos.line + 1
-                ):
-                    lines[i] = code_lines[i - code_block.pos.line]
-        if is_class:
-            for line in code_block.code.split("\n"):
-                lines.append(line)
-
-    # lines.extend(end)
+    for class_ in classes:
+        class_lines = sort_class(
+            class_.code,
+            file_name,
+        )
+        assert len(class_.code.split("\n")) == len(class_lines)
+        for i, line in enumerate(class_lines):
+            lines[i + class_.pos.line] = line
 
     return "\n".join(lines)
 
