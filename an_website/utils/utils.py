@@ -299,7 +299,7 @@ def create_emoji_html(emoji: str, emoji_url: str) -> str:
 
 def emoji2code(emoji: str) -> str:
     """Convert an emoji to the hexcodes of it."""
-    return "-".join(f"{ord(c):x}" for c in emoji).upper()
+    return "-".join(f"{ord(c):04x}" for c in emoji).upper()
 
 
 def emojify(string: str) -> str:

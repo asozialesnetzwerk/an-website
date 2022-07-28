@@ -7,7 +7,7 @@ el.setAttribute("tooltip",timeStampToText(msg.timestamp));messageSection.append(
 const displayCurrentUser=(name)=>{currentUser.innerHTML="";if(usingOpenMoji&&usingOpenMoji.getAttribute("type")!=="font"){for(let emoji of name){currentUser.append(emojiToIMG(emoji));}
 return;}
 currentUser.innerText=name.join("");}
-const emojiToIMG=(emoji)=>{let emojiCode=[...emoji].map(e=>e.codePointAt(0).toString(16)).join(`-`).toUpperCase();let imgEl=document.createElement("img");imgEl.src=`/static/img/openmoji-svg-14.0/${emojiCode}.svg`;imgEl.classList.add("emoji")
+const emojiToIMG=(emoji)=>{let emojiCode=[...emoji].map(e=>e.codePointAt(0).toString(16).padStart(4,'0')).join(`-`).toUpperCase();let imgEl=document.createElement("img");imgEl.src=`/static/img/openmoji-svg-14.0/${emojiCode}.svg`;imgEl.classList.add("emoji")
 imgEl.alt=emoji;return imgEl;}
 const resetLastMessage=()=>{if(lastMessage&&!messageInput.value){messageInput.value=lastMessage;lastMessage="";}}
 const setConnectionState=(state)=>{let tooltip;connectionIndicator.onclick=()=>{};if(state==="connecting"){tooltip="Versuche mit Websocket zu verbinden";}else if(state==="connected"){tooltip="Mit Websocket verbunden!";}else if(state==="disconnected"){tooltip="Verbindung getrennt. Drücke hier um erneut zu versuchen.";connectionIndicator.onclick=()=>{reconnectTries=0;reconnectTimeout=500;connectionIndicator.onclick=()=>{};openWS();}}else{console.error("invalid state",state);return;}

@@ -42,7 +42,7 @@
     }
 
     const emojiToIMG = (emoji) => {
-        let emojiCode = [...emoji].map(e => e.codePointAt(0).toString(16)).join(`-`).toUpperCase();
+        let emojiCode = [...emoji].map(e => e.codePointAt(0).toString(16).padStart(4, '0')).join(`-`).toUpperCase();
 
         let imgEl = document.createElement("img");
 
