@@ -134,9 +134,9 @@ class BlockOfCode:
         #     ].strip()
         #     self.defines = (self.name,)
         # el
-        if isinstance(node, FunctionOrClassDef):  # type: ignore[arg-type, misc]
-            self.name = cast(FunctionOrClassDef, node).name.strip()
-            self.defines = (self.name,)
+        if hasattr(node, "name"):
+            self.name = cast(Any, node).name.strip()
+            self.defines = (self.name,)  # type: ignore[assignment]
         else:
             self.name = None
             self.defines = ()
@@ -210,7 +210,7 @@ def sort_class(
 def sort_classes(
     code: str, filename: str | bytes | PathLike[Any] = "<unknown>"
 ) -> str:
-    """Sort the classes and functions in a list."""
+    """Sort the classes and functions in a module."""
     nodes = compile(code, filename, "exec", ast.PyCF_ONLY_AST).body
 
     lines = code.split("\n")
@@ -231,10 +231,17 @@ def sort_classes(
     if not classes:
         return code
 
+    if isinstance(filename, PathLike):
+        filename = cast(str | bytes, os.fspath(filename))
+
+    if isinstance(filename, str):
+        # pylint: disable=redefined-variable-type
+        filename = filename.encode("utf-8")
+
     for class_ in classes:
         class_lines = sort_class(
             class_.code,
-            filename,
+            b"%b|%b" % (filename, str(class_.name).encode("utf-8")),
         )
         assert len(class_.code.split("\n")) == len(class_lines)
         for i, line in enumerate(class_lines):

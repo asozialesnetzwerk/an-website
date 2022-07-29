@@ -10,9 +10,9 @@ if [ -d venv ]; then
 fi
 
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
-$pip_install "pip>=22.2"
+$pip_install "pip>=22.2" wheel
 if [ $? -ne 0 -a $? -ne 3 ]; then
-  echo "Installing pip>=22.2 failed."
+  echo "Installing pip>=22.2 and wheel failed."
   exit 1
 fi
 $pip_install -r requirements-dev.txt
