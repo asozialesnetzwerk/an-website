@@ -205,7 +205,10 @@ class ChatHandler(BaseRequestHandler):
         """Get a random name as default."""
         return normalize_emojis(
             "".join(random.choice(EMOJIS) for _ in range(4))
-            + (await self.geoip() or {}).get("country_flag", "🏴‍☠")
+            + (await self.geoip() or {}).get(
+                "country_flag",
+                "🏴‍☠" if self.request.host_name.endswith(".onion") else "❔",
+            )
         )
 
     async def post(self) -> None:
