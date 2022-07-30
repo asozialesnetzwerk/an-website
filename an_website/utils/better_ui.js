@@ -48,12 +48,16 @@ function hideSitePane() {
         startPos.x = null;
         startPos.y = null;
 
-        if (Math.abs(diffX) > Math.abs(diffY)) {
-            // sliding horizontally
-            diffX > 0 ? showSitePane() : hideSitePane();
+        let minDiffX = Math.max(
+            12,
+            0.01 * window.screen.width,
+            diffY * 1.5,
+        );
 
-            // e.preventDefault();
-        }
+        console.debug({diffX, minDiffX});
+
+        if (Math.abs(diffX) >= minDiffX)
+            diffX > 0 ? showSitePane() : hideSitePane();
     };
 })()
 // @license-end
