@@ -1,7 +1,7 @@
 [run]
 omit =
     an_website/__main__.py
-    an_website/backdoor/backdoor_client.py
+    an_website/backdoor/client.py
 
 [report]
 exclude_lines =

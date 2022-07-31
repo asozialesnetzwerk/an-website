@@ -66,6 +66,7 @@ E = eval(  # pylint: disable=eval-used
 
 
 class Response(TypedDict):  # noqa: D101
+    # pylint: disable=missing-class-docstring
     success: bool | EllipsisType
     output: None | str
     result: None | tuple[str, None | bytes] | SystemExit
@@ -228,7 +229,7 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
 
 def detect_mode(code: str) -> str:
     """Detect which mode needs to be used."""
-    import __future__
+    import __future__  # pylint: disable=import-outside-toplevel
 
     flags: int = ast.PyCF_ONLY_AST
     if FLUFL:
@@ -260,7 +261,11 @@ def send(
     if isinstance(url, str):
         url = urlsplit(url)
     key = f"Bearer {b64encode(key.encode('utf-8')).decode('ascii')}"
-    headers = {"Authorization": key, "Accept": "application/vnd.python.pickle"}
+    headers = {
+        "Authorization": key,
+        "Accept": "application/vnd.python.pickle",
+        "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
+    }
     if FLUFL:
         headers["X-Future-Feature"] = "barry_as_FLUFL"
     if session:
@@ -365,7 +370,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         else:
             color = "92"  # green
         print(f"\033[{color}mTook: {took:.3f}s\033[0m")
-    status, headers, body = response
+    status, headers, body = response  # pylint: disable=unused-variable
     if status >= 400:
         print(
             "\033[91m" + f"{status} {http.client.responses[status]}" + "\033[0m"
@@ -382,7 +387,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
             print("Output:")
             print(body["output"].strip())
         if isinstance(body["result"], SystemExit):
-            raise body["result"]  # pylint: disable=raising-bad-type
+            raise body["result"]
         if isinstance(body["result"], tuple):
             if not body["success"]:
                 print(body["result"][0])
@@ -614,7 +619,8 @@ Accepted arguments:
     from pyrepl.python_reader import ReaderConsole  # type: ignore
     from pyrepl.python_reader import main as _main
 
-    def _run_and_print(self: Any, code: str) -> None:
+    def _run_and_print(self: ReaderConsole, code: str) -> None:
+        # pylint: disable=unused-argument
         try:
             run_and_print(
                 url,  # type: ignore[arg-type]
@@ -630,7 +636,7 @@ Accepted arguments:
                 proxy_username=proxy_username,
                 proxy_password=proxy_password,
             )
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             print(
                 "\033[91mAn unexpected error occurred. "
                 "Please contact a developer.\033[0m"

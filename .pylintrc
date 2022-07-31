@@ -28,8 +28,6 @@ extension-pkg-allow-list=
     orjson,
     Levenshtein,
     lxml,
-ignore=
-    backdoor_client.py,
 py-version=3.10
 
 [MESSAGES_CONTROL]
