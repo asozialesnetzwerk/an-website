@@ -97,7 +97,7 @@ class Backdoor(APIRequestHandler):
 
     def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
         """Finish with a pickled dictionary."""
-        return self.finish(pickle.dumps(kwargs, PICKLE_PROTOCOL))
+        return self.finish(pickle.dumps(kwargs, self.get_protocol_version()))
 
     def get_flags(self, flags: int) -> int:
         """Get compiler flags."""
@@ -108,6 +108,18 @@ class Backdoor(APIRequestHandler):
                 flags |= getattr(__future__, feature).compiler_flag
 
         return flags
+
+    def get_protocol_version(self) -> int:
+        """Get the protocol version for the response."""
+        try:  # pylint: disable=line-too-long
+            return min(  # type: ignore[no-any-return]
+                int(
+                    self.request.headers.get("X-Pickle-Protocol")  # type: ignore[arg-type]  # noqa: B950
+                ),
+                pickle.HIGHEST_PROTOCOL,
+            )
+        except (TypeError, ValueError):
+            return 5
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
@@ -198,7 +210,7 @@ class Backdoor(APIRequestHandler):
                 new_args = []
                 for arg in exc.args:
                     try:
-                        pickle.dumps(arg, PICKLE_PROTOCOL)
+                        pickle.dumps(arg, self.get_protocol_version())
                     except Exception:  # pylint: disable=broad-except
                         new_args.append(repr(arg))
                     else:
@@ -244,7 +256,7 @@ class Backdoor(APIRequestHandler):
         try:
             result_tuple = (
                 result_tuple[0] or repr(result_tuple[1]),
-                pickle.dumps(result_tuple[1], PICKLE_PROTOCOL),
+                pickle.dumps(result_tuple[1], self.get_protocol_version()),
             )
         except Exception:  # pylint: disable=broad-except
             result_tuple = (
@@ -273,8 +285,9 @@ class Backdoor(APIRequestHandler):
             if not issubclass(exc_info[0], HTTPError):
                 self.finish(
                     pickle.dumps(
-                        self.get_error_message(**kwargs), PICKLE_PROTOCOL
+                        self.get_error_message(**kwargs),
+                        self.get_protocol_version(),
                     )
                 )
                 return
-        self.finish(pickle.dumps(None, PICKLE_PROTOCOL))
+        self.finish(pickle.dumps(None, self.get_protocol_version()))

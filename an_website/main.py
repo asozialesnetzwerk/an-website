@@ -70,7 +70,7 @@ from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
 
 IGNORED_MODULES = {
-    "backdoor.backdoor_client",
+    "backdoor.client",
     "patches.*",
     "quotes.quotes_image",
     "quotes.share_page",

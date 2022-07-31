@@ -62,8 +62,16 @@ SERVICES: tuple[Service, ...] = (
         "online.",
         {
             "Name": "Das Asoziale Netzwerk",
-            "Domain": "stk.asozial.org",
             "SuperTuxKart-Download": "https://supertuxkart.net/Download",
+        },
+    ),
+    Service(
+        "Syncplay-Server",
+        "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
+        "zusammen Sachen gucken.",
+        {
+            "Domain": "syncplay.asozial.org:8999",
+            "Installations-Guide": "https://syncplay.pl/guide/install",
         },
     ),
     Service(
@@ -78,12 +86,11 @@ SERVICES: tuple[Service, ...] = (
         },
     ),
     Service(
-        "Syncplay-Server",
-        "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
-        "zusammen Sachen gucken.",
+        "XMPP-Server",
+        "Das Asoziale Netzwerk hat auch einen XMPP-Server.",
         {
-            "Domain": "syncplay.asozial.org:8999",
-            "Installations-Guide": "https://syncplay.pl/guide/install",
+            "Domain": "asozial.org",
+            "Software": "ejabberd",
         },
     ),
 )

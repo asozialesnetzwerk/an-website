@@ -1,5 +1,5 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+set -e -o pipefail
 
 ###
 # This script is used in the GitHub Actions workflows "Deploy" and "Release"
