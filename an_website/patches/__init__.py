@@ -22,6 +22,8 @@ import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
 import sys
+from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import certifi
@@ -33,7 +35,6 @@ import tornado.log
 import tornado.web
 import uvloop
 import yaml
-from tornado.httputil import parse_body_arguments as _parse_body_arguments
 
 from .. import DIR as ROOT_DIR
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
@@ -53,6 +54,7 @@ def apply() -> None:
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
+    certifi.contents = lambda: Path(certifi.where()).read_text("ascii")
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {"sure": True, "nope": False}
     )
@@ -136,14 +138,16 @@ def ensure_bytes(value: Any) -> bytes:
     return str(value).encode("utf-8")
 
 
-def parse_body_arguments(  # noqa: D103,C901,B950 # pylint: disable=too-complex,too-many-branches
+def parse_body_arguments(  # noqa: D103, C901
     content_type: str,
     body: bytes,
     arguments: dict[str, list[bytes]],
     files: dict[str, list[tornado.httputil.HTTPFile]],
     headers: None | tornado.httputil.HTTPHeaders = None,
+    *,
+    _: Callable[..., None] = tornado.httputil.parse_body_arguments,
 ) -> None:
-    # pylint: disable=missing-function-docstring
+    # pylint: disable=missing-function-docstring, too-complex, too-many-branches
     if content_type.startswith("application/json"):
         if headers and "Content-Encoding" in headers:
             tornado.log.gen_log.warning(
@@ -173,7 +177,7 @@ def parse_body_arguments(  # noqa: D103,C901,B950 # pylint: disable=too-complex,
                 if value is not None:
                     arguments.setdefault(key, []).append(ensure_bytes(value))
     else:
-        _parse_body_arguments(content_type, body, arguments, files, headers)
+        _(content_type, body, arguments, files, headers)
 
 
 def redirect(

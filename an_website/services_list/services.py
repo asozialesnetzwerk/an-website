@@ -78,7 +78,7 @@ SERVICES: tuple[Service, ...] = (
         "Matrix-Heimserver",
         "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und "
         "nutzt im Gegensatz zu den meisten anderen Servern Dendrite anstatt "
-        "Synapse. Die Erstellung eines Accounts ist 100 % kostenlos und ohne "
+        "Synapse. Die Erstellung eines Accounts ist 100% kostenlos und ohne "
         "E-Mail-Adresse oder Telefonnummer möglich.",
         {
             "Domain": "asozial.org",

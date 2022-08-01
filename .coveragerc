@@ -5,8 +5,8 @@ omit =
 
 [report]
 exclude_lines =
-    ^ *pass *$
     pragma: no cover
+    (^|\s)pass\s*(#.*)?$
     raise AssertionError
     raise NotImplementedError
     if __name__ == "__main__":
