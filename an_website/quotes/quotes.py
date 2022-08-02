@@ -481,16 +481,17 @@ class QuoteById(QuoteBaseHandler):
         self, quote_id: int, author_id: int, vote: int
     ) -> None:
         """Save the new vote in Redis."""
-        result = None
-        if EVENT_REDIS.is_set():
-            result = await self.redis.setex(
-                self.get_redis_votes_key(quote_id, author_id),
-                60 * 60 * 24 * 90,  # time to live in seconds (3 months)
-                str(vote),  # value to save (the vote)
-            )
-        if not result:
-            logger.warning("Could not save vote in Redis: %s", result)
-            raise HTTPError(500, "Could not save vote in Redis")
+        if not EVENT_REDIS.is_set():
+            raise HTTPError(503)
+        result = await self.redis.setex(
+            self.get_redis_votes_key(quote_id, author_id),
+            60 * 60 * 24 * 90,  # time to live in seconds (3 months)
+            str(vote),  # value to save (the vote)
+        )
+        if result:
+            return
+        logger.warning("Could not save vote in Redis: %s", result)
+        raise HTTPError(500, "Could not save vote")
 
 
 class QuoteAPIHandler(APIRequestHandler, QuoteById):

@@ -396,6 +396,15 @@ class WebhookLoggingHandler(logging.Handler):
         self.webhook_body_content_type = webhook_body_content_type
         self.webhook_url = webhook_url
 
+    def emit(self, record: logging.LogRecord) -> None:
+        """Handle incoming log records."""
+        if not self.loop.is_running():
+            return  # TODO: save and send later
+
+        task = self.loop.create_task(self.send_request(self.format(record)))
+        self.TASK_REFERENCES.add(task)
+        task.add_done_callback(self.TASK_REFERENCES.discard)
+
     async def send_request(self, data: str) -> int:
         """Send the request to the webhook."""
         async with aiohttp.ClientSession() as session:
@@ -406,15 +415,6 @@ class WebhookLoggingHandler(logging.Handler):
             ) as resp:
                 # TODO: do something on failure
                 return resp.status
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Handle incoming log records."""
-        if not self.loop.is_running():
-            return  # TODO: save and send later
-
-        task = self.loop.create_task(self.send_request(self.format(record)))
-        self.TASK_REFERENCES.add(task)
-        task.add_done_callback(self.TASK_REFERENCES.discard)
 
 
 def setup_logging(  # pragma: no cover

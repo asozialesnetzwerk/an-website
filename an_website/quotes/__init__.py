@@ -315,7 +315,7 @@ async def make_api_request(
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     if response.code != 200:
-        logger.error(
+        logger.warning(
             "%s request to '%s/%s?%s' with body='%s' "
             "failed with code=%d and reason='%s'",
             method,
