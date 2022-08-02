@@ -553,13 +553,18 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
 def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
     config = app.settings["CONFIG"]
-    app.settings["APP_SEARCH"] = AppSearch(
-        config.get("APP_SEARCH", "HOST", fallback=None),
-        http_auth=config.get("APP_SEARCH", "SEARCH_KEY", fallback=None),
-        verify_cert=config.getboolean(
-            "APP_SEARCH", "VERIFY_CERT", fallback=True
-        ),
-        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+    host = config.get("APP_SEARCH", "HOST", fallback=None)
+    app.settings["APP_SEARCH"] = (
+        AppSearch(
+            host,
+            http_auth=config.get("APP_SEARCH", "SEARCH_KEY", fallback=None),
+            verify_cert=config.getboolean(
+                "APP_SEARCH", "VERIFY_CERT", fallback=True
+            ),
+            ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+        )
+        if host
+        else None
     )
     app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
         "APP_SEARCH", "ENGINE_NAME", fallback=NAME.removesuffix("-dev")

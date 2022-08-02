@@ -143,11 +143,14 @@ class Search(HTMLRequestHandler):
 
     async def search(self) -> list[dict[str, float | str]]:
         """Search the website."""
-        if query := self.get_query():
+        if (query := self.get_query()) and self.settings["APP_SEARCH"]:
             try:
                 return await self.app_search(query)
-            except Exception as exc:  # pylint: disable=broad-except
-                logger.exception(exc)
+            except Exception:  # pylint: disable=broad-except
+                logger.error(
+                    "Elastic App Search failed",
+                    # exc_info=sys.exc_info(),
+                )
                 apm: None | elasticapm.Client = self.settings.get(
                     "ELASTIC_APM_CLIENT"
                 )
