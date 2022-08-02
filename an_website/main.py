@@ -24,16 +24,18 @@ import re
 import signal
 import ssl
 import sys
+import time
 import types
 from asyncio.runners import _cancel_all_tasks  # type: ignore
 from base64 import b64encode
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine
 from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, cast
 
+import aiohttp
 import orjson
 import tornado.netutil
 import tornado.process
@@ -373,8 +375,53 @@ def get_ssl_context(  # pragma: no cover
     return None
 
 
+class WebhookLoggingHandler(logging.Handler):
+    """A logging handler that sends data to a webhook."""
+
+    TASK_REFERENCES: set[Awaitable[int]] = set()
+
+    loop: asyncio.AbstractEventLoop
+    webhook_body_content_type: str
+    webhook_url: str
+
+    def __init__(
+        self,
+        loop: asyncio.AbstractEventLoop,
+        webhook_body_content_type: str,
+        webhook_url: str,
+    ):
+        """Initialize this cool class."""
+        super().__init__(level=logging.ERROR)
+        self.loop = loop
+        self.webhook_body_content_type = webhook_body_content_type
+        self.webhook_url = webhook_url
+
+    async def send_request(self, data: str) -> int:
+        """Send the request to the webhook."""
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                self.webhook_url,
+                data=data.strip(),
+                headers={"Content-Type": self.webhook_body_content_type},
+            ) as resp:
+                # TODO: do something on failure
+                return resp.status
+
+    def emit(self, record: logging.LogRecord) -> None:
+        """Handle incoming log records."""
+        if not self.loop.is_running():
+            return  # TODO: save and send later
+
+        task = self.loop.create_task(self.send_request(self.format(record)))
+        self.TASK_REFERENCES.add(task)
+        task.add_done_callback(self.TASK_REFERENCES.discard)
+
+
 def setup_logging(  # pragma: no cover
-    config: ConfigParser, *, force: bool = False
+    config: ConfigParser,
+    loop: asyncio.AbstractEventLoop,
+    *,
+    force: bool = False,
 ) -> None:
     """Setup logging."""  # noqa: D401
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
@@ -391,16 +438,47 @@ def setup_logging(  # pragma: no cover
 
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
 
+    default_logging_format_no_color = re.sub(
+        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
+    )
+
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
         logging.Formatter(
-            re.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT),
+            default_logging_format_no_color,
             LogFormatter.DEFAULT_DATE_FORMAT,
         )
         if sys.flags.dev_mode
         else LogFormatter()
     )
     root_logger.addHandler(stream_handler)
+
+    webhook_url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
+    if webhook_url:
+        webhook_handler = WebhookLoggingHandler(
+            loop,
+            config.get(
+                "LOGGING",
+                "WEBHOOK_BODY_CONTENT_TYPE",
+                fallback="application/json",
+            ),
+            webhook_url,
+        )
+        formatter = logging.Formatter(
+            config.get(
+                "LOGGING",
+                "WEBHOOK_BODY",
+                fallback='{"text":"' + default_logging_format_no_color + '"}',
+            ),
+            config.get(
+                "LOGGING",
+                "WEBHOOK_TIMESTAMP_FORMAT",
+                fallback=None,
+            ),
+        )
+        formatter.converter = time.gmtime  # type: ignore
+        webhook_handler.setFormatter(formatter)
+        root_logger.addHandler(webhook_handler)
 
     if path:
         os.makedirs(path, 0o755, True)
@@ -722,7 +800,9 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     install_signal_handler()
 
-    setup_logging(CONFIG)
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+
+    setup_logging(CONFIG, loop)
 
     logger.info("Starting %s %s", NAME, VERSION)
 
@@ -803,8 +883,6 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
                 os.path.join(unix_socket_path, f"{NAME}.{task_id}.sock")
             )
         )
-
-    loop = asyncio.get_event_loop_policy().get_event_loop()
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
