@@ -27,7 +27,6 @@ from types import TracebackType
 from typing import Any
 
 import dill as pickle  # type: ignore
-import elasticapm  # type: ignore
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN
@@ -144,13 +143,10 @@ class Backdoor(APIRequestHandler):
                 for key, value in session.items():
                     try:
                         session[key] = pickle.loads(value)
-                    except Exception as exc:  # pylint: disable=broad-except
-                        logger.exception(exc)
-                        apm: None | elasticapm.Client = self.settings.get(
-                            "ELASTIC_APM_CLIENT"
-                        )
-                        if apm:
-                            apm.capture_exception()
+                    except Exception:  # pylint: disable=broad-except
+                        logger.exception("Loading the session failed")
+                        if self.apm_client:
+                            self.apm_client.capture_exception()
             else:
                 session = {
                     "__builtins__": __builtins__,

@@ -15,9 +15,11 @@
 #debug = nope
 #path = ...
 #webhook_url = https://discord.com/api/webhooks/...
-#webhook_body = {"embeds":[{"timestamp":"%(asctime)s","title":"%(levelname)s","description":"%(message)s","footer":{"text":"%(module)s:%(lineno)d"}}],"allowed_mentions":{"parse":[]},"username":"an-website","avatar_url":"https://asozial.org/favicon.png"}
-#webhook_timestamp_format = %Y-%m-%dT%H:%M:%SZ
-#webhook_body_content_type = application/json
+#webhook_content_type = application/json
+#webhook_body_format = {"embeds":[{"timestamp":"%(asctime)s","title":"%(levelname)s","description":"%(message)s","footer":{"text":"%(module)s:%(lineno)d"}}],"allowed_mentions":{"parse":[]},"username":"an-website","avatar_url":"https://asozial.org/favicon.png"}
+#webhook_timestamp_timezone = ...
+#webhook_timestamp_format = ...
+#webhook_escape_message = sure
 
 #[REPORTING]
 #enabled = sure

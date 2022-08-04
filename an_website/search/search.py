@@ -17,8 +17,8 @@ from __future__ import annotations
 import asyncio
 import logging
 
-import elasticapm  # type: ignore
 import orjson as json
+from elastic_enterprise_search import AppSearch  # type: ignore
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -44,7 +44,36 @@ def get_module_info() -> ModuleInfo:
 class Search(HTMLRequestHandler):
     """The request handler for the search page."""
 
-    async def app_search(self, query: str) -> list[dict[str, float | str]]:
+    async def get(self, *, head: bool = False) -> None:
+        """Handle GET requests to the search page."""
+        if head:
+            return
+        await self.render(
+            "pages/search.html",
+            query=self.get_query(),
+            results=await self.search(),
+        )
+
+    def get_query(self) -> str:
+        """Return the query."""
+        return str(self.get_argument("q", ""))
+
+    async def search(self) -> list[dict[str, float | str]]:
+        """Search the website."""
+        if (query := self.get_query()) and self.app_search:
+            try:
+                return await self.search_new(
+                    self.app_search, self.app_search_engine, query
+                )
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("App Search request failed")
+                if self.apm_client:
+                    self.apm_client.capture_exception()
+        return await self.search_old(query)
+
+    async def search_new(
+        self, client: AppSearch, engine: str, query: str
+    ) -> list[dict[str, str | float]]:
         """Search the website using Elastic App Search."""
         return [
             {
@@ -55,8 +84,8 @@ class Search(HTMLRequestHandler):
             }
             for result in (
                 await asyncio.to_thread(
-                    self.settings["APP_SEARCH"].search,
-                    self.settings["APP_SEARCH_ENGINE_NAME"],
+                    client.search,
+                    engine,
                     body={
                         "query": query,
                         "filters": {
@@ -88,23 +117,7 @@ class Search(HTMLRequestHandler):
             )["results"]
         ]
 
-    async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests to the search page."""
-        if head:
-            return
-        await self.render(
-            "pages/search.html",
-            query=self.get_query(),
-            results=await self.search(),
-        )
-
-    def get_query(self) -> str:
-        """Return the query."""
-        return str(self.get_argument("q", ""))
-
-    async def old_fallback_search(
-        self, query: str
-    ) -> list[dict[str, float | str]]:
+    async def search_old(self, query: str) -> list[dict[str, str | float]]:
         """Search the website using the old search engine."""
         page_infos: list[tuple[float, list[tuple[str, float | str]]]] = []
 
@@ -140,23 +153,6 @@ class Search(HTMLRequestHandler):
         page_infos.sort(reverse=True)
 
         return [dict(info) for _, info in page_infos]
-
-    async def search(self) -> list[dict[str, float | str]]:
-        """Search the website."""
-        if (query := self.get_query()) and self.settings["APP_SEARCH"]:
-            try:
-                return await self.app_search(query)
-            except Exception:  # pylint: disable=broad-except
-                logger.error(
-                    "Elastic App Search failed",
-                    # exc_info=sys.exc_info(),
-                )
-                apm: None | elasticapm.Client = self.settings.get(
-                    "ELASTIC_APM_CLIENT"
-                )
-                if apm:
-                    apm.capture_exception()
-        return await self.old_fallback_search(query)
 
 
 class SearchAPIHandler(APIRequestHandler, Search):

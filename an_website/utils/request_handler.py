@@ -43,6 +43,7 @@ from .. import GH_ORG_URL, GH_PAGES_URL, GH_REPO_URL
 from .base_request_handler import BaseRequestHandler
 from .static_file_handling import fix_static_url
 from .utils import (
+    SUS_PATHS,
     ModuleInfo,
     Permission,
     bool_to_str,
@@ -223,8 +224,8 @@ class HTMLRequestHandler(BaseRequestHandler):
             short_title=self.short_title,
             theme=self.get_display_theme(),
             title=self.title,
-            apm_script=self.settings["ELASTIC_APM"]["INLINE_SCRIPT"]
-            if self.elastic_apm_enabled()
+            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
+            if self.apm_enabled
             else None,
         )
         namespace.update(
@@ -311,30 +312,7 @@ class NotFoundHandler(HTMLRequestHandler):
 
         new_path = replace_umlauts(new_path)
 
-        if new_path.lower() in {
-            "/-profiler/phpinfo",
-            "/.aws/credentials",
-            "/.env.bak",
-            "/.ftpconfig",
-            "/admin/controller/extension/extension",
-            "/assets/filemanager/dialog",
-            "/assets/vendor/server/php",
-            "/aws.yml",
-            "/boaform/admin/formlogin",
-            "/phpinfo",
-            "/public/assets/jquery-file-upload/server/php",
-            "/root",
-            "/settings/aws.yml",
-            "/uploads",
-            "/vendor/phpunit/phpunit/src/util/php/eval-stdin",
-            "/wordpress",
-            "/wp",
-            "/wp-admin",
-            "/wp-admin/css",
-            "/wp-includes",
-            "/wp-login",
-            "/wp-upload",
-        }:
+        if new_path.lower() in SUS_PATHS:
             self.set_status(469, reason="Nice Try")
             return self.write_error(469)
 

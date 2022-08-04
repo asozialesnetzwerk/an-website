@@ -38,6 +38,7 @@ import elasticapm  # type: ignore
 import orjson as json
 import yaml
 from accept_types import get_best_match  # type: ignore
+from elastic_enterprise_search import AppSearch  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
@@ -98,13 +99,33 @@ class BaseRequestHandler(RequestHandler):
     # info about page, can be overridden in module_info
     title: str = "Das Asoziale Netzwerk"
     short_title: str = "Asoziales Netzwerk"
-    description: str = "Die tolle Webseite des Asozialen Netzwerkes"
+    description: str = "Die tolle Webseite des Asozialen Netzwerks"
 
     active_origin_trials: set[bytes]
     content_type: None | str = None
     auth_failed: bool = False
     apm_script: None | str
     now: datetime
+
+    @property
+    def apm_client(self) -> None | elasticapm.Client:
+        """Get the APM client from the settings."""
+        return self.settings.get("ELASTIC_APM", {}).get("CLIENT")
+
+    @property
+    def apm_enabled(self) -> bool:
+        """Return whether APM is enabled."""
+        return bool(self.settings.get("ELASTIC_APM", {}).get("ENABLED"))
+
+    @property
+    def app_search(self) -> None | AppSearch:
+        """Get the App Search client from the settings."""
+        return self.settings.get("APP_SEARCH")
+
+    @property
+    def app_search_engine(self) -> str:
+        """Get the App Search engine from the settings."""
+        return self.settings.get("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
 
     def compute_etag(self) -> None | str:
         """Compute ETag with Base85 encoding."""
@@ -134,18 +155,6 @@ class BaseRequestHandler(RequestHandler):
             )
 
         return lambda spam: spam  # type: ignore[no-any-return]
-
-    @property
-    def elastic_apm_client(self) -> None | elasticapm.Client:
-        """Get the Elastic APM client from the settings."""
-        return self.settings.get("ELASTIC_APM_CLIENT")
-
-    def elastic_apm_enabled(self) -> bool:
-        """Return whether Elastic APM is enabled."""
-        return (
-            "ELASTIC_APM" in self.settings
-            and self.settings["ELASTIC_APM"]["ENABLED"]
-        )
 
     @property
     def elasticsearch(self) -> AsyncElasticsearch:
@@ -441,13 +450,10 @@ class BaseRequestHandler(RequestHandler):
         tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-        except ElasticsearchException as exc:
-            logger.exception(exc)
-            apm: None | elasticapm.Client = self.settings.get(
-                "ELASTIC_APM_CLIENT"
-            )
-            if apm:
-                apm.capture_exception()
+        except ElasticsearchException:
+            logger.exception("Elasticsearch request failed")
+            if self.apm_client:
+                self.apm_client.capture_exception()
         else:
             if geoip and "timezone" in geoip:
                 tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
@@ -797,7 +803,10 @@ class BaseRequestHandler(RequestHandler):
     def set_csp_header(self) -> None:
         """Set the Content-Security-Policy header."""
         script_src = ["'self'"]
-        if self.elastic_apm_enabled():
+        if (
+            self.apm_enabled
+            and "INLINE_SCRIPT_HASH" in self.settings["ELASTIC_APM"]
+        ):
             script_src.extend(
                 (
                     f"'sha256-{self.settings['ELASTIC_APM']['INLINE_SCRIPT_HASH']}'",
@@ -818,7 +827,8 @@ class BaseRequestHandler(RequestHandler):
             )
             + (
                 f"connect-src 'self' {self.settings['ELASTIC_APM']['SERVER_URL']};"
-                if self.elastic_apm_enabled()
+                if self.apm_enabled
+                and "SERVER_URL" in self.settings["ELASTIC_APM"]
                 else ""
             ),
         )

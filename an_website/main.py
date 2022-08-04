@@ -24,18 +24,18 @@ import re
 import signal
 import ssl
 import sys
-import time
 import types
+from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore
 from base64 import b64encode
-from collections.abc import Awaitable, Callable, Coroutine
+from collections.abc import Callable, Coroutine
 from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, cast
+from zoneinfo import ZoneInfo
 
-import aiohttp
 import orjson
 import tornado.netutil
 import tornado.process
@@ -49,6 +49,7 @@ from redis.asyncio import (
     SSLConnection,
     UnixDomainSocketConnection,
 )
+from tornado.httpclient import AsyncHTTPClient
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
@@ -67,6 +68,7 @@ from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
+from .utils.logging import AsyncHandler, WebhookFormatter
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
@@ -80,7 +82,7 @@ IGNORED_MODULES = {
     "swapped_words.sw_config_file",
     "templates.*",
     "utils.base_request_handler",
-    "utils.braille",
+    "utils.logging",
     "utils.static_file_handling",
     "utils.utils",
 }
@@ -246,7 +248,7 @@ def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
         (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
     )
 
-    logger.debug("Loaded %d handlers.", len(handlers))
+    logger.debug("Loaded %d handlers", len(handlers))
 
     return handlers
 
@@ -375,59 +377,18 @@ def get_ssl_context(  # pragma: no cover
     return None
 
 
-class WebhookLoggingHandler(logging.Handler):
-    """A logging handler that sends data to a webhook."""
-
-    TASK_REFERENCES: set[Awaitable[int]] = set()
-
-    loop: asyncio.AbstractEventLoop
-    webhook_body_content_type: str
-    webhook_url: str
-
-    def __init__(
-        self,
-        loop: asyncio.AbstractEventLoop,
-        webhook_body_content_type: str,
-        webhook_url: str,
-    ):
-        """Initialize this cool class."""
-        super().__init__(level=logging.ERROR)
-        self.loop = loop
-        self.webhook_body_content_type = webhook_body_content_type
-        self.webhook_url = webhook_url
-
-    def emit(self, record: logging.LogRecord) -> None:
-        """Handle incoming log records."""
-        if not self.loop.is_running():
-            return  # TODO: save and send later
-
-        task = self.loop.create_task(self.send_request(self.format(record)))
-        self.TASK_REFERENCES.add(task)
-        task.add_done_callback(self.TASK_REFERENCES.discard)
-
-    async def send_request(self, data: str) -> int:
-        """Send the request to the webhook."""
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                self.webhook_url,
-                data=data.strip(),
-                headers={"Content-Type": self.webhook_body_content_type},
-            ) as resp:
-                # TODO: do something on failure
-                return resp.status
-
-
 def setup_logging(  # pragma: no cover
     config: ConfigParser,
-    loop: asyncio.AbstractEventLoop,
+    loop: AbstractEventLoop,
     *,
     force: bool = False,
 ) -> None:
     """Setup logging."""  # noqa: D401
-    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
-    path = config.get("LOGGING", "PATH", fallback=None)
-
     root_logger = logging.getLogger()
+    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
+    default_logging_format_no_color = re.sub(
+        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
+    )
 
     if root_logger.handlers:
         if not force:
@@ -437,10 +398,6 @@ def setup_logging(  # pragma: no cover
             handler.close()
 
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-
-    default_logging_format_no_color = re.sub(
-        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
-    )
 
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
@@ -453,33 +410,7 @@ def setup_logging(  # pragma: no cover
     )
     root_logger.addHandler(stream_handler)
 
-    webhook_url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
-    if webhook_url:
-        webhook_handler = WebhookLoggingHandler(
-            loop,
-            config.get(
-                "LOGGING",
-                "WEBHOOK_BODY_CONTENT_TYPE",
-                fallback="application/json",
-            ),
-            webhook_url,
-        )
-        formatter = logging.Formatter(
-            config.get(
-                "LOGGING",
-                "WEBHOOK_BODY",
-                fallback='{"text":"' + default_logging_format_no_color + '"}',
-            ),
-            config.get(
-                "LOGGING",
-                "WEBHOOK_TIMESTAMP_FORMAT",
-                fallback=None,
-            ),
-        )
-        formatter.converter = time.gmtime  # type: ignore
-        webhook_handler.setFormatter(formatter)
-        root_logger.addHandler(webhook_handler)
-
+    path = config.get("LOGGING", "PATH", fallback=None)
     if path:
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
@@ -490,6 +421,54 @@ def setup_logging(  # pragma: no cover
         )
         file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
+
+    webhook_url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
+    if webhook_url:
+        webhook_content_type = config.get(
+            "LOGGING",
+            "WEBHOOK_CONTENT_TYPE",
+            fallback="application/json",
+        )
+
+        async def send_request(body: str) -> None:
+            """Send the request to the webhook."""
+            await AsyncHTTPClient().fetch(
+                cast(str, webhook_url),
+                method="POST",
+                headers={"Content-Type": webhook_content_type},
+                body=body.strip(),
+                ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+            )
+
+        webhook_handler = AsyncHandler(
+            logging.ERROR,
+            emitter=send_request,
+            loop=loop,
+        )
+        formatter = WebhookFormatter(
+            config.get(
+                "LOGGING",
+                "WEBHOOK_BODY_FORMAT",
+                fallback='{"text":"' + default_logging_format_no_color + '"}',
+            ),
+            config.get(
+                "LOGGING",
+                "WEBHOOK_TIMESTAMP_FORMAT",
+                fallback=None,
+            ),
+        )
+        formatter.timezone = (
+            ZoneInfo(config.get("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE"))
+            if config.has_option("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE")
+            else None
+        )
+        formatter.escape_message = config.getboolean(
+            "LOGGING",
+            "WEBHOOK_ESCAPE_MESSAGE",
+            fallback=True,
+        )
+        webhook_handler.setFormatter(formatter)
+        root_logger.addHandler(webhook_handler)
 
     logging.captureWarnings(True)
 
@@ -523,6 +502,7 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
         "TRANSACTION_IGNORE_URLS": [
             "/api/ping",
             "/static/*",
+            "/favicon.png",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [
@@ -547,17 +527,18 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ascii")
         ).digest()
     ).decode("ascii")
-    app.settings["ELASTIC_APM_CLIENT"] = ElasticAPM(app).client
+    app.settings["ELASTIC_APM"]["CLIENT"] = ElasticAPM(app).client
 
 
 def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
     config = app.settings["CONFIG"]
     host = config.get("APP_SEARCH", "HOST", fallback=None)
+    key = config.get("APP_SEARCH", "SEARCH_KEY", fallback=None)
     app.settings["APP_SEARCH"] = (
         AppSearch(
             host,
-            http_auth=config.get("APP_SEARCH", "SEARCH_KEY", fallback=None),
+            http_auth=key,
             verify_cert=config.getboolean(
                 "APP_SEARCH", "VERIFY_CERT", fallback=True
             ),
@@ -566,11 +547,10 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
         if host
         else None
     )
-    app.settings["APP_SEARCH_ENGINE_NAME"] = config.get(
+    app.settings["APP_SEARCH_HOST"] = host
+    app.settings["APP_SEARCH_KEY"] = key
+    app.settings["APP_SEARCH_ENGINE"] = config.get(
         "APP_SEARCH", "ENGINE_NAME", fallback=NAME.removesuffix("-dev")
-    )
-    app.settings["APP_SEARCH_SEARCH_KEY"] = config.get(
-        "APP_SEARCH", "SEARCH_KEY", fallback=None
     )
 
 
@@ -624,10 +604,9 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
         )
         try:
             await es.transport.perform_request("HEAD", "/")
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
-            logger.exception(exc)
-            logger.error("Connecting to Elasticsearch failed!")
+            logger.exception("Connecting to Elasticsearch failed")
         else:
             if not EVENT_ELASTICSEARCH.is_set():
                 await setup_elasticsearch_configs(
@@ -646,7 +625,6 @@ async def setup_elasticsearch_configs(  # noqa: C901
     get: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
     put: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
     for i in range(3):
-
         if i == 0:  # pylint: disable=compare-to-zero
             what = "ingest_pipelines"
             get = elasticsearch.ingest.get_pipeline
@@ -661,11 +639,9 @@ async def setup_elasticsearch_configs(  # noqa: C901
             put = elasticsearch.indices.put_index_template
 
         base_path = Path(os.path.join(DIR, "elasticsearch", what))
-
         for path in base_path.rglob("*.json"):
-
             if not path.is_file():
-                logger.warning("%s is not a file!", path)
+                logger.warning("%s is not a file", path)
                 continue
 
             body = orjson.loads(
@@ -761,10 +737,9 @@ async def check_redis(app: Application) -> None:  # pragma: no cover
         redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
         try:
             await redis.ping()
-        except Exception as exc:  # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             EVENT_REDIS.clear()
-            logger.exception(exc)
-            logger.error("Connecting to Redis failed!")
+            logger.exception("Connecting to Redis failed")
         else:
             EVENT_REDIS.set()
         await asyncio.sleep(20)
@@ -813,7 +788,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     if sys.platform == "win32":
         logger.warning(
-            "Please note that running on Windows is not officially supported."
+            "Please note that running on Windows is not officially supported"
         )
 
     ignore_modules(CONFIG)
@@ -826,7 +801,9 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     setup_elasticsearch(app)
     setup_app_search(app)
     setup_redis(app)
-    setup_apm(app)
+
+    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
+        setup_apm(app)
 
     behind_proxy = CONFIG.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 

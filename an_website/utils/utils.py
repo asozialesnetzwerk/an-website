@@ -50,8 +50,44 @@ Handler = Union[
 
 OpenMojiValue = Literal[False, "img"]  # , "font"]
 
+SUS_PATHS = {
+    "/-profiler/phpinfo",
+    "/.aws/credentials",
+    "/.env",
+    "/.env.bak",
+    "/.ftpconfig",
+    "/admin/controller/extension/extension",
+    "/assets/filemanager/dialog",
+    "/assets/vendor/server/php",
+    "/aws.yml",
+    "/boaform/admin/formlogin",
+    "/phpinfo",
+    "/public/assets/jquery-file-upload/server/php",
+    "/root",
+    "/settings/aws.yml",
+    "/uploads",
+    "/vendor/phpunit/phpunit/src/util/php/eval-stdin",
+    "/wordpress",
+    "/wp",
+    "/wp-admin",
+    "/wp-admin/css",
+    "/wp-includes",
+    "/wp-login",
+    "/wp-upload",
+}
 
-# sortable so the pages can be linked in an order
+
+class Permission(IntFlag):
+    """Permissions for accessing restricted stuff."""
+
+    RATELIMITS = 1
+    TRACEBACK = 2
+    BACKDOOR = 4
+    UPDATE = 8
+    REPORTING = 16
+
+
+# sortable, so the pages can be linked in an order
 # frozen, so it's immutable
 @dataclass(order=True, frozen=True)
 class PageInfo:
@@ -192,16 +228,6 @@ class Timer:
         return self._execution_time
 
 
-class Permission(IntFlag):
-    """Permissions for accessing the website."""
-
-    RATELIMITS = 1
-    TRACEBACK = 2
-    BACKDOOR = 4
-    UPDATE = 8
-    REPORTING = 16
-
-
 @cache
 def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
     # pylint: disable=confusing-consecutive-elif
@@ -261,7 +287,8 @@ def apm_anonymization_processor(  # pylint: disable=unused-argument
     if "context" in event and "request" in event["context"]:
         request = event["context"]["request"]
         if "url" in request and "pathname" in request["url"]:
-            if request["url"]["pathname"] == "/robots.txt":
+            path = request["url"]["pathname"]
+            if path == "/robots.txt" or path.lower() in SUS_PATHS:
                 return event
         if "socket" in request and "remote_address" in request["socket"]:
             request["socket"]["remote_address"] = anonymize_ip(
@@ -271,8 +298,8 @@ def apm_anonymization_processor(  # pylint: disable=unused-argument
             headers = request["headers"]
             if "X-Forwarded-For" in headers:
                 headers["X-Forwarded-For"] = ", ".join(
-                    anonymize_ip(_, ignore_invalid=True)
-                    for _ in headers["X-Forwarded-For"].split(",")
+                    anonymize_ip(ip.strip(), ignore_invalid=True)
+                    for ip in headers["X-Forwarded-For"].split(",")
                 )
             for header in headers:
                 if "ip" in header.lower().split("-"):

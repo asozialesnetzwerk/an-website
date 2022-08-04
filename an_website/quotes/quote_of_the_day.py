@@ -158,7 +158,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             lambda wq: wq.rating > 1
         )
         if not quotes:
-            logger.warning("No quotes available!")
+            logger.warning("No quotes available")
             return None
         count = len(quotes)
         index = random.randrange(0, count)

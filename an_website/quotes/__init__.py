@@ -316,12 +316,10 @@ async def make_api_request(
     )
     if response.code != 200:
         logger.warning(
-            "%s request to '%s/%s?%s' with body='%s' "
-            "failed with code=%d and reason='%s'",
+            "%s request to %r with body=%r "
+            "failed with code=%d and reason=%r",
             method,
-            API_URL,
-            endpoint,
-            args,
+            f"{API_URL}/{endpoint}?{args}",
             body,
             response.code,
             response.reason,
@@ -485,14 +483,15 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
                             await update_cache(
                                 app, update_quotes=False, update_authors=False
                             )
-                        except Exception as exc:  # pylint: disable=broad-except
-                            logger.exception(exc)
-                            logger.error("Updating quotes cache failed.")
-                            apm = app.settings.get("ELASTIC_APM_CLIENT")
+                        except Exception:  # pylint: disable=broad-except
+                            logger.exception("Updating quotes cache failed")
+                            apm = app.settings.get("ELASTIC_APM", {}).get(
+                                "CLIENT"
+                            )
                             if apm:
                                 apm.capture_exception()
                         else:
-                            logger.info("Updated quotes cache successfully.")
+                            logger.info("Updated quotes cache successfully")
                     logger.info(
                         "Next update of quotes cache in %d seconds",
                         update_cache_in,
@@ -504,16 +503,15 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     while True:  # update the cache every hour
         try:
             await update_cache(app)
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.exception(exc)
-            logger.error("Updating quotes cache failed.")
-            apm = app.settings.get("ELASTIC_APM_CLIENT")
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Updating quotes cache failed")
+            apm = app.settings.get("ELASTIC_APM", {}).get("CLIENT")
             if apm:
                 apm.capture_exception()
             failed += 1
             await asyncio.sleep(pow(min(failed * 2, 60), 2))  # 4,16,...,60*60
         else:
-            logger.info("Updated quotes cache successfully.")
+            logger.info("Updated quotes cache successfully")
             failed = 0
             await asyncio.sleep(60 * 60)
 
@@ -525,7 +523,7 @@ async def update_cache(
     update_authors: bool = True,
 ) -> None:
     """Fill the cache with all data from the API."""
-    logger.info("Updating quotes cache...")
+    logger.info("Updating quotes cache")
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     redis_available = EVENT_REDIS.is_set()

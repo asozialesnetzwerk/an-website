@@ -19,8 +19,14 @@ import asyncio
 import io
 import os
 import sys
+from asyncio import Future
 from queue import SimpleQueue
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import (  # pylint: disable=import-private-name
+    NamedTemporaryFile,
+    TemporaryDirectory,
+    _TemporaryFileWrapper,
+)
+from typing import Any
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -64,7 +70,10 @@ class UpdateAPI(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("PUT",)
     REQUIRED_PERMISSION = Permission.UPDATE
 
+    dir: TemporaryDirectory[str]
+    file: _TemporaryFileWrapper[bytes]
     queue: SimpleQueue[None | bytes]
+    future: Future[Any]
 
     def data_received(self, chunk: bytes) -> None:
         self.queue.put(chunk)
@@ -73,7 +82,6 @@ class UpdateAPI(APIRequestHandler):
         self.queue.put(None)
 
     async def prepare(self) -> None:
-        # pylint: disable=attribute-defined-outside-init
         await super().prepare()
         loop = asyncio.get_running_loop()
         self.dir = TemporaryDirectory()

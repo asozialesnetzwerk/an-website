@@ -23,8 +23,8 @@ import asyncio
 import logging
 import random
 import re
-from asyncio import Task
-from collections.abc import Coroutine, Generator
+from asyncio import AbstractEventLoop, Future
+from collections.abc import Awaitable
 from typing import Any, Literal, cast
 
 from tornado.web import HTTPError, RedirectHandler
@@ -160,14 +160,15 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
     RATELIMIT_GET_COUNT_PER_PERIOD = 20
     RATELIMIT_GET_PERIOD = 10
 
-    TASK_REFERENCES: set[Task[Any]] = set()
+    FUTURE_REFERENCES: set[Future[Any]] = set()
+
+    awaitables: list[Awaitable[Any]]
+    loop: AbstractEventLoop
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the base request handler."""
         super().__init__(*args, **kwargs)
-        self.awaitables: list[
-            Generator[Any, None, Any] | Coroutine[Any, Any, Any]
-        ] = []
+        self.awaitables = []
 
     def get_next_id(self, rating_filter: None | str = None) -> tuple[int, int]:
         """Get the id of the next quote."""
@@ -228,15 +229,19 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """
         if not self.awaitables:
             quote_id, author_id = self.get_next_id()
-            task = asyncio.create_task(
+            task = self.loop.create_task(
                 get_wrong_quote(quote_id, author_id, use_cache=False)
             )
-            self.TASK_REFERENCES.add(task)
-            task.add_done_callback(self.TASK_REFERENCES.discard)
+            self.FUTURE_REFERENCES.add(task)
+            task.add_done_callback(self.FUTURE_REFERENCES.discard)
         for awaitable in self.awaitables:
-            task = asyncio.create_task(awaitable)
-            self.TASK_REFERENCES.add(task)
-            task.add_done_callback(self.TASK_REFERENCES.discard)
+            future = asyncio.ensure_future(awaitable, loop=self.loop)
+            self.FUTURE_REFERENCES.add(future)
+            future.add_done_callback(self.FUTURE_REFERENCES.discard)
+
+    async def prepare(self) -> None:
+        await super().prepare()
+        self.loop = asyncio.get_running_loop()
 
     def rating_filter(
         self,

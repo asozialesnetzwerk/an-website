@@ -16,9 +16,9 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends libcurl3-nss \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /venv /opt/an-website
+COPY --from=builder /venv /venv
 RUN mkdir /data
 WORKDIR /data
 VOLUME /data
 EXPOSE 8888
-CMD ["/opt/an-website/bin/an-website"]
+CMD ["/venv/bin/an-website"]
