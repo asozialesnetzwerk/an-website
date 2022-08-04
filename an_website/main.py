@@ -503,6 +503,9 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             "/api/ping",
             "/static/*",
             "/favicon.png",
+            "/robots.txt",
+            "/humans.txt",
+            "/.env",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [

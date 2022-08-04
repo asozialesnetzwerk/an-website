@@ -155,7 +155,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if quote_data:  # if was saved already
             return quote_data
         quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
-            lambda wq: wq.rating > 1
+            lambda wq: wq.rating > 1, shuffle=True
         )
         if not quotes:
             logger.warning("No quotes available")
@@ -177,6 +177,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
                 return QuoteOfTheDayData(
                     today, quote, self.get_scheme_and_netloc()
                 )
+        logger.critical("Failed to generate a new quote of the day")
         return None
 
     def get_redis_quote_date_key(self, wq_date: date) -> str:
