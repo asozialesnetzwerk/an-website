@@ -17,12 +17,12 @@ from __future__ import annotations
 
 import email.utils
 import os
-import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 
 import orjson as json
+import regex
 
 from ..utils.static_file_handling import hash_file
 from ..utils.utils import name_to_id, replace_umlauts
@@ -59,17 +59,17 @@ def mark_query(text: str, query: None | str) -> str:
     if not query:
         return text
 
-    query = re.sub("(ä|ae)", "(ä|ae)", query.lower())
-    query = re.sub("(ö|oe)", "(ö|oe)", query)
-    query = re.sub("(ü|ue)", "(ü|ue)", query)
-    query = re.sub("(ü|ue)", "(ü|ue)", query)
+    query = regex.sub("(ä|ae)", "(ä|ae)", query.lower())
+    query = regex.sub("(ö|oe)", "(ö|oe)", query)
+    query = regex.sub("(ü|ue)", "(ü|ue)", query)
+    query = regex.sub("(ü|ue)", "(ü|ue)", query)
 
     for word in query.split(" "):
-        text = re.sub(
+        text = regex.sub(
             word,
             lambda match: f'<div class="marked">{match[0]}</div>',
             text,
-            flags=re.RegexFlag.IGNORECASE,
+            regex.IGNORECASE,  # pylint: disable=no-member
         )
 
     return text
@@ -147,7 +147,7 @@ class SoundInfo(Info):
 
     def get_file_name(self) -> str:
         """Parse the text to return the name of the file."""
-        return re.sub(
+        return regex.sub(
             r"[^a-z0-9_-]+",
             "",
             replace_umlauts(self.text.lower().replace(" ", "_")),

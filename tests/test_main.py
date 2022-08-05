@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import configparser
 import os
-import re
 
+import regex
 from tornado.web import Application
 
 from an_website import main, patches
@@ -71,7 +71,7 @@ async def test_parsing_module_infos(
                 # check if at least one handler matches the path
                 handler_matches_path = False
                 for handler in module_info.handlers:
-                    if re.fullmatch("(?i)" + handler[0], module_info.path):
+                    if regex.fullmatch("(?i)" + handler[0], module_info.path):
                         handler_matches_path = True
                         break
                 assert handler_matches_path

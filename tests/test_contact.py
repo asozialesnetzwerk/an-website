@@ -98,5 +98,5 @@ async def test_sending_email() -> None:
 
 if __name__ == "__main__":
     test_add_geoip_info_to_message()
-    # test_add_geoip_info_to_message_recursive()
+    test_add_geoip_info_to_message_recursive()
     asyncio.run(test_sending_email())

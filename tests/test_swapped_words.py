@@ -16,10 +16,10 @@
 from __future__ import annotations
 
 import base64
-import re
 
 import orjson as json
 import pytest
+import regex
 import tornado.web
 import yaml
 
@@ -94,8 +94,8 @@ def test_parsing_config() -> None:
         parsed_conf.swap_words(str_to_replace)
         == "B b B b  XX  Dd dd dD DD  XX  Cc cc cC CC"
     )
-    assert re.fullmatch(parsed_conf.get_regex(), "a")
-    assert re.fullmatch(parsed_conf.get_regex(), "cc")
+    assert regex.fullmatch(parsed_conf.get_regex(), "a")
+    assert regex.fullmatch(parsed_conf.get_regex(), "cc")
     assert sw_config.beautify(minified) == beautified
     assert sw_config.minify(beautified) == minified
     assert parsed_conf.get_replacement_by_group_name("n", "lol") == "lol"
@@ -113,8 +113,8 @@ def test_parsing_config() -> None:
         parsed_conf.swap_words(str_to_replace)
         == "B b A a  XX  Dd dd dD DD  XX  Dd dd dD DD"
     )
-    assert re.fullmatch(parsed_conf.get_regex(), "a")
-    assert re.fullmatch(parsed_conf.get_regex(), "cc")
+    assert regex.fullmatch(parsed_conf.get_regex(), "a")
+    assert regex.fullmatch(parsed_conf.get_regex(), "cc")
     assert sw_config.beautify(minified) == beautified
     assert sw_config.minify(beautified) == minified
 

@@ -19,12 +19,13 @@ from __future__ import annotations
 
 import ast
 import os
-import re
 import sys
 from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
 from typing import Any, NamedTuple, cast
+
+import regex
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -165,7 +166,9 @@ class BlockOfCode:
     def uses(self, other: BlockOfCode) -> bool:
         """Return if self's code uses stuff from the other block of code."""
         # TODO: improve this
-        code = re.sub(r'"""(.|\n)+"""', "", (self.unparsed_code or self.code))
+        code = regex.sub(
+            r'"""(.|\n)+"""', "", (self.unparsed_code or self.code)
+        )
         return any(def_ in code for def_ in other.defines)
 
 

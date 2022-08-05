@@ -39,16 +39,16 @@ def test_num_string_conversion() -> None:
         assert not converter.string_to_num(not_a_num)
 
 
-def test_currency_conversion() -> None:
+async def test_currency_conversion() -> None:
     """Test the currency conversion."""
     for _f in (0.5, 1, 2, 4, 8, 16, 32, 64, 128):
-        val_dict = asyncio.run(converter.get_value_dict(int(_f * 100)))
+        val_dict = await converter.get_value_dict(int(_f * 100))
         for currency in ("euro", "mark", "ost", "schwarz"):
             assert val_dict[currency] == converter.string_to_num(
-                val_dict[f"{currency}_str"]  # type: ignore
+                val_dict[f"{currency}_str"]  # type: ignore[arg-type]
             )
             assert val_dict[f"{currency}_str"] == converter.num_to_string(
-                val_dict[currency]  # type: ignore
+                val_dict[currency]  # type: ignore[arg-type]
             )
             assert str(val_dict[f"{currency}_str"]) in str(val_dict["text"])
     assert converter.convert(1) == (1, 2, 4, 20)
@@ -57,4 +57,4 @@ def test_currency_conversion() -> None:
 
 if __name__ == "__main__":
     test_num_string_conversion()
-    test_currency_conversion()
+    asyncio.run(test_currency_conversion())

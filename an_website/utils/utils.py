@@ -18,7 +18,6 @@ from __future__ import annotations
 import asyncio
 import os
 import random
-import re
 import time
 from base64 import b85encode
 from collections.abc import Callable, Sequence
@@ -31,6 +30,7 @@ from typing import IO, Any, Literal, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore
+import regex
 from blake3 import blake3  # type: ignore
 from elasticsearch import AsyncElasticsearch
 from Levenshtein import distance  # type: ignore
@@ -116,7 +116,7 @@ class PageInfo:
         words: Sequence[str]
 
         if isinstance(query, str):
-            words = re.split(r"\s+", query)
+            words = regex.split(r"\s+", query)
             query = query.lower()
             if query in self.description.lower() or query in self.name.lower():
                 score = len(query) / 2
@@ -331,12 +331,14 @@ def emoji2code(emoji: str) -> str:
 
 def emojify(string: str) -> str:
     """Emojify a given string."""
-    string = re.sub(
+    string = regex.sub(
         r"[a-zA-Z]+",
         lambda match: "\u200C".join(country_code_to_flag(match[0])),
         replace_umlauts(string),
     )
-    string = re.sub(r"[0-9#*]+", lambda match: f"{'⃣'.join(match[0])}⃣", string)
+    string = regex.sub(
+        r"[0-9#*]+", lambda match: f"{'⃣'.join(match[0])}⃣", string
+    )
     return (
         string.replace("!?", "⁉")
         .replace("!!", "‼")
@@ -442,7 +444,7 @@ def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
     )
 
 
-def length_of_match(match: re.Match[str]) -> int:
+def length_of_match(match: regex.Match[str]) -> int:
     """Calculate the length of the regex match and return it."""
     span = match.span()
     return span[1] - span[0]
@@ -462,7 +464,7 @@ def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
 
 def name_to_id(val: str) -> str:
     """Replace umlauts and whitespaces in a string to get a valid HTML id."""
-    return re.sub(
+    return regex.sub(
         r"[^a-z0-9]+",
         "-",
         replace_umlauts(val).lower(),

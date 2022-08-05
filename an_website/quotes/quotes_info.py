@@ -15,11 +15,11 @@
 from __future__ import annotations
 
 import os
-import re
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote as quote_url
 
 import orjson as json
+import regex
 from tornado.httpclient import AsyncHTTPClient
 
 from .. import DIR as ROOT_DIR
@@ -132,12 +132,13 @@ def fix_author_for_wikipedia_search(author: str) -> str:
     This tries to reduce common problems with authors.
     So that we can show more information.
     """
-    author = re.sub(r"\s+", " ", author)
-    author = re.sub(r"\s*\(.*\)", "", author)
-    author = re.sub(r"\s*Werbespruch$", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"\s*Werbung$", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"^nach\s*", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"^Ein\s+", "", author, flags=re.IGNORECASE)
+    # pylint: disable=no-member
+    author = regex.sub(r"\s+", " ", author)
+    author = regex.sub(r"\s*\(.*\)", "", author)
+    author = regex.sub(r"\s*Werbespruch$", "", author, regex.IGNORECASE)
+    author = regex.sub(r"\s*Werbung$", "", author, regex.IGNORECASE)
+    author = regex.sub(r"^nach\s*", "", author, regex.IGNORECASE)
+    author = regex.sub(r"^Ein\s+", "", author, regex.IGNORECASE)
     return author
 
 

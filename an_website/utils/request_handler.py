@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 import sys
 import time
 from asyncio import Future
@@ -31,6 +30,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 import html2text
+import regex
 from ansi2html import Ansi2HTMLConverter
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
@@ -303,7 +303,7 @@ class NotFoundHandler(HTMLRequestHandler):
 
         if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)
-        new_path = re.sub(r"/+", "/", self.request.path.rstrip("/")).replace(
+        new_path = regex.sub(r"/+", "/", self.request.path.rstrip("/")).replace(
             "_", "-"
         )
         for ext in (".html", ".htm", ".php"):

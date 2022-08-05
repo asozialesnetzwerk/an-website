@@ -38,7 +38,6 @@ patches.apply()
 
 
 import asyncio
-import re
 import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
@@ -47,6 +46,7 @@ from typing import Any, cast
 
 import orjson as json
 import pytest
+import regex
 import tornado.httpclient
 import tornado.web
 import yaml
@@ -343,7 +343,9 @@ def assert_valid_html_response(
         == effective_url.split("?")[0].rstrip("/")
     ) or print(url_in_doc, effective_url)
     # check for template strings, that didn't get replaced
-    matches = re.findall(r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8"))
+    matches = regex.findall(
+        r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8")
+    )
     assert not matches or print(effective_url, matches)
 
     return response
