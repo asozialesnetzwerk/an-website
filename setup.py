@@ -22,12 +22,12 @@ import warnings
 from pathlib import Path
 
 from get_version import get_version
-from setuptools import setup  # type: ignore
+from setuptools import setup
 
 warnings.filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 
-def read(filename):
+def read(filename: str) -> str:
     """Load the contents of a file."""
     root_dir = os.path.dirname(__file__)
     filepath = os.path.join(root_dir, filename)

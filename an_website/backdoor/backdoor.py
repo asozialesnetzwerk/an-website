@@ -26,7 +26,7 @@ from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
-import dill as pickle  # type: ignore
+import dill as pickle  # type: ignore[import]
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN

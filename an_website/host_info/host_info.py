@@ -21,10 +21,10 @@ from __future__ import annotations
 
 import logging
 import os
-import re
 import shutil
 import sys
 
+import regex
 from tornado.web import HTTPError as HTTPEwwow
 
 from .. import CONTAINERIZED
@@ -74,7 +74,7 @@ def get_module_info() -> ModuleInfo:
 
 def minify_ansi_art(string: str) -> str:
     """Minify an ANSI art string."""
-    return re.sub(
+    return regex.sub(
         r"(?m)\s+\x1B\[0m$", "\x1B[0m", string
     )  # for arch: 1059 → 898
 

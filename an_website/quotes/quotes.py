@@ -22,11 +22,11 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-import re
 from asyncio import AbstractEventLoop, Future
 from collections.abc import Awaitable
 from typing import Any, Literal, cast
 
+import regex
 from tornado.web import HTTPError, RedirectHandler
 
 from .. import EVENT_REDIS
@@ -270,7 +270,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             return
         quote = self.get_argument("quote", "")
         author = self.get_argument("author", "")
-        if (quote or author) and re.fullmatch(r"^[0-9]+$", quote + author):
+        if (quote or author) and regex.fullmatch(r"^[0-9]+$", quote + author):
             self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
             return
 

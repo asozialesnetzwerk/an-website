@@ -17,10 +17,10 @@ from __future__ import annotations
 
 import logging
 import math
-import re
 import time
 from typing import TypedDict
 
+import regex
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
 
@@ -124,7 +124,7 @@ def get_availability_dict(up: int, down: int) -> AvailabilityDict:
     }
 
 
-AVAILABILITY_CHART = re.sub(
+AVAILABILITY_CHART = regex.sub(
     r"\s+",
     " ",
     """

@@ -24,10 +24,10 @@ load-plugins=
     pylint.extensions.typing,
     pylint.extensions.while_used,
 extension-pkg-allow-list=
-    blake3,
-    orjson,
     Levenshtein,
+    blake3,
     lxml,
+    orjson,
 py-version=3.10
 
 [MESSAGES_CONTROL]
@@ -44,7 +44,10 @@ include-naming-hint=yes
 expected-line-ending-format=LF
 
 [IMPORTS]
-preferred-modules=xml:defusedxml,json:orjson
+preferred-modules=
+    json:orjson,
+    re:regex,
+    xml:defusedxml,
 
 [SIMILARITIES]
 min-similarity-lines=4

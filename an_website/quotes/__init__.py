@@ -27,12 +27,12 @@ from datetime import date, datetime
 from multiprocessing import Value
 from typing import Any, Literal, cast
 
-import elasticapm  # type: ignore
+import elasticapm  # type: ignore[import]
 import orjson as json
 from redis.asyncio import Redis
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import Application, HTTPError
-from UltraDict import UltraDict  # type: ignore
+from UltraDict import UltraDict  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
 from .. import EVENT_REDIS, ORJSON_OPTIONS, pytest_is_running

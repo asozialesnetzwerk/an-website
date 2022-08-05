@@ -27,8 +27,8 @@ from pathlib import Path
 from typing import Any
 
 import certifi
-import defusedxml  # type: ignore
-import namedthreads  # type: ignore
+import defusedxml  # type: ignore[import]
+import namedthreads  # type: ignore[import]
 import tornado.httpclient
 import tornado.httputil
 import tornado.log

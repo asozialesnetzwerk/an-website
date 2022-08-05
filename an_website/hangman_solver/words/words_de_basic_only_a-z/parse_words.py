@@ -17,8 +17,9 @@
 
 from __future__ import annotations
 
-import re
 from xml.etree.ElementTree import parse
+
+import regex
 
 if __name__ == "__main__":  # noqa: C901
     # how to get the file:
@@ -138,7 +139,7 @@ if __name__ == "__main__":  # noqa: C901
             continue
         # fix string "[[text|test]] [[wort]] [[dies ist ein satz]] wörter"
         # to         "text wort dies ist ein satz wörter"
-        title = re.sub(r"\[\[([^]|]+)(?:\|[^]]+)?]]", r"\1", title)
+        title = regex.sub(r"\[\[([^]|]+)(?:\|[^]]+)?]]", r"\1", title)
         titles.add(title)
 
     with open("output.txt", "w", encoding="utf-8") as file:

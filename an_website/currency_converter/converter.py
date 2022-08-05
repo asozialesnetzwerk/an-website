@@ -16,8 +16,9 @@
 from __future__ import annotations
 
 import random
-import re
 from typing import cast
+
+import regex
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -57,7 +58,7 @@ def get_module_info() -> ModuleInfo:
 
 def string_to_num(num: str, divide_by: int = 1) -> int:
     """Convert a string to a number and divide it by divide_by."""
-    num = re.sub(r"[^\d,]", "", num.replace(".", ","))
+    num = regex.sub(r"[^\d,]", "", num.replace(".", ","))
 
     if not num:
         return 0
@@ -176,7 +177,7 @@ ValuesTuple = tuple[int, int, int, int]
 
 def convert(euro: int) -> ValuesTuple:
     """Convert a number to the german representation of a number."""
-    return tuple(euro * _m for _m in MULTIPLIERS)  # type: ignore
+    return cast(ValuesTuple, tuple(euro * _m for _m in MULTIPLIERS))
 
 
 async def get_value_dict(

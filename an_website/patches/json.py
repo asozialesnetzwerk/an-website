@@ -16,12 +16,12 @@
 from __future__ import annotations
 
 import inspect
-import re
 from collections.abc import Callable
 from json.encoder import JSONEncoder
 from typing import IO, Any, Protocol, TypeVar
 
 import orjson
+import regex
 
 _T_co = TypeVar("_T_co", covariant=True)
 
@@ -95,7 +95,7 @@ def dumps(  # noqa: C901, D103
         if isinstance(indent, int):
             indent = " " * indent
         indent_bytes = str(indent).encode("utf-8")
-        output = re.sub(
+        output = regex.sub(
             rb"(?m)^\s+",
             lambda match: len(match[0]) // 2 * indent_bytes,
             output,

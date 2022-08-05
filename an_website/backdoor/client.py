@@ -23,7 +23,6 @@ import http.client
 import io
 import os
 import pydoc
-import re
 import socket
 import sys
 import time
@@ -35,18 +34,20 @@ from types import EllipsisType
 from typing import Any, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
+import regex
+
 try:
-    import dill as pickle  # type: ignore
+    import dill as pickle  # type: ignore[import]
 except ImportError:
     import pickle  # type: ignore[no-redef]
 
 try:
-    import hy  # type: ignore
+    import hy  # type: ignore[import]
 except ImportError:
     hy = None
 
 try:
-    import socks  # type: ignore
+    import socks  # type: ignore[import]
 except ImportError:
     socks = None
 
@@ -218,8 +219,8 @@ async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
-            status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
-            headers = dict(re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n"))  # type: ignore[union-attr, misc]  # noqa: B950
+            status, o = regex.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
+            headers = dict(regex.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n"))  # type: ignore[union-attr, misc]  # noqa: B950
     writer.close()
     await writer.wait_closed()
     if "status" not in locals():
@@ -498,7 +499,7 @@ Accepted arguments:
         elif "://" not in url:
             if not url.startswith("//"):
                 url = "//" + url
-            if re.match(
+            if regex.match(
                 r"^(\/\/)(localhost|127\.0\.0\.1|\[::1\])(\:\d+)?(/\S*)?$", url
             ):
                 url = "http:" + url
@@ -616,7 +617,7 @@ Accepted arguments:
     )
 
     # pylint: disable=import-outside-toplevel, import-error, useless-suppression
-    from pyrepl.python_reader import ReaderConsole  # type: ignore
+    from pyrepl.python_reader import ReaderConsole  # type: ignore[import]
     from pyrepl.python_reader import main as _main
 
     def _run_and_print(self: ReaderConsole, code: str) -> None:

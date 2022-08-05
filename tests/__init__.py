@@ -38,7 +38,6 @@ patches.apply()
 
 
 import asyncio
-import re
 import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
@@ -47,13 +46,14 @@ from typing import Any, cast
 
 import orjson as json
 import pytest
+import regex
 import tornado.httpclient
 import tornado.web
 import yaml
-from blake3 import blake3  # type: ignore
-from lxml import etree  # type: ignore
-from lxml.html import document_fromstring  # type: ignore
-from lxml.html.html5parser import HTMLParser  # type: ignore
+from blake3 import blake3  # type: ignore[import]
+from lxml import etree
+from lxml.html import document_fromstring
+from lxml.html.html5parser import HTMLParser
 
 # pylint: disable=ungrouped-imports
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main, quotes
@@ -333,9 +333,7 @@ def assert_valid_html_response(
     assert_valid_response(response, "text/html;charset=utf-8", codes)
     body = response.body.decode("utf-8")
     # check if body is valid html5
-    root: etree.ElementTree = HTMLParser(
-        strict=True, namespaceHTMLElements=False
-    ).parse(body)
+    root = HTMLParser(strict=True, namespaceHTMLElements=False).parse(body)
     effective_url = effective_url or response.effective_url.split("#")[0]
     # check if the canonical link is present in the doc
     assert (
@@ -343,7 +341,9 @@ def assert_valid_html_response(
         == effective_url.split("?")[0].rstrip("/")
     ) or print(url_in_doc, effective_url)
     # check for template strings, that didn't get replaced
-    matches = re.findall(r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8"))
+    matches = regex.findall(
+        r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8")
+    )
     assert not matches or print(effective_url, matches)
 
     return response
@@ -352,11 +352,11 @@ def assert_valid_html_response(
 def assert_valid_rss_response(
     response: tornado.httpclient.HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
-) -> etree.ElementTree:
+) -> etree._Element:
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "application/rss+xml", codes)
     body = response.body
-    parsed_xml: etree.ElementTree = etree.fromstring(
+    parsed_xml = etree.fromstring(
         body,
         parser=etree.XMLParser(recover=False, resolve_entities=False),
         base_url=response.request.url,

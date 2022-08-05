@@ -14,10 +14,11 @@
 """Config file for the page that swaps words."""
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from functools import lru_cache
-from re import Match, Pattern
+
+import regex
+from regex import Match, Pattern
 
 
 def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
@@ -133,10 +134,10 @@ class OneWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
-        if re.fullmatch(self.word1, word) is not None:
+        # pylint: disable=no-member
+        if regex.fullmatch(self.word1, word) is not None:
             return self.word2
-        _re_word1 = re.compile(self.word1, re.IGNORECASE)
-        if re.fullmatch(_re_word1, word) is not None:
+        if regex.fullmatch(self.word1, word, regex.IGNORECASE) is not None:
             return copy_case(word, self.word2)
         return word
 
@@ -173,11 +174,11 @@ class TwoWayPair(WordPair):
 
 WORDS_TUPLE = tuple[ConfigLine, ...]  # pylint: disable=invalid-name
 
-LINE_END_REGEX: Pattern[str] = re.compile(
-    r"[\n;]",  # ";" or new line
-    re.MULTILINE,
+LINE_END_REGEX: Pattern[str] = regex.compile(
+    r"(?m)[\n;]",  # ";" or new line
 )
-COMMENT_LINE_REGEX: Pattern[str] = re.compile(
+
+COMMENT_LINE_REGEX: Pattern[str] = regex.compile(
     r"#"  # the start of the comment
     r"\s*"  # optional white space
     r"("  # start of the group
@@ -185,7 +186,8 @@ COMMENT_LINE_REGEX: Pattern[str] = re.compile(
     r".*"  # whatever
     r")?"  # end group, make it optional, to allow lines with only #
 )
-LINE_REGEX: Pattern[str] = re.compile(
+
+LINE_REGEX: Pattern[str] = regex.compile(
     r"\s*"  # white spaces to strip the word
     r"("  # start group one for the first word
     r"[^\s<=>]"  # the start of the word; can't contain: \s, "<", "=", ">"
@@ -219,10 +221,10 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
     # print(len(line.strip()), f"'{line.strip()}'")
 
-    if match := re.fullmatch(COMMENT_LINE_REGEX, line):
+    if match := regex.fullmatch(COMMENT_LINE_REGEX, line):
         return Comment(match[1])
 
-    match = re.fullmatch(LINE_REGEX, line)
+    match = regex.fullmatch(LINE_REGEX, line)
     if match is None:
         raise InvalidConfigError(line_num, line, "Line is invalid.")
 
@@ -238,8 +240,8 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
     try:
         # compile to make sure it doesn't break later
-        left_re = re.compile(left)
-    except re.error as exc:
+        left_re = regex.compile(left)
+    except regex.error as exc:
         raise InvalidConfigError(
             line_num, line, f"Left is invalid regex: {exc}"
         ) from exc
@@ -247,8 +249,8 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
     if separator == "<=>":
         try:
             # compile to make sure it doesn't break later
-            right_re = re.compile(right)
-        except re.error as exc:
+            right_re = regex.compile(right)
+        except regex.error as exc:
             raise InvalidConfigError(
                 line_num, line, f"Right is invalid regex: {exc}"
             ) from exc
@@ -288,13 +290,15 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
         """Parse a config string to a instance of this class."""
         self.lines: WORDS_TUPLE = tuple(
             parse_config_line(line, i)
-            for i, line in enumerate(re.split(LINE_END_REGEX, config.strip()))
+            for i, line in enumerate(
+                regex.split(LINE_END_REGEX, config.strip())
+            )
             if line
         )
 
     def get_regex(self) -> Pattern[str]:
         """Get the regex that matches every word in this."""
-        return re.compile(
+        return regex.compile(
             "|".join(
                 tuple(
                     f"(?P<n{i}>{word_pair.to_pattern_str()})"
@@ -302,7 +306,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
                     if isinstance(word_pair, WordPair)
                 )
             ),
-            re.IGNORECASE | re.UNICODE,
+            regex.IGNORECASE,  # pylint: disable=no-member
         )
 
     def get_replaced_word(self, match: Match[str]) -> str:

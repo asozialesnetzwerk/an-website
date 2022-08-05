@@ -15,11 +15,12 @@
 from __future__ import annotations
 
 import os
-import re
 from datetime import datetime, timedelta, timezone
+from typing import cast
 from urllib.parse import quote as quote_url
 
 import orjson as json
+import regex
 from tornado.httpclient import AsyncHTTPClient
 
 from .. import DIR as ROOT_DIR
@@ -108,7 +109,7 @@ async def search_wikipedia(
 async def get_wikipedia_page_content(
     page_name: str, api: str = WIKI_API_DE
 ) -> None | str:
-    """Get content from a wikipedia page and return it."""
+    """Get content from a Wikipedia page and return it."""
     response = await AsyncHTTPClient().fetch(
         f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
         f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5",
@@ -118,11 +119,10 @@ async def get_wikipedia_page_content(
     if "query" not in response_json or "pages" not in response_json["query"]:
         return None
     pages: dict[str, str] = response_json["query"]["pages"]
-    page = tuple(pages.values())[0]
+    page = cast(dict[str, str], tuple(pages.values())[0])
     if "extract" not in page:
         return None
-    # let's trust the wikipedia API
-    return page["extract"]  # type: ignore
+    return page["extract"]
 
 
 def fix_author_for_wikipedia_search(author: str) -> str:
@@ -132,12 +132,13 @@ def fix_author_for_wikipedia_search(author: str) -> str:
     This tries to reduce common problems with authors.
     So that we can show more information.
     """
-    author = re.sub(r"\s+", " ", author)
-    author = re.sub(r"\s*\(.*\)", "", author)
-    author = re.sub(r"\s*Werbespruch$", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"\s*Werbung$", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"^nach\s*", "", author, flags=re.IGNORECASE)
-    author = re.sub(r"^Ein\s+", "", author, flags=re.IGNORECASE)
+    # pylint: disable=no-member
+    author = regex.sub(r"\s+", " ", author)
+    author = regex.sub(r"\s*\(.*\)", "", author)
+    author = regex.sub(r"\s*Werbespruch$", "", author, regex.IGNORECASE)
+    author = regex.sub(r"\s*Werbung$", "", author, regex.IGNORECASE)
+    author = regex.sub(r"^nach\s*", "", author, regex.IGNORECASE)
+    author = regex.sub(r"^Ein\s+", "", author, regex.IGNORECASE)
     return author
 
 
@@ -186,7 +187,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                         AUTHOR_INFO_NEW_TTL,
                         # value to save (the author info)
                         # type is ignored, because author.info[1] is not None
-                        "|".join(author.info[0:2]),  # type: ignore
+                        "|".join(author.info[0:2]),  # type: ignore[arg-type]
                     )
 
         wqs = get_wrong_quotes(

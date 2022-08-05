@@ -20,13 +20,12 @@ import asyncio
 import importlib
 import logging
 import os
-import re
 import signal
 import ssl
 import sys
 import types
 from asyncio import AbstractEventLoop
-from asyncio.runners import _cancel_all_tasks  # type: ignore
+from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Coroutine
 from configparser import ConfigParser
@@ -37,11 +36,12 @@ from typing import Any, cast
 from zoneinfo import ZoneInfo
 
 import orjson
+import regex
 import tornado.netutil
 import tornado.process
 from ecs_logging import StdlibFormatter
-from elastic_enterprise_search import AppSearch  # type: ignore
-from elasticapm.contrib.tornado import ElasticAPM  # type: ignore
+from elastic_enterprise_search import AppSearch  # type: ignore[import]
+from elasticapm.contrib.tornado import ElasticAPM  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from redis.asyncio import (
     BlockingConnectionPool,
@@ -49,7 +49,6 @@ from redis.asyncio import (
     SSLConnection,
     UnixDomainSocketConnection,
 )
-from tornado.httpclient import AsyncHTTPClient
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
@@ -68,7 +67,7 @@ from .contact.contact import apply_contact_stuff_to_app
 from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
-from .utils.logging import AsyncHandler, WebhookFormatter
+from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
@@ -379,14 +378,14 @@ def get_ssl_context(  # pragma: no cover
 
 def setup_logging(  # pragma: no cover
     config: ConfigParser,
-    loop: AbstractEventLoop,
+    loop: None | AbstractEventLoop = None,
     *,
     force: bool = False,
 ) -> None:
     """Setup logging."""  # noqa: D401
     root_logger = logging.getLogger()
     debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
-    default_logging_format_no_color = re.sub(
+    default_logging_format_no_color = regex.sub(
         r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
     )
 
@@ -423,27 +422,17 @@ def setup_logging(  # pragma: no cover
         root_logger.addHandler(file_handler)
 
     webhook_url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
-    if webhook_url:
+    if webhook_url and loop:
         webhook_content_type = config.get(
             "LOGGING",
             "WEBHOOK_CONTENT_TYPE",
             fallback="application/json",
         )
-
-        async def send_request(body: str) -> None:
-            """Send the request to the webhook."""
-            await AsyncHTTPClient().fetch(
-                cast(str, webhook_url),
-                method="POST",
-                headers={"Content-Type": webhook_content_type},
-                body=body.strip(),
-                ca_certs=os.path.join(DIR, "ca-bundle.crt"),
-            )
-
-        webhook_handler = AsyncHandler(
+        webhook_handler = WebhookHandler(
             logging.ERROR,
-            emitter=send_request,
             loop=loop,
+            url=webhook_url,
+            content_type=webhook_content_type,
         )
         formatter = WebhookFormatter(
             config.get(
@@ -503,9 +492,6 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             "/api/ping",
             "/static/*",
             "/favicon.png",
-            "/robots.txt",
-            "/humans.txt",
-            "/.env",
         ],
         "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
         "PROCESSORS": [

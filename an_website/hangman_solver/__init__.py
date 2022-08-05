@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+from typing import cast
 
 import orjson as json
 
@@ -73,4 +74,4 @@ def get_letters(file_name: str) -> dict[str, int]:
         os.path.join(BASE_WORD_DIR, f"{file_name}.json"), encoding="utf-8"
     ) as file:
         # we know the files, so we know the type
-        return json.loads(file.read())  # type: ignore
+        return cast(dict[str, int], json.loads(file.read()))

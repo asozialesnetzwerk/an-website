@@ -18,7 +18,7 @@ import asyncio
 import logging
 
 import orjson as json
-from elastic_enterprise_search import AppSearch  # type: ignore
+from elastic_enterprise_search import AppSearch  # type: ignore[import]
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo

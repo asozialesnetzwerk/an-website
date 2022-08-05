@@ -22,7 +22,6 @@ from __future__ import annotations
 import inspect
 import logging
 import random
-import re
 import sys
 import traceback
 import uuid
@@ -34,11 +33,12 @@ from typing import Any, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
-import elasticapm  # type: ignore
+import elasticapm  # type: ignore[import]
 import orjson as json
+import regex
 import yaml
-from accept_types import get_best_match  # type: ignore
-from elastic_enterprise_search import AppSearch  # type: ignore
+from accept_types import get_best_match  # type: ignore[import]
+from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
@@ -744,7 +744,7 @@ class BaseRequestHandler(RequestHandler):
             or not self.request.headers.get("Host")
             or self.request.host_name == domain
             or self.request.host_name.endswith((".onion", ".i2p"))
-            or re.fullmatch(r"/[\u2800-\u28FF]+/?", self.request.path)
+            or regex.fullmatch(r"/[\u2800-\u28FF]+/?", self.request.path)
         ):
             return False
         port = urlsplit(f"//{self.request.headers['Host']}").port

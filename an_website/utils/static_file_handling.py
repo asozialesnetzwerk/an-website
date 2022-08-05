@@ -25,7 +25,7 @@ from typing import Any, cast
 
 import defity
 import tornado.web
-from blake3 import blake3  # type: ignore
+from blake3 import blake3  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR

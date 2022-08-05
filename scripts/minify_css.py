@@ -21,7 +21,7 @@ import os
 import shutil
 import sys
 
-import rcssmin  # type: ignore
+import rcssmin  # type: ignore[import]
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

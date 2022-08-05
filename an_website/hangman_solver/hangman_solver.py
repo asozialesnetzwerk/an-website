@@ -15,19 +15,19 @@
 
 from __future__ import annotations
 
-import re
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from functools import cache
 
+import regex
 from tornado.web import HTTPError
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
-WILDCARDS_REGEX = re.compile(r"[_?-]+")
-NOT_WORD_CHAR = re.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
+WILDCARDS_REGEX = regex.compile(r"[_?-]+")
+NOT_WORD_CHAR = regex.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
 def get_module_info() -> ModuleInfo:
@@ -77,7 +77,7 @@ def fix_invalid(invalid: str) -> str:
     )  # replace stuff that could be bad
 
 
-async def generate_pattern_str(
+def generate_pattern_str(
     input_str: str, invalid: str, crossword_mode: bool
 ) -> str:
     """Generate a pattern string that matches a word."""
@@ -120,7 +120,7 @@ def fix_letter_counter_crossword_mode(
 @cache
 def filter_words(
     words: frozenset[str] | str,
-    regex: re.Pattern[str],
+    pattern: regex.Pattern[str],
     input_letters: str,
     crossword_mode: bool = False,
     matches_always: bool = False,
@@ -133,7 +133,7 @@ def filter_words(
     matched_words: set[str] = set()
     letter_list: list[str] = []
     for line in words:
-        if matches_always or regex.fullmatch(line) is not None:
+        if matches_always or pattern.fullmatch(line) is not None:
             matched_words.add(line)
 
             # add letters to list
@@ -168,7 +168,7 @@ def filter_words(
     return frozenset(matched_words), sorted_letters
 
 
-async def get_words_and_letters(
+def get_words_and_letters(
     file_name: str,
     input_str: str,
     invalid: str,
@@ -181,18 +181,18 @@ async def get_words_and_letters(
     if matches_always and not crossword_mode:
         return get_words(file_name), get_letters(file_name)
 
-    pattern = await generate_pattern_str(input_str, invalid, crossword_mode)
+    pattern = generate_pattern_str(input_str, invalid, crossword_mode)
 
     return filter_words(
         file_name,
-        re.compile(pattern, re.ASCII),
+        regex.compile(pattern, regex.ASCII),  # pylint: disable=no-member
         input_letters,
         crossword_mode,
         matches_always,
     )
 
 
-async def solve_hangman(
+def solve_hangman(
     input_str: str,
     invalid: str,
     language: str,
@@ -221,8 +221,8 @@ async def solve_hangman(
             lang=language,
         )
 
-    # do the solving:
-    matched_words, letters = await get_words_and_letters(
+    # do the solving
+    matched_words, letters = get_words_and_letters(
         file_name, input_str, invalid, crossword_mode
     )
 
@@ -247,10 +247,10 @@ class HangmanSolver(HTMLRequestHandler):
         """Handle GET requests to the hangman solver page."""
         if head:
             return
-        hangman = await self.get_hangman_obj()
+        hangman = self.get_hangman_obj()
         await self.render("pages/hangman_solver.html", **asdict(hangman))
 
-    async def get_hangman_obj(self) -> Hangman:
+    def get_hangman_obj(self) -> Hangman:
         """Get the information and return the Hangman object."""
         max_words = self.get_int_argument("max_words", 20, min_=0, max_=100)
 
@@ -259,7 +259,7 @@ class HangmanSolver(HTMLRequestHandler):
         input_str = str(self.get_argument("input", ""))
         invalid = str(self.get_argument("invalid", ""))
 
-        return await solve_hangman(
+        return solve_hangman(
             max_words=max_words,
             crossword_mode=crossword_mode,
             language=language,
@@ -278,11 +278,11 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
         """Handle GET requests to the hangman solver API."""
         if head:
             return
-        hangman = await self.get_hangman_obj()
+        hangman = self.get_hangman_obj()
         hangman_dict = asdict(hangman)
         # convert set to list, because the set can't be converted to JSON.
         hangman_dict["words"] = list(hangman_dict["words"])
-        return await self.finish(hangman_dict)
+        await self.finish(hangman_dict)
 
 
 # def profile():

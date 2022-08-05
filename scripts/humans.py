@@ -17,11 +17,12 @@
 
 from __future__ import annotations
 
-import re
 import sys
 from os.path import abspath, dirname
 from pathlib import Path
 from subprocess import run
+
+import regex
 
 REPO_ROOT = dirname(dirname(abspath(__file__)))
 HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
@@ -61,7 +62,7 @@ def generate_humans_txt() -> str:
     for line in result.stdout.decode("utf-8").split("\n"):
         if not line.strip():
             continue
-        count, name = re.split(r"\s+", line.strip(), 1)
+        count, name = regex.split(r"\s+", line.strip(), 1)
         if name in BOTS:
             continue
         name = NAME_ALIASES.get(name, name)

@@ -21,10 +21,10 @@ import random
 import sys
 import time
 from collections.abc import Awaitable
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 import orjson as json
-from emoji import EMOJI_DATA, demojize, emoji_list, emojize  # type: ignore
+from emoji import EMOJI_DATA, demojize, emoji_list, emojize
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 from tornado.websocket import WebSocketHandler
@@ -130,9 +130,10 @@ def check_only_emojis(string: str) -> bool:
         # pylint: disable=unused-argument
         emj: str,
         emj_data: dict[str, Any],
-    ) -> None:
+    ) -> str:
         for i in range(emj_data["match_start"], emj_data["match_end"]):
             is_emoji[i] = True
+        return ""
 
     demojize(string, language="en", version=-1, handle_version=set_emojis)
 
@@ -141,7 +142,7 @@ def check_only_emojis(string: str) -> bool:
 
 def normalize_emojis(string: str) -> str:
     """Normalize emojis in a string."""
-    return cast(str, emojize(demojize(string)))
+    return emojize(demojize(string))
 
 
 class ChatHandler(BaseRequestHandler):

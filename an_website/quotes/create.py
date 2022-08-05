@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 from typing import cast
 
-from Levenshtein import distance  # type: ignore
+from Levenshtein import distance  # type: ignore[import]
 from tornado.web import HTTPError, MissingArgumentError
 
 from ..utils.utils import ModuleInfo

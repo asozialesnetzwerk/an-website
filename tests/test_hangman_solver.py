@@ -15,10 +15,8 @@
 
 from __future__ import annotations
 
-import asyncio
-import re
-
 import pytest
+import regex
 from tornado.web import HTTPError
 
 from an_website.hangman_solver import hangman_solver as solver
@@ -46,10 +44,10 @@ def test_filter_words() -> None:
         }
     )
 
-    for regex in (r"[01]", r"[01]{2}", r"[ab]", r"[ab]{2}"):
+    for pattern in (r"[01]", r"[01]{2}", r"[ab]", r"[ab]{2}"):
         matched_words, sorted_letters = solver.filter_words(
             words,
-            re.compile(regex),
+            regex.compile(pattern),
             "0b",
             False,
             False,
@@ -62,101 +60,83 @@ def test_filter_words() -> None:
 
 def test_generate_pattern_str() -> None:
     """Test generating the pattern string."""
-    pattern_str = asyncio.run(
-        solver.generate_pattern_str(
-            input_str="_", invalid="", crossword_mode=False
-        )
+    pattern_str = solver.generate_pattern_str(
+        input_str="_", invalid="", crossword_mode=False
     )
     assert pattern_str == "."
 
-    pattern_str = asyncio.run(
-        solver.generate_pattern_str(
-            input_str="___", invalid="", crossword_mode=False
-        )
+    pattern_str = solver.generate_pattern_str(
+        input_str="___", invalid="", crossword_mode=False
     )
     assert pattern_str == "..."
 
-    pattern_str = asyncio.run(
-        solver.generate_pattern_str(
-            input_str="_",
-            invalid="ABCcccccccccccccccccccccc",
-            crossword_mode=False,
-        )
+    pattern_str = solver.generate_pattern_str(
+        input_str="_",
+        invalid="ABCcccccccccccccccccccccc",
+        crossword_mode=False,
     )
-    assert re.fullmatch(r"^\[\^[abc]{3}]\{1}$", pattern_str)
+    assert regex.fullmatch(r"^\[\^[abc]{3}]\{1}$", pattern_str)
 
-    pattern_str = asyncio.run(
-        solver.generate_pattern_str(
-            input_str="___", invalid="abc", crossword_mode=False
-        )
+    pattern_str = solver.generate_pattern_str(
+        input_str="___", invalid="abc", crossword_mode=False
     )
-    assert re.fullmatch(r"^\[\^[abc]{3}]\{3}$", pattern_str)
+    assert regex.fullmatch(r"^\[\^[abc]{3}]\{3}$", pattern_str)
 
 
 def test_solving_hangman() -> None:
     """Test solving hangman puzzles."""
-    hangman: solver.Hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="te_t",
-            invalid="x",
-            language="de_only_a-z",
-            max_words=10,
-            crossword_mode=False,
-        )
+    hangman: solver.Hangman = solver.solve_hangman(
+        input_str="te_t",
+        invalid="x",
+        language="de_only_a-z",
+        max_words=10,
+        crossword_mode=False,
     )
 
     assert len(hangman.words) <= 10
     assert "test" in hangman.words
     assert hangman.letters["s"] == 1
 
-    hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="_est",
-            invalid="n",
-            language="de_only_a-z",
-            max_words=10,
-            crossword_mode=False,
-        )
+    hangman = solver.solve_hangman(
+        input_str="_est",
+        invalid="n",
+        language="de_only_a-z",
+        max_words=10,
+        crossword_mode=False,
     )
 
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="_est",
-            invalid="x",
-            language="de_only_a-z",
-            max_words=10,
-            crossword_mode=False,
-        )
+    hangman = solver.solve_hangman(
+        input_str="_est",
+        invalid="x",
+        language="de_only_a-z",
+        max_words=10,
+        crossword_mode=False,
     )
 
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="_est",
-            invalid="x",
-            language="de_only_a-z",
-            max_words=10,
-            crossword_mode=True,
-        )
+    hangman = solver.solve_hangman(
+        input_str="_est",
+        invalid="x",
+        language="de_only_a-z",
+        max_words=10,
+        crossword_mode=True,
     )
 
     assert len(hangman.words) <= 10
     assert "test" in hangman.words
     assert hangman.letters["t"] == 1
 
-    hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="______",
-            invalid="e",
-            language="de_only_a-z",
-            max_words=10,
-            crossword_mode=False,
-        )
+    hangman = solver.solve_hangman(
+        input_str="______",
+        invalid="e",
+        language="de_only_a-z",
+        max_words=10,
+        crossword_mode=False,
     )
 
     assert len(hangman.words) <= 10
@@ -166,14 +146,12 @@ def test_solving_hangman() -> None:
     assert "ö" not in hangman.letters
     assert "ü" not in hangman.letters
 
-    hangman = asyncio.run(
-        solver.solve_hangman(
-            input_str="______",
-            invalid="",
-            language="de",
-            max_words=10,
-            crossword_mode=False,
-        )
+    hangman = solver.solve_hangman(
+        input_str="______",
+        invalid="",
+        language="de",
+        max_words=10,
+        crossword_mode=False,
     )
 
     assert len(hangman.words) <= 10
@@ -181,14 +159,12 @@ def test_solving_hangman() -> None:
     assert "ä" in hangman.letters
 
     with pytest.raises(HTTPError):
-        asyncio.run(
-            solver.solve_hangman(
-                input_str="",
-                invalid="",
-                language="invalid",
-                max_words=0,
-                crossword_mode=False,
-            )
+        solver.solve_hangman(
+            input_str="",
+            invalid="",
+            language="invalid",
+            max_words=0,
+            crossword_mode=False,
         )
 
 
