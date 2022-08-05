@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import io
 import logging
 import pydoc
@@ -52,13 +53,13 @@ def get_module_info() -> ModuleInfo:
 class PrintWrapper:  # pylint: disable=too-few-public-methods
     """Wrapper for print()."""
 
-    def __call__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
+        self._output: io.TextIOBase = output
+
+    def __call__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         if "file" not in kwargs:
             kwargs["file"] = self._output
         print(*args, **kwargs)
-
-    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
-        self._output: io.TextIOBase = output
 
 
 class Backdoor(APIRequestHandler):
@@ -219,10 +220,8 @@ class Backdoor(APIRequestHandler):
                 )
             except Exception as exc:  # pylint: disable=broad-except
                 exception = exc  # pylint: disable=redefined-variable-type
-                try:
+                with contextlib.suppress(UnboundLocalError):
                     del result
-                except UnboundLocalError:
-                    pass
             else:
                 if result is not None:  # noqa: F821
                     if result is session.get(  # noqa: F821

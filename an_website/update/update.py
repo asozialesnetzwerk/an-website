@@ -75,13 +75,13 @@ class UpdateAPI(APIRequestHandler):
     queue: SimpleQueue[None | bytes]
     future: Future[Any]
 
-    def data_received(self, chunk: bytes) -> None:
+    def data_received(self, chunk: bytes) -> None:  # noqa: D102
         self.queue.put(chunk)
 
-    def on_finish(self) -> None:
+    def on_finish(self) -> None:  # noqa: D102
         self.queue.put(None)
 
-    async def prepare(self) -> None:
+    async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
         loop = asyncio.get_running_loop()
         self.dir = TemporaryDirectory()

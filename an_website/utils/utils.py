@@ -183,7 +183,7 @@ class ModuleInfo(PageInfo):
 
         return self
 
-    def search(self, query: str | Sequence[str]) -> float:
+    def search(self, query: str | Sequence[str]) -> float:  # noqa: D102
         score = super().search(query)
 
         if len(self.sub_pages) > 0:
@@ -359,14 +359,11 @@ async def geoip(
     """Get GeoIP information."""
     if ip not in geoip_cache:
         geoip_cache[ip] = {}
-
     if database not in geoip_cache[ip]:
-
         if not elasticsearch:
             return None
 
         properties: None | tuple[str, ...]
-
         if database == "GeoLite2-City.mmdb":
             properties = (
                 "continent_name",
@@ -450,15 +447,14 @@ def length_of_match(match: regex.Match[str]) -> int:
     return span[1] - span[0]
 
 
-def n_from_set(_set: set[T] | frozenset[T], _n: int) -> set[T]:
-    """Get and return _n elements of the set as a new set."""
-    i = 0
+def n_from_set(set_: set[T] | frozenset[T], n: int) -> set[T]:
+    """Get and return n elements of the set as a new set."""
+    # pylint: disable=invalid-name
     new_set = set()
-    for _el in _set:
-        if i >= _n:
+    for i, element in enumerate(set_):
+        if i >= n:
             break
-        i += 1
-        new_set.add(_el)
+        new_set.add(element)
     return new_set
 
 

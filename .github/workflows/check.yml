@@ -25,12 +25,11 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install required stuff
-        run: grep -E "^(autoflake|black|isort|rjsmin|rcssmin)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(autoflake|black|isort|rcssmin|regex|rjsmin)" requirements-ci.txt | xargs pip install
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-duplicate-keys --remove-unused-variables .
       - name: Run isort
-        run: |
-          isort .
+        run: isort .
       - name: Run Black
         run: black .
       - name: Minify JS files
@@ -70,9 +69,9 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install mypy + stuff required for checking the tests
-        run: grep -E "^(mypy|types-|pytest|html5lib)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(html5lib|mypy|pytest|types-)" requirements-ci.txt | xargs pip install
       - name: Run mypy
-        run: mypy -p an_website -p tests
+        run: mypy -p an_website -p tests -p scripts
 
   flake8:
     name: Flake8
@@ -94,9 +93,9 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Flake8 + stuff required for checking the tests
-        run: grep -E "^(flake8|pep8-naming|pytest|html5lib)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(flake8|html5lib|pep8-naming|pytest)" requirements-ci.txt | xargs pip install
       - name: Run Flake8
-        run: flake8 --extend-ignore=D102 ./*.py an_website tests
+        run: flake8
 
   pylint:
     name: Pylint
@@ -123,7 +122,7 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Install Pylint + stuff required for checking the tests and other stuff
-        run: grep -E "^(pylint|pytest|html5lib|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
+      - name: Install Pylint + stuff required for checking the tests
+        run: grep -E "^(html5lib|pylint|pytest|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
       - name: Run Pylint
-        run: pylint -d fixme ./*.py an_website tests
+        run: pylint -d fixme setup.py an_website tests scripts

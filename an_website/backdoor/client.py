@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import ast
 import asyncio
+import contextlib
 import http.client
 import io
 import os
@@ -149,7 +150,7 @@ async def create_socket(  # noqa: C901  # pylint: disable=too-many-arguments
     )
 
 
-async def request(  # pylint: disable=too-many-branches, too-many-locals  # noqa: C901
+async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-locals
     method: str,
     url: str | SplitResult,
     headers: None | dict[str, str] = None,
@@ -469,9 +470,8 @@ Accepted arguments:
         + ("dev-" if "--dev" in sys.argv else "")
         + "session.pickle",
     )
-    if "--reset-config" in sys.argv:
-        if os.path.exists(config_pickle):
-            os.remove(config_pickle)
+    if "--reset-config" in sys.argv and os.path.exists(config_pickle):
+        os.remove(config_pickle)
     if "--no-config" not in sys.argv:
         try:
             with open(config_pickle, "rb") as file:
@@ -648,10 +648,8 @@ Accepted arguments:
     ReaderConsole.execute = _run_and_print
 
     # run the reader
-    try:
+    with contextlib.suppress(EOFError):
         _main(print_banner=False)
-    except EOFError:
-        pass
     return None
 
 

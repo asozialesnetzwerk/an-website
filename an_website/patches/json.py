@@ -28,7 +28,7 @@ _T_co = TypeVar("_T_co", covariant=True)
 
 class SupportsRead(Protocol[_T_co]):  # noqa: D101
     # pylint: disable=missing-class-docstring, too-few-public-methods
-    def read(self, __length: int = ...) -> _T_co:
+    def read(self, __length: int = ...) -> _T_co:  # noqa: D102
         # pylint: disable=missing-function-docstring
         ...
 

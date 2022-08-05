@@ -203,7 +203,9 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
 
     content_type: None | str
 
-    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
+    def data_received(  # noqa: D102
+        self, chunk: bytes
+    ) -> None | Awaitable[None]:
         pass
 
     def head(self, path: str) -> Awaitable[None]:
@@ -234,11 +236,12 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         self, root: str, absolute_path: str
     ) -> None | str:
         """Validate the path and detect the content type."""
-        if path := super().validate_absolute_path(root, absolute_path):
+        if (
+            path := super().validate_absolute_path(root, absolute_path)
+        ) and not self.content_type:
+            self.content_type = CONTENT_TYPES.get(path.rsplit(".", 1)[-1])
             if not self.content_type:
-                self.content_type = CONTENT_TYPES.get(path.rsplit(".", 1)[-1])
-                if not self.content_type:
-                    self.content_type = defity.from_file(path)
+                self.content_type = defity.from_file(path)
         return path
 
 
@@ -249,7 +252,9 @@ class CachedStaticFileHandler(StaticFileHandler):
         """Don't compute ETag, because it isn't necessary."""
         return None
 
-    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
+    def data_received(  # noqa: D102
+        self, chunk: bytes
+    ) -> None | Awaitable[None]:
         pass
 
     @classmethod

@@ -622,9 +622,10 @@ class BaseRequestHandler(RequestHandler):
             if self.redirect_to_canonical_domain():
                 return
 
-            if not self.settings.get("TESTING"):
-                if (days := random.randint(0, 31337)) in {69, 420, 1337, 31337}:
-                    self.set_cookie("c", "s", expires_days=days / 24, path="/")
+            if not self.settings.get("TESTING") and (
+                days := random.randint(0, 31337)
+            ) in {69, 420, 1337, 31337}:
+                self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
 
@@ -649,14 +650,16 @@ class BaseRequestHandler(RequestHandler):
                     )
                     raise HTTPError(401 if is_authorized is None else 403)
 
-            if self.MAX_BODY_SIZE is not None:
-                if len(self.request.body) > self.MAX_BODY_SIZE:
-                    logger.warning(
-                        "%s > MAX_BODY_SIZE (%s)",
-                        len(self.request.body),
-                        self.MAX_BODY_SIZE,
-                    )
-                    raise HTTPError(413)
+            if (
+                self.MAX_BODY_SIZE is not None
+                and len(self.request.body) > self.MAX_BODY_SIZE
+            ):
+                logger.warning(
+                    "%s > MAX_BODY_SIZE (%s)",
+                    len(self.request.body),
+                    self.MAX_BODY_SIZE,
+                )
+                raise HTTPError(413)
 
             if not await self.ratelimit(True):
                 await self.ratelimit()

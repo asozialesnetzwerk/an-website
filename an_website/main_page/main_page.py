@@ -34,7 +34,7 @@ def get_module_info() -> ModuleInfo:
 class MainPage(QuoteOfTheDayBaseHandler):
     """The request handler of the main page."""
 
-    async def check_ready(self) -> None:
+    async def check_ready(self) -> None:  # noqa: D102
         pass
 
     async def get(self, *, head: bool = False) -> None:

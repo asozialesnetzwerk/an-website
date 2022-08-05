@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import configparser
+import contextlib
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
@@ -41,10 +42,8 @@ from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR = os.path.dirname(__file__)
 
-try:
-    from jxlpy import JXLImagePlugin  # type: ignore  # noqa: F401
-except ImportError:
-    pass
+with contextlib.suppress(ImportError):
+    from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 
 
 def apply() -> None:
@@ -56,7 +55,14 @@ def apply() -> None:
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
     certifi.contents = lambda: Path(certifi.where()).read_text("ascii")
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
-        {"sure": True, "nope": False}
+        {
+            "sure": True,
+            "nope": False,
+            "accept": True,
+            "reject": False,
+            "enabled": True,
+            "disabled": False,
+        }
     )
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     tornado.httpclient.AsyncHTTPClient.configure(

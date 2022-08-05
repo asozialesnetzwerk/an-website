@@ -43,7 +43,7 @@ mypy --pretty -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
 
 # lint
 echo Flake8:
-flake8 --extend-ignore=D102 setup.py an_website tests scripts || FAILED=$(( 16 | FAILED ))
+flake8 || FAILED=$(( 16 | FAILED ))
 echo Pylint:
 pylint="pylint --output-format=colorized"
 $pylint -d all -e fixme --score=no --persistent=no setup.py an_website tests scripts

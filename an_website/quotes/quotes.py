@@ -239,7 +239,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             self.FUTURE_REFERENCES.add(future)
             future.add_done_callback(self.FUTURE_REFERENCES.discard)
 
-    async def prepare(self) -> None:
+    async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
         self.loop = asyncio.get_running_loop()
 

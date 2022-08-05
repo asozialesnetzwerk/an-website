@@ -89,7 +89,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install pytest, coverage and html5lib (needed for the tests)
-        run: grep -E "^(pytest|coverage|html5lib)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
       - name: Run pytest
         run: pytest --durations=0 --verbose --cov=an_website --cov-config=.coveragerc tests
       - name: Upload coverage as artifact

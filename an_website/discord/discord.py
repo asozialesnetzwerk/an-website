@@ -76,6 +76,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
     How to get the invite:
         - from the widget (has to be enabled in guild settings)
         - from DISBOARD (the guild needs to set it up first)
+
     If the invite couldn't be fetched an HTTPError is raised.
     """
     reason = "Invite not found."

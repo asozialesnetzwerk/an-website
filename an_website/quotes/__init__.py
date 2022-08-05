@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import os
 import random
@@ -446,11 +447,9 @@ def parse_list_of_quote_data(
 
 async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     """Start updating the cache every hour."""
-    # pylint: disable=too-complex, too-many-branches
-    try:
+    # pylint: disable=too-complex
+    with contextlib.suppress(asyncio.TimeoutError):
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
-    except asyncio.TimeoutError:
-        pass
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", "")
     apm: None | elasticapm.Client
@@ -498,9 +497,9 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
                     )
                     await asyncio.sleep(update_cache_in)
 
+    # update the cache every hour
     failed = 0
-    # pylint: disable=while-used
-    while True:  # update the cache every hour
+    while True:  # pylint: disable=while-used
         try:
             await update_cache(app)
         except Exception:  # pylint: disable=broad-except
@@ -682,7 +681,7 @@ class QuoteReadyCheckHandler(HTMLRequestHandler):
             self.set_header("Retry-After", "5")
             raise HTTPError(503, reason="Service available in a few seconds")
 
-    async def prepare(self) -> None:
+    async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
         if self.request.method != "OPTIONS":
             await self.check_ready()

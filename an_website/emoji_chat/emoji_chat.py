@@ -272,7 +272,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
     name: str
     connection_time: int
 
-    def on_close(self) -> None:
+    def on_close(self) -> None:  # noqa: D102
         logger.info("WebSocket closed")
         OPEN_CONNECTIONS.remove(self)
         for conn in OPEN_CONNECTIONS:
@@ -316,7 +316,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
 
         return self.send_messages()
 
-    async def prepare(self) -> None:
+    async def prepare(self) -> None:  # noqa: D102
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 

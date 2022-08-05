@@ -62,7 +62,7 @@ async def test_json_apis(
         yaml_resp = assert_valid_yaml_response(
             await fetch(api, headers={"Accept": "application/yaml"})
         )
-        if not api == "/api/betriebszeit":
+        if api != "/api/betriebszeit":
             assert json_resp == yaml_resp
         assert not assert_valid_response(
             await fetch(
