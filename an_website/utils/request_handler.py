@@ -22,7 +22,6 @@ from __future__ import annotations
 import logging
 import os
 import sys
-import time
 from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
@@ -409,8 +408,7 @@ class ElasticRUM(BaseRequestHandler):
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
 
-    SCRIPTS: dict[str, tuple[str, float]] = {}
-    CACHE_TIME = 365 * 60 * 60 * 24
+    SCRIPTS: dict[str, str] = {}
 
     async def get(
         self,
@@ -426,7 +424,7 @@ class ElasticRUM(BaseRequestHandler):
         self.handle_accept_header((accepted_ct,))
 
         key = version + spam + eggs
-        if key not in self.SCRIPTS or self.SCRIPTS[key][1] < time.monotonic():
+        if key not in self.SCRIPTS:
             response = await AsyncHTTPClient().fetch(
                 self.URL.format(version, spam, eggs),
                 raise_error=False,
@@ -434,10 +432,7 @@ class ElasticRUM(BaseRequestHandler):
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[key] = (
-                response.body.decode(),
-                time.monotonic() + 365 * 24 * 60 * 60,
-            )
+            self.SCRIPTS[key] = response.body.decode()
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
                 BaseRequestHandler.ELASTIC_RUM_URL = new_path
@@ -448,10 +443,9 @@ class ElasticRUM(BaseRequestHandler):
             self.set_header(
                 "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
+        self.set_header("Expires", datetime.utcnow() + timedelta(days=365))
         self.set_header(
-            "Expires", datetime.utcnow() + timedelta(seconds=self.CACHE_TIME)
+            "Cache-Control",
+            f"public, min-fresh={60 * 60 * 24 * 365}, immutable",
         )
-        self.set_header(
-            "Cache-Control", f"public, min-fresh={self.CACHE_TIME}, immutable"
-        )
-        return await self.finish(self.SCRIPTS[key][0])
+        return await self.finish(self.SCRIPTS[key])

@@ -24,6 +24,7 @@ import http.client
 import io
 import os
 import pydoc
+import re  # pylint: disable=preferred-module
 import socket
 import sys
 import time
@@ -35,12 +36,10 @@ from types import EllipsisType
 from typing import Any, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
-import regex
-
 try:
-    import dill as pickle  # type: ignore[import]
+    import dill as pickle  # type: ignore[import]  # nosec: B403
 except ImportError:
-    import pickle  # type: ignore[no-redef]
+    import pickle  # type: ignore[no-redef]  # nosec: B403
 
 try:
     import hy  # type: ignore[import]
@@ -62,7 +61,7 @@ else:
 
 FLUFL = True
 
-E = eval(  # pylint: disable=eval-used
+E = eval(  # pylint: disable=eval-used  # nosec: B307
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
 
@@ -220,8 +219,8 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
-            status, o = regex.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
-            headers = dict(regex.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n"))  # type: ignore[union-attr, misc]  # noqa: B950
+            status, o = re.match(r"HTTP/.+? (\d+).*?\r\n(.*)", e.decode("latin-1"), 24).groups()  # type: ignore[union-attr]  # noqa: B950
+            headers = dict(re.match(r"([^\s]+):\s*(.+?)\s*$", x, 24).groups() for x in o.split("\r\n"))  # type: ignore[union-attr, misc]  # noqa: B950
     writer.close()
     await writer.wait_closed()
     if "status" not in locals():
@@ -290,7 +289,7 @@ def send(
         return (
             response[0],  # status
             response[1],  # header
-            pickle.loads(response[2]),  # data
+            pickle.loads(response[2]),  # data  # nosec: B301
         )
     except pickle.UnpicklingError:
         return (
@@ -397,7 +396,7 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
             result_obj: Any = None
             if isinstance(body["result"][1], bytes):
                 try:
-                    result_obj = pickle.loads(body["result"][1])
+                    result_obj = pickle.loads(body["result"][1])  # nosec: B301
                 except Exception:  # pylint: disable=broad-except
                     if sys.flags.dev_mode:
                         traceback.print_exc()
@@ -475,7 +474,7 @@ Accepted arguments:
     if "--no-config" not in sys.argv:
         try:
             with open(config_pickle, "rb") as file:
-                config = pickle.load(file)
+                config = pickle.load(file)  # nosec: B301
         except FileNotFoundError:
             pass
         else:
@@ -499,7 +498,7 @@ Accepted arguments:
         elif "://" not in url:
             if not url.startswith("//"):
                 url = "//" + url
-            if regex.match(
+            if re.match(
                 r"^(\/\/)(localhost|127\.0\.0\.1|\[::1\])(\:\d+)?(/\S*)?$", url
             ):
                 url = "http:" + url

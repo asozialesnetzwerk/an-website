@@ -198,7 +198,7 @@ class AvailabilityChartHandler(BaseRequestHandler):
             )
             return
         self.set_header(
-            "Cache-Control", f"public, min-fresh={14 * 24 * 60 * 60}, immutable"
+            "Cache-Control", f"public, min-fresh={60 * 60 * 24 * 14}, immutable"
         )
         if head:
             return

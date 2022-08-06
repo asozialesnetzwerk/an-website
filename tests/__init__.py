@@ -51,9 +51,9 @@ import tornado.httpclient
 import tornado.web
 import yaml
 from blake3 import blake3  # type: ignore[import]
-from lxml import etree
-from lxml.html import document_fromstring
-from lxml.html.html5parser import HTMLParser
+from lxml import etree  # nosec: B410
+from lxml.html import document_fromstring  # nosec: B410
+from lxml.html.html5parser import HTMLParser  # nosec: B410
 
 # pylint: disable=ungrouped-imports
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main, quotes
@@ -356,9 +356,9 @@ def assert_valid_rss_response(
     """Assert a valid html response with the given code."""
     assert_valid_response(response, "application/rss+xml", codes)
     body = response.body
-    parsed_xml = etree.fromstring(
+    parsed_xml = etree.fromstring(  # nosec: B320
         body,
-        parser=etree.XMLParser(recover=False, resolve_entities=False),
+        parser=etree.XMLParser(resolve_entities=False),
         base_url=response.request.url,
     )
     return parsed_xml

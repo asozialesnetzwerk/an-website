@@ -27,7 +27,7 @@ from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any
 
-import dill as pickle  # type: ignore[import]
+import dill as pickle  # type: ignore[import]  # nosec: B403
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN
@@ -53,13 +53,13 @@ def get_module_info() -> ModuleInfo:
 class PrintWrapper:  # pylint: disable=too-few-public-methods
     """Wrapper for print()."""
 
-    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
-        self._output: io.TextIOBase = output
-
     def __call__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         if "file" not in kwargs:
             kwargs["file"] = self._output
         print(*args, **kwargs)
+
+    def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107
+        self._output: io.TextIOBase = output
 
 
 class Backdoor(APIRequestHandler):
@@ -140,10 +140,10 @@ class Backdoor(APIRequestHandler):
                 else None
             )
             if session_pickle:
-                session = pickle.loads(b85decode(session_pickle))
+                session = pickle.loads(b85decode(session_pickle))  # nosec: B301
                 for key, value in session.items():
                     try:
-                        session[key] = pickle.loads(value)
+                        session[key] = pickle.loads(value)  # nosec: B301
                     except Exception:  # pylint: disable=broad-except
                         logger.exception("Loading the session failed")
                         if self.apm_client:
@@ -195,8 +195,10 @@ class Backdoor(APIRequestHandler):
                 session["help"] = pydoc.Helper(io.StringIO(), output)
             try:
                 try:
-                    result: Any = eval(  # pylint: disable=eval-used
-                        code, session
+                    result: Any = (
+                        eval(  # pylint: disable=eval-used  # nosec: B307
+                            code, session
+                        )
                     )
                     if code.co_flags & CO_COROUTINE:
                         result = await result

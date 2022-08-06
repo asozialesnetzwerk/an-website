@@ -2,6 +2,7 @@ astor==0.8.1
 astroid==2.11.7
 attrs==22.1.0
 autoflake==1.4
+bandit==1.7.4
 black==22.6.0
 certifi==2022.6.15
 cfgv==3.3.1
@@ -18,6 +19,8 @@ flake8-no-pep420==2.3.0
 flake8-rst-docstrings==0.2.7
 flake8-scream==0.1.0
 flake8-simplify==0.19.3
+gitdb==4.0.9
+gitpython==3.1.27
 html5lib==1.1
 identify==2.5.3
 iniconfig==1.1.1
@@ -30,6 +33,7 @@ mypy-extensions==0.4.3
 nodeenv==1.7.0
 packaging==21.3
 pathspec==0.9.0
+pbr==5.9.0
 pep8-naming==0.13.1
 pipenv==2022.8.5
 platformdirs==2.5.2
@@ -53,7 +57,9 @@ restructuredtext-lint==1.4.0
 rjsmin==1.2.1
 setuptools==63.4.1
 six==1.16.0
+smmap==5.0.0
 snowballstemmer==2.2.0
+stevedore==4.0.0
 toml==0.10.2
 tomli==2.0.1
 tomlkit==0.11.1

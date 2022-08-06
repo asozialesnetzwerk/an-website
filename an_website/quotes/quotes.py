@@ -176,7 +176,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             rating_filter = self.rating_filter()
 
         if rating_filter == "smart":
-            rating_filter = random.choice(SMART_RATING_FILTERS)
+            rating_filter = random.choice(SMART_RATING_FILTERS)  # nosec: B311
 
         match rating_filter:
             case "unrated":
@@ -203,7 +203,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             # invalid rating filter or no wrong quotes with that filter
             return get_random_id()
 
-        return random.choice(wrong_quotes).get_id()
+        return random.choice(wrong_quotes).get_id()  # nosec: B311
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
