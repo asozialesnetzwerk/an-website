@@ -20,11 +20,11 @@ from __future__ import annotations
 
 import re  # pylint: disable=preferred-module
 import sys
-from os.path import dirname
+from os.path import abspath, dirname
 from pathlib import Path
 from subprocess import run  # nosec: B404
 
-REPO_ROOT = dirname(dirname(__file__))
+REPO_ROOT = dirname(dirname(abspath(__file__)))
 HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt

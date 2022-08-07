@@ -19,10 +19,10 @@ from __future__ import annotations
 
 import sys
 from hashlib import new
-from os.path import dirname
+from os.path import abspath, dirname
 from pathlib import Path
 
-REPO_ROOT = dirname(dirname(__file__))
+REPO_ROOT = dirname(dirname(abspath(__file__)))
 PATH = Path(REPO_ROOT, "an_website").absolute()
 
 
