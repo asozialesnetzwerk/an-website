@@ -17,9 +17,8 @@
 
 from __future__ import annotations
 
-from xml.etree.ElementTree import parse
-
 import regex
+from defusedxml.etree.ElementTree import parse
 
 if __name__ == "__main__":  # noqa: C901
     # how to get the file:

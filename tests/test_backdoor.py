@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-import pickle
+import pickle  # nosec: B403
 from types import EllipsisType
 from typing import Any, Literal
 
@@ -54,7 +54,9 @@ async def request_and_parse(
 
     assert_valid_response(http_response, "application/vnd.python.pickle")
 
-    response: dict[str, Any] | str | None = pickle.loads(http_response.body)
+    response: dict[str, Any] | str | None = pickle.loads(  # nosec: B301
+        http_response.body
+    )
 
     assert isinstance(response, dict | str | None)
 
@@ -71,7 +73,7 @@ async def request_and_parse(
         assert isinstance(response["result"][1], bytes | None)
         if isinstance(response["result"][1], bytes):
             result = list(response["result"])
-            result[1] = pickle.loads(result[1])
+            result[1] = pickle.loads(result[1])  # nosec: B301
             response["result"] = tuple(result)
 
     return response

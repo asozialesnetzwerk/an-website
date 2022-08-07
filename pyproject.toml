@@ -2,9 +2,12 @@
 requires = ["get_version==3.5.4", "setuptools==63.1.0", "wheel==0.37.1"]
 build-backend = "setuptools.build_meta"
 
+[tool.bandit]
+skips = ["B101"]
+
 [tool.black]
-line-length = 80
 target-version = ["py310", "py311"]
+line-length = 80
 
 [tool.isort]
 atomic = true
@@ -17,8 +20,6 @@ add_imports = ["from __future__ import annotations"]
 [tool.mypy]
 strict = true
 python_version = "3.10"
-show_error_codes = true
 warn_unreachable = true
-warn_unused_ignores = true
-warn_redundant_casts = true
+show_error_codes = true
 plugins = "numpy.typing.mypy_plugin"

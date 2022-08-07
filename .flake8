@@ -1,7 +1,7 @@
 [flake8]
-extend-exclude = venv
+extend-exclude = build,venv
 max-line-length = 80
-max-complexity = 12
+max-complexity = 15
 ignore = E501,W503
 select = B,B9,C,D,E,F,N8,RST,SCR,SIM,W,INP
 require-plugins =
