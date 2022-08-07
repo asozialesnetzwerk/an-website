@@ -294,7 +294,7 @@ class BaseRequestHandler(RequestHandler):
         if theme == "random-dark":
             ignore_themes.extend(("light", "light-blue", "fun"))
 
-        return random.choice(
+        return random.choice(  # nosec: B311
             tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
 
@@ -623,7 +623,7 @@ class BaseRequestHandler(RequestHandler):
                 return
 
             if not self.settings.get("TESTING") and (
-                days := random.randint(0, 31337)
+                days := random.randint(0, 31337)  # nosec: B311
             ) in {69, 420, 1337, 31337}:
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 

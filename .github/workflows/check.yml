@@ -25,7 +25,7 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install required stuff
-        run: grep -E "^(autoflake|black|isort|rcssmin|regex|rjsmin)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(autoflake|black|isort|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-duplicate-keys --remove-unused-variables .
       - name: Run isort
@@ -43,8 +43,8 @@ jobs:
         with:
           commit_message: "🤦"
 
-  check_types:
-    name: Check types
+  mypy:
+    name: mypy
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,7 +71,7 @@ jobs:
       - name: Install mypy + stuff required for checking the tests
         run: grep -E "^(html5lib|mypy|pytest|types-)" requirements-ci.txt | xargs pip install
       - name: Run mypy
-        run: mypy -p an_website -p tests -p scripts
+        run: mypy -m setup -p an_website -p tests -p scripts
 
   flake8:
     name: Flake8
@@ -125,4 +125,22 @@ jobs:
       - name: Install Pylint + stuff required for checking the tests
         run: grep -E "^(html5lib|pylint|pytest|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
       - name: Run Pylint
-        run: pylint -d fixme setup.py an_website tests scripts
+        run: pylint -d fixme
+
+  bandit:
+    name: Bandit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+      - name: Install Bandit
+        run: grep "^bandit" requirements-ci.txt | xargs pip install
+      - name: Run Bandit
+        run: bandit -c pyproject.toml -r .

@@ -591,12 +591,37 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
         return val
     if isinstance(val, str):
         val = val.lower()
-        if val in {"1", "on", "s", "sure", "t", "true", "y", "yes"}:
+        if val in {
+            "1",
+            "a",
+            "accept",
+            "e",
+            "enabled",
+            "on",
+            "s",
+            "sure",
+            "t",
+            "true",
+            "y",
+            "yes",
+        }:
             return True
-        if val in {"0", "f", "false", "n", "no", "nope", "off"}:
+        if val in {
+            "0",
+            "d",
+            "disabled",
+            "f",
+            "false",
+            "n",
+            "no",
+            "nope",
+            "off",
+            "r",
+            "reject",
+        }:
             return False
         if val in {"idc", "maybe", "random"}:
-            return bool(random.randrange(2))
+            return bool(random.randrange(2))  # nosec: B311
     if default is None:
         raise ValueError(f"invalid truth value {val!r}")
     return default

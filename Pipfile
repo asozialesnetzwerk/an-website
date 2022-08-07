@@ -41,6 +41,7 @@ uvloop = "<2"
 
 [dev-packages]
 autoflake = "==1.*"
+bandit = "==1.*"
 black = "==22.*"
 coverage = "==6.*"
 flake8 = "==5.*"

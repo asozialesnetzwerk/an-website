@@ -13,21 +13,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Sort all the python code in this repo."""
+"""Sort all the Python code in this repo."""
 
 from __future__ import annotations
 
 import ast
 import os
+import re  # pylint: disable=preferred-module
 import sys
 from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
 from typing import Any, NamedTuple, cast
 
-import regex
-
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 FunctionOrClassDef = (
     # ast.AnnAssign
@@ -166,9 +165,7 @@ class BlockOfCode:
     def uses(self, other: BlockOfCode) -> bool:
         """Return if self's code uses stuff from the other block of code."""
         # TODO: improve this
-        code = regex.sub(
-            r'"""(.|\n)+"""', "", (self.unparsed_code or self.code)
-        )
+        code = re.sub(r'"""(.|\n)+"""', "", (self.unparsed_code or self.code))
         return any(def_ in code for def_ in other.defines)
 
 

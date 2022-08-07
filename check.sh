@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 if [ -d venv ]; then
   if ! . venv/bin/activate; then
@@ -21,44 +22,42 @@ if [ $? -ne 0 -a $? -ne 3 ]; then
   exit 1
 fi
 
-# install pre-commit hooks
-pre-commit install
+python3 -m pre-commit install || true
 
 FAILED=0
 
-# sort imports
 echo isort:
-isort . || FAILED=$(( 2 | FAILED ))
+python3 -m isort . || FAILED=$(( 2 | FAILED ))
 
-# check formatting
 echo Black:
-if ! black --check --diff --color .; then
-  echo 'Run "black ." to reformat.'
+if ! python3 -m black --check --diff --color .; then
+  echo 'Run "python3 -m black ." to reformat.'
   FAILED=$(( 4 | FAILED ))
 fi
 
-# check types
 echo mypy:
-mypy --pretty -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
+python3 -m mypy --pretty -m setup -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
 
-# lint
 echo Flake8:
-flake8 || FAILED=$(( 16 | FAILED ))
+python3 -m flake8 || FAILED=$(( 16 | FAILED ))
+
 echo Pylint:
-pylint="pylint --output-format=colorized"
-$pylint -d all -e fixme --score=no --persistent=no setup.py an_website tests scripts
-$pylint -d fixme setup.py an_website tests scripts || FAILED=$(( 32 | FAILED ))
+python3 -m pylint -d all -e fixme --score=no --persistent=no setup.py an_website tests scripts
+python3 -m pylint -d fixme setup.py an_website tests scripts || FAILED=$(( 32 | FAILED ))
+
+echo Bandit:
+python3 -m bandit -q -c pyproject.toml -r . || FAILED=$(( 64 | FAILED ))
 
 if [ -n "$1" ]; then
-  pytest="pytest --durations=0 --durations-min=0.5"
+  pytest="python3 -m pytest --durations=0 --durations-min=0.5"
   if [ "$1" = "test" ]; then
     echo Tests:
-    $pytest tests || FAILED=$(( 64 | FAILED ))
+    $pytest tests || FAILED=$(( 128 | FAILED ))
   elif [ "$1" = "test-cov" ]; then
     echo Tests:
-    $pytest --cov=an_website --cov-report= tests || FAILED=$(( 64 | FAILED ))
+    $pytest --cov=an_website --cov-report= tests || FAILED=$(( 128 | FAILED ))
     echo Coverage:
-    coverage report --precision=3 --sort=cover --skip-covered
+    python3 -m coverage report --precision=3 --sort=cover --skip-covered
   fi
 fi
 

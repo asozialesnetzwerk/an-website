@@ -17,7 +17,7 @@
 
 from __future__ import annotations
 
-from xml.etree.ElementTree import parse
+from defusedxml.etree.ElementTree import parse
 
 import regex
 

@@ -1,15 +1,16 @@
 [MASTER]
+ignore=venv
 load-plugins=
     pylint.extensions.bad_builtin,
     pylint.extensions.broad_try_clause,
     pylint.extensions.check_elif,
-    #pylint.extensions.code_style,
+    pylint.extensions.code_style,
     pylint.extensions.comparetozero,
     pylint.extensions.comparison_placement,
     pylint.extensions.confusing_elif,
     pylint.extensions.consider_ternary_expression,
     pylint.extensions.docparams,
-    #pylint.extensions.docstyle,
+    pylint.extensions.docstyle,
     #pylint.extensions.empty_comment,
     pylint.extensions.emptystring,
     pylint.extensions.eq_without_hash,
@@ -28,32 +29,35 @@ extension-pkg-allow-list=
     blake3,
     lxml,
     orjson,
+recursive=yes
 py-version=3.10
 
-[MESSAGES_CONTROL]
-enable=all
-disable=file-ignored,
-        locally-disabled,
-        suppressed-message,
-        duplicate-code,
+[REPORTS]
+output-format=colorized
 
-[BASIC]
-include-naming-hint=yes
+[MESSAGES CONTROL]
+enable=all
+disable=
+    file-ignored,
+    locally-disabled,
+    suppressed-message,
+    docstring-first-line-empty,
+    # TODO: enable after fixing all complaints
+    consider-using-assignment-expr,
+    # https://github.com/PyCQA/pylint/issues/2368
+    duplicate-code,
 
 [FORMAT]
 expected-line-ending-format=LF
+
+[BASIC]
+include-naming-hint=yes
 
 [IMPORTS]
 preferred-modules=
     json:orjson,
     re:regex,
     xml:defusedxml,
-
-[SIMILARITIES]
-min-similarity-lines=4
-ignore-comments=yes
-ignore-docstrings=yes
-ignore-imports=yes
 
 [BROAD_TRY_CLAUSE]
 max-try-statements=8

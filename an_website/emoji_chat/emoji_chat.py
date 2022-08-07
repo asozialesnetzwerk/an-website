@@ -205,7 +205,7 @@ class ChatHandler(BaseRequestHandler):
     async def get_random_name(self) -> str:
         """Get a random name as default."""
         return normalize_emojis(
-            "".join(random.choice(EMOJIS) for _ in range(4))
+            "".join(random.choice(EMOJIS) for _ in range(4))  # nosec: B311
             + (await self.geoip() or {}).get(
                 "country_flag",
                 "🏴‍☠" if self.request.host_name.endswith(".onion") else "❔",

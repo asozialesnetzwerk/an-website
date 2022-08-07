@@ -12,24 +12,24 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=consider-using-namedtuple-or-dataclass
 
 """Generates a humans.txt file."""
 
 from __future__ import annotations
 
+import re  # pylint: disable=preferred-module
 import sys
-from os.path import abspath, dirname
+from os.path import dirname
 from pathlib import Path
-from subprocess import run
+from subprocess import run  # nosec: B404
 
-import regex
-
-REPO_ROOT = dirname(dirname(abspath(__file__)))
+REPO_ROOT = dirname(dirname(__file__))
 HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
 
-# edit these 3 to change humans.txt
+# edit these 4 to change humans.txt
 BOTS: set[str] = {"ImgBotApp", "snyk-bot"}
-NAME_ALIASES: dict[str, str] = {
+ALIASES: dict[str, str] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",
 }
@@ -53,23 +53,21 @@ CONTRIBUTORS: dict[str, dict[str, str]] = {
 
 def generate_humans_txt() -> str:
     """Generate the contents of the humans.txt file."""
-    result = run(
+    result = run(  # nosec: B603, B607
         ["git", "shortlog", "-s", "HEAD"], capture_output=True, check=True
     )
 
     people: dict[str, int] = {}
 
     for line in result.stdout.decode("utf-8").split("\n"):
-        if not line.strip():
+        if not (line := line.strip()):
             continue
-        count, name = regex.split(r"\s+", line.strip(), 1)
+        count, name = re.split(r"\s+", line, 1)
         if name in BOTS:
             continue
-        name = NAME_ALIASES.get(name, name)
-        if name in people:
-            people[name] += int(count)
-        else:
-            people[name] = int(count)
+        name = ALIASES.get(name, name)
+        people.setdefault(name, 0)
+        people[name] += int(count)
 
     maintainers: list[tuple[int, list[tuple[str, str]]]] = []
     contributors: list[tuple[int, list[tuple[str, str]]]] = []

@@ -18,7 +18,6 @@ from __future__ import annotations
 import dataclasses
 import email.utils
 import logging
-import random
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
@@ -160,23 +159,17 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if not quotes:
             logger.warning("No quotes available")
             return None
-        count = len(quotes)
-        index = random.randrange(0, count)
-        for _ in range(count - 1):
-            quote = quotes[index]
+        for quote in quotes:
             if await self.has_been_used(quote.get_id_as_str()):
-                index = (index + 1) % count
-            else:
-                wq_id = quote.get_id_as_str()
-                await self.set_used(wq_id)
-                await self.redis.setex(
-                    self.get_redis_quote_date_key(today),
-                    420 * 24 * 60 * 60,  # TTL
-                    wq_id,
-                )
-                return QuoteOfTheDayData(
-                    today, quote, self.get_scheme_and_netloc()
-                )
+                continue
+            wq_id = quote.get_id_as_str()
+            await self.set_used(wq_id)
+            await self.redis.setex(
+                self.get_redis_quote_date_key(today),
+                60 * 60 * 24 * 420,  # TTL
+                wq_id,
+            )
+            return QuoteOfTheDayData(today, quote, self.get_scheme_and_netloc())
         logger.critical("Failed to generate a new quote of the day")
         return None
 
@@ -205,7 +198,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         await self.redis.setex(
             self.get_redis_used_key(wq_id),
             #  we have over 720 funny wrong quotes, so 420 should be ok
-            420 * 24 * 60 * 60,  # TTL
+            60 * 60 * 24 * 420,  # TTL
             1,  # True
         )
 

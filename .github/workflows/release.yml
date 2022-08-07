@@ -28,7 +28,7 @@ jobs:
         run: test -z $(git tag --list "v*" --points-at)
       - name: Create tag
         if: github.event_name == 'schedule'
-        run: git tag $(python -c "from datetime import datetime; print(datetime.utcnow().strftime('v%y.%m.%d'))")
+        run: git tag $(python -c "from time import strftime, gmtime; print(strftime('v%y.%m.%d', gmtime()))")
       - name: Push tag
         if: github.event_name == 'schedule'
         run: git push --tags
@@ -146,9 +146,9 @@ jobs:
         id: version
         shell: python
         run: |
-          from datetime import datetime
+          from time import strftime, gmtime
           if "${{ github.event_name }}" == "schedule":
-            print(f"::set-output name=TAG_NAME::{datetime.utcnow().strftime('v%y.%m.%d')}")
+            print(f"::set-output name=TAG_NAME::{strftime('v%y.%m.%d', gmtime())}")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             print("::set-output name=TAG_NAME::${{ github.ref_name }}")
       - name: Create release

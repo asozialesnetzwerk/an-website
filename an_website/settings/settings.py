@@ -44,7 +44,7 @@ class SettingsPage(HTMLRequestHandler):
         """Handle GET requests to the settings page."""
         if head:
             return
-        await self.render(
+        await self.render(  # nosec: B106
             "pages/settings.html",
             theme_name=self.get_theme(),
             themes=THEMES,

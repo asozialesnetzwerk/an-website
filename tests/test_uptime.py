@@ -56,8 +56,6 @@ def test_uptime_to_str() -> None:
     """Test the uptime_to_str function."""
     assert uptime.uptime_to_str(0) == "0d 0h 0min 0s"
     assert uptime.uptime_to_str(133769420) == "1548d 6h 10min 20s"
-    assert uptime.uptime_to_str(69420) == "0d 19h 17min 0s"
-    assert uptime.uptime_to_str(24 * 60 * 60 + 69) == "1d 0h 1min 9s"
 
 
 def test_calculate_uptime() -> None:
