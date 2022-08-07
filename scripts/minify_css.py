@@ -23,7 +23,7 @@ import sys
 
 import rcssmin  # type: ignore[import]
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
 
 STATIC_DIR = os.path.join(REPO_ROOT, "an_website/static/style")
 STYLE_DIR = os.path.join(REPO_ROOT, "style")

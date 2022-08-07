@@ -20,11 +20,11 @@ from __future__ import annotations
 
 import re  # pylint: disable=preferred-module
 import sys
-from os.path import abspath, dirname
+from os.path import dirname, normpath
 from pathlib import Path
 from subprocess import run  # nosec: B404
 
-REPO_ROOT = dirname(dirname(abspath(__file__)))
+REPO_ROOT = dirname(dirname(normpath(__file__)))
 HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt
@@ -66,10 +66,8 @@ def generate_humans_txt() -> str:
         if name in BOTS:
             continue
         name = ALIASES.get(name, name)
-        if name in people:
-            people[name] += int(count)
-        else:
-            people[name] = int(count)
+        people.setdefault(name, 0)
+        people[name] += int(count)
 
     maintainers: list[tuple[int, list[tuple[str, str]]]] = []
     contributors: list[tuple[int, list[tuple[str, str]]]] = []

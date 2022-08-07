@@ -16,13 +16,13 @@
 from __future__ import annotations
 
 import asyncio
-import configparser
 import logging
 import smtplib
 import ssl
 import sys
 import time
 from collections.abc import Iterable
+from configparser import ConfigParser
 from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
@@ -52,9 +52,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def apply_contact_stuff_to_app(
-    app: Application, config: configparser.ConfigParser
-) -> None:
+def apply_contact_stuff_to_app(app: Application, config: ConfigParser) -> None:
     """Apply contact stuff to the app."""
     contact_address = config.get(
         "CONTACT",

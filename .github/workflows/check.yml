@@ -141,6 +141,6 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install Bandit
-        run: grep "^bandit" requirements-ci.txt | sed "s/bandit==/bandit[toml]==/" | xargs pip install
+        run: grep "^bandit" requirements-ci.txt | xargs pip install
       - name: Run Bandit
         run: bandit -c pyproject.toml -r .
