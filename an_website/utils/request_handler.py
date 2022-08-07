@@ -443,9 +443,7 @@ class ElasticRUM(BaseRequestHandler):
             self.set_header(
                 "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
-        self.set_header(
-            "Expires", datetime.utcnow() + timedelta(days=365)
-        )
+        self.set_header("Expires", datetime.utcnow() + timedelta(days=365))
         self.set_header(
             "Cache-Control",
             f"public, min-fresh={60 * 60 * 24 * 365}, immutable",
