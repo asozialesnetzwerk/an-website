@@ -41,7 +41,7 @@ uvloop = "<2"
 
 [dev-packages]
 autoflake = "==1.*"
-bandit = "==1.*"
+bandit = {version = "==1.*", extras = ["toml"]}
 black = "==22.*"
 coverage = "==6.*"
 flake8 = "==5.*"
