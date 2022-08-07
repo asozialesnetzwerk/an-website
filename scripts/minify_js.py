@@ -23,7 +23,7 @@ import sys
 
 import rjsmin  # type: ignore[import]
 
-REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 STATIC_DIR = os.path.join(REPO_ROOT, "an_website/static/js")
 VENDORED_JS_DIR = os.path.join(REPO_ROOT, "an_website/static/vendored-js")

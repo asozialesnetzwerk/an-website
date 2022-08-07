@@ -1,6 +1,4 @@
 #!/bin/sh
-set -e
-
 if [ -d venv ]; then
   if ! . venv/bin/activate; then
     echo "Activating venv failed."
@@ -12,12 +10,14 @@ fi
 
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
 $pip_install "pip>=22.2" wheel
-if [ $? -ne 0 -a $? -ne 3 ]; then
+exit_code="$?"
+if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 3 ]; then
   echo "Installing pip>=22.2 and wheel failed."
   exit 1
 fi
 $pip_install -r requirements-dev.txt
-if [ $? -ne 0 -a $? -ne 3 ]; then
+exit_code="$?"
+if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 3 ]; then
   echo "Installing requirements in requirements-dev.txt failed."
   exit 1
 fi
