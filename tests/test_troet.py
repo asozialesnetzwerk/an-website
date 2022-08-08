@@ -27,10 +27,7 @@ from .test_settings import parse_cookie
 assert fetch and app
 
 
-async def test_troet_page(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_troet_page(fetch: FetchCallable) -> None:
     """Test the troet page."""
     assert_valid_html_response(await fetch("/troet"))
 

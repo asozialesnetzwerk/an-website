@@ -3,7 +3,7 @@ requires = ["get_version==3.5.4", "setuptools==63.1.0", "wheel==0.37.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.bandit]
-skips = ["B101"]
+skips = ["B311"]
 
 [tool.black]
 target-version = ["py310", "py311"]

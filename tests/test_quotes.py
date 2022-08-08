@@ -130,10 +130,7 @@ async def test_create() -> None:
     assert wrong_quote.quote in await create.get_quotes(modified_quote_str)
 
 
-async def test_argument_checking_create_pages(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_argument_checking_create_pages(fetch: FetchCallable) -> None:
     """Test whether the create handlers complain because of missing args."""
     wrong_quote = get_wrong_quote()
 
@@ -212,10 +209,7 @@ async def test_quote_updating() -> None:
     )
 
 
-async def test_quote_request_handlers(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_quote_request_handlers(fetch: FetchCallable) -> None:
     """Test the request handlers for the quotes page."""
     get_wrong_quote()  # add data to cache
     await check_html_page(fetch, "/zitate")
@@ -306,10 +300,7 @@ def test_parsing_vote_str() -> None:
         main_page.vote_to_int("x")
 
 
-async def test_quote_apis(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_quote_apis(fetch: FetchCallable) -> None:
     """Test the quote APIs."""
     wrong_quote = get_wrong_quote()
 

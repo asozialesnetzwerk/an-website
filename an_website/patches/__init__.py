@@ -205,7 +205,7 @@ def redirect(
     if status is None:
         status = 308 if permanent else 307
     else:
-        assert isinstance(status, int) and 300 <= status <= 399
+        assert isinstance(status, int) and 300 <= status <= 399  # nosec: B101
     self.set_status(status)
     self.set_header("Location", url)
     self.finish()

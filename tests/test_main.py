@@ -31,11 +31,11 @@ assert fetch and app
 
 
 async def test_parsing_module_infos(
-    # pylint: disable=redefined-outer-name, too-complex, too-many-locals
     fetch: FetchCallable,
     app: Application,
 ) -> None:
     """Tests about the module infos in main."""
+    # pylint: disable=too-complex, too-many-locals
     module_infos = app.settings["MODULE_INFOS"]
     # should get more than one module_info
     assert len(module_infos) > 0

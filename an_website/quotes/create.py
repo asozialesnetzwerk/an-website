@@ -215,7 +215,6 @@ class CreatePage1(QuoteReadyCheckHandler):
                     "Missing arguments. quote-1 and fake-author-1 are needed."
                 ),
             )
-        assert quote_str and fake_author_str  # for mypy
         quote: None | Quote = get_quote_by_str(quote_str)
         fake_author: None | Author = get_author_by_name(fake_author_str)
 

@@ -9,7 +9,7 @@ RUN python -m venv venv \
  && /venv/bin/pip install -r requirements.txt
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
-RUN /venv/bin/pip install .
+RUN /venv/bin/pip install --no-deps .
 
 FROM docker.io/library/python:3.10-slim AS runtime
 RUN apt-get update \

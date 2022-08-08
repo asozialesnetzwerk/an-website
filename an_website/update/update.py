@@ -53,13 +53,9 @@ def get_module_info() -> ModuleInfo:
 def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
     """Read from a queue and write to a file."""
     while True:  # pylint: disable=while-used
-
-        chunk = queue.get()
-
-        if chunk is None:
+        if (chunk := queue.get()) is None:
             file.close()
             break
-
         file.write(chunk)
 
 

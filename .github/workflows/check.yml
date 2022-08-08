@@ -143,4 +143,4 @@ jobs:
       - name: Install Bandit
         run: grep "^bandit" requirements-ci.txt | xargs pip install
       - name: Run Bandit
-        run: bandit -c pyproject.toml -r .
+        run: bandit -c pyproject.toml -r an_website

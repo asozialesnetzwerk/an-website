@@ -411,19 +411,13 @@ class BaseRequestHandler(RequestHandler):
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""
-        default = False
-        dynload = self.get_cookie("dynload")
-        if dynload is None:
-            return default
-        return str_to_bool(dynload, default)
+        return str_to_bool(self.get_cookie("dynload"), False)
 
     def get_saved_no_3rd_party(self) -> bool:
         """Get the saved value for no_3rd_party."""
-        default = self.get_no_3rd_party_default()
-        no_3rd_party = self.get_cookie("no_3rd_party")
-        if no_3rd_party is None:
-            return default
-        return str_to_bool(no_3rd_party, default)
+        return str_to_bool(
+            self.get_cookie("no_3rd_party"), self.get_no_3rd_party_default()
+        )
 
     def get_saved_openmoji(self) -> OpenMojiValue:
         """Get the saved value for openmoji."""
@@ -433,15 +427,13 @@ class BaseRequestHandler(RequestHandler):
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
-        theme = self.get_cookie("theme")
-        if theme in THEMES:
+        if (theme := self.get_cookie("theme")) in THEMES:
             return theme
         return "default"
 
     def get_theme(self) -> str:
         """Get the theme currently selected."""
-        theme = self.get_argument("theme", None)
-        if theme in THEMES:
+        if (theme := self.get_argument("theme", None)) in THEMES:
             return theme
         return self.get_saved_theme()
 
@@ -607,7 +599,7 @@ class BaseRequestHandler(RequestHandler):
         self,
     ) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
+        # pylint: disable=invalid-overridden-method, too-complex
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
                 if isinstance(transform, GZipContentEncoding):
@@ -639,16 +631,17 @@ class BaseRequestHandler(RequestHandler):
             elif required_permission_for_method is not None:
                 required_permission |= required_permission_for_method
 
-            if required_permission is not None:
-                is_authorized = self.is_authorized(required_permission)
-                if not is_authorized:
-                    self.auth_failed = True
-                    logger.warning(
-                        "Unauthorized access to %s from %s",
-                        self.request.path,
-                        anonymize_ip(str(self.request.remote_ip)),
-                    )
-                    raise HTTPError(401 if is_authorized is None else 403)
+            if not (
+                required_permission is None
+                or (is_authorized := self.is_authorized(required_permission))
+            ):
+                self.auth_failed = True
+                logger.warning(
+                    "Unauthorized access to %s from %s",
+                    self.request.path,
+                    anonymize_ip(str(self.request.remote_ip)),
+                )
+                raise HTTPError(401 if is_authorized is None else 403)
 
             if (
                 self.MAX_BODY_SIZE is not None
@@ -703,8 +696,7 @@ class BaseRequestHandler(RequestHandler):
             method = (
                 "GET" if self.request.method == "HEAD" else self.request.method
             )
-            limit = getattr(self, f"RATELIMIT_{method}_LIMIT", 0)
-            if not limit:
+            if not (limit := getattr(self, f"RATELIMIT_{method}_LIMIT", 0)):
                 return False
             ratelimited, headers = await ratelimit(
                 self.redis,

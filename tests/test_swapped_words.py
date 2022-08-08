@@ -177,10 +177,7 @@ def test_check_text_too_long() -> None:
         swap.check_text_too_long("x" * (swap.MAX_CHAR_COUNT + 1))
 
 
-async def test_sw_html_request_handlers(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
     """Test the swapped words html request handlers."""
     assert_valid_html_response(
         await fetch(
@@ -250,10 +247,7 @@ async def test_sw_html_request_handlers(
     assert response2.body == response.body
 
 
-async def test_sw_json_request_handlers(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_sw_json_request_handlers(fetch: FetchCallable) -> None:
     """Test the swapped words json api request handlers."""
     response = assert_valid_json_response(
         await fetch(

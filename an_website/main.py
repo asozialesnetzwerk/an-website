@@ -396,7 +396,10 @@ def setup_logging(  # pragma: no cover
             root_logger.removeHandler(handler)
             handler.close()
 
+    logging.captureWarnings(True)
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
+    logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
+    logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(
@@ -409,8 +412,7 @@ def setup_logging(  # pragma: no cover
     )
     root_logger.addHandler(stream_handler)
 
-    path = config.get("LOGGING", "PATH", fallback=None)
-    if path:
+    if path := config.get("LOGGING", "PATH", fallback=None):
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
             os.path.join(path, f"{NAME}.log"),
@@ -421,8 +423,10 @@ def setup_logging(  # pragma: no cover
         file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
 
-    webhook_url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
-    if webhook_url and loop:
+    if not loop:
+        return
+
+    if webhook_url := config.get("LOGGING", "WEBHOOK_URL", fallback=None):
         webhook_content_type = config.get(
             "LOGGING",
             "WEBHOOK_CONTENT_TYPE",
@@ -458,11 +462,6 @@ def setup_logging(  # pragma: no cover
         )
         webhook_handler.setFormatter(formatter)
         root_logger.addHandler(webhook_handler)
-
-    logging.captureWarnings(True)
-
-    logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
-    logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
 
 def setup_apm(app: Application) -> None:  # pragma: no cover

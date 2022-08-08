@@ -24,6 +24,7 @@ load-plugins=
     pylint.extensions.set_membership,
     pylint.extensions.typing,
     pylint.extensions.while_used,
+    pylint_pytest,
 extension-pkg-allow-list=
     Levenshtein,
     blake3,
@@ -44,6 +45,7 @@ disable=
     docstring-first-line-empty,
     # TODO: enable after fixing all complaints
     consider-using-assignment-expr,
+    cannot-enumerate-pytest-fixtures,
     # https://github.com/PyCQA/pylint/issues/2368
     duplicate-code,
 

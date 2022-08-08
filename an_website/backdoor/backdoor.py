@@ -25,7 +25,7 @@ from asyncio import Future
 from base64 import b85decode, b85encode
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
-from typing import Any
+from typing import Any, cast
 
 import dill as pickle  # type: ignore[import]  # nosec: B403
 from tornado.web import HTTPError
@@ -123,8 +123,11 @@ class Backdoor(APIRequestHandler):
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
-        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
-        if not session_id:
+        if not (
+            session_id := cast(
+                None | str, self.request.headers.get("X-Backdoor-Session")
+            )
+        ):
             session: dict[str, Any] = {
                 "__builtins__": __builtins__,
                 "__name__": "this",

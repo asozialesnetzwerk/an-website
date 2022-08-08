@@ -35,10 +35,7 @@ from . import (
 assert fetch and app
 
 
-async def test_json_apis(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_json_apis(fetch: FetchCallable) -> None:
     """Check whether the APIs return valid JSON."""
     json_apis = (
         "/api/betriebszeit",
@@ -78,11 +75,8 @@ async def test_json_apis(
         ).body
 
 
-async def test_not_found_handler(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
-    """Check if the not found handler works."""
+async def test_not_found_handler(fetch: FetchCallable) -> None:
+    """Check if the NotFoundHandler works."""
     assert_valid_html_response(await fetch("/qwertzuiop"), {404})
 
     await assert_valid_redirect(fetch, "/services.html", "/services", {308})
@@ -110,7 +104,6 @@ async def test_not_found_handler(
 
 
 async def test_page_crawling(
-    # pylint: disable=redefined-outer-name,unused-argument
     fetch: FetchCallable,
     http_server_port: tuple[socket.socket, int],
 ) -> None:
@@ -161,7 +154,6 @@ async def test_page_crawling(
 
 
 async def test_request_handlers2(
-    # pylint: disable=redefined-outer-name, unused-argument
     fetch: FetchCallable,
     http_server_port: tuple[socket.socket, int],
 ) -> None:
@@ -221,11 +213,9 @@ async def test_request_handlers2(
     )
 
 
-async def test_request_handlers(
-    # pylint: disable=redefined-outer-name, too-many-statements
-    fetch: FetchCallable,
-) -> None:
+async def test_request_handlers(fetch: FetchCallable) -> None:
     """Check if the request handlers return 200 codes."""
+    # pylint: disable=too-many-statements
     response = await fetch("/")
     assert response.code == 200
     for theme in ("default", "blue", "random", "random-dark"):

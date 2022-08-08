@@ -24,7 +24,6 @@ assert fetch and app
 
 
 async def test_permissions(
-    # pylint: disable=redefined-outer-name,unused-argument
     fetch: FetchCallable,
     http_server_port: tuple[socket.socket, int],
 ) -> None:
@@ -120,10 +119,7 @@ async def test_permissions(
     )
 
 
-async def test_permissions_with_backdoor(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_permissions_with_backdoor(fetch: FetchCallable) -> None:
     """Test permissions with the backdoor."""
     response = await request_and_parse(
         fetch, "app.settings['TRUSTED_API_SECRETS'].get('')"

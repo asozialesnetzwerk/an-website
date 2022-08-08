@@ -423,8 +423,7 @@ class ElasticRUM(BaseRequestHandler):
         accepted_ct = "application/json" if eggs else "application/javascript"
         self.handle_accept_header((accepted_ct,))
 
-        key = version + spam + eggs
-        if key not in self.SCRIPTS:
+        if (key := version + spam + eggs) not in self.SCRIPTS:
             response = await AsyncHTTPClient().fetch(
                 self.URL.format(version, spam, eggs),
                 raise_error=False,

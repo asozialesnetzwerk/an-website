@@ -24,10 +24,7 @@ from . import FetchCallable, app, assert_url_query, assert_valid_response, fetch
 assert fetch and app
 
 
-async def test_setting_stuff_without_cookies(
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_setting_stuff_without_cookies(fetch: FetchCallable) -> None:
     """Test changing settings with requests without saving to cookie."""
     for request_body in (
         json.dumps(
@@ -81,7 +78,6 @@ def parse_cookie(cookie: str) -> SimpleCookie[str]:
 
 
 async def test_setting_stuff_and_saving_to_cookies(
-    # pylint: disable=redefined-outer-name
     fetch: FetchCallable,
 ) -> None:
     """Test changing settings with requests with saving to cookie."""

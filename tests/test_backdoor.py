@@ -79,11 +79,9 @@ async def request_and_parse(
     return response
 
 
-async def test_backdoor(  # pylint: disable=too-many-statements
-    # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
-) -> None:
+async def test_backdoor(fetch: FetchCallable) -> None:
     """Test the backdoor."""
+    # pylint: disable=too-many-statements
     response = await request_and_parse(fetch, "0==0")
     assert isinstance(response, dict)
     assert response["success"]

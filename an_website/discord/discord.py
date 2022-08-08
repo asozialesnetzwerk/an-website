@@ -88,8 +88,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
     )
     if response.code == 200:
         response_json = json.loads(response.body)
-        invite = response_json["instant_invite"]
-        if invite is not None:
+        if invite := response_json["instant_invite"]:
             return invite, url
         reason = f"No instant invite in widget ({url}) found."
 

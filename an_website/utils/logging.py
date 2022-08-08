@@ -78,8 +78,7 @@ class AsyncHandler(logging.Handler):
             return False
         self.acquire()
         try:
-            awaitable = self.emit(foobar)
-            if awaitable:
+            if awaitable := self.emit(foobar):
                 future = asyncio.run_coroutine_threadsafe(awaitable, self.loop)
                 self.future_references.add(future)
                 future.add_done_callback(self.callback)

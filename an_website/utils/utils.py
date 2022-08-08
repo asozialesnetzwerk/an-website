@@ -124,9 +124,7 @@ class PageInfo:
             words = query
 
         # remove empty strings from words and make the rest lowercase
-        words = [word.lower() for word in words if len(word) > 0]
-
-        if not words:
+        if not (words := [word.lower() for word in words if len(word) > 0]):
             # query empty, so find everything
             return 1.0
 
@@ -522,7 +520,6 @@ async def ratelimit(
             headers["X-RateLimit-Global"] = "true"
 
     if bucket:
-        assert bucket is not None
         reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
         headers["X-RateLimit-Limit"] = str(result[1])
         headers["X-RateLimit-Remaining"] = str(result[2])

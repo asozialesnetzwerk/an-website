@@ -45,8 +45,7 @@ class IPAPI(APIRequestHandler):
         """Handle GET requests to the IP API."""
         if head:
             return
-        geoip = await self.geoip()
-        if geoip:
+        if geoip := await self.geoip():
             return await self.finish_dict(
                 ip=self.request.remote_ip,
                 country=geoip.get("country_flag"),
