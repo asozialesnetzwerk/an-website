@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-(()=>{const messageInput=elById("message-input");const messageSection=elById("message-section");const usingOpenMoji=elById("open-moji-attribution");const connectionIndicator=elById("connection-state");const currentUser=elById("current-user");let reconnectTimeout=100;let reconnectTries=0;let lastMessage="";const timeStampToText=(timestamp)=>{return new Date(timestamp+1_651_075_200_000).toLocaleString();}
+"use strict";(()=>{const messageInput=elById("message-input");const messageSection=elById("message-section");const usingOpenMoji=elById("open-moji-attribution");const connectionIndicator=elById("connection-state");const currentUser=elById("current-user");let reconnectTimeout=100;let reconnectTries=0;let lastMessage="";const timeStampToText=(timestamp)=>{return new Date(timestamp+1_651_075_200_000).toLocaleString();}
 const appendMessage=(msg)=>{let el=document.createElement("div");if(usingOpenMoji&&usingOpenMoji.getAttribute("type")!=="font"){for(let emoji of msg.author){el.append(emojiToIMG(emoji));}
 el.innerHTML+=": ";for(let emoji of msg.content)
 el.append(emojiToIMG(emoji));}else{el.innerText=`${msg.author.join("")}: ${msg.content.join("")}`;}

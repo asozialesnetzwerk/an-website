@@ -1,4 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
+"use strict";
 (() => {
     const resultsList = elById("search-results");
     const searchForm = elById("search-form");
@@ -24,23 +25,25 @@
         displayResults(event.state["results"]);
     }
 
-    searchForm.action = "javascript:void(0)";
-    searchForm.onsubmit = () => get(
-        "/api/suche",
-        "q=" + searchInput.value,
-        (data) => {
-            displayResults(data);
-            setURLParam(
-                "q",
-                searchInput.value,
-                {
-                    "query": searchInput.value,
-                    "results": data
-                },
-                "search",
-                true
-            );
-        }
-    );
+    searchForm.onsubmit = (e) => {
+        e.preventDefault();
+        get(
+            "/api/suche",
+            "q=" + searchInput.value,
+            (data) => {
+                displayResults(data);
+                setURLParam(
+                    "q",
+                    searchInput.value,
+                    {
+                        "query": searchInput.value,
+                        "results": data
+                    },
+                    "search",
+                    true
+                );
+            }
+        );
+    }
 })();
 // @license-end

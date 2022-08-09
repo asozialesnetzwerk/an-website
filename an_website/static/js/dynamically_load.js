@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-const bodyDiv=elById("body");const lastLoaded=[];function dynLoadOnData(data,onpopstate){if(!data){error("No data received");return;}
+"use strict";const bodyDiv=elById("body");const lastLoaded=[];function dynLoadOnData(data,onpopstate){if(!data){error("No data received");return;}
 if(data["redirect"]){w.location.href=data["redirect"];return;}
 const url=data["url"];if(!url){error("No URL in data ",data);return;}
 log("Handling data",data);if(!onpopstate){if(lastLoaded.length===1&&lastLoaded[0]===url){log("Data url is the same as last loaded, ignoring");return;}
