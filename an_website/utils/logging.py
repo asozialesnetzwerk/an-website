@@ -23,7 +23,7 @@ from collections.abc import Awaitable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -73,18 +73,17 @@ class AsyncHandler(logging.Handler):
         self, record: LogRecord
     ) -> Literal[False] | LogRecord:
         """Handle incoming log records."""
-        foobar = cast(Literal[False] | LogRecord, self.filter(record))
-        if not foobar or self.loop.is_closed():
+        if not self.filter(record) or self.loop.is_closed():
             return False
         self.acquire()
         try:
-            if awaitable := self.emit(foobar):
+            if awaitable := self.emit(record):
                 future = asyncio.run_coroutine_threadsafe(awaitable, self.loop)
                 self.future_references.add(future)
                 future.add_done_callback(self.callback)
         finally:
             self.release()
-        return foobar
+        return record
 
 
 class WebhookFormatter(logging.Formatter):

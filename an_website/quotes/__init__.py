@@ -422,7 +422,8 @@ def parse_wrong_quote(
             WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
 
     # make sure the wrong quote is the correct one
-    assert (wrong_quote.quote.id, wrong_quote.author.id) == id_tuple
+    if (wrong_quote.quote.id, wrong_quote.author.id) != id_tuple:
+        raise HTTPError(500, "Assertion failed.")
     # update the data of the wrong quote
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
