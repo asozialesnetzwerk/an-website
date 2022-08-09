@@ -1,14 +1,22 @@
 ignore-failures:
     python:
-      # all the dependencies here are unhealthy, but they are not used in production
-      - pytest-tornasync  # only for testing
-      - webencodings  # only needed for html5lib; only used in tests
-      - namedthreads  # only for debugging
-      - flake8-polyfill  # only for flake8
+      ## THE FOLLOWING IS UNHEALTHY AND USED IN PRODUCTION
+      - accept-types
+      - html2text
+      - python-Levenshtein
+
+      ## all the dependencies under here are unhealthy, but they are not used in production
+      - astor  # only for flake8
+      - autoflake  # only in gh-actions
       - mypy-extensions  # only used for mypy and black
+      - namedthreads  # only for debugging
+      # tests:
+      - html5lib
+      - pytest-tornasync
+      - webencodings  # only needed for html5lib
       # backdoor client:
       - pyrepl
       - pysocks
       # only for hy, which could be used over backdoor
-      - funcparserlib
       - appdirs
+      - funcparserlib

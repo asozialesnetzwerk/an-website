@@ -14,7 +14,8 @@ jobs:
     - name: Run ShellCheck
       uses: ludeeus/action-shellcheck@master
       env:
-        SHELLCHECK_OPTS: -x -o all -s sh -s dash
+        SHELLCHECK_OPTS: -x -o all -s sh
       with:
         check_together: 'yes'
         ignore_paths: venv
+        ignore_names: screenfetch
