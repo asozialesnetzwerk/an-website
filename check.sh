@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 if [ -d venv ]; then
   if ! . venv/bin/activate; then
     echo "Activating venv failed."
@@ -21,7 +23,7 @@ if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
   exit 1
 fi
 
-python3 -m pre-commit install
+python -m pre_commit install || echo "Running 'python -m pre_commit install' failed."
 
 FAILED=0
 
@@ -41,7 +43,7 @@ echo Flake8:
 python3 -m flake8 || FAILED=$(( 16 | FAILED ))
 
 echo Pylint:
-python3 -m pylint -d all -e fixme --score=no --persistent=no .
+python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no .
 python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
 
 echo Bandit:
