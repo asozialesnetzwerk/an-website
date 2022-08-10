@@ -777,7 +777,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     if platform.system() == "Windows":
         logger.warning(
-            f"Please note that running %s on Windows is not officially supported",
+            "Please note that running %s on Windows is not officially supported",
             NAME,
         )
 

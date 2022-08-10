@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -e
 
 if [ -d venv ]; then
   # shellcheck disable=SC1091
