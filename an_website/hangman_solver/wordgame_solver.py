@@ -42,9 +42,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def find_solutions(
-    word: str, ignore: Iterable[str] = tuple()
-) -> set[str]:
+async def find_solutions(word: str, ignore: Iterable[str] = ()) -> set[str]:
     """Find words that have only one different letter."""
     solutions: set[str] = set()
 
@@ -73,7 +71,7 @@ async def find_solutions(
 
 
 async def get_ranked_solutions(
-    word: str, before: Iterable[str] = tuple()
+    word: str, before: Iterable[str] = ()
 ) -> list[tuple[int, str]]:
     """Find solutions for the word and rank them."""
     sols = await find_solutions(word)

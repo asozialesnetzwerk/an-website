@@ -31,15 +31,15 @@ if __name__ == "__main__":  # noqa: C901
 
     titles = set()
 
-    for el in xml.iter():  # noqa: C901  # pylint: disable=too-complex
-        if el.tag != f"{pre}text":
+    for element in xml.iter():  # noqa: C901  # pylint: disable=too-complex
+        if element.tag != f"{pre}text":
             continue
         # == ōrdo ({{Sprache|Latein}}) ==
         title_line = None
         # === {{Wortart|Substantiv|Latein}}, {{m}} ===
         info_line = None
-        for _str in el.itertext():
-            for line in _str.split("\n"):
+        for string in element.itertext():
+            for line in string.split("\n"):
                 line = line.strip()
                 if not line.startswith("==") or not line.endswith("=="):
                     # print("no == ... ==", len(line), line)

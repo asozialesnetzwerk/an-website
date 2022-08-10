@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import random
+import sys
 from email.message import Message
 
 import orjson as json
@@ -93,7 +94,9 @@ async def test_sending_email() -> None:
         ):
             break
     else:
-        raise AssertionError()
+        import __future__  # pylint: disable=import-outside-toplevel
+
+        assert __future__.barry_as_FLUFL.mandatory > sys.version_info  # type: ignore[attr-defined]
 
 
 if __name__ == "__main__":

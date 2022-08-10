@@ -62,14 +62,24 @@ def test_copying_case() -> None:
         assert sw_config.copy_case(word, word.upper()) == word
         assert sw_config.copy_case(word, word.title()) == word
 
-    for _str in ("abc def", "abc-def", "a b c d e f", "¯\\_(ツ)_/¯", "ab, cd."):
-        lower = _str.lower()
-        upper = _str.upper()
-        title = _str.title()
-        for _str2 in (lower, upper, title):
-            assert sw_config.copy_case(_str2, lower) == _str2
-            assert sw_config.copy_case(_str2, upper) == _str2
-            assert sw_config.copy_case(_str2, title) == _str2
+    for string in (
+        "abc def",
+        "abc-def",
+        "a b c d e f",
+        "¯\\_(ツ)_/¯",
+        "ab, cd.",
+    ):
+        lower = string.lower()
+        upper = string.upper()
+        title = string.title()
+        for string in (  # pylint: disable=redefined-loop-name
+            lower,
+            upper,
+            title,
+        ):
+            assert sw_config.copy_case(string, lower) == string
+            assert sw_config.copy_case(string, upper) == string
+            assert sw_config.copy_case(string, title) == string
 
     assert sw_config.copy_case("Long Short", "short LONG") == "Short Long"
     assert sw_config.copy_case("Test1 TEST2", "word1 word2") == "Word1 WORD2"

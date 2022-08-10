@@ -7,15 +7,15 @@ on:
 
 jobs:
   shellcheck:
-    name: Shellcheck
+    name: ShellCheck
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Run ShellCheck
       uses: ludeeus/action-shellcheck@master
       env:
-        SHELLCHECK_OPTS: -x -o all -s sh
+        SHELLCHECK_OPTS: -x -o all
       with:
-        check_together: 'yes'
+        check_together: yes
         ignore_paths: venv
         ignore_names: screenfetch

@@ -423,12 +423,13 @@ def parse_wrong_quote(
 
     # make sure the wrong quote is the correct one
     if (wrong_quote.quote.id, wrong_quote.author.id) != id_tuple:
-        raise HTTPError(500, "Assertion failed.")
+        raise HTTPError(reason="ERROR: -41")
     # update the data of the wrong quote
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
     if wrong_quote.id != wrong_quote_id:
         wrong_quote.id = wrong_quote_id
+
     return wrong_quote
 
 
@@ -438,7 +439,7 @@ def parse_list_of_quote_data(
 ) -> tuple[QuotesObjBase, ...]:
     """Parse a list of quote data."""
     if not json_list:
-        return tuple()
+        return ()
     if isinstance(json_list, str):
         _json_list: list[dict[str, Any]] = json.loads(json_list)
     else:

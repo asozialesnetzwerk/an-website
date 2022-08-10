@@ -23,7 +23,7 @@ from collections.abc import Awaitable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
-from typing import Any, Literal
+from typing import Any, cast
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -34,7 +34,7 @@ from .. import DIR as ROOT_DIR
 class AsyncHandler(logging.Handler):
     """A logging handler that can handle log records asynchronously."""
 
-    future_references: set[Future[Any]]
+    futures: set[Future[Any]]
     loop: AbstractEventLoop
 
     def __init__(
@@ -45,14 +45,14 @@ class AsyncHandler(logging.Handler):
     ):
         """Initialize the handler."""
         super().__init__(level=level)
-        self.future_references = set()
+        self.futures = set()
         self.loop = loop
 
     def callback(self, future: Future[Any]) -> None:
         """Remove the reference to the future from the handler."""
         self.acquire()
         try:
-            self.future_references.discard(future)
+            self.futures.discard(future)
         finally:
             self.release()
 
@@ -66,30 +66,50 @@ class AsyncHandler(logging.Handler):
         raises a NotImplementedError.
         """
         raise NotImplementedError(
-            "emit must be implemented by Handler subclasses"
+            "emit must be implemented by AsyncHandler subclasses"
         )
 
-    def handle(  # type: ignore[override]  # Typeshed fucked this up
+    def handle(  # type: ignore[override]
         self, record: LogRecord
-    ) -> Literal[False] | LogRecord:
+    ) -> bool | LogRecord:
         """Handle incoming log records."""
-        if not self.filter(record) or self.loop.is_closed():
-            return False
-        self.acquire()
-        try:
-            if awaitable := self.emit(record):
-                future = asyncio.run_coroutine_threadsafe(awaitable, self.loop)
-                self.future_references.add(future)
-                future.add_done_callback(self.callback)
-        finally:
-            self.release()
-        return record
+        rv = cast(  # pylint: disable=invalid-name
+            bool | LogRecord, self.filter(record)
+        )
+        if isinstance(rv, LogRecord):
+            record = rv
+        if rv and not self.loop.is_closed():
+            self.acquire()
+            try:
+                if awaitable := self.emit(record):
+                    future = asyncio.run_coroutine_threadsafe(
+                        awaitable, self.loop
+                    )
+                    self.futures.add(future)
+                    future.add_done_callback(self.callback)
+            finally:
+                self.release()
+        return rv
 
 
-class WebhookFormatter(logging.Formatter):
-    """A logging formatter optimized for logging to a webhook."""
+class DatetimeFormatter(logging.Formatter):
+    """A logging formatter that formats the time using datetime."""
 
     timezone: None | tzinfo = None
+
+    def formatTime(  # noqa: N802
+        self, record: LogRecord, datefmt: None | str = None
+    ) -> str:
+        """Return the creation time of the specified LogRecord as formatted text."""
+        spam = datetime.fromtimestamp(record.created).astimezone(self.timezone)
+        if datefmt:
+            return spam.strftime(datefmt)
+        return spam.isoformat()
+
+
+class WebhookFormatter(DatetimeFormatter):
+    """A logging formatter optimized for logging to a webhook."""
+
     escape_message = False
 
     def format(self, record: LogRecord) -> str:
@@ -100,15 +120,6 @@ class WebhookFormatter(logging.Formatter):
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
         return self.formatMessage(record)
-
-    def formatTime(  # noqa: N802
-        self, record: LogRecord, datefmt: None | str = None
-    ) -> str:
-        """Return the creation time of the specified LogRecord as formatted text."""
-        spam = datetime.fromtimestamp(record.created).astimezone(self.timezone)
-        if datefmt:
-            return spam.strftime(datefmt)
-        return spam.isoformat()
 
 
 class WebhookHandler(AsyncHandler):

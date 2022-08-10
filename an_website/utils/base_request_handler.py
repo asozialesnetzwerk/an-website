@@ -380,7 +380,7 @@ class BaseRequestHandler(RequestHandler):
 
     def get_module_infos(self) -> tuple[ModuleInfo, ...]:
         """Get the module infos."""
-        return self.settings.get("MODULE_INFOS") or tuple()
+        return self.settings.get("MODULE_INFOS") or ()
 
     def get_no_3rd_party(self) -> bool:
         """Return the no_3rd_party query argument as boolean."""

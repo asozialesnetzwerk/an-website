@@ -54,8 +54,7 @@ class PrintWrapper:  # pylint: disable=too-few-public-methods
     """Wrapper for print()."""
 
     def __call__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        if "file" not in kwargs:
-            kwargs["file"] = self._output
+        kwargs.setdefault("file", self._output)
         print(*args, **kwargs)
 
     def __init__(self, output: io.TextIOBase) -> None:  # noqa: D107

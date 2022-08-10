@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 # This script is used to edit the data of a quote or author.
 # To use it call it with the api key as the argument.

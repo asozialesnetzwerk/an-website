@@ -1,6 +1,5 @@
 #!/bin/sh
-
-set -e
+set -eu
 
 if [ -d venv ]; then
   # shellcheck disable=SC1091
@@ -41,7 +40,7 @@ echo mypy:
 python3 -m mypy --pretty -m setup -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
 
 echo Flake8:
-python3 -m flake8 || FAILED=$(( 16 | FAILED ))
+python3 -m flake8 --show-source || FAILED=$(( 16 | FAILED ))
 
 echo Pylint:
 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no .

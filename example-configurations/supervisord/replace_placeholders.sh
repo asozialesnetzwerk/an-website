@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 TARGET="/etc/supervisor.d/an_website.ini"
 

@@ -209,27 +209,24 @@ class CurrencyConverter(HTMLRequestHandler):
         """
         arg_list: list[tuple[int, str, str]] = []
 
-        for _i, key in enumerate(KEYS):
+        for i, key in enumerate(KEYS):
             num_str = self.get_argument(key, None)
             if num_str is not None:
-                arg_list.append((_i, key, num_str))
-        # print(arg_list)
-        too_many_params: bool = len(arg_list) > 1
+                arg_list.append((i, key, num_str))
 
-        for _i, key, num_str in arg_list:
-            euro = string_to_num(num_str, MULTIPLIERS[_i])
+        too_many_params = len(arg_list) > 1
 
+        for i, key, num_str in arg_list:
+            euro = string_to_num(num_str, MULTIPLIERS[i])
             if euro is not None:
                 value_dict: ValueDict = await get_value_dict(
                     euro, ins_kino_gehen=self.get_argument("text", None)
                 )
-
                 if too_many_params:
                     value_dict["too_many_params"] = True
-
                 value_dict["key_used"] = key
-
                 return value_dict
+
         return None
 
     async def get(self, *, head: bool = False) -> None:

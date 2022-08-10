@@ -20,6 +20,7 @@ import asyncio
 import importlib
 import logging
 import os
+import platform
 import signal
 import ssl
 import sys
@@ -774,9 +775,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     logger.info("Starting %s %s", NAME, VERSION)
 
-    if sys.platform == "win32":
+    if platform.system() == "Windows":
         logger.warning(
-            "Please note that running on Windows is not officially supported"
+            f"Please note that running %s on Windows is not officially supported",
+            NAME,
         )
 
     ignore_modules(CONFIG)

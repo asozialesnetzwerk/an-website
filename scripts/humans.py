@@ -79,7 +79,7 @@ def generate_humans_txt() -> str:
                     count,
                     [
                         (MAINTAINERS[name].get("__role", "Maintainer"), name),
-                        *sorted(list(MAINTAINERS[name].items())),
+                        *sorted(MAINTAINERS[name].items()),
                     ],
                 )
             )

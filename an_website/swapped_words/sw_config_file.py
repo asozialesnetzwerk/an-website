@@ -76,7 +76,7 @@ class ConfigLine:  # pylint: disable=too-few-public-methods
 
     def to_conf_line(self, len_of_left: None | int = None) -> str:
         """Get how this would look like in a config."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -101,7 +101,7 @@ class WordPair(ConfigLine):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def len_of_left(self) -> int:
         """Get the length to the left of the separator."""
@@ -122,7 +122,7 @@ class WordPair(ConfigLine):
 
     def to_pattern_str(self) -> str:
         """Get the pattern that matches the replaceable words."""
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 @dataclass(frozen=True)
@@ -218,8 +218,6 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
 
     if not line:
         return Comment("")  # empty comment → empty line
-
-    # print(len(line.strip()), f"'{line.strip()}'")
 
     if match := regex.fullmatch(COMMENT_LINE_REGEX, line):
         return Comment(match[1])

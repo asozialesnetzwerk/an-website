@@ -204,10 +204,10 @@ async def test_backdoor(fetch: FetchCallable) -> None:
     # assert response["result"][0].endswith(">")
     # assert response["result"][1] is None
 
-    response = await request_and_parse(fetch, "raise ValueError()", mode="exec")
+    response = await request_and_parse(fetch, "0 / 0", mode="exec")
     assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
     assert response["result"][0].startswith("Traceback (most recent call last)")
-    assert response["result"][1].args == tuple()
-    assert isinstance(response["result"][1], ValueError)
+    assert response["result"][1].args == ("division by zero",)
+    assert isinstance(response["result"][1], ZeroDivisionError)

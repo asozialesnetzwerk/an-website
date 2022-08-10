@@ -160,7 +160,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
     RATELIMIT_GET_COUNT_PER_PERIOD = 20
     RATELIMIT_GET_PERIOD = 10
 
-    FUTURE_REFERENCES: set[Future[Any]] = set()
+    FUTURES: set[Future[Any]] = set()
 
     awaitables: list[Awaitable[Any]]
     loop: AbstractEventLoop
@@ -197,7 +197,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             case "rated":
                 wrong_quotes = get_wrong_quotes()
             case _:
-                wrong_quotes = tuple()
+                wrong_quotes = ()
 
         if not wrong_quotes:
             # invalid rating filter or no wrong quotes with that filter
@@ -232,12 +232,12 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             task = self.loop.create_task(
                 get_wrong_quote(quote_id, author_id, use_cache=False)
             )
-            self.FUTURE_REFERENCES.add(task)
-            task.add_done_callback(self.FUTURE_REFERENCES.discard)
+            self.FUTURES.add(task)
+            task.add_done_callback(self.FUTURES.discard)
         for awaitable in self.awaitables:
             future = asyncio.ensure_future(awaitable, loop=self.loop)
-            self.FUTURE_REFERENCES.add(future)
-            future.add_done_callback(self.FUTURE_REFERENCES.discard)
+            self.FUTURES.add(future)
+            future.add_done_callback(self.FUTURES.discard)
 
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()

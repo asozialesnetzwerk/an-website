@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 export PIPENV_VERBOSITY=-1
 

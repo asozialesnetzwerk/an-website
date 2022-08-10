@@ -24,26 +24,26 @@ from an_website.utils import utils
 
 def test_n_from_set() -> None:
     """Test the n_from_set function."""
-    _set = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-    assert len(utils.n_from_set(_set, 3)) == 3
-    assert -1 < len(utils.n_from_set(_set, 0)) < 1
-    assert -1 < len(utils.n_from_set(_set, -1)) < 1
-    for _el in utils.n_from_set(_set, 8):
-        assert _el in _set
-    for i in range(len(_set) + 3):
-        assert len(utils.n_from_set(_set, i)) == min(len(_set), i)
+    set_ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+    assert len(utils.n_from_set(set_, 3)) == 3
+    assert -1 < len(utils.n_from_set(set_, 0)) < 1
+    assert -1 < len(utils.n_from_set(set_, -1)) < 1
+    for element in utils.n_from_set(set_, 8):
+        assert element in set_
+    for i in range(len(set_) + 3):
+        assert len(utils.n_from_set(set_, i)) == min(len(set_), i)
 
 
 def test_bool_str_conversion() -> None:
     """Test the conversion from bool to str and from str to bool."""
-    for _b in (False, True):
-        assert _b is utils.str_to_bool(utils.bool_to_str(_b))
-        assert _b is utils.str_to_bool(str(_b))
+    for boolean in (False, True):
+        assert boolean is utils.str_to_bool(utils.bool_to_str(boolean))
+        assert boolean is utils.str_to_bool(str(boolean))
 
-    for _b_str in ("sure", "nope"):
-        _b_bool = utils.str_to_bool(_b_str)
-        assert isinstance(_b_bool, bool)
-        assert _b_str == utils.bool_to_str(_b_bool)
+    for boolean_str in ("sure", "nope"):
+        boolean_bool = utils.str_to_bool(boolean_str)
+        assert isinstance(boolean_bool, bool)
+        assert boolean_str == utils.bool_to_str(boolean_bool)
 
     with pytest.raises(ValueError):
         utils.str_to_bool("Invalid bool value")
@@ -89,10 +89,8 @@ def test_adding_stuff_to_url() -> None:
 
 def test_anonomyze_ip() -> None:
     """Test the anonomyze_ip function."""
-    assert utils.anonymize_ip("127.0.0.1") == "127.0.0.0"
-    assert utils.anonymize_ip("127.0.0.1", ignore_invalid=True) == "127.0.0.0"
-    assert utils.anonymize_ip("69.69.69.69") == "69.69.69.0"
-    assert utils.anonymize_ip("69.6.9.69", ignore_invalid=True) == "69.6.9.0"
+    assert utils.anonymize_ip("192.0.2.1") == "192.0.2.0"
+    assert utils.anonymize_ip("2001:db8:a0b:12f0::1") == "2001:db8::"
     with pytest.raises(ValueError):
         utils.anonymize_ip("invalid")
     assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"

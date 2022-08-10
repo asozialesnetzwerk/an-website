@@ -117,36 +117,38 @@ class HTMLRequestHandler(BaseRequestHandler):
         if as_plain_text:
             return super().finish(soup.get_text("\n", True))
 
-        dictionary: dict[str, Any] = dict(
-            url=self.fix_url(),  # request url
-            title=self.title,
-            short_title=self.short_title
+        dictionary: dict[str, Any] = {
+            "url": self.fix_url(),  # request url
+            "title": self.title,
+            "short_title": self.short_title
             if self.title != self.short_title
             else None,
-            body="".join(
-                str(_el)
-                for _el in soup.find_all(name="main", id="body")[0].contents
+            "body": "".join(
+                str(element)
+                for element in soup.find_all(name="main", id="body")[0].contents
             ).strip(),
-            scripts=[
+            "scripts": [
                 {
-                    "src": _s.get("src"),
-                    # "script": _s.string,  # not in use because of csp
-                    # "onload": _s.get("onload"),  # not in use because of csp
+                    "src": script.get("src"),
+                    # "script": script.string,  # not in use because of csp
+                    # "onload": script.get("onload"),  # not in use because of csp
                 }
-                for _s in soup.find_all("script")
+                for script in soup.find_all("script")
             ]
             if soup.head
             else [],
-            stylesheets=[
-                str(_s.get("href")).strip()
-                for _s in soup.find_all("link", rel="stylesheet")
+            "stylesheets": [
+                str(stylesheet.get("href")).strip()
+                for stylesheet in soup.find_all("link", rel="stylesheet")
             ]
             if soup.head
             else [],
-            css="\n".join(str(_s.string or "") for _s in soup.find_all("style"))
+            "css": "\n".join(
+                str(style.string or "") for style in soup.find_all("style")
+            )
             if soup.head
             else "",
-        )
+        }
         return super().finish(dictionary)
 
     def get_form_appendix(self) -> str:
