@@ -26,7 +26,6 @@ load-plugins=
     pylint.extensions.while_used,
     pylint_pytest,
 extension-pkg-allow-list=
-    Levenshtein,
     blake3,
     lxml,
     orjson,

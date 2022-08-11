@@ -3,7 +3,6 @@ ignore-failures:
     ## THE FOLLOWING IS UNHEALTHY AND USED IN PRODUCTION
     - accept-types
     - html2text
-    - python-Levenshtein
 
     ## all the dependencies under here are unhealthy, but they are not used in production
     - astor            # required by flake8-scream and flake8-simplify

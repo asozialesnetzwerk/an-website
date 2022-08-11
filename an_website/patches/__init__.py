@@ -108,14 +108,17 @@ def patch_json() -> None:
 def anonymize_logs() -> None:
     """Anonymize logs."""
     # pylint: disable=import-outside-toplevel
-    from ..utils.utils import anonymize_ip
+    from ..utils.utils import SUS_PATHS, anonymize_ip
 
     tornado.web.RequestHandler._request_summary = (  # type: ignore[assignment]
         lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
         % (
             self.request.method,
             self.request.uri,
-            anonymize_ip(str(self.request.remote_ip)),
+            self.request.remote_ip
+            if self.request.path == "/robots.txt"
+            or self.request.path.lower() in SUS_PATHS
+            else anonymize_ip(str(self.request.remote_ip), ignore_invalid=True),
         )
     )
     tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore[assignment]

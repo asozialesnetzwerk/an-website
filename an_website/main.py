@@ -71,7 +71,14 @@ from .utils.base_request_handler import BaseRequestHandler
 from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
-from .utils.utils import Handler, ModuleInfo, Permission, Timer, time_function
+from .utils.utils import (
+    Handler,
+    ModuleInfo,
+    Permission,
+    Timer,
+    geoip,
+    time_function,
+)
 
 IGNORED_MODULES = {
     "backdoor.client",
@@ -846,6 +853,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+        del geoip.__kwdefaults__["caches"].control.created_by_ultra
 
     task_id = tornado.process.task_id()
 

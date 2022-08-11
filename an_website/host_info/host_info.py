@@ -23,6 +23,8 @@ import logging
 import os
 import shutil
 import sys
+from ctypes import c_char
+from multiprocessing import Array
 
 import regex
 from tornado.web import HTTPError as HTTPEwwow
@@ -72,19 +74,19 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def minify_ansi_art(string: str) -> str:
+def minify_ansi_art(string: bytes) -> bytes:
     """Minify an ANSI art string."""
     return regex.sub(
-        r"(?m)\s+\x1B\[0m$", "\x1B[0m", string
+        rb"(?m)\s+\x1B\[0m$", b"\x1B[0m", string
     )  # for arch: 1059 → 898
 
 
 class HostInfo(HTMLRequestHandler):
     """The request handler for the host info page."""
 
-    RATELIMIT_GET_LIMIT = 5
+    RATELIMIT_GET_LIMIT = 1
 
-    SCREENFETCH_CACHE: dict[str, str] = {}
+    SCREENFETCH_CACHE = Array(c_char, 1024**2)
 
     async def get(self, *, head: bool = False) -> None:
         """
@@ -94,15 +96,16 @@ class HostInfo(HTMLRequestHandler):
         """
         if head:
             return
-        if "LOGO" not in self.SCREENFETCH_CACHE:
-            self.SCREENFETCH_CACHE["LOGO"] = minify_ansi_art(
-                (await run(SCREENFETCH_PATH, "-L"))[1].decode("utf-8")
+
+        if not self.SCREENFETCH_CACHE.value:
+            self.SCREENFETCH_CACHE.value = minify_ansi_art(
+                (await run(SCREENFETCH_PATH, "-L"))[1]
             )
 
         await self.render(
             "ansi2html.html",
             ansi=[
-                self.SCREENFETCH_CACHE["LOGO"],
+                self.SCREENFETCH_CACHE.value.decode("utf-8"),
                 (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("utf-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
@@ -113,7 +116,7 @@ class HostInfo(HTMLRequestHandler):
 class UwUHostInfo(HTMLRequestHandler):
     """The wequest handwew fow the coowew host info page."""
 
-    RATELIMIT_GET_LIMIT = 5
+    RATELIMIT_GET_LIMIT = 1
 
     async def get(self, *, head: bool = False) -> None:
         """
@@ -143,8 +146,10 @@ class UwUHostInfo(HTMLRequestHandler):
                 500,
                 reason=f"UwUFetch has exited with wetuwn code {wetuwn_code}",
             )
+
         if head:
             return
+
         uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
         await self.render(
             "ansi2html.html",

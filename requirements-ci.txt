@@ -34,7 +34,7 @@ mypy-extensions==0.4.3
 nodeenv==1.7.0
 packaging==21.3
 pathspec==0.9.0
-pbr==5.9.0
+pbr==5.10.0
 pep8-naming==0.13.1
 pipenv==2022.8.5
 platformdirs==2.5.2
@@ -45,7 +45,7 @@ pycodestyle==2.9.1
 pydocstyle==6.1.1
 pyflakes==2.5.0
 pygments==2.12.0
-pylint==2.14.5
+pylint==3.0.0a5
 pylint-pytest==1.1.2
 pyparsing==3.0.9
 git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
@@ -57,7 +57,7 @@ pyyaml==6.0
 rcssmin==1.1.1
 restructuredtext-lint==1.4.0
 rjsmin==1.2.1
-setuptools==63.4.3
+setuptools==64.0.0
 six==1.16.0
 smmap==5.0.0
 snowballstemmer==2.2.0
@@ -75,7 +75,7 @@ types-python-dateutil==2.8.19
 types-pyyaml==6.0.11
 types-redis==4.3.14
 types-regex==2022.7.25.0
-types-setuptools==63.4.0
+types-setuptools==63.4.1
 typing-extensions==4.3.0
 virtualenv==20.16.3
 virtualenv-clone==0.5.7
@@ -99,6 +99,7 @@ defusedxml==0.7.1
 deprecated==1.2.13
 dunamai==1.12.0
 ecs-logging==1.1.0
+editdistance==0.6.0
 elastic-apm==6.11.0
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0
@@ -126,7 +127,6 @@ pycurl==7.45.1
 pyjwt==2.4.0
 pysocks==1.7.1
 python-dateutil==2.8.2
-python-levenshtein==0.12.2
 redis[hiredis]==4.3.4
 regex==2022.7.25
 soupsieve==2.3.2.post1

@@ -30,12 +30,14 @@ from typing import IO, Any, Literal, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
+import orjson as json
 import regex
 from blake3 import blake3  # type: ignore[import]
+from editdistance import distance
 from elasticsearch import AsyncElasticsearch
-from Levenshtein import distance  # type: ignore[import]
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
+from UltraDict import UltraDict  # type: ignore[import]
 
 from .. import STATIC_DIR
 
@@ -352,12 +354,13 @@ async def geoip(
     database: str = "GeoLite2-City.mmdb",
     elasticsearch: None | AsyncElasticsearch = None,
     *,
-    geoip_cache: dict[str, dict[str, dict[str, Any]]] = {},  # noqa: B006
+    caches: dict[str, dict[str, dict[str, Any]]] = UltraDict(  # noqa: B008
+        serializer=json
+    ),
 ) -> None | dict[str, Any]:
     """Get GeoIP information."""
-    if ip not in geoip_cache:
-        geoip_cache[ip] = {}
-    if database not in geoip_cache[ip]:
+    cache = caches.get(ip, {})  # pylint: disable=redefined-outer-name
+    if database not in cache:
         if not elasticsearch:
             return None
 
@@ -384,7 +387,7 @@ async def geoip(
         else:
             properties = None
 
-        geoip_cache[ip][database] = (
+        cache[database] = (
             await elasticsearch.ingest.simulate(
                 body={
                     "pipeline": {
@@ -403,11 +406,12 @@ async def geoip(
                 params={"filter_path": "docs.doc._source"},
             )
         )["docs"][0]["doc"]["_source"].get("geoip", {})
-        if "country_iso_code" in geoip_cache[ip][database]:
-            geoip_cache[ip][database]["country_flag"] = country_code_to_flag(
-                geoip_cache[ip][database]["country_iso_code"]
+        if "country_iso_code" in cache[database]:
+            cache[database]["country_flag"] = country_code_to_flag(
+                cache[database]["country_iso_code"]
             )
-    return geoip_cache[ip][database]
+        caches[ip] = cache
+    return cache[database]
 
 
 def get_themes() -> tuple[str, ...]:
