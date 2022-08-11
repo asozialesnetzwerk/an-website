@@ -144,3 +144,17 @@ jobs:
         run: grep "^bandit" requirements-ci.txt | xargs pip install
       - name: Run Bandit
         run: bandit -c pyproject.toml -r an_website
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+      - name: Install ESLint
+        run: npm install -g eslint
+      - name: Run ESLint
+        run: eslint --no-eslintrc --env=es6 --ignore-pattern=an_website/static/js/* an_website/

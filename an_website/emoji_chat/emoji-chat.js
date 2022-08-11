@@ -11,7 +11,7 @@
     let lastMessage = "";
 
     const timeStampToText = (timestamp) => {
-        return new Date(timestamp + 1_651_075_200_000).toLocaleString();
+        return new Date(timestamp + 1651075200000).toLocaleString();
     }
 
     const appendMessage = (msg) => {
@@ -136,7 +136,7 @@
             (w.location.protocol === "https:" ? "wss:" : "ws:")
             + `//${w.location.host}/websocket/emoji-chat`
         );
-        let pingInterval = setInterval(() => ws.send(""), 10_000);
+        let pingInterval = setInterval(() => ws.send(""), 10000);
         ws.onclose = (event) => {
             messageInput.form.onsubmit = () => {};
             if (event.wasClean) {

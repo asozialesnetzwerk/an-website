@@ -52,7 +52,7 @@ function hideSitePane() {
         let minDiffX = Math.max(
             12,
             0.01 * window.screen.width,
-            diffY * 1.5,
+            diffY * 1.5
         );
 
         console.debug({diffX, minDiffX});

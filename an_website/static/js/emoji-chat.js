@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-"use strict";(()=>{const messageInput=elById("message-input");const messageSection=elById("message-section");const usingOpenMoji=elById("open-moji-attribution");const connectionIndicator=elById("connection-state");const currentUser=elById("current-user");let reconnectTimeout=100;let reconnectTries=0;let lastMessage="";const timeStampToText=(timestamp)=>{return new Date(timestamp+1_651_075_200_000).toLocaleString();}
+"use strict";(()=>{const messageInput=elById("message-input");const messageSection=elById("message-section");const usingOpenMoji=elById("open-moji-attribution");const connectionIndicator=elById("connection-state");const currentUser=elById("current-user");let reconnectTimeout=100;let reconnectTries=0;let lastMessage="";const timeStampToText=(timestamp)=>{return new Date(timestamp+1651075200000).toLocaleString();}
 const appendMessage=(msg)=>{let el=document.createElement("div");if(usingOpenMoji&&usingOpenMoji.getAttribute("type")!=="font"){for(let emoji of msg.author){el.append(emojiToIMG(emoji));}
 el.innerHTML+=": ";for(let emoji of msg.content)
 el.append(emojiToIMG(emoji));}else{el.innerText=`${msg.author.join("")}: ${msg.content.join("")}`;}
@@ -22,7 +22,7 @@ case"ratelimit":{resetLastMessage();alert(`Retry after ${data["Retry-After"]} se
 case"error":{resetLastMessage();alert(data["error"]);break;}
 default:{console.error(`Invalid type ${data["type"]}`);}}}
 const openWS=()=>{setConnectionState("connecting");let ws=new WebSocket((w.location.protocol==="https:"?"wss:":"ws:")
-+`//${w.location.host}/websocket/emoji-chat`);let pingInterval=setInterval(()=>ws.send(""),10_000);ws.onclose=(event)=>{messageInput.form.onsubmit=()=>{};if(event.wasClean){console.debug(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);setConnectionState("disconnected");return;}
++`//${w.location.host}/websocket/emoji-chat`);let pingInterval=setInterval(()=>ws.send(""),10000);ws.onclose=(event)=>{messageInput.form.onsubmit=()=>{};if(event.wasClean){console.debug(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);setConnectionState("disconnected");return;}
 console.debug(`Connection closed, reconnecting in ${reconnectTimeout}ms`);setConnectionState("connecting");clearInterval(pingInterval);if(reconnectTries>20){setConnectionState("disconnected");return;}
 setTimeout(()=>{reconnectTimeout=Math.max(500,Math.floor(Math.min(15000,1.5*reconnectTimeout-200)));reconnectTries++;openWS();},reconnectTimeout)};ws.onopen=(event)=>console.debug("Opened WebSocket",event);ws.onmessage=handleWebsocketData;messageInput.form.onsubmit=(event)=>{if(messageInput.value!==""){lastMessage=messageInput.value;ws.send(JSON.stringify({"type":"message","message":messageInput.value,}));messageInput.value="";}
 event.preventDefault();}}
