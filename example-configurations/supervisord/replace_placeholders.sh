@@ -3,9 +3,9 @@ set -eu
 
 TARGET="/etc/supervisor.d/an_website.ini"
 
-if [ -n "$1" ]
+if [ -n "${1:-}" ]
 then
-  TARGET="$1"
+  TARGET="${1:-}"
 fi
 
 echo "Writing config to ${TARGET}"

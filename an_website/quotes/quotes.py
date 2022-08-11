@@ -184,8 +184,8 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
                 # pylint: disable=while-used
                 while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
                     if WRONG_QUOTES_CACHE[ids].id == -1:
-                        # Check for wrong quotes that are unrated but in
-                        # the cache. They don't have a real wrong_quotes_id.
+                        # check for wrong quotes that are unrated but in the cache
+                        # they don't have a real wrong_quotes_id
                         return ids
                 return ids
             case "all":
@@ -306,7 +306,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
 
 
 class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
-    """Redirect to the api for a random quote."""
+    """Redirect to the API for a random quote."""
 
     async def get(  # pylint: disable=unused-argument
         self, suffix: str = "", *, head: bool = False
@@ -449,7 +449,7 @@ class QuoteById(QuoteBaseHandler):
 
         contributed_by = f"an-website_{hash_ip(str(self.request.remote_ip))}"
 
-        # do the voting:
+        # do the voting
         wrong_quote = await create_wq_and_vote(
             to_vote, quote_id, author_id, contributed_by
         )

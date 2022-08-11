@@ -130,7 +130,7 @@ def test_parsing_config() -> None:
 
     assert not sw_config.SwappedWordsConfig("").to_config_str()
 
-    # test invalid configs:
+    # test invalid configs
     with pytest.raises(sw_config.InvalidConfigError):
         sw_config.SwappedWordsConfig(" <=> b")
 
@@ -213,7 +213,7 @@ async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
         ),
         {400},  # invalid config
     )
-    # everything ok:
+    # everything ok
     assert_valid_html_response(
         await fetch(
             "/vertauschte-woerter",
@@ -258,7 +258,7 @@ async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
 
 
 async def test_sw_json_request_handlers(fetch: FetchCallable) -> None:
-    """Test the swapped words json api request handlers."""
+    """Test the swapped words JSON API request handlers."""
     response = assert_valid_json_response(
         await fetch(
             "/api/vertauschte-woerter",

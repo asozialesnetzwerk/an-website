@@ -96,7 +96,7 @@ class WordPair(ConfigLine):
 
     word1: str
     word2: str
-    # separator between the two words, that shouldn't be changed:
+    # separator between the two words, that shouldn't be changed
     separator: str = field(default="", init=False)
 
     def get_replacement(self, word: str) -> str:
@@ -129,7 +129,7 @@ class WordPair(ConfigLine):
 class OneWayPair(WordPair):
     """Class used to represent a word that gets replaced with another."""
 
-    # separator between the two words, that shouldn't be changed:
+    # separator between the two words, that shouldn't be changed
     separator: str = field(default=" =>", init=False)
 
     def get_replacement(self, word: str) -> str:
@@ -150,7 +150,7 @@ class OneWayPair(WordPair):
 class TwoWayPair(WordPair):
     """Class used to represent two words that get replaced with each other."""
 
-    # separator between the two words, that shouldn't be changed:
+    # separator between the two words, that shouldn't be changed
     separator: str = field(default="<=>", init=False)
 
     def get_replacement(self, word: str) -> str:
@@ -159,7 +159,7 @@ class TwoWayPair(WordPair):
             return self.word2
         if self.word2 == word:
             return self.word1
-        # Doesn't match case sensitive
+        # doesn't match case sensitive
         word_lower = word.lower()
         if self.word1.lower() == word_lower:
             return copy_case(word, self.word2)
@@ -312,7 +312,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
         for key, word in match.groupdict().items():
             if isinstance(word, str) and key.startswith("n"):
                 return self.get_replacement_by_group_name(key, word)
-        # if an unknown error happens return the match to change nothing:
+        # if an unknown error happens return the match to change nothing
         return match[0]
 
     def get_replacement_by_group_name(self, group_name: str, word: str) -> str:

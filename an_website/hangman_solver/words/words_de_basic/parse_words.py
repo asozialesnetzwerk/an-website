@@ -22,7 +22,7 @@ from defusedxml.etree.ElementTree import parse
 
 if __name__ == "__main__":  # noqa: C901
     # how to get the file:
-    # download : https://dumps.wikimedia.org
+    # download: https://dumps.wikimedia.org
     # /dewiktionary/latest/dewiktionary-latest-pages-meta-current.xml.bz2
     # extract the .xml file
     xml = parse("dewiktionary-20210920-pages-meta-current.xml")

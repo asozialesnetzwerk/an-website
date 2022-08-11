@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 if [ -d venv ]; then
   # shellcheck disable=SC1091
@@ -49,12 +49,12 @@ python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
 echo Bandit:
 python3 -m bandit -q -c pyproject.toml -r an_website || FAILED=$(( 64 | FAILED ))
 
-if [ -n "$1" ]; then
+if [ -n "${1:-}" ]; then
   pytest="python3 -m pytest --durations=0 --durations-min=0.5"
-  if [ "$1" = "test" ]; then
+  if [ "${1:-}" = "test" ]; then
     echo Tests:
     ${pytest} tests || FAILED=$(( 128 | FAILED ))
-  elif [ "$1" = "test-cov" ]; then
+  elif [ "${1:-}" = "test-cov" ]; then
     echo Tests:
     ${pytest} --cov=an_website --cov-report= tests || FAILED=$(( 128 | FAILED ))
     echo Coverage:

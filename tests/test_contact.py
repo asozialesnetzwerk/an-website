@@ -96,7 +96,7 @@ async def test_sending_email() -> None:
     else:
         import __future__  # pylint: disable=import-outside-toplevel
 
-        assert __future__.barry_as_FLUFL.mandatory > sys.version_info  # type: ignore[attr-defined]  # noqa: B950
+        assert __future__.barry_as_FLUFL.mandatory > sys.version_info  # type: ignore[attr-defined]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
 
 
 if __name__ == "__main__":

@@ -191,7 +191,7 @@ class SoundInfo(Info):
         abs_path = os.path.join(DIR, rel_path)
         file_size = os.path.getsize(abs_path)
         mod_time_since_epoch = os.path.getmtime(abs_path)
-        # Convert seconds since epoch to readable timestamp
+        # convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)
         link = f"/soundboard/{rel_path}"
         text = self.get_text()

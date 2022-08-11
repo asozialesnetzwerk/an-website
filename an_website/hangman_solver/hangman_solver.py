@@ -84,7 +84,7 @@ def generate_pattern_str(
     input_str = input_str.lower()
 
     # in crossword_mode it doesn't matter
-    # if the letters are already in input_str:
+    # if the letters are already in input_str
     if not crossword_mode:
         # add if not cw_mode
         invalid += input_str
@@ -143,10 +143,10 @@ def filter_words(
                 # add every letter only once
                 letter_list.extend(set(line))
 
-    # count letters:
+    # count letters
     letter_counter = Counter(letter_list)
 
-    # fix count for crossword_mode:
+    # fix count for crossword_mode
     if crossword_mode:
         fix_letter_counter_crossword_mode(
             letter_counter,
@@ -154,7 +154,7 @@ def filter_words(
             len(matched_words),
         )
 
-    # put letters in sorted dict:
+    # put letters in sorted dict
     sorted_letters: dict[str, int] = dict(
         letter_counter.most_common(30)
     )  # 26 + äöüß
@@ -280,23 +280,6 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
             return
         hangman = self.get_hangman_obj()
         hangman_dict = asdict(hangman)
-        # convert set to list, because the set can't be converted to JSON.
+        # convert set to list, because the set can't be converted to JSON
         hangman_dict["words"] = list(hangman_dict["words"])
         await self.finish(hangman_dict)
-
-
-# def profile():
-#     import cProfile
-#     import pstats
-#
-#     with cProfile.Profile() as pr:
-#         cache_words_and_letters_in_pickles()
-#         # filter_words(
-#         #     words="words_de/20",
-#         #     regex=re.compile("[^en]{19}en"),
-#         #     input_letters="en"
-#         # )
-#     stats = pstats.Stats(pr)
-#     stats.sort_stats(pstats.SortKey.TIME)
-#     stats.print_stats()
-#     stats.dump_stats(filename="profiling.prof")

@@ -2,10 +2,10 @@
 set -eu
 
 # This script is used to edit the data of a quote or author.
-# To use it call it with the api key as the argument.
+# To use it call it with the API key as the argument.
 # You'll need jq installed to use this script.
 
-# To get an api key go to https://zitate.prapsschnalinen.de
+# To get an API key go to https://zitate.prapsschnalinen.de
 API_KEY="$1"
 API_BASE_URL="https://zitate.prapsschnalinen.de/api"
 
