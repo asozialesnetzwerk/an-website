@@ -18,7 +18,8 @@
 You need:
 - Git (obviously)
 - CPython 3.10+
-- Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
+- gcc (to install editdistance)
+- Packages from requirements-dev.txt** (`pip install -r requirements-dev.txt`)
 
 ### How to check
 - `./check.sh`

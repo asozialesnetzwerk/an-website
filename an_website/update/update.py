@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import asyncio
 import io
+import logging
 import os
 import sys
 from asyncio import Future
@@ -34,6 +35,8 @@ from tornado.web import stream_request_body
 from .. import EVENT_SHUTDOWN, NAME
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
+
+logger = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -112,5 +115,7 @@ class UpdateAPI(APIRequestHandler):
             self.flush()
         await self.finish()
         await process.wait()
-        if not process.returncode:
+        if process.returncode:
+            logger.error("Failed to install %s", filename)
+        else:
             EVENT_SHUTDOWN.set()
