@@ -42,11 +42,14 @@ def hash_file(path: str | Path) -> str:
 
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
-    return {
+    file_hashes_dict = {
         str(path).removeprefix(ROOT_DIR): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
         if path.is_file() and "img/openmoji-svg-" not in str(path)
     }
+    file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
+    file_hashes_dict["/humans.txt"] = file_hashes_dict["/static/humans.txt"]
+    return file_hashes_dict
 
 
 FILE_HASHES_DICT = create_file_hashes_dict()
@@ -145,6 +148,11 @@ def get_handlers() -> list[Handler]:
             StaticFileHandler,
             {"path": STATIC_DIR},
         ),
+        (
+            r"/favicon\.ico",
+            tornado.web.RedirectHandler,
+            {"url": fix_static_url("/favicon.png")},
+        ),
     ]
     if sys.flags.dev_mode:
         # add handlers for the not minified CSS files
@@ -183,7 +191,7 @@ def get_handlers() -> list[Handler]:
 @cache
 def fix_static_url(url: str) -> str:
     """Fix the URL for static files."""
-    if not url.startswith("/static/"):
+    if not url.startswith("/"):
         url = f"/static/{url}"
     if "?" in url:
         url = url.split("?")[0]
@@ -191,8 +199,6 @@ def fix_static_url(url: str) -> str:
         return url
     if url in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[url]
-        if url == "/static/favicon.png":
-            return f"/favicon.png?v={hash_}"
         return f"{url}?v={hash_}"
     logger.warning("%s not in FILE_HASHES_DICT", url)
     return url

@@ -143,14 +143,19 @@ def app() -> tornado.web.Application:
 
 def assert_url_query(url: str, /, **args: None | str) -> None:
     """Assert properties of an url."""
-    query_str = urllib.parse.urlsplit(url or "/").query
+    split_url = urllib.parse.urlsplit(url or "/")
+    query_str = split_url.query
+
+    is_static = split_url.path.startswith(
+        ("/static/", "/soundboard/files/")
+    ) or split_url.path in {"/favicon.png", "/humans.txt"}
 
     query: dict[str, str] = (
         dict(urllib.parse.parse_qsl(query_str, True, True)) if query_str else {}
     )
 
     for key, value in args.items():
-        if value is None:
+        if value is None or (is_static and key != "v"):
             assert key not in query
         else:
             assert key in query or print(url, key, value)

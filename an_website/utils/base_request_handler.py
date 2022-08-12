@@ -50,6 +50,7 @@ from tornado.web import (
 )
 
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
+from .static_file_handling import FILE_HASHES_DICT
 from .utils import (
     THEMES,
     ModuleInfo,
@@ -218,7 +219,7 @@ class BaseRequestHandler(RequestHandler):
         if url.netloc and url.netloc.lower() != self.request.host.lower():
             url = urlsplit(f"/redirect?to={quote(url.geturl())}")
         path = url.path if new_path is None else new_path  # the path of the url
-        if path.startswith(("/static/", "/soundboard/files/")):
+        if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
                 no_3rd_party=None, theme=None, dynload=None, openmoji=None
             )
@@ -814,6 +815,9 @@ class BaseRequestHandler(RequestHandler):
             f"script-src {' '.join(script_src)};"
             "style-src 'self' 'unsafe-inline';"
             "img-src 'self' https://img.zeit.de https://github.asozial.org;"
+            "frame-ancestors 'self';"
+            "sandbox allow-downloads allow-forms allow-popups allow-scripts"
+            " allow-top-navigation-by-user-activation allow-same-origin;"
             "report-to default;"
             + (
                 f"report-uri {self.get_reporting_api_endpoint()};"
@@ -855,6 +859,7 @@ class BaseRequestHandler(RequestHandler):
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
+        self.set_header("X-Content-Type-Options", "nosniff")
         # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
         # don't send the Referer header for cross-origin requests
@@ -863,6 +868,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header(
             "Cross-Origin-Opener-Policy", "same-origin; report-to=default"
         )
+
         if self.request.path == "/kaenguru-comics-alt":  # TODO: improve this
             self.set_header(
                 "Cross-Origin-Embedder-Policy",

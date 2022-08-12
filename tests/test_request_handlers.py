@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import socket
-from urllib.parse import urlsplit
 
 from . import (
     FetchCallable,
@@ -121,10 +120,7 @@ async def test_page_crawling(
         checked_urls=urls_theme,
     )
     for url in urls_theme:
-        if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
-            assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
-        else:
-            assert_url_query(url, theme="pink", no_3rd_party=None, dynload=None)
+        assert_url_query(url, theme="pink", no_3rd_party=None, dynload=None)
 
     urls_3rd_party: set[str] = set()
     await check_html_page(
@@ -134,10 +130,7 @@ async def test_page_crawling(
         checked_urls=urls_3rd_party,
     )
     for url in urls_3rd_party:
-        if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
-            assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
-        else:
-            assert_url_query(url, theme=None, no_3rd_party="sure", dynload=None)
+        assert_url_query(url, theme=None, no_3rd_party="sure", dynload=None)
 
     urls_dynload: set[str] = set()
     await check_html_page(
@@ -147,10 +140,7 @@ async def test_page_crawling(
         checked_urls=urls_dynload,
     )
     for url in urls_dynload:
-        if urlsplit(url).path.startswith(("/static/", "/soundboard/files/")):
-            assert_url_query(url, theme=None, no_3rd_party=None, dynload=None)
-        else:
-            assert_url_query(url, theme=None, no_3rd_party=None, dynload="sure")
+        assert_url_query(url, theme=None, no_3rd_party=None, dynload="sure")
 
 
 async def test_request_handlers2(

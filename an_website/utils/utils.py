@@ -33,7 +33,7 @@ import elasticapm  # type: ignore[import]
 import orjson as json
 import regex
 from blake3 import blake3  # type: ignore[import]
-from editdistance import distance
+from editdistance import distance  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
