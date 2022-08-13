@@ -22,7 +22,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from asyncio import AbstractEventLoop, Future, Task
+from asyncio import Future, Task
 from typing import Any, Literal, cast
 
 import regex
@@ -145,11 +145,60 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     return 0
 
 
-SMART_RATING_FILTERS = (
+RatingFilter = Literal["w", "n", "unrated", "rated", "all", "smart"]
+SMART_RATING_FILTERS: tuple[RatingFilter, ...] = (
     *(("n",) * 1),
     *(("all",) * 5),
     *(("w",) * 5),
 )
+
+
+def parse_rating_filter(rating_filter_str: str) -> RatingFilter:
+    """Get a rating filter."""
+    if rating_filter_str == "w":
+        return "w"
+    if rating_filter_str == "n":
+        return "n"
+    if rating_filter_str == "unrated":
+        return "unrated"
+    if rating_filter_str == "rated":
+        return "rated"
+    if rating_filter_str == "all":
+        return "all"
+    return "smart"
+
+
+def get_next_id(rating_filter: RatingFilter) -> tuple[int, int]:
+    """Get the id of the next quote."""
+    if rating_filter == "smart":
+        rating_filter = random.choice(SMART_RATING_FILTERS)  # nosec: B311
+
+    match rating_filter:
+        case "unrated":
+            # get a random quote, but filter out already rated quotes
+            # pylint: disable=while-used
+            while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
+                if WRONG_QUOTES_CACHE[ids].id == -1:
+                    # check for wrong quotes that are unrated but in the cache
+                    # they don't have a real wrong_quotes_id
+                    return ids
+            return ids
+        case "all":
+            return get_random_id()
+        case "w":
+            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating > 0)
+        case "n":
+            wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
+        case "rated":
+            wrong_quotes = get_wrong_quotes()
+        case _:
+            wrong_quotes = ()
+
+    if not wrong_quotes:
+        # invalid rating filter or no wrong quotes with that filter
+        return get_random_id()
+
+    return random.choice(wrong_quotes).get_id()  # nosec: B311
 
 
 class QuoteBaseHandler(QuoteReadyCheckHandler):
@@ -161,52 +210,14 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     FUTURES: set[Future[Any]] = set()
 
-    loop: AbstractEventLoop
-
-    def get_next_id(self, rating_filter: None | str = None) -> tuple[int, int]:
-        """Get the id of the next quote."""
-        if rating_filter is None:
-            rating_filter = self.rating_filter()
-
-        if rating_filter == "smart":
-            rating_filter = random.choice(SMART_RATING_FILTERS)  # nosec: B311
-
-        match rating_filter:
-            case "unrated":
-                # get a random quote, but filter out already rated quotes
-                # pylint: disable=while-used
-                while (ids := get_random_id()) in WRONG_QUOTES_CACHE:
-                    if WRONG_QUOTES_CACHE[ids].id == -1:
-                        # check for wrong quotes that are unrated but in the cache
-                        # they don't have a real wrong_quotes_id
-                        return ids
-                return ids
-            case "all":
-                return get_random_id()
-            case "w":
-                wrong_quotes = get_wrong_quotes(lambda wq: wq.rating > 0)
-            case "n":
-                wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
-            case "rated":
-                wrong_quotes = get_wrong_quotes()
-            case _:
-                wrong_quotes = ()
-
-        if not wrong_quotes:
-            # invalid rating filter or no wrong quotes with that filter
-            return get_random_id()
-
-        return random.choice(wrong_quotes).get_id()  # nosec: B311
+    next_id: tuple[int, int]
+    rating_filter: RatingFilter
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
-        next_q, next_a = self.get_next_id()
-
         return self.fix_url(
-            f"/zitate/{next_q}-{next_a}",
-            r=None
-            if (rating_filter := self.rating_filter()) == "smart"
-            else rating_filter,
+            f"/zitate/{self.next_id[0]}-{self.next_id[1]}",
+            r=None if self.rating_filter == "smart" else self.rating_filter,
             **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
         )
 
@@ -216,13 +227,15 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     def on_finish(self) -> None:
         """
-        Request the data for the next quote, to improve performance.
+        Pre-fetch the data for the next quote.
 
-        This is done to ensure that the data is always up-to-date.
+        This is done to ensure that the data is up-to-date.
         """
-        quote_id, author_id = self.get_next_id()
-        task = self.loop.create_task(
-            get_wrong_quote(quote_id, author_id, use_cache=False)
+        if len(self.FUTURES) > 5 or (self.content_type or "")[:6] == "image/":
+            return  # don't spam and don't do this for images
+
+        task = asyncio.get_running_loop().create_task(
+            get_wrong_quote(*self.next_id, use_cache=False)
         )
         self.FUTURES.add(task)
 
@@ -230,34 +243,20 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
             self.FUTURES.discard(_task)
             if exc := _task.exception():
                 logger.error(
-                    "Failed to get quote %s-%s",
-                    quote_id,
-                    author_id,
+                    "Failed to pre-fetch quote %d-%d",
+                    *self.next_id,
                     exc_info=(type(exc), exc, exc.__traceback__),
                 )
+            else:
+                logger.debug("Pre-fetched quote %d-%d", *self.next_id)
 
         task.add_done_callback(done_callback)
 
-    async def prepare(self) -> None:  # noqa: D102
+    async def prepare(self) -> None:
+        """Set the id of the next wrong_quote to show."""
         await super().prepare()
-        self.loop = asyncio.get_running_loop()
-
-    def rating_filter(
-        self,
-    ) -> Literal["w", "n", "unrated", "rated", "all", "smart"]:
-        """Get a rating filter."""
-        rating_filter = self.get_argument("r", "smart")
-        if rating_filter == "w":
-            return "w"
-        if rating_filter == "n":
-            return "n"
-        if rating_filter == "unrated":
-            return "unrated"
-        if rating_filter == "rated":
-            return "rated"
-        if rating_filter == "all":
-            return "all"
-        return "smart"
+        self.rating_filter = parse_rating_filter(self.get_argument("r", ""))
+        self.next_id = get_next_id(self.rating_filter)
 
 
 class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
@@ -283,7 +282,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
                 ),
                 rating_param="w",
             ),
-            random_quote_url=self.id_to_url(*self.get_next_id()),
+            random_quote_url=self.id_to_url(*self.next_id),
             quote_of_the_day=await self.get_quote_of_today(),
             one_stone_url=self.get_author_url("Albert Einstein"),
             kangaroo_url=self.get_author_url("Das Känguru"),
@@ -311,7 +310,7 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
         self, suffix: str = "", *, head: bool = False
     ) -> None:
         """Redirect to a random funny quote."""
-        quote_id, author_id = self.get_next_id(rating_filter="w")
+        quote_id, author_id = get_next_id("w")
         return self.redirect(
             self.fix_url(
                 f"/api/zitate/{quote_id}-{author_id}{suffix}",
@@ -377,7 +376,7 @@ class QuoteById(QuoteBaseHandler):
             return "---"
         if (
             not self.get_show_rating()  # don't hide the rating on wish of user
-            and self.rating_filter() == "smart"
+            and self.rating_filter == "smart"
             and self.request.method
             and self.request.method.upper() == "GET"
             and await self.get_saved_vote(
@@ -468,14 +467,13 @@ class QuoteById(QuoteBaseHandler):
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
         """Render the page with the wrong_quote and this vote."""
-        next_q, next_a = self.get_next_id()
         await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
-            next_id=f"{next_q}-{next_a}",
+            next_id=f"{self.next_id[0]}-{self.next_id[1]}",
             description=str(wrong_quote),
-            rating_filter=self.rating_filter(),
+            rating_filter=self.rating_filter,
             rating=await self.get_rating_str(wrong_quote),
             show_rating=self.get_show_rating(),
             vote=vote,
@@ -514,7 +512,7 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
         """Return the relevant data for the quotes page as JSON."""
-        next_q, next_a = self.get_next_id()
+        next_q, next_a = self.next_id
         if self.request.path.endswith("/full"):
             return await self.finish_dict(
                 wrong_quote=wrong_quote.to_json(),
