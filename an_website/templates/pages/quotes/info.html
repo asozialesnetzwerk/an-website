@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote-info.css')}}">
+{% end %}
 
 {% block body %}
     <table>
@@ -40,9 +44,4 @@
             </a>
         {% end %}
     </span>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/quote-info.css')}}">
 {% end %}

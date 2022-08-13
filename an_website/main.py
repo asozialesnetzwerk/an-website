@@ -294,7 +294,9 @@ def make_app(config: ConfigParser) -> str | Application:
         ),
         websocket_ping_interval=10,
         # Template settings
+        autoescape=None,
         template_path=TEMPLATES_DIR,
+        template_whitespace="oneline",
     )
 
 

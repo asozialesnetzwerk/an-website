@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}
 
 {% block body %}
     <form>
@@ -30,9 +34,4 @@
             >{{ _w }}</a> ({{count}})</li>
         {% end %}
     </ul>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
 {% end %}

@@ -1,5 +1,13 @@
-{% whitespace oneline %}
 {% extends "../../base.html" %}
+
+{% block head %}
+    <meta class="elastic" name="quote_rating" content="{{wrong_quote.rating}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote.css')}}">
+    <script defer src="{{fix_static('js/quote.js')}}"></script>
+{% end %}
 
 {% block body %}
     <div id="quote-container">
@@ -150,13 +158,4 @@
         Diese Seite nutzt übrigens einen Cookie {% raw emoji2html("🍪") %},
         um zu speichern, welche Zitate du bewertet hast.
     </span>
-{% end %}
-
-{% block head %}
-    <meta class="elastic" name="quote_rating" content="{{wrong_quote.rating}}">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/quote.css')}}">
-    <script defer src="{{fix_static('js/quote.js')}}"></script>
 {% end %}

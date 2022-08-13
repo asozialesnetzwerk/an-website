@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6a43e8a13340bbef4acd2ec67d206b85fea183eed4b8f72a91ff7a3328485cdf"
+            "sha256": "b19a4e9042ab8c8b9d9b4fbdc17eb379dbf821373f1ec5c4d16f7df049376c30"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1187,6 +1187,22 @@
             "index": "pypi",
             "version": "==2.8.2"
         },
+        "python-geoip-geolite2-yplan": {
+            "hashes": [
+                "sha256:8aa12b25e6380a7e4173290b5564f4233570470b7ef583dbbbfbdd062e927b2c",
+                "sha256:bcc300d1af2f34ea638d12aa99259bc53659f77195343f50255eabac6e9dabfd"
+            ],
+            "index": "pypi",
+            "version": "==2019.1224"
+        },
+        "python-geoip-yplan": {
+            "hashes": [
+                "sha256:1f95986384235920a56f1e923736b3535b36285f8627dfb4905ca05d79324fa0",
+                "sha256:77c12fa4b670e7866893047f4a733e76682df81eecae1bec5daea4e330e4246c"
+            ],
+            "index": "pypi",
+            "version": "==1.2"
+        },
         "pyyaml": {
             "hashes": [
                 "sha256:0283c35a6a9fbf047493e3a0ce8d79ef5030852c51e9d911a27badfde0605293",
@@ -2263,11 +2279,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:63f463b90ff5e0a1422010100268fd688e15c44ae0798659013c8412963e15e4",
-                "sha256:9b5d2cb8df48f005825654e0cb17217418317e4d996c035f0bca7cbaeb8acf51"
+                "sha256:194b74f2c2d1800268fe2d857d99981e7c04d010de3099f04ee45ebec535e560",
+                "sha256:3bcaf6e27ad3b0f643ba0a48c5ab9eca930c3eb51df0e068f4826ab880c394ea"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==64.0.0"
+            "version": "==64.0.3"
         },
         "six": {
             "hashes": [
@@ -2348,6 +2364,14 @@
             ],
             "index": "pypi",
             "version": "==4.11.4"
+        },
+        "types-editdistance": {
+            "hashes": [
+                "sha256:873aaae91ead784d43837ee1f5499c379c2b6e292942dc4cc99f1c04bc8308ac",
+                "sha256:de1271225aebd9dd76a647399bc3b9454d40700b15dbc326b0e1f50e0ccda182"
+            ],
+            "index": "pypi",
+            "version": "==0.6.3"
         },
         "types-emoji": {
             "hashes": [

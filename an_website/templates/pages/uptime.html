@@ -1,5 +1,10 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/uptime.css')}}">
+    <script defer src="{{fix_static('js/uptime.js')}}"></script>
+{% end %}
 
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}
 
@@ -16,10 +21,4 @@
                  height="100">
         </div>
     {% end %}
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/uptime.css')}}">
-    <script defer src="{{fix_static('js/uptime.js')}}"></script>
 {% end %}

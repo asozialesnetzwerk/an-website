@@ -1,9 +1,9 @@
 {% extends "../base.html" %}
-{% whitespace single %}
 
 {% block description %}{{ version }}{% end %}
 
 {% block body %}
+{% whitespace single %}
 
 <pre style="{% if full %}max-width: 100%; overflow: scroll; scrollbar-width: none{% else %}font-size: 1rem{% end %}">
 Version: {{ version }}

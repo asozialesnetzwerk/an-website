@@ -30,11 +30,11 @@ from typing import IO, Any, Literal, TypeVar, Union
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
-import orjson as json
 import regex
 from blake3 import blake3  # type: ignore[import]
-from editdistance import distance  # type: ignore[import]
-from elasticsearch import AsyncElasticsearch
+from editdistance import distance
+from elasticsearch import AsyncElasticsearch, ElasticsearchException
+from geoip import geolite2  # type: ignore[import]
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 from UltraDict import UltraDict  # type: ignore[import]
@@ -329,6 +329,13 @@ def emoji2code(emoji: str) -> str:
     return "-".join(f"{ord(c):04x}" for c in emoji).upper()
 
 
+def emoji2html(emoji: str) -> str:
+    """Convert an emoji to HTML."""
+    return create_emoji_html(
+        emoji, f"/static/img/openmoji-svg-14.0/{emoji2code(emoji)}.svg"
+    )
+
+
 def emojify(string: str) -> str:
     """Emojify a given string."""
     string = regex.sub(
@@ -354,14 +361,21 @@ async def geoip(
     database: str = "GeoLite2-City.mmdb",
     elasticsearch: None | AsyncElasticsearch = None,
     *,
-    caches: dict[str, dict[str, dict[str, Any]]] = UltraDict(  # noqa: B008
-        serializer=json
-    ),
+    allow_fallback: bool = True,
+    caches: dict[str, dict[str, dict[str, Any]]] = UltraDict(),  # noqa: B008
 ) -> None | dict[str, Any]:
     """Get GeoIP information."""
+    # pylint: disable=too-complex
     cache = caches.get(ip, {})  # pylint: disable=redefined-outer-name
     if database not in cache:
         if not elasticsearch:
+            if allow_fallback and database in {
+                "GeoLite2-City.mmdb",
+                "GeoLite2-Country.mmdb",
+            }:
+                return geoip_fallback(
+                    ip, country=database == "GeoLite2-City.mmdb"
+                )
             return None
 
         properties: None | tuple[str, ...]
@@ -387,31 +401,80 @@ async def geoip(
         else:
             properties = None
 
-        cache[database] = (
-            await elasticsearch.ingest.simulate(
-                body={
-                    "pipeline": {
-                        "processors": [
-                            {
-                                "geoip": {
-                                    "field": "ip",
-                                    "database_file": database,
-                                    "properties": properties,
+        try:
+            cache[database] = (
+                await elasticsearch.ingest.simulate(
+                    body={
+                        "pipeline": {
+                            "processors": [
+                                {
+                                    "geoip": {
+                                        "field": "ip",
+                                        "database_file": database,
+                                        "properties": properties,
+                                    }
                                 }
-                            }
-                        ]
+                            ]
+                        },
+                        "docs": [{"_source": {"ip": ip}}],
                     },
-                    "docs": [{"_source": {"ip": ip}}],
-                },
-                params={"filter_path": "docs.doc._source"},
-            )
-        )["docs"][0]["doc"]["_source"].get("geoip", {})
+                    params={"filter_path": "docs.doc._source"},
+                )
+            )["docs"][0]["doc"]["_source"].get("geoip", {})
+        except ElasticsearchException:
+            if allow_fallback and database in {
+                "GeoLite2-City.mmdb",
+                "GeoLite2-Country.mmdb",
+            }:
+                return geoip_fallback(
+                    ip, country=database == "GeoLite2-City.mmdb"
+                )
+            raise
         if "country_iso_code" in cache[database]:
             cache[database]["country_flag"] = country_code_to_flag(
                 cache[database]["country_iso_code"]
             )
         caches[ip] = cache
     return cache[database]
+
+
+def geoip_fallback(ip: str, country: bool = False) -> None | dict[str, Any]:
+    """Get GeoIP information without using Elasticsearch."""
+    # pylint: disable=invalid-name
+    if not (spam := geolite2.lookup(ip)):
+        return None
+
+    info = spam.get_info_dict()
+
+    continent_name = info.get("continent", {}).get("names", {}).get("en")
+    country_iso_code = info.get("country", {}).get("iso_code")
+    country_name = info.get("country", {}).get("names", {}).get("en")
+
+    data = {
+        "continent_name": continent_name,
+        "country_iso_code": country_iso_code,
+        "country_name": country_name,
+    }
+
+    if country:
+        for key, value in tuple(data.items()):
+            if not value:
+                del data[key]
+
+        return data
+
+    latitude = info.get("location", {}).get("latitude")
+    longitude = info.get("location", {}).get("longitude")
+    location = (latitude, longitude) if latitude and longitude else None
+    timezone = info.get("location", {}).get("time_zone")
+
+    data.update({"location": location, "timezone": timezone})
+
+    for key, value in tuple(data.items()):
+        if not value:
+            del data[key]
+
+    return data
 
 
 def get_themes() -> tuple[str, ...]:

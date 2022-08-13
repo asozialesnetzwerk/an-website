@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote-share.css')}}">
+{% end %}
 
 {% block body %}
   {{wrong_quote}}
@@ -126,9 +130,4 @@
       </div>
     </a>
   </div>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/quote-share.css')}}">
 {% end %}

@@ -1,5 +1,10 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <script defer src="{{fix_static('js/swapped_words.js')}}"></script>
+{% end %}
 
 {% block body %}
     <form method="post" id="form">
@@ -49,10 +54,4 @@ Björn Höcke => Bernd Höcke"
         Ausgabe:
         <textarea rows="10" id="output" readonly>{{output}}</textarea>
     </label>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <script defer src="{{fix_static('js/swapped_words.js')}}"></script>
 {% end %}

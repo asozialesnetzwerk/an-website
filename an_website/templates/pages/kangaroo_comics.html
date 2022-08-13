@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{fix_static('style/kangaroo-comics.css')}}">
+    <script defer src="{{fix_static('js/kangaroo-comics.js')}}"></script>
+{% end %}
 
 {% block body %}
     <noscript>Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(</noscript>
@@ -25,9 +29,4 @@
     {% if no_3rd_party %}
         <button id="start-button-no_3rd_party">Lade Inhalte von Zeit Online</button>
     {% end %}
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" href="{{fix_static('style/kangaroo-comics.css')}}">
-    <script defer src="{{fix_static('js/kangaroo-comics.js')}}"></script>
 {% end %}

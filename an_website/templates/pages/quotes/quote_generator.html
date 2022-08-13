@@ -1,5 +1,11 @@
-{% whitespace oneline %}
 {% extends "../../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/quote-generator.css')}}">
+{% end %}
 
 {% block body %}
     <form method="get" action="/zitate">
@@ -28,12 +34,4 @@
         </fieldset>
         <button type="submit">Einreichen</button>
     </form>
-{% end %}
-
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/quote-generator.css')}}">
 {% end %}

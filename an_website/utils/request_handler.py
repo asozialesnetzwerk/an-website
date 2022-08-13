@@ -40,14 +40,13 @@ from tornado.web import HTTPError
 from .. import DIR as ROOT_DIR
 from .. import GH_ORG_URL, GH_PAGES_URL, GH_REPO_URL
 from .base_request_handler import BaseRequestHandler
-from .static_file_handling import fix_static_url
+from .static_file_handling import fix_static_path
 from .utils import (
     SUS_PATHS,
     ModuleInfo,
     Permission,
     bool_to_str,
-    create_emoji_html,
-    emoji2code,
+    emoji2html,
     normalized_levenshtein,
     remove_suffix_ignore_case,
     replace_umlauts,
@@ -193,21 +192,12 @@ class HTMLRequestHandler(BaseRequestHandler):
             description=self.description,
             dynload=self.get_dynload(),
             elastic_rum_url=self.ELASTIC_RUM_URL,
-            fix_static=lambda url: self.fix_url(fix_static_url(url)),
+            fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,
             openmoji=self.get_openmoji(),
-            emoji2html=(
-                lambda emoji: create_emoji_html(
-                    emoji,
-                    self.fix_url(
-                        fix_static_url(
-                            f"img/openmoji-svg-14.0/{emoji2code(emoji)}.svg"
-                        )
-                    ),
-                )
-            )
+            emoji2html=emoji2html
             if self.get_openmoji() == "img"
-            else lambda spam: spam,  # type: ignore[no-any-return]
+            else lambda emoji: emoji,
             form_appendix=self.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
             GH_PAGES_URL=GH_PAGES_URL,

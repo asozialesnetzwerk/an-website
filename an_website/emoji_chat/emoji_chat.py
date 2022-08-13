@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
             (r"/websocket/emoji-chat", ChatWebSocketHandler),
         ),
         name="Emoji-Chat",
-        description="Ein 😎er Chat.",
+        description="Ein 😎er Chat",
         path="/emoji-chat",
         keywords=("Emoji Chat",),
     )
