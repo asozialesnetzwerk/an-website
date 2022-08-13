@@ -57,7 +57,7 @@ pyyaml==6.0
 rcssmin==1.1.1
 restructuredtext-lint==1.4.0
 rjsmin==1.2.1
-setuptools==64.0.0
+setuptools==64.0.3
 six==1.16.0
 smmap==5.0.0
 snowballstemmer==2.2.0
@@ -67,6 +67,7 @@ tomli==2.0.1
 tomlkit==0.11.3
 tornado==6.2
 types-beautifulsoup4==4.11.4
+types-editdistance==0.6.3
 types-emoji==2.0.1
 types-lxml==2022.4.10
 types-orjson==3.6.2
@@ -127,6 +128,8 @@ pycurl==7.45.1
 pyjwt==2.4.0
 pysocks==1.7.1
 python-dateutil==2.8.2
+python-geoip-geolite2-yplan==2019.1224
+python-geoip-yplan==1.2
 redis[hiredis]==4.3.4
 regex==2022.7.25
 soupsieve==2.3.2.post1

@@ -1,5 +1,11 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <style>em{color:var(--contrast-2);}</style>
+    <script defer src="{{fix_static('js/search.js')}}"></script>
+{% end %}
 
 {% block body %}
     <form id="search-form">
@@ -24,11 +30,4 @@
     {% else %}
         <div>Nichts gefunden.</div>
     {% end %}
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <style>em{color:var(--contrast-2);}</style>
-    <script defer src="{{fix_static('js/search.js')}}"></script>
 {% end %}

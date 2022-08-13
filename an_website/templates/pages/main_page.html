@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/main-page.css')}}">
+{% end %}
 
 {% block body %}
     {% if quote_data %}
@@ -44,9 +48,4 @@
                no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
         </section>
     {% end %}
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/main-page.css')}}">
 {% end %}

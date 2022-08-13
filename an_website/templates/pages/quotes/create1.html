@@ -1,5 +1,10 @@
-{% whitespace oneline %}
 {% extends "../../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <script defer src="{{fix_static('js/quote_create1.js')}}"></script>
+{% end %}
 
 {% block body %}
     <form method="post" action="{{fix_url('/zitate/erstellen')}}">
@@ -48,12 +53,6 @@
             {% end %}
         </datalist>
 
-        <input id="submit-button" class="button" type="submit" value="Ausgewählte Daten einreichen.">
+        <input id="submit-button" class="button" type="submit" value="Ausgewählte Daten einreichen">
     </form>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <script defer src="{{fix_static('js/quote_create1.js')}}"></script>
 {% end %}

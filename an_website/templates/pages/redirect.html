@@ -1,5 +1,10 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/redirect.css')}}">
+{% end %}
 
 {% block body %}
     <p>
@@ -20,10 +25,4 @@
            href="{{from_url}}"
         >{{globals().get("back_button_text") or "Nein, ich möchte wieder zurück" }}</a>
     {% end %}
-{% end %}
-
-{% block head %}
-    <meta name="robots" content="noindex">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/redirect.css')}}">
 {% end %}

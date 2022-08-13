@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}
 
 {% block body %}
     <form method="post">
@@ -29,9 +33,4 @@
 
         <button type="submit">Absenden</button>
     </form>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
 {% end %}

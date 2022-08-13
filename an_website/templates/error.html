@@ -1,9 +1,14 @@
-{% whitespace oneline %}
 {% extends "base.html" %}
 
 {% block title %}{{status}} - {{reason}}{% end %}
 
 {% block description %}{{description}}{% end %}
+
+{% block head %}
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/error.css')}}">
+{% end %}
 
 {% block body %}
     {% if is_traceback %}
@@ -14,10 +19,4 @@
             <div id="reason">{{reason}}</div>
         </div>
     {% end %}
-{% end %}
-
-{% block head %}
-    <meta name="robots" content="noindex">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/error.css')}}">
 {% end %}

@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}
 
 {% block body %}
     <form method="post">
@@ -74,9 +78,4 @@
         </label>
         <input type="submit" value="Speichern">
     </form>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
 {% end %}

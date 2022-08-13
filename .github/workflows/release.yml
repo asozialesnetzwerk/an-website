@@ -97,7 +97,7 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r requirements.txt
-      - name: Install pytest, coverage and html5lib (needed for the tests)
+      - name: Install stuff needed for the tests
         run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
       - name: Run pytest
         run: pytest --durations=0 --verbose --cov=an_website --cov-config=.coveragerc tests
@@ -231,7 +231,7 @@ jobs:
       - name: Create coverage files
         run: |
           grep "^coverage" requirements-ci.txt | xargs pip install
-          coverage report --precision=3 --sort=cover --skip-covered
+          coverage report --precision=3 --sort=-miss --skip-covered
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
           set -x

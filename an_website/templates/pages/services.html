@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/table.css')}}">
+{% end %}
 
 {% block body %}
     {% for service in services %}
@@ -22,9 +26,4 @@
             </table>
         {% end %}
     {% end %}
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/table.css')}}">
 {% end %}

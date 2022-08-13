@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/soundboard.css')}}">
+{% end %}
 
 {% block body %}
     {% if query is None %}
@@ -24,9 +28,4 @@
             {% raw sound_info.to_html(fix_url, query) %}
         {% end %}
     </div>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/soundboard.css')}}">
 {% end %}

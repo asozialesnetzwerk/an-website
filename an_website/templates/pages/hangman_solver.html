@@ -1,5 +1,9 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+{% end %}
 
 {% block body %}
     <form>
@@ -77,9 +81,4 @@
         <ul>{% for word in words %}<li>{{word}}</li>{% end %}</ul>
     {% end %}
 
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
 {% end %}

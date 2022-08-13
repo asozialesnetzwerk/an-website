@@ -18,6 +18,7 @@ from __future__ import annotations
 import contextlib
 import io
 import logging
+import pickletools  # nosec: B403
 import pydoc
 import traceback
 from ast import PyCF_ALLOW_TOP_LEVEL_AWAIT, PyCF_ONLY_AST, PyCF_TYPE_COMMENTS
@@ -35,8 +36,6 @@ from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
 
 logger = logging.getLogger(__name__)
-
-PICKLE_PROTOCOL = max(pickle.DEFAULT_PROTOCOL, 5)
 
 
 def get_module_info() -> ModuleInfo:
@@ -83,14 +82,16 @@ class Backdoor(APIRequestHandler):
         session["settings"] = None
         for key, value in tuple(session.items()):
             try:
-                session[key] = pickle.dumps(value, PICKLE_PROTOCOL)
+                session[key] = pickletools.optimize(
+                    pickle.dumps(value, max(pickle.DEFAULT_PROTOCOL, 5))
+                )
             except Exception:  # pylint: disable=broad-except
                 del session[key]
         return bool(
             await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                b85encode(pickle.dumps(session, PICKLE_PROTOCOL)),
+                b85encode(pickletools.optimize(pickle.dumps(session))),
             )
         )
 

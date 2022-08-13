@@ -1,5 +1,12 @@
-{% whitespace oneline %}
 {% extends "../base.html" %}
+
+{% block head %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/form.css')}}">
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('style/emoji-chat.css')}}">
+    <script defer src="{{fix_static('js/emoji-chat.js')}}"></script>
+{% end %}
 
 {% block body %}
 <section id="message-section">
@@ -20,12 +27,4 @@
         <input id="message-input" type="text" name="message">
         <button type="submit">Senden!</button>
     </form>
-{% end %}
-
-{% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/form.css')}}">
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/emoji-chat.css')}}">
-    <script defer src="{{fix_static('js/emoji-chat.js')}}"></script>
 {% end %}

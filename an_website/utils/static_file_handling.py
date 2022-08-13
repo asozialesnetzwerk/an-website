@@ -151,7 +151,7 @@ def get_handlers() -> list[Handler]:
         (
             r"/favicon\.ico",
             tornado.web.RedirectHandler,
-            {"url": fix_static_url("/favicon.png")},
+            {"url": fix_static_path("/favicon.png")},
         ),
     ]
     if sys.flags.dev_mode:
@@ -189,19 +189,19 @@ def get_handlers() -> list[Handler]:
 
 
 @cache
-def fix_static_url(url: str) -> str:
-    """Fix the URL for static files."""
-    if not url.startswith("/"):
-        url = f"/static/{url}"
-    if "?" in url:
-        url = url.split("?")[0]
-    if url.startswith("/static/img/openmoji-svg-"):
-        return url
-    if url in FILE_HASHES_DICT:
-        hash_ = FILE_HASHES_DICT[url]
-        return f"{url}?v={hash_}"
-    logger.warning("%s not in FILE_HASHES_DICT", url)
-    return url
+def fix_static_path(path: str) -> str:
+    """Fix the path for static files."""
+    if not path.startswith("/"):
+        path = f"/static/{path}"
+    if "?" in path:
+        path = path.split("?")[0]
+    if path.startswith("/static/img/openmoji-svg-"):
+        return path
+    if path in FILE_HASHES_DICT:
+        hash_ = FILE_HASHES_DICT[path]
+        return f"{path}?v={hash_}"
+    logger.warning("%s not in FILE_HASHES_DICT", path)
+    return path
 
 
 class StaticFileHandler(tornado.web.StaticFileHandler):
@@ -264,11 +264,12 @@ class CachedStaticFileHandler(StaticFileHandler):
         pass
 
     @classmethod
-    def make_static_url(
+    def make_static_path(
         cls, settings: dict[str, Any], path: str, include_version: bool = True
     ) -> str:
-        """Make a static url for the given path."""
-        return fix_static_url(path)
+        """Make a static path for the given path."""
+        # pylint: disable=unused-argument
+        return fix_static_path(path)
 
     def set_headers(self) -> None:
         """Set the default headers for this handler."""
