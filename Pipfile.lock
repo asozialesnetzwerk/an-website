@@ -2045,11 +2045,11 @@
         },
         "pipenv": {
             "hashes": [
-                "sha256:6cc26b3b2095c2fbc71a5157443e98d80f779b0613e201bf77f745258ee036fb",
-                "sha256:e9333cdd365aeb9c3f9460ac2d84c4750e3ffa8e766fe3d5de03d4496b55d851"
+                "sha256:1323289b715c708649214b58fd496d12547fae408c3b64a9c5f7fe5a2c6c3275",
+                "sha256:151489d27ee4a26d4984bdef8f34c5cdfffce4e7918271e295d66a30300a0ac4"
             ],
             "index": "pypi",
-            "version": "==2022.8.5"
+            "version": "==2022.8.13"
         },
         "platformdirs": {
             "hashes": [
@@ -2334,11 +2334,11 @@
         },
         "tomlkit": {
             "hashes": [
-                "sha256:0ace4c975e0f3e6f71be8a2d61fe568777f1634bc80abff642cd3323ce709a0d",
-                "sha256:800628e7705ff7c7cc4395c29836c7073e55b9ec820e1fc696080f9c5591a789"
+                "sha256:25d4e2e446c453be6360c67ddfb88838cfc42026322770ba13d1fbd403a93a5c",
+                "sha256:3235a9010fae54323e727c3ac06fb720752fe6635b3426e379daec60fbd44a83"
             ],
             "markers": "python_version >= '3.6' and python_version < '4.0'",
-            "version": "==0.11.3"
+            "version": "==0.11.4"
         },
         "tornado": {
             "hashes": [

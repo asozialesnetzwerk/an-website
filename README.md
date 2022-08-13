@@ -18,8 +18,9 @@
 You need:
 - Git (obviously)
 - CPython 3.10+
-- gcc (to install editdistance)
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
+- GCC and G++ for building some of the dependencies
+- Depending on the used version of CPython: Rust
 
 ### How to check
 - `./check.sh`
@@ -31,9 +32,10 @@ You need:
 ### Linux
 You need:
 - CPython 3.10+
+- GCC and G++ for building some of the dependencies
+- Depending on the used version of CPython: Rust
 - Supervisord
 - Redis 6.2
-- gcc (to install editdistance)
 - redis-cell (for ratelimits)
 - Elasticsearch 7.17 or 8.x
 - UwUFetch
@@ -42,7 +44,7 @@ How:
 - [Create a virtual environment](https://docs.python.org/3/library/venv.html)
 - Install an-website in the venv (`pip install an-website`)
 - create a `config.ini` and configure it
-- run it (`an-website` / `python -m an_website`) with supervisord
+- run it (`an-website` / `python -m an_website`) with Supervisord
 
 ### FreeBSD
 Should work similar to Linux.

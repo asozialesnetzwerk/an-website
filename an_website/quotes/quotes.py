@@ -22,7 +22,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from asyncio import Future, Task
+from asyncio import AbstractEventLoop, Future
 from typing import Any, Literal, cast
 
 import regex
@@ -210,8 +210,21 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     FUTURES: set[Future[Any]] = set()
 
+    loop: AbstractEventLoop
     next_id: tuple[int, int]
     rating_filter: RatingFilter
+
+    def future_callback(self, future: Future[WrongQuote]) -> None:
+        """Discard the future and log the exception if one occured."""
+        self.FUTURES.discard(future)
+        if exc := future.exception():
+            logger.error(
+                "Failed to pre-fetch quote %d-%d",
+                *self.next_id,
+                exc_info=(type(exc), exc, exc.__traceback__),
+            )
+        else:
+            logger.debug("Pre-fetched quote %d-%d", *self.next_id)
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
@@ -234,27 +247,16 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         if len(self.FUTURES) > 5 or (self.content_type or "")[:6] == "image/":
             return  # don't spam and don't do this for images
 
-        task = asyncio.get_running_loop().create_task(
+        task = self.loop.create_task(
             get_wrong_quote(*self.next_id, use_cache=False)
         )
         self.FUTURES.add(task)
-
-        def done_callback(_task: Task[WrongQuote]) -> None:
-            self.FUTURES.discard(_task)
-            if exc := _task.exception():
-                logger.error(
-                    "Failed to pre-fetch quote %d-%d",
-                    *self.next_id,
-                    exc_info=(type(exc), exc, exc.__traceback__),
-                )
-            else:
-                logger.debug("Pre-fetched quote %d-%d", *self.next_id)
-
-        task.add_done_callback(done_callback)
+        task.add_done_callback(self.future_callback)
 
     async def prepare(self) -> None:
         """Set the id of the next wrong_quote to show."""
         await super().prepare()
+        self.loop = asyncio.get_running_loop()
         self.rating_filter = parse_rating_filter(self.get_argument("r", ""))
         self.next_id = get_next_id(self.rating_filter)
 

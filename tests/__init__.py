@@ -335,10 +335,12 @@ def assert_valid_html_response(
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid HTML response with the given status code."""
     assert_valid_response(response, "text/html;charset=utf-8", codes)
+    effective_url = effective_url or response.effective_url.split("#")[0]
     body = response.body.decode("utf-8")
     # check if body is valid HTML5
-    root = HTMLParser(namespaceHTMLElements=False).parse(body)
-    effective_url = effective_url or response.effective_url.split("#")[0]
+    spam = HTMLParser(namespaceHTMLElements=False)
+    root = spam.parse(body)
+    assert not spam.errors or print(effective_url, spam.errors, body)
     # check if the canonical link is present in the document
     assert (
         (url_in_doc := root.find("./head/link[@rel='canonical']").get("href"))

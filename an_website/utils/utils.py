@@ -26,7 +26,7 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import IO, Any, Literal, TypeVar, Union
+from typing import IO, Any, Literal, TypeVar, Union, cast
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
@@ -441,20 +441,23 @@ async def geoip(
 def geoip_fallback(ip: str, country: bool = False) -> None | dict[str, Any]:
     """Get GeoIP information without using Elasticsearch."""
     # pylint: disable=invalid-name
-    if not (spam := geolite2.lookup(ip)):
+    if not (info := geolite2.lookup(ip)):
         return None
 
-    info = spam.get_info_dict()
+    info_dict = info.get_info_dict()
 
-    continent_name = info.get("continent", {}).get("names", {}).get("en")
-    country_iso_code = info.get("country", {}).get("iso_code")
-    country_name = info.get("country", {}).get("names", {}).get("en")
+    continent_name = info_dict.get("continent", {}).get("names", {}).get("en")
+    country_iso_code = info_dict.get("country", {}).get("iso_code")
+    country_name = info_dict.get("country", {}).get("names", {}).get("en")
 
     data = {
         "continent_name": continent_name,
         "country_iso_code": country_iso_code,
         "country_name": country_name,
     }
+
+    if data["country_iso_code"]:
+        data["country_flag"] = country_code_to_flag(data["country_iso_code"])
 
     if country:
         for key, value in tuple(data.items()):
@@ -463,10 +466,10 @@ def geoip_fallback(ip: str, country: bool = False) -> None | dict[str, Any]:
 
         return data
 
-    latitude = info.get("location", {}).get("latitude")
-    longitude = info.get("location", {}).get("longitude")
+    latitude = info_dict.get("location", {}).get("latitude")
+    longitude = info_dict.get("location", {}).get("longitude")
     location = (latitude, longitude) if latitude and longitude else None
-    timezone = info.get("location", {}).get("time_zone")
+    timezone = info_dict.get("location", {}).get("time_zone")
 
     data.update({"location": location, "timezone": timezone})
 
@@ -504,6 +507,15 @@ def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
         blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest(),
         address.packed,
     )
+
+
+def is_in_european_union(ip: str) -> None | bool:
+    """Return whether or not the specified address is in the EU."""
+    # pylint: disable=invalid-name
+    if not (info := geolite2.lookup(ip)):
+        return None
+
+    return cast(bool, info.get_info_dict().get("is_in_european_union", False))
 
 
 def length_of_match(match: regex.Match[str]) -> int:

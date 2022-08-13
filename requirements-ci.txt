@@ -36,7 +36,7 @@ packaging==21.3
 pathspec==0.9.0
 pbr==5.10.0
 pep8-naming==0.13.1
-pipenv==2022.8.5
+pipenv==2022.8.13
 platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.20.0
@@ -64,7 +64,7 @@ snowballstemmer==2.2.0
 stevedore==4.0.0
 toml==0.10.2
 tomli==2.0.1
-tomlkit==0.11.3
+tomlkit==0.11.4
 tornado==6.2
 types-beautifulsoup4==4.11.4
 types-editdistance==0.6.3

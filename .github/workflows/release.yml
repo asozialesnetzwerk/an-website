@@ -21,16 +21,16 @@ jobs:
         with:
           python-version: "3.10"
       - name: Fetch tags
-        if: github.event_name == 'schedule'
+        if: github.event_name == "schedule"
         run: git fetch --tags
       - name: Check if already released
-        if: github.event_name == 'schedule'
+        if: github.event_name == "schedule"
         run: test -z $(git tag --list "v*" --points-at)
       - name: Create tag
-        if: github.event_name == 'schedule'
+        if: github.event_name == "schedule"
         run: git tag $(python -c "from time import strftime, gmtime; print(strftime('v%y.%m.%d', gmtime()))")
       - name: Push tag
-        if: github.event_name == 'schedule'
+        if: github.event_name == "schedule"
         run: git push --tags
       - name: Install build frontend
         run: pip install "build>=0.8,<2"
@@ -190,7 +190,7 @@ jobs:
     name: Deploy website
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'schedule'
+    if: github.event_name == "schedule"
     needs:
       - build
       - tests
@@ -208,7 +208,7 @@ jobs:
     name: GitHub Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == 'schedule'
+    if: github.event_name == "schedule"
     needs:
       - deploy
       - hashes
