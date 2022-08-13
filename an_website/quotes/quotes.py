@@ -22,8 +22,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from asyncio import AbstractEventLoop, Future
-from collections.abc import Awaitable
+from asyncio import AbstractEventLoop, Future, Task
 from typing import Any, Literal, cast
 
 import regex
@@ -162,13 +161,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
     FUTURES: set[Future[Any]] = set()
 
-    awaitables: list[Awaitable[Any]]
     loop: AbstractEventLoop
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the base request handler."""
-        super().__init__(*args, **kwargs)
-        self.awaitables = []
 
     def get_next_id(self, rating_filter: None | str = None) -> tuple[int, int]:
         """Get the id of the next quote."""
@@ -225,19 +218,25 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """
         Request the data for the next quote, to improve performance.
 
-        This is done to ensure that the data is always up to date.
+        This is done to ensure that the data is always up-to-date.
         """
-        if not self.awaitables:
-            quote_id, author_id = self.get_next_id()
-            task = self.loop.create_task(
-                get_wrong_quote(quote_id, author_id, use_cache=False)
-            )
-            self.FUTURES.add(task)
-            task.add_done_callback(self.FUTURES.discard)
-        for awaitable in self.awaitables:
-            future = asyncio.ensure_future(awaitable, loop=self.loop)
-            self.FUTURES.add(future)
-            future.add_done_callback(self.FUTURES.discard)
+        quote_id, author_id = self.get_next_id()
+        task = self.loop.create_task(
+            get_wrong_quote(quote_id, author_id, use_cache=False)
+        )
+        self.FUTURES.add(task)
+
+        def done_callback(_task: Task[WrongQuote]) -> None:
+            self.FUTURES.discard(_task)
+            if exc := _task.exception():
+                logger.error(
+                    "Failed to get quote %s-%s",
+                    quote_id,
+                    author_id,
+                    exc_info=(type(exc), exc, exc.__traceback__),
+                )
+
+        task.add_done_callback(done_callback)
 
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
