@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A 😎 chat."""
+"""A 🆒 chat."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
             (r"/websocket/emoji-chat", ChatWebSocketHandler),
         ),
         name="Emoji-Chat",
-        description="Ein 😎er Chat",
+        description="Ein 🆒er Chat",
         path="/emoji-chat",
         keywords=("Emoji Chat",),
     )

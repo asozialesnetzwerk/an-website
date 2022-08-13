@@ -18,7 +18,7 @@ from __future__ import annotations
 from ipaddress import ip_address
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, emoji2html
+from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
@@ -69,20 +69,12 @@ class IP(HTMLRequestHandler):
                 text="IP-Adresse konnte nicht ermittelt werden.",
             )
 
-        flag = (
-            "🔁"
-            if ip_address(self.request.remote_ip).is_loopback
-            else (await self.geoip() or {}).get("country_flag") or "❔"
-        )
-
         await self.render(
-            "pages/empty.html",
-            text=(
-                "Deine IP-Adresse ist "
-                + self.request.remote_ip
-                + " "
-                + emoji2html(flag)
-                if self.get_openmoji() == "img"
-                else flag
-            ).strip(),
+            "pages/ip.html",
+            ip=self.request.remote_ip,
+            flag=(
+                "🔁"
+                if ip_address(self.request.remote_ip).is_loopback
+                else (await self.geoip() or {}).get("country_flag") or "❔"
+            ),
         )
