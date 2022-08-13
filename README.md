@@ -18,6 +18,7 @@
 You need:
 - Git (obviously)
 - CPython 3.10+
+- gcc (to install editdistance)
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 
 ### How to check
@@ -32,6 +33,7 @@ You need:
 - CPython 3.10+
 - Supervisord
 - Redis 6.2
+- gcc (to install editdistance)
 - redis-cell (for ratelimits)
 - Elasticsearch 7.17 or 8.x
 - UwUFetch
@@ -39,7 +41,8 @@ You need:
 How:
 - [Create a virtual environment](https://docs.python.org/3/library/venv.html)
 - Install an-website in the venv (`pip install an-website`)
-- ??? (TODO: finish instructions)
+- create a `config.ini` and configure it
+- run it (`an-website` / `python -m an_website`) with supervisord
 
 ### FreeBSD
 Should work similar to Linux.

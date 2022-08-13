@@ -6,7 +6,6 @@
 
 {% block body %}
     {% whitespace all %}
-    {% autoescape xhtml_escape %}
 
     {% if isinstance(ansi, list) %}
 <div>
@@ -19,10 +18,7 @@
     {% end %}
 
     {% whitespace oneline %}
-    {% autoescape None %}
-
     <br>
-
     <div style="display: block">
         Powered by: <a href="{{fix_url(powered_by)}}">{{powered_by_name}}</a>
     </div>
