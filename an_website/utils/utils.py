@@ -559,7 +559,7 @@ def parse_bumpscosity(value: str | int | None) -> BumpscosityValue:
             value = int(value, base=0)
     if value in BUMPSCOSITY_VALUES:
         return cast(BumpscosityValue, value)
-    return random.Random(value).choice(BUMPSCOSITY_VALUES)
+    return random.Random(repr(value)).choice(BUMPSCOSITY_VALUES)
 
 
 def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:

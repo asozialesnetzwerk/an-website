@@ -3,11 +3,13 @@
 
 function createBumpscositySlider() {
     const select = elById("bumpscosity-select");
+
+    if (!select) return;
+
     select.classList.add("hidden");
     const possibleLevels = [];
-    for (let node of select.options) {
+    for (let node of select.options)
         possibleLevels.push(parseInt(node.value));
-    }
 
     const startLevel = parseInt(select.value);
 
@@ -30,9 +32,7 @@ function createBumpscositySlider() {
         currentValueDiv.style.left = (1 + (98 * rangeSlider.value / (select.options.length - 1))) + "%";
     };
 
-    rangeSlider.onpointerleave = () => {
-        currentValueDiv.classList.remove("show-tooltip");
-    };
+    rangeSlider.onpointerleave = () => currentValueDiv.classList.remove("show-tooltip");
 
     rangeSlider.onchange = (e) => {
         let sliderVal = parseInt(rangeSlider.value);

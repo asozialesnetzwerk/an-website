@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import contextlib
 from base64 import b64encode
 
 from ..utils.request_handler import HTMLRequestHandler
@@ -23,7 +24,9 @@ from ..utils.utils import (
     THEMES,
     ModuleInfo,
     bool_to_str,
+    parse_bumpscosity,
     parse_openmoji_arg,
+    str_to_bool,
 )
 
 
@@ -52,6 +55,7 @@ class SettingsPage(HTMLRequestHandler):
             return
         await self.render(  # nosec: B106
             "pages/settings.html",
+            advanced_settings=self.show_advanced_settings(),
             bumpscosity=self.get_bumpscosity(),
             bumpscosity_values=BUMPSCOSITY_VALUES,
             dynload=self.get_dynload(),
@@ -66,7 +70,8 @@ class SettingsPage(HTMLRequestHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the settings page."""
-        bumpscosity: int = self.get_bumpscosity()
+        advanced_settings = self.get_bool_argument("advanced_settings", False)
+        bumpscosity = parse_bumpscosity(self.get_argument("bumpscosity", ""))
         dynload: bool = self.get_bool_argument("dynload", False)
         no_3rd_party: bool = self.get_bool_argument(
             "no_3rd_party", self.get_no_3rd_party_default()
@@ -84,7 +89,9 @@ class SettingsPage(HTMLRequestHandler):
         if save_in_cookie:
             if access_token:
                 self.set_cookie("access_token", access_token)
-            self.set_cookie("bumpscosity", str(bumpscosity))
+            self.set_cookie("advanced_settings", bool_to_str(advanced_settings))
+            if self.get_argument("bumpscosity", ""):
+                self.set_cookie("bumpscosity", str(bumpscosity))
             self.set_cookie("dynload", bool_to_str(dynload))
             self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
             self.set_cookie("openmoji", openmoji if openmoji else "nope")
@@ -93,6 +100,7 @@ class SettingsPage(HTMLRequestHandler):
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 access_token=None,
+                advanced_settings=None,
                 bumpscosity=None,
                 dynload=None,
                 no_3rd_party=None,
@@ -104,6 +112,7 @@ class SettingsPage(HTMLRequestHandler):
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 access_token=access_token,
+                advanced_settings=advanced_settings,
                 bumpscosity=bumpscosity,
                 dynload=dynload,
                 no_3rd_party=no_3rd_party,
@@ -117,6 +126,7 @@ class SettingsPage(HTMLRequestHandler):
 
         await self.render(
             "pages/settings.html",
+            advanced_settings=self.show_advanced_settings(),
             bumpscosity=bumpscosity,
             bumpscosity_values=BUMPSCOSITY_VALUES,
             dynload=dynload,
@@ -129,3 +139,10 @@ class SettingsPage(HTMLRequestHandler):
             theme_name=theme,
             token=token,
         )
+
+    def show_advanced_settings(self) -> bool:
+        """Whether advanced settings should be shown."""
+        if arg := self.get_argument("advanced_settings", ""):
+            with contextlib.suppress(ValueError):
+                return str_to_bool(arg)
+        return str_to_bool(self.get_cookie("advanced_settings", ""), False)

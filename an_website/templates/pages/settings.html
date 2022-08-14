@@ -62,14 +62,26 @@
         </label>
 
         <label class="form-element">
-            Bumpscosity
-            <select name="bumpscosity" id="bumpscosity-select">
-                {% for _b in bumpscosity_values %}
-                    <option {% if _b == bumpscosity %}selected{% end %}
-                                value="{{_b}}">{{_b}}</option>
+            Aktiviere Einstellungen für Experten
+            <input type="checkbox"
+               name="advanced_settings"
+                {% if advanced_settings %}
+                   checked
                 {% end %}
-            </select>
+               value="sure">
         </label>
+
+        {% if advanced_settings %}
+            <label class="form-element">
+                Bumpscosity
+                <select name="bumpscosity" id="bumpscosity-select">
+                    {% for _b in bumpscosity_values %}
+                        <option {% if _b == bumpscosity %}selected{% end %}
+                                    value="{{_b}}">{{_b}}</option>
+                    {% end %}
+                </select>
+            </label>
+        {% end %}
 
         {% if show_token_input %}
             <label class="form-element">

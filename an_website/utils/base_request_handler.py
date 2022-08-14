@@ -223,13 +223,18 @@ class BaseRequestHandler(RequestHandler):
         path = url.path if new_path is None else new_path  # the path of the url
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
-                no_3rd_party=None, theme=None, dynload=None, openmoji=None
+                no_3rd_party=None,
+                theme=None,
+                dynload=None,
+                openmoji=None,
+                bumpscosity=None,
             )
         else:
             query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
             query_args.setdefault("theme", self.get_theme())
             query_args.setdefault("dynload", self.get_dynload())
             query_args.setdefault("openmoji", self.get_openmoji())
+            query_args.setdefault("bumpscosity", self.get_bumpscosity())
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
             if query_args["theme"] == self.get_saved_theme():
@@ -238,6 +243,8 @@ class BaseRequestHandler(RequestHandler):
                 query_args["dynload"] = None
             if query_args["openmoji"] == self.get_saved_openmoji():
                 query_args["openmoji"] = None
+            if query_args["bumpscosity"] == self.get_saved_bumpscosity():
+                query_args["bumpscosity"] = None
 
         return add_args_to_url(
             urlunsplit(

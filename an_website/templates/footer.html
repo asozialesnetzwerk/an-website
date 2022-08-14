@@ -69,6 +69,8 @@
         <span tooltip="Achtung, es ist keine Bumpscosity vorhanden!">{% raw emoji2html("⚠️") %}</span>
     {% elif bumpscosity == 1000 and now.microsecond % 2  %}
         <span tooltip="Achtung, die Bumpscosity ist erschreckend hoch!">{% raw emoji2html("⚠️") %}</span>
+    {% elif bumpscosity == 50 and now.microsecond % 2  %}
+        <span tooltip="Die Bumpscosity ist echt angenehm.">{% raw emoji2html("🤍") %}</span>
     {% else %}
         {% raw emoji2html("🖤") %}
     {% end %}
