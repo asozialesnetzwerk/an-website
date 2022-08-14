@@ -54,9 +54,9 @@
         <label class="form-element">
             Theme
             <select name="theme">
-                {% for _t in themes %}
-                    <option {% if _t == theme_name %}selected{% end %}
-                            value="{{_t}}">{{_t}}</option>
+                {% for _ in themes %}
+                    <option {% if _ == theme_name %}selected{% end %}
+                            value="{{_}}">{{_}}</option>
                 {% end %}
             </select>
         </label>
@@ -75,9 +75,9 @@
             <label class="form-element">
                 Bumpscosity
                 <select name="bumpscosity" id="bumpscosity-select">
-                    {% for _b in bumpscosity_values %}
-                        <option {% if _b == bumpscosity %}selected{% end %}
-                                    value="{{_b}}">{{_b}}</option>
+                    {% for _ in bumpscosity_values %}
+                        <option {% if _ == bumpscosity %}selected{% end %}
+                                    value="{{_}}">{{_}}</option>
                     {% end %}
                 </select>
             </label>

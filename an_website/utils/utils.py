@@ -44,6 +44,8 @@ from .. import STATIC_DIR
 
 T = TypeVar("T")
 
+TOptionalStr = TypeVar("TOptionalStr", None, str)
+
 # pylint: disable=consider-alternative-union-syntax
 Handler = Union[
     tuple[str, type[RequestHandler]],
@@ -54,6 +56,13 @@ Handler = Union[
 BumpscosityValue = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: tuple[BumpscosityValue, ...] = get_args(BumpscosityValue)
 OpenMojiValue = Literal[False, "img"]  # , "font"]
+
+IP_HASH_SALT = {
+    "date": datetime.utcnow().date(),
+    "hasher": blake3(
+        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
+    ),
+}
 
 SUS_PATHS = {
     "/-profiler/phpinfo",
@@ -265,9 +274,15 @@ def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
     )
 
 
-def anonymize_ip(address: str, *, ignore_invalid: bool = False) -> str:
+def anonymize_ip(
+    address: TOptionalStr, *, ignore_invalid: bool = False
+) -> TOptionalStr:
     """Anonymize an IP address."""
+    if address is None:
+        return None
+
     address = address.strip()
+
     try:
         version = ip_address(address).version
     except ValueError:
@@ -360,7 +375,7 @@ def emojify(string: str) -> str:
 
 
 async def geoip(
-    ip: str,  # pylint: disable=invalid-name
+    ip: None | str,  # pylint: disable=invalid-name
     database: str = "GeoLite2-City.mmdb",
     elasticsearch: None | AsyncElasticsearch = None,
     *,
@@ -369,6 +384,9 @@ async def geoip(
 ) -> None | dict[str, Any]:
     """Get GeoIP information."""
     # pylint: disable=too-complex
+    if not ip:
+        return None
+
     cache = caches.get(ip, {})  # pylint: disable=redefined-outer-name
     if database not in cache:
         if not elasticsearch:
@@ -433,10 +451,12 @@ async def geoip(
                     ip, country=database == "GeoLite2-City.mmdb"
                 )
             raise
+
         if "country_iso_code" in cache[database]:
             cache[database]["country_flag"] = country_code_to_flag(
                 cache[database]["country_iso_code"]
             )
+
         caches[ip] = cache
     return cache[database]
 
@@ -493,38 +513,51 @@ def get_themes() -> tuple[str, ...]:
     )
 
 
-def hash_bytes(*args: bytes, size: int = 32) -> str:
-    """Hash bytes with BLAKE3 and return the Base85 representation."""
-    hasher = blake3()
-    for spam in args:
-        hasher.update(spam)
-    digest: bytes = hasher.digest(size)
+def hash_bytes(*args: bytes, hasher: Any = None, size: int = 32) -> str:
+    """Hash bytes and return the Base85 representation."""
+    digest: bytes
+    if not hasher:
+        hasher = blake3()
+    for arg in args:
+        hasher.update(arg)
+    digest = (
+        hasher.digest(size)
+        if isinstance(hasher, blake3)
+        else hasher.digest()[:size]
+    )
     return b85encode(digest).decode("ascii")
 
 
-def hash_ip(address: str | IPv4Address | IPv6Address) -> str:
+def hash_ip(
+    address: None | str | IPv4Address | IPv6Address, size: int = 32
+) -> str:
     """Hash an IP address."""
-    if not isinstance(address, IPv4Address | IPv6Address):
+    if isinstance(address, str):
         address = ip_address(address)
+    if IP_HASH_SALT["date"] != (date := datetime.utcnow().date()):
+        IP_HASH_SALT["hasher"] = blake3(
+            blake3(date.isoformat().encode("ascii")).digest()
+        )
+        IP_HASH_SALT["date"] = date
     return hash_bytes(
-        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest(),
-        address.packed,
+        address.packed if address else b"",
+        hasher=IP_HASH_SALT["hasher"].copy(),
+        size=size,
     )
 
 
-def is_in_european_union(ip: str) -> None | bool:
+def is_in_european_union(ip: None | str) -> None | bool:
     """Return whether or not the specified address is in the EU."""
     # pylint: disable=invalid-name
-    if not (info := geolite2.lookup(ip)):
+    if not (ip and (info := geolite2.lookup(ip))):
         return None
 
     return cast(bool, info.get_info_dict().get("is_in_european_union", False))
 
 
-def length_of_match(match: regex.Match[str]) -> int:
+def length_of_match(match: regex.Match[Any]) -> int:
     """Calculate the length of the regex match and return it."""
-    span = match.span()
-    return span[1] - span[0]
+    return match.end() - match.start()
 
 
 def n_from_set(set_: set[T] | frozenset[T], n: int) -> set[T]:

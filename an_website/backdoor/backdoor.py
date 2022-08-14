@@ -111,8 +111,6 @@ class Backdoor(APIRequestHandler):
 
     def get_protocol_version(self) -> int:
         """Get the protocol version for the response."""
-        if not self.request.headers.get("X-Pickle-Protocol"):
-            return cast(int, pickle.HIGHEST_PROTOCOL)
         try:  # pylint: disable=line-too-long
             return min(  # type: ignore[no-any-return]
                 int(
@@ -121,7 +119,7 @@ class Backdoor(APIRequestHandler):
                 pickle.HIGHEST_PROTOCOL,
             )
         except (TypeError, ValueError):
-            return cast(int, pickle.HIGHEST_PROTOCOL)
+            return 5
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""

@@ -38,8 +38,8 @@ lxml==4.9.1
 mpmath==1.2.1
 multidict==6.0.2; python_version >= '3.7'
 namedthreads==1.0
-numpy==1.23.1
-orjson==3.7.11
+numpy==1.23.2
+orjson==3.7.12
 packaging==21.3; python_version >= '3.6'
 pillow==9.2.0
 pycares==4.2.2

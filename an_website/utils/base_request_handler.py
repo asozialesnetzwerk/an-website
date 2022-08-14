@@ -19,6 +19,7 @@ This should only contain the BaseRequestHandler class.
 
 from __future__ import annotations
 
+import contextlib
 import inspect
 import logging
 import random
@@ -263,13 +264,17 @@ class BaseRequestHandler(RequestHandler):
         self,
         ip: None | str = None,  # pylint: disable=invalid-name
         database: str = geoip.__defaults__[0],  # type: ignore
+        *,
+        allow_fallback: bool = True,
     ) -> Coroutine[None, None, None | dict[str, Any]]:
         """Get GeoIP information."""
         if not ip:
-            ip = str(self.request.remote_ip)
+            ip = self.request.remote_ip
         if not EVENT_ELASTICSEARCH.is_set():
             return geoip(ip, database)
-        return geoip(ip, database, self.elasticsearch)
+        return geoip(
+            ip, database, self.elasticsearch, allow_fallback=allow_fallback
+        )
 
     @classmethod
     def get_allowed_methods(cls) -> list[str]:
@@ -374,7 +379,6 @@ class BaseRequestHandler(RequestHandler):
         min_: None | int = None,
     ) -> int:
         """Get an argument parsed as integer."""
-        value: int
         if default is None:
             str_value = self.get_argument(name)
             try:
@@ -661,7 +665,7 @@ class BaseRequestHandler(RequestHandler):
                 logger.warning(
                     "Unauthorized access to %s from %s",
                     self.request.path,
-                    anonymize_ip(str(self.request.remote_ip)),
+                    anonymize_ip(self.request.remote_ip),
                 )
                 raise HTTPError(401 if is_authorized is None else 403)
 
@@ -949,5 +953,18 @@ class BaseRequestHandler(RequestHandler):
 
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
+
+        if self.now.date() == date(self.now.year, 4, 27):
+            if isinstance(chunk, bytes):
+                with contextlib.suppress(UnicodeDecodeError):
+                    chunk = chunk.decode("utf-8")
+            if isinstance(chunk, str):
+                chunk = regex.sub(
+                    r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",
+                    lambda match: "Stanley"
+                    if random.Random(match[0]).randrange(5) == self.now.year % 5
+                    else match[0],
+                    chunk,
+                )
 
         super().write(chunk)

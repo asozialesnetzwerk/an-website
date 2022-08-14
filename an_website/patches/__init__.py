@@ -118,7 +118,7 @@ def anonymize_logs() -> None:
             self.request.remote_ip
             if self.request.path == "/robots.txt"
             or self.request.path.lower() in SUS_PATHS
-            else anonymize_ip(str(self.request.remote_ip), ignore_invalid=True),
+            else anonymize_ip(self.request.remote_ip, ignore_invalid=True),
         )
     )
     tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore[assignment]
