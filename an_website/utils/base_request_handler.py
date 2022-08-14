@@ -289,7 +289,9 @@ class BaseRequestHandler(RequestHandler):
 
     def get_bumpscosity(self) -> BumpscosityValue:
         """Get the saved value for the bumpscosity."""
-        return parse_bumpscosity(self.get_argument("bumpscosity", ""))
+        if spam := self.get_argument("bumpscosity", ""):
+            return parse_bumpscosity(spam)
+        return self.get_saved_bumpscosity()
 
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
