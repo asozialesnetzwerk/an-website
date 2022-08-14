@@ -147,7 +147,7 @@ jobs:
         shell: python
         run: |
           from time import strftime, gmtime
-          if "${{ github.event_name }}" == "schedule":
+          if "${{ github.event_name }}" == 'schedule':
             print(f"::set-output name=TAG_NAME::{strftime('v%y.%m.%d', gmtime())}")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             print("::set-output name=TAG_NAME::${{ github.ref_name }}")
@@ -190,7 +190,7 @@ jobs:
     name: Deploy website
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == "schedule"
+    if: github.event_name == 'schedule'
     needs:
       - build
       - tests
@@ -208,7 +208,7 @@ jobs:
     name: GitHub Pages
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event_name == "schedule"
+    if: github.event_name == 'schedule'
     needs:
       - deploy
       - hashes

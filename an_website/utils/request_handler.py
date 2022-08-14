@@ -181,6 +181,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         namespace.update(
             ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
             as_html=self.content_type == "text/html",
+            bumpscosity=self.get_bumpscosity(),
             c=self.settings.get("TESTING")
             or self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),

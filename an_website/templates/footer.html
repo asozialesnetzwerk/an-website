@@ -65,6 +65,10 @@
         {% raw emoji2html("🎄") %}
     {% elif now.day == 13 and now.weekday() == 4 %}
         {% raw emoji2html("🐈‍⬛") %}
+    {% elif not bumpscosity and now.microsecond % 2 %}
+        <span tooltip="Achtung, es ist keine Bumpscosity vorhanden!">{% raw emoji2html("⚠️") %}</span>
+    {% elif bumpscosity == 1000 and now.microsecond % 2  %}
+        <span tooltip="Achtung, die Bumpscosity ist erschreckend hoch!">{% raw emoji2html("⚠️") %}</span>
     {% else %}
         {% raw emoji2html("🖤") %}
     {% end %}

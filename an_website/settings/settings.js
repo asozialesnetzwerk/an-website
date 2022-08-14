@@ -14,7 +14,6 @@ function createBumpscositySlider() {
     const currentValueDiv = document.createElement("div");
     currentValueDiv.setAttribute("tooltip", startLevel);
     currentValueDiv.style.position = "absolute";
-    currentValueDiv.style.top = "1.1rem";
     currentValueDiv.style.transform = "translateX(-50%)";
 
     const rangeSlider = document.createElement("input");
@@ -39,14 +38,13 @@ function createBumpscositySlider() {
         let sliderVal = parseInt(rangeSlider.value);
         let promptStart = `Willst du die Bumpscosity wirklich auf ${possibleLevels[sliderVal]} setzen? `;
         if (sliderVal === select.options.length - 1) {
-            if (!confirm(promptStart + "Ein so hoher Wert kann unterschiedlichste Probleme verursachen."))
+            if (!confirm(promptStart + "Ein so hoher Wert kann katastrophale Folgen haben."))
                 sliderVal--;
         } else if (sliderVal === 0) {
-            if (!confirm(promptStart + "Ein so niedriger Wert kann großes Unbehagen verursachen."))
+            if (!confirm(promptStart + "Fehlende Bumpscosity kann großes Unbehagen verursachen."))
                 sliderVal++;
-        } else {
-            return;
-        }
+        } else return;
+
         if (sliderVal !== parseInt(rangeSlider.value)) {
             rangeSlider.value = sliderVal;
             select.value = possibleLevels[rangeSlider.value];
