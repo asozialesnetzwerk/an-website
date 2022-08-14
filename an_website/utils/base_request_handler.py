@@ -53,6 +53,7 @@ from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
 from .static_file_handling import FILE_HASHES_DICT
 from .utils import (
     THEMES,
+    BumpscosityValue,
     ModuleInfo,
     OpenMojiValue,
     Permission,
@@ -61,6 +62,7 @@ from .utils import (
     bool_to_str,
     geoip,
     hash_bytes,
+    parse_bumpscosity,
     parse_openmoji_arg,
     ratelimit,
     str_to_bool,
@@ -285,6 +287,10 @@ class BaseRequestHandler(RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a boolean") from err
 
+    def get_bumpscosity(self) -> BumpscosityValue:
+        """Get the saved value for the bumpscosity."""
+        return parse_bumpscosity(self.get_argument("bumpscosity", ""))
+
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
         if "random" not in (theme := self.get_theme()):
@@ -363,14 +369,16 @@ class BaseRequestHandler(RequestHandler):
         if default is None:
             str_value = self.get_argument(name)
             try:
-                value = int(str_value)
+                value = int(str_value, base=0)
             except ValueError as err:
                 raise HTTPError(400, f"{str_value} is not an integer") from err
-        else:
+        elif self.get_argument(name, ""):
             try:
-                value = int(self.get_argument(name, None) or default)
+                value = int(self.get_argument(name), base=0)
             except ValueError:
                 value = default
+        else:
+            value = default
 
         if max_ is not None:
             value = min(max_, value)
@@ -409,6 +417,10 @@ class BaseRequestHandler(RequestHandler):
             return endpoint
 
         return f"{self.request.protocol}://{self.request.host}{endpoint}"
+
+    def get_saved_bumpscosity(self) -> BumpscosityValue:
+        """Get the saved value for the bumpscosity."""
+        return parse_bumpscosity(self.get_cookie("bumpscosity", ""))
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""
@@ -816,8 +828,8 @@ class BaseRequestHandler(RequestHandler):
             "style-src 'self' 'unsafe-inline';"
             "img-src 'self' https://img.zeit.de https://github.asozial.org;"
             "frame-ancestors 'self';"
-            "sandbox allow-downloads allow-forms allow-popups allow-scripts"
-            " allow-top-navigation-by-user-activation allow-same-origin;"
+            "sandbox allow-downloads allow-same-origin allow-popups allow-scripts"
+            " allow-top-navigation-by-user-activation allow-forms  allow-modals;"
             "report-to default;"
             + (
                 f"report-uri {self.get_reporting_api_endpoint()};"

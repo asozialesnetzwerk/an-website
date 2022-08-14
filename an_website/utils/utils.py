@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import os
 import random
 import time
@@ -26,7 +27,7 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import IO, Any, Literal, TypeVar, Union, cast
+from typing import IO, Any, Literal, TypeVar, Union, cast, get_args
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
@@ -50,6 +51,8 @@ Handler = Union[
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
+BumpscosityValue = Literal[0, 1, 12, 50, 76, 100, 1000]
+BUMPSCOSITY_VALUES: tuple[BumpscosityValue, ...] = get_args(BumpscosityValue)
 OpenMojiValue = Literal[False, "img"]  # , "font"]
 
 SUS_PATHS = {
@@ -547,6 +550,16 @@ def name_to_id(val: str) -> str:
 def normalized_levenshtein(string1: str, string2: str) -> float:
     """Calculate the normalized Levenshtein distance between two strings."""
     return float(distance(string1, string2)) / max(len(string1), len(string2))
+
+
+def parse_bumpscosity(value: str | int | None) -> BumpscosityValue:
+    """Parse a string to a valid bumpscosity value."""
+    if isinstance(value, str):
+        with contextlib.suppress(ValueError):
+            value = int(value, base=0)
+    if value in BUMPSCOSITY_VALUES:
+        return cast(BumpscosityValue, value)
+    return random.Random(value).choice(BUMPSCOSITY_VALUES)
 
 
 def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:

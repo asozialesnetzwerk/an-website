@@ -3,6 +3,7 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('style/form.css')}}">
+    <script defer src="{{fix_static('js/settings.js')}}"></script>
 {% end %}
 
 {% block body %}
@@ -56,6 +57,16 @@
                 {% for _t in themes %}
                     <option {% if _t == theme_name %}selected{% end %}
                             value="{{_t}}">{{_t}}</option>
+                {% end %}
+            </select>
+        </label>
+
+        <label class="form-element">
+            Bumpscosity
+            <select name="bumpscosity" id="bumpscosity-select">
+                {% for _b in bumpscosity_values %}
+                    <option {% if _b == bumpscosity %}selected{% end %}
+                                value="{{_b}}">{{_b}}</option>
                 {% end %}
             </select>
         </label>
