@@ -24,9 +24,9 @@ function dynLoadOnData(data, onpopstate) {
             return;
         }
         history.pushState(
-            {"data": data, "url": url, "stateType": "dynLoad"},
+            { "data": data, "url": url, "stateType": "dynLoad" },
             data["title"],
-            url
+            url,
         );
         w.lastLocation = url;
     }
@@ -71,7 +71,7 @@ function dynLoadOnData(data, onpopstate) {
     const titleElement = elById("title");
     titleElement.setAttribute(
         "short_title",
-        data["short_title"] || data["title"]
+        data["short_title"] || data["title"],
     );
     titleElement.innerText = data["title"];
 
@@ -81,13 +81,15 @@ function dynLoadOnData(data, onpopstate) {
 }
 
 function dynLoadReplaceAnchors() {
-    for (const anchor of d.getElementsByTagName("A"))
+    for (const anchor of d.getElementsByTagName("A")) {
         dynLoadReplaceHrefOnAnchor(anchor);
+    }
 }
 
 function dynLoadReplaceHrefOnAnchor(anchor) {
-    if (anchor.hasAttribute("no-dynload"))
+    if (anchor.hasAttribute("no-dynload")) {
         return;
+    }
 
     dynLoadFixHref(anchor);
 }
@@ -97,34 +99,39 @@ function dynLoadFixHref(anchor) {
 
     const href = (
         anchor.href.startsWith("/")
-        ? (w.location.origin + anchor.href)
-        : anchor.href
+            ? (w.location.origin + anchor.href)
+            : anchor.href
     ).trim();
 
     const hrefWithoutQuery = href.split("?")[0];
     if (
         // link is to different domain
-        !href.startsWith(w.location.origin)
+        !href.startsWith(w.location.origin) ||
         // link is to file, not html page
-        || (
-            hrefWithoutQuery.split("/").pop().includes(".")
+        (
+            hrefWithoutQuery.split("/").pop().includes(".") &&
             // urls to redirect page are html pages
-            && hrefWithoutQuery !== (w.location.origin + "/redirect")
-        )
+            hrefWithoutQuery !== (w.location.origin + "/redirect")
+        ) ||
         // link is to /chat, which redirects to another page
-        || hrefWithoutQuery === (w.location.origin + "/chat")
-    ) return;
+        hrefWithoutQuery === (w.location.origin + "/chat")
+    ) {
+        return;
+    }
 
-    if ( // is url to the same page, but with hash
-        href.startsWith("#")
-        || href.startsWith(w.location.href.split("#")[0] + "#")
-    ) return;
+    if (
+        // is url to the same page, but with hash
+        href.startsWith("#") ||
+        href.startsWith(w.location.href.split("#")[0] + "#")
+    ) {
+        return;
+    }
 
     // TODO: this broken because CSP
     anchor.onclick = (e) => {
         dynLoad(href);
         e.preventDefault();
-    }
+    };
 }
 
 function dynLoad(url) {
@@ -134,15 +141,15 @@ function dynLoad(url) {
             "data": w.urlData,
             "url": w.location.href,
             "scrollPos": [
-                d.documentElement.scrollLeft
-                || d.body.scrollLeft,
-                d.documentElement.scrollTop
-                || d.body.scrollTop
+                d.documentElement.scrollLeft ||
+                d.body.scrollLeft,
+                d.documentElement.scrollTop ||
+                d.body.scrollTop,
             ],
-            "stateType": "dynLoad"
+            "stateType": "dynLoad",
         },
         d.title,
-        w.location.href
+        w.location.href,
     );
     dynLoadSwitchToURL(url);
 }
@@ -154,7 +161,7 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
         return;
     }
     bodyDiv.prepend(
-        "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu."
+        "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     get(
         url,
@@ -167,7 +174,7 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
             } else {
                 w.location.href = url;
             }
-        }
+        },
     );
 }
 
@@ -177,13 +184,14 @@ function dynLoadOnPopState(event) {
         if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
             // when the data did not get handled properly
             dynLoadSwitchToURL(
-                event.state["url"] || w.location.href, true
+                event.state["url"] || w.location.href,
+                true,
             );
         }
         if (event.state["scrollPos"]) {
             w.scrollTo(
                 event.state["scrollPos"][0],
-                event.state["scrollPos"][1]
+                event.state["scrollPos"][1],
             );
             return;
         }

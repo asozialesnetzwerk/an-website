@@ -11,11 +11,11 @@ function startQuotes() {
     const nextQuoteId = [nextButton.getAttribute("quote-id")];
     const params = w.location.search;
 
-
     const keys = (() => {
-        let k = new URLSearchParams(params).get("keys");
-        if (!(k && k.length))
+        const k = new URLSearchParams(params).get("keys");
+        if (!(k && k.length)) {
             return "WASD";
+        }
         // for vim-like set keys to khjl
         if (k.length === 4) {
             return k.toUpperCase();
@@ -23,11 +23,10 @@ function startQuotes() {
             alert("Invalid keys given, using default.");
             return "WASD";
         }
-    })();  // currently only letter keys are supported
-    elById("wasd").innerText = (
-        `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), `
-        + `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`
-    );
+    })(); // currently only letter keys are supported
+    elById("wasd").innerText =
+        `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
+        `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
     d.onkeydown = (event) => {
         switch (event.code) {
@@ -67,14 +66,14 @@ function startQuotes() {
     }
 
     function updateRating(rating) {
-        rating = rating.toString()
+        rating = rating.toString();
         ratingText.innerText = rating;
         if (["---", "???", "0"].includes(rating)) {
             ratingImageContainer.innerHTML = "";
             return;
         }
         const ratingNum = Number.parseInt(rating);
-        const ratingImg = d.createElement("div")
+        const ratingImg = d.createElement("div");
         ratingImg.className = "rating-img" + (
             ratingNum > 0 ? " witzig" : " nicht-witzig"
         );
@@ -89,11 +88,11 @@ function startQuotes() {
             if (vote === btn_vote) {
                 // the vote of the button is active
                 btn.setAttribute("voted", btn_vote_str);
-                btn.value = "0";  // if pressed again reset the vote
+                btn.value = "0"; // if pressed again reset the vote
             } else {
                 // the vote of the button isn't active
                 btn.removeAttribute("voted");
-                btn.value = btn_vote_str;  // if pressed, vote with the button
+                btn.value = btn_vote_str; // if pressed, vote with the button
             }
         }
         // update the upvote button
@@ -104,10 +103,11 @@ function startQuotes() {
 
     function handleData(data) {
         if (data["status"]) {
-            error(data)
-            if (data["status"] in [429, 420])
+            error(data);
+            if (data["status"] in [429, 420]) {
                 // ratelimited
                 alert(data["reason"]);
+            }
         } else if (data && data["id"]) {
             updateQuoteId(data["id"]);
             nextQuoteId[0] = data["next"];
@@ -115,15 +115,17 @@ function startQuotes() {
             author.innerText = `- ${data["author"]}`;
             realAuthor.innerText = data["real_author"];
             realAuthor.href = fixHref(
-                `/zitate/info/a/${data["real_author_id"]}${params}`
+                `/zitate/info/a/${data["real_author_id"]}${params}`,
             );
             if (reportButton) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
-                    "subject", `Das falsche Zitat ${data["id"]} hat ein Problem`
+                    "subject",
+                    `Das falsche Zitat ${data["id"]} hat ein Problem`,
                 );
                 reportHrefParams.set(
-                    "message", `${quote.innerText} ${realAuthor.innerText}`
+                    "message",
+                    `${quote.innerText} ${realAuthor.innerText}`,
                 );
                 reportButton.href = fixHref(`/kontakt?${reportHrefParams}`);
             }
@@ -135,30 +137,32 @@ function startQuotes() {
 
     w.PopStateHandlers["quotes"] = (event) => (
         event.state && handleData(event.state)
-    )
-
-    nextButton.onclick = () => get(
-        `/api/zitate/${nextQuoteId[0]}`,
-        params,
-        (data) => {
-            if (!handleData(data)) return;
-
-            data["stateType"] = "quotes";
-            data["url"] = `/zitate/${data["id"]}${params}`;
-            w.history.pushState(
-                data,
-                "Falsche Zitate",
-                data["url"]
-            )
-            w.lastLocation = data["url"];
-        }
     );
 
-    const vote = (vote) => post(
-        `/api/zitate/${thisQuoteId[0]}`,
-        {"vote": vote},
-        (data) => handleData(data)
-    );
+    nextButton.onclick = () =>
+        get(
+            `/api/zitate/${nextQuoteId[0]}`,
+            params,
+            (data) => {
+                if (!handleData(data)) return;
+
+                data["stateType"] = "quotes";
+                data["url"] = `/zitate/${data["id"]}${params}`;
+                w.history.pushState(
+                    data,
+                    "Falsche Zitate",
+                    data["url"],
+                );
+                w.lastLocation = data["url"];
+            },
+        );
+
+    const vote = (vote) =>
+        post(
+            `/api/zitate/${thisQuoteId[0]}`,
+            { "vote": vote },
+            (data) => handleData(data),
+        );
 
     for (const voteButton of [upvoteButton, downvoteButton]) {
         voteButton.type = "button";
@@ -168,11 +172,13 @@ function startQuotes() {
             vote(voteButton.value);
             upvoteButton.disabled = false;
             downvoteButton.disabled = false;
-        }
+        };
     }
 }
 
-for (let autoSubmitEl of document.getElementsByClassName("auto-submit-element")) {
+for (
+    const autoSubmitEl of document.getElementsByClassName("auto-submit-element")
+) {
     autoSubmitEl.onchange = () => autoSubmitEl.form.submit();
 }
 

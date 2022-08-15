@@ -30,7 +30,7 @@ function hideSitePane() {
     d.onclick = (e) => belongsToSitePane(e.target) || hideSitePane();
 
     // swipe gestures (for phone users)
-    const startPos = {x: null, y: null};
+    const startPos = { x: null, y: null };
     d.ontouchstart = (e) => {
         // save start pos of touch
         startPos.x = e.touches[0].clientX;
@@ -40,7 +40,7 @@ function hideSitePane() {
         if (startPos.x === null || startPos.y === null) return;
         // calculate difference
         const diffX = startPos.x - e.touches[0].clientX;
-        const diffY = startPos.y -  e.touches[0].clientY;
+        const diffY = startPos.y - e.touches[0].clientY;
 
         // early return if just clicked, not swiped
         if (diffX === 0 && diffY === 0) return;
@@ -49,16 +49,17 @@ function hideSitePane() {
         startPos.x = null;
         startPos.y = null;
 
-        let minDiffX = Math.max(
+        const minDiffX = Math.max(
             12,
             0.01 * window.screen.width,
-            diffY * 1.5
+            diffY * 1.5,
         );
 
-        console.debug({diffX, minDiffX});
+        console.debug({ diffX, minDiffX });
 
-        if (Math.abs(diffX) >= minDiffX)
+        if (Math.abs(diffX) >= minDiffX) {
             diffX > 0 ? showSitePane() : hideSitePane();
+        }
     };
-})()
+})();
 // @license-end

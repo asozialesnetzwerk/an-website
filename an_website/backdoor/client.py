@@ -261,6 +261,8 @@ def send(
     body = code.encode("utf-8")
     if isinstance(url, str):
         url = urlsplit(url)
+    if not url.path:
+        url = url._replace(path="/api/backdoor")
     key = f"Bearer {b64encode(key.encode('utf-8')).decode('ascii')}"
     headers = {
         "Authorization": key,
@@ -274,7 +276,7 @@ def send(
     response = asyncio.run(
         request(
             "POST",
-            url._replace(path=f"{url.path}/api/backdoor/{mode}"),
+            url._replace(path=f"{url.path.removesuffix('/')}/{mode}"),
             headers,
             body,
             proxy_type=proxy_type,

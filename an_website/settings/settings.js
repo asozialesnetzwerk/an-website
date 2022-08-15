@@ -8,8 +8,9 @@ function createBumpscositySlider() {
 
     select.classList.add("hidden");
     const possibleLevels = [];
-    for (let node of select.options)
+    for (const node of select.options) {
         possibleLevels.push(parseInt(node.value));
+    }
 
     const startLevel = parseInt(select.value);
 
@@ -29,20 +30,36 @@ function createBumpscositySlider() {
         select.value = value;
         currentValueDiv.setAttribute("tooltip", value);
         currentValueDiv.classList.add("show-tooltip");
-        currentValueDiv.style.left = (1 + (98 * rangeSlider.value / (select.options.length - 1))) + "%";
+        currentValueDiv.style.left =
+            (1 + (98 * rangeSlider.value / (select.options.length - 1))) + "%";
     };
 
-    rangeSlider.onpointerleave = () => currentValueDiv.classList.remove("show-tooltip");
+    rangeSlider.onpointerleave = () =>
+        currentValueDiv.classList.remove("show-tooltip");
 
-    rangeSlider.onchange = (e) => {
+    rangeSlider.onchange = (_e) => {
         let sliderVal = parseInt(rangeSlider.value);
-        let promptStart = `Willst du die Bumpscosity wirklich auf ${possibleLevels[sliderVal]} setzen? `;
+        const promptStart = `Willst du die Bumpscosity wirklich auf ${
+            possibleLevels[sliderVal]
+        } setzen? `;
         if (sliderVal === select.options.length - 1) {
-            if (!confirm(promptStart + "Ein so hoher Wert kann katastrophale Folgen haben."))
+            if (
+                !confirm(
+                    promptStart +
+                        "Ein so hoher Wert kann katastrophale Folgen haben.",
+                )
+            ) {
                 sliderVal--;
+            }
         } else if (sliderVal === 0) {
-            if (!confirm(promptStart + "Fehlende Bumpscosity kann großes Unbehagen verursachen."))
+            if (
+                !confirm(
+                    promptStart +
+                        "Fehlende Bumpscosity kann großes Unbehagen verursachen.",
+                )
+            ) {
                 sliderVal++;
+            }
         } else return;
 
         if (sliderVal !== parseInt(rangeSlider.value)) {

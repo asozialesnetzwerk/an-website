@@ -8,36 +8,39 @@ const error = console.error;
 
 w.lastLocation = String(w.location);
 
+// deno-lint-ignore no-unused-vars
 function post(
     url,
     params = {},
     ondata = log,
-    onerror = error
+    onerror = error,
 ) {
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
         headers: {
-            "Accept": "application/json", "Content-Type": "application/json"
-        }
-    }).then(response => response.json()).catch(onerror)
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+    }).then((response) => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
 
+// deno-lint-ignore no-unused-vars
 function get(
     url,
     params = {},
     ondata = log,
-    onerror = error
+    onerror = error,
 ) {
-    if (params) url += "?" + (new URLSearchParams(params)).toString()
+    if (params) url += "?" + (new URLSearchParams(params)).toString();
     fetch(
         url,
         {
             method: "GET",
-            headers: {"Accept": "application/json"}
-        }
-    ).then(response => response.json()).catch(onerror)
+            headers: { "Accept": "application/json" },
+        },
+    ).then((response) => response.json()).catch(onerror)
         .then(ondata).catch(onerror);
 }
 
@@ -47,26 +50,28 @@ w.PopStateHandlers = {
         w.lastLocation === state["origin"] || w.location.reload();
     },
     // always reload the location if URLParamChange
-    "URLParamChange": (s) => w.location.reload()
+    "URLParamChange": (_s) => w.location.reload(),
 };
 
+// deno-lint-ignore no-unused-vars
 function setURLParam(
     param,
     value,
     state,
     stateType = "URLParamChange",
-    push = true
+    push = true,
 ) {
     //log("setURLParam", param, value, state, onpopstate);
     const urlParams = new URLSearchParams(w.location.search);
     urlParams.set(param, value);
-    const newUrl = `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
+    const newUrl =
+        `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
     //log("newUrl", newUrl);
     state["stateType"] = stateType;
     if (push && newUrl !== w.location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
-        history.replaceState(state, newUrl, newUrl)
+        history.replaceState(state, newUrl, newUrl);
     }
     w.lastLocation = w.location.href;
     return newUrl;
@@ -79,8 +84,8 @@ function scrollToId() {
     w.scrollBy(
         0,
         el.getBoundingClientRect().top - Math.floor(
-            parseFloat(getComputedStyle(elById("header")).height)
-        )
+            parseFloat(getComputedStyle(elById("header")).height),
+        ),
     );
 }
 // scroll after few ms so the scroll is right on page load
@@ -89,8 +94,8 @@ w.onhashchange = scrollToId;
 
 w.onpopstate = (event) => {
     if (
-        w.lastLocation.split("#")[0]
-        === w.location.href.split("#")[0]
+        w.lastLocation.split("#")[0] ===
+            w.location.href.split("#")[0]
     ) {
         // Only hash changed
         w.lastLocation = w.location.href;
@@ -98,9 +103,9 @@ w.onpopstate = (event) => {
         return;
     }
     if (
-        event.state
-        && event.state["stateType"]
-        && w.PopStateHandlers[event.state["stateType"]]
+        event.state &&
+        event.state["stateType"] &&
+        w.PopStateHandlers[event.state["stateType"]]
     ) {
         w.PopStateHandlers[event.state["stateType"]](event);
         w.lastLocation = w.location.href;
@@ -111,11 +116,13 @@ w.onpopstate = (event) => {
     error("Couldn't handle state. ", event.state);
     w.lastLocation = w.location.href;
     w.location.reload();
-}
+};
 
+// deno-lint-ignore no-unused-vars
 function fixHref(href) {
-    if (w.dynLoadGetFixedHref)
+    if (w.dynLoadGetFixedHref) {
         return w.dynLoadGetFixedHref(href);
+    }
     // if the function doesn't exist don't change anything
     return href;
 }

@@ -10,12 +10,11 @@
         for (const result of results) {
             const resultElement = d.createElement("li");
             resultElement.setAttribute(
-                "score", String(result["score"])
+                "score",
+                String(result["score"]),
             );
-            resultElement.innerHTML = (
-                `<a href='${fixHref(result.url)}'>`
-                + `${result.title}</a> ${result.description}`
-            );
+            resultElement.innerHTML = `<a href='${fixHref(result.url)}'>` +
+                `${result.title}</a> ${result.description}`;
             resultsList.appendChild(resultElement);
         }
     }
@@ -23,7 +22,7 @@
     w.PopStateHandlers["search"] = (event) => {
         searchInput.value = event.state["query"];
         displayResults(event.state["results"]);
-    }
+    };
 
     searchForm.onsubmit = (e) => {
         e.preventDefault();
@@ -37,13 +36,13 @@
                     searchInput.value,
                     {
                         "query": searchInput.value,
-                        "results": data
+                        "results": data,
                     },
                     "search",
-                    true
+                    true,
                 );
-            }
+            },
         );
-    }
+    };
 })();
 // @license-end

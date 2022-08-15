@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from urllib.parse import urlsplit
 
+from .. import pytest_is_running
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -60,7 +61,10 @@ class RedirectPage(HTMLRequestHandler):
         send_referrer = False
 
         if domain := urlsplit(redirect_url).hostname:
-            if domain.rsplit(".", 2)[-2:] == ["asozial", "org"]:
+            if (
+                domain.rsplit(".", 2)[-2:] == ["asozial", "org"]
+                and not pytest_is_running()
+            ):
                 return self.redirect(redirect_url)
 
             send_referrer = domain.removeprefix("www.") in {

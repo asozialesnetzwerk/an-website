@@ -31,7 +31,7 @@ from typing import Any, cast
 import dill as pickle  # type: ignore[import]  # nosec: B403
 from tornado.web import HTTPError
 
-from .. import EVENT_REDIS, EVENT_SHUTDOWN
+from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
 
@@ -77,9 +77,9 @@ class Backdoor(APIRequestHandler):
         if not (EVENT_REDIS.is_set() and session_id in self.sessions):
             return False
         session: dict[str, Any] = self.sessions[session_id].copy()
-        session["self"] = None
-        session["app"] = None
-        session["settings"] = None
+        session.pop("self", None)
+        session.pop("app", None)
+        session.pop("settings", None)
         for key, value in tuple(session.items()):
             try:
                 session[key] = pickletools.optimize(
@@ -156,7 +156,7 @@ class Backdoor(APIRequestHandler):
                     "__builtins__": __builtins__,
                     "__name__": "this",
                 }
-                if self.settings.get("TESTING"):
+                if pytest_is_running():
                     session["session_id"] = session_id
             self.sessions[session_id] = session
         return self.update_session(session)

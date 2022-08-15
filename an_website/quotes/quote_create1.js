@@ -2,9 +2,10 @@
 "use strict";
 (() => {
     const realAuthors = {};
-    for (let child of elById("quote-list").children) {
+    for (const child of elById("quote-list").children) {
         // put the quotes with their authors into an object
-        realAuthors[child.value.toLowerCase()] = child.attributes.getNamedItem("data-author").value;
+        realAuthors[child.value.toLowerCase()] =
+            child.attributes.getNamedItem("data-author").value;
     }
 
     const quoteInput = elById("quote-input");
@@ -12,8 +13,8 @@
     quoteInput.oninput = () => {
         const author = realAuthors[quoteInput.value.toLowerCase()];
         // when real author is found disable input and set the value
-        realAuthorInput.disabled = !!author;  // !! ≙ check of truthiness
+        realAuthorInput.disabled = !!author; // !! ≙ check of truthiness
         if (author) realAuthorInput.value = author;
-    }
+    };
 })();
 // @license-end

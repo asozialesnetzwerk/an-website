@@ -210,13 +210,13 @@ async def test_request_handlers(fetch: FetchCallable) -> None:
     assert response.code == 200
     for theme in ("default", "blue", "random", "random-dark"):
         assert_valid_html_response(await fetch(f"/?theme={theme}"))
-    for _b1, _b2 in (("sure", "true"), ("nope", "false")):
-        response = await check_html_page(fetch, f"/?no_3rd_party={_b1}")
+    for bool1, bool2 in (("sure", "true"), ("nope", "false")):
+        response = await check_html_page(fetch, f"/?no_3rd_party={bool1}")
         body = response.body.decode()
-        response = await check_html_page(fetch, f"/?no_3rd_party={_b2}")
+        response = await check_html_page(fetch, f"/?no_3rd_party={bool2}")
         assert (
             response.body.decode().replace(
-                f"no_3rd_party={_b2}", f"no_3rd_party={_b1}"
+                f"no_3rd_party={bool2}", f"no_3rd_party={bool1}"
             )
             == body
         )
@@ -328,8 +328,6 @@ async def test_request_handlers(fetch: FetchCallable) -> None:
     assert_valid_json_response(
         await fetch("/wortspiel-helfer", headers={"Accept": "application/json"})
     )
-
-    await assert_valid_redirect(fetch, "/chat", "https://chat.asozial.org")
 
     response = await fetch("/host-info/uwu")
     assert response.code in {200, 503}

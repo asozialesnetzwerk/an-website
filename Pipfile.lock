@@ -2051,11 +2051,11 @@
         },
         "pipenv": {
             "hashes": [
-                "sha256:220f1863ee3d67fe073d7d14dfad3a0cd9dafe1bce4c7970da6ad16467d12f06",
-                "sha256:38cb8aaf12eb4a2a4ac09a460338140678cfd0ef6f2942035ea9d13982b21761"
+                "sha256:26c1dd6156953a37715c7f962719cc25ea8c7815f6c833bfc8f12cdf3508aae8",
+                "sha256:bd9bf3963290bfd2e3bcd0dc453b819ffcbe9e849852d86683c9bb385fb271cb"
             ],
             "index": "pypi",
-            "version": "==2022.8.14"
+            "version": "==2022.8.15"
         },
         "platformdirs": {
             "hashes": [
