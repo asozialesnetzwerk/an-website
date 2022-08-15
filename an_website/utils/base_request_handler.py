@@ -841,8 +841,9 @@ class BaseRequestHandler(RequestHandler):
             "style-src 'self' 'unsafe-inline';"
             "img-src 'self' https://img.zeit.de https://github.asozial.org;"
             "frame-ancestors 'self';"
-            "sandbox allow-downloads allow-same-origin allow-popups allow-scripts"
-            " allow-top-navigation-by-user-activation allow-forms  allow-modals;"
+            "sandbox allow-downloads allow-same-origin allow-modals"
+            " allow-popups-to-escape-sandbox allow-scripts allow-popups"
+            " allow-top-navigation-by-user-activation allow-forms;"
             "report-to default;"
             + (
                 f"report-uri {self.get_reporting_api_endpoint()};"
