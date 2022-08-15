@@ -37,13 +37,13 @@ from zoneinfo import ZoneInfo
 import elasticapm  # type: ignore[import]
 import orjson as json
 import regex
+import tornado.locale
 import yaml
 from accept_types import get_best_match  # type: ignore[import]
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
-import tornado.locale
 from tornado.web import (
     GZipContentEncoding,
     HTTPError,
