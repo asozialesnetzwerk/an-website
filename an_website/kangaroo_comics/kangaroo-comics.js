@@ -58,6 +58,10 @@ function startLoadingComics() {
           getDateBy(2022, 5, 9),
             "administratives/kaenguru-comics/2022-05/9/original"
         ],
+        [
+            getDateBy(2022, 8, 15),
+            "administratives/kaenguru-comics/2022-08/kaenguru-comics-2022-08-15/original"
+        ],
     ];
 
     const dateEquals = (date, year, month, dayOfMonth) => (

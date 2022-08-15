@@ -317,6 +317,8 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         return self.send_messages()
 
     async def prepare(self) -> None:  # noqa: D102
+        self.now = await self.get_time()
+
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
