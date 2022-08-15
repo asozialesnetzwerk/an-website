@@ -9,7 +9,7 @@
     {% if quote_data %}
         <a class="no-style-a"
            href="{{fix_url(quote_data.get_quote_url())}}"
-           tooltip="Das Zitat des Tages"
+           tooltip="{{_('Das Zitat des Tages')}}"
            tooltip-position="bottom"
            id="quote-of-the-day">
             {{quote_data.wrong_quote.quote}}<br>
@@ -20,8 +20,8 @@
         {% for info in handler.settings.get("MODULE_INFOS") %}
             {% if not info.hidden and not info.path is None and not info.path == "/" %}
                 <li>
-                    <a href="{{fix_url(info.path)}}">{{info.name}}</a>:
-                    {{info.description}}
+                    <a href="{{fix_url(info.path)}}">{{_(info.name)}}</a>:
+                    {{_(info.description)}}
 
                     {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
                         <ul class="sub-list">
@@ -29,8 +29,8 @@
                                 {% if not page_info.hidden and page_info.path is not None %}
                                     <li>
                                         <a href="{{fix_url(page_info.path)}}"
-                                            >{{page_info.name}}</a>:
-                                        {{page_info.description}}
+                                            >{{_(page_info.name)}}</a>:
+                                        {{_(page_info.description)}}
                                     </li>
                                 {% end %}
                             {% end %}
@@ -43,7 +43,7 @@
 
     {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
         <section id="onion-address-section">
-            Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
+            {{_("Wir sind übrigens auch über das Tor-Netzwerk erreichbar:")}}
             <a href="{{settings.get('ONION_ADDRESS')}}"
                no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
         </section>

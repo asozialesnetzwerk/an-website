@@ -15,13 +15,13 @@
             <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
                class="no-style-a quote-text"
                target="_blank"
-               id="quote">»{{wrong_quote.quote}}«</a>
+               id="quote">{{_("»%s«") % wrong_quote.quote}}</a>
             <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
                class="no-style-a quote-author"
                target="_blank"
                id="author">- {{wrong_quote.author}}</a>
         </article>
-        <div id="rating-container" tooltip="Die Bewertung des Zitats">
+        <div id="rating-container" tooltip="{{_('Die Bewertung des Zitats')}}">
             <div class="flex">
                 <div id="rating-text">{{rating}}</div>
                 <div id="rating-img-container">
@@ -40,32 +40,32 @@
             </div>
         </div>
         <div id="buttons">
-            <a tooltip="Downloade das Zitat als Bild."
+            <a tooltip="{{_('Downloade das Zitat als Bild.')}}"
                tooltip-position="bottom"
                id="download"
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
                 <img class="button-img"
                      src="{{fix_static('img/save.svg')}}"
-                     alt="Zitat downloaden.">
+                     alt="{{_('Zitat downloaden')}}">
             </a>
             <a id="share"
-               tooltip="Teile das Zitat in den Sozialen Medien."
+               tooltip="{{_('Teile das Zitat')}}"
                tooltip-position="bottom"
                href="{{fix_url(f'/zitate/share/{wrong_quote.get_id_as_str()}')}}"
                target="_blank"
                rel="nofollow">
                 <img class="button-img"
                      src="{{fix_static('img/share.svg')}}"
-                     alt="Zitat teilen.">
+                     alt="{{_('Zitat teilen')}}">
             </a>
-            <a tooltip="Gehe zum nächsten Zitat."
+            <a tooltip="{{_('Gehe zum nächsten Zitat.')}}"
                tooltip-position="bottom"
                id="next"
                quote-id="{{next_id}}"
                href="{{next_href}}">
                 <img class="button-img"
-                     alt="Nächstes Zitat"
+                     alt="{{_('Gehe zum nächsten Zitat.')}}"
                      src="{{fix_static('img/arrow.svg')}}">
             </a>
         </div>
@@ -74,63 +74,63 @@
         {% raw form_appendix %}
         <input name="r" class="hidden" value="{{rating_filter}}">
         <button class="form-button vote"
-                tooltip="Bewerte das Zitat als witzig!"
+                tooltip="{{_('Bewerte das Zitat als witzig!')}}"
                 {% if vote == 1 %} voted="1" {% end %}
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
                 type="submit" id="upvote" name="vote">
             <img src="{{fix_static('img/StempelWitzigKlein.svg')}}"
-                 alt="WITZIG!">
+                 alt="{{_('')}}WITZIG!">
         </button>
         <button class="form-button vote"
-                tooltip="Bewerte das Zitat als nicht witzig!"
+                tooltip="{{_('Bewerte das Zitat als nicht witzig!')}}"
                 {% if vote == -1 %} voted="-1" {% end %}
                 value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
                 type="submit" id="downvote" name="vote">
             <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}"
-                 alt="NICHT WITZIG!">
+                 alt="{{_('')}}NICHT WITZIG!">
         </button>
     </form>
 
     <div id="bottom-buttons-container">
         {% if settings.get("CONTACT_USE_FORM") %}
             <a id="report"
-               href="{{fix_url('/kontakt', subject=f'Das falsche Zitat {wrong_quote.get_id_as_str()} hat ein Problem', message=str(wrong_quote))}}"
-               tooltip="Melde das Zitat.">
-                <img class="button-img report-img" alt="Zitat melden."
+               href="{{fix_url('/kontakt', subject=_('Das falsche Zitat %s hat ein Problem') % wrong_quote.get_id_as_str(), message=str(wrong_quote))}}"
+               tooltip="{{_('Melde das Zitat.')}}">
+                <img class="button-img report-img" alt="{{_('Zitat melden')}}"
                      src="{{fix_static('img/report.svg')}}">
             </a>
         {% end %}
 
         <a id="add-quote"
-           tooltip="Neues Zitat hinzufügen"
+           tooltip="{{_('Neues Zitat hinzufügen')}}"
            href="{{fix_url('/zitate/erstellen')}}">
-            <img class="button-img" alt="Zitat hinzufügen."
+            <img class="button-img" alt="{{_('Zitat hinzufügen')}}"
                  src="{{fix_static('img/plus.svg')}}">
         </a>
 
         <form method="get">
             {% raw form_appendix %}
-            <label tooltip="Filtere das nächste Zitate.">
+            <label tooltip="{{_('Filtere das nächste Zitate')}}">
                 Filter
                 <select name="r"
                         id="rating-filter-select"
                         class="rating-form-el auto-submit-element">
                     <option {% if rating_filter=="smart"%}selected{%end%}
-                            value="smart">Smart</option>
+                            value="smart">{{_('Klever')}}</option>
                     <option {% if rating_filter=="w"%}selected{%end%}
-                            value="w">Witzig</option>
+                            value="w">{{_('Witzig')}}</option>
                     <option {% if rating_filter=="n"%}selected{%end%}
-                            value="n">Nicht witzig</option>
+                            value="n">{{_('Nicht witzig')}}</option>
                     <option {% if rating_filter=="rated"%}selected{%end%}
-                            value="rated">Bewertet</option>
+                            value="rated">{{_('Bewertet')}}</option>
                     <option {% if rating_filter=="unrated"%}selected{%end%}
-                            value="unrated">Unbewertet</option>
+                            value="unrated">{{_('Unbewertet')}}</option>
                     <option {% if rating_filter=="all"%}selected{%end%}
-                            value="all">Alle</option>
+                            value="all">{{_('Alle')}}</option>
                 </select>
             </label>
             <label class="rating-form-el">
-                Zeige Bewertung
+                {{_('Zeige Bewertung')}}
                 <input {% if show_rating %}checked{% end %}
                    type="checkbox"
                    id="show-rating"
@@ -140,22 +140,19 @@
             </label>
 
             <noscript>
-                <button type="submit" class="rating-form-el">Submit</button>
+                <button type="submit" class="rating-form-el">{{_('Absenden')}}</button>
             </noscript>
         </form>
     </div>
 
     <span data-elastic-exclude>
-        Der/die richtige Autor/-in dieses Zitats ist vermutlich
-        „<a class="no-style-a-in"
-            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}')}}"
-            id="real-author-name">{{wrong_quote.quote.author}}</a>“.
+        {% set __correct_author = f"<a class=\"no-style-a-in\" href=\"{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}')}\" id=\"real-author-name\">{wrong_quote.quote.author}</a>" %}
+        {% raw _('Der/die richtige Autor/-in dieses Zitats ist vermutlich „%s“.') % __correct_author %}
+
         <br><br>
-        Wenn dein Browser JavaScript unterstützt (und es aktiviert ist),
-        kannst du die Seite mit <span id="wasd">WASD</span> navigieren.
-        JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.
+        {% raw _('Wenn dein Browser JavaScript unterstützt (und es aktiviert ist), kannst du die Seite mit <span id="wasd">WASD</span> navigieren.') %}
+        {% raw _('JavaScript ist aktuell <noscript>nicht</noscript> aktiviert.') %}
         <br><br>
-        Diese Seite nutzt übrigens einen Cookie {% raw emoji2html("🍪") %},
-        um zu speichern, welche Zitate du bewertet hast.
+        {% raw _('Diese Seite nutzt übrigens einen Cookie %s, um zu speichern, welche Zitate du bewertet hast.') % emoji2html("🍪") %}
     </span>
 {% end %}

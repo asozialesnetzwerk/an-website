@@ -1,4 +1,4 @@
-<footer id="footer" data-elastic-exclude>Mit Liebe gebacken
+<footer id="footer" data-elastic-exclude>{{_("Mit Liebe gebacken")}}
     {% if globals()["🦘"] %}
         {% raw emoji2html("🦘") %}
     {% elif globals()["🥚"] %}
@@ -66,15 +66,15 @@
     {% elif now.day == 13 and now.weekday() == 4 %}
         {% raw emoji2html("🐈‍⬛") %}
     {% elif not bumpscosity and now.microsecond % 2 %}
-        <span tooltip="Achtung, es ist keine Bumpscosity vorhanden!">{% raw emoji2html("⚠️") %}</span>
+        <span tooltip="{{_('Achtung, es ist keine Bumpscosity vorhanden!')}}">{% raw emoji2html("⚠️") %}</span>
     {% elif bumpscosity == 1000 and now.microsecond % 2  %}
-        <span tooltip="Achtung, die Bumpscosity ist erschreckend hoch!">{% raw emoji2html("⚠️") %}</span>
+        <span tooltip="{{_('Achtung, die Bumpscosity ist erschreckend hoch!')}}">{% raw emoji2html("⚠️") %}</span>
     {% elif bumpscosity == 50 and now.microsecond % 2  %}
-        <span tooltip="Die Bumpscosity ist echt angenehm.">{% raw emoji2html("🤍") %}</span>
+        <span tooltip="{{_('Die Bumpscosity ist echt angenehm.')}}">{% raw emoji2html("🤍") %}</span>
     {% else %}
         {% raw emoji2html("🖤") %}
     {% end %}
-    <a href="{{fix_url(GH_REPO_URL)}}">Asoziales Netzwerk: Sektion GitHub</a>
+    <a href="{{fix_url(GH_REPO_URL)}}">{{_("Asoziales Netzwerk: Sektion GitHub")}}</a>
     {% if openmoji %}
         <br>
         <br>

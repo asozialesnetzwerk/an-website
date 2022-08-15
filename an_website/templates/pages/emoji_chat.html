@@ -19,12 +19,12 @@
 </section>
 
     <form method="post">
-        <div tooltip="Nicht mit Websocket verbunden (kein JS verfügbar)"
+        <div tooltip="{{_('Nicht mit Websocket verbunden (kein JS verfügbar)')}}"
              tooltip-position="right"
              state="disconnected"
              id="connection-state"></div>
         Du bist: <div id="current-user">{% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}</div>
         <input id="message-input" type="text" name="message">
-        <button type="submit">Senden!</button>
+        <button type="submit">{{_('Senden!')}}</button>
     </form>
 {% end %}

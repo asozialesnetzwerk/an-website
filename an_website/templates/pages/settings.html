@@ -10,7 +10,7 @@
     <form method="post">
         {% if no_3rd_party_default %}
             <label class="form-element">
-                Erlaube Inhalte von Drittanbietern
+                {{_('Erlaube Inhalte von Drittanbietern')}}
                 <input type="checkbox"
                     name="no_3rd_party"
                     {% if not no_3rd_party %}
@@ -20,7 +20,7 @@
             </label>
         {% else %}
             <label class="form-element">
-                Deaktiviere Inhalte von Drittanbietern
+                {{_('Deaktiviere Inhalte von Drittanbietern')}}
                 <input type="checkbox"
                    name="no_3rd_party"
                     {% if no_3rd_party %}
@@ -31,18 +31,18 @@
         {% end %}
 
         <label class="form-element">
-            Nutze coole Emojis von OpenMoji
+            {{_('Nutze coole Emojis von OpenMoji')}}
             <select name="openmoji">
                 <option {% if not openmoji %}selected{% end %}
-                        value="nope">Deaktiviert</option>
-{# <option {% if openmoji == "font" %}selected{% end %} value="font">Als Font (Firefox)</option> #}
+                        value="nope">{{_('Deaktiviert')}}</option>
+{# <option {% if openmoji == "font" %}selected{% end %} value="font">{{_('Als Font (Firefox)')}}</option> #}
                 <option {% if openmoji == "img" %}selected{% end %}
-                        value="img">Als SVGs (funktioniert)</option>
+                        value="img">{{_('Als SVGs (funktioniert)')}}</option>
             </select>
         </label>
 
         <label class="form-element">
-            Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
+            {{_('Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)')}}
             <input type="checkbox"
                name="dynload"
                 {% if dynload %}
@@ -52,17 +52,17 @@
         </label>
 
         <label class="form-element">
-            Theme
+            {{_('Thema')}}
             <select name="theme">
-                {% for _ in themes %}
-                    <option {% if _ == theme_name %}selected{% end %}
-                            value="{{_}}">{{_}}</option>
+                {% for spam in themes %}
+                    <option {% if spam == theme_name %}selected{% end %}
+                            value="{{spam}}">{{spam}}</option>
                 {% end %}
             </select>
         </label>
 
         <label class="form-element">
-            Aktiviere Einstellungen für Experten
+            {{_('Aktiviere Einstellungen für Experten')}}
             <input type="checkbox"
                name="advanced_settings"
                 {% if advanced_settings %}
@@ -73,11 +73,11 @@
 
         {% if advanced_settings %}
             <label class="form-element">
-                Bumpscosity
+                {{_('Bumpscosity')}}
                 <select name="bumpscosity" id="bumpscosity-select">
-                    {% for _ in bumpscosity_values %}
-                        <option {% if _ == bumpscosity %}selected{% end %}
-                                    value="{{_}}">{{_}}</option>
+                    {% for bsv in bumpscosity_values %}
+                        <option {% if bsv == bumpscosity %}selected{% end %}
+                                    value="{{bsv}}">{{bsv}}</option>
                     {% end %}
                 </select>
             </label>
@@ -85,13 +85,13 @@
 
         {% if show_token_input %}
             <label class="form-element">
-                Autorisierungsschlüssel
+                {{_('Autorisierungsschlüssel')}}
                 <input type="text" name="access_token" value="{{token}}">
             </label>
         {% end %}
 
         <label class="form-element">
-           Speicher in Cookies {% raw emoji2html("🍪") %} (empfohlen)
+           {% raw _('Speicher in Cookies %s (empfohlen)') % emoji2html("🍪") %}
             <input type="checkbox"
                 name="save_in_cookie"
                 {% if save_in_cookie %}
@@ -99,6 +99,6 @@
                 {% end %}
                 value="sure">
         </label>
-        <input type="submit" value="Speichern">
+        <input type="submit" value="{{_('Speichern')}}">
     </form>
 {% end %}

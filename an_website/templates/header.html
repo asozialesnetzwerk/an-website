@@ -5,7 +5,7 @@
            href="{{fix_url('/')}}"
            class="no-style-a-emoji"
            id="back-to-home"></a>
-        <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
+        <h1 id="title" short_title="{{_(short_title)}}">{{_(title)}}</h1>
         {#
             ugly workaround because Chromium (sadly most used) is stupid
             see: https://bugs.chromium.org/p/chromium/issues/detail?id=109212&q=clip-path&can=2
@@ -18,13 +18,13 @@
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
         <nav id="site-pane" tabindex="-1">
-            <h2 data-elastic-exclude>Unterseiten:</h2>
+            <h2 data-elastic-exclude>{{_("Unterseiten")}}</h2>
             <ul class="list">
                 {% for i, info in enumerate(settings.get("MODULE_INFOS")) %}
                     {% if not info.hidden and info.path is not None %}
                         <li>
                             <a href="{{fix_url(info.path)}}"
-                               tooltip="{{info.description}}"
+                               tooltip="{{_(info.description)}}"
                                class="site-pane-a"
                                {% if i < 6 %}
                                    tooltip-position="bottom"
@@ -32,16 +32,16 @@
                                {% if info.path == "/js-lizenzen/" %}
                                    data-jslicense="1"
                                {% end %}
-                            >{{info.name}}</a>
+                            >{{_(info.name)}}</a>
                             {% if info.sub_pages is not None %}
                                 <ul class="sub-list">
                                     {% for page_info in info.sub_pages %}
                                         {% if not page_info.hidden and page_info.path is not None %}
                                             <li>
                                                 <a href="{{fix_url(page_info.path)}}"
-                                                   tooltip="{{page_info.description}}"
+                                                   tooltip="{{_(page_info.description)}}"
                                                    class="site-pane-a"
-                                                >{{page_info.name}}</a>
+                                                >{{_(page_info.name)}}</a>
                                             </li>
                                         {% end %}
                                     {% end %}
@@ -53,12 +53,12 @@
             </ul>
             {% if settings.get("CONTACT_USE_FORM") %}
                 <a href="{{fix_url('/kontakt')}}"
-                   class="contact-anchor">KONTAKT</a>
+                   class="contact-anchor">{{_('KONTAKT')}}</a>
             {% end %}
             {% if settings.get("NETCUP") %}
                 <a id="oekostrom" href="{{fix_url('https://www.netcup.de')}}">
                     <img src="{{ fix_static('img/netcup-oekostrom2.png') }}"
-                         alt="netcup Ökostrom">
+                         alt="{{_('netcup Ökostrom')}}">
                 </a>
             {% end %}
         </nav>

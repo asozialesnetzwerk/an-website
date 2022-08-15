@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{lang}}">
+<html lang="{{locale.code}}">
     <head>
         {% if as_html %}
             <title>{{title}}</title>
             <meta charset="UTF-8">
-            <meta name="description" content="{{ description }}">
-            <meta name="keywords" content="{{keywords}}">
+            <meta name="description" content="{{_(description)}}">
+            <meta name="keywords" content="{{_(keywords)}}">
             <meta name="theme-color" content="#8B0000">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
-            <meta property="og:locale" content="de_DE">
-            <meta property="og:site_name" content="Asoziale Webseite">
-            <meta property="og:title" content="{{title}}">
+            <meta property="og:description" content="{% block description %}{{_(description)}}{% end %}">
+            <meta property="og:locale" content="{{locale.code}}">
+            <meta property="og:site_name" content="{{_('Asoziale Webseite')}}">
+            <meta property="og:title" content="{{_(title)}}">
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{canonical_url}}">
             <link rel="author" type="text/plain" href="{{fix_static('/humans.txt')}}">
@@ -40,12 +40,12 @@
             <a href="#body"
                no-dynload
                id="skip-to-content"
-               data-elastic-exclude>Skip to content.</a>
+               data-elastic-exclude>{{_('Zum Inhalt springen.')}}</a>
             {% include "header.html" %}
         {% end %}
 
         <main data-elastic-include
-              id="body">{% block body %}{{content}}{% end %}</main>
+              id="body">{% block body %}{{_(content)}}{% end %}</main>
 
         {% if as_html %}
             {% include "footer.html" %}

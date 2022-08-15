@@ -347,16 +347,14 @@ administratives/kaenguru-comics/kaenguru-045/original
     if (startButton) {
         const contentContainer = elById("comic-content-container");
         // no_3rd_party is activated
-        function removeButtonAndLoad() {
+        startButton.onclick = () => {
             startButton.remove();
             contentContainer.classList.remove("hidden");
             startLoadingComics();
-        }
-
-        startButton.onclick = removeButtonAndLoad;
+        };
         contentContainer.classList.add("hidden");
     } else {
         startLoadingComics();
     }
-})()
+})();
 // @license-end

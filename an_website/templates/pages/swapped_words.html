@@ -9,25 +9,25 @@
 {% block body %}
     <form method="post" id="form">
         <label class="form-element">
-            Der Text, dessen Wörter vertauscht werden sollen
+            {{_('Der Text, dessen Wörter vertauscht werden sollen')}}
             <textarea id="text"
                     name="text"
-                    placeholder="Gebe witzigen Text ein."
+                    placeholder="{{_('Gebe einen witzigen Text ein.')}}"
                     rows="10"
                     maxlength="{{MAX_CHAR_COUNT}}"
                     spellcheck="true">{{text}}</textarea>
         </label>
 
         <label class="form-element">
-            Die Regeln nach denen vertauscht werden sollen
+            {{_('Die Regeln nach denen vertauscht werden sollen')}}
             <button name="reset"
                     value="sure"
-                    id="reset">Reset</button>
+                    id="reset">{{_('Zurücksetzen')}}</button>
             <textarea name="config"
                     id="config-textarea"
                     placeholder="# Vertauschungen eingeben, zum Beispiel:
 amüsant <=> relevant
-Björn Höcke => Bernd Höcke"
+Björn Höcke => Bernd Höcke"  {# TODO: translation #}
                     rows="10"
                     maxlength="{{MAX_CHAR_COUNT}}"
                     style="font-family: monospace, monospace;"
@@ -36,22 +36,22 @@ Björn Höcke => Bernd Höcke"
 
         <div id="error-msg" style="color: var(--contrast)">
             {% if error_msg is not None %}
-                {% raw error_msg %}
+                {% raw _(error_msg) %}
             {% end %}
         </div>
 
         {% raw form_appendix %}
 
-        <div tooltip="Aktualisiere die Eingabe."
+        <div tooltip="{{_('Aktualisiere die Eingabe.')}}"
              class="button-container form-element">
-            <input type="submit" id="submit" value="Eingabe">
+            <input type="submit" id="submit" value="{{_('Eingabe')}}">
         </div>
     </form>
 
     <br>
 
     <label class="form">
-        Ausgabe:
+        {{_('Ausgabe:')}}
         <textarea rows="10" id="output" readonly>{{output}}</textarea>
     </label>
 {% end %}

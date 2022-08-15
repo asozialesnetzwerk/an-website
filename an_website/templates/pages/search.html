@@ -10,24 +10,22 @@
 {% block body %}
     <form id="search-form">
         <label>
-            Suche:
+            {{_('Suche:')}}
             <input type="search" id="search-input" name="q" value="{{query}}">
         </label>
     </form>
     {% if results %}
-        <h2>
-            Gefundene Seiten:
-        </h2>
+        <h2>{{_('Gefundene Seiten:')}}</h2>
         <ul id="search-results" class="list">
             {% for result in results %}
                 <li score="{{result['score']}}" class="menu-list">
                     <a href="{{fix_url(result['url'])}}"
-                    >{% raw result["title"]%}</a>:
-                    {% raw result["description"] %}
+                    >{% raw _(result["title"]) %}</a>:
+                    {% raw _(result["description"]) %}
                 </li>
             {% end %}
         </ul>
     {% else %}
-        <div>Nichts gefunden.</div>
+        <div>{{_('Nichts gefunden.')}}</div>
     {% end %}
 {% end %}

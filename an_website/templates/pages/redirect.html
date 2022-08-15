@@ -8,21 +8,18 @@
 
 {% block body %}
     <p>
-        Willst du wirklich <strong>{{redirect_url.split("?")[0]}}</strong> öffnen? Für die Inhalte auf
-        fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
+        {% raw _('Willst du wirklich <strong>%s</strong> öffnen? Für die Inhalte auf fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.') % redirect_url.split("?")[0] %}
         {% if discord %}
             <br>
-            Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen,
-            da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel
-            über <a no-dynload href="{{fix_url('/chat')}}">chat.asozial.org</a> tun.
+            {% raw _('Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen, da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel über %s tun.') % f"<a no-dynload href=\"{fix_url('/chat')}\">chat.asozial.org</a>" %}
         {% end %}
     </p>
     <a class="leave button no-style-a" no-dynload
        referrerpolicy="{{'strict-origin-when-cross-origin' if send_referrer else 'same-origin'}}"
-       href="{{redirect_url}}">Ja, ich bin mir sicher</a>
+       href="{{redirect_url}}">{{_('Ja, ich bin mir sicher')}}</a>
     {% if from_url %}
         <a class="stay button no-style-a"
            href="{{from_url}}"
-        >{{globals().get("back_button_text") or "Nein, ich möchte wieder zurück" }}</a>
+        >{{_(globals().get("back_button_text") or "Nein, ich möchte wieder zurück")}}</a>
     {% end %}
 {% end %}

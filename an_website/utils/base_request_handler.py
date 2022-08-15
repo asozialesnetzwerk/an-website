@@ -43,6 +43,7 @@ from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
+import tornado.locale
 from tornado.web import (
     GZipContentEncoding,
     HTTPError,
@@ -501,6 +502,10 @@ class BaseRequestHandler(RequestHandler):
                 samesite="Strict",
             )
         return user_id
+
+    def get_user_locale(self) -> None | tornado.locale.Locale:
+        """Get the locale of the user."""
+        return tornado.locale.get("de")  # TODO: remove this
 
     def handle_accept_header(
         self, possible_content_types: tuple[str, ...]

@@ -8,14 +8,14 @@
 {% block body %}
     <form>
         <label class="form-element">
-            Das aktuelle Wort
+            {{_('Das aktuelle Wort')}}
             <input type="text"
                    name="word"
                    value="{{word}}">
         </label>
 
         <label class="form-element">
-            Wörter, die vor diesem Wort kamen (Mit Komma getrennt)
+            {{_('Wörter, die vor diesem Wort kamen (Mit Komma getrennt)')}}
             <input type="text"
                    name="before"
                    value="{{before}}">
@@ -25,7 +25,7 @@
 
         <input type="submit"
                id="submit"
-               value="Eingabe">
+               value="{{_('Eingabe')}}">
     </form>
 
     <ul>

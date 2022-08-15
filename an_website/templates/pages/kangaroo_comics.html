@@ -6,27 +6,27 @@
 {% end %}
 
 {% block body %}
-    <noscript>Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(</noscript>
+    <noscript>{{_('Da diese Seite die Comics direkt von zeit.de holt, benötigt sie Javascript. Sorry :(')}}</noscript>
 
     <div id="comic-content-container">
         <h1>
             <a id="current-comic-header"
-               class="comic-header">Aktueller Comic:</a>
+               class="comic-header">{{_('Aktueller Comic:')}}</a>
         </h1>
         <div id="current-img-container">
             <img id="current-img"
                  class="normal-img"
-                 alt="Aktueller Comic"
+                 alt="{{_('Aktueller Comic')}}"
                  {# crossorigin #}
                  src="">
         </div>
-        <h1>Alte Comics:</h1>
+        <h1>{{_('Alte Comics:')}}</h1>
         <ul id="old-comics-list"></ul>
         <input id="load-button"
                type="button"
-               value="Lade mehr Comics!">
+               value="{{_('Lade mehr Comics!')}}">
     </div>
     {% if no_3rd_party %}
-        <button id="start-button-no_3rd_party">Lade Inhalte von Zeit Online</button>
+        <button id="start-button-no_3rd_party">{{_('Lade Inhalte von Zeit Online')}}</button>
     {% end %}
 {% end %}

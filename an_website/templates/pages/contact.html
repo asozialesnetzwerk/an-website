@@ -7,12 +7,12 @@
 
 {% block body %}
     <form method="post">
-        <label>Name<input type="text" name="name"></label>
+        <label>{{_('Name')}}<input type="text" name="name"></label>
 
-        <label>E-Mail-Adresse<input type="email" name="addresse" autocomplete="email"></label>
+        <label>{{_('E-Mail-Adresse')}}<input type="email" name="addresse" autocomplete="email"></label>
 
         <label>
-            Betreff
+            {{_('Betreff')}}
             {% if subject %}
                 <input type="text" name="subjekt" value="{{subject}}">
             {% else %}
@@ -27,10 +27,10 @@
         </label>
 
         <label>
-            Nachricht (erforderlich)
+            {{_('Nachricht (erforderlich)')}}
             <textarea name="nachricht">{{message}}</textarea>
         </label>
 
-        <button type="submit">Absenden</button>
+        <button type="submit">{{_('Absenden')}}</button>
     </form>
 {% end %}

@@ -9,7 +9,7 @@
 {% block body %}
     <form method="post" action="{{fix_url('/zitate/erstellen')}}">
         <label class="form-element">
-            Zitat
+            {{_('Zitat')}}
              <input name="quote-1"
                     list="quote-list"
                     autocomplete="on"
@@ -18,7 +18,7 @@
         </label>
 
         <label class="form-element">
-            Richtiger Autor
+           {{_('Richtiger Autor')}}
             <input name="real-author-1"
                    list="author-list"
                    autocomplete="on"
@@ -27,7 +27,7 @@
         </label>
 
         <label class="form-element">
-            Falscher Autor
+            {{_('Falscher Autor')}}
             <input name="fake-author-1"
                    list="author-list"
                    autocomplete="on"
@@ -35,9 +35,7 @@
         </label>
 
         <label class="form-element">
-            Dein Name (Optional)! Dieser Name wird an <a
-                href="{{fix_url('https://zitate.prapsschnalinen.de')}}"
-            >Drittanbieter</a> weitergeleitet.
+            {% raw _('Dein Name (Optional)! Dieser Name wird an %s weitergeleitet.') % f"<a href=\"{fix_url('https://zitate.prapsschnalinen.de')}\">zitate.prapsschnalinen.de</a>" %}
             <input name="user-name" type="text">
         </label>
 
@@ -53,6 +51,6 @@
             {% end %}
         </datalist>
 
-        <input id="submit-button" class="button" type="submit" value="Ausgewählte Daten einreichen">
+        <input id="submit-button" class="button" type="submit" value="{{_('Ausgewählte Daten einreichen')}}">
     </form>
 {% end %}

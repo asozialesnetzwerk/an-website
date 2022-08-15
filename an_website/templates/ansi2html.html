@@ -9,8 +9,8 @@
 
     {% if isinstance(ansi, list) %}
 <div>
-        {% for _ in ansi %}
-<div class="pre">{% raw ansi2html.convert(_, full=False) %}</div>
+        {% for spam in ansi %}
+<div class="pre">{% raw ansi2html.convert(spam, full=False) %}</div>
         {% end %}
 </div>
     {% else %}

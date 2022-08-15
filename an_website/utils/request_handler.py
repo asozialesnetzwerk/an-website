@@ -209,7 +209,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 if self.module_info
                 else ""
             ),
-            lang="de",  # TODO: add language support
+            locale=self.locale,
             no_3rd_party=self.get_no_3rd_party(),
             now=self.now,
             settings=self.settings,

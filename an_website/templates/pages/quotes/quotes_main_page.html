@@ -5,7 +5,7 @@
 {% end %}
 
 {% block body %}
-    <p class="center-text">
+    <p class="center-text">  {# TODO: translate #}
         Hier gibt es ganz viele bewertbare falsch zugeordnete Zitate.
         Die Idee hinter diesen stammt aus dem
         <a class="no-style-a-in" href="{{fix_url('https://marcuwekling.reimkultur-shop.de/marc-uwe-kling-das-kaenguru-manifest-live-und-ungekuerzt-download-album-6400139.html')}}"
@@ -32,7 +32,7 @@
         zitieren:
     </p>
     <blockquote>
-        Falsch zugeordnete Zitate sind wie Physik, unnötig aber einfach witzig.
+        {{_('Falsch zugeordnete Zitate sind wie Physik, unnötig aber einfach witzig.')}}
     </blockquote>
     <p class="center-text">
         Teilweise kommen da echt
@@ -42,7 +42,7 @@
         Schau Dich gerne mal um. Viel Spaß!
     </p>
     {% if quote_of_the_day %}
-        <h2>Das Zitat des Tages
+        <h2>{{_('Das Zitat des Tages')}}
             <a href="{{fix_url('/zitat-des-tages/feed')}}" no-dynload
                class="no-style-a-in"
             ><img src="{{fix_static('img/rss.svg')}}"
@@ -55,27 +55,27 @@
         </a>
 
     {% end %}
-    <h2>Links zu Zitaten</h2>
+    <h2>{{_('Links zu Zitaten')}}</h2>
     <ul>
         <li>
-            <a href="{{funny_quote_url}}">Witzige Zitate</a>
+            <a href="{{funny_quote_url}}">{{_('Witzige Zitate')}}</a>
         </li>
         <li>
-            <a href="{{random_quote_url}}">Zufällige Zitate</a>
+            <a href="{{random_quote_url}}">{{_('Zufällige Zitate')}}</a>
         </li>
     </ul>
-    <h2>Zitate beeinflussen</h2>
+    <h2>{{_('Zitate beeinflussen')}}</h2>
     <ul>
         <li>
-            <a href="{{fix_url('/zitate/erstellen')}}">Zitate erstellen</a>
+            <a href="{{fix_url('/zitate/erstellen')}}">{{_('Zitate erstellen')}}</a>
         </li>
         <li>
-            <a href="{{fix_url('/zitate/generator')}}">Zitate-Generator</a>
+            <a href="{{fix_url('/zitate/generator')}}">{{_('Zitate-Generator')}}</a>
         </li>
         {% if settings.get("CONTACT_USE_FORM") %}
             <li>
-                <a href="{{fix_url('/kontakt', subject='Falsch zugeordnete Zitate')}}"
-                >Über Zitate beschweren</a>
+                <a href="{{fix_url('/kontakt', subject=_('Falsch zugeordnete Zitate'))}}"
+                >{{_('Über Zitate beschweren')}}</a>
             </li>
         {% end %}
     </ul>

@@ -10,7 +10,7 @@
 {% block body %}
     <form action="{{fix_url(canonical_url)}}" method="get" id="form">
         <label class="form-element">
-            Euro:
+            {{_('Euro:')}}
             <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                    type="text"
                    id="euro"
@@ -19,7 +19,7 @@
         </label>
 
         <label class="form-element">
-            D-Mark:
+            {{_('D-Mark:')}}
             <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                    type="text"
                    id="mark"
@@ -28,7 +28,7 @@
         </label>
 
         <label class="form-element">
-            Ostmark:
+            {{_('Ostmark:')}}
             <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                    type="text"
                    id="ost"
@@ -37,7 +37,7 @@
         </label>
 
         <label class="form-element">
-            Ostmark auf dem Schwarzmarkt:
+            {{_('Ostmark auf dem Schwarzmarkt:')}}
             <input pattern="^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$"
                    type="text"
                    id="schwarz"
@@ -49,13 +49,13 @@
 
         <input type="submit"
                id="submit"
-               value="Eingabe!">
+               value="{{_('Eingabe!')}}">
     </form>
 
     <br>
 
     <label class="form">
-        Als Text:
+        {{_('Als Text:')}}
         <textarea readonly id="output">{{text}}</textarea>
     </label>
 {% end %}

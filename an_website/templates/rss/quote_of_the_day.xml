@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Zitat des Tages</title>
-        <description>Jeden Tag wird hier ein witziges falsches Zitat hinzugefügt.</description>
-        <language>de-de</language>
+        <title>{{_('Zitat des Tages')}}</title>
+        <description>{{_('Jeden Tag wird hier ein witziges falsches Zitat hinzugefügt.')}}</description>
+        <language>{{lang}}</language>
         <link>{{canonical_url}}</link>
         <atom:link href="{{canonical_url}}"
                    rel="self"

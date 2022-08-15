@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}{{status}} - {{reason}}{% end %}
+{% block title %}{{status}} - {{reason if is_traceback _(reason)}}{% end %}
 
-{% block description %}{{description}}{% end %}
+{% block description %}{{_(description)}}{% end %}
 
 {% block head %}
     <meta name="robots" content="noindex">
@@ -16,7 +16,7 @@
     {% else %}
         <div id="container">
             <div id="status">{{status}}</div>
-            <div id="reason">{{reason}}</div>
+            <div id="reason">{{_(reason)}}</div>
         </div>
     {% end %}
 {% end %}

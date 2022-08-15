@@ -38,6 +38,7 @@ from zoneinfo import ZoneInfo
 
 import orjson
 import regex
+import tornado.locale
 import tornado.netutil
 import tornado.process
 from ecs_logging import StdlibFormatter
@@ -298,6 +299,43 @@ def make_app(config: ConfigParser) -> str | Application:
         template_path=TEMPLATES_DIR,
         template_whitespace="oneline",
     )
+
+
+def load_translations() -> None:
+    """Load the translation files."""
+    tornado.locale.set_default_locale("de")
+    tornado.locale.load_translations(
+        os.path.join(DIR, "_translations"), "utf-8"
+    )
+
+    if "--save-missing-strings" not in sys.argv:
+        return
+
+    _translate = tornado.locale.CSVLocale.translate
+    already_encountered = set()
+
+    import csv  # pylint: disable=import-outside-toplevel
+
+    def translate(
+        self: tornado.locale.CSVLocale,
+        message: str,
+        plural_message: None | str = None,
+        count: None | int = None,
+    ) -> str:
+        translated = _translate(
+            self, message=message, plural_message=plural_message, count=count
+        )
+        if translated is message and message not in already_encountered:
+            with open(
+                os.path.join(DIR, "_translations/missing_translations.csv"),
+                "a",
+                encoding="utf-8",
+            ) as file:
+                csv.writer(file).writerow((message, "", ""))
+            already_encountered.add(message)
+        return translated
+
+    tornado.locale.CSVLocale.translate = translate  # type: ignore[assignment]
 
 
 def apply_config_to_app(app: Application, config: ConfigParser) -> None:
@@ -775,7 +813,6 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-
     install_signal_handler()
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
@@ -812,6 +849,8 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         decompress_request=True,
         xheaders=behind_proxy,
     )
+
+    load_translations()
 
     sockets = []
 

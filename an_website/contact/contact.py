@@ -171,7 +171,7 @@ class ContactPage(HTMLRequestHandler):
     """The request handler for the contact page."""
 
     RATELIMIT_POST_LIMIT = 5
-    RATELIMIT_POST_COUNT_PER_PERIOD = 1
+    RATELIMIT_POST_COUNT_PER_PERIOD = 10
     RATELIMIT_POST_PERIOD = 120
 
     ACCESS_LOG: dict[str, float] = {}

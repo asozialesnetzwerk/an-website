@@ -8,22 +8,22 @@
 {% block body %}
     <form>
         <label class="form-element">
-            Eingabe (Nutze "_" für nicht bekannte Buchstaben)
+            {{_('Eingabe (Nutze "_" für nicht bekannte Buchstaben)')}}
             <input type="text"
                    name="input"
                    value="{{input}}">
         </label>
 
         <label class="form-element">
-            Falsche Buchstaben
+            {{_('Falsche Buchstaben')}}
             <input type="text"
                    name="invalid"
                    value="{{invalid}}">
         </label>
 
         <div class="form-element">
-            <label tooltip="Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen."
-                   tooltip-position="right">Kreuzworträtselmodus
+            <label tooltip="{{_('Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen.')}}"
+                   tooltip-position="right">{{_('Kreuzworträtselmodus')}}
                 <input type="checkbox"
                    id="crossword-mode"
                    {% if crossword_mode %} checked {% end %}
@@ -32,8 +32,8 @@
         </div>
 
         <div class="form-element">
-            <label tooltip="Wie viele Wörter maximal angezeigt werden dürfen."
-                   tooltip-position="right">Maximale Wortanzahl
+            <label tooltip="{{_('Wie viele Wörter maximal angezeigt werden dürfen.')}}"
+                   tooltip-position="right">{{_('Maximale Wortanzahl')}}
                 <input type="number"
                    id="max_words"
                    name="max_words"
@@ -45,18 +45,18 @@
         </div>
 
         <label class="form-element">
-            Sprache der Wörter
+            {{_('Sprache der Wörter')}}
             <select name="lang">
                 <option {% if lang == "de_only_a-z" %}selected{% end %}
-                    value="de_only_a-z">Deutsch ohne Umlaute</option>
+                    value="de_only_a-z">{{_('Deutsch ohne Umlaute')}}</option>
                 <option {% if lang == "de" %}selected{% end %}
-                    value="de">Deutsch</option>
+                    value="de">{{_('Deutsch')}}</option>
                 <option {% if lang == "de_basic_only_a-z" %}selected{% end %}
-                    value="de_basic_only_a-z">Deutsch (Grundformen) ohne Umlaute</option>
+                    value="de_basic_only_a-z">{{_('Deutsch (Grundformen) ohne Umlaute')}}</option>
                 <option {% if lang == "de_basic" %}selected{% end %}
-                    value="de_basic">Deutsch (Grundformen)</option>
+                    value="de_basic">{{_('Deutsch (Grundformen)')}}</option>
                 <option {% if lang == "en" %}selected{% end %}
-                    value="en">Englisch</option>
+                    value="en">{{_('Englisch')}}</option>
             </select>
         </label>
 
@@ -64,20 +64,20 @@
 
         <input type="submit"
                id="submit"
-               value="Eingabe">
+               value="{{_('Eingabe')}}">
     </form>
 
     <div>
         {% if letters %}
-            Mögliche Buchstaben:
+            {{_('Mögliche Buchstaben:')}}
             {% for letter in letters %}
                 {{ letter }}: {{ letters[letter]}},
             {% end %}
-        {% else %}Nichts gefunden.{% end %}
+        {% else %}{{_('Nichts gefunden.')}}{% end %}
     </div>
 
     {% if word_count > 0 %}
-        {{min(word_count, max_words)}}/{{word_count}} passenden Wörter:
+        {{_('%d/%d passenden Wörter:') % (min(word_count, max_words), word_count)}}
         <ul>{% for word in words %}<li>{{word}}</li>{% end %}</ul>
     {% end %}
 

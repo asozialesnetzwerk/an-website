@@ -6,17 +6,17 @@
     <script defer src="{{fix_static('js/uptime.js')}}"></script>
 {% end %}
 
-{% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}
+{% block description %}{{_('Diese Webseite läuft bereits %s') % uptime_str}}{% end %}
 
 {% block body %}
     <div>
-        Diese Webseite läuft bereits <div id="uptime" uptime="{{uptime}}">{{uptime_str}}</div>
+        {% raw _('Diese Webseite läuft bereits %s') % f'<div id="uptime" uptime="{uptime}">{uptime_str}</div>' %}
     </div>
     {% if availability is not None %}
         <div>
-            <br>Verfügbarkeit: {{f"{availability:.2f}".replace(".", ",")}} %<br>
+            <br>{{_('Verfügbarkeit: %s %%') % f"{availability:.2f}".replace(".", "," if lang[:2] == "de" else ".")}}<br>
             <img src="{{fix_url('/betriebszeit/verfuegbarkeit.svg', a=int(availability * 100) / (100.0 * 100))}}"
-                 alt="Verfügbarkeits-Tortendiagramm"
+                 alt="{{_('Verfügbarkeits-Tortendiagramm')}}"
                  width="100"
                  height="100">
         </div>

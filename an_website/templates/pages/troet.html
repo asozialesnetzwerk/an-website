@@ -8,19 +8,19 @@
 {% block body %}
 <form method="get">
     {% raw form_appendix %}
-    <label>Text zum Tröten
+    <label>{{_('Text zum Tröten')}}
         <textarea name="text">{{text}}</textarea>
     </label>
-    <label>Mastodon-Instanz
+    <label>{{_('Mastodon-Instanz')}}
         <input name="instance" type="text" value="{{instance}}">
     </label>
-    <label tooltip="Speichere die eingegebene Instanz in einem Cookie"
-           tooltip-position="right">Speichere Instanz
+    <label tooltip="{{_('Speichere die eingegebene Instanz in einem Cookie')}}"
+           tooltip-position="right">{{_('Speichere Instanz')}}
         <input type="checkbox"
                {% if save %} checked {% end %}
                name="save"
                value="sure">
     </label>
-    <button tooltip="Teile auf Mastodon" type="submit">Tröt!</button>
+    <button tooltip="{{_('Teile auf Mastodon')}}" type="submit">{{_('Tröt!')}}</button>
 </form>
 {% end %}

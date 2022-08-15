@@ -1,2 +1,2 @@
 {% extends "../base.html" %}
-{% block body %}<p>Deine IP-Adresse ist {{ip}} {% raw emoji2html(flag) %}</p>{% end %}
+{% block body %}<p>{% raw _("Deine IP-Adresse ist %s %s") % (ip, emoji2html(flag)) %}</p>{% end %}

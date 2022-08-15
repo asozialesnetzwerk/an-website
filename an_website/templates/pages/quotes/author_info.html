@@ -1,13 +1,12 @@
 {% extends "info.html" %}
 
 {% block info_column %}
-    Autor: {{author}}
+    {{_('Autor: %s') % author}}
     {% if author.info is not None %}
         <div>
             <p id="author-info">{{ author.info[1] }}</p>
             <br>
-            Quelle: <a href="{{fix_url(author.info[0])}}">Wikipedia</a>
-            (Stand: {{author.info[2].date()}})
+            {% raw _('Quelle: %s (Stand: %s)') % (f'<a href="{fix_url(author.info[0])}">Wikipedia</a>', author.info[2].date())%}
         </div>
     {% end %}
 {% end %}

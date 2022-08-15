@@ -8,7 +8,7 @@
 {% block body %}
     <form method="post" action="{{fix_url('/zitate/create-wrong-quote')}}">
         <label>
-            Zitat:
+            {{_('Zitat')}}
              <select name="quote-2">
                  {% for quote in quotes %}
                      {% if isinstance(quote, str) %}
@@ -21,7 +21,7 @@
         </label>
 
         <label>
-            Richtiger Autor:
+            {{_('Richtiger Autor')}}
             <select name="real-author-2">
                 {% for author in real_authors %}
                     {% if isinstance(author, str) %}
@@ -34,7 +34,7 @@
         </label>
 
         <label>
-            Falscher Autor:
+            {{_('Falscher Autor')}}
             <select name="fake-author-2">
                 {% for author in fake_authors %}
                     {% if isinstance(author, str) %}
@@ -49,6 +49,6 @@
         <input id="submit-button"
                class="button"
                type="submit"
-               value="Zitat erstellen">
+               value="{{_('Zitat erstellen')}}">
     </form>
 {% end %}
