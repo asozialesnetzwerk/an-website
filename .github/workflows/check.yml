@@ -32,12 +32,20 @@ jobs:
         run: isort .
       - name: Run Black
         run: black .
+      - name: Download Deno
+        run: |
+          curl -sSfLo deno.zip https://github.com/denoland/deno/releases/download/v1.24.3/deno-x86_64-unknown-linux-gnu.zip
+          unzip deno.zip
+      - name: Format with Deno
+        run: ./deno fmt --options-indent-width 4 --ignore=an_website/static,an_website/elasticsearch,an_website/hangman_solver/words,an_website/soundboard/info.json an_website
       - name: Minify JS files
         run: ./scripts/minify_js.py --clean
       - name: Minify CSS files
         run: ./scripts/minify_css.py --clean
       - name: Generate humans.txt
         run: ./scripts/humans.py
+      - name: Cleanup
+        run: rm deno*
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -155,6 +163,36 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
       - name: Install ESLint
-        run: npm install -g eslint
+        run: npm install -g eslint@^8
       - name: Run ESLint
-        run: eslint --no-eslintrc --env=es6 --ignore-pattern=an_website/static/js/* an_website/
+        run: eslint --env=es2020 --ignore-pattern=an_website/static/js/* an_website
+
+  deno_lint:
+    name: Deno Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Download Deno
+        run: |
+          curl -sSfLo deno.zip https://github.com/denoland/deno/releases/download/v1.24.3/deno-x86_64-unknown-linux-gnu.zip
+          unzip deno.zip
+      - name: Lint with Deno
+        run: ./deno lint --ignore=an_website/static an_website
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -x -o all
+        with:
+          check_together: yes
+          ignore_paths: venv
+          ignore_names: screenfetch

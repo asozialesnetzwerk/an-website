@@ -131,7 +131,7 @@ jobs:
           name: artifact
       - name: Deploy website
         run: |
-          curl -s -S -T *.whl https://asozial.org/api/update/ \
+          curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
 
   gh_pages:

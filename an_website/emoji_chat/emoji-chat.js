@@ -12,54 +12,57 @@
 
     const timeStampToText = (timestamp) => {
         return new Date(timestamp + 1651075200000).toLocaleString();
-    }
+    };
 
     const appendMessage = (msg) => {
-        let el = document.createElement("div");
+        const el = document.createElement("div");
         if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
-            for (let emoji of msg.author) {
+            for (const emoji of msg.author) {
                 el.append(emojiToIMG(emoji));
             }
             el.innerHTML += ": ";
-            for (let emoji of msg.content)
+            for (const emoji of msg.content) {
                 el.append(emojiToIMG(emoji));
+            }
         } else {
             el.innerText = `${msg.author.join("")}: ${msg.content.join("")}`;
         }
 
         el.setAttribute("tooltip", timeStampToText(msg.timestamp));
         messageSection.append(el);
-    }
+    };
 
     const displayCurrentUser = (name) => {
         currentUser.innerHTML = "";
         if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
-            for (let emoji of name) {
+            for (const emoji of name) {
                 currentUser.append(emojiToIMG(emoji));
             }
             return;
         }
         currentUser.innerText = name.join("");
-    }
+    };
 
     const emojiToIMG = (emoji) => {
-        let emojiCode = [...emoji].map(e => e.codePointAt(0).toString(16).padStart(4, '0')).join(`-`).toUpperCase();
+        const emojiCode = [...emoji].map((e) =>
+            e.codePointAt(0).toString(16).padStart(4, "0")
+        ).join(`-`).toUpperCase();
 
-        let imgEl = document.createElement("img");
+        const imgEl = document.createElement("img");
 
         imgEl.src = `/static/img/openmoji-svg-14.0/${emojiCode}.svg`;
-        imgEl.classList.add("emoji")
+        imgEl.classList.add("emoji");
         imgEl.alt = emoji;
 
         return imgEl;
-    }
+    };
 
     const resetLastMessage = () => {
         if (lastMessage && !messageInput.value) {
             messageInput.value = lastMessage;
             lastMessage = "";
         }
-    }
+    };
 
     const setConnectionState = (state) => {
         let tooltip;
@@ -69,27 +72,28 @@
         } else if (state === "connected") {
             tooltip = "Mit Websocket verbunden!";
         } else if (state === "disconnected") {
-            tooltip = "Verbindung getrennt. Drücke hier um erneut zu versuchen.";
+            tooltip =
+                "Verbindung getrennt. Drücke hier um erneut zu versuchen.";
             connectionIndicator.onclick = () => {
                 reconnectTries = 0;
                 reconnectTimeout = 500;
                 connectionIndicator.onclick = () => {};
                 openWS();
-            }
+            };
         } else {
             console.error("invalid state", state);
             return;
         }
         connectionIndicator.setAttribute("state", state);
         connectionIndicator.setAttribute("tooltip", tooltip);
-    }
+    };
 
     const handleWebsocketData = (event) => {
         const data = JSON.parse(event.data);
         switch (data["type"]) {
             case "messages": {
                 messageSection.innerText = "";
-                for (let msg of data["messages"]) {
+                for (const msg of data["messages"]) {
                     appendMessage(msg);
                 }
                 break;
@@ -100,7 +104,7 @@
                 break;
             }
             case "init": {
-                displayCurrentUser(data["current_user"])
+                displayCurrentUser(data["current_user"]);
                 console.log("Connected as", data["current_user"].join(""));
                 setConnectionState("connected");
                 reconnectTimeout = 100;
@@ -127,45 +131,48 @@
                 console.error(`Invalid type ${data["type"]}`);
             }
         }
-    }
-
+    };
 
     const openWS = () => {
         setConnectionState("connecting");
-        let ws = new WebSocket(
-            (w.location.protocol === "https:" ? "wss:" : "ws:")
-            + `//${w.location.host}/websocket/emoji-chat`
+        const ws = new WebSocket(
+            (w.location.protocol === "https:" ? "wss:" : "ws:") +
+                `//${w.location.host}/websocket/emoji-chat`,
         );
-        let pingInterval = setInterval(() => ws.send(""), 10000);
+        const pingInterval = setInterval(() => ws.send(""), 10000);
         ws.onclose = (event) => {
             messageInput.form.onsubmit = () => {};
             if (event.wasClean) {
-                console.debug(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+                console.debug(
+                    `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
+                );
                 setConnectionState("disconnected");
                 return;
             }
-            console.debug(`Connection closed, reconnecting in ${reconnectTimeout}ms`);
+            console.debug(
+                `Connection closed, reconnecting in ${reconnectTimeout}ms`,
+            );
             setConnectionState("connecting");
             clearInterval(pingInterval);
             if (reconnectTries > 20) {
-                 // ~3 minutes not connected, just give up
+                // ~3 minutes not connected, just give up
                 setConnectionState("disconnected");
                 return;
             }
             setTimeout(
                 () => {
                     reconnectTimeout = Math.max(
-                        500,  // minimum 500ms, for a better curve
+                        500, // minimum 500ms, for a better curve
                         Math.floor(
                             // maximum 15s, so we don't have to wait too long
-                            Math.min(15000, 1.5 * reconnectTimeout - 200)
-                        )
+                            Math.min(15000, 1.5 * reconnectTimeout - 200),
+                        ),
                     );
                     reconnectTries++;
                     openWS(); // restart connection
                 },
-                reconnectTimeout
-            )
+                reconnectTimeout,
+            );
         };
         ws.onopen = (event) => console.debug("Opened WebSocket", event);
         ws.onmessage = handleWebsocketData;
@@ -178,14 +185,14 @@
                         {
                             "type": "message",
                             "message": messageInput.value,
-                        }
-                    )
+                        },
+                    ),
                 );
                 messageInput.value = "";
             }
             event.preventDefault();
-        }
-    }
+        };
+    };
     openWS();
 })();
 // @license-end

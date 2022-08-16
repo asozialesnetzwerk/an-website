@@ -99,7 +99,6 @@ def app() -> tornado.web.Application:
     assert isinstance(app, tornado.web.Application)
 
     app.settings["debug"] = True
-    app.settings["TESTING"] = True
 
     main.apply_config_to_app(app, config)
     es = main.setup_elasticsearch(app)  # pylint: disable=invalid-name
@@ -169,13 +168,26 @@ def fetch(
 ) -> FetchCallable:
     """Fetch a URL."""
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+
     host = f"http://127.0.0.1:{http_server_port[1]}"
-    return lambda url, **kwargs: http_client.fetch(
-        url
-        if url.startswith("http://") or url.startswith("https://")
-        else f"{host}/{url.removeprefix('/')}",
-        **{"raise_error": False, "follow_redirects": False, **kwargs},
-    )
+
+    async def _fetch(
+        url: str, **kwargs: Any
+    ) -> tornado.httpclient.HTTPResponse:
+        """Fetch a URL."""
+        if not url.startswith(("http://", "https://")):
+            url = f"{host}/{url.removeprefix('/')}"
+
+        kwargs.setdefault("raise_error", False)
+        kwargs.setdefault("follow_redirects", False)
+
+        try:
+            return await http_client.fetch(url, **kwargs)
+        except tornado.httpclient.HTTPClientError:
+            print(url, kwargs)
+            raise
+
+    return _fetch
 
 
 async def assert_valid_redirect(
@@ -207,9 +219,6 @@ def assert_valid_response(
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given status code and Content-Type header."""
     url = response.effective_url
-
-    if url.startswith("https://"):
-        return response
 
     assert response.code in codes or print(
         url, codes, response.code, response.body
@@ -261,13 +270,13 @@ async def check_html_page(
     assert html.find("body") is not None or print("no body found", url)
     html.make_links_absolute(response.effective_url)
     eff_url = urllib.parse.urlsplit(response.effective_url)
-    scheme_and_host = f"{eff_url.scheme}://{eff_url.netloc}"
-    checked_urls.add(url.removeprefix(scheme_and_host) or "/")
+    scheme_and_netloc = f"{eff_url.scheme}://{eff_url.netloc}"
+    checked_urls.add(url.removeprefix(scheme_and_netloc) or "/")
     found_ref_to_body = False
     responses_to_check: list[tornado.httpclient.HTTPResponse] = []
     for link_tuple in html.iterlinks():
         assert (  # do not allow links to insecure pages
-            link_tuple[2].startswith(scheme_and_host)
+            link_tuple[2].startswith(scheme_and_netloc)
             or link_tuple[2].startswith(
                 (
                     "https:",
@@ -293,10 +302,11 @@ async def check_html_page(
         link: str = link_tuple[2].split("#")[0]
         assert link == link.strip()
         if (
-            link.startswith(scheme_and_host)
-            and (link.removeprefix(scheme_and_host) or "/") not in checked_urls
+            link.startswith(scheme_and_netloc)
+            and (link.removeprefix(scheme_and_netloc) or "/")
+            not in checked_urls
         ):
-            checked_urls.add(link.removeprefix(scheme_and_host) or "/")
+            checked_urls.add(link.removeprefix(scheme_and_netloc) or "/")
             resp = assert_valid_response(
                 await fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type
@@ -304,13 +314,13 @@ async def check_html_page(
             )
             if (
                 resp.headers["Content-Type"] == "text/html;charset=utf-8"
-                and resp.effective_url.startswith(scheme_and_host)
+                and resp.effective_url.startswith(scheme_and_netloc)
                 and recursive > 0
             ):
                 responses_to_check.append(resp)
             if (
-                link.startswith(f"{scheme_and_host}/static/")
-                or link.startswith(f"{scheme_and_host}/soundboard/files/")
+                link.startswith(f"{scheme_and_netloc}/static/")
+                or link.startswith(f"{scheme_and_netloc}/soundboard/files/")
                 and resp.headers["Content-Type"] != "text/html;charset=utf-8"
             ):
                 # check if static file is linked with correct hash

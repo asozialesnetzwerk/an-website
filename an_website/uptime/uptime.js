@@ -6,10 +6,10 @@ function startDisplayingUptime() {
     uptimeDiv.style.fontFamily = "'clock-face', monospace";
     // the time the website got loaded minus the uptime
     const startTime = (performance.now() / 1000) - parseFloat(
-        uptimeDiv.getAttribute("uptime")
+        uptimeDiv.getAttribute("uptime"),
     );
 
-    const zeroPad = n => String(Math.floor(n)).padStart(2, "0");
+    const zeroPad = (n) => String(Math.floor(n)).padStart(2, "0");
 
     const displayUptime = () => {
         // the uptime: currentTime - (startTime - uptime at start)
@@ -20,9 +20,9 @@ function startDisplayingUptime() {
         const div_60_60 = Math.floor(div_60 / 60);
         uptimeDiv.innerText = [
             zeroPad(div_60_60 / 24), // days
-            zeroPad(div_60_60 % 24),  // hours
-            zeroPad(div_60 % 60),  // minutes
-            zeroPad(uptime % 60)  // seconds
+            zeroPad(div_60_60 % 24), // hours
+            zeroPad(div_60 % 60), // minutes
+            zeroPad(uptime % 60), // seconds
         ].join(":");
         uptimeDiv.setAttribute("uptime", String(uptime));
     };

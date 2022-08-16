@@ -38,7 +38,7 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
 from .. import DIR as ROOT_DIR
-from .. import GH_ORG_URL, GH_PAGES_URL, GH_REPO_URL
+from .. import GH_ORG_URL, GH_PAGES_URL, GH_REPO_URL, pytest_is_running
 from .base_request_handler import BaseRequestHandler
 from .static_file_handling import fix_static_path
 from .utils import (
@@ -182,8 +182,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
             as_html=self.content_type == "text/html",
             bumpscosity=self.get_bumpscosity(),
-            c=self.settings.get("TESTING")
-            or self.now.date() == date(self.now.year, 4, 1)
+            c=self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
             canonical_url=self.fix_url(
                 self.request.full_url().upper()
@@ -214,6 +213,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             now=self.now,
             settings=self.settings,
             short_title=self.short_title,
+            testing=pytest_is_running(),
             theme=self.get_display_theme(),
             title=self.title,
             apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
@@ -222,11 +222,11 @@ class HTMLRequestHandler(BaseRequestHandler):
         )
         namespace.update(
             {
-                "🥚": self.settings.get("TESTING")
+                "🥚": pytest_is_running()
                 or timedelta()
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2),
-                "🦘": self.settings.get("TESTING")
+                "🦘": pytest_is_running()
                 or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
             }
         )

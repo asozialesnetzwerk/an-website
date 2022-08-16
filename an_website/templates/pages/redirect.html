@@ -10,7 +10,7 @@
     <p>
         Willst du wirklich <strong>{{redirect_url.split("?")[0]}}</strong> öffnen? Für die Inhalte auf
         fremden Seiten können wir keine Garantie bieten. Weitergehen ist auf eigene Gefahr.
-        {% if discord %}
+        {% if discord and not testing %}
             <br>
             Wenn du Discord nicht verwenden möchtest, kannst du auch Matrix nutzen,
             da bei uns alle Nachrichten gebridget werden. Dies kannst du zum Beispiel

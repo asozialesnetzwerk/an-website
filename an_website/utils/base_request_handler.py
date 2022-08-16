@@ -50,7 +50,13 @@ from tornado.web import (
     RequestHandler,
 )
 
-from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, ORJSON_OPTIONS
+from .. import (
+    EVENT_ELASTICSEARCH,
+    EVENT_REDIS,
+    NAME,
+    ORJSON_OPTIONS,
+    pytest_is_running,
+)
 from .static_file_handling import FILE_HASHES_DICT
 from .utils import (
     THEMES,
@@ -640,7 +646,7 @@ class BaseRequestHandler(RequestHandler):
             if self.redirect_to_canonical_domain():
                 return
 
-            if not self.settings.get("TESTING") and (
+            if not pytest_is_running() and (
                 days := random.randint(0, 31337)  # nosec: B311
             ) in {69, 420, 1337, 31337}:
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")

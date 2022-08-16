@@ -18,15 +18,15 @@
     {% end %}
     <ul class="list" id="pages-list">
         {% for info in handler.settings.get("MODULE_INFOS") %}
-            {% if not info.hidden and not info.path is None and not info.path == "/" %}
+            {% if not (info.hidden or not info.path or info.path == "/") %}
                 <li>
                     <a href="{{fix_url(info.path)}}">{{info.name}}</a>:
                     {{info.description}}
 
-                    {% if info.sub_pages is not None and len(info.sub_pages) > 0 %}
+                    {% if info.sub_pages %}
                         <ul class="sub-list">
                             {% for page_info in info.sub_pages %}
-                                {% if not page_info.hidden and page_info.path is not None %}
+                                {% if not page_info.hidden and page_info.path %}
                                     <li>
                                         <a href="{{fix_url(page_info.path)}}"
                                             >{{page_info.name}}</a>:
@@ -41,7 +41,7 @@
         {% end %}
     </ul>
 
-    {% if settings.get("ONION_ADDRESS") is not None and not request.host_name.endswith(".onion") %}
+    {% if settings.get("ONION_ADDRESS") and not request.host_name.endswith(".onion") %}
         <section id="onion-address-section">
             Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
             <a href="{{settings.get('ONION_ADDRESS')}}"
