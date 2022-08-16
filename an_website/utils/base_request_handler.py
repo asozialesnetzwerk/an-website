@@ -487,14 +487,14 @@ class BaseRequestHandler(RequestHandler):
 
     def get_user_id(self) -> str:
         """Get the user id saved in the cookie or create one."""
-        _user_id = self.get_secure_cookie(
+        cookie = self.get_secure_cookie(
             "user_id",
             max_age_days=90,
             min_version=2,
         )
-        user_id = (
-            str(uuid.uuid4()) if _user_id is None else _user_id.decode("ascii")
-        )
+
+        user_id = cookie.decode("UTF-8") if cookie else str(uuid.uuid4())
+
         # save it in cookie or reset expiry date
         if not self.get_secure_cookie(
             "user_id", max_age_days=30, min_version=2
@@ -506,6 +506,7 @@ class BaseRequestHandler(RequestHandler):
                 path="/",
                 samesite="Strict",
             )
+
         return user_id
 
     def handle_accept_header(
@@ -564,7 +565,7 @@ class BaseRequestHandler(RequestHandler):
 
         def keydecode(token: str) -> None | str:
             try:
-                return b64decode(token).decode("utf-8")
+                return b64decode(token).decode("UTF-8")
             except ValueError:
                 return None
 
@@ -964,7 +965,7 @@ class BaseRequestHandler(RequestHandler):
         if self.now.date() == date(self.now.year, 4, 27):
             if isinstance(chunk, bytes):
                 with contextlib.suppress(UnicodeDecodeError):
-                    chunk = chunk.decode("utf-8")
+                    chunk = chunk.decode("UTF-8")
             if isinstance(chunk, str):
                 chunk = regex.sub(
                     r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",

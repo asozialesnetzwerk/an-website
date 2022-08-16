@@ -29,7 +29,7 @@ from ..utils.utils import name_to_id, replace_umlauts
 
 DIR = os.path.dirname(__file__)
 
-with open(os.path.join(DIR, "info.json"), encoding="utf-8") as file:
+with open(os.path.join(DIR, "info.json"), encoding="UTF-8") as file:
     info = json.loads(file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}

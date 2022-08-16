@@ -16,7 +16,7 @@ repos:
       - id: fix-byte-order-marker
       - id: mixed-line-ending
       - id: pretty-format-json
-        args: [--autofix, --no-ensure-ascii]
+        args: [--autofix, --no-ensure-ascii, --no-sort-keys]
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
   - repo: https://github.com/Lucas-C/pre-commit-hooks

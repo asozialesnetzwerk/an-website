@@ -15,9 +15,9 @@
 
 from __future__ import annotations
 
-import base64
 import os
 from asyncio import Future
+from base64 import b64decode, b64encode
 
 from tornado.web import HTTPError
 
@@ -57,7 +57,7 @@ def get_module_info() -> ModuleInfo:
 # the max char count of the text to process
 MAX_CHAR_COUNT = 32768
 
-with open(os.path.join(DIR, "config.sw"), encoding="utf-8") as file:
+with open(os.path.join(DIR, "config.sw"), encoding="UTF-8") as file:
     DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
 
 
@@ -102,18 +102,13 @@ class SwappedWords(HTMLRequestHandler):
             )
             if cookie is not None:
                 # decode the base64 text
-                config_str = str(
-                    base64.b64decode(cookie.encode("utf-8")), "utf-8"
-                )
+                config_str = b64decode(cookie).decode("UTF-8")
         else:
             # save the config in a cookie
             self.set_cookie(
                 name="swapped-words-config",
-                value=str(
-                    # encode the config as base64
-                    base64.b64encode(config_str.encode("utf-8")),
-                    "utf-8",
-                ),
+                # encode the config as base64
+                value=b64encode(config_str.encode("UTF-8")).decode("UTF-8"),
                 expires_days=1000,
                 path=self.request.path,
                 SameSite="Strict",

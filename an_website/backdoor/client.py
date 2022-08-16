@@ -173,7 +173,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     if headers is None:
         headers = {}
     if isinstance(body, str):
-        body = body.encode("utf-8")
+        body = body.encode("UTF-8")
     if isinstance(body, memoryview):
         body = body.tobytes()
     if isinstance(body, Iterable) and not isinstance(body, (bytes, bytearray)):
@@ -181,7 +181,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
-        headers["Host"] = url.netloc.encode("idna").decode("ascii")
+        headers["Host"] = url.netloc.encode("IDNA").decode("ASCII")
     if body and "Content-Length" not in header_names:
         headers["Content-Length"] = str(len(body))
     e, data = E, b""
@@ -207,7 +207,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
             + (quote(url.path) or "/")
             + ("?" + quote_plus(url.query) if url.query else "")
             + " HTTP/1.0\r\n"
-        ).encode("ascii")
+        ).encode("ASCII")
         + "\r\n".join(
             [f"{key}:{value}" for key, value in headers.items()] + [""]
         ).encode("latin-1")
@@ -258,12 +258,12 @@ def send(
     proxy_password: None | str = None,
 ) -> tuple[int, dict[str, str], Response | str | None]:
     """Send code to the backdoor API."""
-    body = code.encode("utf-8")
+    body = code.encode("UTF-8")
     if isinstance(url, str):
         url = urlsplit(url)
     if not url.path:
         url = url._replace(path="/api/backdoor")
-    key = f"Bearer {b64encode(key.encode('utf-8')).decode('ascii')}"
+    key = f"Bearer {b64encode(key.encode('UTF-8')).decode('ASCII')}"
     headers = {
         "Authorization": key,
         "Accept": "application/vnd.python.pickle",

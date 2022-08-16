@@ -22,7 +22,7 @@ import json  # pylint: disable=preferred-module
 FILE = "full_wordlist.txt"
 
 if __name__ == "__main__":
-    with open(FILE, encoding="utf-8") as file:
+    with open(FILE, encoding="UTF-8") as file:
         text = file.read().lower()
     words = text.splitlines()
     words_sorted = sorted(set(words))  # sort words unique
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     letters: dict[str, dict[str, int]] = {}
     for word in words_sorted:
         length = str(len(word))
-        with open(length + ".txt", "a", encoding="utf-8") as file:
+        with open(length + ".txt", "a", encoding="UTF-8") as file:
             file.write(word)
             file.write("\n")
         print(word)
@@ -50,5 +50,5 @@ if __name__ == "__main__":
         sorted_letters_json = json.dumps(dict(sorted_letters))
         print(key, sorted_letters_json)
 
-        with open(key + ".json", "w", encoding="utf-8") as file:
+        with open(key + ".json", "w", encoding="UTF-8") as file:
             file.write(sorted_letters_json)

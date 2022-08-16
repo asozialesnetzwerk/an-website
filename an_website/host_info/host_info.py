@@ -105,8 +105,8 @@ class HostInfo(HTMLRequestHandler):
         await self.render(
             "ansi2html.html",
             ansi=[
-                self.SCREENFETCH_CACHE.value.decode("utf-8"),
-                (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("utf-8"),
+                self.SCREENFETCH_CACHE.value.decode("UTF-8"),
+                (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("UTF-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
@@ -150,7 +150,7 @@ class UwUHostInfo(HTMLRequestHandler):
         if head:
             return
 
-        uwufetch = uwufetch_bytes.decode("utf-8").split("\n\n")
+        uwufetch = uwufetch_bytes.decode("UTF-8").split("\n\n")
         await self.render(
             "ansi2html.html",
             ansi=uwufetch,

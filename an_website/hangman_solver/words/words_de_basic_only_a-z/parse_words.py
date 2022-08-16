@@ -141,6 +141,6 @@ if __name__ == "__main__":  # noqa: C901
         title = regex.sub(r"\[\[([^]|]+)(?:\|[^]]+)?]]", r"\1", title)
         titles.add(title)
 
-    with open("output.txt", "w", encoding="utf-8") as file:
+    with open("output.txt", "w", encoding="UTF-8") as file:
         file.write("\n".join(titles))
         file.close()

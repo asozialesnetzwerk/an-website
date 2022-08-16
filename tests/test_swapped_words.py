@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-import base64
+from base64 import b64encode
 
 import orjson as json
 import pytest
@@ -240,7 +240,7 @@ async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
     assert morsel["path"] == "/vertauschte-woerter"
     assert morsel["samesite"] == "Strict"
     assert morsel.key == "swapped-words-config"
-    assert morsel.value == base64.b64encode(b"abc <=> xyz").decode("utf-8")
+    assert morsel.value == b64encode(b"abc <=> xyz").decode("UTF-8")
 
     response2 = await fetch(
         "/vertauschte-woerter",

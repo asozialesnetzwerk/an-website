@@ -104,7 +104,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         ):
             return super().finish(chunk)
 
-        chunk = chunk.decode("utf-8") if isinstance(chunk, bytes) else chunk
+        chunk = chunk.decode("UTF-8") if isinstance(chunk, bytes) else chunk
 
         if as_markdown:
             return super().finish(

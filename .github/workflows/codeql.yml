@@ -10,7 +10,7 @@ on:
 jobs:
 
   analyze:
-    name: Analyze
+    name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -19,15 +19,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ "python", "javascript" ]
-        # CodeQL supports [ "cpp", "csharp", "go", "java", "javascript", "python" ]
-        # Learn more:
-        # https://docs.github.com/en/free-pro-team@latest/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#changing-the-languages-that-are-analyzed
+        language: [ "Python", "JavaScript" ]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Install libcurl4-openssl-dev for compiling PycURL
-      if: matrix.language == 'python'
+      if: matrix.language == 'Python'
       run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev

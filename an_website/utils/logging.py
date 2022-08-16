@@ -116,7 +116,7 @@ class WebhookFormatter(DatetimeFormatter):
         """Format the specified record as text."""
         record.message = record.getMessage()
         if self.escape_message:
-            record.message = json.dumps(record.message).decode("utf-8")[1:-1]
+            record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
         return self.formatMessage(record)

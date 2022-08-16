@@ -11,7 +11,8 @@ jobs:
   check_emoji:
     name: Look for Emoji in commit message
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -20,7 +21,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install required library
-        run: pip install "emoji~=2.0"
+        run: pip install "emoji==2.*"
       - name: Run the check
         shell: python
         run: |

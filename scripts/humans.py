@@ -59,7 +59,7 @@ def generate_humans_txt() -> str:
 
     people: dict[str, int] = {}
 
-    for line in result.stdout.decode("utf-8").split("\n"):
+    for line in result.stdout.decode("UTF-8").split("\n"):
         if not (line := line.strip()):
             continue
         count, name = re.split(r"\s+", line, 1)
@@ -128,7 +128,7 @@ def add_data_to_output(
 
 def main() -> None | int | str:  # pylint: disable=useless-return
     """Write the humans.txt file."""
-    HUMANS_TXT.write_text(generate_humans_txt(), "utf-8")
+    HUMANS_TXT.write_text(generate_humans_txt(), "UTF-8")
 
     return None
 

@@ -20,7 +20,7 @@ from __future__ import annotations
 FILE = "full_wordlist.txt"
 
 if __name__ == "__main__":
-    with open(FILE, encoding="utf-8") as file:
+    with open(FILE, encoding="UTF-8") as file:
         text = (
             file.read()
             .lower()
@@ -30,5 +30,5 @@ if __name__ == "__main__":
             .replace("ß", "ss")
         )
 
-    with open(FILE, "w", encoding="utf-8") as file:
+    with open(FILE, "w", encoding="UTF-8") as file:
         file.write(text)

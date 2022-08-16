@@ -62,7 +62,7 @@ FILE_NAMES, LANGUAGES = get_file_names_and_languages()
 def get_words(file_name: str) -> frozenset[str]:
     """Get the words with the file_name and return them."""
     with open(
-        os.path.join(BASE_WORD_DIR, f"{file_name}.txt"), encoding="utf-8"
+        os.path.join(BASE_WORD_DIR, f"{file_name}.txt"), encoding="UTF-8"
     ) as file:
         return frozenset(file.read().splitlines())
 
@@ -71,7 +71,7 @@ def get_words(file_name: str) -> frozenset[str]:
 def get_letters(file_name: str) -> dict[str, int]:
     """Get the letters dict with the file_name and return it."""
     with open(
-        os.path.join(BASE_WORD_DIR, f"{file_name}.json"), encoding="utf-8"
+        os.path.join(BASE_WORD_DIR, f"{file_name}.json"), encoding="UTF-8"
     ) as file:
         # we know the files, so we know the type
         return cast(dict[str, int], json.loads(file.read()))

@@ -77,9 +77,9 @@ class Backdoor(APIRequestHandler):
         if not (EVENT_REDIS.is_set() and session_id in self.sessions):
             return False
         session: dict[str, Any] = self.sessions[session_id].copy()
-        session["self"] = None
-        session["app"] = None
-        session["settings"] = None
+        session.pop("self", None)
+        session.pop("app", None)
+        session.pop("settings", None)
         for key, value in tuple(session.items()):
             try:
                 session[key] = pickletools.optimize(

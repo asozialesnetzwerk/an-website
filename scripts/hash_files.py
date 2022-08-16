@@ -43,7 +43,7 @@ def hash_all_files() -> str:
 
 
 FILE_HASHES = hash_all_files()
-HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("utf-8"))
+HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("UTF-8"))
 
 
 def main() -> None | int | str:  # pylint: disable=useless-return

@@ -31,7 +31,7 @@ def read(filename: str) -> str:
     """Load the contents of a file."""
     root_dir = os.path.dirname(__file__)
     filepath = os.path.join(root_dir, filename)
-    return Path(filepath).read_text("utf-8")
+    return Path(filepath).read_text("UTF-8")
 
 
 setup(

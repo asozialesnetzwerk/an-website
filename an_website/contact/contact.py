@@ -232,7 +232,7 @@ class ContactPage(HTMLRequestHandler):
             or f"{name or address or 'Jemand'} "
             f"will etwas über {self.request.host_name} schreiben."
         )
-        message.set_payload(text, "utf-8")
+        message.set_payload(text, "UTF-8")
         if honeypot := self.get_argument("message", ""):  # 🍯
             logger.info(
                 "rejected message: %s",

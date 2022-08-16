@@ -67,7 +67,7 @@ async def test_sending_email() -> None:
     content = random.randbytes(80).hex()
     message = Message()
     message["Subject"] = subject
-    message.set_payload(content, "utf-8")
+    message.set_payload(content, "UTF-8")
     await asyncio.to_thread(
         contact.send_message,
         message=message,
@@ -90,7 +90,7 @@ async def test_sending_email() -> None:
             and email["to"][0]["name"] == "an-website"
             and email["to"][0]["address"] == f"{user}@restmail.net"
             and email["headers"]["content-type"]
-            == 'text/plain; charset="utf-8"'
+            == 'text/plain; charset="UTF-8"'
         ):
             break
     else:

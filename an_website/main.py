@@ -95,7 +95,7 @@ IGNORED_MODULES = {
 }
 
 CONFIG = ConfigParser(interpolation=None)
-CONFIG.read("config.ini", encoding="utf-8")
+CONFIG.read("config.ini", encoding="UTF-8")
 
 logger = logging.getLogger(__name__)
 
@@ -294,7 +294,6 @@ def make_app(config: ConfigParser) -> str | Application:
         ),
         websocket_ping_interval=10,
         # Template settings
-        autoescape="xhtml_escape",
         template_path=TEMPLATES_DIR,
         template_whitespace="oneline",
     )
@@ -522,9 +521,9 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
     )
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = b64encode(
         sha256(
-            app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ascii")
+            app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ASCII")
         ).digest()
-    ).decode("ascii")
+    ).decode("ASCII")
     app.settings["ELASTIC_APM"]["CLIENT"] = ElasticAPM(app).client
 
 
@@ -643,7 +642,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 continue
 
             body = orjson.loads(
-                path.read_bytes().replace(b"{prefix}", prefix.encode("ascii"))
+                path.read_bytes().replace(b"{prefix}", prefix.encode("ASCII"))
             )
 
             name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
@@ -757,7 +756,7 @@ def signal_handler(  # noqa: D103  # pragma: no cover
     # pylint: disable=unused-argument, missing-function-docstring
     if signalnum in {signal.SIGINT, signal.SIGTERM}:
         EVENT_SHUTDOWN.set()
-    if hasattr(signal, "SIGHUP") and signalnum == signal.SIGHUP:
+    if signalnum == getattr(signal, "SIGHUP", None):
         EVENT_SHUTDOWN.set()
 
 
@@ -765,6 +764,8 @@ def install_signal_handler() -> None:  # pragma: no cover
     """Install the signal handler."""
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+    if hasattr(signal, "SIGHUP"):
+        signal.signal(signal.SIGHUP, signal_handler)
 
 
 def main() -> None | int | str:  # noqa: C901  # pragma: no cover
@@ -791,7 +792,6 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         )
 
     ignore_modules(CONFIG)
-
     app = make_app(CONFIG)
     if isinstance(app, str):
         return app

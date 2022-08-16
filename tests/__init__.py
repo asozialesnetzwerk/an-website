@@ -93,7 +93,6 @@ def app() -> tornado.web.Application:
     config.read(os.path.join(DIR, "config.ini"))
 
     main.ignore_modules(config)
-
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
 
     assert isinstance(app, tornado.web.Application)
@@ -101,6 +100,7 @@ def app() -> tornado.web.Application:
     app.settings["debug"] = True
 
     main.apply_config_to_app(app, config)
+
     es = main.setup_elasticsearch(app)  # pylint: disable=invalid-name
     redis = main.setup_redis(app)
 
@@ -264,7 +264,7 @@ async def check_html_page(
     assert_valid_html_response(response, codes)
 
     html = document_fromstring(
-        response.body.decode("utf-8"), base_url=response.effective_url
+        response.body.decode("UTF-8"), base_url=response.effective_url
     )
     assert html.find("head") is not None or print("no head found", url)
     assert html.find("body") is not None or print("no body found", url)
@@ -346,7 +346,7 @@ def assert_valid_html_response(
     """Assert a valid HTML response with the given status code."""
     assert_valid_response(response, "text/html;charset=utf-8", codes)
     effective_url = effective_url or response.effective_url.split("#")[0]
-    body = response.body.decode("utf-8")
+    body = response.body.decode("UTF-8")
     # check if body is valid HTML5
     spam = HTMLParser(namespaceHTMLElements=False)
     root = spam.parse(body)
@@ -358,7 +358,7 @@ def assert_valid_html_response(
     ) or print(url_in_doc, effective_url)
     # check for template strings that didn't get replaced
     matches = regex.findall(
-        r"{\s*[a-zA-Z_]+\s*}", response.body.decode("utf-8")
+        r"{\s*[a-zA-Z_]+\s*}", response.body.decode("UTF-8")
     )
     assert not matches or print(effective_url, matches)
 

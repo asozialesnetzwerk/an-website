@@ -68,9 +68,9 @@
         let tooltip;
         connectionIndicator.onclick = () => {};
         if (state === "connecting") {
-            tooltip = "Versuche mit Websocket zu verbinden";
+            tooltip = "Versuche mit WebSocket zu verbinden";
         } else if (state === "connected") {
-            tooltip = "Mit Websocket verbunden!";
+            tooltip = "Mit WebSocket verbunden!";
         } else if (state === "disconnected") {
             tooltip =
                 "Verbindung getrennt. Drücke hier um erneut zu versuchen.";
@@ -88,7 +88,7 @@
         connectionIndicator.setAttribute("tooltip", tooltip);
     };
 
-    const handleWebsocketData = (event) => {
+    const handleWebSocketData = (event) => {
         const data = JSON.parse(event.data);
         switch (data["type"]) {
             case "messages": {
@@ -175,7 +175,7 @@
             );
         };
         ws.onopen = (event) => console.debug("Opened WebSocket", event);
-        ws.onmessage = handleWebsocketData;
+        ws.onmessage = handleWebSocketData;
 
         messageInput.form.onsubmit = (event) => {
             if (messageInput.value !== "") {

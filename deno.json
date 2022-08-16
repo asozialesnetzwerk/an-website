@@ -1,0 +1,33 @@
+{
+  "lint": {
+    "files": {
+      "include": [
+        "an_website"
+      ],
+      "exclude": [
+        "an_website/static"
+      ]
+    },
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": [
+        "an_website"
+      ],
+      "exclude": [
+        "an_website/static",
+        "an_website/elasticsearch",
+        "an_website/hangman_solver/words",
+        "an_website/soundboard/info.json"
+      ]
+    },
+    "options": {
+      "indentWidth": 4
+    }
+  }
+}

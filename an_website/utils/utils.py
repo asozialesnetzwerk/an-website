@@ -60,7 +60,7 @@ OpenMojiValue = Literal[False, "img"]  # , "font"]
 IP_HASH_SALT = {
     "date": datetime.utcnow().date(),
     "hasher": blake3(
-        blake3(datetime.utcnow().date().isoformat().encode("ascii")).digest()
+        blake3(datetime.utcnow().date().isoformat().encode("ASCII")).digest()
     ),
 }
 
@@ -525,7 +525,7 @@ def hash_bytes(*args: bytes, hasher: Any = None, size: int = 32) -> str:
         if isinstance(hasher, blake3)
         else hasher.digest()[:size]
     )
-    return b85encode(digest).decode("ascii")
+    return b85encode(digest).decode("ASCII")
 
 
 def hash_ip(
@@ -536,7 +536,7 @@ def hash_ip(
         address = ip_address(address)
     if IP_HASH_SALT["date"] != (date := datetime.utcnow().date()):
         IP_HASH_SALT["hasher"] = blake3(
-            blake3(date.isoformat().encode("ascii")).digest()
+            blake3(date.isoformat().encode("ASCII")).digest()
         )
         IP_HASH_SALT["date"] = date
     return hash_bytes(
@@ -619,7 +619,7 @@ async def ratelimit(
     tokens: int,
 ) -> tuple[bool, dict[str, str]]:
     """Take b1nzy to space using Redis."""
-    remote_ip = hash_bytes(remote_ip.encode("ascii"))
+    remote_ip = hash_bytes(remote_ip.encode("ASCII"))
     key = f"{redis_prefix}:ratelimit:{remote_ip}"
     if bucket:
         key = f"{key}:{bucket}"
@@ -650,7 +650,7 @@ async def ratelimit(
         headers["X-RateLimit-Remaining"] = str(result[2])
         headers["X-RateLimit-Reset"] = str(time.time() + reset_after)
         headers["X-RateLimit-Reset-After"] = str(reset_after)
-        headers["X-RateLimit-Bucket"] = hash_bytes(bucket.encode("ascii"))
+        headers["X-RateLimit-Bucket"] = hash_bytes(bucket.encode("ASCII"))
     # fmt: on
 
     return bool(result[0]), headers

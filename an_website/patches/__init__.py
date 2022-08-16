@@ -54,7 +54,7 @@ def apply() -> None:
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
-    certifi.contents = lambda: Path(certifi.where()).read_text("ascii")
+    certifi.contents = lambda: Path(certifi.where()).read_text("ASCII")
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {
             "sure": True,
@@ -145,7 +145,7 @@ def ensure_bytes(value: Any) -> bytes:
         return b"true" if value else b"false"
     if isinstance(value, bytes):
         return value
-    return str(value).encode("utf-8")
+    return str(value).encode("UTF-8")
 
 
 def parse_body_arguments(  # noqa: D103, C901

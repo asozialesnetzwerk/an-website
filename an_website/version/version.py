@@ -63,9 +63,9 @@ def get_file_hashes() -> str:
     """Return the file hashes."""
     with FILE_HASHES:
         if FILE_HASHES.value:
-            return cast(str, FILE_HASHES.value.decode("utf-8"))
+            return cast(str, FILE_HASHES.value.decode("UTF-8"))
         file_hashes = hash_all_files()
-        FILE_HASHES.value = file_hashes.encode("utf-8")
+        FILE_HASHES.value = file_hashes.encode("UTF-8")
         return file_hashes
 
 
@@ -75,7 +75,7 @@ def get_hash_of_file_hashes() -> str:
         if HASH_OF_FILE_HASHES.value:
             # .raw to fix bug with \x00 in hash
             return cast(str, HASH_OF_FILE_HASHES.raw.decode("utf-16-be"))
-        hash_of_file_hashes = hash_bytes(get_file_hashes().encode("utf-8"))
+        hash_of_file_hashes = hash_bytes(get_file_hashes().encode("UTF-8"))
         HASH_OF_FILE_HASHES.raw = hash_of_file_hashes.encode("utf-16-be")
         return hash_of_file_hashes
 

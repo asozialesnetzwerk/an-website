@@ -37,6 +37,9 @@ from ..utils.utils import ModuleInfo, Permission, ratelimit
 logger = logging.getLogger(__name__)
 
 EMOJIS = tuple(EMOJI_DATA)
+EMOJIS_NO_FLAGS = tuple(
+    emoji for emoji in EMOJIS if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
+)
 
 
 def get_module_info() -> ModuleInfo:
@@ -54,8 +57,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-MAX_MESSAGE_SAVE_COUNT = 20
-MAX_MESSAGE_LENGTH = 100
+MAX_MESSAGE_SAVE_COUNT = 100
+MAX_MESSAGE_LENGTH = 20
 
 
 def get_ms_timestamp() -> int:
@@ -126,12 +129,9 @@ def check_only_emojis(string: str) -> bool:
     """Check whether a string only includes emojis."""
     is_emoji: list[bool] = [False] * len(string)
 
-    def set_emojis(
+    def set_emojis(emoji: str, emoji_data: dict[str, Any]) -> str:
         # pylint: disable=unused-argument
-        emj: str,
-        emj_data: dict[str, Any],
-    ) -> str:
-        for i in range(emj_data["match_start"], emj_data["match_end"]):
+        for i in range(emoji_data["match_start"], emoji_data["match_end"]):
             is_emoji[i] = True
         return ""
 
@@ -143,6 +143,13 @@ def check_only_emojis(string: str) -> bool:
 def normalize_emojis(string: str) -> str:
     """Normalize emojis in a string."""
     return emojize(demojize(string))
+
+
+def get_random_name() -> str:
+    """Generate a random name."""
+    return normalize_emojis(
+        "".join(random.sample(EMOJIS_NO_FLAGS, 5))  # nosec: B311
+    )
 
 
 class ChatHandler(BaseRequestHandler):
@@ -176,13 +183,13 @@ class ChatHandler(BaseRequestHandler):
 
     async def get_name(self) -> str:
         """Get the name of the user."""
-        name: None | bytes = self.get_secure_cookie(
+        cookie = self.get_secure_cookie(
             "emoji-chat-name",
             max_age_days=90,
             min_version=2,
         )
-        if not name:
-            name = (await self.get_random_name()).encode("utf-8")
+
+        name = cookie.decode("UTF-8") if cookie else get_random_name()
 
         # save it in cookie or reset expiry date
         if not self.get_secure_cookie(
@@ -190,27 +197,25 @@ class ChatHandler(BaseRequestHandler):
         ):
             self.set_secure_cookie(
                 "emoji-chat-name",
-                name,
+                name.encode("UTF-8"),
                 expires_days=90,
                 path="/",
                 samesite="Strict",
             )
 
-        return normalize_emojis(name.decode("utf-8"))
+        geoip = await self.geoip() or {}
+        if "country_flag" in geoip:
+            flag = geoip["country_flag"]
+        elif self.request.host_name.endswith(".onion"):
+            flag = "🏴☠"
+        else:
+            flag = "❔"
+
+        return normalize_emojis(name + flag)
 
     async def get_name_as_list(self) -> list[str]:
         """Return the name as list of emojis."""
         return [emoji["emoji"] for emoji in emoji_list(await self.get_name())]
-
-    async def get_random_name(self) -> str:
-        """Get a random name as default."""
-        return normalize_emojis(
-            "".join(random.sample(EMOJIS, 5))  # nosec: B311
-            + (await self.geoip() or {}).get(
-                "country_flag",
-                "🏴‍☠" if self.request.host_name.endswith(".onion") else "❔",
-            )
-        )
 
     async def post(self) -> None:
         """Let users send messages and show the users the current messages."""

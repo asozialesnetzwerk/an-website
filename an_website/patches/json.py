@@ -94,13 +94,13 @@ def dumps(  # noqa: C901, D103
     if indent not in {None, 2, "  "}:
         if isinstance(indent, int):
             indent = " " * indent
-        indent_bytes = str(indent).encode("utf-8")
+        indent_bytes = str(indent).encode("UTF-8")
         output = regex.sub(
             rb"(?m)^\s+",
             lambda match: len(match[0]) // 2 * indent_bytes,
             output,
         )
-    return output.decode("utf-8")
+    return output.decode("UTF-8")
 
 
 def dump(obj: Any, fp: IO[str], **kwargs: Any) -> None:  # noqa: D103

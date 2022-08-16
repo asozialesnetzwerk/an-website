@@ -83,7 +83,7 @@ class SettingsPage(HTMLRequestHandler):
 
         token = self.get_argument("access_token", "")
         access_token: None | str = (
-            b64encode(token.encode("utf-8")).decode("ascii") if token else None
+            b64encode(token.encode("UTF-8")).decode("ASCII") if token else None
         )
 
         if save_in_cookie:

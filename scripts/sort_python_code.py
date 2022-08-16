@@ -66,7 +66,7 @@ def main() -> None | int | str:
 
 def sort_file(file: Path) -> str | bool:
     """Sort a given file."""
-    code = file.read_text("utf-8")
+    code = file.read_text("UTF-8")
 
     try:
         new_code = sort_classes(code.strip(), file).strip() + "\n"
@@ -81,7 +81,7 @@ def sort_file(file: Path) -> str | bool:
         return f"Sorting destroyed code: {error}"
 
     if code != new_code:
-        file.write_text(new_code, "utf-8")
+        file.write_text(new_code, "UTF-8")
         return True
 
     return False
@@ -236,12 +236,12 @@ def sort_classes(
 
     if isinstance(filename, str):
         # pylint: disable=redefined-variable-type
-        filename = filename.encode("utf-8")
+        filename = filename.encode("UTF-8")
 
     for class_ in classes:
         class_lines = sort_class(
             class_.code,
-            b"%b|%b" % (filename, str(class_.name).encode("utf-8")),
+            b"%b|%b" % (filename, str(class_.name).encode("UTF-8")),
         )
         assert len(class_.code.split("\n")) == len(class_lines)
         for i, line in enumerate(class_lines):
