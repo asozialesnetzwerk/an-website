@@ -32,20 +32,16 @@ jobs:
         run: isort .
       - name: Run Black
         run: black .
-      - name: Download Deno
-        run: |
-          curl -sSfLo deno.zip https://github.com/denoland/deno/releases/download/v1.24.3/deno-x86_64-unknown-linux-gnu.zip
-          unzip deno.zip
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
       - name: Format with Deno
-        run: ./deno fmt
+        run: deno fmt
       - name: Minify JS files
         run: ./scripts/minify_js.py --clean
       - name: Minify CSS files
         run: ./scripts/minify_css.py --clean
       - name: Generate humans.txt
         run: ./scripts/humans.py
-      - name: Cleanup
-        run: rm deno*
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
@@ -174,12 +170,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Download Deno
-        run: |
-          curl -sSfLo deno.zip https://github.com/denoland/deno/releases/download/v1.24.3/deno-x86_64-unknown-linux-gnu.zip
-          unzip deno.zip
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
       - name: Lint with Deno
-        run: ./deno lint
+        run: deno lint
 
   shellcheck:
     name: ShellCheck
