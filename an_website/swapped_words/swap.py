@@ -25,7 +25,7 @@ from .. import GH_ORG_URL
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from . import DIR
-from .sw_config_file import InvalidConfigError, SwappedWordsConfig
+from .config_file import InvalidConfigError, SwappedWordsConfig
 
 
 def get_module_info() -> ModuleInfo:

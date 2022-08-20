@@ -27,14 +27,14 @@ DIR = os.path.dirname(__file__)
 BASE_WORD_DIR = os.path.join(DIR, "words")
 
 
-def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
+def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
     """
     Find all the words and return a tuple of their file names and languages.
 
     The file names are each in a frozenset to guarantee immutability.
     """
     languages: set[str] = set()
-    file_names: set[str] = set()
+    filenames: set[str] = set()
     # iterate over the folders in the words dir
     for folder in os.listdir(BASE_WORD_DIR):
         # check if the folder is a words folder
@@ -43,35 +43,35 @@ def get_file_names_and_languages() -> tuple[frozenset[str], frozenset[str]]:
             languages.add(folder[6:])  # without: "words_"
             # the dir with the words in the current lang
             words_dir = os.path.join(BASE_WORD_DIR, folder)
-            for file_name in os.listdir(words_dir):
+            for filename in os.listdir(words_dir):
                 # ignore python files
-                if not file_name.endswith(".py"):
+                if not filename.endswith(".py"):
                     # the relativ file name
-                    rel_file_name = f"{folder}/{file_name}"
+                    rel_filename = f"{folder}/{filename}"
 
-                    # add the file name without the extension to file_names
-                    file_names.add(rel_file_name.split(".", 1)[0])
+                    # add the file name without the extension to filenames
+                    filenames.add(rel_filename.split(".", 1)[0])
 
-    return frozenset(file_names), frozenset(languages)
+    return frozenset(filenames), frozenset(languages)
 
 
-FILE_NAMES, LANGUAGES = get_file_names_and_languages()
+FILE_NAMES, LANGUAGES = get_filenames_and_languages()
 
 
 @lru_cache(10)
-def get_words(file_name: str) -> frozenset[str]:
-    """Get the words with the file_name and return them."""
+def get_words(filename: str) -> frozenset[str]:
+    """Get the words with the filename and return them."""
     with open(
-        os.path.join(BASE_WORD_DIR, f"{file_name}.txt"), encoding="UTF-8"
+        os.path.join(BASE_WORD_DIR, f"{filename}.txt"), encoding="UTF-8"
     ) as file:
         return frozenset(file.read().splitlines())
 
 
 @lru_cache(10)
-def get_letters(file_name: str) -> dict[str, int]:
-    """Get the letters dict with the file_name and return it."""
+def get_letters(filename: str) -> dict[str, int]:
+    """Get the letters dict with the filename and return it."""
     with open(
-        os.path.join(BASE_WORD_DIR, f"{file_name}.json"), encoding="UTF-8"
+        os.path.join(BASE_WORD_DIR, f"{filename}.json"), encoding="UTF-8"
     ) as file:
         # we know the files, so we know the type
         return cast(dict[str, int], json.loads(file.read()))

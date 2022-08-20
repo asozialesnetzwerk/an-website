@@ -2,11 +2,11 @@
 
 {% block head %}
     <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/table.css')}}">
+          href="{{fix_static('css/table.css')}}">
 {% end %}
 
 {% block body %}
-<table id="jslicense-labels1"  class="table">
+<table class="table">
     <thead>
         <tr>
             <th>Skript</th>
@@ -14,11 +14,11 @@
         </tr>
     </thead>
     <tbody>
-        {% for file_name, license, license_url in js_files %}
+        {% for path, license, license_url in js_files %}
         <tr>
             <td>
-                <a href="{{fix_static(f'js/{file_name}')}}"
-                   no-dynload >{{ file_name }}</a>
+                <a href="{{fix_static(f'js/{path}')}}"
+                   no-dynload >{{ path }}</a>
             </td>
             <td>
                 <a href="{{license_url}}" no-dynload>{{license}}</a>

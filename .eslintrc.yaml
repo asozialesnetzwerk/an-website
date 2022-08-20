@@ -1,7 +1,27 @@
-#extends: eslint:recommended
 root: true
+plugins:
+  - "@typescript-eslint"
+extends:
+  - "eslint:recommended"
+  - "plugin:@typescript-eslint/recommended"
+parser: "@typescript-eslint/parser"
+parserOptions:
+  ecmaVersion: latest
 env:
   es2020: true
   browser: true
 ignorePatterns:
   - an_website/static/js/*
+globals:
+  d: readonly
+  elById: readonly
+  error: readonly
+  fixHref: readonly
+  get: readonly
+  hideSitePane: readonly
+  log: readonly
+  post: readonly
+  showSitePane: readonly
+  scrollToId: readonly
+  setURLParam: readonly
+  w: readonly

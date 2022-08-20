@@ -4,9 +4,9 @@ set -eu
 if [ -d venv ]; then
   # shellcheck disable=SC1091
   if ! . venv/bin/activate; then
-    echo "Activating venv failed."
-    echo "You have a venv directory, but it isn't a valid Python virtual environment."
-    echo 'Either run "rm -r venv" or run "python -m venv venv".'
+    echo "Activating venv failed"
+    echo "You have a venv directory, but it isn't a valid Python virtual environment"
+    echo 'Either run "rm -r venv" or run "python -m venv venv"'
     exit 1
   fi
 fi
@@ -14,16 +14,16 @@ fi
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
 ${pip_install} "pip>=22.2" wheel; exit_code="$?"
 if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
-  echo "Installing pip>=22.2 and wheel failed."
+  echo "Installing pip>=22.2 and wheel failed"
   exit 1
 fi
 ${pip_install} -r requirements-dev.txt; exit_code="$?"
 if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
-  echo "Installing requirements in requirements-dev.txt failed."
+  echo "Installing requirements in requirements-dev.txt failed"
   exit 1
 fi
 
-python3 -m pre_commit install || echo "Running 'python3 -m pre_commit install' failed."
+python3 -m pre_commit install || echo "Running 'python3 -m pre_commit install' failed"
 
 FAILED=0
 
@@ -32,7 +32,7 @@ python3 -m isort . || FAILED=$(( 2 | FAILED ))
 
 echo Black:
 if ! python3 -m black --check --diff --color .; then
-  echo 'Run "python3 -m black ." to reformat.'
+  echo 'Run "python3 -m black ." to reformat'
   FAILED=$(( 4 | FAILED ))
 fi
 

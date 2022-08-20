@@ -2,7 +2,7 @@
 
 {% block head %}
     <link rel="stylesheet" type="text/css"
-          href="{{fix_static('style/table.css')}}">
+          href="{{fix_static('css/table.css')}}">
 {% end %}
 
 {% block body %}
@@ -10,7 +10,7 @@
         <h2>{{service.title}}</h2>
         <div style="max-width: 50rem">{{service.text}}</div>
         {% if service.infos %}
-            <table class='table'>
+            <table class="table">
                 <tbody>
                     {% for key, value in service.infos.items() %}
                         <tr>

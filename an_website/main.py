@@ -83,10 +83,10 @@ from .utils.utils import (
 IGNORED_MODULES = {
     "backdoor.client",
     "patches.*",
-    "quotes.quotes_image",
-    "quotes.share_page",
+    "quotes.image",
+    "quotes.share",
     "static.*",
-    "swapped_words.sw_config_file",
+    "swapped_words.config_file",
     "templates.*",
     "utils.base_request_handler",
     "utils.logging",

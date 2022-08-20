@@ -8,9 +8,11 @@
 /config.ini
 /.well-known
 
-# Unit test / coverage reports
+# cringe
+/node_modules
+
+# coverage reports
 /.coverage
-/.coverage.box*
 
 # nano backup files
 *~

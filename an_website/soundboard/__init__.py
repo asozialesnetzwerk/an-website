@@ -145,7 +145,7 @@ class SoundInfo(Info):
             for word in replace_umlauts(string.lower()).split(" ")
         )
 
-    def get_file_name(self) -> str:
+    def get_filename(self) -> str:
         """Parse the text to return the name of the file."""
         return regex.sub(
             r"[^a-z0-9_-]+",
@@ -163,7 +163,7 @@ class SoundInfo(Info):
         query: None | str = None,
     ) -> str:
         """Parse the info to a list element with an audio element."""
-        file = self.get_file_name()  # pylint: disable=redefined-outer-name
+        file = self.get_filename()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"files/{file}.mp3"
         file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
@@ -186,8 +186,8 @@ class SoundInfo(Info):
 
     def to_rss(self, url: None | str) -> str:
         """Parse the info to a RSS item."""
-        file_name = self.get_file_name()
-        rel_path = f"files/{file_name}.mp3"
+        filename = self.get_filename()
+        rel_path = f"files/{filename}.mp3"
         abs_path = os.path.join(DIR, rel_path)
         file_size = os.path.getsize(abs_path)
         mod_time_since_epoch = os.path.getmtime(abs_path)
@@ -210,7 +210,7 @@ class SoundInfo(Info):
             f"<link>{link}</link>"
             f"<enclosure url='{link}' type='audio/mpeg' length='{file_size}'>"
             "</enclosure>"
-            f"<guid>{file_name}</guid>"
+            f"<guid>{filename}</guid>"
             f"<pubDate>{modification_time}</pubDate>"
             "</item>"
         )

@@ -23,7 +23,7 @@ import regex
 import tornado.web
 import yaml
 
-from an_website.swapped_words import sw_config_file as sw_config
+from an_website.swapped_words import config_file as sw_config
 from an_website.swapped_words import swap
 
 from . import (

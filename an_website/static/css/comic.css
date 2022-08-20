@@ -1,0 +1,1 @@
+@font-face{font-family:comic;font-style:normal;src:url(/static/fonts/comic.woff2?v=0) format("woff2")}*{font-family:comic,Comic Sans MS,serif}@font-face{font-family:comic-mono;font-style:normal;src:url(/static/fonts/ComicMono.woff2?v=0) format("woff2")}pre *,.pre *{font-family:comic-mono,monospace,monospace}

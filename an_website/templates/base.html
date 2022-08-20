@@ -17,13 +17,13 @@
             <link rel="author" type="text/plain" href="{{fix_static('/humans.txt')}}">
             <link rel="canonical" href="{{canonical_url}}">
             <link rel="icon apple-touch-icon" type="image/png" href="{{fix_static('/favicon.png')}}">
-            <link rel="stylesheet" type="text/css" href="{{fix_static('style/base.css')}}">
-            {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('style/comic.css')}}">{% end %}
-            <link rel="stylesheet" type="text/css" href="{{fix_static(f'style/themes/{theme}.css')}}">
-            <script defer src="{{fix_static('js/utils.js')}}"></script>
-            <script defer src="{{fix_static('js/better_ui.js')}}"></script>
+            <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
+            {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('css/comic.css')}}">{% end %}
+            <link rel="stylesheet" type="text/css" href="{{fix_static(f'css/themes/{theme}.css')}}">
+            <script defer src="{{fix_static('js/utils/utils.js')}}"></script>
+            <script defer src="{{fix_static('js/utils/better_ui.js')}}"></script>
             {% if dynload %}
-                <script defer src="{{fix_static('js/dynamically_load.js')}}"></script>
+                <script defer src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
             {% if openmoji == "font" %}
                 <style>:root {font-family:OpenMojiColor,sans-serif}</style>

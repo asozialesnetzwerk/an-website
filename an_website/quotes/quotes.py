@@ -43,11 +43,11 @@ from . import (
     get_wrong_quotes,
 )
 from .create import get_module_info as get_create_mi
-from .quote_generator import get_module_info as get_generator_mi
+from .generator import get_module_info as get_generator_mi
+from .image import QuoteAsImage, create_image
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .quote_of_the_day import get_module_info as get_qod_mi
-from .quotes_image import QuoteAsImage, create_image
-from .share_page import ShareQuote
+from .share import ShareQuote
 
 logger = logging.getLogger(__name__)
 
@@ -275,7 +275,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             return
 
         await self.render(
-            "pages/quotes/quotes_main_page.html",
+            "pages/quotes/main_page.html",
             funny_quote_url=self.id_to_url(
                 *(
                     get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[

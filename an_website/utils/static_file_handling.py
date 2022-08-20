@@ -155,7 +155,7 @@ def get_handlers() -> list[Handler]:
         ),
     ]
     if sys.flags.dev_mode:
-        # add handlers for the not minified CSS files
+        # add handlers for the unminified CSS files
         handlers.append(
             (
                 r"/static/style/(.+\.css)",
@@ -163,25 +163,6 @@ def get_handlers() -> list[Handler]:
                 {"path": os.path.join(os.path.dirname(ROOT_DIR), "style")},
             )
         )
-        # add handlers for the not minified JS files
-        for folder, _, files in os.walk(
-            ROOT_DIR,
-            topdown=True,
-            onerror=None,
-            followlinks=False,
-        ):
-            if folder != os.path.join(STATIC_DIR, "js"):
-                handlers.extend(
-                    (
-                        f"/static/js/({file})",
-                        StaticFileHandler,
-                        {"path": folder},
-                    )
-                    for file in files
-                    if file.endswith(".js")
-                )
-
-    # static files in "/static/"; add it here (after the CSS & JS handlers)
     handlers.append(
         (r"/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
     )

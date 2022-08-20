@@ -1,0 +1,3 @@
+"use strict";// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
+(()=>{const l=elById("search-results"),a=elById("search-form"),s=elById("search-input");function u(t){l.innerHTML="";for(const e of t){const r=d.createElement("li");r.setAttribute("score",String(e.score)),r.innerHTML=`<a href='${fixHref(e.url)}'>${e.title}</a> ${e.description}`,l.appendChild(r)}}w.PopStateHandlers.search=t=>{s.value=t.state.query,u(t.state.results)},a.onsubmit=t=>{t.preventDefault(),get("/api/suche","q="+s.value,e=>{u(e),setURLParam("q",s.value,{query:s.value,results:e},"search",!0)})}})();// @license-end
+//# sourceMappingURL=search.js.map

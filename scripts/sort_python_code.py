@@ -72,7 +72,7 @@ def sort_file(file: Path) -> str | bool:
         new_code = sort_classes(code.strip(), file).strip() + "\n"
     except Exception as exc:  # pylint: disable=broad-except
         error = format_exception_only(exc)[-1].strip()  # type: ignore[arg-type]
-        return f"Sorting failed with: {error}"
+        return f"Sorting failed: {error}"
 
     try:
         compile(new_code, file, "exec")

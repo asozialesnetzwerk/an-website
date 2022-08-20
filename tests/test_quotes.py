@@ -23,7 +23,7 @@ import pytest
 import an_website.quotes.quotes as main_page
 from an_website import quotes
 from an_website.quotes import create
-from an_website.quotes.quotes_image import FILE_EXTENSIONS
+from an_website.quotes.image import FILE_EXTENSIONS
 
 from . import (
     WRONG_QUOTE_DATA,

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../quotes/create.ts"],
+  "sourcesContent": ["// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later\n\"use strict\";\n(() => {\n    const realAuthors = {};\n    for (const child of elById(\"quote-list\").children) {\n        // put the quotes with their authors into an object\n        realAuthors[child.value.toLowerCase()] = child\n            .attributes\n            .getNamedItem(\"data-author\")\n            .value;\n    }\n\n    const quoteInput = elById(\"quote-input\");\n    const realAuthorInput = elById(\"real-author-input\");\n    quoteInput.oninput = () => {\n        const author = realAuthors[quoteInput.value.toLowerCase()];\n        // when real author is found disable input and set the value\n        realAuthorInput.disabled = !!author; // !! ≙ check of truthiness\n        if (author) {\n            realAuthorInput.value = author;\n        }\n    };\n})();\n// @license-end\n"],
+  "mappings": "aAAA;AAAA,CAEC,IAAM,CACH,MAAMA,EAAc,CAAC,EACrB,UAAWC,KAAS,OAAO,YAAY,EAAE,SAErCD,EAAYC,EAAM,MAAM,YAAY,GAAKA,EACpC,WACA,aAAa,aAAa,EAC1B,MAGT,MAAMC,EAAa,OAAO,aAAa,EACjCC,EAAkB,OAAO,mBAAmB,EAClDD,EAAW,QAAU,IAAM,CACvB,MAAME,EAASJ,EAAYE,EAAW,MAAM,YAAY,GAExDC,EAAgB,SAAW,CAAC,CAACC,EACzBA,IACAD,EAAgB,MAAQC,EAEhC,CACJ,GAAG,EACH;",
+  "names": ["realAuthors", "child", "quoteInput", "realAuthorInput", "author"]
+}

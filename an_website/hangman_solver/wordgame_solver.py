@@ -54,16 +54,16 @@ async def find_solutions(word: str, ignore: Iterable[str] = ()) -> set[str]:
     ignore = (*ignore, word)
 
     for sol_len in (word_len - 1, word_len, word_len + 1):
-        file_name = f"words_de_basic/{sol_len}"
+        filename = f"words_de_basic/{sol_len}"
 
-        if file_name not in FILE_NAMES:
+        if filename not in FILE_NAMES:
             # don't test with this length
             # we don't have any words with this length
             continue
 
         solutions.update(
             test_word
-            for test_word in get_words(file_name)
+            for test_word in get_words(filename)
             if test_word not in ignore and distance(word, test_word) == 1
         )
 

@@ -26,6 +26,7 @@ from __future__ import annotations
 import logging
 import os
 from functools import cache
+from pathlib import Path
 
 from .. import STATIC_DIR
 from ..utils.request_handler import HTMLRequestHandler
@@ -56,31 +57,27 @@ LICENSES = {
 
 
 @cache
-def get_js_file_names_and_licenses() -> list[tuple[str, str, str]]:
+def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
     """Get the names of the JS files in this project.
 
-    Returns a list of tuples with file_name, license and license_url.
+    Returns a list of tuples with filename, license and license URL.
     """
     js_files_dir = os.path.join(STATIC_DIR, "js")
-    js_file_names = os.listdir(js_files_dir)
-
     licenses_list: list[tuple[str, str, str]] = []
-
-    for file_name in js_file_names:
-        with open(
-            os.path.join(js_files_dir, file_name), encoding="UTF-8"
-        ) as file:
-            license_line = file.readline().strip()
+    for path in Path(js_files_dir).rglob("*.js"):
+        if not path.is_file():
+            continue
+        filename = str(path.relative_to(js_files_dir))
+        with path.open(encoding="UTF-8") as file:
+            license_line = file.readline().strip().removeprefix('"use strict";')
         if not license_line.startswith("// @license "):
-            logger.warning("%s has no license comment", file_name)
+            logger.warning("%s has no license comment", filename)
             # TODO: exit in dev mode if this fails
             continue
         magnet, name = (
             license_line.removeprefix("// @license").strip().split(" ")
         )
-        licenses_list.append(
-            (file_name, name.strip(), LICENSES[magnet.strip()])
-        )
+        licenses_list.append((filename, name.strip(), LICENSES[magnet.strip()]))
     return licenses_list
 
 
@@ -92,5 +89,5 @@ class JSLicenses(HTMLRequestHandler):
         if head:
             return
         await self.render(
-            "pages/js_licenses.html", js_files=get_js_file_names_and_licenses()
+            "pages/js_licenses.html", js_files=get_js_filenames_and_licenses()
         )

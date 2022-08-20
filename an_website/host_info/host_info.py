@@ -37,7 +37,7 @@ from ..utils.utils import ModuleInfo, PageInfo, run
 
 logger = logging.getLogger(__name__)
 
-SCREENFETCH_PATH = os.path.join(ROOT_DIR, "screenfetch")
+SCREENFETCH_PATH = os.path.join(ROOT_DIR, "vendored/screenfetch")
 UWUFETCH_PATH = shutil.which("uwufetch")
 ENV = {
     "USER": NAME,

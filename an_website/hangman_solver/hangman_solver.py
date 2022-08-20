@@ -126,7 +126,7 @@ def filter_words(
     matches_always: bool = False,
 ) -> tuple[frozenset[str], dict[str, int]]:
     """Filter a set of words to get only those that match the regex."""
-    # if "words" is string it is a file_name
+    # if "words" is string it is a filename
     if isinstance(words, str):
         words = get_words(words)
 
@@ -169,7 +169,7 @@ def filter_words(
 
 
 def get_words_and_letters(
-    file_name: str,
+    filename: str,
     input_str: str,
     invalid: str,
     crossword_mode: bool,
@@ -179,12 +179,12 @@ def get_words_and_letters(
     matches_always = not invalid and not input_letters
 
     if matches_always and not crossword_mode:
-        return get_words(file_name), get_letters(file_name)
+        return get_words(filename), get_letters(filename)
 
     pattern = generate_pattern_str(input_str, invalid, crossword_mode)
 
     return filter_words(
-        file_name,
+        filename,
         regex.compile(pattern, regex.ASCII),  # pylint: disable=no-member
         input_letters,
         crossword_mode,
@@ -209,9 +209,9 @@ def solve_hangman(
     input_len = len(input_str)
 
     # to be short (is only the key of the words dict in __init__.py)
-    file_name = f"words_{language}/{input_len}"
+    filename = f"words_{language}/{input_len}"
 
-    if file_name not in FILE_NAMES:
+    if filename not in FILE_NAMES:
         # no words with the length
         return Hangman(
             input=input_str,
@@ -223,7 +223,7 @@ def solve_hangman(
 
     # do the solving
     matched_words, letters = get_words_and_letters(
-        file_name, input_str, invalid, crossword_mode
+        filename, input_str, invalid, crossword_mode
     )
 
     return Hangman(

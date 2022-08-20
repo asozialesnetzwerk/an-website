@@ -25,21 +25,19 @@ jobs:
           cache: pip
           cache-dependency-path: requirements*.txt
       - name: Install required stuff
-        run: grep -E "^(autoflake|black|isort|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
       - name: Run autoflake
-        run: autoflake --recursive --in-place --remove-all-unused-imports --remove-duplicate-keys --remove-unused-variables .
+        run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort
         run: isort .
       - name: Run Black
         run: black .
       - name: Setup Deno
         uses: denoland/setup-deno@v1
-      - name: Format with Deno
+      - name: Format TS with Deno
         run: deno fmt
-      - name: Minify JS files
-        run: ./scripts/minify_js.py --clean
-      - name: Minify CSS files
-        run: ./scripts/minify_css.py --clean
+      - name: Minify TS & CSS
+        run: ./minify.sh clean
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Push changes
@@ -127,7 +125,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Pylint + stuff required for checking the tests
-        run: grep -E "^(html5lib|pylint|pytest|rcssmin|rjsmin)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(html5lib|pylint|pytest)" requirements-ci.txt | xargs pip install
       - name: Run Pylint
         run: pylint -d fixme .
 
@@ -158,22 +156,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Node.js
         uses: actions/setup-node@v3
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install ESLint
-        run: npm install -g eslint@^8
+        run: pnpm install
       - name: Run ESLint
-        run: eslint --report-unused-disable-directives an_website
-
-  deno_lint:
-    name: Deno Lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-      - name: Lint with Deno
-        run: deno lint
+        run: pnpm eslint --report-unused-disable-directives an_website
 
   shellcheck:
     name: ShellCheck

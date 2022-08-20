@@ -1,4 +1,5 @@
 # Webseite des AN
+
 ![License](https://img.shields.io/pypi/l/an-website?label=License)
 ![Python](https://img.shields.io/pypi/pyversions/an-website?label=Python)
 ![Implementation](https://img.shields.io/pypi/implementation/an-website?label=Implementation)
@@ -15,22 +16,31 @@
 [![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)
 
 ## How to develop
+
 You need:
+
 - Git (obviously)
 - CPython 3.10+
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 - GCC and G++ for building some of the dependencies
 - Depending on the used version of CPython: Rust
+- For formatting TS and minifying TS & CSS: Deno
+- For linting TS: Node.js and pnpm (`npm install -g pnpm`)
 
 ### How to check
+
 - `./check.sh`
 
 ### How to run
+
 - `python -Xdev -m an_website` (`-Xdev` enables development mode)
 
 ## How to run (production)
+
 ### Linux
+
 You need:
+
 - CPython 3.10+
 - GCC and G++ for building some of the dependencies
 - Depending on the used version of CPython: Rust
@@ -41,16 +51,20 @@ You need:
 - UwUFetch
 
 How:
+
 - [Create a virtual environment](https://docs.python.org/3/library/venv.html)
 - Install an-website in the venv (`pip install an-website`)
 - create a `config.ini` and configure it
 - run it (`an-website` / `python -m an_website`) with Supervisord
 
 ### FreeBSD
+
 Should work similar to Linux.
 
 ### macOS
+
 Not supported, but should work.
 
 ### Windows
+
 Not supported, but maybe works.
