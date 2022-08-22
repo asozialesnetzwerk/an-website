@@ -158,7 +158,7 @@ def get_handlers() -> list[Handler]:
         # add handlers for the unminified CSS files
         handlers.append(
             (
-                r"/static/style/(.+\.css)",
+                r"/static/css/(.+\.css)",
                 StaticFileHandler,
                 {"path": os.path.join(os.path.dirname(ROOT_DIR), "style")},
             )

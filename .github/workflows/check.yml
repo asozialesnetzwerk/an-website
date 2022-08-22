@@ -34,8 +34,6 @@ jobs:
         run: black .
       - name: Setup Deno
         uses: denoland/setup-deno@v1
-      - name: Format TS with Deno
-        run: deno fmt
       - name: Minify TS & CSS
         run: ./minify.sh clean
       - name: Generate humans.txt
@@ -162,6 +160,22 @@ jobs:
         run: pnpm install
       - name: Run ESLint
         run: pnpm eslint --report-unused-disable-directives an_website
+
+  tsc:
+    name: tsc
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install tsc
+        run: pnpm install
+      - name: Run tsc
+        run: pnpm tsc
 
   shellcheck:
     name: ShellCheck

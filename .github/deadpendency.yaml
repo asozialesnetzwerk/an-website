@@ -2,6 +2,7 @@ ignore-failures:
   python:
     ## THE FOLLOWING IS UNHEALTHY AND USED IN PRODUCTION
     - accept-types
+    - brotli
     - html2text
     - python-geoip-geolite2-yplan
     - python-geoip-yplan

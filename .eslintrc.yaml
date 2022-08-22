@@ -1,17 +1,17 @@
 root: true
+parser: "@typescript-eslint/parser"
 plugins:
   - "@typescript-eslint"
 extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/recommended"
-parser: "@typescript-eslint/parser"
+ignorePatterns:
+  - "*.js"
 parserOptions:
   ecmaVersion: latest
 env:
   es2020: true
   browser: true
-ignorePatterns:
-  - an_website/static/js/*
 globals:
   d: readonly
   elById: readonly

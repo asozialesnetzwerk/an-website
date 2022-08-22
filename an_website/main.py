@@ -606,10 +606,16 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
             logger.exception("Connecting to Elasticsearch failed")
         else:
             if not EVENT_ELASTICSEARCH.is_set():
-                await setup_elasticsearch_configs(
-                    es, app.settings["ELASTICSEARCH_PREFIX"]
-                )
-            EVENT_ELASTICSEARCH.set()
+                try:
+                    await setup_elasticsearch_configs(
+                        es, app.settings["ELASTICSEARCH_PREFIX"]
+                    )
+                except Exception:  # pylint: disable=broad-except
+                    logger.exception(
+                        "An exception occured while configuring Elasticsearch"
+                    )
+                else:
+                    EVENT_ELASTICSEARCH.set()
         await asyncio.sleep(20)
 
 
