@@ -7,18 +7,18 @@
     } catch (e) {
         // fix for cool browsers like Pale Moon that don't support BigInt
         // eslint-disable-next-line no-global-assign
-        BigInt = Number;
+        BigInt = Number as unknown as BigIntConstructor;
         bigIntType = "number";
     }
-    const output = elById("output");
+    const output = elById("output") as HTMLInputElement;
 
-    const fields = [
-        elById("euro"), // Euro
-        elById("mark"), // Deutsche Mark
-        elById("ost"), // Ostmark
-        elById("schwarz"), // Ostmark auf dem Schwarzmarkt
+    const fields: [HTMLInputElement, HTMLInputElement, HTMLInputElement, HTMLInputElement] = [
+        elById("euro") as HTMLInputElement, // Euro
+        elById("mark") as HTMLInputElement, // Deutsche Mark
+        elById("ost") as HTMLInputElement, // Ostmark
+        elById("schwarz") as HTMLInputElement, // Ostmark auf dem Schwarzmarkt
     ];
-    const factors = [
+    const factors: [bigint | number, bigint | number, bigint | number, bigint | number] = [
         BigInt(1), // Euro
         BigInt(2), // Deutsche Mark
         BigInt(4), // Ostmark
@@ -26,18 +26,19 @@
     ];
     const numberRegex = /^(?:\d+|(?:\d+)?[,.]\d{1,2}|\d+[,.](?:\d{1,2})?)?$/;
 
-    const isZero = (str) => /^0*$/.test(str);
+    const isZero = (str: string) => /^0*$/.test(str);
 
-    function getDisplayValue(wert) {
+    function getDisplayValue(wert: string | bigint | number) : null | string {
         if (typeof wert === "string") {
             wert = strToBigInt(wert);
         }
 
         if (typeof wert !== bigIntType) {
             alert(`Ungültiger Wert ${wert} mit type ${typeof wert}`);
+            return null;
         }
 
-        if (bigIntType === "number") {
+        if (typeof wert === "number") {
             wert = Math.floor(wert);
         }
 
@@ -52,7 +53,7 @@
             // eslint-disable-next-line prefer-const
             let [int, dec] = num.split(".");
             dec = dec || "";
-            str = int + dec + "0".repeat(pow - dec.length);
+            str = int + dec + "0".repeat(parseInt(pow) - dec.length);
         }
         if (isZero(str)) {
             return "0"; // is empty string or 0
@@ -69,7 +70,7 @@
         );
     }
 
-    function strToBigInt(str) {
+    function strToBigInt(str: string): number | bigint {
         if (typeof str !== "string") {
             throw `${str} is not a String.`;
         }
@@ -91,10 +92,9 @@
         return BigInt(int + dec);
     }
 
-    w.PopStateHandlers["currencyConverter"] = (e) =>
-        setAllFields(strToBigInt(e.state["euro"]));
+    PopStateHandlers["currencyConverter"] = (e: PopStateEvent) => setAllFields(strToBigInt(e.state["euro"]));
 
-    const setEuroParam = (euroVal, push) =>
+    const setEuroParam = (euroVal: string, push) =>
         setURLParam(
             "euro",
             euroVal,
@@ -103,13 +103,13 @@
             push,
         );
 
-    function setAllFields(euroValue, ignored) {
-        setEuroParam(getDisplayValue(euroValue), false);
+    function setAllFields(euroValue: bigint | number, ignored: number | null = null) {
+        setEuroParam(getDisplayValue(euroValue) || "null", false);
         for (let i = 0; i < 4; i++) {
-            const value = getDisplayValue(euroValue * factors[i]);
-            fields[i].placeholder = value;
+            const value = getDisplayValue((euroValue as bigint) * (factors[i] as bigint));
+            fields[i].placeholder = value || "null";
             if (i !== ignored) {
-                fields[i].value = value;
+                fields[i].value = value || "null";
             }
         }
     }
@@ -122,10 +122,10 @@
             fields[3].value + " Ostmark auf dem Schwarzmarkt!";
     };
 
-    function onSubmit(event) {
+    function onSubmit(event: Event) {
         event.preventDefault();
-        for (const feld of fields) {
-            feld.value = getDisplayValue(feld.value);
+        for (const field of fields) {
+            field.value = getDisplayValue(field.value) || "null";
         }
         setEuroParam(fields[0].value, true);
         updateOutput();
@@ -143,7 +143,7 @@
                 return;
             }
             // parse input as it is a number
-            setAllFields(strToBigInt(fields[i].value) / factors[i], i);
+            setAllFields((strToBigInt(fields[i].value) as bigint) / (factors[i] as bigint), i);
 
             updateOutput();
         };
@@ -153,6 +153,6 @@
         field.value = field.placeholder;
     }
     // fix form submit
-    elById("form").onsubmit = onSubmit;
+    (elById("form") as HTMLFormElement).onsubmit = onSubmit;
 })();
 // @license-end

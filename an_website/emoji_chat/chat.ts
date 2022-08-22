@@ -1,11 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
 (() => {
-    const messageInput = elById("message-input");
-    const messageSection = elById("message-section");
-    const usingOpenMoji = elById("open-moji-attribution");
-    const connectionIndicator = elById("connection-state");
-    const currentUser = elById("current-user");
+    const messageInput = elById("message-input") as HTMLInputElement;
+    const messageInputForm = messageInput.form as HTMLFormElement;
+    const messageSection = elById("message-section") as HTMLElement;
+    const usingOpenMoji = elById("open-moji-attribution") as HTMLElement | null;
+    const connectionIndicator = elById("connection-state") as HTMLElement;
+    const currentUser = elById("current-user") as HTMLElement;
     let reconnectTimeout = 100;
     let reconnectTries = 0;
     let lastMessage = "";
@@ -139,13 +140,13 @@
     const openWS = () => {
         setConnectionState("connecting");
         const ws = new WebSocket(
-            (w.location.protocol === "https:" ? "wss:" : "ws:") +
-                `//${w.location.host}/websocket/emoji-chat`,
+            (window.location.protocol === "https:" ? "wss:" : "ws:") +
+                `//${window.location.host}/websocket/emoji-chat`,
         );
         const pingInterval = setInterval(() => ws.send(""), 10000);
         ws.onclose = (event) => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            messageInput.form.onsubmit = () => {};
+            messageInputForm.onsubmit = () => {};
             if (event.wasClean) {
                 console.debug(
                     `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
@@ -178,7 +179,7 @@
         ws.onopen = (event) => console.debug("Opened WebSocket", event);
         ws.onmessage = handleWebSocketData;
 
-        messageInput.form.onsubmit = (event) => {
+        messageInputForm.onsubmit = (event) => {
             if (messageInput.value !== "") {
                 lastMessage = messageInput.value;
                 ws.send(

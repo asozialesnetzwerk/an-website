@@ -1,12 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
 function startDisplayingUptime() {
-    const uptimeDiv = elById("uptime");
+    const uptimeDiv = elById("uptime") as HTMLDivElement;
     // set the font family, because it looks much better
     uptimeDiv.style.fontFamily = "'clock-face', monospace";
     // the time the website got loaded minus the uptime
     const startTime = (performance.now() / 1000) - parseFloat(
-        uptimeDiv.getAttribute("uptime"),
+        uptimeDiv.getAttribute("uptime") as string
     );
 
     const zeroPad = (n) => String(Math.floor(n)).padStart(2, "0");

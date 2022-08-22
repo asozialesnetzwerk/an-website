@@ -1,30 +1,30 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
 (() => {
-    const textInput = elById("text");
-    const configInput = elById("config-textarea");
-    const outputText = elById("output");
-    const errorText = elById("error-msg");
+    const textInput = elById("text") as HTMLInputElement;
+    const configInput = elById("config-textarea") as HTMLTextAreaElement;
+    const outputText = elById("output") as HTMLElement;
+    const errorText = elById("error-msg") as HTMLDivElement;
 
     if (errorText.innerHTML.trim()) {
         alert(errorText.innerHTML.trim());
     }
 
-    function onerror(e) {
-        error(e);
+    function onerror(e: {error: string | null, line_num: number, line: string}) {
+        console.error(e);
         if (e.error) {
             alert(e.error);
             errorText.innerText =
                 `${e.error} In line ${e.line_num}: "${e.line}"`;
         } else {
             alert(e);
-            errorText.innerText = e;
+            errorText.innerText = JSON.stringify(e);
         }
     }
 
     function ondata(data, onpopstate = false) {
         if (!data) {
-            log("data is falsy!");
+            console.log("data is falsy!");
             return;
         }
         if (data.error) {
@@ -32,7 +32,7 @@
         }
         if (!onpopstate) {
             data["stateType"] = "swappedWords";
-            w.history.pushState(data, "Vertauschte Wörter", w.location.href);
+            window.history.pushState(data, "Vertauschte Wörter", window.location.href);
         }
         textInput.value = data["text"] || "";
         configInput.value = data["config"] || "";
@@ -40,10 +40,10 @@
         errorText.innerText = "";
     }
 
-    elById("form").onsubmit = (e) => {
+    (elById("form") as HTMLFormElement).onsubmit = (e) => {
         e.preventDefault();
     };
-    elById("reset").onclick = () =>
+    (elById("reset") as HTMLElement).onclick = () =>
         post(
             "/api/vertauschte-woerter",
             {
@@ -54,7 +54,7 @@
             ondata,
             onerror,
         );
-    elById("submit").onclick = () =>
+    (elById("submit") as HTMLElement).onclick = () =>
         post(
             "/api/vertauschte-woerter",
             {
@@ -67,7 +67,7 @@
             onerror,
         );
 
-    w.PopStateHandlers["swappedWords"] = (event) =>
+    PopStateHandlers["swappedWords"] = (event) =>
         event.state && ondata(event.state, true);
 })();
 // @license-end

@@ -1,15 +1,11 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
-const w = window;
-const d = document;
-const elById = (id) => d.getElementById(id);
-const log = console.log;
-const error = console.error;
+const elById = (id: string) => document.getElementById(id);
 
-w.lastLocation = String(w.location);
+let lastLocation = String(window.location);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function post(url, params = {}, ondata = log, onerror = error) {
+function post(url: string, params = {}, ondata = console.log, onerror = console.error): void {
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
@@ -26,7 +22,7 @@ function post(url, params = {}, ondata = log, onerror = error) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function get(url, params = {}, ondata = log, onerror = error) {
+function get(url: string, params = {}, ondata = console.log, onerror = console.error): void {
     if (params) {
         url += "?" + (new URLSearchParams(params)).toString();
     }
@@ -39,88 +35,83 @@ function get(url, params = {}, ondata = log, onerror = error) {
         .catch(onerror);
 }
 
-w.PopStateHandlers = {
-    replaceURL: (state) => {
+const PopStateHandlers = {
+    replaceURL: (state: object) => {
         // reload if the last location was not the one that got replaced
-        w.lastLocation === state["origin"] || w.location.reload();
+        lastLocation === state["origin"] || window.location.reload();
     },
     // always reload the location if URLParamChange
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    URLParamChange: (s) => w.location.reload(),
+    URLParamChange: () => window.location.reload(),
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function setURLParam(
-    param,
-    value,
-    state,
+    param: string,
+    value: string,
+    state: {stateType: string},
     stateType = "URLParamChange",
     push = true,
 ) {
     // log("setURLParam", param, value, state, onpopstate);
-    const urlParams = new URLSearchParams(w.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     urlParams.set(param, value);
     const newUrl =
-        `${w.location.origin}${w.location.pathname}?${urlParams.toString()}`;
+        `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);
     state["stateType"] = stateType;
-    if (push && newUrl !== w.location.href) {
+    if (push && newUrl !== window.location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
         history.replaceState(state, newUrl, newUrl);
     }
-    w.lastLocation = w.location.href;
+    lastLocation = window.location.href;
     return newUrl;
 }
 
 function scrollToId() {
-    if (w.location.hash === "") {
+    if (window.location.hash === "") {
         return;
     }
-    const el = d.querySelector(w.location.hash);
+    const header = elById("header");
+    if (!header) {
+        return;
+    }
+    const el = document.querySelector(window.location.hash);
     if (!el) {
         return;
     }
-    w.scrollBy(
+
+    window.scrollBy(
         0,
         el.getBoundingClientRect().top - Math.floor(
-            parseFloat(getComputedStyle(elById("header")).height),
+            parseFloat(getComputedStyle(header).height),
         ),
     );
 }
 // scroll after few ms so the scroll is right on page load
 setTimeout(scrollToId, 4);
-w.onhashchange = scrollToId;
+window.onhashchange = scrollToId;
 
-w.onpopstate = (event) => {
-    if (w.lastLocation.split("#")[0] === w.location.href.split("#")[0]) {
+window.onpopstate = (event: PopStateEvent) => {
+    if (lastLocation.split("#")[0] === window.location.href.split("#")[0]) {
         // Only hash changed
-        w.lastLocation = w.location.href;
+        lastLocation = window.location.href;
         scrollToId();
         return;
     }
     if (
         event.state &&
         event.state["stateType"] &&
-        w.PopStateHandlers[event.state["stateType"]]
+        PopStateHandlers[event.state["stateType"]]
     ) {
-        w.PopStateHandlers[event.state["stateType"]](event);
-        w.lastLocation = w.location.href;
+        PopStateHandlers[event.state["stateType"]](event);
+        lastLocation = window.location.href;
         event.preventDefault();
         scrollToId();
         return;
     }
-    error("Couldn't handle state. ", event.state);
-    w.lastLocation = w.location.href;
-    w.location.reload();
+    console.error("Couldn't handle state. ", event.state);
+    lastLocation = window.location.href;
+    window.location.reload();
 };
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function fixHref(href) {
-    if (w.dynLoadGetFixedHref) {
-        return w.dynLoadGetFixedHref(href);
-    }
-    // if the function doesn't exist don't change anything
-    return href;
-}
 // @license-end

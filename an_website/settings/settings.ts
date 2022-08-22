@@ -2,30 +2,30 @@
 "use strict";
 
 function createBumpscositySlider() {
-    const select = elById("bumpscosity-select");
+    const select = elById("bumpscosity-select") as HTMLSelectElement;
 
     if (!select) {
         return;
     }
 
     select.classList.add("hidden");
-    const possibleLevels = [];
+    const possibleLevels: number[] = [];
     for (const node of select.options) {
         possibleLevels.push(parseInt(node.value));
     }
 
-    const startLevel = parseInt(select.value);
+    const startLevel = parseInt(select.value) as number;
 
     const currentValueDiv = document.createElement("div");
-    currentValueDiv.setAttribute("tooltip", startLevel);
+    currentValueDiv.setAttribute("tooltip", startLevel.toString());
     currentValueDiv.style.position = "absolute";
     currentValueDiv.style.transform = "translateX(-50%)";
 
     const rangeSlider = document.createElement("input");
     rangeSlider.setAttribute("type", "range");
-    rangeSlider.setAttribute("min", 0);
-    rangeSlider.setAttribute("value", possibleLevels.indexOf(startLevel));
-    rangeSlider.setAttribute("max", select.options.length - 1);
+    rangeSlider.setAttribute("min", "0");
+    rangeSlider.setAttribute("value", possibleLevels.indexOf(startLevel).toString());
+    rangeSlider.setAttribute("max", (select.options.length - 1).toString());
 
     rangeSlider.onpointermove = () => {
         const value = possibleLevels[rangeSlider.value];
@@ -33,14 +33,13 @@ function createBumpscositySlider() {
         currentValueDiv.setAttribute("tooltip", value);
         currentValueDiv.classList.add("show-tooltip");
         currentValueDiv.style.left =
-            (1 + (98 * rangeSlider.value / (select.options.length - 1))) + "%";
+            (1 + (98 * parseInt(rangeSlider.value) / (select.options.length - 1))) + "%";
     };
 
     rangeSlider.onpointerleave = () =>
         currentValueDiv.classList.remove("show-tooltip");
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    rangeSlider.onchange = (e) => {
+    rangeSlider.onchange = () => {
         let sliderVal = parseInt(rangeSlider.value);
         const promptStart = `Willst du die Bumpscosity wirklich auf ${
             possibleLevels[sliderVal]
@@ -68,14 +67,15 @@ function createBumpscositySlider() {
         }
 
         if (sliderVal !== parseInt(rangeSlider.value)) {
-            rangeSlider.value = sliderVal;
+            rangeSlider.value = sliderVal.toString();
             select.value = possibleLevels[rangeSlider.value];
         }
     };
 
-    select.parentElement.style.position = "relative";
-    select.parentElement.append(currentValueDiv);
-    select.parentElement.append(rangeSlider);
+    const parent = select.parentElement as HTMLElement;
+    parent.style.position = "relative";
+    parent.append(currentValueDiv);
+    parent.append(rangeSlider);
 }
 
 createBumpscositySlider();

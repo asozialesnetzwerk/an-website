@@ -1,10 +1,10 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
 function startLoadingComics() {
-    const getDateBy = (year, month, dayOfMonth) =>
+    const getDateBy = (year: number, month: number, dayOfMonth: number): Date =>
         new Date(year, month - 1, dayOfMonth, 6, 0, 0, 0);
     // date with special link format
-    const wrongLinks = [
+    const wrongLinks: [Date, string][] = [
         [
             getDateBy(2021, 5, 25),
             "administratives/kaenguru-comics/25/original/",
@@ -63,14 +63,14 @@ function startLoadingComics() {
         ],
     ];
 
-    const dateEquals = (date, year, month, dayOfMonth) => (
+    const dateEquals = (date: Date, year: number, month: number, dayOfMonth: number): boolean => (
         // check if a date equals another based on year, month, and dayOfMonth
         date.getFullYear() === year &&
-        date.getMonth() === month - 1 && // JS is stupid
+        date.getMonth() === (month - 1) && // JS is stupid
         date.getDate() === dayOfMonth
     );
 
-    const datesEqual = (date1, date2) =>
+    const datesEqual = (date1: Date, date2: Date): boolean =>
         dateEquals(
             date1,
             date2.getFullYear(),
@@ -78,20 +78,20 @@ function startLoadingComics() {
             date2.getDate(),
         );
 
-    const isSunday = (date) => (
+    const isSunday = (date: Date) => (
         date &&
         date.getDay() === 0 &&
         // exception for 2020-12-20 (sunday) because there was a comic
         !dateEquals(date, 2020, 12, 20)
     );
 
-    const copyDate = (date) =>
+    const copyDate = (date: Date): Date =>
         getDateBy(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
     // get today without hours, minutes, seconds and ms
-    const getToday = () => copyDate(new Date());
+    const getToday = (): Date => copyDate(new Date());
 
-    const comics = [];
+    const comics: string[] = [];
 
     const links = `/static/img/2020-11-03.jpg
 administratives/kaenguru-comics/pilot-kaenguru/original
@@ -140,7 +140,7 @@ administratives/kaenguru-comics/kaenguru-43/original
 administratives/kaenguru-comics/kaenguru-44/original
 administratives/kaenguru-comics/kaenguru-045/original
 `;
-    function addLinksToComics() {
+    function addLinksToComics(): void {
         const today = getToday();
         const date = copyDate(firstDateWithNewLink);
         while (date.getTime() <= today.getTime()) {
@@ -149,7 +149,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
-    const days = [
+    const days: [string, string, string, string, string, string, string] = [
         "Sonntag",
         "Montag",
         "Dienstag",
@@ -158,8 +158,8 @@ administratives/kaenguru-comics/kaenguru-045/original
         "Freitag",
         "Samstag",
     ];
-    const getDayName = (date) => days[date.getDay()];
-    const months = [
+    const getDayName = (date: Date): string => days[date.getDay()];
+    const months: [string, string, string, string, string, string, string, string, string, string, string, string] = [
         "Januar",
         "Februar",
         "März",
@@ -173,9 +173,9 @@ administratives/kaenguru-comics/kaenguru-045/original
         "November",
         "Dezember",
     ];
-    const getMonthName = (date) => months[date.getMonth()];
+    const getMonthName = (date: Date): string => months[date.getMonth()];
 
-    const getDateString = (date) => (
+    const getDateString = (date: Date): string => (
         // deno-fmt-ignore
         "Comic von " +
         getDayName(date) + ", dem " +
@@ -185,16 +185,16 @@ administratives/kaenguru-comics/kaenguru-045/original
     );
 
     function removeAllPopups() {
-        for (const node of d.getElementsByClassName("popup-container")) {
+        for (const node of document.getElementsByClassName("popup-container")) {
             node.remove();
         }
     }
 
-    const currentImgHeader = elById("current-comic-header");
-    const currentImg = elById("current-img");
+    const currentImgHeader = elById("current-comic-header") as HTMLAnchorElement;
+    const currentImg = elById("current-img") as HTMLImageElement;
     currentImg.onmouseover = removeAllPopups;
     // const currentImgContainer = elById("current-img-container");
-    function setCurrentComic(date) {
+    function setCurrentComic(date: Date) {
         let link = generateComicLink(date);
         link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
         currentImg.src = link;
@@ -213,18 +213,18 @@ administratives/kaenguru-comics/kaenguru-045/original
 
     const relativeLinkRegex = /\/static\/img\/(\d{4})-(\d{1,2})-(\d{1,2})\.jpg/;
 
-    function getDateFromLink(link) {
+    function getDateFromLink(link: string): Date | null {
         for (const reg of [newLinkRegex, relativeLinkRegex]) {
             // URLs with year, month, day in them as three groups
             const match = link.toLowerCase().match(reg);
             if (match && match.length > 3) {
-                return getDateBy(match[1], match[2], match[3]);
+                return getDateBy(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
             }
         }
         // URLs with incrementing number in them
         const arr = link.toLowerCase().match(oldLinkRegex);
         if (arr && arr.length > 1) {
-            const num = arr[1] - 5;
+            const num = parseInt(arr[1]) - 5;
             const date = new Date(firstDateWithOldLink.getTime());
             for (let i = 0; i < num; i++) {
                 date.setTime(dateIncreaseByDays(date, isSunday(date) ? 2 : 1));
@@ -251,11 +251,12 @@ administratives/kaenguru-comics/kaenguru-045/original
                 return arr[0];
             }
         }
+        return null;
     }
 
     const linkFormat = "administratives/kaenguru-comics/%y-%m/%d/original";
 
-    function generateComicLink(date) {
+    function generateComicLink(date: Date): string {
         for (const arr of wrongLinks) {
             if (datesEqual(date, arr[0])) {
                 return arr[1];
@@ -279,11 +280,11 @@ administratives/kaenguru-comics/kaenguru-045/original
     }
 
     const comicCountToLoadOnCLick = 7;
-    const loadButton = elById("load-button");
-    const list = elById("old-comics-list");
+    const loadButton = elById("load-button") as HTMLElement;
+    const list = elById("old-comics-list") as HTMLElement;
     let loaded = 0;
 
-    function loadMoreComics() {
+    const loadMoreComics = () => {
         for (let i = 0; i < comicCountToLoadOnCLick; i++) {
             loaded++;
             const c = comics.length - loaded;
@@ -293,17 +294,21 @@ administratives/kaenguru-comics/kaenguru-045/original
 
             let link = comics[c];
             const date = getDateFromLink(link);
+            if (date === null) {
+                console.error("No date found for " + link);
+                continue;
+            }
             link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
 
-            const listItem = d.createElement("li");
-            const header = d.createElement("a");
+            const listItem = document.createElement("li");
+            const header = document.createElement("a");
             header.classList.add("comic-header");
             header.innerText = getDateString(date) + ":";
             header.href = link;
             header.style.fontSize = "25px";
             listItem.appendChild(header);
-            listItem.appendChild(d.createElement("br"));
-            const image = d.createElement("img");
+            listItem.appendChild(document.createElement("br"));
+            const image = document.createElement("img");
             image.classList.add("normal-img");
             // image.crossOrigin = "";
             image.src = link;
@@ -328,27 +333,27 @@ administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.visibility = "invisible";
         }
     }
-    elById("load-button").onclick = loadMoreComics;
+    (elById("load-button") as HTMLElement).onclick = loadMoreComics;
 
-    function createImgPopup(image) {
+    const createImgPopup = (image: HTMLImageElement) => {
         removeAllPopups();
 
-        const popupContainer = d.createElement("div");
+        const popupContainer = document.createElement("div");
         popupContainer.classList.add("popup-container");
         popupContainer.onmouseleave = () => popupContainer.remove();
         popupContainer.onclick = () => removeAllPopups();
 
-        const clone = image.cloneNode(true);
+        const clone = image.cloneNode(true) as HTMLElement;
         clone.classList.remove("normal-img");
         clone.classList.add("popup-img");
 
-        const closeButton = d.createElement("img");
+        const closeButton = document.createElement("img");
         closeButton.classList.add("close-button");
         closeButton.src = "/static/img/close.svg?v=0";
 
         popupContainer.appendChild(clone);
         popupContainer.appendChild(closeButton);
-        image.parentNode.appendChild(popupContainer);
+        image.parentNode?.appendChild(popupContainer);
     }
 
     // add links to comics list
@@ -357,8 +362,7 @@ administratives/kaenguru-comics/kaenguru-045/original
 
     const today = dateIncreaseByDays(getToday(), 1);
     setCurrentComic(today);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    currentImg.onerror = (e) => {
+    currentImg.onerror = () => {
         dateIncreaseByDays(today, -1);
         setCurrentComic(today);
 
@@ -370,16 +374,14 @@ administratives/kaenguru-comics/kaenguru-045/original
 
 (() => {
     const startButton = elById("start-button-no_3rd_party");
-    if (startButton) {
-        const contentContainer = elById("comic-content-container");
+    if (startButton !== null) {
+        const contentContainer = elById("comic-content-container") as HTMLElement;
         // no_3rd_party is activated
-        // eslint-disable-next-line no-inner-declarations
-        function removeButtonAndLoad() {
-            startButton.remove();
+        startButton.onclick = () => {
+            startButton?.remove();
             contentContainer.classList.remove("hidden");
             startLoadingComics();
-        }
-        startButton.onclick = removeButtonAndLoad;
+        };
         contentContainer.classList.add("hidden");
     } else {
         startLoadingComics();

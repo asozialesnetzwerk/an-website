@@ -3,17 +3,22 @@
 
 // these functions break if using the CSS-only functionality of the site-pane
 function showSitePane() {
-    elById("site-pane").setAttribute("open", "");
+    elById("site-pane")?.setAttribute("open", "");
 }
 function hideSitePane() {
-    elById("site-pane").removeAttribute("open");
+    elById("site-pane")?.removeAttribute("open");
 }
 
 (() => {
     const openPane = elById("open-pane");
     const sitePane = elById("site-pane");
 
-    const belongsToSitePane = (el) => (
+    if (!openPane || !sitePane) {
+        console.error("open-pane or site-pane not found");
+        return;
+    }
+
+    const belongsToSitePane = (el: HTMLElement) => (
         el === openPane || el === sitePane || sitePane.contains(el)
     );
 
@@ -22,21 +27,26 @@ function hideSitePane() {
     sitePane.onmouseleave = hideSitePane;
 
     // keyboard users
-    sitePane.onfocusin = showSitePane;
-    sitePane.onfocusout = hideSitePane;
+    document.onfocus = (event: FocusEvent) => {
+        if (belongsToSitePane(event.target as HTMLElement)) {
+            showSitePane();
+        } else {
+            hideSitePane();
+        }
+    };
 
     // phone users
     openPane.onclick = showSitePane;
-    d.onclick = (e) => belongsToSitePane(e.target) || hideSitePane();
+    document.onclick = (e) => belongsToSitePane(e.target as HTMLElement) || hideSitePane();
 
     // swipe gestures (for phone users)
-    const startPos = { x: null, y: null };
-    d.ontouchstart = (e) => {
+    const startPos: {x: number | null; y: number | null } = { x: null, y: null };
+    document.ontouchstart = (e) => {
         // save start pos of touch
         startPos.x = e.touches[0].clientX;
         startPos.y = e.touches[0].clientY;
     };
-    d.ontouchmove = (e) => {
+    document.ontouchmove = (e) => {
         if (startPos.x === null || startPos.y === null) {
             return;
         }
