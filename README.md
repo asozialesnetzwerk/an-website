@@ -24,8 +24,9 @@ You need:
 - Packages from requirements-dev.txt (`pip install -r requirements-dev.txt`)
 - GCC and G++ for building some of the dependencies
 - Depending on the used version of CPython: Rust
-- For formatting TS and minifying TS & CSS: Deno
-- For linting TS: Node.js and pnpm (`npm install -g pnpm`)
+- For formatting TypeScript and Markdown: dprint
+- For minifying TypeScript and CSS: Deno
+- For linting TypeScript: Node.js and pnpm (`npm install -g pnpm`)
 
 ### How to check
 

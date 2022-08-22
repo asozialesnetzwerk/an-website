@@ -24,7 +24,10 @@ function createBumpscositySlider() {
     const rangeSlider = document.createElement("input");
     rangeSlider.setAttribute("type", "range");
     rangeSlider.setAttribute("min", "0");
-    rangeSlider.setAttribute("value", possibleLevels.indexOf(startLevel).toString());
+    rangeSlider.setAttribute(
+        "value",
+        possibleLevels.indexOf(startLevel).toString(),
+    );
     rangeSlider.setAttribute("max", (select.options.length - 1).toString());
 
     rangeSlider.onpointermove = () => {
@@ -32,8 +35,10 @@ function createBumpscositySlider() {
         select.value = value;
         currentValueDiv.setAttribute("tooltip", value);
         currentValueDiv.classList.add("show-tooltip");
-        currentValueDiv.style.left =
-            (1 + (98 * parseInt(rangeSlider.value) / (select.options.length - 1))) + "%";
+        currentValueDiv.style.left = (1 +
+            (98 *
+                parseInt(rangeSlider.value) /
+                (select.options.length - 1))) + "%";
     };
 
     rangeSlider.onpointerleave = () =>

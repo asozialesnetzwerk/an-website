@@ -6,7 +6,7 @@ function startDisplayingUptime() {
     uptimeDiv.style.fontFamily = "'clock-face', monospace";
     // the time the website got loaded minus the uptime
     const startTime = (performance.now() / 1000) - parseFloat(
-        uptimeDiv.getAttribute("uptime") as string
+        uptimeDiv.getAttribute("uptime") as string,
     );
 
     const zeroPad = (n) => String(Math.floor(n)).padStart(2, "0");

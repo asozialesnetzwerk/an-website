@@ -10,7 +10,9 @@
         alert(errorText.innerHTML.trim());
     }
 
-    function onerror(e: {error: string | null, line_num: number, line: string}) {
+    function onerror(
+        e: { error: string | null; line_num: number; line: string },
+    ) {
         console.error(e);
         if (e.error) {
             alert(e.error);
@@ -32,7 +34,11 @@
         }
         if (!onpopstate) {
             data["stateType"] = "swappedWords";
-            window.history.pushState(data, "Vertauschte Wörter", window.location.href);
+            window.history.pushState(
+                data,
+                "Vertauschte Wörter",
+                window.location.href,
+            );
         }
         textInput.value = data["text"] || "";
         configInput.value = data["config"] || "";

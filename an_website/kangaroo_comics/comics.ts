@@ -63,7 +63,12 @@ function startLoadingComics() {
         ],
     ];
 
-    const dateEquals = (date: Date, year: number, month: number, dayOfMonth: number): boolean => (
+    const dateEquals = (
+        date: Date,
+        year: number,
+        month: number,
+        dayOfMonth: number,
+    ): boolean => (
         // check if a date equals another based on year, month, and dayOfMonth
         date.getFullYear() === year &&
         date.getMonth() === (month - 1) && // JS is stupid
@@ -159,7 +164,20 @@ administratives/kaenguru-comics/kaenguru-045/original
         "Samstag",
     ];
     const getDayName = (date: Date): string => days[date.getDay()];
-    const months: [string, string, string, string, string, string, string, string, string, string, string, string] = [
+    const months: [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+    ] = [
         "Januar",
         "Februar",
         "März",
@@ -190,7 +208,9 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
-    const currentImgHeader = elById("current-comic-header") as HTMLAnchorElement;
+    const currentImgHeader = elById(
+        "current-comic-header",
+    ) as HTMLAnchorElement;
     const currentImg = elById("current-img") as HTMLImageElement;
     currentImg.onmouseover = removeAllPopups;
     // const currentImgContainer = elById("current-img-container");
@@ -218,7 +238,11 @@ administratives/kaenguru-comics/kaenguru-045/original
             // URLs with year, month, day in them as three groups
             const match = link.toLowerCase().match(reg);
             if (match && match.length > 3) {
-                return getDateBy(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+                return getDateBy(
+                    parseInt(match[1]),
+                    parseInt(match[2]),
+                    parseInt(match[3]),
+                );
             }
         }
         // URLs with incrementing number in them
@@ -332,7 +356,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.opacity = "0";
             loadButton.style.visibility = "invisible";
         }
-    }
+    };
     (elById("load-button") as HTMLElement).onclick = loadMoreComics;
 
     const createImgPopup = (image: HTMLImageElement) => {
@@ -354,7 +378,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         popupContainer.appendChild(clone);
         popupContainer.appendChild(closeButton);
         image.parentNode?.appendChild(popupContainer);
-    }
+    };
 
     // add links to comics list
     comics.concat(links.split("\n")); // first 50 comics 29.11.2020 - 17.01.21
@@ -375,7 +399,9 @@ administratives/kaenguru-comics/kaenguru-045/original
 (() => {
     const startButton = elById("start-button-no_3rd_party");
     if (startButton !== null) {
-        const contentContainer = elById("comic-content-container") as HTMLElement;
+        const contentContainer = elById(
+            "comic-content-container",
+        ) as HTMLElement;
         // no_3rd_party is activated
         startButton.onclick = () => {
             startButton?.remove();

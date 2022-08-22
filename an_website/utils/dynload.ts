@@ -74,7 +74,7 @@ function dynLoadOnData(data, onpopstate) {
 
     document.title = data["title"];
     const titleElement = elById("title");
-    if (titleElement)  {
+    if (titleElement) {
         titleElement.setAttribute(
             "short_title",
             data["short_title"] || data["title"],
@@ -187,7 +187,10 @@ function dynLoadOnPopState(event) {
         console.log("Popstate", event.state);
         if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
             // when the data did not get handled properly
-            dynLoadSwitchToURL(event.state["url"] || window.location.href, true);
+            dynLoadSwitchToURL(
+                event.state["url"] || window.location.href,
+                true,
+            );
         }
         if (event.state["scrollPos"]) {
             window.scrollTo(

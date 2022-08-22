@@ -54,12 +54,16 @@ CONTRIBUTORS: dict[str, dict[str, str]] = {
 def generate_humans_txt() -> str:
     """Generate the contents of the humans.txt file."""
     result = run(  # nosec: B603, B607
-        ["git", "shortlog", "-s", "HEAD"], capture_output=True, check=True
+        ["git", "shortlog", "-s", "HEAD"],
+        capture_output=True,
+        encoding="UTF-8",
+        cwd=REPO_ROOT,
+        check=True,
     )
 
     people: dict[str, int] = {}
 
-    for line in result.stdout.decode("UTF-8").split("\n"):
+    for line in result.stdout.split("\n"):
         if not (line := line.strip()):
             continue
         count, name = re.split(r"\s+", line, 1)

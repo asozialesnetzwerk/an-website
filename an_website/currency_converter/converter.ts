@@ -12,13 +12,23 @@
     }
     const output = elById("output") as HTMLInputElement;
 
-    const fields: [HTMLInputElement, HTMLInputElement, HTMLInputElement, HTMLInputElement] = [
+    const fields: [
+        HTMLInputElement,
+        HTMLInputElement,
+        HTMLInputElement,
+        HTMLInputElement,
+    ] = [
         elById("euro") as HTMLInputElement, // Euro
         elById("mark") as HTMLInputElement, // Deutsche Mark
         elById("ost") as HTMLInputElement, // Ostmark
         elById("schwarz") as HTMLInputElement, // Ostmark auf dem Schwarzmarkt
     ];
-    const factors: [bigint | number, bigint | number, bigint | number, bigint | number] = [
+    const factors: [
+        bigint | number,
+        bigint | number,
+        bigint | number,
+        bigint | number,
+    ] = [
         BigInt(1), // Euro
         BigInt(2), // Deutsche Mark
         BigInt(4), // Ostmark
@@ -28,7 +38,7 @@
 
     const isZero = (str: string) => /^0*$/.test(str);
 
-    function getDisplayValue(wert: string | bigint | number) : null | string {
+    function getDisplayValue(wert: string | bigint | number): null | string {
         if (typeof wert === "string") {
             wert = strToBigInt(wert);
         }
@@ -92,7 +102,8 @@
         return BigInt(int + dec);
     }
 
-    PopStateHandlers["currencyConverter"] = (e: PopStateEvent) => setAllFields(strToBigInt(e.state["euro"]));
+    PopStateHandlers["currencyConverter"] = (e: PopStateEvent) =>
+        setAllFields(strToBigInt(e.state["euro"]));
 
     const setEuroParam = (euroVal: string, push) =>
         setURLParam(
@@ -103,10 +114,15 @@
             push,
         );
 
-    function setAllFields(euroValue: bigint | number, ignored: number | null = null) {
+    function setAllFields(
+        euroValue: bigint | number,
+        ignored: number | null = null,
+    ) {
         setEuroParam(getDisplayValue(euroValue) || "null", false);
         for (let i = 0; i < 4; i++) {
-            const value = getDisplayValue((euroValue as bigint) * (factors[i] as bigint));
+            const value = getDisplayValue(
+                (euroValue as bigint) * (factors[i] as bigint),
+            );
             fields[i].placeholder = value || "null";
             if (i !== ignored) {
                 fields[i].value = value || "null";
@@ -143,7 +159,11 @@
                 return;
             }
             // parse input as it is a number
-            setAllFields((strToBigInt(fields[i].value) as bigint) / (factors[i] as bigint), i);
+            setAllFields(
+                (strToBigInt(fields[i].value) as bigint) /
+                    (factors[i] as bigint),
+                i,
+            );
 
             updateOutput();
         };

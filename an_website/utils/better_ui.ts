@@ -37,10 +37,14 @@ function hideSitePane() {
 
     // phone users
     openPane.onclick = showSitePane;
-    document.onclick = (e) => belongsToSitePane(e.target as HTMLElement) || hideSitePane();
+    document.onclick = (e) =>
+        belongsToSitePane(e.target as HTMLElement) || hideSitePane();
 
     // swipe gestures (for phone users)
-    const startPos: {x: number | null; y: number | null } = { x: null, y: null };
+    const startPos: { x: number | null; y: number | null } = {
+        x: null,
+        y: null,
+    };
     document.ontouchstart = (e) => {
         // save start pos of touch
         startPos.x = e.touches[0].clientX;

@@ -5,7 +5,12 @@ const elById = (id: string) => document.getElementById(id);
 let lastLocation = String(window.location);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function post(url: string, params = {}, ondata = console.log, onerror = console.error): void {
+function post(
+    url: string,
+    params = {},
+    ondata = console.log,
+    onerror = console.error,
+): void {
     fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
@@ -22,7 +27,12 @@ function post(url: string, params = {}, ondata = console.log, onerror = console.
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function get(url: string, params = {}, ondata = console.log, onerror = console.error): void {
+function get(
+    url: string,
+    params = {},
+    ondata = console.log,
+    onerror = console.error,
+): void {
     if (params) {
         url += "?" + (new URLSearchParams(params)).toString();
     }
@@ -48,7 +58,7 @@ const PopStateHandlers = {
 function setURLParam(
     param: string,
     value: string,
-    state: {stateType: string},
+    state: { stateType: string },
     stateType = "URLParamChange",
     push = true,
 ) {
