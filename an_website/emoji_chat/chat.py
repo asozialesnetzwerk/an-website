@@ -140,6 +140,14 @@ def check_only_emojis(string: str) -> bool:
     return False not in is_emoji
 
 
+def emojize_user_input(string: str) -> str:
+    """Emojize user input."""
+    string = emojize(string, language="de")
+    string = emojize(string, language="en")
+    string = emojize(string, language="alias")
+    return string
+
+
 def normalize_emojis(string: str) -> str:
     """Normalize emojis in a string."""
     return emojize(demojize(string))
@@ -222,7 +230,9 @@ class ChatHandler(BaseRequestHandler):
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        message = normalize_emojis(self.get_argument("message"))
+        message = emojize_user_input(
+            normalize_emojis(self.get_argument("message"))
+        )
 
         if err := check_message_invalid(message):
             raise HTTPError(400, reason=err)
@@ -338,7 +348,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
 
     async def save_new_message(self, msg_text: str) -> None:
         """Save a new message."""
-        msg_text = normalize_emojis(msg_text).strip()
+        msg_text = emojize_user_input(normalize_emojis(msg_text).strip())
         if err := check_message_invalid(msg_text):
             return await self.write_message({"type": "error", "error": err})
 

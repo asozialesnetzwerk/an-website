@@ -36,6 +36,7 @@ import tornado.log
 import tornado.web
 import uvloop
 import yaml
+from emoji import EMOJI_DATA
 
 from .. import DIR as ROOT_DIR
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
@@ -95,6 +96,39 @@ def apply() -> None:
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()
     anonymize_logs()
+    patch_emoji()
+
+
+def patch_emoji() -> None:
+    """Add cool new emoji."""
+    EMOJI_DATA["🐱\u200D💻"] = {
+        "de": ":hacker_katze:",
+        "en": ":hacker_cat:",
+        "status": 2,
+        "E": 1,
+    }
+    for de_name, en_name, rect in (
+        ("rotes", "red", "🟥"),
+        ("blaues", "blue", "🟦"),
+        ("oranges", "orange", "🟧"),
+        ("gelbes", "yellow", "🟨"),
+        ("grünes", "green", "🟩"),
+        ("lilanes", "purple", "🟪"),
+        ("braunes", "brown", "🟫"),
+    ):
+        EMOJI_DATA[f"🫙\u200D{rect}"] = {
+            "de": f":{de_name}_glas:",
+            "en": f":{en_name}_jar:",
+            "status": 2,
+            "E": 14,
+        }
+
+    # pylint: disable=import-outside-toplevel, protected_access
+    import emoji.unicode_codes as euc
+
+    for lang in euc.LANGUAGES:
+        euc._EMOJI_UNICODE[lang] = None  # type: ignore[attr-defined]
+    euc._ALIASES_UNICODE.clear()  # type: ignore[attr-defined]
 
 
 def patch_json() -> None:
