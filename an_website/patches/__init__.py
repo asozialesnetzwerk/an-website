@@ -123,7 +123,7 @@ def patch_emoji() -> None:
             "E": 14,
         }
 
-    # pylint: disable=import-outside-toplevel, protected_access
+    # pylint: disable=import-outside-toplevel
     import emoji.unicode_codes as euc
 
     for lang in euc.LANGUAGES:
