@@ -34,7 +34,6 @@ jobs:
   tests:
     name: Run tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +43,7 @@ jobs:
           #- 3.12
         stack-version:
           - 7.17.5
-          #- 8.3.2
+          #- 8.3.3
         #license:
         #  - basic
         #  - trial
@@ -81,7 +80,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: requirements*.txt
+          cache-dependency-path: Pipfile.lock
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: |
           sudo apt-get update
@@ -91,7 +90,8 @@ jobs:
       - name: Install stuff needed for the tests
         run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
       - name: Run pytest
-        run: pytest --durations=0 --verbose --cov=an_website --cov-config=.coveragerc tests
+        timeout-minutes: 5
+        run: pytest --durations=0 --verbose --cov=an_website tests
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v3
         with:
@@ -113,22 +113,25 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact
-      - id: version
+      - name: Install required library
+        run: pip install packaging
+      - name: Version
+        id: version
         shell: python
         run: |
           from os import popen as run
           from packaging.utils import parse_sdist_filename
           filename = run("ls an-website-*.tar.gz").read().strip()
-          ver = parse_sdist_filename(filename)[1])
-          print(f"::set-output name=VERSION::{ver}")
+          version = parse_sdist_filename(filename)[1]
+          print(f"::set-output name=VERSION::{version}")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
       - name: Upload sourcemaps
         run: |
-          cd an-website-*/an_website/static/js
+          cd an-website-*/an_website
           find static/js -type f -name "*.js" -exec \
-            curl http://apm.asozial.org:8200/assets/v1/sourcemaps \
-              -H "Authorization: Bearer ${{ secrets.APM_TOKEN }}" \
+            curl -sSf https://apm.asozial.org:8200/assets/v1/sourcemaps \
+              -H "Authorization: Bearer ${{ secrets.APM_SECRET_TOKEN }}" \
               -F service_name="an-website" \
               -F service_version="${{ steps.version.outputs.VERSION }}" \
               -F bundle_filepath="/{}" \
@@ -150,30 +153,11 @@ jobs:
           curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
 
-  hashes:
-    name: Hash files
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - name: Hash files
-        run: ./scripts/hash_files.py > hashes
-      - name: Upload as build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          path: hashes
-          name: hashes
-
   gh_pages:
     name: GitHub Pages
     runs-on: ubuntu-latest
     needs:
       - deploy
-      - hashes
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -182,21 +166,22 @@ jobs:
         with:
           python-version: "3.10"
           cache: pip
-          cache-dependency-path: requirements*.txt
-      - name: Download artifacts
+          cache-dependency-path: Pipfile.lock
+      - name: Download coverage
         uses: actions/download-artifact@v3
-      - name: Move files
-        run: |
-          mkdir public
-          mv hashes/hashes public/hashes.txt
-          mv coverage/.coverage .
+        with:
+          name: coverage
+      - name: Make directory
+        run: mkdir public
+      - name: Hash files
+        run: ./scripts/hash_files.py > public/hashes
+      - name: Install Coverage.py
+        run: grep "^coverage" requirements-ci.txt | xargs pip install
       - name: Create coverage files
         run: |
-          grep "^coverage" requirements-ci.txt | xargs pip install
           coverage report --precision=3 --sort=-miss --skip-covered
           coverage html -d "public/coverage"
           coverage json -o "public/coverage.json"
-          set -x
           ./generate-badge.sh > public/coverage/badge.svg
           rm public/coverage/.gitignore
       - name: Push hashes and coverage to GitHub Pages
