@@ -22,6 +22,7 @@ from functools import cache
 import regex
 from tornado.web import HTTPError
 
+from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
@@ -192,7 +193,29 @@ def get_words_and_letters(
     )
 
 
-def solve_hangman(
+@dataclass
+class HangmanArguments:
+    """Arguments for the hangman solver."""
+
+    max_words: int = 20
+    crossword_mode: bool = False
+    lang: str = "de_only_a-z"
+    input: str = ""
+    invalid: str = ""
+
+
+def solve_hangman(data: HangmanArguments) -> Hangman:
+    """Generate a hangman object based on the input and return it."""
+    return _solve_hangman(
+        max_words=max(20, min(100, data.max_words)),
+        crossword_mode=data.crossword_mode,
+        language=data.lang,
+        input_str=data.input,
+        invalid=data.invalid,
+    )
+
+
+def _solve_hangman(
     input_str: str,
     invalid: str,
     language: str,
@@ -243,29 +266,13 @@ class HangmanSolver(HTMLRequestHandler):
 
     RATELIMIT_GET_LIMIT = 10
 
-    async def get(self, *, head: bool = False) -> None:
+    @parse_args(type_=HangmanArguments, name="data")
+    async def get(self, *, data: HangmanArguments, head: bool = False) -> None:
         """Handle GET requests to the hangman solver page."""
         if head:
             return
-        hangman = self.get_hangman_obj()
+        hangman = solve_hangman(data)
         await self.render("pages/hangman_solver.html", **asdict(hangman))
-
-    def get_hangman_obj(self) -> Hangman:
-        """Get the information and return the Hangman object."""
-        max_words = self.get_int_argument("max_words", 20, min_=0, max_=100)
-
-        crossword_mode = self.get_bool_argument("crossword_mode", False)
-        language = str(self.get_argument("lang", "de_only_a-z"))
-        input_str = str(self.get_argument("input", ""))
-        invalid = str(self.get_argument("invalid", ""))
-
-        return solve_hangman(
-            max_words=max_words,
-            crossword_mode=crossword_mode,
-            language=language,
-            input_str=input_str,
-            invalid=invalid,
-        )
 
 
 class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
@@ -274,11 +281,12 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
     RATELIMIT_GET_LIMIT = 10
     IS_NOT_HTML = True
 
-    async def get(self, *, head: bool = False) -> None:
+    @parse_args(type_=HangmanArguments, name="data")
+    async def get(self, *, data: HangmanArguments, head: bool = False) -> None:
         """Handle GET requests to the hangman solver API."""
         if head:
             return
-        hangman = self.get_hangman_obj()
+        hangman = solve_hangman(data)
         hangman_dict = asdict(hangman)
         # convert set to list, because the set can't be converted to JSON
         hangman_dict["words"] = list(hangman_dict["words"])

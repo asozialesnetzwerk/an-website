@@ -89,6 +89,7 @@ IGNORED_MODULES = {
     "swapped_words.config_file",
     "templates.*",
     "utils.base_request_handler",
+    "utils.data_parsing",
     "utils.logging",
     "utils.static_file_handling",
     "utils.utils",

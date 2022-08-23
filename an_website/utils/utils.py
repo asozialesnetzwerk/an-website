@@ -745,7 +745,7 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
         if val in {"idc", "maybe", "random"}:
             return bool(random.randrange(2))  # nosec: B311
     if default is None:
-        raise ValueError(f"invalid truth value {val!r}")
+        raise ValueError(f"Invalid bool value: {val!r}")
     return default
 
 

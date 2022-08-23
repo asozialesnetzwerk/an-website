@@ -85,7 +85,8 @@ def test_generate_pattern_str() -> None:
 
 def test_solving_hangman() -> None:
     """Test solving hangman puzzles."""
-    hangman: solver.Hangman = solver.solve_hangman(
+    # pylint: disable=protected-access
+    hangman: solver.Hangman = solver._solve_hangman(
         input_str="te_t",
         invalid="x",
         language="de_only_a-z",
@@ -97,7 +98,7 @@ def test_solving_hangman() -> None:
     assert "test" in hangman.words
     assert hangman.letters["s"] == 1
 
-    hangman = solver.solve_hangman(
+    hangman = solver._solve_hangman(
         input_str="_est",
         invalid="n",
         language="de_only_a-z",
@@ -108,7 +109,7 @@ def test_solving_hangman() -> None:
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = solver.solve_hangman(
+    hangman = solver._solve_hangman(
         input_str="_est",
         invalid="x",
         language="de_only_a-z",
@@ -119,7 +120,7 @@ def test_solving_hangman() -> None:
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = solver.solve_hangman(
+    hangman = solver._solve_hangman(
         input_str="_est",
         invalid="x",
         language="de_only_a-z",
@@ -131,7 +132,7 @@ def test_solving_hangman() -> None:
     assert "test" in hangman.words
     assert hangman.letters["t"] == 1
 
-    hangman = solver.solve_hangman(
+    hangman = solver._solve_hangman(
         input_str="______",
         invalid="e",
         language="de_only_a-z",
@@ -146,7 +147,7 @@ def test_solving_hangman() -> None:
     assert "ö" not in hangman.letters
     assert "ü" not in hangman.letters
 
-    hangman = solver.solve_hangman(
+    hangman = solver._solve_hangman(
         input_str="______",
         invalid="",
         language="de",
@@ -159,7 +160,7 @@ def test_solving_hangman() -> None:
     assert "ä" in hangman.letters
 
     with pytest.raises(HTTPError):
-        solver.solve_hangman(
+        solver._solve_hangman(
             input_str="",
             invalid="",
             language="invalid",
