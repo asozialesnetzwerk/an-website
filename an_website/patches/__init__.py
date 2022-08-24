@@ -108,19 +108,31 @@ def patch_emoji() -> None:
         "E": 1,
     }
     for de_name, en_name, rect in (
-        ("rotes", "red", "🟥"),
-        ("blaues", "blue", "🟦"),
-        ("oranges", "orange", "🟧"),
-        ("gelbes", "yellow", "🟨"),
-        ("grünes", "green", "🟩"),
-        ("lilanes", "purple", "🟪"),
-        ("braunes", "brown", "🟫"),
+        ("rote", "red", "🟥"),
+        ("blaue", "blue", "🟦"),
+        ("orange", "orange", "🟧"),
+        ("gelbe", "yellow", "🟨"),
+        ("grüne", "green", "🟩"),
+        ("lilane", "purple", "🟪"),
+        ("braune", "brown", "🟫"),
     ):
         EMOJI_DATA[f"🫙\u200D{rect}"] = {
-            "de": f":{de_name}_glas:",
+            "de": f":{de_name}s_glas:",
             "en": f":{en_name}_jar:",
             "status": 2,
             "E": 14,
+        }
+        EMOJI_DATA[f"🏳\uFE0F\u200D{rect}"] = {
+            "de": f":{de_name}_flagge:",
+            "en": f":{en_name}_flag:",
+            "status": 2,
+            "E": 11,
+        }
+        EMOJI_DATA[f"\u2691\uFE0F\u200D{rect}"] = {
+            "de": f":tief{de_name}_flagge:",
+            "en": f":deep_{en_name}_flag:",
+            "status": 2,
+            "E": 11,
         }
 
     # pylint: disable=import-outside-toplevel
