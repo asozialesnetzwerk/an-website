@@ -93,13 +93,9 @@ class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
     @parse_args(type_=SwArgs, name="data")
-    async def get(
-        self,
-        *,
-        head: bool = False,  # pylint: disable=unused-argument
-        data: SwArgs,
-    ) -> None:
+    async def get(self, *, head: bool = False, data: SwArgs) -> None:
         """Handle GET requests to the swapped words page."""
+        # pylint: disable=unused-argument
         await self.handle_text(data)
 
     def handle_text(self, args: SwArgs) -> Future[None]:
@@ -164,13 +160,9 @@ class SwappedWordsAPI(APIRequestHandler):
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
     @parse_args(type_=SwArgs, name="args")
-    async def get(
-        self,
-        *,
-        head: bool = False,  # pylint: disable=unused-argument
-        args: SwArgs,
-    ) -> None:
+    async def get(self, *, head: bool = False, args: SwArgs) -> None:
         """Handle GET requests to the swapped words API."""
+        # pylint: disable=unused-argument
         check_text_too_long(args.text)
         try:
             sw_config = (

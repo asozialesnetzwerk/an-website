@@ -108,28 +108,28 @@ def patch_emoji() -> None:
         "E": 1,
     }
     for de_name, en_name, rect in (
-        ("rote", "red", "🟥"),
-        ("blaue", "blue", "🟦"),
-        ("orange", "orange", "🟧"),
-        ("gelbe", "yellow", "🟨"),
-        ("grüne", "green", "🟩"),
-        ("lilane", "purple", "🟪"),
-        ("braune", "brown", "🟫"),
+        ("rot", "red", "🟥"),
+        ("blau", "blue", "🟦"),
+        ("orang", "orange", "🟧"),
+        ("gelb", "yellow", "🟨"),
+        ("grün", "green", "🟩"),
+        ("lilan", "purple", "🟪"),
+        ("braun", "brown", "🟫"),
     ):
         EMOJI_DATA[f"🫙\u200D{rect}"] = {
-            "de": f":{de_name}s_glas:",
+            "de": f":{de_name}es_glas:",
             "en": f":{en_name}_jar:",
             "status": 2,
             "E": 14,
         }
         EMOJI_DATA[f"🏳\uFE0F\u200D{rect}"] = {
-            "de": f":{de_name}_flagge:",
+            "de": f":{de_name}e_flagge:",
             "en": f":{en_name}_flag:",
             "status": 2,
             "E": 11,
         }
         EMOJI_DATA[f"\u2691\uFE0F\u200D{rect}"] = {
-            "de": f":tief{de_name}_flagge:",
+            "de": f":tief{de_name}e_flagge:",
             "en": f":deep_{en_name}_flag:",
             "status": 2,
             "E": 11,

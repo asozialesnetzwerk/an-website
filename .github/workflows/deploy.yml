@@ -122,7 +122,7 @@ jobs:
           from os import popen as run
           from packaging.utils import parse_sdist_filename
           filename = run("ls an-website-*.tar.gz").read().strip()
-          version = parse_sdist_filename(filename)[1]
+          name, version = parse_sdist_filename(filename)
           print(f"::set-output name=VERSION::{version}")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
