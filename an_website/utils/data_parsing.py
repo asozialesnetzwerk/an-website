@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import functools
 import inspect
 import typing
@@ -37,17 +38,25 @@ def parse(
     strict: bool = False,
 ) -> T:
     """Parse a data."""
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements, too-complex
+    if data is None and type_ is None:
+        return None  # type: ignore[unreachable]
+
     simple_type: type = get_origin(type_) or type_
+
+    if (
+        simple_type is type_
+        and not isinstance(type_, str)
+        and isinstance(data, type_)
+    ):
+        return data
+
     if simple_type == UnionType:
-        if isinstance(data, type_):
-            return data
         possible = list(typing.get_args(type_))
-        if len(possible) != 2 or None not in possible:
-            raise ValueError("Cannot parse all Unions, only optionals.")
-        possible.remove(None)
-        type_ = possible[0]
-        simple_type = get_origin(type_) or type_
+        for pos in possible:
+            with contextlib.suppress(ValueError):
+                return typing.cast(T, parse(pos, data, strict=strict))
+        raise ValueError(f"Unable to parse {data!r} into {type_}")
 
     if simple_type in {list, "list"} and isinstance(data, list):
         return _parse_list(type_, data, strict=strict)
@@ -131,8 +140,7 @@ def _parse_list(
 
 def _parse_class(type_: type[T], data: dict[str, Any], *, strict: bool) -> T:
     """Parse data into a class."""
-    # pylint: disable=too-complex
-    signature = inspect.signature(type_.__init__)
+    signature = inspect.signature(type_.__init__, eval_str=True)
     args: list[Any] = []
     kwargs: dict[str, Any] = {}
     in_positional = False
@@ -161,12 +169,7 @@ def _parse_class(type_: type[T], data: dict[str, Any], *, strict: bool) -> T:
                 raise ValueError(f"Missing type annotation for {arg_name!r}")
             add(arg_name, value)
             continue
-        annotation = param.annotation
-        if isinstance(annotation, str):
-            annotation = type_.__init__.__annotations__.get(
-                arg_name, annotation
-            )
-        add(arg_name, parse(annotation, value, strict=strict))
+        add(arg_name, parse(param.annotation, value, strict=strict))
 
     return type_(*args, **kwargs)
 

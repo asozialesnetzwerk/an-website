@@ -266,7 +266,7 @@ async def test_sw_json_request_handlers(fetch: FetchCallable) -> None:
             headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
-                    "text": " x z o ",
+                    "text": "x z o",
                     "config": "x  => y\nz <=> o",
                     "return_config": "sure",
                     "minify_config": "sure",
@@ -287,7 +287,7 @@ async def test_sw_json_request_handlers(fetch: FetchCallable) -> None:
             headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
-                    "text": " x z o ",
+                    "text": "x z o",
                     "config": "x  => y\nz <=> o",
                     "return_config": True,
                     "minify_config": False,

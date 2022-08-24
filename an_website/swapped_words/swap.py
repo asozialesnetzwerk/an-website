@@ -18,10 +18,12 @@ from __future__ import annotations
 import os
 from asyncio import Future
 from base64 import b64decode, b64encode
+from dataclasses import dataclass
 
 from tornado.web import HTTPError
 
 from .. import GH_ORG_URL
+from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from . import DIR
@@ -76,39 +78,48 @@ def check_text_too_long(text: str) -> None:
         )
 
 
+@dataclass
+class SwArgs:
+    """Arguments used for swapped words."""
+
+    text: str = ""
+    config: None | str = None
+    reset: bool = False
+    return_config: bool = False
+    minify_config: bool = False
+
+
 class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
+    @parse_args(type_=SwArgs, name="data")
     async def get(
-        self, *, head: bool = False  # pylint: disable=unused-argument
+        self,
+        *,
+        head: bool = False,  # pylint: disable=unused-argument
+        data: SwArgs,
     ) -> None:
         """Handle GET requests to the swapped words page."""
-        await self.handle_text(
-            self.get_argument("text", ""),
-            self.get_argument("config", None),
-            self.get_bool_argument("reset", False),
-        )
+        await self.handle_text(data)
 
-    def handle_text(
-        self, text: str, config_str: None | str, use_default_config: bool
-    ) -> Future[None]:
+    def handle_text(self, args: SwArgs) -> Future[None]:
         """Use the text to display the HTML page."""
-        check_text_too_long(text)
+        check_text_too_long(args.text)
 
-        if config_str is None:
+        if args.config is None:
             cookie = self.get_cookie(
                 "swapped-words-config",
                 None,
             )
             if cookie is not None:
                 # decode the base64 text
-                config_str = b64decode(cookie).decode("UTF-8")
+                args.config = b64decode(cookie).decode("UTF-8")
         else:
             # save the config in a cookie
             self.set_cookie(
                 name="swapped-words-config",
                 # encode the config as base64
-                value=b64encode(config_str.encode("UTF-8")).decode("UTF-8"),
+                value=b64encode(args.config.encode("UTF-8")).decode("UTF-8"),
                 expires_days=1000,
                 path=self.request.path,
                 SameSite="Strict",
@@ -117,36 +128,34 @@ class SwappedWords(HTMLRequestHandler):
         try:
             sw_config = (
                 DEFAULT_CONFIG
-                if config_str is None or use_default_config
-                else SwappedWordsConfig(config_str)
+                if args.config is None or args.reset
+                else SwappedWordsConfig(args.config)
             )
         except InvalidConfigError as exc:
             self.set_status(400)
             return self.render(
                 "pages/swapped_words.html",
-                text=text,
+                text=args.text,
                 output="",
-                config=config_str,
+                config=args.config,
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(exc),
             )
         else:  # everything went well
             return self.render(
                 "pages/swapped_words.html",
-                text=text,
-                output=sw_config.swap_words(text),
+                text=args.text,
+                output=sw_config.swap_words(args.text),
                 config=sw_config.to_config_str(),
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=None,
             )
 
-    async def post(self) -> None:
+    @parse_args(type_=SwArgs, name="data")
+    async def post(self, *, data: SwArgs) -> None:
         """Handle POST requests to the swapped words page."""
-        await self.handle_text(
-            self.get_argument("text"),
-            self.get_argument("config", None),
-            self.get_bool_argument("reset", False),
-        )
+        self.get_argument("text")  # 400 if text is missing
+        await self.handle_text(data)
 
 
 class SwappedWordsAPI(APIRequestHandler):
@@ -154,37 +163,34 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
+    @parse_args(type_=SwArgs, name="args")
     async def get(
-        self, *, head: bool = False  # pylint: disable=unused-argument
+        self,
+        *,
+        head: bool = False,  # pylint: disable=unused-argument
+        args: SwArgs,
     ) -> None:
         """Handle GET requests to the swapped words API."""
-        text = self.get_argument("text", "")
-
-        check_text_too_long(text)
-
-        config_str = self.get_argument("config", None)
-        return_config = self.get_bool_argument("return_config", False)
+        check_text_too_long(args.text)
         try:
             sw_config = (
                 DEFAULT_CONFIG
-                if config_str is None
-                else SwappedWordsConfig(config_str)
+                if args.config is None
+                else SwappedWordsConfig(args.config)
             )
 
-            if return_config:
-
-                minify_config = self.get_bool_argument("minify_config", True)
+            if args.return_config:
                 return await self.finish_dict(
-                    text=text,
+                    text=args.text,
                     return_config=True,
-                    minify_config=minify_config,
-                    config=sw_config.to_config_str(minify_config),
-                    replaced_text=sw_config.swap_words(text),
+                    minify_config=args.minify_config,
+                    config=sw_config.to_config_str(args.minify_config),
+                    replaced_text=sw_config.swap_words(args.text),
                 )
             return await self.finish_dict(
-                text=text,
+                text=args.text,
                 return_config=False,
-                replaced_text=sw_config.swap_words(text),
+                replaced_text=sw_config.swap_words(args.text),
             )
         except InvalidConfigError as exc:
             self.set_status(400)
@@ -196,4 +202,4 @@ class SwappedWordsAPI(APIRequestHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the swapped words API."""
-        return await self.get()
+        return await self.get()  # pylint: disable=missing-kwoa
