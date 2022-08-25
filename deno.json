@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.5/mod.js"
+  }
+}

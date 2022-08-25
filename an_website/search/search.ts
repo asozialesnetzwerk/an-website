@@ -6,6 +6,7 @@
     const searchForm = elById("search-form") as HTMLFormElement;
     const searchInput = elById("search-input") as HTMLInputElement;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function displayResults(results: Iterable<any>) {
         resultsList.innerHTML = "";
         for (const result of results) {

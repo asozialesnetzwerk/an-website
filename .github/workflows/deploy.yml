@@ -42,7 +42,7 @@ jobs:
           #- 3.11
           #- 3.12
         stack-version:
-          - 7.17.5
+          - 7.17.6
           #- 8.3.3
         #license:
         #  - basic
