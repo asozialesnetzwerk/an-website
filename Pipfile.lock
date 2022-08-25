@@ -553,11 +553,11 @@
                 "async"
             ],
             "hashes": [
-                "sha256:540d646908761120926850e98230ffc08fee9a3f9b45073d42de08246f598652",
-                "sha256:81c1d15b0f9382b2dc40a896c634f8de09bfcd5079e19a8412940a9ddfbde64b"
+                "sha256:2c3400c9e9c7fee46c4732fb32b933577aebb07b5e94df025f6ff1a30d2397d0",
+                "sha256:f4b779fc2a035904b97bef0542110372efd94aa7ab2c13749af73158c08be110"
             ],
             "index": "pypi",
-            "version": "==7.17.4"
+            "version": "==7.17.6"
         },
         "emoji": {
             "hashes": [

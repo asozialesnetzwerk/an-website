@@ -247,11 +247,12 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         if len(self.FUTURES) > 5 or (self.content_type or "")[:6] == "image/":
             return  # don't spam and don't do this for images
 
-        task = self.loop.create_task(
-            get_wrong_quote(*self.next_id, use_cache=False)
-        )
-        self.FUTURES.add(task)
-        task.add_done_callback(self.future_callback)
+        if hasattr(self, "loop"):
+            task = self.loop.create_task(
+                get_wrong_quote(*self.next_id, use_cache=False)
+            )
+            self.FUTURES.add(task)
+            task.add_done_callback(self.future_callback)
 
     async def prepare(self) -> None:
         """Set the id of the next wrong_quote to show."""

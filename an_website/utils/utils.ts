@@ -55,7 +55,6 @@ function get(
         .catch(onerror);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PopStateHandlers = {
     replaceURL: (state: object) => {
         // reload if the last location was not the one that got replaced
@@ -69,6 +68,7 @@ const PopStateHandlers = {
 function setURLParam(
     param: string,
     value: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     state: any,
     stateType = "URLParamChange",
     push = true,
