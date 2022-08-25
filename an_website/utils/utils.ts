@@ -5,6 +5,16 @@ const elById = (id: string) => document.getElementById(id);
 let lastLocation = String(window.location);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getLastLocation(): string {
+    return lastLocation;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function setLastLocation(url: string) : void {
+    lastLocation = url;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function post(
     url: string,
     params = {},
@@ -45,6 +55,7 @@ function get(
         .catch(onerror);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PopStateHandlers = {
     replaceURL: (state: object) => {
         // reload if the last location was not the one that got replaced
@@ -58,7 +69,7 @@ const PopStateHandlers = {
 function setURLParam(
     param: string,
     value: string,
-    state: { stateType: string },
+    state: any,
     stateType = "URLParamChange",
     push = true,
 ) {

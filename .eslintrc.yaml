@@ -16,7 +16,6 @@ globals:
   d: readonly
   elById: readonly
   error: readonly
-  fixHref: readonly
   get: readonly
   hideSitePane: readonly
   log: readonly

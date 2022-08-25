@@ -1,15 +1,14 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
 function startQuotes() {
-    const nextButton = elById("next");
-    const upvoteButton = elById("upvote");
-    const downvoteButton = elById("downvote");
-    // may be missing
-    const reportButton = elById("report");
+    const nextButton = elById("next") as HTMLAnchorElement;
+    const upvoteButton = elById("upvote") as HTMLButtonElement;
+    const downvoteButton = elById("downvote") as HTMLButtonElement;
+    const reportButton = elById("report") as HTMLAnchorElement | null;
 
-    const thisQuoteId = [elById("top").getAttribute("quote-id")];
-    const nextQuoteId = [nextButton.getAttribute("quote-id")];
-    const params = w.location.search;
+    const thisQuoteId = [elById("top").getAttribute("quote-id") as string];
+    const nextQuoteId = [nextButton.getAttribute("quote-id") as string];
+    const params = window.location.search;
 
     const keys = (() => {
         const k = new URLSearchParams(params).get("keys");
@@ -28,13 +27,13 @@ function startQuotes() {
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
         `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
-    d.onkeydown = (event) => {
+    document.onkeydown = (event) => {
         switch (event.code) {
             case `Key${keys[0]}`:
                 upvoteButton.click();
                 break;
             case `Key${keys[1]}`:
-                w.history.back();
+                window.history.back();
                 break;
             case `Key${keys[2]}`:
                 downvoteButton.click();
@@ -44,24 +43,24 @@ function startQuotes() {
         }
     };
 
-    const shareButton = elById("share");
-    const downloadButton = elById("download");
+    const shareButton = elById("share") as HTMLAnchorElement;
+    const downloadButton = elById("download") as HTMLAnchorElement;
 
-    const author = elById("author");
-    const quote = elById("quote");
-    const realAuthor = elById("real-author-name");
+    const author = elById("author") as HTMLAnchorElement;
+    const quote = elById("quote") as HTMLAnchorElement;
+    const realAuthor = elById("real-author-name") as HTMLAnchorElement;
 
-    const ratingText = elById("rating-text");
-    const ratingImageContainer = elById("rating-img-container");
+    const ratingText = elById("rating-text") as HTMLDivElement;
+    const ratingImageContainer = elById("rating-img-container") as HTMLDivElement;
 
     nextButton.removeAttribute("href");
 
-    function updateQuoteId(quoteId) {
-        shareButton.href = fixHref(`/zitate/share/${quoteId}${params}`);
-        downloadButton.href = fixHref(`/zitate/${quoteId}.gif${params}`);
+    function updateQuoteId(quoteId: string): void {
+        shareButton.href = `/zitate/share/${quoteId}${params}`;
+        downloadButton.href = `/zitate/${quoteId}.gif${params}`;
         const [q_id, a_id] = quoteId.split("-", 2);
-        quote.href = fixHref(`/zitate/info/z/${q_id}${params}`);
-        author.href = fixHref(`/zitate/info/a/${a_id}${params}`);
+        quote.href = `/zitate/info/z/${q_id}${params}`;
+        author.href = `/zitate/info/a/${a_id}${params}`;
         thisQuoteId[0] = quoteId;
     }
 
@@ -73,7 +72,7 @@ function startQuotes() {
             return;
         }
         const ratingNum = Number.parseInt(rating);
-        const ratingImg = d.createElement("div");
+        const ratingImg = document.createElement("div");
         ratingImg.className = "rating-img" + (
             ratingNum > 0 ? " witzig" : " nicht-witzig"
         );
@@ -105,7 +104,7 @@ function startQuotes() {
 
     function handleData(data) {
         if (data["status"]) {
-            error(data);
+            console.error(data);
             if (data["status"] in [429, 420]) {
                 // ratelimited
                 alert(data["reason"]);
@@ -116,9 +115,8 @@ function startQuotes() {
             quote.innerText = `»${data["quote"]}«`;
             author.innerText = `- ${data["author"]}`;
             realAuthor.innerText = data["real_author"];
-            realAuthor.href = fixHref(
-                `/zitate/info/a/${data["real_author_id"]}${params}`,
-            );
+            realAuthor.href = `/zitate/info/a/${data["real_author_id"]}${params}`
+            ;
             if (reportButton) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
@@ -129,7 +127,7 @@ function startQuotes() {
                     "message",
                     `${quote.innerText} ${realAuthor.innerText}`,
                 );
-                reportButton.href = fixHref(`/kontakt?${reportHrefParams}`);
+                reportButton.href = `/kontakt?${reportHrefParams}`;
             }
             updateRating(data["rating"]);
             updateVote(Number.parseInt(data["vote"]));
@@ -137,7 +135,7 @@ function startQuotes() {
         }
     }
 
-    w.PopStateHandlers["quotes"] = (event) => (
+    PopStateHandlers["quotes"] = (event: PopStateEvent) => (
         event.state && handleData(event.state)
     );
 
@@ -149,11 +147,11 @@ function startQuotes() {
 
             data["stateType"] = "quotes";
             data["url"] = `/zitate/${data["id"]}${params}`;
-            w.history.pushState(data, "Falsche Zitate", data["url"]);
-            w.lastLocation = data["url"];
+            window.history.pushState(data, "Falsche Zitate", data["url"]);
+            setLastLocation(data["url"]);
         });
 
-    const vote = (vote) =>
+    const vote = (vote: string) =>
         post(
             `/api/zitate/${thisQuoteId[0]}`,
             { vote: vote },
@@ -173,7 +171,7 @@ function startQuotes() {
 }
 
 for (
-    const autoSubmitEl of document.getElementsByClassName("auto-submit-element")
+    const autoSubmitEl of (document.getElementsByClassName("auto-submit-element") as HTMLCollectionOf<HTMLInputElement>)
 ) {
     autoSubmitEl.onchange = () => autoSubmitEl.form.submit();
 }
