@@ -51,7 +51,9 @@ function startQuotes() {
     const realAuthor = elById("real-author-name") as HTMLAnchorElement;
 
     const ratingText = elById("rating-text") as HTMLDivElement;
-    const ratingImageContainer = elById("rating-img-container") as HTMLDivElement;
+    const ratingImageContainer = elById(
+        "rating-img-container",
+    ) as HTMLDivElement;
 
     nextButton.removeAttribute("href");
 
@@ -115,8 +117,9 @@ function startQuotes() {
             quote.innerText = `»${data["quote"]}«`;
             author.innerText = `- ${data["author"]}`;
             realAuthor.innerText = data["real_author"];
-            realAuthor.href = `/zitate/info/a/${data["real_author_id"]}${params}`
-            ;
+            realAuthor.href = `/zitate/info/a/${
+                data["real_author_id"]
+            }${params}`;
             if (reportButton) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
@@ -171,7 +174,9 @@ function startQuotes() {
 }
 
 for (
-    const autoSubmitEl of (document.getElementsByClassName("auto-submit-element") as HTMLCollectionOf<HTMLInputElement>)
+    const autoSubmitEl of (document.getElementsByClassName(
+        "auto-submit-element",
+    ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
     autoSubmitEl.onchange = () => autoSubmitEl.form.submit();
 }

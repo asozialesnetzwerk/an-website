@@ -10,7 +10,7 @@ function getLastLocation(): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function setLastLocation(url: string) : void {
+function setLastLocation(url: string): void {
     lastLocation = url;
 }
 
