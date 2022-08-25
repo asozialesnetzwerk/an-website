@@ -4,7 +4,9 @@
     const realAuthors = {};
     for (const child of elById("quote-list").children) {
         // put the quotes with their authors into an object
-        realAuthors[(child as unknown as {value: string}).value.toLowerCase()] = child
+        realAuthors[
+            (child as unknown as { value: string }).value.toLowerCase()
+        ] = child
             .attributes
             .getNamedItem("data-author")
             .value;
