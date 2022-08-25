@@ -4,14 +4,14 @@
     const realAuthors = {};
     for (const child of elById("quote-list").children) {
         // put the quotes with their authors into an object
-        realAuthors[child.value.toLowerCase()] = child
+        realAuthors[(child as unknown as {value: string}).value.toLowerCase()] = child
             .attributes
             .getNamedItem("data-author")
             .value;
     }
 
-    const quoteInput = elById("quote-input");
-    const realAuthorInput = elById("real-author-input");
+    const quoteInput = elById("quote-input") as HTMLInputElement;
+    const realAuthorInput = elById("real-author-input") as HTMLInputElement;
     quoteInput.oninput = () => {
         const author = realAuthors[quoteInput.value.toLowerCase()];
         // when real author is found disable input and set the value
