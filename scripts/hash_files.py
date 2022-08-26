@@ -18,19 +18,38 @@
 from __future__ import annotations
 
 import sys
-from hashlib import new
+from ctypes import CDLL, create_string_buffer
+from hashlib import algorithms_available, new
 from os.path import dirname, normpath
 from pathlib import Path
 
 REPO_ROOT = dirname(dirname(normpath(__file__)))
 PATH = Path(REPO_ROOT, "an_website").absolute()
 
+try:
+    from Crypto.Hash import RIPEMD160
+except ImportError:
+    RIPEMD160 = None  # type: ignore[assignment]
+
 
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
-    return "".join(
-        chr(spam + 0x2800) for spam in new("ripemd160", data).digest()
-    )
+    if "ripemd160" in algorithms_available:
+        digest = new("ripemd160", data).digest()
+    elif RIPEMD160:
+        digest = RIPEMD160.new(data).digest()
+    else:
+        spam = create_string_buffer(20)
+        for i in range(3, 13):
+            try:
+                libssl = CDLL(f"libssl.so.{i}")
+            except OSError:
+                continue
+            else:
+                break
+        libssl.RIPEMD160(data, len(data), spam)
+        digest = spam.value
+    return "".join(chr(0x2800 + byte) for byte in digest)
 
 
 def hash_all_files() -> str:

@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+TARGET=es$(python -c "from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))")
+
 if [ "${1:-}" = "clean" ]; then
   rm -rf an_website/static/css
   rm -rf an_website/static/js
@@ -17,4 +19,4 @@ find an_website \
     deno task --quiet esbuild \
       --outbase=an_website --outdir=an_website/static/js \
       --log-level=warning --log-override:unsupported-regexp=error \
-      --charset=utf8 --target=es2020 --minify --sourcemap {} +
+      --charset=utf8 --target="${TARGET}" --minify --sourcemap {} +

@@ -37,11 +37,11 @@ from ..utils.utils import ModuleInfo, PageInfo, run
 
 logger = logging.getLogger(__name__)
 
-SCREENFETCH_PATH = os.path.join(ROOT_DIR, "vendored/screenfetch")
+SCREENFETCH_PATH = os.path.join(ROOT_DIR, "vendored", "screenfetch")
 UWUFETCH_PATH = shutil.which("uwufetch")
 ENV = {
     "USER": NAME,
-    "SHELL": f"python{sys.version.split(' ', maxsplit=1)[0]}",
+    "SHELL": f"python{'.'.join(str(_) for _ in sys.version_info[:3])}",
 }
 
 

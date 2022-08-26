@@ -16,10 +16,11 @@
 from __future__ import annotations
 
 from ctypes import c_char
-from hashlib import new
 from multiprocessing import Array
 from pathlib import Path
 from typing import cast
+
+from Crypto.Hash import RIPEMD160  # nosec: B413
 
 from .. import DIR as ROOT_DIR
 from .. import VERSION
@@ -47,7 +48,7 @@ def get_module_info() -> ModuleInfo:
 
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
-    return new("ripemd160", data).digest().decode("braille")
+    return RIPEMD160.new(data).digest().decode("braille")
 
 
 def hash_all_files() -> str:

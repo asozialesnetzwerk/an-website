@@ -71,7 +71,7 @@ class Example(HTMLRequestHandler):
 
 
 class ExampleAPI(APIRequestHandler):
-    """The request handler for the example api."""
+    """The request handler for the example API."""
 
     @parse_args(type_=ExampleArguments, validation_method="validate")
     async def get(self, *, args: ExampleArguments, head: bool = False) -> None:

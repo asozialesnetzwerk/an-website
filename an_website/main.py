@@ -426,7 +426,8 @@ def setup_logging(  # pragma: no cover
         os.makedirs(path, 0o755, True)
         file_handler = logging.handlers.TimedRotatingFileHandler(
             os.path.join(path, f"{NAME}.log"),
-            "midnight",
+            encoding="UTF-8",
+            when="midnight",
             backupCount=7,
             utc=True,
         )
