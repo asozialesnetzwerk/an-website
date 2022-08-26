@@ -93,7 +93,7 @@ IGNORED_MODULES = {
     "utils.logging",
     "utils.static_file_handling",
     "utils.utils",
-} | set(() if sys.flags.dev_mode else "example.*")
+} | (set() if sys.flags.dev_mode else {"example.*"})
 
 CONFIG = ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="UTF-8")

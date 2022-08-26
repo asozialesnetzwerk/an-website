@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-from tornado.web import HTTPError
+from tornado.web import MissingArgumentError
 
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
@@ -54,7 +54,7 @@ class ExampleArguments:
         """Validate this."""
         self.name = self.name.strip()
         if not self.name:
-            raise HTTPError(400, reason="Argument name cannot be empty.")
+            raise MissingArgumentError("name")
 
 
 class Example(HTMLRequestHandler):

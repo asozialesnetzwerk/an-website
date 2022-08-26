@@ -20,7 +20,7 @@ from asyncio import Future
 from base64 import b64decode, b64encode
 from dataclasses import dataclass
 
-from tornado.web import HTTPError
+from tornado.web import HTTPError, MissingArgumentError
 
 from .. import GH_ORG_URL
 from ..utils.data_parsing import parse_args
@@ -88,20 +88,31 @@ class SwArgs:
     return_config: bool = False
     minify_config: bool = False
 
+    def validate(self) -> None:
+        """Validate the given data."""
+        self.text = self.text.strip()
+        check_text_too_long(self.text)
+        if self.config:
+            self.config = self.config.strip()
+
+    def validate_require_text(self) -> None:
+        """Validate the given data and require the text argument."""
+        self.validate()
+        if not self.text:
+            raise MissingArgumentError("text")
+
 
 class SwappedWords(HTMLRequestHandler):
     """The request handler for the swapped words page."""
 
-    @parse_args(type_=SwArgs, name="data")
-    async def get(self, *, head: bool = False, data: SwArgs) -> None:
+    @parse_args(type_=SwArgs, validation_method="validate")
+    async def get(self, *, head: bool = False, args: SwArgs) -> None:
         """Handle GET requests to the swapped words page."""
         # pylint: disable=unused-argument
-        await self.handle_text(data)
+        await self.handle_text(args)
 
     def handle_text(self, args: SwArgs) -> Future[None]:
         """Use the text to display the HTML page."""
-        check_text_too_long(args.text)
-
         if args.config is None:
             cookie = self.get_cookie(
                 "swapped-words-config",
@@ -147,11 +158,10 @@ class SwappedWords(HTMLRequestHandler):
                 error_msg=None,
             )
 
-    @parse_args(type_=SwArgs, name="data")
-    async def post(self, *, data: SwArgs) -> None:
+    @parse_args(type_=SwArgs, validation_method="validate_require_text")
+    async def post(self, *, args: SwArgs) -> None:
         """Handle POST requests to the swapped words page."""
-        self.get_argument("text")  # 400 if text is missing
-        await self.handle_text(data)
+        await self.handle_text(args)
 
 
 class SwappedWordsAPI(APIRequestHandler):
@@ -159,11 +169,10 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
-    @parse_args(type_=SwArgs)
+    @parse_args(type_=SwArgs, validation_method="validate")
     async def get(self, *, head: bool = False, args: SwArgs) -> None:
         """Handle GET requests to the swapped words API."""
         # pylint: disable=unused-argument
-        check_text_too_long(args.text)
         try:
             sw_config = (
                 DEFAULT_CONFIG
