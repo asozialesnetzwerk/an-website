@@ -175,7 +175,7 @@ def _parse_class(type_: type[T], data: dict[str, Any], *, strict: bool) -> T:
 
 
 def parse_args(
-    *, type_: Any, name: str = "data"
+    *, type_: Any, name: str = "args", validation_method: str | None = None
 ) -> Callable[[Callable[..., T]], Callable[..., T]]:
     """Insert kwarg with name and type into function."""
 
@@ -190,6 +190,8 @@ def parse_args(
                 _data = parse(type_, arguments, strict=False)
             except ValueError as err:
                 raise HTTPError(400, reason=err.args[0]) from err
+            if validation_method:
+                getattr(_data, validation_method)()
             return func(self, *args, **kwargs, **{name: _data})
 
         return new_func

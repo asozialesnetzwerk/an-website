@@ -159,7 +159,7 @@ class SwappedWordsAPI(APIRequestHandler):
 
     ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
 
-    @parse_args(type_=SwArgs, name="args")
+    @parse_args(type_=SwArgs)
     async def get(self, *, head: bool = False, args: SwArgs) -> None:
         """Handle GET requests to the swapped words API."""
         # pylint: disable=unused-argument

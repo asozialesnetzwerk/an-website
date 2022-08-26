@@ -1,10 +1,18 @@
 {% extends "../base.html" %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/EXAMPLE.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{fix_static('css/form.css')}}">
 {% end %}
 
 {% block body %}
-    <p>Hallo Welt!</p>
+    <p>Hallo, {{name}}!</p>
+
+    <form method="get">
+        <label>
+            Name:
+            <input type="text" name="name" value="{{name}}">
+        </label>
+
+        <button type="submit">Eingabe</button>
+    </form>
 {% end %}
