@@ -242,10 +242,14 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """
         Pre-fetch the data for the next quote.
 
-        This is done to ensure that the data is up-to-date.
+        This is done to show the users less out-of-date data.
         """
-        if len(self.FUTURES) > 5 or (self.content_type or "")[:6] == "image/":
+        if len(self.FUTURES) > 1 or (self.content_type or "")[:6] == "image/":
             return  # don't spam and don't do this for images
+
+        user_agent = self.request.headers.get("User-Agent")
+        if not user_agent or "bot" in user_agent.lower():
+            return  # don't do this for bots
 
         if hasattr(self, "loop"):
             task = self.loop.create_task(
