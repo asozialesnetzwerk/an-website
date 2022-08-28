@@ -1,5 +1,37 @@
 {
+  "compilerOptions": {
+    "strict": true
+  },
   "tasks": {
     "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.5/mod.js"
+  },
+  "lint": {
+    "files": {
+      "include": [
+        "scripts"
+      ]
+    },
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": [
+        "scripts"
+      ]
+    },
+    "options": {
+      "indentWidth": 4
+    }
+  },
+  "test": {
+    "files": {
+      "include": [
+        "scripts"
+      ]
+    }
   }
 }

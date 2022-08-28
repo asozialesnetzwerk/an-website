@@ -227,16 +227,16 @@ async def test_request_handlers(fetch: FetchCallable) -> None:
     assert b"https://example.org" in response.body
 
     assert_valid_response(
-        await fetch("/humans.txt"), "text/plain;charset=utf-8"
+        await fetch("/humans.txt"), "text/plain; charset=UTF-8"
     )
     assert_valid_response(
-        await fetch("/static/humans.txt"), "text/plain;charset=utf-8"
+        await fetch("/static/humans.txt"), "text/plain; charset=UTF-8"
     )
     assert_valid_response(
-        await fetch("/robots.txt"), "text/plain;charset=utf-8"
+        await fetch("/robots.txt"), "text/plain; charset=UTF-8"
     )
     assert_valid_response(
-        await fetch("/static/robots.txt"), "text/plain;charset=utf-8"
+        await fetch("/static/robots.txt"), "text/plain; charset=UTF-8"
     )
     assert_valid_response(await fetch("/favicon.png"), "image/png")
     assert_valid_response(await fetch("/static/favicon.png"), "image/png")

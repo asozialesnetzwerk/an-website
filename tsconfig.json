@@ -4,5 +4,8 @@
     "module": "es2020",
     "noEmit": true,
     "strict": true
-  }
+  },
+  "include": [
+    "an_website/**/*"
+  ]
 }

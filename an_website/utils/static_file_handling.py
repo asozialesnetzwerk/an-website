@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import defity
+import orjson as json
 import tornado.web
 from blake3 import blake3  # type: ignore[import]
 
@@ -54,90 +55,11 @@ def create_file_hashes_dict() -> dict[str, str]:
 
 FILE_HASHES_DICT = create_file_hashes_dict()
 
-# https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-# modified to add ATOM, RSS, and WASM
-CONTENT_TYPES = {
-    "3g2": "video/3gpp2",
-    "3gp": "video/3gpp",
-    "7z": "application/x-7z-compressed",
-    "aac": "audio/aac",
-    "abw": "application/x-abiword",
-    "arc": "application/x-freearc",
-    "atom": "application/atom+xml",
-    "avi": "video/x-msvideo",
-    "avif": "image/avif",
-    "azw": "application/vnd.amazon.ebook",
-    "bin": "application/octet-stream",
-    "bmp": "image/bmp",
-    "bz": "application/x-bzip",
-    "bz2": "application/x-bzip2",
-    "cda": "application/x-cdf",
-    "csh": "application/x-csh",
-    "css": "text/css",
-    "csv": "text/csv",
-    "doc": "application/msword",
-    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "eot": "application/vnd.ms-fontobject",
-    "epub": "application/epub+zip",
-    "gif": "image/gif",
-    "gz": "application/gzip",
-    "htm": "text/html",
-    "html": "text/html",
-    "ico": "image/vnd.microsoft.icon",
-    "ics": "text/calendar",
-    "jar": "application/java-archive",
-    "jpeg": "image/jpeg",
-    "jpg": "image/jpeg",
-    "js": "text/javascript",
-    "json": "application/json",
-    "jsonld": "application/ld+json",
-    "mid": "audio/midi",
-    "midi": "audio/midi",
-    "mjs": "text/javascript",
-    "mp3": "audio/mpeg",
-    "mp4": "video/mp4",
-    "mpeg": "video/mpeg",
-    "mpkg": "application/vnd.apple.installer+xml",
-    "odp": "application/vnd.oasis.opendocument.presentation",
-    "ods": "application/vnd.oasis.opendocument.spreadsheet",
-    "odt": "application/vnd.oasis.opendocument.text",
-    "oga": "audio/ogg",
-    "ogv": "video/ogg",
-    "ogx": "application/ogg",
-    "opus": "audio/opus",
-    "otf": "font/otf",
-    "pdf": "application/pdf",
-    "php": "application/x-httpd-php",
-    "png": "image/png",
-    "ppt": "application/vnd.ms-powerpoint",
-    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "rar": "application/vnd.rar",
-    "rss": "application/rss+xml",
-    "rtf": "application/rtf",
-    "sh": "application/x-sh",
-    "svg": "image/svg+xml",
-    "swf": "application/x-shockwave-flash",
-    "tar": "application/x-tar",
-    "tif": "image/tiff",
-    "tiff": "image/tiff",
-    "ts": "video/mp2t",
-    "ttf": "font/ttf",
-    "txt": "text/plain",
-    "vsd": "application/vnd.visio",
-    "wasm": "application/wasm",
-    "wav": "audio/wav",
-    "weba": "audio/webm",
-    "webm": "video/webm",
-    "webp": "image/webp",
-    "woff": "font/woff",
-    "woff2": "font/woff2",
-    "xhtml": "application/xhtml+xml",
-    "xls": "application/vnd.ms-excel",
-    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "xml": "application/xml",
-    "xul": "application/vnd.mozilla.xul+xml",
-    "zip": "application/zip",
-}
+MEDIA_TYPES: dict[str, str] = json.loads(
+    Path(
+        os.path.join(ROOT_DIR, "media_types.json")
+    ).read_bytes()
+)
 
 
 def get_handlers() -> list[Handler]:
@@ -212,12 +134,7 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
         if self.content_type:
-            if self.content_type.startswith("text/"):  # RFC2616 3.7.1
-                self.set_header(
-                    "Content-Type", f"{self.content_type};charset=utf-8"
-                )
-            else:
-                self.set_header("Content-Type", self.content_type)
+            self.set_header("Content-Type", self.content_type)
 
     def validate_absolute_path(
         self, root: str, absolute_path: str
@@ -226,7 +143,7 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         if (
             path := super().validate_absolute_path(root, absolute_path)
         ) and not self.content_type:
-            self.content_type = CONTENT_TYPES.get(path.rsplit(".", 1)[-1])
+            self.content_type = MEDIA_TYPES.get(Path(path).suffix[1:])
             if not self.content_type:
                 self.content_type = defity.from_file(path)
         return path
