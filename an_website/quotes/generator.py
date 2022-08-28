@@ -18,8 +18,7 @@ from __future__ import annotations
 import random
 
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo
-from . import (
+from .utils import (
     Author,
     Quote,
     QuoteReadyCheckHandler,
@@ -27,22 +26,6 @@ from . import (
     get_quotes,
     get_wrong_quotes,
 )
-
-
-def get_module_info(*, hidden: bool = True) -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/zitate/generator", QuoteGenerator),
-            (r"/api/zitate/generator", QuoteGeneratorAPI),
-        ),
-        name="Der Zitate-Generator",
-        short_name="Zitate-Generator",
-        description="Lasse falsch zugeordnete Zitate generieren",
-        path="/zitate/generator",
-        keywords=("Generator", "Falsche Zitate", "Falsch zugeordnete Zitate"),
-        hidden=hidden,
-    )
 
 
 def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:

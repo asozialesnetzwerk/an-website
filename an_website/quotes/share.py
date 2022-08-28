@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from urllib.parse import quote
 
-from . import QuoteReadyCheckHandler, get_wrong_quote
+from .utils import QuoteReadyCheckHandler, get_wrong_quote
 
 
 class ShareQuote(QuoteReadyCheckHandler):

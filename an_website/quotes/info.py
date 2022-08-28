@@ -26,23 +26,7 @@ from tornado.httpclient import AsyncHTTPClient
 from .. import DIR as ROOT_DIR
 from .. import EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo
-from . import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
-
-
-def get_module_info() -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/zitate/info/a/([0-9]{1,10})", AuthorsInfoPage),
-            (r"/zitate/info/z/([0-9]{1,10})", QuotesInfoPage),
-        ),
-        name="Falsch zugeordnete Zitate",
-        short_name="Falsche Zitate",
-        description="Eine Webseite mit falsch zugeordneten Zitaten",
-        path="/zitate/info/a/1",
-        hidden=True,
-    )
+from .utils import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
 
 
 class QuotesInfoPage(HTMLRequestHandler):

@@ -28,7 +28,7 @@ import types
 from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
-from collections.abc import Callable, Coroutine
+from collections.abc import Callable, Coroutine, Iterable
 from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
@@ -65,7 +65,7 @@ from . import (
     VERSION,
 )
 from .contact.contact import apply_contact_stuff_to_app
-from .quotes import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
+from .quotes.utils import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
 from .utils.logging import WebhookFormatter, WebhookHandler
@@ -81,18 +81,9 @@ from .utils.utils import (
 )
 
 IGNORED_MODULES = {
-    "backdoor.client",
     "patches.*",
-    "quotes.image",
-    "quotes.share",
     "static.*",
-    "swapped_words.config_file",
     "templates.*",
-    "utils.base_request_handler",
-    "utils.data_parsing",
-    "utils.logging",
-    "utils.static_file_handling",
-    "utils.utils",
 } | (set() if sys.flags.dev_mode else {"example.*"})
 
 CONFIG = ConfigParser(interpolation=None)
@@ -118,6 +109,19 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         ):
             continue
 
+        _module_infos = get_module_infos_from_module(
+            potential_module, errors, ignore_not_found=True
+        )
+        if _module_infos:
+            module_infos.extend(_module_infos)
+            loaded_modules.append(potential_module)
+            logger.info(
+                "Found module_infos in %s.__init__.py, "
+                "do not search in other files in the module.",
+                potential_module,
+            )
+            continue
+
         for potential_file in os.listdir(os.path.join(DIR, potential_module)):
             module_name = f"{potential_module}.{potential_file[:-3]}"
             if (
@@ -126,44 +130,10 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 or potential_file.startswith("_")
             ):
                 continue
-
-            import_timer = Timer()
-            module = importlib.import_module(
-                f".{module_name}",
-                package="an_website",
-            )
-
-            if "get_module_info" not in dir(module):
-                errors.append(
-                    f"{os.path.join(DIR, potential_module, potential_file)} "
-                    "has no 'get_module_info' method. Please add the method "
-                    f"or add '{potential_module}.*' or '{module_name}' to "
-                    "IGNORED_MODULES."
-                )
-                continue
-
-            if isinstance(
-                module_info := module.get_module_info(),
-                ModuleInfo,
-            ):
-                module_infos.append(module_info)
+            _module_infos = get_module_infos_from_module(module_name, errors)
+            if _module_infos:
+                module_infos.extend(_module_infos)
                 loaded_modules.append(module_name)
-                if import_timer.stop() > 0.1:
-                    logger.warning(
-                        "Import of %s took %ss. "
-                        "That's affecting the startup time.",
-                        module_name,
-                        import_timer.execution_time,
-                    )
-                continue
-
-            errors.append(
-                "'get_module_info' in "
-                f"{os.path.join(DIR, potential_module, potential_file)} "
-                "does not return ModuleInfo. Please fix the returned value "
-                f"or add '{potential_module}.*' or '{module_name}' to "
-                "IGNORED_MODULES."
-            )
 
     if len(errors) > 0:
         if sys.flags.dev_mode:
@@ -188,6 +158,76 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
 
     # make module_infos immutable so it never changes
     return tuple(module_infos)
+
+
+def get_module_infos_from_module(
+    module_name: str,
+    errors: list[str],  # gets modified
+    ignore_not_found: bool = False,
+) -> None | list[ModuleInfo]:
+    """Get the module infos based on a module."""
+    import_timer = Timer()
+    module = importlib.import_module(
+        f".{module_name}",
+        package="an_website",
+    )
+    if import_timer.stop() > 0.1:
+        logger.warning(
+            "Import of %s took %ss. That's affecting the startup time.",
+            module_name,
+            import_timer.execution_time,
+        )
+
+    module_infos: list[ModuleInfo] = []
+
+    has_get_module_info = "get_module_info" in dir(module)
+    has_get_module_infos = "get_module_infos" in dir(module)
+
+    if not (has_get_module_info or has_get_module_infos):
+        if ignore_not_found:
+            return None
+        errors.append(
+            f"{module_name} has no 'get_module_info' and no 'get_module_infos' "
+            "method. Please add at least one of the methods or add "
+            f"'{module_name.rsplit('.', 1)[0]}.*' or '{module_name}' to "
+            "IGNORED_MODULES."
+        )
+        return None
+
+    if has_get_module_info and isinstance(
+        module_info := module.get_module_info(),
+        ModuleInfo,
+    ):
+        module_infos.append(module_info)
+    elif has_get_module_info:
+        errors.append(
+            f"'get_module_info' in {module_name} does not return ModuleInfo. "
+            "Please fix the returned value."
+        )
+
+    if not has_get_module_infos:
+        return module_infos or None
+
+    _module_infos = module.get_module_infos()
+
+    if not isinstance(_module_infos, Iterable):
+        errors.append(
+            f"'get_module_infos' in {module_name} does not return an Iterable. "
+            "Please fix the returned value."
+        )
+        return module_infos or None
+
+    for _module_info in _module_infos:
+        if isinstance(_module_info, ModuleInfo):
+            module_infos.append(_module_info)
+        else:
+            errors.append(
+                f"'get_module_infos' in {module_name} did return an Iterable "
+                f"with an element of type {type(_module_info)}. "
+                "Please fix the returned value."
+            )
+
+    return module_infos or None
 
 
 def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
@@ -889,7 +929,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     if CONFIG.getboolean("REDIS", "ENABLED", fallback=False):
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
-    from .quotes import update_cache_periodically
+    from .quotes.utils import update_cache_periodically
 
     if not task_id:
         quotes_cache_update_task = loop.create_task(  # noqa: F841

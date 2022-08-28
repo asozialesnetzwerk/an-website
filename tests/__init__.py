@@ -167,7 +167,7 @@ def fetch(
     http_server_port: tuple[socket.socket, int],
 ) -> FetchCallable:
     """Fetch a URL."""
-    quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
+    quotes.utils.parse_wrong_quote(WRONG_QUOTE_DATA)
 
     host = f"http://127.0.0.1:{http_server_port[1]}"
 

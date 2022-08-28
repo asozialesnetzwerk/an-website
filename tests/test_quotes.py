@@ -21,8 +21,8 @@ import orjson as json
 import pytest
 
 import an_website.quotes.quotes as main_page
-from an_website import quotes
 from an_website.quotes import create
+from an_website.quotes import utils as quotes
 from an_website.quotes.image import FILE_EXTENSIONS
 
 from . import (

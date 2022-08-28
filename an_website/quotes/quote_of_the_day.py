@@ -25,8 +25,7 @@ from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo
-from . import (
+from .utils import (
     WRONG_QUOTES_CACHE,
     QuoteReadyCheckHandler,
     WrongQuote,
@@ -34,39 +33,6 @@ from . import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def get_module_info(*, hidden: bool = True) -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/zitat-des-tages/feed", QuoteOfTheDayRss),
-            (r"/zitat-des-tages", QuoteOfTheDayRedirect),
-            (
-                r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})",
-                QuoteOfTheDayRedirect,
-            ),
-            (r"/api/zitat-des-tages", QuoteOfTheDayAPI),
-            (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})",
-                QuoteOfTheDayAPI,
-            ),
-            (r"/api/zitat-des-tages/full", QuoteOfTheDayAPI),
-            (
-                r"/api/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})/full",
-                QuoteOfTheDayAPI,
-            ),
-        ),
-        name="Das Zitat des Tages",
-        description="Jeden Tag ein anderes Zitat",
-        path="/zitat-des-tages",
-        keywords=(
-            "Zitate",
-            "Witzig",
-            "Känguru",
-        ),
-        hidden=hidden,
-    )
 
 
 @dataclasses.dataclass

@@ -17,4 +17,34 @@ from __future__ import annotations
 
 import os
 
+from .. import GH_ORG_URL
+from ..utils.utils import ModuleInfo, PageInfo
+from .swap import SwappedWords, SwappedWordsAPI
+
 DIR = os.path.dirname(__file__)
+
+
+def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
+    return ModuleInfo(
+        handlers=(
+            (r"/vertauschte-woerter", SwappedWords),
+            (r"/api/vertauschte-woerter", SwappedWordsAPI),
+        ),
+        name="Vertauschte Wörter",
+        description="Eine Seite, die Wörter vertauscht",
+        path="/vertauschte-woerter",
+        keywords=("vertauschte", "Wörter", "witzig", "Känguru"),
+        sub_pages=(
+            PageInfo(
+                name="Plugin",
+                description="Ein Browser-Plugin, welches Wörter vertauscht",
+                path=f"{GH_ORG_URL}/VertauschteWoerterPlugin",
+            ),
+        ),
+        aliases=(
+            "/swapped-words",
+            "/vertauschte-wörter",
+            "/vertauschte-w%C3%B6rter",
+        ),
+    )

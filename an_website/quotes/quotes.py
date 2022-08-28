@@ -26,13 +26,14 @@ from asyncio import AbstractEventLoop, Future
 from typing import Any, Literal, cast
 
 import regex
-from tornado.web import HTTPError, RedirectHandler
+from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
-from ..main import IGNORED_MODULES
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, hash_ip
-from . import (
+from ..utils.utils import hash_ip
+from .image import QuoteAsImage, create_image
+from .quote_of_the_day import QuoteOfTheDayBaseHandler
+from .utils import (
     WRONG_QUOTES_CACHE,
     QuoteReadyCheckHandler,
     WrongQuote,
@@ -42,89 +43,8 @@ from . import (
     get_wrong_quote,
     get_wrong_quotes,
 )
-from .create import get_module_info as get_create_mi
-from .generator import get_module_info as get_generator_mi
-from .image import QuoteAsImage, create_image
-from .quote_of_the_day import QuoteOfTheDayBaseHandler
-from .quote_of_the_day import get_module_info as get_qod_mi
-from .share import ShareQuote
 
 logger = logging.getLogger(__name__)
-
-
-def get_module_info() -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/zitate", QuoteMainPage),
-            # {1,10} is too much, but better too much than not enough
-            (r"/zitate/([0-9]{1,10})-([0-9]{1,10})", QuoteById),
-            (r"/zitate/([0-9]{1,10})", QuoteById),
-            (
-                r"/zitate/-([0-9]{1,10})",
-                RedirectHandler,
-                {"url": "/zitate/info/a/{0}"},
-            ),
-            (
-                r"/zitate/([0-9]{1,10})-",
-                RedirectHandler,
-                {"url": "/zitate/info/z/{0}"},
-            ),
-            (  # /zitate/69-420.html shouldn't say "unsupported file extension"
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10}).html?",
-                RedirectHandler,
-                {"url": "/zitate/{0}-{1}"},
-            ),
-            (  # redirect to the new URL
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image\.([a-zA-Z]{3,4})",
-                RedirectHandler,
-                {"url": "/zitate/{0}-{1}.{2}"},
-            ),
-            (
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})\.([a-zA-Z]{3,4})",
-                QuoteAsImage,
-            ),
-            (
-                r"/zitate/([0-9]{1,10})()\.([a-zA-Z]{3,4})",
-                QuoteAsImage,
-            ),
-            (  # redirect to the new URL (changed because of robots.txt)
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share",
-                RedirectHandler,
-                {"url": "/zitate/share/{0}-{1}"},
-            ),
-            (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})", ShareQuote),
-            (r"/api/zitate(/full|)", QuoteRedirectAPI),
-            (
-                r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)",
-                QuoteAPIHandler,
-            ),
-            (
-                r"/api/zitate/([0-9]{1,10})(?:/full|)",
-                QuoteAPIHandler,
-            ),
-        ),
-        name="Falsch zugeordnete Zitate",
-        short_name="Falsche Zitate",
-        description="Witzige, aber falsch zugeordnete Zitate",
-        path="/zitate",
-        aliases=("/z",),
-        sub_pages=(
-            get_create_mi(hidden=False),
-            get_generator_mi(hidden=False),
-            get_qod_mi(hidden="quotes.quote_of_the_day" in IGNORED_MODULES),
-        ),
-        keywords=(
-            "falsch",
-            "zugeordnet",
-            "Zitate",
-            "Witzig",
-            "Känguru",
-            "Marc-Uwe Kling",
-            "falsche Zitate",
-            "falsch zugeordnete Zitate",
-        ),
-    )
 
 
 def vote_to_int(vote: str) -> Literal[-1, 0, 1]:

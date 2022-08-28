@@ -27,7 +27,12 @@ from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
 from .. import patches
-from . import DIR, QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
+from .utils import (
+    DIR,
+    QuoteReadyCheckHandler,
+    get_wrong_quote,
+    get_wrong_quotes,
+)
 
 logger = logging.getLogger(__name__)
 

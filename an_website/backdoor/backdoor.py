@@ -33,20 +33,9 @@ from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
 from ..utils.request_handler import APIRequestHandler
-from ..utils.utils import ModuleInfo, Permission
+from ..utils.utils import Permission
 
 logger = logging.getLogger(__name__)
-
-
-def get_module_info() -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=((r"/api/backdoor/(eval|exec)", Backdoor),),
-        name="Backdoor",
-        description="🚪",
-        aliases=("/api/hintertür", "/api/hintertuer"),
-        hidden=True,
-    )
 
 
 class PrintWrapper:  # pylint: disable=too-few-public-methods

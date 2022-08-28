@@ -23,7 +23,6 @@ from tornado.web import Application
 
 from an_website import main, patches
 from an_website.utils.base_request_handler import BaseRequestHandler
-from an_website.utils.utils import ModuleInfo
 
 from . import PARENT_DIR, FetchCallable, app, assert_valid_redirect, fetch
 
@@ -35,18 +34,10 @@ async def test_parsing_module_infos(
     app: Application,
 ) -> None:
     """Tests about the module infos in main."""
-    # pylint: disable=too-complex, too-many-locals
+    # pylint: disable=too-complex
     module_infos = app.settings["MODULE_INFOS"]
     # should get more than one module_info
     assert len(module_infos) > 0
-
-    # pylint: disable=import-outside-toplevel
-    from an_website.lolwut.lolwut import get_module_info as gmi1
-    from an_website.quotes.quote_of_the_day import get_module_info as gmi2
-    from an_website.reporting.reporting import get_module_info as gmi3
-
-    # test excluded module infos
-    assert all(isinstance(_mi, ModuleInfo) for _mi in (gmi1(), gmi2(), gmi3()))
 
     # module_infos should be sorted already; test that
     module_infos_list = list(module_infos)

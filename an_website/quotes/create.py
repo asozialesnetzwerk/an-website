@@ -21,8 +21,7 @@ from typing import cast
 from editdistance import distance
 from tornado.web import HTTPError, MissingArgumentError
 
-from ..utils.utils import ModuleInfo
-from . import (
+from .utils import (
     AUTHORS_CACHE,
     QUOTES_CACHE,
     Author,
@@ -36,21 +35,6 @@ from . import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def get_module_info(*, hidden: bool = True) -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/zitate/erstellen", CreatePage1),
-            (r"/zitate/create-wrong-quote", CreatePage2),
-        ),
-        name="Falsche-Zitate-Ersteller",
-        description="Erstelle witzige falsch zugeordnete Zitate",
-        aliases=("/zitate/create",),
-        path="/zitate/erstellen",
-        hidden=hidden,
-    )
 
 
 async def create_quote(quote_str: str, author: Author) -> Quote:

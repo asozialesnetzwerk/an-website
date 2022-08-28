@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
@@ -43,7 +42,6 @@ from .base_request_handler import BaseRequestHandler
 from .static_file_handling import fix_static_path
 from .utils import (
     SUS_PATHS,
-    ModuleInfo,
     Permission,
     bool_to_str,
     emoji2html,
@@ -54,28 +52,6 @@ from .utils import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-def get_module_info() -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        name="Utilities",
-        description="Nützliche Werkzeuge für alle möglichen Sachen.",
-        handlers=(
-            (
-                r"/error",
-                ZeroDivision if sys.flags.dev_mode else NotFoundHandler,
-                {},
-            ),
-            (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
-            (
-                r"/@elastic/apm-rum@(.+)/dist/bundles"
-                r"/elastic-apm-rum.umd(\.min|).js(\.map|)",
-                ElasticRUM,
-            ),
-        ),
-        hidden=True,
-    )
 
 
 class HTMLRequestHandler(BaseRequestHandler):
