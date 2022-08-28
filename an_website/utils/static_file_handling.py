@@ -56,9 +56,7 @@ def create_file_hashes_dict() -> dict[str, str]:
 FILE_HASHES_DICT = create_file_hashes_dict()
 
 MEDIA_TYPES: dict[str, str] = json.loads(
-    Path(
-        os.path.join(ROOT_DIR, "media_types.json")
-    ).read_bytes()
+    Path(os.path.join(ROOT_DIR, "media_types.json")).read_bytes()
 )
 
 
