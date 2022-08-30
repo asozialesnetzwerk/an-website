@@ -417,6 +417,37 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         print(body)
 
 
+def shellify(code: str) -> str:
+    """Modify code in a way that it gets executed in a shell."""
+    if not code.startswith("!"):
+        return code
+
+    code = (
+        code.removeprefix("!")
+        .lstrip()
+        .replace("\\", "\\\\")
+        .replace("\n", R"\n")
+        .replace('"', R"\"")
+    )
+    return f"""async def run():
+    import asyncio
+    _proc = await asyncio.create_subprocess_shell(
+        "{code}",
+        asyncio.subprocess.DEVNULL,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await asyncio.wait_for(_proc.communicate(), 60 * 60)
+    if stderr:
+        print("[stderr]")
+        print(stderr.decode("utf-8"))
+    if stdout:
+        print("[stdout]")
+        print(stdout.decode("utf-8"))
+await run()
+"""
+
+
 def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
@@ -627,7 +658,7 @@ Accepted arguments:
             run_and_print(
                 url,  # type: ignore[arg-type]
                 key,  # type: ignore[arg-type]
-                code,
+                shellify(code),
                 "--lisp" in sys.argv,
                 session,
                 "--timing" in sys.argv,
