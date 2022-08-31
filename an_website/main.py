@@ -428,7 +428,6 @@ def get_ssl_context(  # pragma: no cover
 
 def setup_logging(  # pragma: no cover
     config: ConfigParser,
-    loop: None | AbstractEventLoop = None,
     *,
     force: bool = False,
 ) -> None:
@@ -474,45 +473,56 @@ def setup_logging(  # pragma: no cover
         file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
 
-    if not loop:
+
+def setup_webhook_logging(
+    config: ConfigParser,
+    loop: AbstractEventLoop,
+) -> None:
+    """Setup logging to webhook."""  # noqa: D401
+    if not (webhook_url := config.get("LOGGING", "WEBHOOK_URL", fallback=None)):
         return
 
-    if webhook_url := config.get("LOGGING", "WEBHOOK_URL", fallback=None):
-        webhook_content_type = config.get(
+    default_logging_format_no_color = regex.sub(
+        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
+    )
+
+    root_logger = logging.getLogger()
+
+    webhook_content_type = config.get(
+        "LOGGING",
+        "WEBHOOK_CONTENT_TYPE",
+        fallback="application/json",
+    )
+    webhook_handler = WebhookHandler(
+        logging.ERROR,
+        loop=loop,
+        url=webhook_url,
+        content_type=webhook_content_type,
+    )
+    formatter = WebhookFormatter(
+        config.get(
             "LOGGING",
-            "WEBHOOK_CONTENT_TYPE",
-            fallback="application/json",
-        )
-        webhook_handler = WebhookHandler(
-            logging.ERROR,
-            loop=loop,
-            url=webhook_url,
-            content_type=webhook_content_type,
-        )
-        formatter = WebhookFormatter(
-            config.get(
-                "LOGGING",
-                "WEBHOOK_BODY_FORMAT",
-                fallback='{"text":"' + default_logging_format_no_color + '"}',
-            ),
-            config.get(
-                "LOGGING",
-                "WEBHOOK_TIMESTAMP_FORMAT",
-                fallback=None,
-            ),
-        )
-        formatter.timezone = (
-            ZoneInfo(config.get("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE"))
-            if config.has_option("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE")
-            else None
-        )
-        formatter.escape_message = config.getboolean(
+            "WEBHOOK_BODY_FORMAT",
+            fallback='{"text":"' + default_logging_format_no_color + '"}',
+        ),
+        config.get(
             "LOGGING",
-            "WEBHOOK_ESCAPE_MESSAGE",
-            fallback=True,
-        )
-        webhook_handler.setFormatter(formatter)
-        root_logger.addHandler(webhook_handler)
+            "WEBHOOK_TIMESTAMP_FORMAT",
+            fallback=None,
+        ),
+    )
+    formatter.timezone = (
+        ZoneInfo(config.get("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE"))
+        if config.has_option("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE")
+        else None
+    )
+    formatter.escape_message = config.getboolean(
+        "LOGGING",
+        "WEBHOOK_ESCAPE_MESSAGE",
+        fallback=True,
+    )
+    webhook_handler.setFormatter(formatter)
+    root_logger.addHandler(webhook_handler)
 
 
 def setup_apm(app: Application) -> None:  # pragma: no cover
@@ -824,12 +834,9 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
+    setup_logging(CONFIG)
 
     install_signal_handler()
-
-    loop = asyncio.get_event_loop_policy().get_event_loop()
-
-    setup_logging(CONFIG, loop)
 
     logger.info("Starting %s %s", NAME, VERSION)
 
@@ -904,6 +911,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del geoip.__kwdefaults__["caches"].control.created_by_ultra
+
+    # get loop after forking
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+    setup_webhook_logging(CONFIG, loop)
 
     task_id = tornado.process.task_id()
 
