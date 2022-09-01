@@ -121,9 +121,11 @@ async def continuation_string(
     output = [
         "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker für",
         "eine" if price_ostmark == 100 else num_to_string(price_ostmark),
-        f"Ostmark {ins_kino_gehen}! Das heißt man konnte von "
-        f"{num_to_string(values[-1])} Ostmark "
-        f"{kino_count}-mal {ins_kino_gehen}.",
+        (
+            f"Ostmark {ins_kino_gehen}! Das heißt man konnte von "
+            f"{num_to_string(values[-1])} Ostmark "
+            f"{kino_count}-mal {ins_kino_gehen}."
+        ),
     ]
     while True:  # pylint: disable=while-used
         euro, mark, ost, schwarz = convert(int(price * kino_count))

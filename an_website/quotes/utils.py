@@ -317,8 +317,7 @@ async def make_api_request(
     )
     if response.code != 200:
         logger.warning(
-            "%s request to %r with body=%r "
-            "failed with code=%d and reason=%r",
+            "%s request to %r with body=%r failed with code=%d and reason=%r",
             method,
             f"{API_URL}/{endpoint}?{args}",
             body,

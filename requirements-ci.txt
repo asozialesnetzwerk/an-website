@@ -1,9 +1,9 @@
 astor==0.8.1
 astroid==2.11.7
 attrs==22.1.0
-autoflake==1.5.2
+autoflake==1.5.3
 bandit[toml]==1.7.4
-black==22.6.0
+black==22.8.0
 certifi==2022.6.15
 cfgv==3.3.1
 click==8.1.3
@@ -36,7 +36,7 @@ packaging==21.3
 pathspec==0.10.0
 pbr==5.10.0
 pep8-naming==0.13.2
-pipenv==2022.8.30
+pipenv==2022.8.31
 platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.20.0
@@ -115,7 +115,6 @@ hyrule==0.2
 idna==3.3
 mpmath==1.2.1
 multidict==6.0.2
-namedthreads==1.0
 numpy==1.23.2
 orjson==3.8.0
 pillow==9.2.0

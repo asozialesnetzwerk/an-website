@@ -34,8 +34,8 @@ jobs:
         run: curl -sSf https://dprint.dev/install.sh | sh -s 0.30.3
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
-      - name: Minify TS & CSS
-        run: ./minify.sh clean
+      - name: Build TS & CSS
+        run: deno task clean && deno task build
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Push changes

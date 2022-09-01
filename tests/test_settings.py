@@ -47,15 +47,19 @@ async def test_setting_stuff_without_cookies(fetch: FetchCallable) -> None:
             }
         ),
         "theme=pink&no_3rd_party=sure&dynload=sure&openmoji=img&bumpscosity=0",
-        "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=n&openmoji=i"
-        "&bumpscosity=0",
+        (
+            "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=n&openmoji=i"
+            "&bumpscosity=0"
+        ),
         "",
     ):
         response = await fetch(
             "/einstellungen"
             if request_body
-            else "/einstellungen?theme=pink&no_3rd_party=s&dynload=s&openmoji=i"
-            "&bumpscosity=0",
+            else (
+                "/einstellungen?theme=pink&no_3rd_party=s&dynload=s&openmoji=i"
+                "&bumpscosity=0"
+            ),
             method="POST",
             headers={"Content-Type": "application/json"}
             if isinstance(request_body, bytes)

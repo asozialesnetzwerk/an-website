@@ -315,7 +315,7 @@ def lisp_always_active() -> bool:
             getattr(
                 os, "洀漀搀渀愀爀甀".encode("UTF-16-BE")[::-1].decode("UTF-16-BE")
             )(1),
-            sys.byteorder,
+            "big",
         )
         // (69 // 4 - 1)
     )

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import sys
 from ctypes import CDLL, create_string_buffer
+from ctypes.util import find_library
 from hashlib import algorithms_available, new
 from os.path import dirname, normpath
 from pathlib import Path
@@ -31,6 +32,8 @@ try:
 except ImportError:
     RIPEMD160 = None  # type: ignore[assignment]
 
+CRYPTO = CDLL(find_library("crypto"))
+
 
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
@@ -39,16 +42,10 @@ def hash_bytes(data: bytes) -> str:
     elif RIPEMD160:
         digest = RIPEMD160.new(data).digest()
     else:
-        spam = create_string_buffer(20)
-        for i in range(3, 13):
-            try:
-                libssl = CDLL(f"libssl.so.{i}")
-            except OSError:
-                continue
-            else:
-                break
-        libssl.RIPEMD160(data, len(data), spam)
-        digest = spam.value
+        # https://www.openssl.org/docs/man3.0/man3/RIPEMD160.html
+        buffer = create_string_buffer(20)
+        CRYPTO.RIPEMD160(data, len(data), buffer)
+        digest = buffer.value
     return "".join(chr(0x2800 + byte) for byte in digest)
 
 

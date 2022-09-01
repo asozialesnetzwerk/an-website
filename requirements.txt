@@ -37,7 +37,6 @@ idna==3.3; python_version >= '3.5'
 lxml==4.9.1
 mpmath==1.2.1
 multidict==6.0.2; python_version >= '3.7'
-namedthreads==1.0
 numpy==1.23.2
 orjson==3.8.0
 packaging==21.3; python_version >= '3.6'

@@ -643,7 +643,6 @@ class BaseRequestHandler(RequestHandler):
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method == "GET":
-
             if self.redirect_to_canonical_domain():
                 return
 
@@ -653,7 +652,6 @@ class BaseRequestHandler(RequestHandler):
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
-
             required_permission = self.REQUIRED_PERMISSION
             required_permission_for_method = getattr(
                 self, f"REQUIRED_PERMISSION_{self.request.method}", None
@@ -858,7 +856,8 @@ class BaseRequestHandler(RequestHandler):
                 else ""
             )
             + (
-                f"connect-src 'self' {self.settings['ELASTIC_APM']['SERVER_URL']};"
+                "connect-src 'self'"
+                f" {self.settings['ELASTIC_APM']['SERVER_URL']};"
                 if self.apm_enabled
                 and "SERVER_URL" in self.settings["ELASTIC_APM"]
                 else ""

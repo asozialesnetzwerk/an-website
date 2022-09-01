@@ -218,28 +218,29 @@ class ContactPage(HTMLRequestHandler):
             raise MissingArgumentError("nachricht")  # raise on empty message
 
         name = self.get_argument("name", "")
-        address = self.get_argument("addresse", "")
-        from_address = (
-            f"{name} <{address or 'anonymous@foo.bar'}>"
+        address_arg = self.get_argument("addresse", "")
+        address = (
+            f"{name} <{address_arg or 'anonymous@foo.bar'}>"
             if name
-            else address or "anonymous@foo.bar"
+            else address_arg or "anonymous@foo.bar"
         )
 
         message = Message()
-
+        host = self.request.host_name
+        name = name or address_arg or "Jemand"
         message["Subject"] = str(
             self.get_argument("subjekt", "")
-            or f"{name or address or 'Jemand'} "
-            f"will etwas über {self.request.host_name} schreiben."
+            or f"{name} will etwas über {host} schreiben."
         )
         message.set_payload(text, "UTF-8")
+
         if honeypot := self.get_argument("message", ""):  # 🍯
             logger.info(
                 "rejected message: %s",
                 {
                     "Subject": message["Subject"],
                     "message": message,
-                    "from_address": from_address,
+                    "address": address,
                     "geoip": await self.geoip(),
                     "🍯": honeypot,
                 },
@@ -251,7 +252,7 @@ class ContactPage(HTMLRequestHandler):
             query = urlencode(
                 {
                     "subject": message["Subject"],
-                    "body": f"{text}\n\nVon: {from_address}",
+                    "body": f"{text}\n\nVon: {address}",
                 },
                 quote_via=quote,
             )
@@ -267,7 +268,7 @@ class ContactPage(HTMLRequestHandler):
         await asyncio.to_thread(
             send_message,
             message=message,
-            from_address=from_address,
+            from_address=address,
             server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore[arg-type]
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
             recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore

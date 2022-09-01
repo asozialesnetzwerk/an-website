@@ -84,3 +84,5 @@ __all__ = (
     "VERSION",
     "pytest_is_running",
 )
+
+__version__ = VERSION

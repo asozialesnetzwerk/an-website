@@ -100,7 +100,7 @@ class DatetimeFormatter(logging.Formatter):
     def formatTime(  # noqa: N802
         self, record: LogRecord, datefmt: None | str = None
     ) -> str:
-        """Return the creation time of the specified LogRecord as formatted text."""
+        """Return the creation time of the LogRecord as formatted text."""
         spam = datetime.fromtimestamp(record.created).astimezone(self.timezone)
         if datefmt:
             return spam.strftime(datefmt)

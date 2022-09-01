@@ -7,7 +7,9 @@ skips = ["B311"]
 
 [tool.black]
 target-version = ["py310", "py311"]
+required-version = "22.8.0"
 line-length = 80
+preview = true
 
 [tool.isort]
 atomic = true

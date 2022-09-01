@@ -429,7 +429,6 @@ def get_ssl_context(  # pragma: no cover
 
 def setup_logging(  # pragma: no cover
     config: ConfigParser,
-    *,
     force: bool = False,
 ) -> None:
     """Setup logging."""  # noqa: D401
@@ -699,7 +698,9 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 path.read_bytes().replace(b"{prefix}", prefix.encode("ASCII"))
             )
 
-            name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
+            name = (
+                f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
+            )
 
             try:
                 if what == "ingest_pipelines":
@@ -830,18 +831,16 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-
     setproctitle(NAME)
-
     install_signal_handler()
-
     setup_logging(CONFIG)
 
     logger.info("Starting %s %s", NAME, VERSION)
 
     if platform.system() == "Windows":
         logger.warning(
-            "Please note that running %s on Windows is not officially supported",
+            "Please note that running %s on Windows is not officially"
+            " supported",
             NAME.removesuffix("-dev"),
         )
 

@@ -194,7 +194,8 @@ async def test_quote_updating() -> None:
     quote = await quotes.get_quote_by_id(1)
 
     assert (
-        quote.quote == "Frage nicht, was dein Land für dich tun kann, "
+        quote.quote
+        == "Frage nicht, was dein Land für dich tun kann, "
         "frage, was du für dein Land tun kannst."
     )
     quote.quote = "test"
@@ -204,7 +205,8 @@ async def test_quote_updating() -> None:
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
     assert (
-        quote.quote == "Frage nicht, was dein Land für dich tun kann, "
+        quote.quote
+        == "Frage nicht, was dein Land für dich tun kann, "
         "frage, was du für dein Land tun kannst."
     )
 

@@ -22,14 +22,13 @@ import contextlib
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
-import sys
+import threading
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 import certifi
 import defusedxml  # type: ignore[import]
-import namedthreads  # type: ignore[import]
 import tornado.httpclient
 import tornado.httputil
 import tornado.log
@@ -37,6 +36,7 @@ import tornado.web
 import uvloop
 import yaml
 from emoji import EMOJI_DATA
+from setproctitle import setthreadtitle
 
 from .. import DIR as ROOT_DIR
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
@@ -47,13 +47,20 @@ with contextlib.suppress(ImportError):
     # pylint: disable=import-error, useless-suppression
     from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 
+_bootstrap = threading.Thread._bootstrap  # type: ignore[attr-defined]
+
+
+def _boobstrap(self: threading.Thread) -> None:
+    with contextlib.suppress(Exception):
+        setthreadtitle(self.name)
+    _bootstrap(self)
+
 
 def apply() -> None:
     """Apply the patches."""
-    if sys.flags.dev_mode:
-        namedthreads.patch()
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
+    threading.Thread._bootstrap = _boobstrap  # type: ignore[attr-defined]
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
     certifi.contents = lambda: Path(certifi.where()).read_text("ASCII")
     configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]

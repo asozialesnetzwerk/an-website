@@ -41,7 +41,9 @@ SCREENFETCH_PATH = os.path.join(ROOT_DIR, "vendored", "screenfetch")
 UWUFETCH_PATH = shutil.which("uwufetch")
 ENV = {
     "USER": NAME,
-    "SHELL": f"{sys.implementation.name}{'.'.join(str(_) for _ in sys.version_info[:3])}",  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+    "SHELL": (  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        f"{sys.implementation.name}{'.'.join(str(_) for _ in sys.version_info[:3])}"
+    ),
 }
 
 

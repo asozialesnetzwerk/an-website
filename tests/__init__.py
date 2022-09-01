@@ -217,7 +217,7 @@ def assert_valid_response(
     codes: Set[int] = frozenset({200, 503}),
     headers: None | dict[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
-    """Assert a valid response with the given status code and Content-Type header."""
+    """Assert a valid response with the given status code and Content-Type."""
     url = response.effective_url
 
     assert response.code in codes or print(

@@ -25,7 +25,7 @@ You need:
 - GCC and G++ for building some of the dependencies
 - Depending on the used version of CPython: Rust
 - For formatting TypeScript and Markdown: dprint
-- For minifying TypeScript and CSS: Deno
+- For building TypeScript and CSS: Deno
 - For linting TypeScript: Node.js and pnpm (`npm install -g pnpm`)
 
 ### How to check
