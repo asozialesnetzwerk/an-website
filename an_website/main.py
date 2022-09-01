@@ -50,6 +50,7 @@ from redis.asyncio import (
     SSLConnection,
     UnixDomainSocketConnection,
 )
+from setproctitle import setproctitle
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
@@ -433,10 +434,6 @@ def setup_logging(  # pragma: no cover
 ) -> None:
     """Setup logging."""  # noqa: D401
     root_logger = logging.getLogger()
-    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
-    default_logging_format_no_color = regex.sub(
-        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
-    )
 
     if root_logger.handlers:
         if not force:
@@ -445,20 +442,21 @@ def setup_logging(  # pragma: no cover
             root_logger.removeHandler(handler)
             handler.close()
 
+    debug = config.getboolean("LOGGING", "DEBUG", fallback=sys.flags.dev_mode)
+
     logging.captureWarnings(True)
+
     root_logger.setLevel(logging.DEBUG if debug else logging.INFO)
     logging.getLogger("tornado.curl_httpclient").setLevel(logging.INFO)
     logging.getLogger("elasticsearch").setLevel(logging.INFO)
 
     stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(
-        logging.Formatter(
-            default_logging_format_no_color,
-            LogFormatter.DEFAULT_DATE_FORMAT,
-        )
-        if sys.flags.dev_mode
-        else LogFormatter()
-    )
+    if sys.flags.dev_mode:
+        spam = regex.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT)
+        formatter = logging.Formatter(spam, LogFormatter.DEFAULT_DATE_FORMAT)
+    else:
+        formatter = LogFormatter()
+    stream_handler.setFormatter(formatter)
     root_logger.addHandler(stream_handler)
 
     if path := config.get("LOGGING", "PATH", fallback=None):
@@ -467,24 +465,22 @@ def setup_logging(  # pragma: no cover
             os.path.join(path, f"{NAME}.log"),
             encoding="UTF-8",
             when="midnight",
-            backupCount=7,
+            backupCount=30,
             utc=True,
         )
         file_handler.setFormatter(StdlibFormatter())
         root_logger.addHandler(file_handler)
 
 
-def setup_webhook_logging(
+def setup_webhook_logging(  # pragma: no cover
     config: ConfigParser,
     loop: AbstractEventLoop,
 ) -> None:
-    """Setup logging to webhook."""  # noqa: D401
+    """Setup WebHook logging."""  # noqa: D401
     if not (webhook_url := config.get("LOGGING", "WEBHOOK_URL", fallback=None)):
         return
 
-    default_logging_format_no_color = regex.sub(
-        r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT
-    )
+    spam = regex.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT)
 
     root_logger = logging.getLogger()
 
@@ -503,7 +499,7 @@ def setup_webhook_logging(
         config.get(
             "LOGGING",
             "WEBHOOK_BODY_FORMAT",
-            fallback='{"text":"' + default_logging_format_no_color + '"}',
+            fallback='{"text":"' + spam + '"}',
         ),
         config.get(
             "LOGGING",
@@ -834,16 +830,19 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-    setup_logging(CONFIG)
+
+    setproctitle(NAME)
 
     install_signal_handler()
+
+    setup_logging(CONFIG)
 
     logger.info("Starting %s %s", NAME, VERSION)
 
     if platform.system() == "Windows":
         logger.warning(
             "Please note that running %s on Windows is not officially supported",
-            NAME,
+            NAME.removesuffix("-dev"),
         )
 
     ignore_modules(CONFIG)
@@ -904,6 +903,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     )
 
     if processes > 0:
+        setproctitle(f"{NAME} - Master")
         tornado.process.fork_processes(processes)
         # yeet all children (there should be none, but do it regardless, just in case)
         process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
@@ -912,23 +912,26 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del geoip.__kwdefaults__["caches"].control.created_by_ultra
 
-    # get loop after forking
-    loop = asyncio.get_event_loop_policy().get_event_loop()
-    setup_webhook_logging(CONFIG, loop)
-
     task_id = tornado.process.task_id()
 
-    if unix_socket_path and task_id is not None:
-        sockets.append(
-            tornado.netutil.bind_unix_socket(
-                os.path.join(unix_socket_path, f"{NAME}.{task_id}.sock")
+    if task_id is not None:
+        setproctitle(f"{NAME} - Worker {task_id}")
+        if unix_socket_path:
+            sockets.append(
+                tornado.netutil.bind_unix_socket(
+                    os.path.join(unix_socket_path, f"{NAME}.{task_id}.sock")
+                )
             )
-        )
+
+    # get loop after forking
+    loop = asyncio.get_event_loop_policy().get_event_loop()
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
     asyncio.get_event_loop = _
+
+    setup_webhook_logging(CONFIG, loop)
 
     # pylint: disable=import-outside-toplevel, unused-variable
 

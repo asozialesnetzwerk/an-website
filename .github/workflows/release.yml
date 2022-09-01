@@ -58,7 +58,7 @@ jobs:
         #  - trial
     services:
       redis:
-        image: redis/redis-stack-server:6.2.2-v5
+        image: redis/redis-stack-server:6.2.4-v2
         ports:
           - 6379:6379
     steps:

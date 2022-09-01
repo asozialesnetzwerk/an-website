@@ -9,7 +9,7 @@
 /.well-known
 
 # cringe
-/node_modules
+**/node_modules
 
 # coverage reports
 /.coverage

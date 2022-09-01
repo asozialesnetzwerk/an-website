@@ -1,4 +1,7 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 "use strict";
 
 function createBumpscositySlider() {
@@ -14,7 +17,7 @@ function createBumpscositySlider() {
         possibleLevels.push(parseInt(node.value));
     }
 
-    const startLevel = parseInt(select.value) as number;
+    const startLevel = parseInt(select.value);
 
     const currentValueDiv = document.createElement("div");
     currentValueDiv.setAttribute("tooltip", startLevel.toString());

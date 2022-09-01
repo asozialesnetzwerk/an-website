@@ -313,7 +313,7 @@ def lisp_always_active() -> bool:
         )
         and not int.from_bytes(
             getattr(
-                os, "洀漀搀渀愀爀甀".encode("utf_16_be")[::-1].decode("utf_16_be")
+                os, "洀漀搀渀愀爀甀".encode("UTF-16-BE")[::-1].decode("UTF-16-BE")
             )(1),
             sys.byteorder,
         )
@@ -423,28 +423,26 @@ def shellify(code: str) -> str:
         return code
 
     code = (
-        code.removeprefix("!")
-        .lstrip()
-        .replace("\\", "\\\\")
-        .replace("\n", R"\n")
-        .replace('"', R"\"")
+        code[1:]
+        .strip()
+        .replace("\\", r"\\")
+        .replace("\n", r"\n")
+        .replace('"', r"\"")
     )
-    return f"""async def run():
+    return f"""
+async def run_shell_50821273052022fbc283():
     import asyncio
-    _proc = await asyncio.create_subprocess_shell(
+    proc = await asyncio.create_subprocess_shell(
         "{code}",
         asyncio.subprocess.DEVNULL,
         stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
     )
-    stdout, stderr = await asyncio.wait_for(_proc.communicate(), 60 * 60)
-    if stderr:
-        print("[stderr]")
-        print(stderr.decode("utf-8"))
-    if stdout:
-        print("[stdout]")
-        print(stdout.decode("utf-8"))
-await run()
+    output, _ = await asyncio.wait_for(proc.communicate(), 60 * 60)
+    if output:
+        print(output.decode("UTF-8"))
+await run_shell_50821273052022fbc283()
+del run_shell_50821273052022fbc283
 """
 
 

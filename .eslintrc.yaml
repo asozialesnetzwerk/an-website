@@ -5,10 +5,12 @@ plugins:
 extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/recommended"
+  - "plugin:@typescript-eslint/recommended-requiring-type-checking"
 ignorePatterns:
   - "*.js"
 parserOptions:
   ecmaVersion: latest
+  project: tsconfig.json
 env:
   es2020: true
   browser: true

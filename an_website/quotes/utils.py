@@ -36,7 +36,7 @@ from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
-from .. import EVENT_REDIS, ORJSON_OPTIONS, pytest_is_running
+from .. import EVENT_REDIS, NAME, ORJSON_OPTIONS, pytest_is_running
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import emojify
 
@@ -453,7 +453,7 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     with contextlib.suppress(asyncio.TimeoutError):
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
-    prefix: str = app.settings.get("REDIS_PREFIX", "")
+    prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     apm: None | elasticapm.Client
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         parse_list_of_quote_data(
@@ -526,7 +526,7 @@ async def update_cache(
     """Fill the cache with all data from the API."""
     logger.info("Updating quotes cache")
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
-    prefix: str = app.settings.get("REDIS_PREFIX", "")
+    prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     redis_available = EVENT_REDIS.is_set()
 
     if update_wrong_quotes:
@@ -535,8 +535,9 @@ async def update_cache(
             parse_wrong_quote,
         )
         if wq_data and redis_available:
-            await redis.set(
+            await redis.setex(
                 f"{prefix}:cached-quote-data:wrongquotes",
+                60 * 60 * 24 * 30,
                 json.dumps(wq_data, option=ORJSON_OPTIONS),
             )
 
@@ -546,8 +547,9 @@ async def update_cache(
             parse_quote,
         )
         if quotes_data and redis_available:
-            await redis.set(
+            await redis.setex(
                 f"{prefix}:cached-quote-data:quotes",
+                60 * 60 * 24 * 30,
                 json.dumps(quotes_data, option=ORJSON_OPTIONS),
             )
 
@@ -557,8 +559,9 @@ async def update_cache(
             parse_author,
         )
         if authors_data and redis_available:
-            await redis.set(
+            await redis.setex(
                 f"{prefix}:cached-quote-data:authors",
+                60 * 60 * 24 * 30,
                 json.dumps(authors_data, option=ORJSON_OPTIONS),
             )
 
@@ -568,8 +571,9 @@ async def update_cache(
         and update_quotes
         and update_authors
     ):
-        await redis.set(
+        await redis.setex(
             f"{prefix}:cached-quote-data:last-update",
+            60 * 60 * 24 * 30,
             int(time.time()),
         )
 

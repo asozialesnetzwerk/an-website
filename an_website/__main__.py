@@ -20,6 +20,10 @@ import os
 import sys
 import warnings
 
+from setproctitle import getproctitle
+
+getproctitle()  # 42
+
 if sys.flags.dev_mode and not (
     len(sys.warnoptions) > 1
     or "PYTHONWARNINGS" in os.environ

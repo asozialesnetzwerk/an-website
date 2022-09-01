@@ -35,6 +35,7 @@ python-geoip-yplan = "==1.*"
 PyYAML = "==6.*"
 redis = {version = "==4.*", extras = ["hiredis"]}
 regex = "*"
+setproctitle = "==1.*"
 sympy = "==1.*"
 tornado = "==6.*"
 tzdata = "==2022.1"

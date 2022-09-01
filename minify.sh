@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-TARGET=es$(python -c "from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))")
+TARGET=es$(python3 -c "from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))")
 
 if [ "${1:-}" = "clean" ]; then
   rm -rf an_website/static/css

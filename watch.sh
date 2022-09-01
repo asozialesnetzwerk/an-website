@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-TARGET=es$(python -c "from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))")
+TARGET=es$(python3 -c "from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))")
 
 find an_website \
   -type f -name "*.ts" -exec \

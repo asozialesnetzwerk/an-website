@@ -97,15 +97,16 @@ class HostInfo(HTMLRequestHandler):
         if head:
             return
 
-        if not self.SCREENFETCH_CACHE.value:
-            self.SCREENFETCH_CACHE.value = minify_ansi_art(
-                (await run(SCREENFETCH_PATH, "-L"))[1]
-            )
+        logo = self.SCREENFETCH_CACHE.value
+
+        if not logo:
+            logo = minify_ansi_art((await run(SCREENFETCH_PATH, "-L"))[1])
+            self.SCREENFETCH_CACHE.value = logo
 
         await self.render(
             "ansi2html.html",
             ansi=[
-                self.SCREENFETCH_CACHE.value.decode("UTF-8"),
+                logo.decode("UTF-8"),
                 (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("UTF-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",

@@ -1,9 +1,6 @@
 {
-  "compilerOptions": {
-    "strict": true
-  },
   "tasks": {
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.5/mod.js"
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.6/mod.js"
   },
   "lint": {
     "files": {
