@@ -1,14 +1,15 @@
 {
   "tasks": {
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.6/mod.js --log-override:unsupported-regexp=error --target=$(deno task target) --charset=utf8",
-    "clean": "deno task clean:css && deno task clean:js",
-    "clean:css": "rm -rf an_website/static/css",
-    "clean:js": "rm -rf an_website/static/js",
-    "find:css": "find style -type f -name '*.css'",
-    "find:ts": "find an_website -type f -name '*.ts'",
     "build": "deno task build:css && deno task build:ts",
     "build:css": "deno task find:css -exec deno task esbuild --outbase=style --outdir=an_website/static/css --minify '{}' +",
     "build:ts": "deno task find:ts -exec deno task esbuild --outbase=an_website --outdir=an_website/static/js --minify --sourcemap '{}' +",
+    "clean": "deno task clean:css && deno task clean:js",
+    "clean:css": "rm -rf an_website/static/css",
+    "clean:js": "rm -rf an_website/static/js",
+    "content_types": "scripts/content_types.ts | python3 -m json.tool --sort-keys --indent 2 > an_website/content_types.json",
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.15.6/mod.js --log-override:unsupported-regexp=error --target=$(deno task target) --charset=utf8",
+    "find:css": "find style -type f -name '*.css'",
+    "find:ts": "find an_website -type f -name '*.ts'",
     "target": "echo es$(python3 -c 'from datetime import datetime; print((now := datetime.utcnow()).year - (2 + (now.month < 7)))')",
     "watch": "deno task find:ts -exec deno task esbuild --outbase=an_website --outdir=an_website/static/js --minify --sourcemap --watch '{}' +"
   },

@@ -144,15 +144,12 @@ def assert_url_query(url: str, /, **args: None | str) -> None:
     """Assert properties of a URL."""
     split_url = urllib.parse.urlsplit(url or "/")
     query_str = split_url.query
-
     is_static = split_url.path.startswith(
         ("/static/", "/soundboard/files/")
     ) or split_url.path in {"/favicon.png", "/humans.txt"}
-
     query: dict[str, str] = (
         dict(urllib.parse.parse_qsl(query_str, True, True)) if query_str else {}
     )
-
     for key, value in args.items():
         if value is None or (is_static and key != "v"):
             assert key not in query
@@ -168,7 +165,6 @@ def fetch(
 ) -> FetchCallable:
     """Fetch a URL."""
     quotes.utils.parse_wrong_quote(WRONG_QUOTE_DATA)
-
     host = f"http://127.0.0.1:{http_server_port[1]}"
 
     async def _fetch(
@@ -177,10 +173,8 @@ def fetch(
         """Fetch a URL."""
         if not url.startswith(("http://", "https://")):
             url = f"{host}/{url.removeprefix('/')}"
-
         kwargs.setdefault("raise_error", False)
         kwargs.setdefault("follow_redirects", False)
-
         try:
             return await http_client.fetch(url, **kwargs)
         except tornado.httpclient.HTTPClientError:
@@ -200,14 +194,11 @@ async def assert_valid_redirect(
     """Assert a valid redirect to a new URL."""
     response = await fetch(path, **kwargs)
     assert response.code in codes or print(path, codes, response.code)
-
     base_url = response.request.url.removesuffix(path)
-
     real_new_path = response.headers["Location"].removeprefix(base_url) or "/"
     if real_new_path.startswith("?"):
         real_new_path = f"/{real_new_path}"
     assert real_new_path == new_path or print(path, new_path, real_new_path)
-
     return response
 
 
@@ -219,11 +210,9 @@ def assert_valid_response(
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given status code and Content-Type."""
     url = response.effective_url
-
     assert response.code in codes or print(
         url, codes, response.code, response.body
     )
-
     if (
         "Content-Type" in response.headers
         and response.headers["Content-Type"].startswith(
@@ -235,11 +224,9 @@ def assert_valid_response(
         assert response.body.endswith(b"\n") or print(
             f"Body from {url} doesn't end with newline"
         )
-
     headers = headers or {}
     if content_type is not None:
         headers["Content-Type"] = content_type
-
     for header, value in headers.items():
         assert response.headers[header] == value or print(
             url, response.headers, header, value
@@ -262,7 +249,6 @@ async def check_html_page(
         response = url
         url = response.effective_url
     assert_valid_html_response(response, codes)
-
     html = document_fromstring(
         response.body.decode("UTF-8"), base_url=response.effective_url
     )
@@ -361,7 +347,6 @@ def assert_valid_html_response(
         r"{\s*[a-zA-Z_]+\s*}", response.body.decode("UTF-8")
     )
     assert not matches or print(effective_url, matches)
-
     return response
 
 
