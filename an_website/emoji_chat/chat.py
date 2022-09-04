@@ -21,7 +21,7 @@ import random
 import sys
 import time
 from collections.abc import Awaitable
-from typing import Any, Literal
+from typing import Any, Final, Literal
 
 import orjson as json
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize
@@ -34,10 +34,10 @@ from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, Permission, ratelimit
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
-EMOJIS = tuple(EMOJI_DATA)
-EMOJIS_NO_FLAGS = tuple(
+EMOJIS: Final[tuple[str, ...]] = tuple(EMOJI_DATA)
+EMOJIS_NO_FLAGS: Final[tuple[str, ...]] = tuple(
     emoji for emoji in EMOJIS if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
 )
 
@@ -288,7 +288,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
     connection_time: int
 
     def on_close(self) -> None:  # noqa: D102
-        logger.info("WebSocket closed")
+        LOGGER.info("WebSocket closed")
         OPEN_CONNECTIONS.remove(self)
         for conn in OPEN_CONNECTIONS:
             conn.send_users()
@@ -314,7 +314,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
 
     def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
         """Handle an opened connection."""
-        logger.info("WebSocket opened")
+        LOGGER.info("WebSocket opened")
         self.write_message(
             {
                 "type": "init",

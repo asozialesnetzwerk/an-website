@@ -25,6 +25,7 @@ import shutil
 import sys
 from ctypes import c_char
 from multiprocessing import Array
+from typing import Final
 
 import regex
 from tornado.web import HTTPError as HTTPEwwow
@@ -35,11 +36,11 @@ from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
-SCREENFETCH_PATH = os.path.join(ROOT_DIR, "vendored", "screenfetch")
-UWUFETCH_PATH = shutil.which("uwufetch")
-ENV = {
+SCREENFETCH_PATH: Final = os.path.join(ROOT_DIR, "vendored", "screenfetch")
+UWUFETCH_PATH: Final = shutil.which("uwufetch")
+ENV: Final[dict[str, str]] = {
     "USER": NAME,
     "SHELL": (  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         f"{sys.implementation.name}{'.'.join(str(_) for _ in sys.version_info[:3])}"

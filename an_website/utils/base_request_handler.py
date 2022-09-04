@@ -30,7 +30,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timezone, tzinfo
-from typing import Any, cast
+from typing import Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
@@ -75,9 +75,9 @@ from .utils import (
     str_to_bool,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
-TEXT_CONTENT_TYPES = {
+TEXT_CONTENT_TYPES: Final[set[str]] = {
     "application/javascript",
     "application/json",
     "application/x-ndjson",
@@ -91,19 +91,19 @@ class BaseRequestHandler(RequestHandler):
 
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
 
-    ELASTIC_RUM_URL = (
+    ELASTIC_RUM_URL: ClassVar[str] = (
         "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
-    COMPUTE_ETAG = True
-    ALLOW_COMPRESSION = True
-    MAX_BODY_SIZE: None | int = None
-    ALLOWED_METHODS: tuple[str, ...] = ("GET",)
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ()
-    REQUIRED_PERMISSION: None | Permission = None
+    COMPUTE_ETAG: ClassVar[bool] = True
+    ALLOW_COMPRESSION: ClassVar[bool] = True
+    MAX_BODY_SIZE: ClassVar[None | int] = None
+    ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET",)
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ()
+    REQUIRED_PERMISSION: ClassVar[None | Permission] = None
     # the following should be False on security relevant endpoints
-    ALLOW_COOKIE_AUTHENTICATION = True
+    ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = True
 
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
@@ -218,8 +218,8 @@ class BaseRequestHandler(RequestHandler):
         """
         Fix a URL and return it.
 
-        If the URL is from another website, link to it with the redirect page.
-        Otherwise just return the URL with no_3rd_party appended.
+        If the URL is from another website, link to it with the redirect page,
+        otherwise just return the URL with no_3rd_party appended.
         """
         if url is None:
             url = self.request.full_url()
@@ -285,11 +285,10 @@ class BaseRequestHandler(RequestHandler):
     @classmethod
     def get_allowed_methods(cls) -> list[str]:
         """Get allowed methods."""
-        methods = ["OPTIONS"]
+        methods = {"OPTIONS", *cls.ALLOWED_METHODS}
         if "GET" in cls.ALLOWED_METHODS and cls.supports_head():
-            methods.append("HEAD")
-        methods.extend(cls.ALLOWED_METHODS)
-        return methods
+            methods.add("HEAD")
+        return sorted(methods)
 
     def get_bool_argument(
         self,
@@ -475,7 +474,7 @@ class BaseRequestHandler(RequestHandler):
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
         except ElasticsearchException:
-            logger.exception("Elasticsearch request failed")
+            LOGGER.exception("Elasticsearch request failed")
             if self.apm_client:
                 self.apm_client.capture_exception()
         else:
@@ -667,7 +666,7 @@ class BaseRequestHandler(RequestHandler):
                 or (is_authorized := self.is_authorized(required_permission))
             ):
                 self.auth_failed = True
-                logger.warning(
+                LOGGER.warning(
                     "Unauthorized access to %s from %s",
                     self.request.path,
                     anonymize_ip(self.request.remote_ip),
@@ -678,7 +677,7 @@ class BaseRequestHandler(RequestHandler):
                 self.MAX_BODY_SIZE is not None
                 and len(self.request.body) > self.MAX_BODY_SIZE
             ):
-                logger.warning(
+                LOGGER.warning(
                     "%s > MAX_BODY_SIZE (%s)",
                     len(self.request.body),
                     self.MAX_BODY_SIZE,
@@ -706,7 +705,7 @@ class BaseRequestHandler(RequestHandler):
             return False
 
         if not EVENT_REDIS.is_set():
-            logger.warning(
+            LOGGER.warning(
                 "Ratelimits are enabled, but Redis is not available. "
                 "This can happen shortly after starting the website.",
             )

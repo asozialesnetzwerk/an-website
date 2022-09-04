@@ -18,18 +18,18 @@ from __future__ import annotations
 import logging
 import math
 import time
-from typing import TypedDict
+from typing import Final, TypedDict
 
 import regex
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
 
-from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME
+from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME_NS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 class AvailabilityDict(TypedDict):  # noqa: D101
@@ -59,7 +59,7 @@ def get_module_info() -> ModuleInfo:
 
 def calculate_uptime() -> float:
     """Calculate the uptime in seconds and return it."""
-    return time.monotonic() - START_TIME
+    return (time.monotonic_ns() - START_TIME_NS) / 1_000_000
 
 
 def uptime_to_str(uptime: None | float = None) -> str:

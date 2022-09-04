@@ -25,7 +25,7 @@ import os
 import threading
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import certifi
 import defusedxml  # type: ignore[import]
@@ -41,7 +41,7 @@ from setproctitle import setthreadtitle
 from .. import DIR as ROOT_DIR
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 with contextlib.suppress(ImportError):
     # pylint: disable=import-error, useless-suppression

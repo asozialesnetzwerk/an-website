@@ -23,7 +23,7 @@ import asyncio
 import logging
 import random
 from asyncio import AbstractEventLoop, Future
-from typing import Any, Literal, cast
+from typing import Any, ClassVar, Final, Literal, TypeAlias, cast
 
 import regex
 from tornado.web import HTTPError
@@ -44,7 +44,7 @@ from .utils import (
     get_wrong_quotes,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
@@ -65,8 +65,8 @@ def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
     return 0
 
 
-RatingFilter = Literal["w", "n", "unrated", "rated", "all", "smart"]
-SMART_RATING_FILTERS: tuple[RatingFilter, ...] = (
+RatingFilter: TypeAlias = Literal["w", "n", "unrated", "rated", "all", "smart"]
+SMART_RATING_FILTERS: Final[tuple[RatingFilter, ...]] = (
     *(("n",) * 1),
     *(("all",) * 5),
     *(("w",) * 5),
@@ -138,13 +138,13 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """Discard the future and log the exception if one occured."""
         self.FUTURES.discard(future)
         if exc := future.exception():
-            logger.error(
+            LOGGER.error(
                 "Failed to pre-fetch quote %d-%d",
                 *self.next_id,
                 exc_info=(type(exc), exc, exc.__traceback__),
             )
         else:
-            logger.debug("Pre-fetched quote %d-%d", *self.next_id)
+            LOGGER.debug("Pre-fetched quote %d-%d", *self.next_id)
 
     def get_next_url(self) -> str:
         """Get the URL of the next quote."""
@@ -248,16 +248,16 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
-    RATELIMIT_POST_LIMIT = 10
-    RATELIMIT_POST_COUNT_PER_PERIOD = 5
-    RATELIMIT_POST_PERIOD = 10
+    RATELIMIT_POST_LIMIT: ClassVar[int] = 10
+    RATELIMIT_POST_COUNT_PER_PERIOD: ClassVar[int] = 5
+    RATELIMIT_POST_PERIOD: ClassVar[int] = 10
 
-    POSSIBLE_CONTENT_TYPES = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
         *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
 
-    LONG_PATH = "/zitate/%d-%d"
+    LONG_PATH: ClassVar[str] = "/zitate/%d-%d"
 
     async def get(
         self, quote_id: str, author_id: None | str = None, *, head: bool = False
@@ -331,7 +331,7 @@ class QuoteById(QuoteBaseHandler):
         Return None if nothing is saved.
         """
         if not EVENT_REDIS.is_set():
-            logger.warning("No Redis connection")
+            LOGGER.warning("No Redis connection")
             return 0
         result = await self.redis.get(
             self.get_redis_votes_key(quote_id, author_id)
@@ -419,21 +419,21 @@ class QuoteById(QuoteBaseHandler):
         )
         if result:
             return
-        logger.warning("Could not save vote in Redis: %s", result)
+        LOGGER.warning("Could not save vote in Redis: %s", result)
         raise HTTPError(500, "Could not save vote")
 
 
 class QuoteAPIHandler(APIRequestHandler, QuoteById):
     """API request handler for the quotes page."""
 
-    ALLOWED_METHODS = ("GET", "POST")
+    ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET", "POST")
 
-    POSSIBLE_CONTENT_TYPES = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
         *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
 
-    LONG_PATH = "/api/zitate/%d-%d"
+    LONG_PATH: ClassVar[str] = "/api/zitate/%d-%d"
 
     async def render_wrong_quote(
         self, wrong_quote: WrongQuote, vote: int

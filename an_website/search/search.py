@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Final
 
 import orjson as json
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
@@ -23,7 +24,7 @@ from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -66,7 +67,7 @@ class Search(HTMLRequestHandler):
                     self.app_search, self.app_search_engine, query
                 )
             except Exception:  # pylint: disable=broad-except
-                logger.exception("App Search request failed")
+                LOGGER.exception("App Search request failed")
                 if self.apm_client:
                     self.apm_client.capture_exception()
         return await self.search_old(query)

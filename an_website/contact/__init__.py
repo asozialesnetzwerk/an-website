@@ -16,5 +16,6 @@
 from __future__ import annotations
 
 import os
+from typing import Final
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)

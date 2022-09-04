@@ -26,7 +26,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime
 from multiprocessing import Value
-from typing import Any, Literal, cast
+from typing import Any, Final, Literal, cast
 
 import elasticapm  # type: ignore[import]
 import orjson as json
@@ -40,17 +40,17 @@ from .. import EVENT_REDIS, NAME, ORJSON_OPTIONS, pytest_is_running
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import emojify
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
-API_URL = "https://zitate.prapsschnalinen.de/api"
+API_URL: Final[str] = "https://zitate.prapsschnalinen.de/api"
 
-# fmt: off
-QUOTES_CACHE: dict[int, Quote] = UltraDict(buffer_size=1024**2)
-AUTHORS_CACHE: dict[int, Author] = UltraDict(buffer_size=1024**2)
-WRONG_QUOTES_CACHE: dict[tuple[int, int], WrongQuote] = UltraDict(buffer_size=1024**2)
-# fmt: on
+QUOTES_CACHE: Final[dict[int, Quote]] = UltraDict(buffer_size=1024**2)
+AUTHORS_CACHE: Final[dict[int, Author]] = UltraDict(buffer_size=1024**2)
+WRONG_QUOTES_CACHE: Final[dict[tuple[int, int], WrongQuote]] = UltraDict(
+    buffer_size=1024**2
+)
 
 MAX_QUOTES_ID = Value("Q", 0)
 MAX_AUTHORS_ID = Value("Q", 0)
@@ -316,7 +316,7 @@ async def make_api_request(
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     if response.code != 200:
-        logger.warning(
+        LOGGER.warning(
             "%s request to %r with body=%r failed with code=%d and reason=%r",
             method,
             f"{API_URL}/{endpoint}?{args}",
@@ -484,15 +484,15 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
                                 app, update_quotes=False, update_authors=False
                             )
                         except Exception:  # pylint: disable=broad-except
-                            logger.exception("Updating quotes cache failed")
+                            LOGGER.exception("Updating quotes cache failed")
                             apm = app.settings.get("ELASTIC_APM", {}).get(
                                 "CLIENT"
                             )
                             if apm:
                                 apm.capture_exception()
                         else:
-                            logger.info("Updated quotes cache successfully")
-                    logger.info(
+                            LOGGER.info("Updated quotes cache successfully")
+                    LOGGER.info(
                         "Next update of quotes cache in %d seconds",
                         update_cache_in,
                     )
@@ -504,14 +504,14 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
         try:
             await update_cache(app)
         except Exception:  # pylint: disable=broad-except
-            logger.exception("Updating quotes cache failed")
+            LOGGER.exception("Updating quotes cache failed")
             apm = app.settings.get("ELASTIC_APM", {}).get("CLIENT")
             if apm:
                 apm.capture_exception()
             failed += 1
             await asyncio.sleep(pow(min(failed * 2, 60), 2))  # 4,16,...,60*60
         else:
-            logger.info("Updated quotes cache successfully")
+            LOGGER.info("Updated quotes cache successfully")
             failed = 0
             await asyncio.sleep(60 * 60)
 
@@ -523,7 +523,7 @@ async def update_cache(
     update_authors: bool = True,
 ) -> None:
     """Fill the cache with all data from the API."""
-    logger.info("Updating quotes cache")
+    LOGGER.info("Updating quotes cache")
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     redis_available = EVENT_REDIS.is_set()

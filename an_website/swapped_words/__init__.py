@@ -16,12 +16,13 @@
 from __future__ import annotations
 
 import os
+from typing import Final
 
 from .. import GH_ORG_URL
 from ..utils.utils import ModuleInfo, PageInfo
 from .swap import SwappedWords, SwappedWordsAPI
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 
 def get_module_info() -> ModuleInfo:

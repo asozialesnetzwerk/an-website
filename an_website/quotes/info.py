@@ -26,7 +26,7 @@ from tornado.httpclient import AsyncHTTPClient
 from .. import DIR as ROOT_DIR
 from .. import EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
-from .utils import get_author_by_id, get_quote_by_id, get_wrong_quotes, logger
+from .utils import LOGGER, get_author_by_id, get_quote_by_id, get_wrong_quotes
 
 
 class QuotesInfoPage(HTMLRequestHandler):
@@ -164,7 +164,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                 author.info = await search_wikipedia(fixed_author_name)
                 if author.info is None or author.info[1] is None:
                     # nothing found
-                    logger.info("No information found about %s", repr(author))
+                    LOGGER.info("No information found about %s", repr(author))
                 elif EVENT_REDIS.is_set():
                     await self.redis.setex(
                         self.get_redis_info_key(fixed_author_name),

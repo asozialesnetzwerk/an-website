@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import os
+from typing import Final
 
 from tornado.web import RedirectHandler
 
@@ -23,7 +24,7 @@ from ..utils.static_file_handling import CachedStaticFileHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from .soundboard import SoundboardHTMLHandler, SoundboardRSSHandler
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 
 def get_module_info() -> ModuleInfo:

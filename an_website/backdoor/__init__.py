@@ -16,11 +16,12 @@
 from __future__ import annotations
 
 import os
+from typing import Final
 
 from ..utils.utils import ModuleInfo
 from .backdoor import Backdoor
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 
 def get_module_info() -> ModuleInfo:

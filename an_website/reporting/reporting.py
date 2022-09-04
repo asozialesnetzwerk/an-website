@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
-from typing import Any, cast
+from typing import Any, ClassVar, Final, cast
 
 import orjson as json
 from elasticsearch import AsyncElasticsearch
@@ -29,7 +29,7 @@ from .. import EVENT_ELASTICSEARCH, ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -110,19 +110,19 @@ async def get_reports(  # pylint: disable=too-many-arguments
 class ReportingAPI(APIRequestHandler):
     """The request handler for the Reporting API™️."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[
-        str, ...
+    POSSIBLE_CONTENT_TYPES: ClassVar[
+        tuple[str, ...]
     ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
 
-    RATELIMIT_GET_LIMIT = 20
-    RATELIMIT_GET_COUNT_PER_PERIOD = 2
+    RATELIMIT_GET_LIMIT: ClassVar[int] = 20
+    RATELIMIT_GET_COUNT_PER_PERIOD: ClassVar[int] = 2
 
-    RATELIMIT_POST_LIMIT = 20
-    RATELIMIT_POST_COUNT_PER_PERIOD = 2
+    RATELIMIT_POST_LIMIT: ClassVar[int] = 20
+    RATELIMIT_POST_COUNT_PER_PERIOD: ClassVar[int] = 2
 
-    MAX_BODY_SIZE = 1_000_000
+    MAX_BODY_SIZE: ClassVar[int] = 1_000_000
 
-    MAX_REPORTS_PER_REQUEST = 100
+    MAX_REPORTS_PER_REQUEST: ClassVar[int] = 100
 
     async def get(self, *, head: bool = False) -> None:  # noqa: C901
         """Handle GET requests to the Reporting API™️."""
@@ -208,7 +208,7 @@ class ReportingAPI(APIRequestHandler):
         if not isinstance(reports, list):
             raise HTTPError(400)
         if len(reports) > self.MAX_REPORTS_PER_REQUEST:
-            logger.warning(
+            LOGGER.warning(
                 "%s > MAX_REPORTS_PER_REQUEST (%s)",
                 len(reports),
                 self.MAX_REPORTS_PER_REQUEST,

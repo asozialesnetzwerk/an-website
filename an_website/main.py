@@ -33,7 +33,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Final, cast
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -81,16 +81,16 @@ from .utils.utils import (
     time_function,
 )
 
-IGNORED_MODULES = {
+IGNORED_MODULES: Final[set[str]] = {
     "patches.*",
     "static.*",
     "templates.*",
 } | (set() if sys.flags.dev_mode else {"example.*"})
 
-CONFIG = ConfigParser(interpolation=None)
+CONFIG: Final[ConfigParser] = ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="UTF-8")
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 # add all the information from the packages to a list
@@ -116,7 +116,7 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         if _module_infos:
             module_infos.extend(_module_infos)
             loaded_modules.append(potential_module)
-            logger.info(
+            LOGGER.info(
                 "Found module_infos in %s.__init__.py, "
                 "do not search in other files in the module.",
                 potential_module,
@@ -141,15 +141,15 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             # exit to make sure it gets fixed
             return "\n".join(errors)
         # don't exit in production to keep stuff running
-        logger.error("\n".join(errors))
+        LOGGER.error("\n".join(errors))
 
-    logger.info(
+    LOGGER.info(
         "Loaded %d modules: '%s'",
         len(loaded_modules),
         "', '".join(loaded_modules),
     )
 
-    logger.info(
+    LOGGER.info(
         "Ignored %d modules: '%s'",
         len(IGNORED_MODULES),
         "', '".join(IGNORED_MODULES),
@@ -173,7 +173,7 @@ def get_module_infos_from_module(
         package="an_website",
     )
     if import_timer.stop() > 0.1:
-        logger.warning(
+        LOGGER.warning(
             "Import of %s took %ss. That's affecting the startup time.",
             module_name,
             import_timer.execution_time,
@@ -297,7 +297,7 @@ def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
         (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
     )
 
-    logger.debug("Loaded %d handlers", len(handlers))
+    LOGGER.debug("Loaded %d handlers", len(handlers))
 
     return handlers
 
@@ -318,7 +318,7 @@ def make_app(config: ConfigParser) -> str | Application:
     if isinstance(module_infos, str):
         return module_infos
     if duration > 1:
-        logger.warning(
+        LOGGER.warning(
             "Getting the module infos took %ss. That's probably too long.",
             duration,
         )
@@ -650,7 +650,7 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
             await es.transport.perform_request("HEAD", "/")
         except Exception:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
-            logger.exception("Connecting to Elasticsearch failed")
+            LOGGER.exception("Connecting to Elasticsearch failed")
         else:
             if not EVENT_ELASTICSEARCH.is_set():
                 try:
@@ -658,7 +658,7 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
                         es, app.settings["ELASTICSEARCH_PREFIX"]
                     )
                 except Exception:  # pylint: disable=broad-except
-                    logger.exception(
+                    LOGGER.exception(
                         "An exception occured while configuring Elasticsearch"
                     )
                 else:
@@ -691,7 +691,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
         base_path = Path(os.path.join(DIR, "elasticsearch", what))
         for path in base_path.rglob("*.json"):
             if not path.is_file():
-                logger.warning("%s is not a file", path)
+                LOGGER.warning("%s is not a file", path)
                 continue
 
             body = orjson.loads(
@@ -721,7 +721,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 else:
                     await put(name=name, body=body)
             elif current_version > body.get("version", 1):
-                logger.warning(
+                LOGGER.warning(
                     "%s has version %s. The version in Elasticsearch is %s!",
                     path,
                     body.get("version", 1),
@@ -791,7 +791,7 @@ async def check_redis(app: Application) -> None:  # pragma: no cover
             await redis.ping()
         except Exception:  # pylint: disable=broad-except
             EVENT_REDIS.clear()
-            logger.exception("Connecting to Redis failed")
+            LOGGER.exception("Connecting to Redis failed")
         else:
             EVENT_REDIS.set()
         await asyncio.sleep(20)
@@ -835,10 +835,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     install_signal_handler()
     setup_logging(CONFIG)
 
-    logger.info("Starting %s %s", NAME, VERSION)
+    LOGGER.info("Starting %s %s", NAME, VERSION)
 
     if platform.system() == "Windows":
-        logger.warning(
+        LOGGER.warning(
             "Please note that running %s on Windows is not officially"
             " supported",
             NAME.removesuffix("-dev"),

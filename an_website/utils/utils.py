@@ -27,7 +27,17 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import IO, Any, Literal, TypeVar, Union, cast, get_args
+from typing import (
+    IO,
+    Any,
+    Final,
+    Literal,
+    TypeAlias,
+    TypeVar,
+    Union,
+    cast,
+    get_args,
+)
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
@@ -47,15 +57,17 @@ T = TypeVar("T")
 TOptionalStr = TypeVar("TOptionalStr", None, str)
 
 # pylint: disable=consider-alternative-union-syntax
-Handler = Union[
+Handler: TypeAlias = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-BumpscosityValue = Literal[0, 1, 12, 50, 76, 100, 1000]
-BUMPSCOSITY_VALUES: tuple[BumpscosityValue, ...] = get_args(BumpscosityValue)
-OpenMojiValue = Literal[False, "img"]  # , "font"]
+BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
+BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
+    BumpscosityValue
+)
+OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "font"]
 
 IP_HASH_SALT = {
     "date": datetime.utcnow().date(),
@@ -64,7 +76,7 @@ IP_HASH_SALT = {
     ),
 }
 
-SUS_PATHS = {
+SUS_PATHS: Final[set[str]] = {
     "/-profiler/phpinfo",
     "/.aws/credentials",
     "/.env",
@@ -755,4 +767,4 @@ def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
     return function(*args), timer.stop()
 
 
-THEMES: tuple[str, ...] = get_themes()
+THEMES: Final[tuple[str, ...]] = get_themes()

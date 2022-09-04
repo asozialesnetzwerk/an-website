@@ -24,7 +24,7 @@ import os
 from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
-from typing import Any
+from typing import Any, ClassVar, Final
 from urllib.parse import unquote, urlsplit
 
 import html2text
@@ -51,18 +51,20 @@ from .utils import (
     str_to_bool,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 class HTMLRequestHandler(BaseRequestHandler):
     """A request handler that serves HTML."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/html",
         "text/plain",
         "text/markdown",
         "application/json",
     )
+    IS_NOT_HTML: ClassVar[bool]
+
     used_render = False
 
     def finish(
@@ -236,11 +238,11 @@ class APIRequestHandler(BaseRequestHandler):
     It overrides the write error method to return errors as JSON.
     """
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "application/json",
         "application/yaml",
     )
-    IS_NOT_HTML = True
+    IS_NOT_HTML: ClassVar[bool] = True
 
     def finish_dict(self, **kwargs: Any) -> Future[None]:
         """Finish the request with a JSON response."""
@@ -367,17 +369,17 @@ class ZeroDivision(HTMLRequestHandler):
 class ElasticRUM(BaseRequestHandler):
     """A request handler that serves the Elastic RUM Agent."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES = (
         "application/javascript",
         "application/json",
     )
 
-    URL = (
+    URL: ClassVar[str] = (
         "https://unpkg.com/@elastic/apm-rum@{}"
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
 
-    SCRIPTS: dict[str, str] = {}
+    SCRIPTS: ClassVar[dict[str, str]] = {}
 
     async def get(
         self,
@@ -404,7 +406,7 @@ class ElasticRUM(BaseRequestHandler):
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
                 BaseRequestHandler.ELASTIC_RUM_URL = new_path
-            logger.info("RUM script %s updated", new_path)
+            LOGGER.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
         if spam and not eggs:  # if serving minified JS (URL contains ".min")

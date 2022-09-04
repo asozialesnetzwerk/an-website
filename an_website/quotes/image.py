@@ -21,7 +21,7 @@ import math
 import os
 import sys
 import textwrap
-from typing import Any
+from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
@@ -34,22 +34,22 @@ from .utils import (
     get_wrong_quotes,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
-AUTHOR_MAX_WIDTH: int = 686
-QUOTE_MAX_WIDTH: int = 900
-DEBUG_COLOR: tuple[int, int, int] = 245, 53, 170
-DEBUG_COLOR2: tuple[int, int, int] = 224, 231, 34
-TEXT_COLOR: tuple[int, int, int] = 230, 230, 230
-FONT = ImageFont.truetype(
+AUTHOR_MAX_WIDTH: Final[int] = 686
+QUOTE_MAX_WIDTH: Final[int] = 900
+DEBUG_COLOR: Final[tuple[int, int, int]] = 245, 53, 170
+DEBUG_COLOR2: Final[tuple[int, int, int]] = 224, 231, 34
+TEXT_COLOR: Final[tuple[int, int, int]] = 230, 230, 230
+FONT: Final = ImageFont.truetype(
     font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=50,
 )
-FONT_SMALLER = ImageFont.truetype(
+FONT_SMALLER: Final = ImageFont.truetype(
     font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=44,
 )
-HOST_NAME_FONT = ImageFont.truetype(
+HOST_NAME_FONT: Final = ImageFont.truetype(
     font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=23,
 )
@@ -206,7 +206,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     )
 
     if y_text > IMAGE_HEIGHT and font is FONT:
-        logger.info("Using smaller font for quote %s", source)
+        LOGGER.info("Using smaller font for quote %s", source)
         return create_image(
             quote=quote,
             author=author,
@@ -296,11 +296,11 @@ if hasattr(patches, "JXLImagePlugin"):
 class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
     )
-    RATELIMIT_GET_LIMIT = 15
-    IS_NOT_HTML = True
+    RATELIMIT_GET_LIMIT: ClassVar[int] = 15
+    IS_NOT_HTML: ClassVar[bool] = True
 
     async def get(
         self,

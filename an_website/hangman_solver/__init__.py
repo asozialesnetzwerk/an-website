@@ -17,14 +17,14 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
-from typing import cast
+from typing import Final, cast
 
 import orjson as json
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 
-BASE_WORD_DIR = os.path.join(DIR, "words")
+BASE_WORD_DIR: Final = os.path.join(DIR, "words")
 
 
 def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:

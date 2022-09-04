@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -33,7 +35,7 @@ def get_module_info() -> ModuleInfo:
 class PingPong(APIRequestHandler):
     """The request handler for the ping API."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/plain",
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
     )

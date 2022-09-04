@@ -22,7 +22,7 @@ from datetime import datetime
 
 # add parent dir to sys.path
 # this makes importing an_website possible
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
 sys.path.append(PARENT_DIR)
 
@@ -42,7 +42,7 @@ import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
 from configparser import ConfigParser
-from typing import Any, cast
+from typing import Any, Final, cast
 
 import orjson as json
 import pytest

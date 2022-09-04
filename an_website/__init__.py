@@ -20,6 +20,7 @@ import os
 import sys
 import time
 from asyncio import Event
+from typing import Final
 
 import orjson
 from get_version import get_version
@@ -33,37 +34,39 @@ except ImportError:
         return "pytest" in sys.modules
 
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
-START_TIME = time.monotonic()
+START_TIME_NS: Final[int] = time.monotonic_ns()
 
-EPOCH = 1651075200
-EPOCH_MS = EPOCH * 1000
+EPOCH: Final[int] = 1651075200
+EPOCH_MS: Final[int] = EPOCH * 1000
 
 NAME = "an-website"
-VERSION = get_version(__file__, vcs="git")
-GH_ORG_URL = "https://github.com/asozialesnetzwerk"
-GH_REPO_URL = f"{GH_ORG_URL}/{NAME}"
-GH_PAGES_URL = f"https://github.asozial.org/{NAME}"
+VERSION: Final[str] = get_version(__file__, vcs="git")
+GH_ORG_URL: Final[str] = "https://github.com/asozialesnetzwerk"
+GH_REPO_URL: Final[str] = f"{GH_ORG_URL}/{NAME}"
+GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 
-STATIC_DIR = os.path.join(DIR, "static")
-TEMPLATES_DIR = os.path.join(DIR, "templates")
+STATIC_DIR: Final = os.path.join(DIR, "static")
+TEMPLATES_DIR: Final = os.path.join(DIR, "templates")
 
 ORJSON_OPTIONS = (
     orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
 )
 
-CONTAINERIZED = "container" in os.environ or os.path.exists("/.dockerenv")
+CONTAINERIZED: Final[bool] = "container" in os.environ or os.path.exists(
+    "/.dockerenv"
+)
 
 if pytest_is_running():
     NAME += "-test"
 elif sys.flags.dev_mode:
     NAME += "-dev"
 
-EVENT_SHUTDOWN = multiprocessing.Event()
+EVENT_SHUTDOWN: Final = multiprocessing.Event()
 
-EVENT_ELASTICSEARCH = Event()
-EVENT_REDIS = Event()
+EVENT_ELASTICSEARCH: Final = Event()
+EVENT_REDIS: Final = Event()
 
 __all__ = (
     "CONTAINERIZED",
@@ -78,7 +81,7 @@ __all__ = (
     "GH_REPO_URL",
     "NAME",
     "ORJSON_OPTIONS",
-    "START_TIME",
+    "START_TIME_NS",
     "STATIC_DIR",
     "TEMPLATES_DIR",
     "VERSION",

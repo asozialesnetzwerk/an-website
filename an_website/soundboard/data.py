@@ -20,6 +20,7 @@ import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from typing import Final
 
 import orjson as json
 import regex
@@ -27,7 +28,7 @@ import regex
 from ..utils.static_file_handling import hash_file
 from ..utils.utils import name_to_id, replace_umlauts
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 with open(os.path.join(DIR, "info.json"), encoding="UTF-8") as file:
     info = json.loads(file.read())
@@ -218,7 +219,7 @@ class SoundInfo(Info):
 
 all_sounds: list[SoundInfo] = []
 main_page_info: list[Info] = []
-PERSON_SOUNDS: dict[str, list[SoundInfo]] = {}
+PERSON_SOUNDS: Final[dict[str, list[SoundInfo]]] = {}
 
 for book_info in info["bücher"]:
     book = Book[book_info["name"]]
@@ -238,7 +239,7 @@ for book_info in info["bücher"]:
             PERSON_SOUNDS.setdefault(person_short, []).append(sound_info)
 
 # convert to tuple for immutability
-ALL_SOUNDS: tuple[SoundInfo, ...] = tuple(all_sounds)
-MAIN_PAGE_INFO: tuple[Info, ...] = tuple(main_page_info)
+ALL_SOUNDS: Final[tuple[SoundInfo, ...]] = tuple(all_sounds)
+MAIN_PAGE_INFO: Final[tuple[Info, ...]] = tuple(main_page_info)
 
 del all_sounds, main_page_info

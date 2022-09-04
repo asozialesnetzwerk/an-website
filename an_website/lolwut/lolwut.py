@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
@@ -85,7 +87,7 @@ class LOLWUT(HTMLRequestHandler):
 class LOLWUTAPI(APIRequestHandler):
     """The request handler for the LOLWUT API."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/plain",
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
     )

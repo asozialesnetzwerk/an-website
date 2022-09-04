@@ -21,7 +21,7 @@ import sys
 from collections.abc import Awaitable
 from functools import cache
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Final, cast
 
 import defity
 import orjson as json
@@ -32,7 +32,7 @@ from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
 from .utils import Handler
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def hash_file(path: str | Path) -> str:
@@ -101,7 +101,7 @@ def fix_static_path(path: str) -> str:
     if path in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[path]
         return f"{path}?v={hash_}"
-    logger.warning("%s not in FILE_HASHES_DICT", path)
+    LOGGER.warning("%s not in FILE_HASHES_DICT", path)
     return path
 
 

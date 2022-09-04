@@ -19,6 +19,7 @@ import os
 from asyncio import Future
 from base64 import b64decode, b64encode
 from dataclasses import dataclass
+from typing import ClassVar, Final
 
 from tornado.web import HTTPError, MissingArgumentError
 
@@ -26,13 +27,13 @@ from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from .config_file import InvalidConfigError, SwappedWordsConfig
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 # the max char count of the text to process
-MAX_CHAR_COUNT = 32768
+MAX_CHAR_COUNT: Final[int] = 32769 - 1
 
 with open(os.path.join(DIR, "config.sw"), encoding="UTF-8") as file:
-    DEFAULT_CONFIG: SwappedWordsConfig = SwappedWordsConfig(file.read())
+    DEFAULT_CONFIG: Final[SwappedWordsConfig] = SwappedWordsConfig(file.read())
 
 
 def check_text_too_long(text: str) -> None:
@@ -139,7 +140,7 @@ class SwappedWords(HTMLRequestHandler):
 class SwappedWordsAPI(APIRequestHandler):
     """The request handler for the swapped words API."""
 
-    ALLOWED_METHODS: tuple[str, ...] = ("GET", "POST")
+    ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET", "POST")
 
     @parse_args(type_=SwArgs, validation_method="validate")
     async def get(self, *, head: bool = False, args: SwArgs) -> None:

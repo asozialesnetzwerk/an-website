@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from functools import cache
+from typing import ClassVar
 
 from tornado.web import HTTPError
 
@@ -173,11 +174,11 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 class SoundboardRSSHandler(SoundboardHTMLHandler):
     """The request handler for the RSS feeds."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "application/rss+xml",
         "application/xml",
     )
-    IS_NOT_HTML = True
+    IS_NOT_HTML: ClassVar[bool] = True
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
         """Handle GET requests and generate the feed content."""

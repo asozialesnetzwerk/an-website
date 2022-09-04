@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
 from math import pi
-from typing import Any
+from typing import Any, Final
 from urllib.parse import quote, urlencode
 
 from tornado.web import Application, HTTPError, MissingArgumentError
@@ -36,7 +36,7 @@ from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -206,7 +206,7 @@ class ContactPage(HTMLRequestHandler):
         if atime := self.ACCESS_LOG.get(str(self.request.remote_ip)):
             del self.ACCESS_LOG[str(self.request.remote_ip)]
             if time.monotonic() - atime < pi:
-                logger.info("Rejected message because of timing")
+                LOGGER.info("Rejected message because of timing")
                 await self.render(
                     "pages/empty.html",
                     text="Nicht gesendet, da du zu schnell warst.",
@@ -235,7 +235,7 @@ class ContactPage(HTMLRequestHandler):
         message.set_payload(text, "UTF-8")
 
         if honeypot := self.get_argument("message", ""):  # 🍯
-            logger.info(
+            LOGGER.info(
                 "rejected message: %s",
                 {
                     "Subject": message["Subject"],

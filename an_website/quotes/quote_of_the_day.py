@@ -19,7 +19,7 @@ import dataclasses
 import email.utils
 import logging
 from datetime import date, datetime, timedelta, timezone
-from typing import Any
+from typing import Any, ClassVar, Final
 
 from tornado.web import HTTPError
 
@@ -32,7 +32,7 @@ from .utils import (
     get_wrong_quotes,
 )
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
@@ -123,7 +123,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
             lambda wq: wq.rating > 1, shuffle=True
         )
         if not quotes:
-            logger.warning("No quotes available")
+            LOGGER.warning("No quotes available")
             return None
         for quote in quotes:
             if await self.has_been_used(quote.get_id_as_str()):
@@ -136,7 +136,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
                 wq_id,
             )
             return QuoteOfTheDayData(today, quote, self.get_scheme_and_netloc())
-        logger.critical("Failed to generate a new quote of the day")
+        LOGGER.critical("Failed to generate a new quote of the day")
         return None
 
     def get_redis_quote_date_key(self, wq_date: date) -> str:
@@ -172,8 +172,11 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
     """The request handler for the quote of the day RSS feed."""
 
-    POSSIBLE_CONTENT_TYPES = ("application/rss+xml", "application/xml")
-    IS_NOT_HTML = True
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        "application/rss+xml",
+        "application/xml",
+    )
+    IS_NOT_HTML: ClassVar[bool] = True
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""

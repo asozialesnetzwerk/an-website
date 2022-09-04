@@ -27,7 +27,7 @@ from tempfile import (  # pylint: disable=import-private-name
     TemporaryDirectory,
     _TemporaryFileWrapper,
 )
-from typing import Any
+from typing import Any, ClassVar, Final
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -36,7 +36,7 @@ from .. import EVENT_SHUTDOWN, NAME
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -66,8 +66,8 @@ def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
 class UpdateAPI(APIRequestHandler):
     """The request handler for the update API."""
 
-    ALLOWED_METHODS: tuple[str, ...] = ("PUT",)
-    REQUIRED_PERMISSION = Permission.UPDATE
+    ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("PUT",)
+    REQUIRED_PERMISSION: ClassVar[Permission] = Permission.UPDATE
 
     dir: TemporaryDirectory[str]
     file: _TemporaryFileWrapper[bytes]
@@ -116,6 +116,6 @@ class UpdateAPI(APIRequestHandler):
         await self.finish()
         await process.wait()
         if process.returncode:
-            logger.error("Failed to install %s", filename)
+            LOGGER.error("Failed to install %s", filename)
         else:
             EVENT_SHUTDOWN.set()

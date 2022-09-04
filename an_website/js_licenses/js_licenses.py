@@ -27,12 +27,13 @@ import logging
 import os
 from functools import cache
 from pathlib import Path
+from typing import Final
 
 from .. import STATIC_DIR
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 def get_module_info() -> ModuleInfo:
@@ -72,7 +73,7 @@ def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
         with path.open(encoding="UTF-8") as file:
             license_line = file.readline().strip().removeprefix('"use strict";')
         if not license_line.startswith("// @license "):
-            logger.warning("%s has no license comment", filename)
+            LOGGER.warning("%s has no license comment", filename)
             # TODO: exit in dev mode if this fails
             continue
         magnet, name = (

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import sys
+from typing import Final
 
 from .request_handler import (
     ElasticRUM,
@@ -26,7 +27,7 @@ from .request_handler import (
 )
 from .utils import ModuleInfo
 
-DIR = os.path.dirname(__file__)
+DIR: Final = os.path.dirname(__file__)
 
 
 def get_module_info() -> ModuleInfo:

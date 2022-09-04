@@ -26,7 +26,7 @@ from asyncio import Future
 from base64 import b85decode, b85encode
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
-from typing import Any, cast
+from typing import Any, ClassVar, Final, cast
 
 import dill as pickle  # type: ignore[import]  # nosec: B403
 from tornado.web import HTTPError
@@ -35,7 +35,7 @@ from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import Permission
 
-logger = logging.getLogger(__name__)
+LOGGER: Final = logging.getLogger(__name__)
 
 
 class PrintWrapper:  # pylint: disable=too-few-public-methods
@@ -52,11 +52,13 @@ class PrintWrapper:  # pylint: disable=too-few-public-methods
 class Backdoor(APIRequestHandler):
     """The request handler for the backdoor API."""
 
-    POSSIBLE_CONTENT_TYPES: tuple[str, ...] = ("application/vnd.python.pickle",)
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        "application/vnd.python.pickle",
+    )
 
-    ALLOWED_METHODS: tuple[str, ...] = ("POST",)
-    REQUIRED_PERMISSION = Permission.BACKDOOR
-    ALLOW_COOKIE_AUTHENTICATION: bool = False
+    ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("POST",)
+    REQUIRED_PERMISSION: ClassVar[Permission] = Permission.BACKDOOR
+    ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = False
 
     sessions: dict[str, dict[str, Any]] = {}
 
@@ -137,7 +139,7 @@ class Backdoor(APIRequestHandler):
                     try:
                         session[key] = pickle.loads(value)  # nosec: B301
                     except Exception:  # pylint: disable=broad-except
-                        logger.exception("Loading the session failed")
+                        LOGGER.exception("Loading the session failed")
                         if self.apm_client:
                             self.apm_client.capture_exception()
             else:
