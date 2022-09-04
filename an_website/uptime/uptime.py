@@ -59,7 +59,7 @@ def get_module_info() -> ModuleInfo:
 
 def calculate_uptime() -> float:
     """Calculate the uptime in seconds and return it."""
-    return (time.monotonic_ns() - START_TIME_NS) / 1_000_000
+    return (time.monotonic_ns() - START_TIME_NS) / 1_000_000_000
 
 
 def uptime_to_str(uptime: None | float = None) -> str:
