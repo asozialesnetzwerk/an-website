@@ -15,8 +15,7 @@
 
 from __future__ import annotations
 
-import logging
-from typing import Final, cast
+from typing import cast
 
 from editdistance import distance
 from tornado.web import HTTPError, MissingArgumentError
@@ -33,8 +32,6 @@ from .utils import (
     parse_author,
     parse_quote,
 )
-
-LOGGER: Final = logging.getLogger(__name__)
 
 
 async def create_quote(quote_str: str, author: Author) -> Quote:

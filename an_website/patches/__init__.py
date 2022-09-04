@@ -36,6 +36,7 @@ import tornado.web
 import uvloop
 import yaml
 from emoji import EMOJI_DATA
+from emoji import unicode_codes as euc
 from setproctitle import setthreadtitle
 
 from .. import DIR as ROOT_DIR
@@ -141,10 +142,6 @@ def patch_emoji() -> None:
             "status": 2,
             "E": 11,
         }
-
-    # pylint: disable=import-outside-toplevel
-    import emoji.unicode_codes as euc
-
     for lang in euc.LANGUAGES:
         euc._EMOJI_UNICODE[lang] = None  # type: ignore[attr-defined]
     euc._ALIASES_UNICODE.clear()  # type: ignore[attr-defined]

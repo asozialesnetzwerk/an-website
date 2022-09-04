@@ -44,9 +44,11 @@ def hash_file(path: str | Path) -> str:
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
     file_hashes_dict = {
-        str(path).removeprefix(ROOT_DIR): hash_file(path)
+        str(path)
+        .removeprefix(ROOT_DIR)
+        .replace(os.path.sep, "/"): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
-        if path.is_file() and "img/openmoji-svg-" not in str(path)
+        if path.is_file() and "openmoji-svg-" not in str(path)
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
     file_hashes_dict["/humans.txt"] = file_hashes_dict["/static/humans.txt"]
@@ -64,12 +66,12 @@ def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
         (
-            r"/(?:static/)?(\.env|favicon\.png|humans\.txt|robots\.txt)",
+            r"(?i)(?:/static)?/(\.env|favicon\.png|humans\.txt|robots\.txt)",
             StaticFileHandler,
             {"path": STATIC_DIR},
         ),
         (
-            r"/favicon\.ico",
+            r"(?i)/favicon\.ico",
             tornado.web.RedirectHandler,
             {"url": fix_static_path("/favicon.png")},
         ),
@@ -78,13 +80,13 @@ def get_handlers() -> list[Handler]:
         # add handlers for the unminified CSS files
         handlers.append(
             (
-                r"/static/css/(.+\.css)",
+                r"(?i)/static/css/(.+\.css)",
                 StaticFileHandler,
                 {"path": os.path.join(os.path.dirname(ROOT_DIR), "style")},
             )
         )
     handlers.append(
-        (r"/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
+        (r"(?i)/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
     )
     return handlers
 
@@ -98,6 +100,7 @@ def fix_static_path(path: str) -> str:
         path = path.split("?")[0]
     if path.startswith("/static/img/openmoji-svg-"):
         return path
+    path = path.lower()
     if path in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[path]
         return f"{path}?v={hash_}"
@@ -110,14 +113,26 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
 
     content_type: None | str
 
-    def data_received(  # noqa: D102
-        self, chunk: bytes
-    ) -> None | Awaitable[None]:
-        pass
+    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
+        """Do nothing."""
 
-    def head(self, path: str) -> Awaitable[None]:
+    async def get(self, path: str, include_body: bool = True) -> None:
+        """Handle GET requests."""
+        return await super().get(
+            "/".join(
+                spam.upper()[:-4] + ".svg"
+                if spam.lower().endswith(".svg")
+                else spam.lower()
+                for spam in path.split("/")
+            )
+            if path.lower().startswith("img/openmoji-svg-")
+            else path.lower()
+        )
+
+    async def head(self, path: str) -> None:
+        # pylint: disable=invalid-overridden-method
         """Handle HEAD requests."""
-        return self.get(path)
+        return await self.get(path)
 
     def initialize(
         self,
@@ -154,11 +169,6 @@ class CachedStaticFileHandler(StaticFileHandler):
         """Don't compute ETag, because it isn't necessary."""
         return None
 
-    def data_received(  # noqa: D102
-        self, chunk: bytes
-    ) -> None | Awaitable[None]:
-        pass
-
     @classmethod
     def make_static_path(
         cls, settings: dict[str, Any], path: str, include_version: bool = True
@@ -173,7 +183,7 @@ class CachedStaticFileHandler(StaticFileHandler):
         if not sys.flags.dev_mode and (
             "v" in self.request.arguments
             # guaranteed uniqueness is done via the 14.0 in the folder name
-            or self.path.startswith("/static/img/openmoji-svg-")
+            or self.path.lower().startswith("/static/img/openmoji-svg-")
         ):
             self.set_header(  # never changes
                 "Cache-Control",

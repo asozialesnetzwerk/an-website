@@ -15,10 +15,9 @@
 
 from __future__ import annotations
 
-import logging
 import math
 import time
-from typing import Final, TypedDict
+from typing import TypedDict
 
 import regex
 from elasticsearch import AsyncElasticsearch
@@ -28,8 +27,6 @@ from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME_NS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
-
-LOGGER: Final = logging.getLogger(__name__)
 
 
 class AvailabilityDict(TypedDict):  # noqa: D101

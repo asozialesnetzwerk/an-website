@@ -14,9 +14,10 @@
 """Info page to show information about authors and quotes."""
 from __future__ import annotations
 
+import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import cast
+from typing import Final, cast
 from urllib.parse import quote as quote_url
 
 import orjson as json
@@ -26,7 +27,9 @@ from tornado.httpclient import AsyncHTTPClient
 from .. import DIR as ROOT_DIR
 from .. import EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
-from .utils import LOGGER, get_author_by_id, get_quote_by_id, get_wrong_quotes
+from .utils import get_author_by_id, get_quote_by_id, get_wrong_quotes
+
+LOGGER: Final = logging.getLogger(__name__)
 
 
 class QuotesInfoPage(HTMLRequestHandler):

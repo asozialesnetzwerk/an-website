@@ -115,6 +115,7 @@ class BaseRequestHandler(RequestHandler):
     content_type: None | str = None
     auth_failed: bool = False
     apm_script: None | str
+    crawler: bool = False
     now: datetime
 
     @property
@@ -143,7 +144,7 @@ class BaseRequestHandler(RequestHandler):
             return None
         return f'"{hash_bytes(*self._write_buffer)}"'
 
-    def data_received(self, chunk: Any) -> None:
+    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         """Do nothing."""
 
     @property
@@ -627,16 +628,19 @@ class BaseRequestHandler(RequestHandler):
         self.active_origin_trials.add(data)
         return True
 
-    async def prepare(  # noqa: C901
-        self,
-    ) -> None:
+    async def prepare(self) -> None:  # noqa: C901
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex
+        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
                 if isinstance(transform, GZipContentEncoding):
                     # pylint: disable=protected-access
                     transform._gzipping = False
+
+        if crawler_secret := self.settings.get("CRAWLER_SECRET"):
+            self.crawler = crawler_secret in self.request.headers.get(
+                "User-Agent", ""
+            )
 
         self.now = await self.get_time()
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
@@ -701,6 +705,7 @@ class BaseRequestHandler(RequestHandler):
             not self.settings.get("RATELIMITS")
             or self.request.method == "OPTIONS"
             or self.is_authorized(Permission.RATELIMITS)
+            or self.crawler
         ):
             return False
 

@@ -19,7 +19,6 @@ Only to inform, not to brag.
 
 from __future__ import annotations
 
-import logging
 import os
 import shutil
 import sys
@@ -35,8 +34,6 @@ from .. import DIR as ROOT_DIR
 from .. import NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
-
-LOGGER: Final = logging.getLogger(__name__)
 
 SCREENFETCH_PATH: Final = os.path.join(ROOT_DIR, "vendored", "screenfetch")
 UWUFETCH_PATH: Final = shutil.which("uwufetch")

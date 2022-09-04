@@ -66,7 +66,12 @@ from . import (
     VERSION,
 )
 from .contact.contact import apply_contact_stuff_to_app
-from .quotes.utils import AUTHORS_CACHE, QUOTES_CACHE, WRONG_QUOTES_CACHE
+from .quotes.utils import (
+    AUTHORS_CACHE,
+    QUOTES_CACHE,
+    WRONG_QUOTES_CACHE,
+    update_cache_periodically,
+)
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
 from .utils.logging import WebhookFormatter, WebhookHandler
@@ -294,7 +299,7 @@ def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
     handlers.append((r"(?i)/api/*", RedirectHandler, {"url": "/api/endpunkte"}))
 
     handlers.append(
-        (r"/.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
+        (r"(?i)/\.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
     )
 
     LOGGER.debug("Loaded %d handlers", len(handlers))
@@ -347,6 +352,10 @@ def apply_config_to_app(app: Application, config: ConfigParser) -> None:
 
     app.settings["cookie_secret"] = config.get(
         "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
+    )
+
+    app.settings["CRAWLER_SECRET"] = config.get(
+        "APP_SEARCH", "CRAWLER_SECRET", fallback=None
     )
 
     app.settings["DOMAIN"] = config.get("GENERAL", "DOMAIN", fallback=None)
@@ -829,8 +838,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     This is the main function that is called when running this file.
     """
-    # pylint: disable=too-complex, too-many-branches
-    # pylint: disable=too-many-locals, too-many-statements
+    # pylint: disable=too-complex, too-many-branches, too-many-statements
     setproctitle(NAME)
     install_signal_handler()
     setup_logging(CONFIG)
@@ -934,7 +942,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     setup_webhook_logging(CONFIG, loop)
 
-    # pylint: disable=import-outside-toplevel, unused-variable
+    # pylint: disable=unused-variable
 
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
@@ -943,8 +951,6 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     if CONFIG.getboolean("REDIS", "ENABLED", fallback=False):
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
-
-    from .quotes.utils import update_cache_periodically
 
     if not task_id:
         quotes_cache_update_task = loop.create_task(  # noqa: F841
