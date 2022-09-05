@@ -8,6 +8,8 @@
 	Location: NRW, Germany
 
 /* THANKS */
+	Contributor: pyup-bot
+
 	CSS wizard: h4ckerle
 
 	README destroyer: Jimi
