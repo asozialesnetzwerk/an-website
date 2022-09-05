@@ -28,7 +28,7 @@ REPO_ROOT = dirname(dirname(normpath(__file__)))
 HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt
-BOTS: set[str] = {"ImgBotApp", "snyk-bot"}
+BOTS: set[str] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
 ALIASES: dict[str, str] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",

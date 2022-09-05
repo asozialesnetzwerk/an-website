@@ -894,7 +894,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     )
 
     if unix_socket_path:
-        os.makedirs(unix_socket_path, exist_ok=True)
+        os.makedirs(unix_socket_path, 0o755, True)
         sockets.append(
             tornado.netutil.bind_unix_socket(
                 os.path.join(unix_socket_path, f"{NAME}.sock"),

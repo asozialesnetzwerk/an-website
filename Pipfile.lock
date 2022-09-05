@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ae399c8ed7e2be9cf4799d45b25bef9f08884ff681d084bd9e3a422865750dba"
+            "sha256": "a03a272beda4952ef07c8f5684ab91eb7db67ea0adeee4b4b69be3c42f9ecb78"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -442,11 +442,11 @@
         },
         "ecs-logging": {
             "hashes": [
-                "sha256:2869f94257ae8766041310063d9baf453c8f399887026a8956801d357ab0a5cf",
-                "sha256:e3ca917a19bb60887195e2c11f311145c52deea466b3b37ace6f55405950c815"
+                "sha256:8acbc164a7c14d96cb6b3b3e90e8b6972f93ddbd0215e71c6823856518f742ff",
+                "sha256:d4b791f044e8b96a4707edd4156a35fbe0e593c27ba5f05bae6b007cfab7622c"
             ],
             "index": "pypi",
-            "version": "==1.1.0"
+            "version": "==2.0.0"
         },
         "editdistance": {
             "hashes": [
@@ -1443,11 +1443,11 @@
         },
         "tzdata": {
             "hashes": [
-                "sha256:238e70234214138ed7b4e8a0fab0e5e13872edab3be586ab8198c407620e2ab9",
-                "sha256:8b536a8ec63dc0751342b3984193a3118f8fca2afe25752bb9b7fffd398552d3"
+                "sha256:21f4f0d7241572efa7f7a4fdabb052e61b55dc48274e6842697ccdf5253e5451",
+                "sha256:c3119520447d68ef3eb8187a55a4f44fa455f30eb1b4238fa5691ba094f2b05b"
             ],
             "index": "pypi",
-            "version": "==2022.1"
+            "version": "==2022.2"
         },
         "ultradict": {
             "hashes": [
