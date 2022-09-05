@@ -100,7 +100,7 @@ dunamai==1.13.0
 ecs-logging==1.1.0
 editdistance==0.6.0
 elastic-apm==6.11.0
-elastic-enterprise-search==7.17.0
+elastic-enterprise-search==8.4.0
 elastic-transport==7.16.0
 elasticsearch[async]==7.17.6
 emoji==2.0.0
