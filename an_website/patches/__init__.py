@@ -16,28 +16,29 @@
 
 from __future__ import annotations
 
-import asyncio
-import configparser
 import contextlib
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
-import threading
+from asyncio import set_event_loop_policy
 from collections.abc import Callable
+from configparser import RawConfigParser
 from pathlib import Path
+from threading import Thread
 from typing import Any, Final
 
 import certifi
 import defusedxml  # type: ignore[import]
-import tornado.httpclient
 import tornado.httputil
-import tornado.log
-import tornado.web
-import uvloop
 import yaml
 from emoji import EMOJI_DATA
 from emoji import unicode_codes as euc
 from setproctitle import setthreadtitle
+from tornado.httpclient import AsyncHTTPClient
+from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
+from tornado.log import gen_log
+from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
+from uvloop import EventLoopPolicy
 
 from .. import DIR as ROOT_DIR
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
@@ -48,10 +49,10 @@ with contextlib.suppress(ImportError):
     # pylint: disable=import-error, useless-suppression
     from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 
-_bootstrap = threading.Thread._bootstrap  # type: ignore[attr-defined]
+_bootstrap = Thread._bootstrap  # type: ignore[attr-defined]
 
 
-def _boobstrap(self: threading.Thread) -> None:
+def _boobstrap(self: Thread) -> None:
     with contextlib.suppress(Exception):
         setthreadtitle(self.name)
     _bootstrap(self)
@@ -61,10 +62,10 @@ def apply() -> None:
     """Apply the patches."""
     defusedxml.defuse_stdlib()
     defusedxml.xmlrpc.monkey_patch()
-    threading.Thread._bootstrap = _boobstrap  # type: ignore[attr-defined]
+    Thread._bootstrap = _boobstrap  # type: ignore[attr-defined]
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
     certifi.contents = lambda: Path(certifi.where()).read_text("ASCII")
-    configparser.RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
+    RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {
             "sure": True,
             "nope": False,
@@ -74,28 +75,26 @@ def apply() -> None:
             "disabled": False,
         }
     )
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    tornado.httpclient.AsyncHTTPClient.configure(
-        "tornado.curl_httpclient.CurlAsyncHTTPClient"
-    )
+    set_event_loop_policy(EventLoopPolicy())
+    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     tornado.httputil.parse_body_arguments = parse_body_arguments
-    tornado.web.RedirectHandler.head = tornado.web.RedirectHandler.get
-    tornado.web.RequestHandler.redirect = redirect  # type: ignore[assignment]
-    tornado.web.RequestHandler.SUPPORTED_METHODS = (
-        tornado.web.RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
+    RedirectHandler.head = RedirectHandler.get
+    RequestHandler.redirect = redirect  # type: ignore[assignment]
+    RequestHandler.SUPPORTED_METHODS = (
+        RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
         + (
             "PROPFIND",
             "BREW",
             "WHEN",
         )
     )
-    _ = tornado.web.RequestHandler._unimplemented_method
-    tornado.web.RequestHandler.propfind = _  # type: ignore[attr-defined]
-    tornado.web.RequestHandler.brew = _  # type: ignore[attr-defined]
-    tornado.web.RequestHandler.when = _  # type: ignore[attr-defined]
-    tornado.web.GZipContentEncoding.CONTENT_TYPES.add("application/x-ndjson")
-    tornado.web.GZipContentEncoding.CONTENT_TYPES.add("application/yaml")
-    tornado.web.GZipContentEncoding._compressible_type = (  # type: ignore[assignment]
+    _ = RequestHandler._unimplemented_method
+    RequestHandler.propfind = _  # type: ignore[attr-defined]
+    RequestHandler.brew = _  # type: ignore[attr-defined]
+    RequestHandler.when = _  # type: ignore[attr-defined]
+    GZipContentEncoding.CONTENT_TYPES.add("application/x-ndjson")
+    GZipContentEncoding.CONTENT_TYPES.add("application/yaml")
+    GZipContentEncoding._compressible_type = (  # type: ignore[assignment]
         lambda self, ctype: ctype in self.CONTENT_TYPES
         or ctype.endswith(("+xml", "+json"))
         or ctype.startswith("text/")
@@ -160,7 +159,7 @@ def anonymize_logs() -> None:
     # pylint: disable=import-outside-toplevel
     from ..utils.utils import SUS_PATHS, anonymize_ip
 
-    tornado.web.RequestHandler._request_summary = (  # type: ignore[assignment]
+    RequestHandler._request_summary = (  # type: ignore[assignment]
         lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
         % (
             self.request.method,
@@ -171,7 +170,8 @@ def anonymize_logs() -> None:
             else anonymize_ip(self.request.remote_ip, ignore_invalid=True),
         )
     )
-    tornado.httputil.HTTPServerRequest.__repr__ = (  # type: ignore[assignment]
+
+    HTTPServerRequest.__repr__ = (  # type: ignore[assignment]
         lambda self: "%s(%s)"  # pylint: disable=consider-using-f-string
         % (
             self.__class__.__name__,
@@ -202,36 +202,36 @@ def parse_body_arguments(  # noqa: D103, C901
     content_type: str,
     body: bytes,
     arguments: dict[str, list[bytes]],
-    files: dict[str, list[tornado.httputil.HTTPFile]],
-    headers: None | tornado.httputil.HTTPHeaders = None,
+    files: dict[str, list[HTTPFile]],
+    headers: None | HTTPHeaders = None,
     *,
     _: Callable[..., None] = tornado.httputil.parse_body_arguments,
 ) -> None:
     # pylint: disable=missing-function-docstring, too-complex, too-many-branches
     if content_type.startswith("application/json"):
         if headers and "Content-Encoding" in headers:
-            tornado.log.gen_log.warning(
+            gen_log.warning(
                 "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
             )
             return
         try:
             spam = json.loads(body)
         except Exception as exc:  # pylint: disable=broad-except
-            tornado.log.gen_log.warning("Invalid JSON body: %s", exc)
+            gen_log.warning("Invalid JSON body: %s", exc)
         else:
             for key, value in spam.items():
                 if value is not None:
                     arguments.setdefault(key, []).append(ensure_bytes(value))
     elif content_type.startswith("application/yaml"):
         if headers and "Content-Encoding" in headers:
-            tornado.log.gen_log.warning(
+            gen_log.warning(
                 "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
             )
             return
         try:
             spam = yaml.safe_load(body)
         except Exception as exc:  # pylint: disable=broad-except
-            tornado.log.gen_log.warning("Invalid YAML body: %s", exc)
+            gen_log.warning("Invalid YAML body: %s", exc)
         else:
             for key, value in spam.items():
                 if value is not None:
@@ -241,7 +241,7 @@ def parse_body_arguments(  # noqa: D103, C901
 
 
 def redirect(
-    self: tornado.web.RequestHandler,
+    self: RequestHandler,
     url: str,
     permanent: bool = False,
     status: None | int = None,

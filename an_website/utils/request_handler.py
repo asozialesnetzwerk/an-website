@@ -402,7 +402,7 @@ class ElasticRUM(BaseRequestHandler):
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[key] = response.body.decode()
+            self.SCRIPTS[key] = response.body.decode("UTF-8")
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
                 BaseRequestHandler.ELASTIC_RUM_URL = new_path

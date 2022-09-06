@@ -212,10 +212,10 @@ async def test_request_handlers(fetch: FetchCallable) -> None:
         assert_valid_html_response(await fetch(f"/?theme={theme}"))
     for bool1, bool2 in (("sure", "true"), ("nope", "false")):
         response = await check_html_page(fetch, f"/?no_3rd_party={bool1}")
-        body = response.body.decode()
+        body = response.body.decode("UTF-8")
         response = await check_html_page(fetch, f"/?no_3rd_party={bool2}")
         assert (
-            response.body.decode().replace(
+            response.body.decode("UTF-8").replace(
                 f"no_3rd_party={bool2}", f"no_3rd_party={bool1}"
             )
             == body
@@ -349,7 +349,7 @@ async def test_request_handlers(fetch: FetchCallable) -> None:
     response = assert_valid_response(
         await fetch("/api/ping"), "text/plain;charset=utf-8"
     )
-    assert response.body.decode() == "🏓\n"
+    assert response.body.decode("UTF-8") == "🏓\n"
 
     for boolean in (False, True):
         url = (

@@ -16,9 +16,17 @@
 
 from __future__ import annotations
 
+import contextlib
 import os
 import sys
+import tracemalloc
 import warnings
+
+if sys.flags.dev_mode:
+    tracemalloc.start()
+    if sys.version_info >= (3, 12):
+        with contextlib.suppress(ValueError):
+            sys.activate_stack_trampoline("perf")
 
 from setproctitle import getproctitle
 

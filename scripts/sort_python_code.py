@@ -38,23 +38,20 @@ FunctionOrClassDef: TypeAlias = (
 
 
 def main() -> None | int | str:
-    """Sort the code in the an_website module."""
+    """Sort all the Python code in this repo."""
     errors = []
     changed_count = 0
     file_count = 0
-    for root in (
-        Path(REPO_ROOT, "an_website"),
-        Path(REPO_ROOT, "scripts"),
-        Path(REPO_ROOT, "tests"),
-    ):
-        for file in root.rglob("*.py"):
-            if not file.is_file():
-                continue
-            file_count += 1
-            if isinstance(changed := sort_file(file), str):
-                errors.append((file.relative_to(REPO_ROOT), changed))
-            elif changed:
-                changed_count += 1
+    for path in Path(REPO_ROOT).rglob("*.py"):
+        if not path.is_file() or path.is_relative_to(
+            os.path.join(REPO_ROOT, "venv")
+        ):
+            continue
+        file_count += 1
+        if isinstance(changed := sort_file(path), str):
+            errors.append((path.relative_to(REPO_ROOT), changed))
+        elif changed:
+            changed_count += 1
 
     print(
         f"Sorted {changed_count}/{file_count} files "

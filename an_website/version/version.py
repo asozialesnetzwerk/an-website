@@ -48,7 +48,7 @@ def get_module_info() -> ModuleInfo:
 
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
-    return RIPEMD160.new(data).digest().decode("braille")
+    return RIPEMD160.new(data).digest().decode("BRAILLE")
 
 
 def hash_all_files() -> str:
@@ -75,9 +75,9 @@ def get_hash_of_file_hashes() -> str:
     with HASH_OF_FILE_HASHES:
         if HASH_OF_FILE_HASHES.value:
             # .raw to fix bug with \x00 in hash
-            return cast(str, HASH_OF_FILE_HASHES.raw.decode("utf-16-be"))
+            return cast(str, HASH_OF_FILE_HASHES.raw.decode("UTF-16-BE"))
         hash_of_file_hashes = hash_bytes(get_file_hashes().encode("UTF-8"))
-        HASH_OF_FILE_HASHES.raw = hash_of_file_hashes.encode("utf-16-be")
+        HASH_OF_FILE_HASHES.raw = hash_of_file_hashes.encode("UTF-16-BE")
         return hash_of_file_hashes
 
 
