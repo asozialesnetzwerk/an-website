@@ -1,5 +1,5 @@
 astor==0.8.1
-astroid==2.11.7
+astroid==2.12.8
 attrs==22.1.0
 autoflake==1.5.3
 bandit[toml]==1.7.4
