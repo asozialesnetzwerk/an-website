@@ -38,6 +38,8 @@ jobs:
         run: deno task clean && deno task build
       - name: Generate humans.txt
         run: ./scripts/humans.py
+      - name: Sort methods
+        run: ./scripts/sort_python_code.py
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

@@ -24,11 +24,11 @@ import sys
 from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
-from typing import Any, NamedTuple, cast
+from typing import Any, Final, NamedTuple, TypeAlias, cast
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
+REPO_ROOT: Final = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
 
-FunctionOrClassDef = (
+FunctionOrClassDef: TypeAlias = (
     # ast.AnnAssign
     # | ast.Assign
     ast.AsyncFunctionDef
