@@ -63,9 +63,7 @@ GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 STATIC_DIR: Final = os.path.join(DIR, "static")
 TEMPLATES_DIR: Final = os.path.join(DIR, "templates")
 
-ORJSON_OPTIONS = (
-    json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
-)
+ORJSON_OPTIONS = json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
 
 CONTAINERIZED: Final[bool] = "container" in os.environ or os.path.exists(
     "/.dockerenv"

@@ -34,7 +34,9 @@ You need:
 
 ### How to run
 
-- `python -Xdev -Xwarn_default_encoding -m an_website` (`-Xdev` enables development mode)
+- `python -Xdev -Xwarn_default_encoding -m an_website`
+
+(`-Xdev` enables development mode)
 
 ## How to run (production)
 
