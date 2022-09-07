@@ -41,6 +41,7 @@ from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
 from uvloop import EventLoopPolicy
 
 from .. import DIR as ROOT_DIR
+from .. import MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR: Final = os.path.dirname(__file__)
@@ -92,13 +93,9 @@ def apply() -> None:
     RequestHandler.propfind = _  # type: ignore[attr-defined]
     RequestHandler.brew = _  # type: ignore[attr-defined]
     RequestHandler.when = _  # type: ignore[attr-defined]
-    GZipContentEncoding.CONTENT_TYPES.add("application/x-ndjson")
-    GZipContentEncoding.CONTENT_TYPES.add("application/yaml")
-    GZipContentEncoding._compressible_type = (  # type: ignore[assignment]
-        lambda self, ctype: ctype in self.CONTENT_TYPES
-        or ctype.endswith(("+xml", "+json"))
-        or ctype.startswith("text/")
-    )
+    GZipContentEncoding.CONTENT_TYPES = {
+        type for type, data in MEDIA_TYPES.items() if data.get("compressible")
+    }
     http.client.responses[420] = "Enhance Your Calm"
     if not getattr(stdlib_json, "_omegajson", False):
         patch_json()

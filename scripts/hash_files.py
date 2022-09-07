@@ -17,12 +17,14 @@
 
 from __future__ import annotations
 
+import os
 import sys
-from ctypes import CDLL, create_string_buffer
+from ctypes import CDLL, create_string_buffer, string_at
 from ctypes.util import find_library
 from hashlib import algorithms_available, new
 from os.path import dirname, normpath
 from pathlib import Path
+from random import randrange
 
 REPO_ROOT = dirname(dirname(normpath(__file__)))
 PATH = Path(REPO_ROOT, "an_website").absolute()
@@ -32,7 +34,10 @@ try:
 except ImportError:
     RIPEMD160 = None  # type: ignore[assignment]
 
-CRYPTO = CDLL(find_library("crypto"))
+try:
+    CRYPTO = CDLL(find_library("crypto"))
+except TypeError:
+    CRYPTO = None  # type: ignore[assignment]
 
 
 def hash_bytes(data: bytes) -> str:
@@ -41,11 +46,16 @@ def hash_bytes(data: bytes) -> str:
         digest = new("ripemd160", data).digest()
     elif RIPEMD160:
         digest = RIPEMD160.new(data).digest()
-    else:
+    elif hasattr(CRYPTO, "RIPEMD160"):
         # https://www.openssl.org/docs/man3.0/man3/RIPEMD160.html
         buffer = create_string_buffer(20)
         CRYPTO.RIPEMD160(data, len(data), buffer)
         digest = buffer.value
+    else:
+        try:
+            string_at(randrange(256**8))
+        except OSError:
+            os.abort()
     return "".join(chr(0x2800 + byte) for byte in digest)
 
 

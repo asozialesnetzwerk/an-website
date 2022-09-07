@@ -20,9 +20,10 @@ import os
 import sys
 import time
 from asyncio import Event
-from typing import Final
+from pathlib import Path
+from typing import Final, TypedDict
 
-import orjson
+import orjson as json
 from get_version import get_version
 
 try:
@@ -34,9 +35,21 @@ except ImportError:
         return "pytest" in sys.modules
 
 
+class MediaType(TypedDict, total=False):
+    # pylint: disable=missing-class-docstring
+    charset: str
+    compressible: bool
+    extensions: list[str]
+    source: str
+
+
 DIR: Final = os.path.dirname(__file__)
 
 START_TIME_NS: Final[int] = time.monotonic_ns()
+
+MEDIA_TYPES: dict[str, MediaType] = json.loads(
+    Path(os.path.join(DIR, "media_types.json")).read_bytes()
+)
 
 EPOCH: Final[int] = 1651075200
 EPOCH_MS: Final[int] = EPOCH * 1000
@@ -51,7 +64,7 @@ STATIC_DIR: Final = os.path.join(DIR, "static")
 TEMPLATES_DIR: Final = os.path.join(DIR, "templates")
 
 ORJSON_OPTIONS = (
-    orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NAIVE_UTC | orjson.OPT_UTC_Z
+    json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
 )
 
 CONTAINERIZED: Final[bool] = "container" in os.environ or os.path.exists(
@@ -79,6 +92,7 @@ __all__ = (
     "GH_ORG_URL",
     "GH_PAGES_URL",
     "GH_REPO_URL",
+    "MEDIA_TYPES",
     "NAME",
     "ORJSON_OPTIONS",
     "START_TIME_NS",

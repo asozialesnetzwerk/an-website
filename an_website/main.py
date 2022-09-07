@@ -121,9 +121,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         if _module_infos:
             module_infos.extend(_module_infos)
             loaded_modules.append(potential_module)
-            LOGGER.info(
+            LOGGER.debug(
                 "Found module_infos in %s.__init__.py, "
-                "do not search in other files in the module.",
+                "not searching in other modules in the package.",
                 potential_module,
             )
             continue
@@ -334,7 +334,7 @@ def make_app(config: ConfigParser) -> str | Application:
         HANDLERS=handlers,
         # General settings
         autoreload=False,
-        debug=bool(sys.flags.dev_mode),
+        debug=sys.flags.dev_mode,
         default_handler_class=NotFoundHandler,
         compress_response=config.getboolean(
             "GENERAL", "COMPRESS_RESPONSE", fallback=False

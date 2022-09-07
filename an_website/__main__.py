@@ -22,12 +22,6 @@ import sys
 import tracemalloc
 import warnings
 
-if sys.flags.dev_mode:
-    tracemalloc.start()
-    if sys.version_info >= (3, 12):
-        with contextlib.suppress(ValueError):
-            sys.activate_stack_trampoline("perf")
-
 from setproctitle import getproctitle
 
 getproctitle()  # 42
@@ -50,4 +44,10 @@ patches.apply()
 from .main import main
 
 if __name__ == "__main__":
+    if sys.flags.dev_mode:
+        tracemalloc.start()
+        if sys.version_info >= (3, 12):
+            with contextlib.suppress(ValueError):
+                sys.activate_stack_trampoline("perf")
+
     sys.exit(main())
