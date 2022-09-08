@@ -29,6 +29,7 @@ from typing import Any, Final
 
 import certifi
 import defusedxml  # type: ignore[import]
+import orjson
 import tornado.httputil
 import yaml
 from emoji import EMOJI_DATA
@@ -212,7 +213,7 @@ def parse_body_arguments(  # noqa: D103, C901
             )
             return
         try:
-            spam = json.loads(body)
+            spam = orjson.loads(body)
         except Exception as exc:  # pylint: disable=broad-except
             gen_log.warning("Invalid JSON body: %s", exc)
         else:

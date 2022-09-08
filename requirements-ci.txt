@@ -36,7 +36,7 @@ packaging==21.3
 pathspec==0.10.1
 pbr==5.10.0
 pep8-naming==0.13.2
-pipenv==2022.9.4
+pipenv==2022.9.8
 platformdirs==2.5.2
 pluggy==1.0.0
 pre-commit==2.20.0
@@ -76,7 +76,7 @@ types-redis==4.3.20
 types-regex==2022.8.17.0
 types-setuptools==63.4.1
 typing-extensions==4.3.0
-virtualenv==20.16.4
+virtualenv==20.16.5
 virtualenv-clone==0.5.7
 webencodings==0.5.1
 wrapt==1.14.1
@@ -99,7 +99,7 @@ deprecated==1.2.13
 dunamai==1.13.0
 ecs-logging==2.0.0
 editdistance==0.6.0
-elastic-apm==6.11.0
+elastic-apm==6.12.0
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0
 elasticsearch[async]==7.17.6

@@ -31,9 +31,9 @@ if sys.flags.dev_mode and not (
     or "PYTHONWARNINGS" in os.environ
     or " -W" in " ".join(sys.orig_argv)
 ):
+    warnings.simplefilter("error", EncodingWarning)
     warnings.simplefilter("error", DeprecationWarning)
 warnings.filterwarnings("ignore", module="defusedxml")
-warnings.filterwarnings("default", module="aioredis.connection")
 
 
 from . import patches
