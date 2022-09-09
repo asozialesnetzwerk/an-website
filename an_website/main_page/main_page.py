@@ -41,7 +41,8 @@ class MainPage(QuoteOfTheDayBaseHandler):
         """Handle GET requests to the main page."""
         if head:
             return
-        await self.render(
-            "pages/main_page.html",
-            quote_data=await self.get_quote_of_today(),
-        )
+        try:
+            quote_data = await self.get_quote_of_today()
+        except Exception:
+            quote_data = None
+        await self.render("pages/main_page.html", quote_data=quote_data)
