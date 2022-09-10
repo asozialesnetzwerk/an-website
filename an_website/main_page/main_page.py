@@ -43,6 +43,6 @@ class MainPage(QuoteOfTheDayBaseHandler):
             return
         try:
             quote_data = await self.get_quote_of_today()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             quote_data = None
         await self.render("pages/main_page.html", quote_data=quote_data)

@@ -216,18 +216,40 @@ class HTMLRequestHandler(BaseRequestHandler):
         return super().render(template_name, **kwargs)
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Render the error page with the status_code as a HTML page."""
+        """Render the error page with the status_code as an HTML page."""
+        try:
+            is_traceback = (
+                "exc_info" in kwargs
+                and not issubclass(kwargs["exc_info"][0], HTTPError)
+                and (
+                    self.settings.get("serve_traceback")
+                    or self.is_authorized(Permission.TRACEBACK)
+                )
+            )
+        except Exception:  # pylint: disable=broad-except
+            LOGGER.exception(
+                "Error while checking if traceback should be shown"
+            )
+            is_traceback = False
+
+        try:
+            reason = self.get_error_message(**kwargs)
+        except Exception:  # pylint: disable=broad-except
+            LOGGER.exception("Error while getting error message")
+            reason = "Unknown error"
+
+        try:
+            description = self.get_error_page_description(status_code)
+        except Exception:  # pylint: disable=broad-except
+            LOGGER.exception("Error while getting error page description")
+            description = "Unknown error"
+
         self.render(
             "error.html",
             status=status_code,
-            reason=self.get_error_message(**kwargs),
-            description=self.get_error_page_description(status_code),
-            is_traceback="exc_info" in kwargs
-            and not issubclass(kwargs["exc_info"][0], HTTPError)
-            and (
-                self.settings.get("serve_traceback")
-                or self.is_authorized(Permission.TRACEBACK)
-            ),
+            reason=reason,
+            description=description,
+            is_traceback=is_traceback,
         )
 
 
@@ -250,9 +272,15 @@ class APIRequestHandler(BaseRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""
+        try:
+            reason = self.get_error_message(**kwargs)
+        except Exception:  # pylint: disable=broad-except
+            LOGGER.exception("Error while getting error message")
+            reason = "Unknown error"
+
         self.finish_dict(
             status=status_code,
-            reason=self.get_error_message(**kwargs),
+            reason=reason,
         )
 
 

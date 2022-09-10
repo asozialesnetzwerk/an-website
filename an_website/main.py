@@ -33,7 +33,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
-from typing import Any, Final, cast
+from typing import Any, Final, NoReturn, cast
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -838,7 +838,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     This is the main function that is called when running this file.
     """
-    # pylint: disable=too-complex, too-many-branches, too-many-statements
+    # pylint: disable=too-complex,too-many-branches,too-many-statements,too-many-locals
     setproctitle(NAME)
     install_signal_handler()
     setup_logging(CONFIG)
@@ -960,6 +960,14 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     try:
         loop.run_forever()
     finally:
+        EVENT_SHUTDOWN.set()
+        LOGGER.info("Exiting %s", task_id)
+
+        def force_exit_bad() -> NoReturn:
+            """Force exit this process."""
+            sys.exit(0)
+
+        loop.call_later(10, force_exit_bad)  # make sure no process survives
         try:
             server.stop()
             loop.run_until_complete(asyncio.sleep(1))

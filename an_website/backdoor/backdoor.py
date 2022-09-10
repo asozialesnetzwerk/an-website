@@ -269,16 +269,19 @@ class Backdoor(APIRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""
-        if "exc_info" in kwargs:
-            exc_info: tuple[
-                type[BaseException], BaseException, TracebackType
-            ] = kwargs["exc_info"]
-            if not issubclass(exc_info[0], HTTPError):
-                self.finish(
-                    pickle.dumps(
-                        self.get_error_message(**kwargs),
-                        self.get_protocol_version(),
+        try:
+            if "exc_info" in kwargs:
+                exc_info: tuple[
+                    type[BaseException], BaseException, TracebackType
+                ] = kwargs["exc_info"]
+                if not issubclass(exc_info[0], HTTPError):
+                    self.finish(
+                        pickle.dumps(
+                            self.get_error_message(**kwargs),
+                            self.get_protocol_version(),
+                        )
                     )
-                )
-                return
+                    return
+        except Exception:  # pylint: disable=broad-except
+            LOGGER.exception("Writing the error failed")
         self.finish(pickle.dumps(None, self.get_protocol_version()))
