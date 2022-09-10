@@ -650,13 +650,12 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
 
 async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
     """Check Elasticsearch."""
-    # pylint: disable=invalid-name
-    while True:  # pylint: disable=while-used
-        es: AsyncElasticsearch = cast(
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
+        aes: AsyncElasticsearch = cast(
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
         try:
-            await es.transport.perform_request("HEAD", "/")
+            await aes.transport.perform_request("HEAD", "/")
         except Exception:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
             LOGGER.exception("Connecting to Elasticsearch failed")
@@ -664,7 +663,7 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
             if not EVENT_ELASTICSEARCH.is_set():
                 try:
                     await setup_elasticsearch_configs(
-                        es, app.settings["ELASTICSEARCH_PREFIX"]
+                        aes, app.settings["ELASTICSEARCH_PREFIX"]
                     )
                 except Exception:  # pylint: disable=broad-except
                     LOGGER.exception(
@@ -794,7 +793,7 @@ def setup_redis(app: Application) -> None | Redis[str]:
 
 async def check_redis(app: Application) -> None:  # pragma: no cover
     """Check Redis."""
-    while True:  # pylint: disable=while-used
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
         try:
             await redis.ping()
@@ -858,12 +857,6 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         return app
 
     apply_config_to_app(app, CONFIG)
-    setup_elasticsearch(app)
-    setup_app_search(app)
-    setup_redis(app)
-
-    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
-        setup_apm(app)
 
     behind_proxy = CONFIG.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
@@ -932,18 +925,22 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
                 )
             )
 
-    # get loop after forking
+    setup_app_search(app)
+    setup_elasticsearch(app)
+    setup_redis(app)
+
+    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
+        setup_apm(app)
+
     loop = asyncio.get_event_loop_policy().get_event_loop()
+    setup_webhook_logging(CONFIG, loop)
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
     asyncio.get_event_loop = _
 
-    setup_webhook_logging(CONFIG, loop)
-
     # pylint: disable=unused-variable
-
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
     if CONFIG.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
@@ -967,7 +964,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
             """Force exit this process."""
             sys.exit(0)
 
-        loop.call_later(10, force_exit_bad)  # make sure no process survives
+        loop.call_later(16, force_exit_bad)  # make sure no process survives
         try:
             server.stop()
             loop.run_until_complete(asyncio.sleep(1))

@@ -36,7 +36,13 @@ from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
-from .. import EVENT_REDIS, NAME, ORJSON_OPTIONS, pytest_is_running
+from .. import (
+    EVENT_REDIS,
+    EVENT_SHUTDOWN,
+    NAME,
+    ORJSON_OPTIONS,
+    pytest_is_running,
+)
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import emojify
 
@@ -500,13 +506,12 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
 
     # update the cache every hour
     failed = 0
-    while True:  # pylint: disable=while-used
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         try:
             await update_cache(app)
         except Exception:  # pylint: disable=broad-except
             LOGGER.exception("Updating quotes cache failed")
-            apm = app.settings.get("ELASTIC_APM", {}).get("CLIENT")
-            if apm:
+            if apm := app.settings.get("ELASTIC_APM", {}).get("CLIENT"):
                 apm.capture_exception()
             failed += 1
             await asyncio.sleep(pow(min(failed * 2, 60), 2))  # 4,16,...,60*60
