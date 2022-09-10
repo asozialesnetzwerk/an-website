@@ -910,9 +910,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         else (tornado.process.cpu_count() if hasattr(os, "fork") else 0),
     )
 
+    task_id: int | None = None
     if processes > 0:
-        setproctitle(f"{NAME} - Master")
-        tornado.process.fork_processes(processes)
+        setproctitle(f"{NAME} - M")
+        task_id = tornado.process.fork_processes(processes)
         # yeet all children (there should be none, but do it regardless, just in case)
         process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
@@ -920,10 +921,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del geoip.__kwdefaults__["caches"].control.created_by_ultra
 
-    task_id = tornado.process.task_id()
-
-    if task_id is not None:
-        setproctitle(f"{NAME} - Worker {task_id}")
+        setproctitle(f"{NAME} - W {task_id}")
         if unix_socket_path:
             sockets.append(
                 tornado.netutil.bind_unix_socket(
@@ -956,6 +954,8 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         quotes_cache_update_task = loop.create_task(  # noqa: F841
             update_cache_periodically(app)
         )
+
+    LOGGER.info("Starting %d", task_id or 0)
 
     try:
         loop.run_forever()
