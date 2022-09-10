@@ -33,7 +33,7 @@ from configparser import ConfigParser
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
-from typing import Any, Final, NoReturn, cast
+from typing import Any, Final, cast
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -650,12 +650,13 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
 
 async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
     """Check Elasticsearch."""
+    # pylint: disable=invalid-name
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        aes: AsyncElasticsearch = cast(
+        es: AsyncElasticsearch = cast(
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
         try:
-            await aes.transport.perform_request("HEAD", "/")
+            await es.transport.perform_request("HEAD", "/")
         except Exception:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
             LOGGER.exception("Connecting to Elasticsearch failed")
@@ -663,7 +664,7 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
             if not EVENT_ELASTICSEARCH.is_set():
                 try:
                     await setup_elasticsearch_configs(
-                        aes, app.settings["ELASTICSEARCH_PREFIX"]
+                        es, app.settings["ELASTICSEARCH_PREFIX"]
                     )
                 except Exception:  # pylint: disable=broad-except
                     LOGGER.exception(
@@ -680,8 +681,8 @@ async def setup_elasticsearch_configs(  # noqa: C901
 ) -> None:
     """Setup Elasticsearch configs."""  # noqa: D401
     # pylint: disable=too-complex, too-many-branches
-    get: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
-    put: Callable[..., Coroutine[Any, Any, dict[str, Any]]]
+    get: Callable[..., Coroutine[None, None, dict[str, Any]]]
+    put: Callable[..., Coroutine[None, None, dict[str, Any]]]
     for i in range(3):
         if i == 0:  # pylint: disable=compare-to-zero
             what = "ingest_pipelines"
@@ -837,7 +838,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     This is the main function that is called when running this file.
     """
-    # pylint: disable=too-complex,too-many-branches,too-many-statements,too-many-locals
+    # pylint: disable=too-complex, too-many-branches, too-many-statements
     setproctitle(NAME)
     install_signal_handler()
     setup_logging(CONFIG)
@@ -857,6 +858,12 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         return app
 
     apply_config_to_app(app, CONFIG)
+    setup_elasticsearch(app)
+    setup_app_search(app)
+    setup_redis(app)
+
+    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
+        setup_apm(app)
 
     behind_proxy = CONFIG.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
@@ -925,22 +932,18 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
                 )
             )
 
-    setup_app_search(app)
-    setup_elasticsearch(app)
-    setup_redis(app)
-
-    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
-        setup_apm(app)
-
+    # get loop after forking
     loop = asyncio.get_event_loop_policy().get_event_loop()
-    setup_webhook_logging(CONFIG, loop)
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
     asyncio.get_event_loop = _
 
+    setup_webhook_logging(CONFIG, loop)
+
     # pylint: disable=unused-variable
+
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
     if CONFIG.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
@@ -949,30 +952,33 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     if CONFIG.getboolean("REDIS", "ENABLED", fallback=False):
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
-    if not task_id:
+    if not task_id:  # update from one process only
         quotes_cache_update_task = loop.create_task(  # noqa: F841
             update_cache_periodically(app)
         )
 
     try:
         loop.run_forever()
-    finally:
         EVENT_SHUTDOWN.set()
-        LOGGER.info("Exiting %s", task_id)
-
-        def force_exit_bad() -> NoReturn:
-            """Force exit this process."""
-            sys.exit(0)
-
-        loop.call_later(16, force_exit_bad)  # make sure no process survives
+    finally:
         try:
             server.stop()
+
             loop.run_until_complete(asyncio.sleep(1))
-            loop.run_until_complete(server.close_all_connections())
+
+            loop.run_until_complete(
+                asyncio.wait_for(server.close_all_connections(), 5)
+            )
+
             if redis := app.settings.get("REDIS"):
-                loop.run_until_complete(redis.close(close_connection_pool=True))
+                loop.run_until_complete(
+                    asyncio.wait_for(redis.close(close_connection_pool=True), 5)
+                )
+
             if elasticsearch := app.settings.get("ELASTICSEARCH"):
-                loop.run_until_complete(elasticsearch.close())
+                loop.run_until_complete(
+                    asyncio.wait_for(elasticsearch.close(), 5)
+                )
         finally:
             try:
                 _cancel_all_tasks(loop)
