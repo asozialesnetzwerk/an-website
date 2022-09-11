@@ -838,7 +838,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     This is the main function that is called when running this file.
     """
-    # pylint: disable=too-complex, too-many-branches, too-many-statements
+    # pylint: disable=too-complex,too-many-branches,too-many-statements,too-many-locals
     setproctitle(NAME)
     install_signal_handler()
     setup_logging(CONFIG)
@@ -956,6 +956,14 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         )
 
     LOGGER.info("Starting %d", task_id or 0)
+
+    if task_id is not None:
+        # ensure that the event loop starts properly
+        import threading  # pylint: disable=import-outside-toplevel
+
+        timer = threading.Timer(16, loop.close)
+        loop.call_later(2, timer.cancel)
+        timer.start()
 
     try:
         loop.run_forever()
