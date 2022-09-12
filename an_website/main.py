@@ -989,7 +989,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         global HEARTBEAT  # pylint: disable=global-statement
         HEARTBEAT = time.monotonic()
         threading.Thread(
-            target=supervise, name="supervisor", args=(loop), daemon=True
+            target=supervise, name="supervisor", args=(loop,), daemon=True
         ).start()
 
     try:
