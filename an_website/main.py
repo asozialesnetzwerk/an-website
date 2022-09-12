@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import importlib
 import logging
 import os
@@ -56,7 +57,6 @@ from setproctitle import setproctitle
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
-from UltraDict import UltraDict  # type: ignore[import]
 
 from . import (
     CONTAINERIZED,
@@ -99,6 +99,8 @@ CONFIG: Final[ConfigParser] = ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="UTF-8")
 
 LOGGER: Final = logging.getLogger(__name__)
+
+HEARTBEAT: float = 0
 
 
 # add all the information from the packages to a list
@@ -835,23 +837,20 @@ def install_signal_handler() -> None:  # pragma: no cover
         signal.signal(signal.SIGHUP, signal_handler)
 
 
-async def heartbeat(spam: dict[int, float]) -> None:
+async def heartbeat() -> None:
     """Heartbeat."""
-    task = tornado.process.task_id()
-    if task is None:
-        return
-    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        spam[task] = time.monotonic()
+    global HEARTBEAT  # pylint: disable=global-statement
+    while True:  # pylint: disable=while-used
+        HEARTBEAT = time.monotonic()
         await asyncio.sleep(1)
 
 
-def supervise(spam: dict[int, float], eggs: dict[int, int]) -> None:
+def supervise(loop: AbstractEventLoop) -> None:
     """Supervise."""
-    while True:  # pylint: disable=while-used
-        for task, timestamp in spam.items():
-            if time.monotonic() - timestamp >= 20:
-                with contextlib.suppress(OSError):
-                    os.kill(eggs[task], 9)
+    while not loop.is_closed():  # pylint: disable=while-used
+        if time.monotonic() - HEARTBEAT >= 10:
+            with contextlib.suppress(OSError):
+                os.kill(os.getpid(), getattr(signal, "CTRL_BREAK_EVENT", 9))
         time.sleep(1)
 
 
@@ -934,26 +933,17 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     )
 
     task_id: int | None = None
+
     if processes > 0:
-        spam: dict[int, float] = UltraDict()
-        eggs: dict[int, float] = UltraDict()
-
-        threading.Thread(
-            target=supervise, name="supervisor", args=(spam, eggs), daemon=True
-        ).start()
-
         setproctitle(f"{NAME} - Master")
-        task_id = tornado.process.fork_processes(processes)
-        setproctitle(f"{NAME} - Worker {task_id}")
 
-        spam[task_id] = time.monotonic()
-        eggs[task_id] = os.getpid()
+        task_id = tornado.process.fork_processes(processes)
+
+        setproctitle(f"{NAME} - Worker {task_id}")
 
         # yeet all children (there should be none, but do it regardless, just in case)
         process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
 
-        del spam.control.created_by_ultra  # type: ignore[attr-defined]
-        del eggs.control.created_by_ultra  # type: ignore[attr-defined]
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
@@ -978,8 +968,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     # pylint: disable=unused-variable
 
-    if task_id is not None:
-        heartbeat_task = loop.create_task(heartbeat(spam))  # noqa: F841
+    heartbeat_task = loop.create_task(heartbeat())  # noqa: F841
 
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
@@ -995,6 +984,13 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         )
 
     # pylint: enable=unused-variable
+
+    if CONFIG.getboolean("GENERAL", "SUPERVISE", fallback=False):
+        global HEARTBEAT  # pylint: disable=global-statement
+        HEARTBEAT = time.monotonic()
+        threading.Thread(
+            target=supervise, name="supervisor", args=(loop), daemon=True
+        ).start()
 
     try:
         loop.run_forever()
