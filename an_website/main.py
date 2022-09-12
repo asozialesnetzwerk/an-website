@@ -10,7 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# pylint: disable=import-private-name
+# pylint: disable=import-private-name, too-many-lines
 
 """The website of the AN. Loads config and modules and starts Tornado."""
 
@@ -24,6 +24,8 @@ import platform
 import signal
 import ssl
 import sys
+import threading
+import time
 import types
 from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
@@ -54,6 +56,7 @@ from setproctitle import setproctitle
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
+from UltraDict import UltraDict  # type: ignore[import]
 
 from . import (
     CONTAINERIZED,
@@ -832,13 +835,34 @@ def install_signal_handler() -> None:  # pragma: no cover
         signal.signal(signal.SIGHUP, signal_handler)
 
 
+async def heartbeat(spam: dict[int, float]) -> None:
+    """Heartbeat."""
+    task = tornado.process.task_id()
+    if task is None:
+        return
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
+        spam[task] = time.monotonic()
+        await asyncio.sleep(1)
+
+
+def supervise(spam: dict[int, float], eggs: dict[int, int]) -> None:
+    """Supervise."""
+    while True:  # pylint: disable=while-used
+        for task, timestamp in spam.items():
+            if time.monotonic() - timestamp >= 20:
+                with contextlib.suppress(OSError):
+                    os.kill(eggs[task], 9)
+        time.sleep(1)
+
+
 def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     Start everything.
 
     This is the main function that is called when running this file.
     """
-    # pylint: disable=too-complex,too-many-branches,too-many-statements,too-many-locals
+    # pylint: disable=too-complex, too-many-branches
+    # pylint: disable=too-many-locals, too-many-statements
     setproctitle(NAME)
     install_signal_handler()
     setup_logging(CONFIG)
@@ -847,8 +871,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     if platform.system() == "Windows":
         LOGGER.warning(
-            "Please note that running %s on Windows is not officially"
-            " supported",
+            "Running %s on Windows is not officially supported",
             NAME.removesuffix("-dev"),
         )
 
@@ -905,23 +928,37 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     processes = CONFIG.getint(
         "GENERAL",
         "PROCESSES",
-        fallback=0
+        fallback=2
         if sys.flags.dev_mode
         else (tornado.process.cpu_count() if hasattr(os, "fork") else 0),
     )
 
     task_id: int | None = None
     if processes > 0:
-        setproctitle(f"{NAME} - M")
+        spam: dict[int, float] = UltraDict()
+        eggs: dict[int, float] = UltraDict()
+
+        threading.Thread(
+            target=supervise, name="supervisor", args=(spam, eggs), daemon=True
+        ).start()
+
+        setproctitle(f"{NAME} - Master")
         task_id = tornado.process.fork_processes(processes)
+        setproctitle(f"{NAME} - Worker {task_id}")
+
+        spam[task_id] = time.monotonic()
+        eggs[task_id] = os.getpid()
+
         # yeet all children (there should be none, but do it regardless, just in case)
         process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
+
+        del spam.control.created_by_ultra  # type: ignore[attr-defined]
+        del eggs.control.created_by_ultra  # type: ignore[attr-defined]
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del geoip.__kwdefaults__["caches"].control.created_by_ultra
 
-        setproctitle(f"{NAME} - W {task_id}")
         if unix_socket_path:
             sockets.append(
                 tornado.netutil.bind_unix_socket(
@@ -932,15 +969,17 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     # get loop after forking
     loop = asyncio.get_event_loop_policy().get_event_loop()
+    setup_webhook_logging(CONFIG, loop)
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
     asyncio.get_event_loop = _
 
-    setup_webhook_logging(CONFIG, loop)
-
     # pylint: disable=unused-variable
+
+    if task_id is not None:
+        heartbeat_task = loop.create_task(heartbeat(spam))  # noqa: F841
 
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
@@ -955,15 +994,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
             update_cache_periodically(app)
         )
 
-    LOGGER.info("Starting %d", task_id or 0)
-
-    if task_id is not None:
-        # ensure that the event loop starts properly
-        import threading  # pylint: disable=import-outside-toplevel
-
-        timer = threading.Timer(16, loop.close)
-        loop.call_later(2, timer.cancel)
-        timer.start()
+    # pylint: enable=unused-variable
 
     try:
         loop.run_forever()
@@ -971,9 +1002,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
     finally:
         try:
             server.stop()
-
             loop.run_until_complete(asyncio.sleep(1))
-
             loop.run_until_complete(
                 asyncio.wait_for(server.close_all_connections(), 5)
             )
@@ -987,6 +1016,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
                 loop.run_until_complete(
                     asyncio.wait_for(elasticsearch.close(), 5)
                 )
+
         finally:
             try:
                 _cancel_all_tasks(loop)
