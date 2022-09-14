@@ -8,6 +8,8 @@ jobs:
   fix_stupid_mistakes:
     name: Fix stupid mistakes
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -48,6 +50,8 @@ jobs:
   mypy:
     name: mypy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -77,6 +81,8 @@ jobs:
   flake8:
     name: Flake8
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -100,6 +106,8 @@ jobs:
   pylint:
     name: Pylint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -129,6 +137,8 @@ jobs:
   bandit:
     name: Bandit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -146,6 +156,8 @@ jobs:
   eslint:
     name: ESLint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -166,6 +178,8 @@ jobs:
   tsc:
     name: tsc
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -186,6 +200,8 @@ jobs:
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

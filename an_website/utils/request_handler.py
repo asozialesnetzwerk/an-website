@@ -74,6 +74,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         as_json: bool = self.content_type == "application/json"
         as_plain_text: bool = self.content_type == "text/plain"
         as_markdown: bool = self.content_type == "text/markdown"
+
         if (
             not isinstance(chunk, bytes | str)
             or not self.used_render
@@ -91,11 +92,12 @@ class HTMLRequestHandler(BaseRequestHandler):
             )
 
         soup = BeautifulSoup(chunk, features="lxml")
+
         if as_plain_text:
             return super().finish(soup.get_text("\n", True))
 
         dictionary: dict[str, Any] = {
-            "url": self.fix_url(),  # request url
+            "url": self.fix_url(),
             "title": self.title,
             "short_title": self.short_title
             if self.title != self.short_title
@@ -107,8 +109,8 @@ class HTMLRequestHandler(BaseRequestHandler):
             "scripts": [
                 {
                     "src": script.get("src"),
-                    # "script": script.string,  # not in use because of csp
-                    # "onload": script.get("onload"),  # not in use because of csp
+                    # "script": script.string,  # not in use because of CSP
+                    # "onload": script.get("onload"),  # not in use because of CSP
                 }
                 for script in soup.find_all("script")
             ]
@@ -126,6 +128,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             if soup.head
             else "",
         }
+
         return super().finish(dictionary)
 
     def get_form_appendix(self) -> str:
@@ -273,9 +276,11 @@ class NotFoundHandler(HTMLRequestHandler):
 
         if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)
+
         new_path = regex.sub(r"/+", "/", self.request.path.rstrip("/")).replace(
             "_", "-"
         )
+
         for ext in (".html", ".htm", ".php"):
             new_path = remove_suffix_ignore_case(new_path, f"/index{ext}")
             new_path = remove_suffix_ignore_case(new_path, ext)
@@ -379,7 +384,7 @@ class ElasticRUM(BaseRequestHandler):
         "/dist/bundles/elastic-apm-rum.umd{}.js{}"
     )
 
-    SCRIPTS: ClassVar[dict[str, str]] = {}
+    SCRIPTS: ClassVar[dict[str, bytes]] = {}
 
     async def get(
         self,
@@ -402,20 +407,23 @@ class ElasticRUM(BaseRequestHandler):
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[key] = response.body.decode("UTF-8")
+            self.SCRIPTS[key] = response.body
             new_path = urlsplit(response.effective_url).path
             if new_path.endswith(".js"):
                 BaseRequestHandler.ELASTIC_RUM_URL = new_path
             LOGGER.info("RUM script %s updated", new_path)
             self.redirect(self.fix_url(new_path), False)
             return
+
         if spam and not eggs:  # if serving minified JS (URL contains ".min")
             self.set_header(
                 "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
+
         self.set_header("Expires", datetime.utcnow() + timedelta(days=365))
         self.set_header(
             "Cache-Control",
             f"public, min-fresh={60 * 60 * 24 * 365}, immutable",
         )
+
         return await self.finish(self.SCRIPTS[key])

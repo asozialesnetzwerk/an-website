@@ -12,6 +12,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -43,6 +45,8 @@ jobs:
   tests:
     name: Run tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -110,6 +114,8 @@ jobs:
   release:
     name: Create release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     needs:
       - build
       - tests
@@ -146,6 +152,7 @@ jobs:
     needs:
       - build
       - tests
+    permissions: {}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -172,6 +179,7 @@ jobs:
     needs:
       - build
       - tests
+    permissions: {}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -212,6 +220,10 @@ jobs:
     needs:
       - build
       - tests
+    permissions: {}
+    environment:
+      name: production
+      url: https://asozial.org
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -222,12 +234,19 @@ jobs:
           curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
 
-  gh_pages:
+  github-pages:
     name: GitHub Pages
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
     needs:
       - deploy
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -242,21 +261,22 @@ jobs:
         with:
           name: coverage
       - name: Make directory
-        run: mkdir public
+        run: mkdir github-pages
       - name: Hash files
-        run: ./scripts/hash_files.py > public/hashes
+        run: ./scripts/hash_files.py > github-pages/hashes.txt
       - name: Install Coverage.py
         run: grep "^coverage" requirements-ci.txt | xargs pip install
       - name: Create coverage files
         run: |
           coverage report --precision=3 --sort=-miss --skip-covered
-          coverage html -d "public/coverage"
-          coverage json -o "public/coverage.json"
-          ./generate-badge.sh > public/coverage/badge.svg
-          rm public/coverage/.gitignore
-      - name: Push hashes and coverage to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+          coverage html -d github-pages/coverage
+          coverage json -o github-pages/coverage.json
+          ./generate-badge.sh > github-pages/coverage/badge.svg
+          rm github-pages/coverage/.gitignore
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_orphan: true
-          commit_message: ${{ github.event.head_commit.message }}
+          path: github-pages
+      - name: Deploy GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v1

@@ -6,7 +6,7 @@ set -eu
 ###
 
 # get the total coverage percentage and round it to 2 decimals
-total=$(jq ".totals.percent_covered" public/coverage.json)
+total=$(jq ".totals.percent_covered" github-pages/coverage.json)
 total=$(echo "${total}" | awk '{ printf("%3.2f\n", $1) }')
 inttotal=$(echo "${total}" | cut -d "." -f1)
 

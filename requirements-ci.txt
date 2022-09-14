@@ -4,7 +4,7 @@ attrs==22.1.0
 autoflake==1.5.3
 bandit[toml]==1.7.4
 black==22.8.0
-certifi==2022.6.15.1
+certifi==2022.6.15.2
 cfgv==3.3.1
 click==8.1.3
 coverage==6.4.4
@@ -112,7 +112,7 @@ hiredis==2.0.0
 html2text==2020.1.16
 hy==0.24.0
 hyrule==0.2
-idna==3.3
+idna==3.4
 mpmath==1.2.1
 multidict==6.0.2
 numpy==1.23.3
@@ -128,12 +128,12 @@ python-dateutil==2.8.2
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
 redis[hiredis]==4.3.4
-regex==2022.9.11
+regex==2022.9.13
 setproctitle==1.3.2
 soupsieve==2.3.2.post1
 sympy==1.11.1
 tzdata==2022.2
 ultradict==0.0.6
 urllib3==1.26.12
-uvloop==0.16.0
+uvloop==0.17.0
 yarl==1.8.1

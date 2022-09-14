@@ -1,8 +1,9 @@
 #[GENERAL]
 #processes = ...
+#supervise = nope
 #ignored_modules = spam, eggs
 #trusted_api_secrets = correct_horse_battery_staple=3, xyzzy
-#cookie_secret = 量子チキンスープグラ ス ビッグチュング
+#cookie_secret = 量子チキンスープグラ ス ビッグチュングス
 #onion_address = ...
 #behind_proxy = nope
 #ratelimits = ...

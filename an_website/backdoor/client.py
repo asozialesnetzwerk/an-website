@@ -23,6 +23,7 @@ import contextlib
 import http.client
 import io
 import os
+import pickle  # nosec: B403
 import pydoc
 import re  # pylint: disable=preferred-module
 import socket
@@ -36,15 +37,18 @@ from types import EllipsisType
 from typing import Any, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
-try:
-    import dill as pickle  # type: ignore[import]  # nosec: B403
-except ImportError:
-    import pickle  # type: ignore[no-redef]  # nosec: B403
+with contextlib.suppress(ImportError):
+    import dill as pickle  # type: ignore[import, no-redef]  # noqa: F811  # nosec: B403
 
 try:
     import hy  # type: ignore[import]
 except ImportError:
     hy = None
+
+try:
+    import idna
+except ImportError:
+    idna = None  # type: ignore[assignment]
 
 try:
     import socks  # type: ignore[import]
@@ -181,7 +185,14 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
-        headers["Host"] = url.netloc.encode("IDNA").decode("ASCII")
+        host: None | str = None
+        if idna:
+            with contextlib.suppress(Exception):
+                host = idna.encode(url.hostname).decode("ASCII")
+                host = f"{host}:{url.port}" if url.port else host
+        if not host:
+            host = url.netloc.encode("IDNA").decode("ASCII")
+        headers["Host"] = host
     if body and "Content-Length" not in header_names:
         headers["Content-Length"] = str(len(body))
     e, data = E, b""

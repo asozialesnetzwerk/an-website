@@ -833,6 +833,7 @@ class BaseRequestHandler(RequestHandler):
     def set_csp_header(self) -> None:
         """Set the Content-Security-Policy header."""
         script_src = ["'self'"]
+
         if (
             self.apm_enabled
             and "INLINE_SCRIPT_HASH" in self.settings["ELASTIC_APM"]
@@ -843,10 +844,22 @@ class BaseRequestHandler(RequestHandler):
                     "'unsafe-inline'",  # for browsers that don't support hash
                 )
             )
+
+        connect_src = ["'self'"]
+
+        if self.apm_enabled and "SERVER_URL" in self.settings["ELASTIC_APM"]:
+            connect_src.append(self.settings["ELASTIC_APM"]["SERVER_URL"])
+
+        connect_src.append(  # fix for older browsers
+            ("wss" if self.request.protocol == "https" else "ws")
+            + f"://{self.request.host}"
+        )
+
         self.set_header(
             "Content-Security-Policy",
             "default-src 'self';"
             f"script-src {' '.join(script_src)};"
+            f"connect-src {' '.join(connect_src)};"
             "style-src 'self' 'unsafe-inline';"
             "img-src 'self' https://img.zeit.de https://github.asozial.org;"
             "frame-ancestors 'self';"
@@ -857,13 +870,6 @@ class BaseRequestHandler(RequestHandler):
             + (
                 f"report-uri {self.get_reporting_api_endpoint()};"
                 if self.settings.get("REPORTING")
-                else ""
-            )
-            + (
-                "connect-src 'self'"
-                f" {self.settings['ELASTIC_APM']['SERVER_URL']};"
-                if self.apm_enabled
-                and "SERVER_URL" in self.settings["ELASTIC_APM"]
                 else ""
             ),
         )
@@ -887,7 +893,6 @@ class BaseRequestHandler(RequestHandler):
                 ),
             )
             self.set_header("NEL", '{"report_to":"default","max_age":2592000}')
-        # dev.mozilla.org/docs/Web/HTTP/Headers
         self.set_header("Access-Control-Max-Age", "7200")
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "*")
@@ -896,15 +901,11 @@ class BaseRequestHandler(RequestHandler):
             ", ".join(self.get_allowed_methods()),
         )
         self.set_header("X-Content-Type-Options", "nosniff")
-        # opt out of all FLoC cohort calculation
         self.set_header("Permissions-Policy", "interest-cohort=()")
-        # don't send the Referer header for cross-origin requests
         self.set_header("Referrer-Policy", "same-origin")
-        # dev.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer
         self.set_header(
             "Cross-Origin-Opener-Policy", "same-origin; report-to=default"
         )
-
         if self.request.path == "/kaenguru-comics-alt":  # TODO: improve this
             self.set_header(
                 "Cross-Origin-Embedder-Policy",
@@ -916,12 +917,10 @@ class BaseRequestHandler(RequestHandler):
                 "require-corp; report-to=default",
             )
         if self.settings.get("HSTS"):
-            # dev.mozilla.org/docs/Web/HTTP/Headers/Strict-Transport-Security
             self.set_header("Strict-Transport-Security", "max-age=63072000")
         if (
             onion_address := self.settings.get("ONION_ADDRESS")
         ) and not self.request.host_name.endswith(".onion"):
-            # community.torproject.org/onion-services/advanced/onion-location
             self.set_header(
                 "Onion-Location",
                 onion_address
