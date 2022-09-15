@@ -187,7 +187,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     if "Host" not in header_names:
         host: None | str = None
         if idna:
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(idna.core.InvalidCodepoint):
                 host = idna.encode(url.hostname).decode("ASCII")
                 host = f"{host}:{url.port}" if url.port else host
         if not host:

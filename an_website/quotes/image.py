@@ -313,8 +313,8 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         """Handle GET requests to this page and render the quote as image."""
         if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
             reason = (
-                f"Unsupported file extension: {file_extension} "
-                f"(supported: {', '.join(FILE_EXTENSIONS.keys())})"
+                f"Unsupported file extension: {file_extension} (supported:"
+                f" {', '.join(sorted(set(FILE_EXTENSIONS.values())))})"
             )
             self.set_status(400, reason=reason)
             self.content_type = "text/plain"
