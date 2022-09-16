@@ -110,7 +110,7 @@ def get_next_id(rating_filter: RatingFilter) -> tuple[int, int]:
         case "n":
             wrong_quotes = get_wrong_quotes(lambda wq: wq.rating < 0)
         case "rated":
-            wrong_quotes = get_wrong_quotes()
+            wrong_quotes = get_wrong_quotes(lambda wq: wq.id not in {-1, None})
         case _:
             wrong_quotes = ()
 
