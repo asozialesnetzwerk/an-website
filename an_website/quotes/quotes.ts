@@ -1,10 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 "use strict";
 function startQuotes() {
     const nextButton = elById("next") as HTMLAnchorElement;
@@ -12,7 +6,9 @@ function startQuotes() {
     const downvoteButton = elById("downvote") as HTMLButtonElement;
     const reportButton = elById("report") as HTMLAnchorElement | null;
 
-    const thisQuoteId = [elById("top").getAttribute("quote-id") as string];
+    const thisQuoteId = [
+        (elById("top") as HTMLElement).getAttribute("quote-id") as string,
+    ];
     const nextQuoteId = [nextButton.getAttribute("quote-id") as string];
     const params = window.location.search;
 
@@ -29,7 +25,8 @@ function startQuotes() {
             return "WASD";
         }
     })(); // currently only letter keys are supported
-    elById("wasd").innerText =
+
+    (elById("wasd") as HTMLElement).innerText =
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
         `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
@@ -72,7 +69,7 @@ function startQuotes() {
         thisQuoteId[0] = quoteId;
     }
 
-    function updateRating(rating) {
+    function updateRating(rating: string | number) {
         rating = rating.toString();
         ratingText.innerText = rating;
         if (["---", "???", "0"].includes(rating)) {
@@ -91,10 +88,14 @@ function startQuotes() {
             .trim();
     }
 
-    function updateVote(vote) {
-        function update(btn, btn_vote, btn_vote_str) {
+    function updateVote(vote: number | string): void {
+        function update(
+            btn: HTMLButtonElement,
+            btn_vote: number,
+            btn_vote_str: string,
+        ) {
             btn.disabled = false;
-            if (vote === btn_vote) {
+            if (vote === btn_vote || vote === btn_vote_str) {
                 // the vote of the button is active
                 btn.setAttribute("voted", btn_vote_str);
                 btn.value = "0"; // if pressed again reset the vote
@@ -110,13 +111,30 @@ function startQuotes() {
         update(downvoteButton, -1, "-1");
     }
 
-    function handleData(data) {
+    interface API_DATA {
+        // either this
+        status: number | undefined;
+        reason: string;
+        // or the following
+        id: string;
+        rating: string;
+        vote: number;
+        quote: string;
+        author: string;
+        real_author: string;
+        real_author_id: number;
+        next: string;
+    }
+    function handleData(
+        data: API_DATA,
+    ): boolean {
         if (data["status"]) {
             console.error(data);
             if (data["status"] in [429, 420]) {
                 // ratelimited
                 alert(data["reason"]);
             }
+            return false;
         } else if (data && data["id"]) {
             updateQuoteId(data["id"]);
             nextQuoteId[0] = data["next"];
@@ -136,35 +154,45 @@ function startQuotes() {
                     "message",
                     `${quote.innerText} ${realAuthor.innerText}`,
                 );
-                reportButton.href = `/kontakt?${reportHrefParams}`;
+                reportButton.href = `/kontakt?${reportHrefParams.toString()}`;
             }
             updateRating(data["rating"]);
-            updateVote(Number.parseInt(data["vote"]));
+            updateVote(data["vote"]);
             return true;
         }
+        return false;
     }
 
-    PopStateHandlers["quotes"] = (event: PopStateEvent) => (
-        event.state && handleData(event.state)
-    );
+    PopStateHandlers["quotes"] = (event: PopStateEvent) => {
+        event.state && handleData(event.state as API_DATA);
+    };
+
+    interface POP_STATE_API_DATA extends API_DATA {
+        stateType: string;
+        url: string;
+    }
 
     nextButton.onclick = () =>
-        get(`/api/zitate/${nextQuoteId[0]}`, params, (data) => {
-            if (!handleData(data)) {
-                return;
-            }
+        get(
+            `/api/zitate/${nextQuoteId[0]}`,
+            params,
+            (data: POP_STATE_API_DATA) => {
+                if (!handleData(data)) {
+                    return;
+                }
 
-            data["stateType"] = "quotes";
-            data["url"] = `/zitate/${data["id"]}${params}`;
-            window.history.pushState(data, "Falsche Zitate", data["url"]);
-            setLastLocation(data["url"]);
-        });
+                data["stateType"] = "quotes";
+                data["url"] = `/zitate/${data["id"]}${params}`;
+                window.history.pushState(data, "Falsche Zitate", data["url"]);
+                setLastLocation(data["url"]);
+            },
+        );
 
-    const vote = (vote: string) =>
+    const vote = (vote: string): Promise<void> =>
         post(
             `/api/zitate/${thisQuoteId[0]}`,
             { vote: vote },
-            (data) => handleData(data),
+            (data: API_DATA) => void handleData(data),
         );
 
     for (const voteButton of [upvoteButton, downvoteButton]) {
@@ -172,9 +200,15 @@ function startQuotes() {
         voteButton.onclick = () => {
             upvoteButton.disabled = true;
             downvoteButton.disabled = true;
-            vote(voteButton.value);
-            upvoteButton.disabled = false;
-            downvoteButton.disabled = false;
+            vote(voteButton.value)
+                .then(() => {
+                    upvoteButton.disabled = false;
+                    downvoteButton.disabled = false;
+                })
+                .catch(() => {
+                    upvoteButton.disabled = false;
+                    downvoteButton.disabled = false;
+                });
         };
     }
 }
@@ -184,7 +218,8 @@ for (
         "auto-submit-element",
     ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
-    autoSubmitEl.onchange = () => autoSubmitEl.form.submit();
+    autoSubmitEl.onchange = () =>
+        (autoSubmitEl.form as HTMLFormElement).submit();
 }
 
 startQuotes();

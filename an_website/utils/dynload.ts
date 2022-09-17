@@ -6,8 +6,9 @@
 const bodyDiv = elById("body") as HTMLDivElement;
 let urlData = {};
 
-const lastLoaded = [];
-function dynLoadOnData(data, onpopstate) {
+const lastLoaded: [string] | [] = [];
+
+function dynLoadOnData(data, onpopstate: boolean) {
     if (!data) {
         console.error("No data received");
         return;
@@ -146,7 +147,7 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
     };
 }
 
-function dynLoad(url) {
+function dynLoad(url: string) {
     console.log("Loading URL", url);
     history.replaceState( // save current scrollPos
         {
@@ -164,7 +165,7 @@ function dynLoad(url) {
     dynLoadSwitchToURL(url);
 }
 
-function dynLoadSwitchToURL(url, allowSameUrl = false) {
+function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     if (!allowSameUrl && url === window.location.href) {
         console.log("URL is the same as current, just hide site pane");
         if (window["hideSitePane"]) {
@@ -175,7 +176,7 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
     bodyDiv.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
-    get(url, "", (data) => dynLoadOnData(data, false), (error) => {
+    void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
             window.location.reload();
@@ -185,7 +186,7 @@ function dynLoadSwitchToURL(url, allowSameUrl = false) {
     });
 }
 
-function dynLoadOnPopState(event) {
+function dynLoadOnPopState(event: PopStateEvent) {
     if (event.state) {
         console.log("Popstate", event.state);
         if (!(event.state["data"] && dynLoadOnData(event.state, true))) {

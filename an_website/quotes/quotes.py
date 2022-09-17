@@ -75,16 +75,17 @@ SMART_RATING_FILTERS: Final[tuple[RatingFilter, ...]] = (
 
 def parse_rating_filter(rating_filter_str: str) -> RatingFilter:
     """Get a rating filter."""
-    if rating_filter_str == "w":
-        return "w"
-    if rating_filter_str == "n":
-        return "n"
-    if rating_filter_str == "unrated":
-        return "unrated"
-    if rating_filter_str == "rated":
-        return "rated"
-    if rating_filter_str == "all":
-        return "all"
+    match rating_filter_str:
+        case "w":
+            return "w"
+        case "n":
+            return "n"
+        case "unrated":
+            return "unrated"
+        case "rated":
+            return "rated"
+        case "all":
+            return "all"
     return "smart"
 
 

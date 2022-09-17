@@ -22,8 +22,8 @@ function post(
     params = {},
     ondata = console.log,
     onerror = console.error,
-): void {
-    fetch(url, {
+): Promise<void> {
+    return fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
         headers: {
@@ -44,11 +44,14 @@ function get(
     params = {},
     ondata = console.log,
     onerror = console.error,
-): void {
+): Promise<void> {
     if (params) {
         url += "?" + (new URLSearchParams(params)).toString();
     }
-    fetch(url, { method: "GET", headers: { Accept: "application/json" } })
+    return fetch(url, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+    })
         .then(
             (response) => response.json(),
         )
@@ -57,8 +60,9 @@ function get(
         .catch(onerror);
 }
 
-const PopStateHandlers = {
-    replaceURL: (state: object) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const PopStateHandlers: any = {
+    replaceURL: (state: { origin: string }) => {
         // reload if the last location was not the one that got replaced
         lastLocation === state["origin"] || window.location.reload();
     },

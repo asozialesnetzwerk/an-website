@@ -77,7 +77,7 @@
             onerror,
         );
 
-    PopStateHandlers["swappedWords"] = (event) =>
+    PopStateHandlers["swappedWords"] = (event: PopStateEvent) =>
         event.state && ondata(event.state, true);
 })();
 // @license-end

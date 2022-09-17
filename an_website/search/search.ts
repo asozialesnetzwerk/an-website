@@ -29,7 +29,7 @@
 
     searchForm.onsubmit = (e: Event) => {
         e.preventDefault();
-        get("/api/suche", "q=" + searchInput.value, (data) => {
+        return get("/api/suche", "q=" + searchInput.value, (data) => {
             displayResults(data);
             setURLParam(
                 "q",
