@@ -1,14 +1,26 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use strict";
 const bodyDiv = elById("body") as HTMLDivElement;
 let urlData = {};
 
 const lastLoaded: [string] | [] = [];
 
-function dynLoadOnData(data, onpopstate: boolean) {
+interface DynloadData {
+    redirect: string;
+    url: string;
+    title: string;
+    body: string;
+    css: string;
+    stylesheets: string[];
+    short_title: string;
+    scripts: { src: string }[];
+    scrollPos?: [number, number];
+}
+
+function dynLoadOnData(
+    data: DynloadData,
+    onpopstate: boolean,
+) {
     if (!data) {
         console.error("No data received");
         return;
@@ -188,18 +200,22 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
 
 function dynLoadOnPopState(event: PopStateEvent) {
     if (event.state) {
-        console.log("Popstate", event.state);
-        if (!(event.state["data"] && dynLoadOnData(event.state, true))) {
+        const state = event.state as DynloadData;
+        console.log("Popstate", state);
+        if (
+            !((event.state as { data: string })["data"] &&
+                dynLoadOnData(state, true))
+        ) {
             // when the data did not get handled properly
             dynLoadSwitchToURL(
-                event.state["url"] || window.location.href,
+                state["url"] || window.location.href,
                 true,
             );
         }
-        if (event.state["scrollPos"]) {
+        if (state["scrollPos"]) {
             window.scrollTo(
-                event.state["scrollPos"][0],
-                event.state["scrollPos"][1],
+                state["scrollPos"][0],
+                state["scrollPos"][1],
             );
             return;
         }

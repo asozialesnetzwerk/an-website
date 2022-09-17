@@ -1,10 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 "use strict";
 function startLoadingComics() {
     const getDateBy = (year: number, month: number, dayOfMonth: number): Date =>
@@ -204,12 +198,9 @@ administratives/kaenguru-comics/kaenguru-045/original
     const getMonthName = (date: Date): string => months[date.getMonth()];
 
     const getDateString = (date: Date): string => (
-        // deno-fmt-ignore
-        "Comic von " +
-        getDayName(date) + ", dem " +
-        date.getDate() + ". " +
-        getMonthName(date) + " " +
-        date.getFullYear()
+        `Comic von ${getDayName(date)}, dem ${date.getDate()}. ${
+            getMonthName(date)
+        } ${date.getFullYear()}`
     );
 
     function removeAllPopups() {
@@ -261,7 +252,9 @@ administratives/kaenguru-comics/kaenguru-045/original
             const num = parseInt(arr[1]) - 5;
             const date = new Date(firstDateWithOldLink.getTime());
             for (let i = 0; i < num; i++) {
-                date.setTime(dateIncreaseByDays(date, isSunday(date) ? 2 : 1));
+                date.setTime(
+                    dateIncreaseByDays(date, isSunday(date) ? 2 : 1).getTime(),
+                );
             }
             return isSunday(date) ? dateIncreaseByDays(date, 1) : date;
         }
@@ -304,7 +297,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             .replace("%d", day.length === 2 ? day : "0" + day);
     }
 
-    function dateIncreaseByDays(date, days) {
+    function dateIncreaseByDays(date: Date, days: number): Date {
         date.setTime(
             // working in milliseconds
             date.getTime() + (days * 1000 * 60 * 60 * 24),

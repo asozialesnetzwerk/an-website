@@ -1,11 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 "use strict";
 (() => {
     const messageInput = elById("message-input") as HTMLInputElement;
@@ -18,11 +11,17 @@
     let reconnectTries = 0;
     let lastMessage = "";
 
-    const timeStampToText = (timestamp) => {
+    const timeStampToText = (timestamp: number) => {
         return new Date(timestamp + 1651075200000).toLocaleString();
     };
 
-    const appendMessage = (msg) => {
+    interface Message {
+        author: string[];
+        content: string[];
+        timestamp: number;
+    }
+
+    const appendMessage = (msg: Message) => {
         const el = document.createElement("div");
         if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
             for (const emoji of msg.author) {
@@ -40,7 +39,7 @@
         messageSection.append(el);
     };
 
-    const displayCurrentUser = (name) => {
+    const displayCurrentUser = (name: string[]) => {
         currentUser.innerHTML = "";
         if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
             for (const emoji of name) {
@@ -51,9 +50,11 @@
         currentUser.innerText = name.join("");
     };
 
-    const emojiToIMG = (emoji) => {
+    const emojiToIMG = (emoji: string) => {
         const emojiCode = [...emoji]
-            .map((e) => e.codePointAt(0).toString(16).padStart(4, "0"))
+            .map((e: string) =>
+                e.codePointAt(0)?.toString(16)?.padStart(4, "0")
+            )
             .join(`-`)
             .toUpperCase();
 
@@ -73,7 +74,7 @@
         }
     };
 
-    const setConnectionState = (state) => {
+    const setConnectionState = (state: string) => {
         let tooltip;
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         connectionIndicator.onclick = () => {};
@@ -99,8 +100,17 @@
         connectionIndicator.setAttribute("tooltip", tooltip);
     };
 
-    const handleWebSocketData = (event) => {
-        const data = JSON.parse(event.data);
+    const handleWebSocketData = (event: { data: string }) => {
+        const data = (JSON.parse(event.data) as {
+            type: string;
+            // the following are only present depending on the type
+            message: Message;
+            messages: Message[];
+            current_user: string[];
+            "Retry-After": number;
+            users: string[];
+            error: string;
+        });
         switch (data["type"]) {
             case "messages": {
                 messageSection.innerText = "";

@@ -1,22 +1,28 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 "use strict";
 (() => {
-    const realAuthors = {};
-    for (const child of elById("quote-list").children) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const realAuthors: any = {};
+    for (
+        const child of (elById("quote-list") as HTMLDataListElement).children
+    ) {
         // put the quotes with their authors into an object
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         realAuthors[
             (child as unknown as { value: string }).value.toLowerCase()
-        ] = child
+        ] = ((child as { attributes: NamedNodeMap })
             .attributes
-            .getNamedItem("data-author")
+            .getNamedItem("data-author") as Attr)
             .value;
     }
 
     const quoteInput = elById("quote-input") as HTMLInputElement;
     const realAuthorInput = elById("real-author-input") as HTMLInputElement;
     quoteInput.oninput = () => {
-        const author = realAuthors[quoteInput.value.toLowerCase()];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        const author = realAuthors[quoteInput.value.toLowerCase()] as
+            | string
+            | undefined;
         // when real author is found disable input and set the value
         realAuthorInput.disabled = !!author; // !! ≙ check of truthiness
         if (author) {

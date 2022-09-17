@@ -1,8 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 "use strict";
 (() => {
     const textInput = elById("text") as HTMLInputElement;
@@ -27,8 +23,19 @@
             errorText.innerText = JSON.stringify(e);
         }
     }
-
-    function ondata(data, onpopstate = false) {
+    interface SwappedWordsData { // this is a mix of error data and success data
+        stateType: string;
+        error: string | null;
+        line_num: number;
+        line: string;
+        text: string;
+        config: string;
+        replaced_text: string;
+    }
+    function ondata(
+        data: SwappedWordsData,
+        onpopstate = false,
+    ) {
         if (!data) {
             console.log("data is falsy!");
             return;
@@ -77,7 +84,8 @@
             onerror,
         );
 
-    PopStateHandlers["swappedWords"] = (event: PopStateEvent) =>
-        event.state && ondata(event.state, true);
+    PopStateHandlers["swappedWords"] = (event: PopStateEvent) => {
+        event.state && ondata(event.state as SwappedWordsData, true);
+    };
 })();
 // @license-end

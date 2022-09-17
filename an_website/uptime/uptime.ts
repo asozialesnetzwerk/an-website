@@ -1,5 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 "use strict";
 function startDisplayingUptime() {
     const uptimeDiv = elById("uptime") as HTMLDivElement;
@@ -10,7 +9,7 @@ function startDisplayingUptime() {
         uptimeDiv.getAttribute("uptime") as string,
     );
 
-    const zeroPad = (n) => String(Math.floor(n)).padStart(2, "0");
+    const zeroPad = (n: number) => String(Math.floor(n)).padStart(2, "0");
 
     const displayUptime = () => {
         // the uptime: currentTime - (startTime - uptime at start)

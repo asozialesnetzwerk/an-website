@@ -1,8 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 "use strict";
 
 (() => {
@@ -10,8 +6,14 @@
     const searchForm = elById("search-form") as HTMLFormElement;
     const searchInput = elById("search-input") as HTMLInputElement;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function displayResults(results: Iterable<any>) {
+    interface Result {
+        score: number;
+        title: string;
+        url: string;
+        description: string;
+    }
+
+    function displayResults(results: Result[]) {
         resultsList.innerHTML = "";
         for (const result of results) {
             const resultElement = document.createElement("li");
@@ -23,18 +25,22 @@
     }
 
     PopStateHandlers["search"] = (event: PopStateEvent) => {
-        searchInput.value = event.state["query"];
-        displayResults(event.state["results"]);
+        const state = event.state as { query: string; results: Result[] };
+        searchInput.value = state.query;
+        displayResults(state.results);
     };
 
     searchForm.onsubmit = (e: Event) => {
         e.preventDefault();
         return get("/api/suche", "q=" + searchInput.value, (data) => {
-            displayResults(data);
+            displayResults(data as Result[]);
             setURLParam(
                 "q",
                 searchInput.value,
-                { query: searchInput.value, results: data },
+                {
+                    query: searchInput.value,
+                    results: data as Result[],
+                },
                 "search",
                 true,
             );

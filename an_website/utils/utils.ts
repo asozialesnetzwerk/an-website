@@ -1,6 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use strict";
 const elById = (id: string) => document.getElementById(id);
 
@@ -85,7 +83,7 @@ function setURLParam(
     const newUrl =
         `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);
-    state["stateType"] = stateType;
+    (state as { stateType: string })["stateType"] = stateType;
     if (push && newUrl !== window.location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
@@ -126,17 +124,21 @@ window.onpopstate = (event: PopStateEvent) => {
         scrollToId();
         return;
     }
-    if (
-        event.state &&
-        event.state["stateType"] &&
-        PopStateHandlers[event.state["stateType"]]
-    ) {
-        PopStateHandlers[event.state["stateType"]](event);
-        lastLocation = window.location.href;
-        event.preventDefault();
-        scrollToId();
-        return;
+    if (event.state) {
+        const state = event.state as { stateType: string };
+        if (
+            state["stateType"] &&
+            PopStateHandlers[state["stateType"]]
+        ) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            PopStateHandlers[state["stateType"]](event);
+            lastLocation = window.location.href;
+            event.preventDefault();
+            scrollToId();
+            return;
+        }
     }
+
     console.error("Couldn't handle state. ", event.state);
     lastLocation = window.location.href;
     window.location.reload();

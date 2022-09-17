@@ -1,7 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 "use strict";
 (() => {
     let bigIntType = "bigint";
@@ -84,10 +81,6 @@
     }
 
     function strToBigInt(str: string): number | bigint {
-        if (typeof str !== "string") {
-            throw `${str} is not a String.`;
-        }
-
         if (isZero(str)) {
             return BigInt(0);
         }
@@ -106,9 +99,11 @@
     }
 
     PopStateHandlers["currencyConverter"] = (e: PopStateEvent) =>
-        setAllFields(strToBigInt(e.state["euro"]));
+        setAllFields(
+            strToBigInt((e.state as { euro: string })["euro"].toString()),
+        );
 
-    const setEuroParam = (euroVal: string, push) =>
+    const setEuroParam = (euroVal: string, push: boolean) =>
         setURLParam(
             "euro",
             euroVal,
