@@ -11,3 +11,5 @@
 	CSS wizard: h4ckerle
 
 	README destroyer: Jimi
+
+	Contributor: binarynoise
