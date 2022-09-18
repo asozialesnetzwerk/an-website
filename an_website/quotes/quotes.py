@@ -140,8 +140,9 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         self.FUTURES.discard(future)
         if exc := future.exception():
             LOGGER.error(
-                "Failed to pre-fetch quote %d-%d",
+                "Failed to pre-fetch quote %d-%d (%s)",
                 *self.next_id,
+                exc,
                 exc_info=(type(exc), exc, exc.__traceback__),
             )
         else:
