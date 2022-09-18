@@ -23,7 +23,7 @@
     "**/node_modules",
     "**/*-lock.json",
     "an_website/static/js",
-    "venv/*"
+    "venv"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.73.1.wasm",

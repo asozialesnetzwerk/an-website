@@ -119,7 +119,7 @@ def generate_humans_txt() -> str:
     output_lines: list[str] = [name_to_section_line("TEAM", random)]
     add_data_to_output(maintainers, output_lines)
 
-    output_lines.append(get_white_spaces(random, 0, 5))
+    output_lines.append(get_whitespaces(random, 0, 5))
 
     output_lines.append(name_to_section_line("THANKS", random))
     add_data_to_output(contributors, output_lines)
@@ -131,10 +131,10 @@ def name_to_section_line(name: str, random: Random) -> str:
     """Generate a section line based on the name."""
     sep = random.choice("\u200B\u200C\u200D")
     sep = sep + " " if random.randint(0, 1) else " " + sep
-    return f"/*{sep}{name}{sep}*/{get_white_spaces(random, 0, 4)}"
+    return f"/*{sep}{name}{sep}*/{get_whitespaces(random, 0, 4)}"
 
 
-def get_white_spaces(
+def get_whitespaces(
     random: Random,
     min_: int,
     max_: int,
@@ -153,17 +153,17 @@ def add_data_to_output(
 ) -> None:
     """Add the data of contributors/maintainers to the output."""
     for i, (_, person) in enumerate(sorted(data, reverse=True)):
-        random = Random(sha3_512(str(person).encode("UTF-8")).digest())
+        random = Random(sha3_512(repr(person).encode("UTF-8")).digest())
         if i:
-            output.append(get_white_spaces(random, 0, 5))
+            output.append(get_whitespaces(random, 0, 5))
         for key, value in person:
             if key.startswith("__"):
                 continue
             output.append(
                 f"\t{key}:"
-                + get_white_spaces(random, 0, 3, " \u200B")
+                + get_whitespaces(random, 0, 3, " \u200B")
                 + value
-                + get_white_spaces(random, 0, 4)
+                + get_whitespaces(random, 0, 4)
             )
 
 

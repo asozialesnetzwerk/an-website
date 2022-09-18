@@ -565,10 +565,10 @@
         },
         "emoji": {
             "hashes": [
-                "sha256:297fac7ec9e86f7b602792c28eb6f04819ba67ab88a34c56afcde52243a9a105"
+                "sha256:56a8c5e906c11694eb7694b78e5452d745030869b3945f6306a8151ff5cdbc39"
             ],
             "index": "pypi",
-            "version": "==2.0.0"
+            "version": "==2.1.0"
         },
         "frozendict": {
             "hashes": [
@@ -1161,11 +1161,11 @@
         },
         "pyjwt": {
             "hashes": [
-                "sha256:72d1d253f32dbd4f5c88eaf1fdc62f3a19f676ccbadb9dbc5d07e951b2b26daf",
-                "sha256:d42908208c699b3b973cbeb01a969ba6a96c821eefb1c5bfe4c390c01d67abba"
+                "sha256:8d82e7087868e94dd8d7d418e5088ce64f7daab4b36db654cbaedb46f9d1ca80",
+                "sha256:e77ab89480905d86998442ac5788f35333fa85f65047a534adc38edf3c88fc3b"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==2.4.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==2.5.0"
         },
         "pyparsing": {
             "hashes": [
@@ -2497,11 +2497,11 @@
         },
         "types-regex": {
             "hashes": [
-                "sha256:6c3c2cac6486fba44dd3a8c6fbf780768b8e605455dd80364eea4f647179ec06",
-                "sha256:73af11d8a146b1e9fbfd0f3eebfa5640ed1786f0d1b1fc8ff72e8882cf0f4133"
+                "sha256:2ee7deaece82cfe49bc5506ef184d29052aea3542d13b7047caf9b88bcf632f3",
+                "sha256:7ff535cbfad83fdb4c091c092434081970e017c3ff3a22b8728ad566a09c581f"
             ],
             "index": "pypi",
-            "version": "==2022.8.17.0"
+            "version": "==2022.9.13.0"
         },
         "types-setuptools": {
             "hashes": [
