@@ -331,7 +331,9 @@ async def make_api_request(
             response.reason,
         )
         raise HTTPError(
-            400,
+            400
+            if response.code == 500
+            else (404 if response.code == 404 else 503),
             reason=(
                 f"{API_URL}/{endpoint} returned: "
                 f"{response.code} {response.reason}"
