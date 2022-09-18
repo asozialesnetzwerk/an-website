@@ -398,11 +398,7 @@ def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
         QUOTES_CACHE[quote.id] = quote
         MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
     else:  # quote was already saved
-        quote.update_quote(
-            quote_str,
-            author.id,
-            author.name,
-        )
+        quote.update_quote(quote_str, author.id, author.name)
     return quote
 
 

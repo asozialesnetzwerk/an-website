@@ -20,8 +20,10 @@ from __future__ import annotations
 
 import re  # pylint: disable=preferred-module
 import sys
+from hashlib import sha3_512
 from os.path import dirname, normpath
 from pathlib import Path
+from random import Random
 from subprocess import run  # nosec: B404
 
 REPO_ROOT = dirname(dirname(normpath(__file__)))
@@ -49,6 +51,11 @@ CONTRIBUTORS: dict[str, dict[str, str]] = {
     "Jimi": {"__role": "README destroyer"},
     "h4ckerle": {"__role": "CSS wizard"},
 }
+
+
+def get_random_number() -> int:
+    """Return the standard IEEE-vetted random number according to RFC 1149.5."""
+    return 4  # chosen by fair dice roll. guaranteed to be random.
 
 
 def generate_humans_txt() -> str:
@@ -107,27 +114,57 @@ def generate_humans_txt() -> str:
             )
         )
 
-    output_lines: list[str] = ["/* TEAM */"]
+    random = Random(get_random_number())
+
+    output_lines: list[str] = [name_to_section_line("TEAM", random)]
     add_data_to_output(maintainers, output_lines)
-    # print("Maintainers:\t", [person[0][1] for _, person in maintainers])
 
-    output_lines.append("/* THANKS */")
+    output_lines.append(get_white_spaces(random, 0, 5))
+
+    output_lines.append(name_to_section_line("THANKS", random))
     add_data_to_output(contributors, output_lines)
-    # print("Contributors:\t", [person[0][1] for _, person in contributors])
 
-    return "\n".join(output_lines).strip() + "\n"
+    return "\n".join(output_lines) + "\n"
+
+
+def name_to_section_line(name: str, random: Random) -> str:
+    """Generate a section line based on the name."""
+    sep = random.choice("\u200B\u200C\u200D")
+    sep = sep + " " if random.randint(0, 1) else " " + sep
+    return f"/*{sep}{name}{sep}*/{get_white_spaces(random, 0, 4)}"
+
+
+def get_white_spaces(
+    random: Random,
+    min_: int,
+    max_: int,
+    whitespaces: str = " \t \t\u200B\u200C\u200D",
+) -> str:
+    """Get random whitespaces."""
+    return "".join(
+        random.choices(
+            whitespaces, cum_weights=None, k=random.randint(min_, max_)
+        )
+    )
 
 
 def add_data_to_output(
     data: list[tuple[int, list[tuple[str, str]]]], output: list[str]
 ) -> None:
     """Add the data of contributors/maintainers to the output."""
-    for _, person in sorted(data, reverse=True):
+    for i, (_, person) in enumerate(sorted(data, reverse=True)):
+        random = Random(sha3_512(str(person).encode("UTF-8")).digest())
+        if i:
+            output.append(get_white_spaces(random, 0, 5))
         for key, value in person:
             if key.startswith("__"):
                 continue
-            output.append(f"\t{key}: {value}")
-        output.append("")
+            output.append(
+                f"\t{key}:"
+                + get_white_spaces(random, 0, 3, " \u200B")
+                + value
+                + get_white_spaces(random, 0, 4)
+            )
 
 
 def main() -> None | int | str:  # pylint: disable=useless-return
