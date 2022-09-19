@@ -65,7 +65,6 @@ from . import (
     EVENT_REDIS,
     EVENT_SHUTDOWN,
     NAME,
-    START_TIME_NS,
     TEMPLATES_DIR,
     VERSION,
 )
@@ -846,13 +845,14 @@ async def heartbeat() -> None:
         await asyncio.sleep(1)
 
 
-def supervise(loop: AbstractEventLoop, task_id: int) -> None:
+def supervise(loop: AbstractEventLoop) -> None:
     """Supervise."""
     while not loop.is_closed():  # pylint: disable=while-used
         if time.monotonic() - HEARTBEAT >= 10:
+            task_id = tornado.process.task_id()
             pid = os.getpid()
-            LOGGER.error(
-                "Heartbeat failed for %d. Killing process %d", task_id, pid
+            LOGGER.fatal(
+                "Heartbeat timed out for worker %d (pid %d)", task_id, pid
             )
             with contextlib.suppress(OSError):
                 os.kill(pid, getattr(signal, "CTRL_BREAK_EVENT", 9))
@@ -994,16 +994,8 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
         global HEARTBEAT  # pylint: disable=global-statement
         HEARTBEAT = time.monotonic()
         threading.Thread(
-            target=supervise,
-            name="supervisor",
-            args=(loop, task_id),
-            daemon=True,
+            target=supervise, name="supervisor", args=(loop,), daemon=True
         ).start()
-
-    if (time.monotonic_ns() - START_TIME_NS) > 60_000_000_000:
-        LOGGER.error(
-            "Starting loop in %s more than 60 seconds after start.", task_id
-        )
 
     try:
         loop.run_forever()
