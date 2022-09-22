@@ -26,7 +26,7 @@ jobs:
           import emoji
           if "${{ github.event_name }}".startswith("pull_request"):
             print(os.popen("git fetch").read())
-            commit = "${{ github.event.after }}"
+            commit = "${{ github.event.pull_request.head.sha }}"
           else:
             commit = "${{ github.sha }}"
           commit_message = os.popen(f"git show -s --format=%B {commit}").read()
