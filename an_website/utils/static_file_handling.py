@@ -112,12 +112,15 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
     """A StaticFileHandler with smart Content-Type."""
 
     content_type: None | str
+    keep_case: bool
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         """Do nothing."""
 
     async def get(self, path: str, include_body: bool = True) -> None:
         """Handle GET requests."""
+        if self.keep_case:
+            return await super().get(path, include_body=include_body)
         return await super().get(
             "/".join(
                 spam.upper()[:-4] + ".svg"
@@ -126,7 +129,8 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
                 for spam in path.split("/")
             )
             if path.lower().startswith("img/openmoji-svg-")
-            else path.lower()
+            else path.lower(),
+            include_body=include_body,
         )
 
     async def head(self, path: str) -> None:
@@ -139,10 +143,12 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         path: str,
         default_filename: None | str = None,
         content_type: None | str = None,
+        keep_case: bool = False,
     ) -> None:
         """Initialize the handler."""
         super().initialize(path=path, default_filename=default_filename)
         self.content_type = content_type
+        self.keep_case = keep_case
 
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""

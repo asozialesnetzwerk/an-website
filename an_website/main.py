@@ -304,7 +304,11 @@ def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
     handlers.append((r"(?i)/api/*", RedirectHandler, {"url": "/api/endpunkte"}))
 
     handlers.append(
-        (r"(?i)/\.well-known/(.*)", StaticFileHandler, {"path": ".well-known"})
+        (
+            r"(?i)/\.well-known/(.*)",
+            StaticFileHandler,
+            {"path": ".well-known", "keep_case": True},
+        )
     )
 
     LOGGER.debug("Loaded %d handlers", len(handlers))
