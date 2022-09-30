@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The API used to update the website."""
+"""The API for updating the website."""
 
 from __future__ import annotations
 
@@ -44,10 +44,7 @@ def get_module_info() -> ModuleInfo:
     return ModuleInfo(
         handlers=((r"/api/update/(.*)", UpdateAPI),),
         name="Update-API",
-        description=(
-            "Update-API, die genutzt wird, "
-            f"um {NAME.removesuffix('-dev')} zu aktualisieren"
-        ),
+        description=f"API zum Aktualisieren von {NAME.removesuffix('-dev')}",
         path="/api/update",
         hidden=True,
     )
@@ -63,7 +60,7 @@ def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
 
 
 @stream_request_body
-class UpdateAPI(APIRequestHandler):
+class UpdateAPI(APIRequestHandler):  # pragma: no cover
     """The request handler for the update API."""
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("PUT",)
@@ -117,5 +114,5 @@ class UpdateAPI(APIRequestHandler):
         await process.wait()
         if process.returncode:
             LOGGER.error("Failed to install %s", filename)
-        else:
+        elif self.get_bool_argument("shutdown", True):
             EVENT_SHUTDOWN.set()

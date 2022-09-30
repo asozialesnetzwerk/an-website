@@ -111,6 +111,8 @@ class Permission(IntFlag):
     BACKDOOR = 4
     UPDATE = 8
     REPORTING = 16
+    SHORTEN = 32
+    UPLOAD = 64
 
 
 # sortable, so the pages can be linked in an order
