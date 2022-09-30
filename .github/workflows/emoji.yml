@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Fetch PR commit
+        if: github.event_name == 'pull_request'
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -22,11 +25,9 @@ jobs:
       - name: Run the check
         shell: python
         run: |
-          import os
-          import emoji
+          import emoji, os
           if "${{ github.event_name }}".startswith("pull_request"):
-            print(os.popen("git fetch").read())
-            commit = "${{ github.event.after }}"
+            commit = "${{ github.event.pull_request.head.sha }}"
           else:
             commit = "${{ github.sha }}"
           commit_message = os.popen(f"git show -s --format=%B {commit}").read()

@@ -95,7 +95,7 @@ IGNORED_MODULES: Final[set[str]] = {
     "templates.*",
 } | (set() if sys.flags.dev_mode else {"example.*"})
 
-CONFIG: Final[ConfigParser] = ConfigParser(interpolation=None)
+CONFIG = ConfigParser(interpolation=None)
 CONFIG.read("config.ini", encoding="UTF-8")
 
 LOGGER: Final = logging.getLogger(__name__)
@@ -846,7 +846,7 @@ async def heartbeat() -> None:
     global HEARTBEAT  # pylint: disable=global-statement
     while True:  # pylint: disable=while-used
         HEARTBEAT = time.monotonic()
-        await asyncio.sleep(1)
+        await asyncio.sleep(0)
 
 
 def supervise(loop: AbstractEventLoop) -> None:
@@ -900,8 +900,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     server = HTTPServer(
         app,
-        ssl_options=get_ssl_context(CONFIG),
+        body_timeout=3600,
         decompress_request=True,
+        max_body_size=1_000_000_000,
+        ssl_options=get_ssl_context(CONFIG),
         xheaders=behind_proxy,
     )
 

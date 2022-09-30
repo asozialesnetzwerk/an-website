@@ -193,5 +193,5 @@ class CachedStaticFileHandler(StaticFileHandler):
         ):
             self.set_header(  # never changes
                 "Cache-Control",
-                f"public, immutable, min-fresh={60 * 60 * 24 * 365 * 10}",
+                f"public, immutable, max-age={self.CACHE_MAX_AGE}",
             )
