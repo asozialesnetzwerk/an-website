@@ -15,13 +15,12 @@
 
 from __future__ import annotations
 
-import configparser
-import os
+import pathlib
 
 import regex
 from tornado.web import Application
 
-from an_website import main, patches
+from an_website import main, patches, utils
 from an_website.utils.base_request_handler import BaseRequestHandler
 
 from . import PARENT_DIR, FetchCallable, app, assert_valid_redirect, fetch
@@ -120,8 +119,9 @@ def test_making_app() -> None:
     patches.apply()
 
     # read the example config, because it is always the same and should always work
-    config = configparser.ConfigParser(interpolation=None)
-    config.read(os.path.join(PARENT_DIR, "config.ini.example"))
+    config = utils.utils.parse_config(
+        pathlib.Path(PARENT_DIR, "config.ini.example")
+    )
 
     application = main.make_app(config)
 

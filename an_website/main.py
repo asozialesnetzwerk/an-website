@@ -81,11 +81,14 @@ from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
+    BetterConfigParser,
     Handler,
     ModuleInfo,
     Permission,
     Timer,
     geoip,
+    parse_command_line_arguments,
+    parse_config,
     time_function,
 )
 
@@ -94,9 +97,6 @@ IGNORED_MODULES: Final[set[str]] = {
     "static.*",
     "templates.*",
 } | (set() if sys.flags.dev_mode else {"example.*"})
-
-CONFIG = ConfigParser(interpolation=None)
-CONFIG.read("config.ini", encoding="UTF-8")
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -316,14 +316,11 @@ def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
     return handlers
 
 
-def ignore_modules(config: ConfigParser) -> None:
+def ignore_modules(config: BetterConfigParser) -> None:
     """Read ignored modules from the config."""
-    for module_name in config.get(
-        "GENERAL", "IGNORED_MODULES", fallback=""
-    ).split(","):
-        module_name = module_name.strip()  # pylint: disable=redefined-loop-name
-        if len(module_name) > 0:
-            IGNORED_MODULES.add(module_name)
+    IGNORED_MODULES.update(
+        config.getset("GENERAL", "IGNORED_MODULES", fallback="")
+    )
 
 
 def make_app(config: ConfigParser) -> str | Application:
@@ -355,7 +352,7 @@ def make_app(config: ConfigParser) -> str | Application:
     )
 
 
-def apply_config_to_app(app: Application, config: ConfigParser) -> None:
+def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
     """Apply the config (from the config.ini file) to the application."""
     app.settings["CONFIG"] = config
 
@@ -416,9 +413,9 @@ def apply_config_to_app(app: Application, config: ConfigParser) -> None:
             if len(key_perms) > 1
             else (1 << len(Permission)) - 1  # should be all permissions
         )
-        for secret in config.get(
+        for secret in config.getset(
             "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
-        ).split(",")
+        )
         if (key_perms := [part.strip() for part in secret.split("=")])
         if key_perms[0]
     }
@@ -431,7 +428,7 @@ def apply_config_to_app(app: Application, config: ConfigParser) -> None:
 
 
 def get_ssl_context(  # pragma: no cover
-    config: ConfigParser,
+    config: BetterConfigParser,
 ) -> None | ssl.SSLContext:
     """Create SSL context and configure using the config."""
     if config.getboolean("TLS", "ENABLED", fallback=False):
@@ -490,7 +487,7 @@ def setup_logging(  # pragma: no cover
 
 
 def setup_webhook_logging(  # pragma: no cover
-    config: ConfigParser,
+    config: BetterConfigParser,
     loop: AbstractEventLoop,
 ) -> None:
     """Setup WebHook logging."""  # noqa: D401
@@ -624,10 +621,7 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         return None
     elasticsearch = AsyncElasticsearch(
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
-        hosts=tuple(
-            host.strip()
-            for host in config.get("ELASTICSEARCH", "HOSTS").split(",")
-        )
+        hosts=tuple(config.getset("ELASTICSEARCH", "HOSTS"))
         if config.has_option("ELASTICSEARCH", "HOSTS")
         else None,
         url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=""),
@@ -863,17 +857,23 @@ def supervise(loop: AbstractEventLoop) -> None:
         time.sleep(1)
 
 
-def main() -> None | int | str:  # noqa: C901  # pragma: no cover
+def main(
+    config: BetterConfigParser | None = None,
+) -> None | int | str:  # noqa: C901  # pragma: no cover
     """
     Start everything.
 
-    This is the main function that is called when running this file.
+    This is the main function that is called when running this programm.
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     setproctitle(NAME)
     install_signal_handler()
-    setup_logging(CONFIG)
+
+    args = parse_command_line_arguments()
+    config = parse_config(*args.config) if config is None else config
+
+    setup_logging(config)
 
     LOGGER.info("Starting %s %s", NAME, VERSION)
 
@@ -883,44 +883,48 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
             NAME.removesuffix("-dev"),
         )
 
-    ignore_modules(CONFIG)
-    app = make_app(CONFIG)
+    ignore_modules(config)
+    app = make_app(config)
     if isinstance(app, str):
         return app
 
-    apply_config_to_app(app, CONFIG)
+    apply_config_to_app(app, config)
     setup_elasticsearch(app)
     setup_app_search(app)
     setup_redis(app)
 
-    if CONFIG.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
+    if config.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
         setup_apm(app)
 
-    behind_proxy = CONFIG.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
+    behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
     server = HTTPServer(
         app,
         body_timeout=3600,
         decompress_request=True,
         max_body_size=1_000_000_000,
-        ssl_options=get_ssl_context(CONFIG),
+        ssl_options=get_ssl_context(config),
         xheaders=behind_proxy,
     )
 
     sockets = []
 
-    port = CONFIG.getint(
-        "GENERAL", "PORT", fallback=8888 if CONTAINERIZED else None
-    )
+    ports = {
+        *args.port,
+        config.getint(
+            "GENERAL", "PORT", fallback=8888 if CONTAINERIZED else None
+        ),
+    }
 
-    if port:
-        sockets.extend(
-            tornado.netutil.bind_sockets(
-                port, "localhost" if behind_proxy else ""
+    for port in ports:
+        if port:
+            sockets.extend(
+                tornado.netutil.bind_sockets(
+                    port, "localhost" if behind_proxy else ""
+                )
             )
-        )
 
-    unix_socket_path = CONFIG.get(
+    unix_socket_path = config.get(
         "GENERAL",
         "UNIX_SOCKET_PATH",
         fallback="/data" if CONTAINERIZED else None,
@@ -935,7 +939,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
             )
         )
 
-    processes = CONFIG.getint(
+    processes = config.getint(
         "GENERAL",
         "PROCESSES",
         fallback=2
@@ -970,7 +974,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     # get loop after forking
     loop = asyncio.get_event_loop_policy().get_event_loop()
-    setup_webhook_logging(CONFIG, loop)
+    setup_webhook_logging(config, loop)
 
     _ = asyncio.get_event_loop
     asyncio.get_event_loop = lambda: loop
@@ -983,10 +987,10 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-    if CONFIG.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+    if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-    if CONFIG.getboolean("REDIS", "ENABLED", fallback=False):
+    if config.getboolean("REDIS", "ENABLED", fallback=False):
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
     if not task_id:  # update from one process only
@@ -996,7 +1000,7 @@ def main() -> None | int | str:  # noqa: C901  # pragma: no cover
 
     # pylint: enable=unused-variable
 
-    if CONFIG.getboolean("GENERAL", "SUPERVISE", fallback=False):
+    if config.getboolean("GENERAL", "SUPERVISE", fallback=False):
         global HEARTBEAT  # pylint: disable=global-statement
         HEARTBEAT = time.monotonic()
         threading.Thread(

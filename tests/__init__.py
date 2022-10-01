@@ -17,12 +17,13 @@
 from __future__ import annotations
 
 import os
+import pathlib
 import sys
 from datetime import datetime
 
 # add parent dir to sys.path
 # this makes importing an_website possible
-DIR: Final = os.path.dirname(__file__)
+DIR = os.path.dirname(__file__)
 PARENT_DIR = os.path.dirname(DIR)
 sys.path.append(PARENT_DIR)
 
@@ -41,8 +42,7 @@ import asyncio
 import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
-from configparser import ConfigParser
-from typing import Any, Final, cast
+from typing import Any, cast
 
 import orjson as json
 import pytest
@@ -56,7 +56,14 @@ from lxml.html import document_fromstring  # nosec: B410
 from lxml.html.html5parser import HTMLParser  # nosec: B410
 
 # pylint: disable=ungrouped-imports
-from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main, quotes
+from an_website import (
+    EVENT_ELASTICSEARCH,
+    EVENT_REDIS,
+    NAME,
+    main,
+    quotes,
+    utils,
+)
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -89,8 +96,7 @@ def app() -> tornado.web.Application:
     """Create the application."""
     assert NAME.endswith("-test")
 
-    config = ConfigParser(interpolation=None)
-    config.read(os.path.join(DIR, "config.ini"))
+    config = utils.utils.parse_config(pathlib.Path(DIR, "config.ini"))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name

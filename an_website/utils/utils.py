@@ -15,13 +15,16 @@
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import contextlib
 import os
+import pathlib
 import random
 import time
 from base64 import b85encode
 from collections.abc import Callable, Sequence
+from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
@@ -761,6 +764,65 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
     if default is None:
         raise ValueError(f"Invalid bool value: {val!r}")
     return default
+
+
+def str_to_set(string: str) -> set[str]:
+    """Convert a string to a set of strings."""
+    return {part.strip() for part in string.split(",") if part.strip()}
+
+
+class ArgparseNamespace(argparse.Namespace):
+    """A class to fake type hints for argparse Namespace."""
+
+    # pylint: disable=too-few-public-methods
+    __slots__ = ("config", "port")
+
+    config: list[pathlib.Path]
+    port: list[int]
+
+
+def parse_command_line_arguments() -> ArgparseNamespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c",
+        "--config",
+        default="config.ini",
+        help="the path to the config file",
+        metavar="PATH",
+        nargs="*",
+        type=pathlib.Path,
+    )
+    parser.add_argument(
+        "--port",
+        "-p",
+        default=[],
+        help="the port to use",
+        metavar="PORT",
+        nargs="*",
+        type=int,
+    )
+    return parser.parse_args(namespace=ArgparseNamespace())
+
+
+class BetterConfigParser(ConfigParser):
+    """A better config parser."""
+
+    getset: Callable[..., set[str]]
+
+    def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+        """Initialize this config parser."""
+        converters = kwargs.setdefault("converters", {})
+        converters["set"] = str_to_set
+        kwargs.setdefault("interpolation", None)
+        super().__init__(*args, **kwargs)
+
+
+def parse_config(*path: pathlib.Path) -> BetterConfigParser:
+    """Parse the config at the given path."""
+    config = BetterConfigParser()
+    config.read(path, encoding="UTF-8")
+    return config
 
 
 def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
