@@ -787,7 +787,7 @@ def parse_command_line_arguments() -> ArgparseNamespace:
     parser.add_argument(
         "-c",
         "--config",
-        default="config.ini",
+        default=[pathlib.Path("config.ini")],
         help="the path to the config file",
         metavar="PATH",
         nargs="*",

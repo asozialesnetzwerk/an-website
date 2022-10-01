@@ -428,7 +428,7 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
 
 
 def get_ssl_context(  # pragma: no cover
-    config: BetterConfigParser,
+    config: ConfigParser,
 ) -> None | ssl.SSLContext:
     """Create SSL context and configure using the config."""
     if config.getboolean("TLS", "ENABLED", fallback=False):
@@ -487,7 +487,7 @@ def setup_logging(  # pragma: no cover
 
 
 def setup_webhook_logging(  # pragma: no cover
-    config: BetterConfigParser,
+    config: ConfigParser,
     loop: AbstractEventLoop,
 ) -> None:
     """Setup WebHook logging."""  # noqa: D401
