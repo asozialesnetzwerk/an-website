@@ -357,7 +357,7 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
     app.settings["CONFIG"] = config
 
     app.settings["cookie_secret"] = config.get(
-        "GENERAL", "COOKIE_SECRET", fallback=b"xyzzy"
+        "GENERAL", "COOKIE_SECRET", fallback="xyzzy"
     )
 
     app.settings["CRAWLER_SECRET"] = config.get(
@@ -586,7 +586,8 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ASCII")
         ).digest()
     ).decode("ASCII")
-    app.settings["ELASTIC_APM"]["CLIENT"] = ElasticAPM(app).client
+    if app.settings["ELASTIC_APM"]["ENABLED"]:
+        app.settings["ELASTIC_APM"]["CLIENT"] = ElasticAPM(app).client
 
 
 def setup_app_search(app: Application) -> None:  # pragma: no cover
@@ -616,10 +617,7 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
 def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
-    if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
-        app.settings["ELASTICSEARCH"] = None
-        return None
-    elasticsearch = AsyncElasticsearch(
+    kwargs = dict(  # noqa: C408
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         hosts=tuple(config.getset("ELASTICSEARCH", "HOSTS"))
         if config.has_option("ELASTICSEARCH", "HOSTS")
@@ -647,6 +645,10 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
             "accept": "application/vnd.elasticsearch+json; compatible-with=7"
         },
     )
+    if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+        app.settings["ELASTICSEARCH"] = None
+        return None
+    elasticsearch = AsyncElasticsearch(**kwargs)
     app.settings["ELASTICSEARCH"] = elasticsearch
     return elasticsearch
 
@@ -744,9 +746,6 @@ async def setup_elasticsearch_configs(  # noqa: C901
 def setup_redis(app: Application) -> None | Redis[str]:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
-    if not config.getboolean("REDIS", "ENABLED", fallback=False):
-        app.settings["REDIS"] = None
-        return None
     kwargs = {
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
@@ -790,6 +789,9 @@ def setup_redis(app: Application) -> None | Redis[str]:
                     ),
                 }
             )
+    if not config.getboolean("REDIS", "ENABLED", fallback=False):
+        app.settings["REDIS"] = None
+        return None
     redis: Redis[str] = Redis(connection_pool=BlockingConnectionPool(**kwargs))
     app.settings["REDIS"] = redis
     return redis
@@ -857,9 +859,9 @@ def supervise(loop: AbstractEventLoop) -> None:
         time.sleep(1)
 
 
-def main(
+def main(  # noqa: C901
     config: BetterConfigParser | None = None,
-) -> None | int | str:  # noqa: C901  # pragma: no cover
+) -> None | int | str:  # pragma: no cover
     """
     Start everything.
 
@@ -893,8 +895,7 @@ def main(
     setup_app_search(app)
     setup_redis(app)
 
-    if config.getboolean("ELASTIC_APM", "ENABLED", fallback=False):
-        setup_apm(app)
+    setup_apm(app)
 
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
 
@@ -949,7 +950,7 @@ def main(
 
     task_id: int | None = None
 
-    if processes > 0:
+    if processes > 0 and sockets:
         setproctitle(f"{NAME} - Master")
 
         task_id = tornado.process.fork_processes(processes)
@@ -983,29 +984,42 @@ def main(
 
     # pylint: disable=unused-variable
 
-    heartbeat_task = loop.create_task(heartbeat())  # noqa: F841
+    if sockets:
+        heartbeat_task = loop.create_task(heartbeat())  # noqa: F841
 
-    wait_for_shutdown_task = loop.create_task(wait_for_shutdown())  # noqa: F841
+        wait_for_shutdown_task = loop.create_task(  # noqa: F841
+            wait_for_shutdown()
+        )
 
-    if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+    if (
+        config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False)
+        and sockets
+    ):
         check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-    if config.getboolean("REDIS", "ENABLED", fallback=False):
+    if config.getboolean("REDIS", "ENABLED", fallback=False) and sockets:
         check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
 
-    if not task_id:  # update from one process only
+    if not task_id and sockets:  # update from one process only
         quotes_cache_update_task = loop.create_task(  # noqa: F841
             update_cache_periodically(app)
         )
 
     # pylint: enable=unused-variable
 
-    if config.getboolean("GENERAL", "SUPERVISE", fallback=False):
+    if config.getboolean("GENERAL", "SUPERVISE", fallback=False) and sockets:
         global HEARTBEAT  # pylint: disable=global-statement
         HEARTBEAT = time.monotonic()
         threading.Thread(
             target=supervise, name="supervisor", args=(loop,), daemon=True
         ).start()
+
+    if args.save_config_to:
+        with open(args.save_config_to, "w", encoding="UTF-8") as file:
+            config.write(file, True)
+
+    if not sockets:
+        return None
 
     try:
         loop.run_forever()
