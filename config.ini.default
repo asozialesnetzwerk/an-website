@@ -16,7 +16,7 @@ under_attack = nope
 behind_proxy = nope
 #port = 
 #unix_socket_path = 
-processes = 8
+processes = 2
 supervise = nope
 
 [APP_SEARCH]
