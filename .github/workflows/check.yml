@@ -25,7 +25,11 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
-        run: grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+          pip install -r requirements.txt
+          grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort
@@ -42,6 +46,8 @@ jobs:
         run: ./scripts/humans.py
       - name: Sort methods
         run: ./scripts/sort_python_code.py
+      - name: generate config.ini.default
+        run: python3 -m an_website --save-config-to config.ini.default -c
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

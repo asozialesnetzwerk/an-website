@@ -23,7 +23,7 @@ import pathlib
 import random
 import time
 from base64 import b85encode
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -775,10 +775,11 @@ class ArgparseNamespace(argparse.Namespace):
     """A class to fake type hints for argparse Namespace."""
 
     # pylint: disable=too-few-public-methods
-    __slots__ = ("config", "port")
+    __slots__ = ("config", "port", "save_config_to")
 
     config: list[pathlib.Path]
     port: list[int]
+    save_config_to: pathlib.Path | None
 
 
 def parse_command_line_arguments() -> ArgparseNamespace:
@@ -802,6 +803,14 @@ def parse_command_line_arguments() -> ArgparseNamespace:
         nargs="*",
         type=int,
     )
+    parser.add_argument(
+        "--save-config-to",
+        default=None,
+        help="save the configuration to a file",
+        metavar="Path",
+        nargs="?",
+        type=pathlib.Path,
+    )
     return parser.parse_args(namespace=ArgparseNamespace())
 
 
@@ -815,7 +824,50 @@ class BetterConfigParser(ConfigParser):
         converters = kwargs.setdefault("converters", {})
         converters["set"] = str_to_set
         kwargs.setdefault("interpolation", None)
+        kwargs["dict_type"] = dict
         super().__init__(*args, **kwargs)
+
+    def _add_fallback_to_config(
+        self,
+        section: str,
+        option: str,
+        fallback: str | Iterable[str] | bool | int | float | None,
+    ) -> None:
+        if section in self and option in self[section]:
+            return
+        if isinstance(fallback, str):
+            pass
+        elif isinstance(fallback, Iterable):
+            fallback = ", ".join([str(val) for val in fallback])
+        elif isinstance(fallback, bool):
+            fallback = bool_to_str(fallback)
+        elif fallback is None:
+            fallback = ""
+            option = f"#{option}"
+        else:
+            fallback = str(fallback)  # float, int
+        if section not in self.sections():
+            self.add_section(section)
+        self.set(section, option.lower(), fallback)
+
+    def _get_conv(
+        self, section: str, option: str, conv: Callable[[str], T], **kwargs: Any
+    ) -> T:
+        value: T = super()._get_conv(section, option, conv, **kwargs)
+        if "fallback" in kwargs:
+            self._add_fallback_to_config(
+                section, option, kwargs.get("fallback")
+            )
+        return value
+
+    def get(self, section: str, option: str, **kwargs: Any) -> None | str:  # type: ignore[override]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        """Get an option in a section."""
+        value: None | str = super().get(section, option, **kwargs)
+        if "fallback" in kwargs:
+            self._add_fallback_to_config(
+                section, option, kwargs.get("fallback")
+            )
+        return value
 
 
 def parse_config(*path: pathlib.Path) -> BetterConfigParser:
