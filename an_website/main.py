@@ -842,7 +842,7 @@ async def heartbeat() -> None:
     global HEARTBEAT  # pylint: disable=global-statement
     while True:  # pylint: disable=while-used
         HEARTBEAT = time.monotonic()
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.05)
 
 
 def supervise(loop: AbstractEventLoop) -> None:
