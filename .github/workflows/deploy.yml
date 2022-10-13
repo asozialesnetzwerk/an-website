@@ -177,6 +177,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -200,6 +203,8 @@ jobs:
           coverage json -o github-pages/coverage.json
           ./generate-badge.sh > github-pages/coverage/badge.svg
           rm github-pages/coverage/.gitignore
+      - name: Generate committers.txt
+        run: git log "--pretty=%H %cd %s" --date=unix HEAD > github-pages/committers.txt
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
