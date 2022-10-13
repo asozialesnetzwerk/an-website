@@ -253,6 +253,8 @@ class APIRequestHandler(BaseRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: dict[str, Any]) -> None:
         """Finish with the status code and the reason as dict."""
+        if self.content_type == "text/plain":
+            self.finish(f"{status_code} {self.get_error_message(**kwargs)}")
         self.finish_dict(
             status=status_code,
             reason=self.get_error_message(**kwargs),

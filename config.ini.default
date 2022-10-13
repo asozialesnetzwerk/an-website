@@ -9,6 +9,7 @@ compress_response = nope
 cookie_secret = xyzzy
 #domain = 
 netcup = nope
+committers_uri = https://github.asozial.org/an-website/committers.txt
 #onion_address = 
 ratelimits = nope
 trusted_api_secrets = xyzzy
