@@ -853,8 +853,8 @@ async def heartbeat() -> None:
 
 def supervise() -> None:
     """Supervise."""
-    while HEARTBEAT:  # pylint: disable=while-used
-        if time.monotonic() - HEARTBEAT >= 10:
+    while foobarbaz := HEARTBEAT:  # pylint: disable=while-used
+        if time.monotonic() - foobarbaz >= 10:
             task_id = tornado.process.task_id()
             pid = os.getpid()
             LOGGER.fatal(
