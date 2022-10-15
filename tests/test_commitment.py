@@ -35,18 +35,20 @@ assert fetch and app
 
 async def test_parsing() -> None:
     """Make request to the backdoor and parse the response."""
-    data = await get_commit_data(join(DIR, "commits.txt"))
+    file = join(DIR, "commits.txt")
+    for uri in (file, f"file://{file}"):
+        data = await get_commit_data(uri)
 
-    assert len(data) == 2
+        assert len(data) == 2
 
-    assert data["50821273052022fbc283e310e09168dc65fb3cce"] == (
-        datetime(2022, 8, 29, 19, 56, 6),
-        "💬 fix kangaroo comic of today",
-    )
-    assert data["7335914237808031fa15f32a854ba1e6b1544420"] == (
-        datetime(2021, 7, 21, 22, 29, 26),
-        "no_js → no_3rd_party",
-    )
+        assert data["50821273052022fbc283e310e09168dc65fb3cce"] == (
+            datetime(2022, 8, 29, 19, 56, 6),
+            "💬 fix kangaroo comic of today",
+        )
+        assert data["7335914237808031fa15f32a854ba1e6b1544420"] == (
+            datetime(2021, 7, 21, 22, 29, 26),
+            "no_js → no_3rd_party",
+        )
 
 
 async def test_text_api(fetch: FetchCallable) -> None:
@@ -80,7 +82,7 @@ async def test_json_api(fetch: FetchCallable) -> None:
         response = assert_valid_json_response(
             await fetch(
                 f"/api/commitment?{query}",
-                headers={"Accept": "application/json"},
+                headers={"Accept": "application/yaml"},
             ),
         )
         assert response["permalink"].endswith(
@@ -116,3 +118,24 @@ async def test_yaml_api(fetch: FetchCallable) -> None:
             "hash": "7335914237808031fa15f32a854ba1e6b1544420",
             "date": datetime(2021, 7, 21, 22, 29, 26),  # yaml > json
         }
+
+
+async def test_api_404(fetch: FetchCallable) -> None:
+    """Test getting not existing hashes."""
+    for query in (
+        "hash=7335914237808031fa15f32a854ba1e6b154442&require_emoji=sure",
+        "hash=9",
+        "hash=9168045768942198",
+        "hash=9168045768942198e1fbe5e3f00e133b5377a5fa",
+        "hash=9168045768942198e1fbe5e3f00e133b5377a5fa6",  # too long
+        "hash=x",
+        "hash=xxxxxxxxxxxxxxxx",
+        "hash=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "hash=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",  # too long
+    ):
+        response = assert_valid_response(
+            await fetch(f"/api/commitment?{query}", headers={"Accept": "*/*"}),
+            "text/plain;charset=utf-8",
+            codes={404},
+        )
+        assert response.body == b"404 Not Found\n"

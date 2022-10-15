@@ -125,7 +125,9 @@ class CommitmentAPI(APIRequestHandler):
             raise HTTPError(404)
 
         results = [
-            item for item in data.items() if item[0].startswith(args.hash)
+            item for item in data.items()
+            if item[0].startswith(args.hash)
+            if not args.require_emoji or emoji.emoji_count(item[1][1])
         ]
 
         if not results:
