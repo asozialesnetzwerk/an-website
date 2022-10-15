@@ -995,7 +995,7 @@ def main(  # noqa: C901
 
         task_heartbeat = loop.create_task(heartbeat())  # noqa: F841
 
-        task_shutdown = loop.create_task()  # noqa: F841
+        task_shutdown = loop.create_task(wait_for_shutdown())  # noqa: F841
 
         if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
             task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
