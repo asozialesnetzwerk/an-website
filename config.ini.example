@@ -2,6 +2,7 @@
 #processes = ...
 #supervise = nope
 #ignored_modules = spam, eggs
+#committers_uri = https://github.asozial.org/an-website/committers.txt
 #trusted_api_secrets = correct_horse_battery_staple=3, xyzzy
 #cookie_secret = 量子チキンスープグラ ス ビッグチュングス
 #onion_address = ...

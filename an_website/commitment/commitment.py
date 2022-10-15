@@ -56,7 +56,7 @@ COMMIT_DATA: dict[str, Commits] = {}
 
 
 async def get_commit_data(committers_uri: str) -> Commits:
-    """Get data from uri."""
+    """Get data from URI."""
     if committers_uri in COMMIT_DATA:
         return COMMIT_DATA[committers_uri]
     file_content: bytes
@@ -82,14 +82,14 @@ async def get_commit_data(committers_uri: str) -> Commits:
 
 @dataclass
 class Arguments:
-    """The arguments for the commitments API."""
+    """The arguments for the commitment API."""
 
     hash: str | None = None
     require_emoji: bool = False
 
 
 class CommitmentAPI(APIRequestHandler):
-    """The request handler for the example API."""
+    """The request handler for the commitment API."""
 
     POSSIBLE_CONTENT_TYPES = (
         "text/plain",

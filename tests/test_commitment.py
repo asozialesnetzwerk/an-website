@@ -34,7 +34,7 @@ assert fetch and app
 
 
 async def test_parsing() -> None:
-    """Make request to the backdoor and parse the response."""
+    """Test parsing the commitment data."""
     file = join(DIR, "commits.txt")
     for uri in (file, f"file://{file}"):
         data = await get_commit_data(uri)
@@ -45,6 +45,7 @@ async def test_parsing() -> None:
             datetime(2022, 8, 29, 19, 56, 6),
             "💬 fix kangaroo comic of today",
         )
+
         assert data["7335914237808031fa15f32a854ba1e6b1544420"] == (
             datetime(2021, 7, 21, 22, 29, 26),
             "no_js → no_3rd_party",
@@ -57,6 +58,7 @@ async def test_text_api(fetch: FetchCallable) -> None:
         await fetch("/api/commitment", headers={"Accept": "*/*"}),
         "text/plain;charset=utf-8",
     )
+
     assert response.body.decode("UTF-8") in {
         "💬 fix kangaroo comic of today\n",
         "no_js → no_3rd_party\n",
@@ -68,11 +70,12 @@ async def test_text_api(fetch: FetchCallable) -> None:
         ),
         "text/plain;charset=utf-8",
     )
+
     assert response.body.decode("UTF-8") == "💬 fix kangaroo comic of today\n"
 
 
 async def test_json_api(fetch: FetchCallable) -> None:
-    """Test the json API."""
+    """Test the JSON API."""
     for query in (
         "require_emoji=sure",
         "hash=5",
@@ -97,7 +100,7 @@ async def test_json_api(fetch: FetchCallable) -> None:
 
 
 async def test_yaml_api(fetch: FetchCallable) -> None:
-    """Test the yaml API."""
+    """Test the YAML API."""
     for query in (
         "hash=7",
         "hash=7335914237808031",
@@ -121,7 +124,7 @@ async def test_yaml_api(fetch: FetchCallable) -> None:
 
 
 async def test_api_404(fetch: FetchCallable) -> None:
-    """Test getting not existing hashes."""
+    """Test getting non-existant hashes."""
     for query in (
         "hash=7335914237808031fa15f32a854ba1e6b154442&require_emoji=sure",
         "hash=9",

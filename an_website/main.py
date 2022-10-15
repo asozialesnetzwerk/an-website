@@ -846,14 +846,14 @@ def install_signal_handler() -> None:  # pragma: no cover
 async def heartbeat() -> None:
     """Heartbeat."""
     global HEARTBEAT  # pylint: disable=global-statement
-    while True:  # pylint: disable=while-used
+    while HEARTBEAT:  # pylint: disable=while-used
         HEARTBEAT = time.monotonic()
         await asyncio.sleep(0.05)
 
 
-def supervise(loop: AbstractEventLoop) -> None:
+def supervise() -> None:
     """Supervise."""
-    while not loop.is_closed():  # pylint: disable=while-used
+    while HEARTBEAT:  # pylint: disable=while-used
         if time.monotonic() - HEARTBEAT >= 10:
             task_id = tornado.process.task_id()
             pid = os.getpid()
@@ -875,6 +875,8 @@ def main(  # noqa: C901
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
+    global HEARTBEAT  # pylint: disable=global-statement
+
     setproctitle(NAME)
     install_signal_handler()
 
@@ -900,7 +902,6 @@ def main(  # noqa: C901
     setup_elasticsearch(app)
     setup_app_search(app)
     setup_redis(app)
-
     setup_apm(app)
 
     behind_proxy = config.getboolean("GENERAL", "BEHIND_PROXY", fallback=False)
@@ -951,6 +952,7 @@ def main(  # noqa: C901
         "PROCESSES",
         fallback=hasattr(os, "fork") * (2 if sys.flags.dev_mode else -1),
     )
+
     if processes < 0:
         processes = tornado.process.cpu_count()
 
@@ -988,41 +990,35 @@ def main(  # noqa: C901
     server.add_sockets(sockets)
     asyncio.get_event_loop = _
 
-    # pylint: disable=unused-variable
-
     if sockets:
-        heartbeat_task = loop.create_task(heartbeat())  # noqa: F841
+        # pylint: disable=unused-variable
 
-        wait_for_shutdown_task = loop.create_task(  # noqa: F841
-            wait_for_shutdown()
-        )
+        task_heartbeat = loop.create_task(heartbeat())  # noqa: F841
 
-    if (
-        config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False)
-        and sockets
-    ):
-        check_es_task = loop.create_task(check_elasticsearch(app))  # noqa: F841
+        task_shutdown = loop.create_task()  # noqa: F841
 
-    if config.getboolean("REDIS", "ENABLED", fallback=False) and sockets:
-        check_redis_task = loop.create_task(check_redis(app))  # noqa: F841
+        if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+            task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-    if not task_id and sockets:  # update from one process only
-        quotes_cache_update_task = loop.create_task(  # noqa: F841
-            update_cache_periodically(app)
-        )
+        if config.getboolean("REDIS", "ENABLED", fallback=False):
+            task_redis = loop.create_task(check_redis(app))  # noqa: F841
 
-    # pylint: enable=unused-variable
+        if not task_id:  # update from one process only
+            task_quotes = loop.create_task(  # noqa: F841
+                update_cache_periodically(app)
+            )
+
+        # pylint: enable=unused-variable
 
     if config.getboolean("GENERAL", "SUPERVISE", fallback=False) and sockets:
-        global HEARTBEAT  # pylint: disable=global-statement
         HEARTBEAT = time.monotonic()
         threading.Thread(
-            target=supervise, name="supervisor", args=(loop,), daemon=True
+            target=supervise, name="supervisor", daemon=True
         ).start()
 
     if args.save_config_to:
         with open(args.save_config_to, "w", encoding="UTF-8") as file:
-            config.write(file, True)
+            config.write(file)
 
     if not sockets:
         return None
@@ -1055,5 +1051,6 @@ def main(  # noqa: C901
                 loop.run_until_complete(loop.shutdown_default_executor())
             finally:
                 loop.close()
+                HEARTBEAT = 0
 
     return None

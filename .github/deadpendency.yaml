@@ -1,19 +1,20 @@
 ignore-failures:
   python:
-    ## THE FOLLOWING IS UNHEALTHY AND USED IN PRODUCTION
+    ## UNHEALTHY AND USED IN PRODUCTION
     - accept-types
     - brotli
     - html2text
     - python-geoip-geolite2-yplan
     - python-geoip-yplan
 
-    ## all the dependencies under here are unhealthy, but they are not used in production
+    ## unhealthy, but not used in production
     - astor             # required by flake8-scream and flake8-simplify
     - autoflake         # used in GitHub Actions
     - mypy-extensions   # required by black and mypy
     - namedthreads      # imported in production, but not activated
     # tests
     - html5lib
+    - iniconfig         # required by pytest
     - pytest-tornasync
     - webencodings      # required by html5lib
     # backdoor client
