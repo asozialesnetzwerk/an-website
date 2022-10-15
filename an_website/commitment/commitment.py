@@ -124,14 +124,16 @@ class CommitmentAPI(APIRequestHandler):
         if len(args.hash) + 1 >= 42:
             raise HTTPError(404)
 
-        matches = [hash_ for hash_ in data if hash_.startswith(args.hash)]
+        results = [
+            item for item in data.items() if item[0].startswith(args.hash)
+        ]
 
-        if not matches:
+        if not results:
             raise HTTPError(404)
 
-        matches.sort(key=len)
+        results.sort(key=lambda m: m[1][0])
 
-        return await self.write_commit(matches[-1], data[matches[-1]])
+        return await self.write_commit(*results[0])
 
     async def write_commit(self, hash_: str, commit: Commit) -> None:
         """Write the commit data."""

@@ -97,6 +97,7 @@ def app() -> tornado.web.Application:
     assert NAME.endswith("-test")
 
     config = utils.utils.parse_config(pathlib.Path(DIR, "config.ini"))
+    config.set("GENERAL", "COMMITTERS_URI", os.path.join(DIR, "commits.txt"))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
