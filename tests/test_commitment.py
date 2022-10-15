@@ -82,7 +82,7 @@ async def test_json_api(fetch: FetchCallable) -> None:
         response = assert_valid_json_response(
             await fetch(
                 f"/api/commitment?{query}",
-                headers={"Accept": "application/yaml"},
+                headers={"Accept": "application/json"},
             ),
         )
         assert response["permalink"].endswith(
