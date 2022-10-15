@@ -27,6 +27,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from multiprocessing import Value
 from typing import Any, Final, Literal, cast
+from urllib.parse import urlencode
 
 import elasticapm  # type: ignore[import]
 import orjson as json
@@ -186,7 +187,11 @@ class WrongQuote(QuotesObjBase):
         if self.id == -1:
             api_data = await make_api_request(
                 "wrongquotes",
-                f"quote={self.quote.id}&author={self.author.id}&simulate=true",
+                {
+                    "quote": str(self.quote.id),
+                    "simulate": "true",
+                    "author": str(self.author.id),
+                },
             )
             if api_data:
                 api_data = api_data[0]
@@ -245,7 +250,7 @@ class WrongQuote(QuotesObjBase):
             await make_api_request(
                 f"wrongquotes/{self.id}",
                 method="POST",
-                body=f"vote={vote}",
+                body={"vote": str(vote)},
             ),
             self,
         )
@@ -306,18 +311,22 @@ def get_authors(
 
 async def make_api_request(
     endpoint: str,
-    args: str = "",
+    args: dict[str, str] | None = None,
+    *,
     method: Literal["GET", "POST"] = "GET",
-    body: None | str = None,
+    body: None | dict[str, str] = None,
 ) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
     if pytest_is_running():
         return None
+    query = f"?{urlencode(args)}" if args else ""
+    url = f"{API_URL}/{endpoint}{query}"
+    body_str = urlencode(body) if body else body
     response = await AsyncHTTPClient().fetch(
-        f"{API_URL}/{endpoint}?{args}",
+        url,
         method=method,
         headers={"Content-Type": "application/x-www-form-urlencoded"},
-        body=body,
+        body=body_str,
         raise_error=False,
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
@@ -325,8 +334,8 @@ async def make_api_request(
         LOGGER.warning(
             "%s request to %r with body=%r failed with code=%d and reason=%r",
             method,
-            f"{API_URL}/{endpoint}?{args}",
-            body,
+            url,
+            body_str,
             response.code,
             response.reason,
         )
@@ -619,7 +628,11 @@ async def get_wrong_quote(
     # request the wrong quote from the API
     result = await make_api_request(
         "wrongquotes",
-        f"quote={quote_id}&author={author_id}&simulate=true",
+        {
+            "quote": str(quote_id),
+            "simulate": "true",
+            "author": str(author_id),
+        },
     )
     if result:
         return parse_wrong_quote(result[0])
@@ -670,10 +683,11 @@ async def create_wq_and_vote(
         await make_api_request(
             "wrongquotes",
             method="POST",
-            body=(
-                f"quote={quote_id}&author={author_id}&"
-                f"contributed_by={contributed_by}"
-            ),
+            body={
+                "quote": str(quote_id),
+                "author": str(author_id),
+                "contributed_by": contributed_by,
+            },
         )
     )
     return await wrong_quote.vote(vote, lazy=True)

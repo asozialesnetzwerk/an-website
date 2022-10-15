@@ -374,7 +374,7 @@ class QuoteById(QuoteBaseHandler):
 
         to_vote = cast(Literal[-1, 1], -1 if vote_diff < 0 else 1)
 
-        contributed_by = f"an-website_{hash_ip(self.request.remote_ip)}"
+        contributed_by = f"an-website_{hash_ip(self.request.remote_ip, 10)}"
 
         # do the voting
         wrong_quote = await create_wq_and_vote(
