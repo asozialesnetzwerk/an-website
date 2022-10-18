@@ -368,10 +368,11 @@ def get_author_updated_with(author_id: int, name: str) -> Author:
     author = AUTHORS_CACHE.get(author_id)
     if author is None:  # author not in cache, create new one
         author = Author(author_id, name, None)
-        AUTHORS_CACHE[author.id] = author
         MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
     else:  # update to make sure cache is correct
         author.update_name(name)
+
+    AUTHORS_CACHE[author.id] = author
 
     return author
 
@@ -404,10 +405,12 @@ def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
         quote = QUOTES_CACHE.get(quote_id)
     if quote is None:  # new quote
         quote = Quote(quote_id, quote_str, author)
-        QUOTES_CACHE[quote.id] = quote
         MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
     else:  # quote was already saved
         quote.update_quote(quote_str, author.id, author.name)
+
+    QUOTES_CACHE[quote.id] = quote
+
     return quote
 
 
@@ -431,7 +434,6 @@ def parse_wrong_quote(
                 author=author,
                 rating=rating,
             )
-            WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
 
     # make sure the wrong quote is the correct one
     if (wrong_quote.quote.id, wrong_quote.author.id) != id_tuple:
@@ -441,6 +443,8 @@ def parse_wrong_quote(
         wrong_quote.rating = rating
     if wrong_quote.id != wrong_quote_id:
         wrong_quote.id = wrong_quote_id
+
+    WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
 
     return wrong_quote
 
