@@ -76,7 +76,7 @@ def mark_query(text: str, query: None | str) -> str:
     return text
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Info:
     """Info class that is used as a base for HeaderInfo and SoundInfo."""
 
@@ -93,7 +93,7 @@ class Info:
         return mark_query(self.text, query)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class HeaderInfo(Info):
     """A header with a tag and href to itself."""
 
@@ -125,7 +125,7 @@ class HeaderInfo(Info):
         )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class SoundInfo(Info):
     """The information about a sound."""
 

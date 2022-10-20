@@ -79,7 +79,7 @@ class ConfigLine:  # pylint: disable=too-few-public-methods
         raise NotImplementedError
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Comment(ConfigLine):
     """Class used to represent a comment."""
 
@@ -90,7 +90,7 @@ class Comment(ConfigLine):
         return "" if not self.comment else f"# {self.comment}"
 
 
-@dataclass(frozen=True, init=False)
+@dataclass(frozen=True, init=False, slots=True)
 class WordPair(ConfigLine):
     """Parent class representing a word pair."""
 
@@ -125,7 +125,7 @@ class WordPair(ConfigLine):
         raise NotImplementedError
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class OneWayPair(WordPair):
     """Class used to represent a word that gets replaced with another."""
 
@@ -146,7 +146,7 @@ class OneWayPair(WordPair):
         return self.word1
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class TwoWayPair(WordPair):
     """Class used to represent two words that get replaced with each other."""
 
@@ -259,7 +259,7 @@ def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
     raise InvalidConfigError(line_num, line, "Something went wrong.")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class InvalidConfigError(Exception):
     """Exception raised if the config is invalid."""
 

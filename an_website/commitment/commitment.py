@@ -80,7 +80,7 @@ async def get_commit_data(committers_uri: str) -> Commits:
     return data
 
 
-@dataclass
+@dataclass(slots=True)
 class Arguments:
     """The arguments for the commitment API."""
 

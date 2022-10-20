@@ -51,7 +51,7 @@ def check_text_too_long(text: str) -> None:
         )
 
 
-@dataclass
+@dataclass(slots=True)
 class SwArgs:
     """Arguments used for swapped words."""
 

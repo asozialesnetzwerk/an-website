@@ -120,7 +120,7 @@ class Permission(IntFlag):
 
 # sortable, so the pages can be linked in an order
 # frozen, so it's immutable
-@dataclass(order=True, frozen=True)
+@dataclass(order=True, frozen=True, slots=True)
 class PageInfo:
     """The PageInfo class that is used for the subpages of a ModuleInfo."""
 
@@ -181,7 +181,7 @@ class PageInfo:
         return score / len(words)
 
 
-@dataclass(order=True, frozen=True)
+@dataclass(order=True, frozen=True, slots=True)
 class ModuleInfo(PageInfo):
     """
     The ModuleInfo class adds handlers and subpages to the PageInfo.

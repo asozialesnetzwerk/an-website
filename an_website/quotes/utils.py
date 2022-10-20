@@ -63,11 +63,10 @@ MAX_QUOTES_ID = Value("Q", 0)
 MAX_AUTHORS_ID = Value("Q", 0)
 
 
-@dataclass(init=False)
+@dataclass(init=False, slots=True)
 class QuotesObjBase:
     """An object with an id."""
 
-    __slots__ = ("id",)
     id: int  # pylint: disable=invalid-name
 
     async def fetch_new_data(self) -> QuotesObjBase:
@@ -80,11 +79,10 @@ class QuotesObjBase:
         return str(self.id)
 
 
-@dataclass
+@dataclass(slots=True)
 class Author(QuotesObjBase):
     """The author object with a name."""
 
-    __slots__ = ("name", "info")
     name: str
     # tuple(url_to_info, info_str, creation_date)
     info: None | tuple[str, None | str, date]
@@ -125,11 +123,10 @@ class Author(QuotesObjBase):
             self.name = name
 
 
-@dataclass
+@dataclass(slots=True)
 class Quote(QuotesObjBase):
     """The quote object with a quote text and an author."""
 
-    __slots__ = ("quote", "author")
     quote: str
     author: Author
 
@@ -165,11 +162,10 @@ class Quote(QuotesObjBase):
         self.author = get_author_updated_with(author_id, author_name)
 
 
-@dataclass
+@dataclass(slots=True)
 class WrongQuote(QuotesObjBase):
     """The wrong quote object with a quote, an author and a rating."""
 
-    __slots__ = ("quote", "author", "rating")
     quote: Quote
     author: Author
     rating: int

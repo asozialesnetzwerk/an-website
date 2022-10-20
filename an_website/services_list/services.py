@@ -33,11 +33,10 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(slots=True)
 class Service:
     """A class representing a service."""
 
-    __slots__ = ("title", "text", "infos")
     title: str
     text: str
     infos: None | dict[str, str]

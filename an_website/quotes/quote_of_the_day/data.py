@@ -22,11 +22,10 @@ from typing import Any
 from ..utils import WrongQuote
 
 
-@dataclass
+@dataclass(slots=True)
 class QuoteOfTheDayData:
     """The class representing data for the quote of the day."""
 
-    __slots__ = ("date", "wrong_quote", "url_without_path")
     date: date
     wrong_quote: WrongQuote
     url_without_path: str

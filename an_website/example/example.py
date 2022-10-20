@@ -45,7 +45,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-@dataclass
+@dataclass(slots=True)
 class ExampleArguments:
     """The arguments for the example page."""
 

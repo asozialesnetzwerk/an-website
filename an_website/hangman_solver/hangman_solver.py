@@ -193,7 +193,7 @@ def get_words_and_letters(
     )
 
 
-@dataclass
+@dataclass(slots=True)
 class HangmanArguments:
     """Arguments for the hangman solver."""
 
