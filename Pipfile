@@ -28,6 +28,8 @@ Pillow = "==9.*"
 pycryptodome = "==3.*"
 pycurl = "*"
 pysocks = "==1.*"
+pyston-lite = {version = "==2.*", markers = "python_version < '3.11'"}
+pyston-lite-autoload = {version = "==2.*", markers = "python_version < '3.11'"}
 python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "*"
 python-geoip-yplan = "==1.*"
