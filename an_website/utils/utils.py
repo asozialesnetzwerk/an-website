@@ -213,7 +213,7 @@ class ModuleInfo(PageInfo):
         return self
 
     def search(self, query: str | Sequence[str]) -> float:  # noqa: D102
-        score = super().search(query)
+        score = super(ModuleInfo, self).search(query)
 
         if len(self.sub_pages) > 0:
             sp_score = 0.0
