@@ -33,7 +33,7 @@ from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Coroutine, Iterable
 from configparser import ConfigParser
-from hashlib import sha256
+from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, Final, cast
@@ -425,6 +425,10 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         if (key_perms := [part.strip() for part in secret.split("=")])
         if key_perms[0]
     }
+    app.settings["AUTH_TOKEN_SECRET"] = (
+        config.get("GENERAL", "AUTH_TOKEN_SECRET", fallback=None)
+        or sha3_512(__file__.encode("UTF-8")).digest()
+    )
 
     app.settings["UNDER_ATTACK"] = config.getboolean(
         "GENERAL", "UNDER_ATTACK", fallback=False
