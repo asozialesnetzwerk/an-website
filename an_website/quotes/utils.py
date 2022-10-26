@@ -434,6 +434,10 @@ def parse_wrong_quote(
     # make sure the wrong quote is the correct one
     if (wrong_quote.quote.id, wrong_quote.author.id) != id_tuple:
         raise HTTPError(reason="ERROR: -41")
+
+    wrong_quote.quote = quote
+    wrong_quote.author = author
+
     # update the data of the wrong quote
     if wrong_quote.rating != rating:
         wrong_quote.rating = rating
