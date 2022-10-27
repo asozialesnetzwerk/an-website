@@ -1,9 +1,10 @@
 {
   "type": "module",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
     "eslint": "8.22.0",
-    "typescript": "4.8.2"
+    "typescript": "4.8.2",
+    "typescript-eslint-language-service": "^5.0.0"
   }
 }

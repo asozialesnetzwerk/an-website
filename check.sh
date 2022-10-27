@@ -43,8 +43,8 @@ echo Flake8:
 python3 -m flake8 --show-source || FAILED=$(( 16 | FAILED ))
 
 echo Pylint:
-python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no .
-python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
+DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no .
+DISABLE_PYSTON=1 python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
 
 echo Bandit:
 python3 -m bandit -q -c pyproject.toml -r an_website || FAILED=$(( 64 | FAILED ))
