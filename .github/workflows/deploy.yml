@@ -93,6 +93,9 @@ jobs:
         run: pip install -r requirements.txt
       - name: Install stuff needed for the tests
         run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
+      - name: Test starting
+        timeout-minutes: 1
+        run: python -m an_website -c
       - name: Run pytest
         timeout-minutes: 5
         run: pytest --durations=0 --verbose --cov=an_website tests
