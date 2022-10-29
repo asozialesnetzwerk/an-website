@@ -553,6 +553,9 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
         "SERVER_URL": config.get(
             "ELASTIC_APM", "SERVER_URL", fallback="http://localhost:8200"
         ),
+        "SERVER_URL_JS_AGENT": config.get(
+            "ELASTIC_APM", "SERVER_URL_JS_AGENT", fallback=None
+        ),
         "SECRET_TOKEN": config.get(
             "ELASTIC_APM", "SECRET_TOKEN", fallback=None
         ),
@@ -582,14 +585,31 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             "elasticapm.processors.sanitize_http_wsgi_env",
             "elasticapm.processors.sanitize_http_request_body",
         ],
+        "SERVER_URL_PREFIX": config.get(
+            "ELASTIC_APM", "SERVER_URL_PREFIX", fallback=None
+        ),
     }
+    script_options = [
+        f"serviceName:'{app.settings['ELASTIC_APM']['SERVICE_NAME']}'",
+        f"serviceVersion:'{app.settings['ELASTIC_APM']['SERVICE_VERSION']}'",
+        f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}'",
+    ]
+    server_url_js_agent = app.settings["ELASTIC_APM"]["SERVER_URL_JS_AGENT"]
+    if server_url_js_agent is None:
+        script_options.append(
+            f"serverUrl:'{app.settings['ELASTIC_APM']['SERVER_URL']}'"
+        )
+    elif server_url_js_agent:
+        script_options.append(f"serverUrl:'{server_url_js_agent}'")
+    else:
+        script_options.append("serverUrl:window.location.origin")
+
+    if app.settings["ELASTIC_APM"]["SERVER_URL_PREFIX"]:
+        script_options.append(
+            f"serverUrlPrefix:'{app.settings['ELASTIC_APM']['SERVER_URL_PREFIX']}'"
+        )
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT"] = (
-        "elasticApm.init({"
-        f"serverUrl:'{app.settings['ELASTIC_APM']['SERVER_URL']}',"
-        f"serviceName:'{app.settings['ELASTIC_APM']['SERVICE_NAME']}',"
-        f"serviceVersion:'{app.settings['ELASTIC_APM']['SERVICE_VERSION']}',"
-        f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}',"
-        "})"
+        "elasticApm.init({" + ",".join(script_options) + "})"
     )
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = b64encode(
         sha256(
