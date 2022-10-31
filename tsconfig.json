@@ -3,7 +3,13 @@
     "target": "es2020",
     "module": "es2020",
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    //"isolatedModules": true,
+    "plugins": [
+      {
+        "name": "typescript-eslint-language-service"
+      }
+    ]
   },
   "include": [
     "an_website/**/*"

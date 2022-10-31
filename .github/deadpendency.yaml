@@ -18,4 +18,5 @@ ignore-failures:
     - pyrepl            # used by the backdoor client
     - pysocks           # used by the backdoor client
     - pytest-tornasync  # used by the tests
+    - toml              # required by dparse and pre-commit
     - webencodings      # required by html5lib

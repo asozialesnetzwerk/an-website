@@ -553,9 +553,6 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
         "SERVER_URL": config.get(
             "ELASTIC_APM", "SERVER_URL", fallback="http://localhost:8200"
         ),
-        "SERVER_URL_JS_AGENT": config.get(
-            "ELASTIC_APM", "SERVER_URL_JS_AGENT", fallback=None
-        ),
         "SECRET_TOKEN": config.get(
             "ELASTIC_APM", "SECRET_TOKEN", fallback=None
         ),
@@ -585,37 +582,46 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
             "elasticapm.processors.sanitize_http_wsgi_env",
             "elasticapm.processors.sanitize_http_request_body",
         ],
-        "SERVER_URL_PREFIX": config.get(
-            "ELASTIC_APM", "SERVER_URL_PREFIX", fallback=None
+        "RUM_SERVER_URL": config.get(
+            "ELASTIC_APM", "RUM_SERVER_URL", fallback=None
+        ),
+        "RUM_SERVER_URL_PREFIX": config.get(
+            "ELASTIC_APM", "RUM_SERVER_URL_PREFIX", fallback=None
         ),
     }
+
     script_options = [
         f"serviceName:'{app.settings['ELASTIC_APM']['SERVICE_NAME']}'",
         f"serviceVersion:'{app.settings['ELASTIC_APM']['SERVICE_VERSION']}'",
         f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}'",
     ]
-    server_url_js_agent = app.settings["ELASTIC_APM"]["SERVER_URL_JS_AGENT"]
-    if server_url_js_agent is None:
+
+    rum_server_url = app.settings["ELASTIC_APM"]["RUM_SERVER_URL"]
+
+    if rum_server_url is None:
         script_options.append(
             f"serverUrl:'{app.settings['ELASTIC_APM']['SERVER_URL']}'"
         )
-    elif server_url_js_agent:
-        script_options.append(f"serverUrl:'{server_url_js_agent}'")
+    elif rum_server_url:
+        script_options.append(f"serverUrl:'{rum_server_url}'")
     else:
         script_options.append("serverUrl:window.location.origin")
 
-    if app.settings["ELASTIC_APM"]["SERVER_URL_PREFIX"]:
+    if app.settings["ELASTIC_APM"]["RUM_SERVER_URL_PREFIX"]:
         script_options.append(
-            f"serverUrlPrefix:'{app.settings['ELASTIC_APM']['SERVER_URL_PREFIX']}'"
+            f"serverUrlPrefix:'{app.settings['ELASTIC_APM']['RUM_SERVER_URL_PREFIX']}'"
         )
+
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT"] = (
         "elasticApm.init({" + ",".join(script_options) + "})"
     )
+
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT_HASH"] = b64encode(
         sha256(
             app.settings["ELASTIC_APM"]["INLINE_SCRIPT"].encode("ASCII")
         ).digest()
     ).decode("ASCII")
+
     if app.settings["ELASTIC_APM"]["ENABLED"]:
         app.settings["ELASTIC_APM"]["CLIENT"] = ElasticAPM(app).client
 

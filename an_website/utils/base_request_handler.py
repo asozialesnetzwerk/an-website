@@ -859,15 +859,13 @@ class BaseRequestHandler(RequestHandler):
         connect_src = ["'self'"]
 
         if self.apm_enabled and "SERVER_URL" in self.settings["ELASTIC_APM"]:
-            server_url_js = self.settings["ELASTIC_APM"].get(
-                "SERVER_URL_JS_AGENT"
-            )
-            if server_url_js is None:
-                # rum js agent needs to connect to ["ELASTIC_APM"]["SERVER_URL"]
+            rum_server_url = self.settings["ELASTIC_APM"].get("RUM_SERVER_URL")
+            if rum_server_url:
+                # the RUM agent needs to connect to rum_server_url
+                connect_src.append(rum_server_url)
+            elif rum_server_url is None:
+                # the RUM agent needs to connect to ["ELASTIC_APM"]["SERVER_URL"]
                 connect_src.append(self.settings["ELASTIC_APM"]["SERVER_URL"])
-            elif server_url_js:
-                # rum js agent needs to connect to server_url_js
-                connect_src.append(server_url_js)
 
         connect_src.append(  # fix for older browsers
             ("wss" if self.request.protocol == "https" else "ws")

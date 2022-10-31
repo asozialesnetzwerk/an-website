@@ -66,9 +66,9 @@ contact_address =
 [ELASTIC_APM]
 enabled = nope
 server_url = http://localhost:8200
-#server_url_js_agent = 
 #secret_token = 
 #api_key = 
 verify_server_cert = sure
-#server_url_prefix = 
+#rum_server_url = 
+#rum_server_url_prefix = 
 
