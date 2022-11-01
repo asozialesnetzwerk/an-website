@@ -184,8 +184,12 @@ def parse_args(
         def new_func(self: RequestHandler, *args: Any, **kwargs: Any) -> T:
             arguments: dict[str, str] = {}
             for key, values in self.request.arguments.items():
-                if values:
-                    arguments[key] = values[-1].decode("UTF-8")
+                if len(values) == 1:
+                    arguments[key] = values[0].decode("UTF-8")
+                else:
+                    raise HTTPError(  # we don't want to guess
+                        400, reason=f"Given multiple values for {key!r}"
+                    )
             try:
                 _data = parse(type_, arguments, strict=False)
             except ValueError as err:

@@ -14,6 +14,9 @@
                     list="quote-list"
                     autocomplete="on"
                     id="quote-input"
+             {% if selected_quote %}
+                    value="{{selected_quote.quote}}"
+             {% end %}
                     type="text">
         </label>
 
@@ -23,6 +26,9 @@
                    list="author-list"
                    autocomplete="on"
                    id="real-author-input"
+            {% if selected_quote %}
+                   value="{{selected_quote.author.name}}"
+            {% end %}
                    type="text">
         </label>
 
@@ -31,6 +37,9 @@
             <input name="fake-author-1"
                    list="author-list"
                    autocomplete="on"
+            {% if selected_author %}
+                   value="{{selected_author.name}}"
+            {% end %}
                    type="text">
         </label>
 

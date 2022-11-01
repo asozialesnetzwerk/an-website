@@ -54,6 +54,7 @@ class QuotesInfoPage(HTMLRequestHandler):
             id=quote_id,
             text=str(quote),
             description=f"Falsch zugeordnete Zitate mit „{quote}“ als Zitat.",
+            create_kwargs={"quote": quote_id},
         )
 
 
@@ -192,6 +193,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
             id=author_id,
             text=str(author),
             description=f"Falsch zugeordnete Zitate mit „{author}“ als Autor.",
+            create_kwargs={"author": author_id},
         )
 
     def get_redis_info_key(self, author_name: str) -> str:

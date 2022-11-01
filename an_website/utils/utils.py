@@ -213,6 +213,7 @@ class ModuleInfo(PageInfo):
         return self
 
     def search(self, query: str | Sequence[str]) -> float:  # noqa: D102
+        # pylint: disable=super-with-arguments
         score = super(ModuleInfo, self).search(query)
 
         if len(self.sub_pages) > 0:

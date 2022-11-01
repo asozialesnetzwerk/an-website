@@ -15,11 +15,13 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import cast
 
 from editdistance import distance
 from tornado.web import HTTPError, MissingArgumentError
 
+from ..utils.data_parsing import parse_args
 from .utils import (
     AUTHORS_CACHE,
     QUOTES_CACHE,
@@ -172,20 +174,39 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
     return quotes
 
 
+@dataclass(slots=True, frozen=True)
+class QuoteInfoArgs:
+    """Class representing a quote id and an author id."""
+
+    quote: int | None = None
+    author: int | None = None
+
+
 class CreatePage1(QuoteReadyCheckHandler):
     """The request handler for the create page."""
 
     RATELIMIT_POST_LIMIT = 5
     RATELIMIT_POST_COUNT_PER_PERIOD = 10
 
-    async def get(self, *, head: bool = False) -> None:
+    @parse_args(type_=QuoteInfoArgs)
+    async def get(self, *, args: QuoteInfoArgs, head: bool = False) -> None:
         """Handle GET requests to the create page."""
+        if args.quote is not None and args.author is not None:
+            return self.redirect(f"/zitate/{args.quote}-{args.author}")
+
         if head:
             return
+
         await self.render(
             "pages/quotes/create1.html",
             quotes=tuple(QUOTES_CACHE.values()),
             authors=tuple(AUTHORS_CACHE.values()),
+            selected_quote=None
+            if args.quote is None
+            else QUOTES_CACHE.get(args.quote),
+            selected_author=None
+            if args.author is None
+            else AUTHORS_CACHE.get(args.author),
         )
 
     async def post(self) -> None:

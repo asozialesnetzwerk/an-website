@@ -18,7 +18,7 @@ from datetime import datetime
 
 import pytest
 
-from an_website.utils.token import (
+from an_website.utils.token import (  # pylint: disable=import-private-name
     InvalidTokenError,
     _create_token_body_v0,
     _parse_token_v0,
@@ -71,7 +71,7 @@ def test_int_to_bytes() -> None:
 
 def test_bytes_to_int() -> None:
     """Test the bytes to int conversion."""
-    assert bytes_to_int(b"\0") == 0
+    assert bytes_to_int(b"\0") == 0  # pylint: disable=compare-to-zero
     assert bytes_to_int(b" ") == 0x20
     assert bytes_to_int(b"  ") == 0x2020
     assert bytes_to_int(b" \0") == 0x2000

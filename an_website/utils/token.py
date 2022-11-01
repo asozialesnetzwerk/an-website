@@ -64,13 +64,20 @@ def _split_token(token: str) -> tuple[TokenVersion, str]:
     raise InvalidTokenVersionError()
 
 
-def parse_token(token: str, *, secret: bytes | str) -> ParseResult:
+def parse_token(  # pylint: disable=inconsistent-return-statements
+    token: str,
+    *,
+    secret: bytes | str,
+    verify_time: bool = True,
+) -> ParseResult:
     """Parse an auth-token."""
     secret_bytes = secret.encode("UTF-8") if isinstance(secret, str) else secret
     version, token_body = _split_token(token)
     try:
         if version == "0":
-            return _parse_token_v0(token_body, secret_bytes)
+            return _parse_token_v0(
+                token_body, secret_bytes, verify_time=verify_time
+            )
     except InvalidTokenError:
         raise
     except Exception as exc:
@@ -96,7 +103,7 @@ def create_token(
             permissions, secret_bytes, duration, start_date, salt_bytes
         )
 
-    return parse_token(version + token, secret=secret)
+    return parse_token(version + token, secret=secret, verify_time=False)
 
 
 def int_to_bytes(number: int, length: int, signed: bool = False) -> bytes:

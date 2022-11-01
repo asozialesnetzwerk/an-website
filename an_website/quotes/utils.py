@@ -364,7 +364,9 @@ def get_author_updated_with(author_id: int, name: str) -> Author:
     author = AUTHORS_CACHE.get(author_id)
     if author is None:  # author not in cache, create new one
         author = Author(author_id, name, None)
-        MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
+        MAX_AUTHORS_ID.value = max(  # type: ignore[attr-defined]
+            MAX_AUTHORS_ID.value, author_id  # type: ignore[attr-defined]
+        )
     else:  # update to make sure cache is correct
         author.update_name(name)
 
@@ -401,7 +403,9 @@ def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
         quote = QUOTES_CACHE.get(quote_id)
     if quote is None:  # new quote
         quote = Quote(quote_id, quote_str, author)
-        MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
+        MAX_QUOTES_ID.value = max(  # type: ignore[attr-defined]
+            MAX_QUOTES_ID.value, quote.id  # type: ignore[attr-defined]
+        )
     else:  # quote was already saved
         quote.update_quote(quote_str, author.id, author.name)
 
@@ -651,12 +655,16 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.randint(1, MAX_QUOTES_ID.value)  # nosec: B311
+    return random.randint(  # nosec: B311
+        1, MAX_QUOTES_ID.value  # type: ignore[attr-defined]
+    )
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.randint(1, MAX_AUTHORS_ID.value)  # nosec: B311
+    return random.randint(  # nosec: B311
+        1, MAX_AUTHORS_ID.value  # type: ignore[attr-defined]
+    )
 
 
 def get_random_id() -> tuple[int, int]:

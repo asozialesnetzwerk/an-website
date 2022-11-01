@@ -97,11 +97,11 @@ class HostInfo(HTMLRequestHandler):
         if head:
             return
 
-        logo = self.SCREENFETCH_CACHE.value
+        logo = self.SCREENFETCH_CACHE.value  # type: ignore[attr-defined]
 
         if not logo:
             logo = minify_ansi_art((await run(SCREENFETCH_PATH, "-L"))[1])
-            self.SCREENFETCH_CACHE.value = logo
+            self.SCREENFETCH_CACHE.value = logo  # type: ignore[attr-defined]
 
         await self.render(
             "ansi2html.html",

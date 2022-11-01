@@ -2,6 +2,8 @@
 
 {% block head %}
     <link rel="stylesheet" type="text/css"
+          href="{{fix_static('css/quotes/quotes.css')}}">
+    <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/quotes/info.css')}}">
 {% end %}
 
@@ -12,6 +14,12 @@
                 {% block info_column %}{% end %}
             </th>
             <th>
+                <a class="no-style-a button-container-a"
+                   tooltip="Neues falsches Zitat hinzufügen"
+                   href="{{fix_url('/zitate/erstellen', **create_kwargs)}}">
+                    <img class="button-img" alt="Zitat hinzufügen."
+                         src="{{fix_static('img/plus.svg')}}">
+                </a>
                 {% if len(wrong_quotes) != 0 %}
                     Falsche Zitate:
                     <ol>
@@ -39,8 +47,9 @@
             <a href="{{fix_url('/kontakt', subject=f'Fehler bei {type} {id}', message=f'{text}\n({canonical_url})')}}"
                tooltip="Melde Fehler"
                tooltip-position="left"
+               class="button-container-a"
                id="report">
-                <img alt="Fehler melden" src="{{fix_static('img/report.svg')}}">
+                <img class="report-img" alt="Fehler melden" src="{{fix_static('img/report.svg')}}">
             </a>
         {% end %}
     </span>
