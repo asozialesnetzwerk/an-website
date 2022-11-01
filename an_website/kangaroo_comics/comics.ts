@@ -380,7 +380,8 @@ administratives/kaenguru-comics/kaenguru-045/original
 
         popupContainer.appendChild(clone);
         popupContainer.appendChild(closeButton);
-        image.parentNode?.appendChild(popupContainer);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        image.parentNode!.appendChild(popupContainer);
     };
 
     // add links to comics list
@@ -407,7 +408,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         ) as HTMLElement;
         // no_3rd_party is activated
         startButton.onclick = () => {
-            startButton?.remove();
+            startButton.remove();
             contentContainer.classList.remove("hidden");
             startLoadingComics();
         };

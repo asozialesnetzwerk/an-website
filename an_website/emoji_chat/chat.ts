@@ -53,7 +53,8 @@
     const emojiToIMG = (emoji: string) => {
         const emojiCode = [...emoji]
             .map((e: string) =>
-                e.codePointAt(0)?.toString(16)?.padStart(4, "0")
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                e.codePointAt(0)!.toString(16).padStart(4, "0")
             )
             .join(`-`)
             .toUpperCase();
