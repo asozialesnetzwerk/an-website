@@ -157,7 +157,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     method: str,
     url: str | SplitResult,
     headers: None | dict[str, str] = None,
-    body: None | bytes | Iterable[bytes] | str = None,
+    body: None | bytes | Iterable[bytes] | memoryview | str = None,
     *,
     proxy_type: None | int = None,
     proxy_addr: None | str = None,

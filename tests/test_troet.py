@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from . import (
+from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
     assert_valid_html_response,
@@ -24,10 +24,8 @@ from . import (
 )
 from .test_settings import parse_cookie
 
-assert fetch and app
 
-
-async def test_troet_page(fetch: FetchCallable) -> None:
+async def test_troet_page(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the troet page."""
     assert_valid_html_response(await fetch("/troet"))
 

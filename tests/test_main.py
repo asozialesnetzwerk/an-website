@@ -23,14 +23,18 @@ from tornado.web import Application
 from an_website import main, patches, utils
 from an_website.utils.base_request_handler import BaseRequestHandler
 
-from . import PARENT_DIR, FetchCallable, app, assert_valid_redirect, fetch
-
-assert fetch and app
+from . import (  # noqa: F401  # pylint: disable=unused-import
+    PARENT_DIR,
+    FetchCallable,
+    app,
+    assert_valid_redirect,
+    fetch,
+)
 
 
 async def test_parsing_module_infos(
-    fetch: FetchCallable,
-    app: Application,
+    fetch: FetchCallable,  # noqa: F811
+    app: Application,  # noqa: F811
 ) -> None:
     """Tests about the module infos in main."""
     # pylint: disable=too-complex

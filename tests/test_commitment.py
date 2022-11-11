@@ -20,7 +20,7 @@ from os.path import join
 
 from an_website.commitment.commitment import get_commit_data
 
-from . import (
+from . import (  # noqa: F401  # pylint: disable=unused-import
     DIR,
     FetchCallable,
     app,
@@ -29,8 +29,6 @@ from . import (
     assert_valid_yaml_response,
     fetch,
 )
-
-assert fetch and app
 
 
 async def test_parsing() -> None:
@@ -52,7 +50,7 @@ async def test_parsing() -> None:
         )
 
 
-async def test_text_api(fetch: FetchCallable) -> None:
+async def test_text_api(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the commitment API."""
     response = assert_valid_response(
         await fetch("/api/commitment", headers={"Accept": "*/*"}),
@@ -74,7 +72,7 @@ async def test_text_api(fetch: FetchCallable) -> None:
     assert response.body.decode("UTF-8") == "💬 fix kangaroo comic of today\n"
 
 
-async def test_json_api(fetch: FetchCallable) -> None:
+async def test_json_api(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the JSON API."""
     for query in (
         "require_emoji=sure",
@@ -99,7 +97,7 @@ async def test_json_api(fetch: FetchCallable) -> None:
         }
 
 
-async def test_yaml_api(fetch: FetchCallable) -> None:
+async def test_yaml_api(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the YAML API."""
     for query in (
         "hash=7",
@@ -123,7 +121,7 @@ async def test_yaml_api(fetch: FetchCallable) -> None:
         }
 
 
-async def test_api_404(fetch: FetchCallable) -> None:
+async def test_api_404(fetch: FetchCallable) -> None:  # noqa: F811
     """Test getting non-existant hashes."""
     for query in (
         "hash=7335914237808031fa15f32a854ba1e6b154442&require_emoji=sure",

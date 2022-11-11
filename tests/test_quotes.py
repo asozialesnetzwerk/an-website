@@ -25,7 +25,7 @@ from an_website.quotes import create
 from an_website.quotes import utils as quotes
 from an_website.quotes.image import FILE_EXTENSIONS
 
-from . import (
+from . import (  # noqa: F401  # pylint: disable=unused-import
     WRONG_QUOTE_DATA,
     FetchCallable,
     app,
@@ -36,8 +36,6 @@ from . import (
     check_html_page,
     fetch,
 )
-
-assert app and fetch
 
 
 @cache
@@ -132,7 +130,9 @@ async def test_create() -> None:
     assert wrong_quote.quote in await create.get_quotes(modified_quote_str)
 
 
-async def test_argument_checking_create_pages(fetch: FetchCallable) -> None:
+async def test_argument_checking_create_pages(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
     """Test whether the create handlers complain because of missing args."""
     wrong_quote = get_wrong_quote()
 
@@ -213,7 +213,9 @@ async def test_quote_updating() -> None:
     )
 
 
-async def test_quote_request_handlers(fetch: FetchCallable) -> None:
+async def test_quote_request_handlers(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
     """Test the request handlers for the quotes page."""
     get_wrong_quote()  # add data to cache
     await check_html_page(fetch, "/zitate")
@@ -304,7 +306,7 @@ def test_parsing_vote_str() -> None:
         main_page.vote_to_int("x")
 
 
-async def test_quote_apis(fetch: FetchCallable) -> None:
+async def test_quote_apis(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the quote APIs."""
     wrong_quote = get_wrong_quote()
 

@@ -26,7 +26,7 @@ import yaml
 from an_website.swapped_words import config_file as sw_config
 from an_website.swapped_words import swap
 
-from . import (
+from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
     assert_valid_html_response,
@@ -34,8 +34,6 @@ from . import (
     fetch,
 )
 from .test_settings import parse_cookie
-
-assert app and fetch
 
 
 def test_copying_case_of_letters() -> None:
@@ -187,7 +185,9 @@ def test_check_text_too_long() -> None:
         swap.check_text_too_long("x" * (swap.MAX_CHAR_COUNT + 1))
 
 
-async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
+async def test_sw_html_request_handlers(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
     """Test the swapped words html request handlers."""
     assert_valid_html_response(
         await fetch(
@@ -257,7 +257,9 @@ async def test_sw_html_request_handlers(fetch: FetchCallable) -> None:
     assert response2.body == response.body
 
 
-async def test_sw_json_request_handlers(fetch: FetchCallable) -> None:
+async def test_sw_json_request_handlers(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
     """Test the swapped words JSON API request handlers."""
     response = assert_valid_json_response(
         await fetch(

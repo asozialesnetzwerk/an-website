@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import socket
 
-from . import (
+from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
     assert_url_query,
@@ -31,10 +31,8 @@ from . import (
     fetch,
 )
 
-assert fetch and app
 
-
-async def test_json_apis(fetch: FetchCallable) -> None:
+async def test_json_apis(fetch: FetchCallable) -> None:  # noqa: F811
     """Check whether the APIs return valid JSON."""
     json_apis = (
         "/api/betriebszeit",
@@ -74,7 +72,7 @@ async def test_json_apis(fetch: FetchCallable) -> None:
         ).body
 
 
-async def test_not_found_handler(fetch: FetchCallable) -> None:
+async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the NotFoundHandler works."""
     assert_valid_html_response(await fetch("/qwertzuiop"), {404})
 
@@ -103,7 +101,7 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:
 
 
 async def test_page_crawling(
-    fetch: FetchCallable,
+    fetch: FetchCallable,  # noqa: F811
     http_server_port: tuple[socket.socket, int],
 ) -> None:
     """Test most of the request handlers with crawling."""
@@ -144,7 +142,7 @@ async def test_page_crawling(
 
 
 async def test_request_handlers2(
-    fetch: FetchCallable,
+    fetch: FetchCallable,  # noqa: F811
     http_server_port: tuple[socket.socket, int],
 ) -> None:
     """Test more request handler stuff."""
@@ -203,7 +201,7 @@ async def test_request_handlers2(
     )
 
 
-async def test_request_handlers(fetch: FetchCallable) -> None:
+async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
     # pylint: disable=too-many-statements
     response = await fetch("/")

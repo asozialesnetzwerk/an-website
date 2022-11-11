@@ -17,14 +17,17 @@ from __future__ import annotations
 
 import socket
 
-from . import FetchCallable, app, assert_valid_response, fetch
+from . import (  # noqa: F401  # pylint: disable=unused-import
+    FetchCallable,
+    app,
+    assert_valid_response,
+    fetch,
+)
 from .test_backdoor import request_and_parse
-
-assert fetch and app
 
 
 async def test_permissions(
-    fetch: FetchCallable,
+    fetch: FetchCallable,  # noqa: F811
     http_server_port: tuple[socket.socket, int],
 ) -> None:
     """Test stuff with permissions."""
@@ -119,7 +122,9 @@ async def test_permissions(
     )
 
 
-async def test_permissions_with_backdoor(fetch: FetchCallable) -> None:
+async def test_permissions_with_backdoor(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
     """Test permissions with the backdoor."""
     response = await request_and_parse(
         fetch, "app.settings['TRUSTED_API_SECRETS'].get('')"

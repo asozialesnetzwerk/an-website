@@ -19,14 +19,17 @@ import pickle  # nosec: B403
 from types import EllipsisType
 from typing import Any, Literal
 
-from . import FetchCallable, app, assert_valid_response, fetch
-
-assert fetch and app
+from . import (  # noqa: F401  # pylint: disable=unused-import
+    FetchCallable,
+    app,
+    assert_valid_response,
+    fetch,
+)
 
 
 async def request_and_parse(
     # pylint: disable=redefined-outer-name
-    fetch: FetchCallable,
+    fetch: FetchCallable,  # noqa: F811
     /,
     code: str,
     *,
@@ -79,7 +82,7 @@ async def request_and_parse(
     return response
 
 
-async def test_backdoor(fetch: FetchCallable) -> None:
+async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the backdoor."""
     # pylint: disable=too-many-statements
     response = await request_and_parse(fetch, "0==0")

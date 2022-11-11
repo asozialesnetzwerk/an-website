@@ -192,7 +192,7 @@ def fetch(
 
 
 async def assert_valid_redirect(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name  # noqa: F811
     path: str,
     new_path: str,
     codes: Set[int] = frozenset({307, 308}),
@@ -242,7 +242,7 @@ def assert_valid_response(
 
 
 async def check_html_page(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name  # noqa: F811
     url: str | tornado.httpclient.HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
     *,
