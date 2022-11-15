@@ -157,7 +157,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     method: str,
     url: str | SplitResult,
     headers: None | dict[str, str] = None,
-    body: None | bytes | Iterable[bytes] | memoryview | str = None,
+    body: None | bytes | Iterable[bytes] | str = None,
     *,
     proxy_type: None | int = None,
     proxy_addr: None | str = None,
@@ -179,7 +179,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     if isinstance(body, str):
         body = body.encode("UTF-8")
     if isinstance(body, memoryview):
-        body = body.tobytes()
+        body = body.tobytes()  # type: ignore[unreachable]
     if isinstance(body, Iterable) and not isinstance(body, (bytes, bytearray)):
         body = b"".join(body)  # type: ignore[arg-type]
     https = url.scheme == "https"

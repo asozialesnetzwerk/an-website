@@ -39,7 +39,6 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
 from tornado.log import gen_log
 from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
-from uvloop import EventLoopPolicy
 
 from .. import DIR as ROOT_DIR
 from .. import MEDIA_TYPES
@@ -77,7 +76,11 @@ def apply() -> None:
             "disabled": False,
         }
     )
-    set_event_loop_policy(EventLoopPolicy())
+    # pylint: disable=import-outside-toplevel
+    if "DISABLE_UVLOOP" not in os.environ:
+        from uvloop import EventLoopPolicy
+
+        set_event_loop_policy(EventLoopPolicy())
     AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
     tornado.httputil.parse_body_arguments = parse_body_arguments
     RedirectHandler.head = RedirectHandler.get
