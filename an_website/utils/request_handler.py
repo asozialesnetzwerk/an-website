@@ -379,6 +379,7 @@ class ElasticRUM(BaseRequestHandler):
     POSSIBLE_CONTENT_TYPES = (
         "application/javascript",
         "application/json",
+        "text/javascript",  # see: rfc9239
     )
 
     URL: ClassVar[str] = (
@@ -398,8 +399,11 @@ class ElasticRUM(BaseRequestHandler):
         head: bool = False,
     ) -> None:
         """Serve the RUM script."""
-        accepted_ct = "application/json" if eggs else "application/javascript"
-        self.handle_accept_header((accepted_ct,))
+        self.handle_accept_header(
+            ("application/json",)
+            if eggs
+            else ("application/javascript", "text/javascript")
+        )
 
         if (key := version + spam + eggs) not in self.SCRIPTS:
             response = await AsyncHTTPClient().fetch(
