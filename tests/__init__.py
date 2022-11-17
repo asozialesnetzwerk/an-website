@@ -392,3 +392,23 @@ def assert_valid_json_response(
     parsed_json = json.loads(response.body)
     assert parsed_json
     return parsed_json
+
+
+def assert_valid_dynload_response(
+    response: tornado.httpclient.HTTPResponse,
+    codes: Set[int] = frozenset({200, 503}),
+) -> Any:
+    """Assert a valid dynload response with the given status code."""
+    assert_valid_response(
+        response, "application/vnd.asozial.dynload+json", codes
+    )
+    parsed_json = json.loads(response.body)
+    assert parsed_json
+    assert response.effective_url == parsed_json["url"]
+    assert parsed_json["title"]
+    assert "short_title" in parsed_json
+    assert parsed_json["body"]
+    assert "scripts" in parsed_json
+    assert "stylesheets" in parsed_json
+    assert "css" in parsed_json
+    return parsed_json

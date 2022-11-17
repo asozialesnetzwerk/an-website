@@ -20,13 +20,14 @@ function post(
     params = {},
     ondata = console.log,
     onerror = console.error,
+    accept = "application/json",
 ): Promise<void> {
     return fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
         headers: {
             // deno-fmt-ignore
-            "Accept": "application/json",
+            "Accept": accept,
             "Content-Type": "application/json",
         },
     })
@@ -42,13 +43,14 @@ function get(
     params = {},
     ondata = console.log,
     onerror = console.error,
+    accept = "application/json",
 ): Promise<void> {
     if (params) {
         url += "?" + (new URLSearchParams(params)).toString();
     }
     return fetch(url, {
         method: "GET",
-        headers: { Accept: "application/json" },
+        headers: { Accept: accept },
     })
         .then(
             (response) => response.json(),

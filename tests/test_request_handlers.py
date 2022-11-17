@@ -21,6 +21,7 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
     assert_url_query,
+    assert_valid_dynload_response,
     assert_valid_html_response,
     assert_valid_json_response,
     assert_valid_redirect,
@@ -260,71 +261,122 @@ async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
     await check_html_page(fetch, "/wiki")
     await check_html_page(fetch, "/wortspiel-helfer")
 
-    assert_valid_json_response(
-        await fetch("/betriebszeit", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/discord", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/einstellungen", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/endpunkte", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/hangman-loeser", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/host-info", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/ip", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/js-lizenzen", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/kaenguru-comics", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/kontakt", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/services", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/soundboard", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
+    assert_valid_dynload_response(
         await fetch(
-            "/soundboard/personen", headers={"Accept": "application/json"}
+            "/betriebszeit",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
         )
     )
-    assert_valid_json_response(
-        await fetch("/soundboard/suche", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/suche", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
-        await fetch("/version", headers={"Accept": "application/json"})
-    )
-    assert_valid_json_response(
+    assert_valid_dynload_response(
         await fetch(
-            "/vertauschte-woerter", headers={"Accept": "application/json"}
+            "/discord",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
         )
     )
-    assert_valid_json_response(
+    assert_valid_dynload_response(
         await fetch(
-            "/waehrungs-rechner", headers={"Accept": "application/json"}
+            "/einstellungen",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
         )
     )
-    assert_valid_json_response(
-        await fetch("/wiki", headers={"Accept": "application/json"})
+    assert_valid_dynload_response(
+        await fetch(
+            "/endpunkte",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
     )
-    assert_valid_json_response(
-        await fetch("/wortspiel-helfer", headers={"Accept": "application/json"})
+    assert_valid_dynload_response(
+        await fetch(
+            "/hangman-loeser",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/host-info",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/ip", headers={"Accept": "application/vnd.asozial.dynload+json"}
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/js-lizenzen",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/kaenguru-comics",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/kontakt",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/services",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/soundboard",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/soundboard/personen",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/soundboard/suche",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/suche", headers={"Accept": "application/vnd.asozial.dynload+json"}
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/version",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/vertauschte-woerter",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/waehrungs-rechner",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/wiki", headers={"Accept": "application/vnd.asozial.dynload+json"}
+        )
+    )
+    assert_valid_dynload_response(
+        await fetch(
+            "/wortspiel-helfer",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
+        )
     )
 
     response = await fetch("/host-info/uwu")

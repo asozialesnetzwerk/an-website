@@ -61,7 +61,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         "text/html",
         "text/plain",
         "text/markdown",
-        "application/json",
+        "application/vnd.asozial.dynload+json",
     )
     IS_NOT_HTML: ClassVar[bool]
 
@@ -71,7 +71,9 @@ class HTMLRequestHandler(BaseRequestHandler):
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
         """Finish the request."""
-        as_json: bool = self.content_type == "application/json"
+        as_json: bool = (
+            self.content_type == "application/vnd.asozial.dynload+json"
+        )
         as_plain_text: bool = self.content_type == "text/plain"
         as_markdown: bool = self.content_type == "text/markdown"
 

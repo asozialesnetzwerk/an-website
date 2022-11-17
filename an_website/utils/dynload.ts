@@ -195,7 +195,7 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         } else {
             window.location.href = url;
         }
-    });
+    }, "application/vnd.asozial.dynload+json");
 }
 
 function dynLoadOnPopState(event: PopStateEvent) {

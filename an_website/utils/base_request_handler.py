@@ -81,6 +81,7 @@ LOGGER: Final = logging.getLogger(__name__)
 TEXT_CONTENT_TYPES: Final[set[str]] = {
     "application/javascript",
     "application/json",
+    "application/vnd.asozial.dynload+json",
     "application/x-ndjson",
     "application/xml",
     "application/yaml",
@@ -151,7 +152,10 @@ class BaseRequestHandler(RequestHandler):
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
         """Get the function for dumping the output."""
-        if self.content_type == "application/json":
+        if self.content_type in {
+            "application/json",
+            "application/vnd.asozial.dynload+json",
+        }:
             option = ORJSON_OPTIONS
             if self.get_bool_argument("pretty", False):
                 option |= json.OPT_INDENT_2
@@ -496,8 +500,7 @@ class BaseRequestHandler(RequestHandler):
 
         user_id = cookie.decode("UTF-8") if cookie else str(uuid.uuid4())
 
-        # save it in cookie or reset expiry date
-        if not self.get_secure_cookie(
+        if not self.get_secure_cookie(  # save it in cookie or reset expiry date
             "user_id", max_age_days=30, min_version=2
         ):
             self.set_secure_cookie(
