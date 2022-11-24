@@ -247,6 +247,29 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
         )
 
 
+def wrong_quote_to_json(
+    wq_: WrongQuote, vote: int, next_: tuple[int, int], rating: str, full: bool
+) -> dict[str, Any]:  # TODO: improve lazy return type typing
+    """Convert a wrong quote to a dict."""
+    next_q, next_a = next_
+    if full:
+        return {
+            "wrong_quote": wq_.to_json(),
+            "next": f"{next_q}-{next_a}",
+            "vote": vote,
+        }
+    return {
+        "id": wq_.get_id_as_str(),
+        "quote": str(wq_.quote),
+        "author": str(wq_.author),
+        "real_author": str(wq_.quote.author),
+        "real_author_id": wq_.quote.author.id,
+        "rating": rating,
+        "vote": vote,
+        "next": f"{next_q}-{next_a}",
+    }
+
+
 class QuoteById(QuoteBaseHandler):
     """The page with a specified quote that then gets rendered."""
 
@@ -256,6 +279,7 @@ class QuoteById(QuoteBaseHandler):
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
         *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
     )
 
@@ -396,6 +420,16 @@ class QuoteById(QuoteBaseHandler):
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
         """Render the page with the wrong_quote and this vote."""
+        if self.content_type in APIRequestHandler.POSSIBLE_CONTENT_TYPES:
+            return await self.finish(
+                wrong_quote_to_json(
+                    wrong_quote,
+                    vote,
+                    self.next_id,
+                    await self.get_rating_str(wrong_quote),
+                    self.get_bool_argument("full", False),
+                )
+            )
         await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
@@ -441,20 +475,12 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
         """Return the relevant data for the quotes page as JSON."""
-        next_q, next_a = self.next_id
-        if self.request.path.endswith("/full"):
-            return await self.finish_dict(
-                wrong_quote=wrong_quote.to_json(),
-                next=f"{next_q}-{next_a}",
-                vote=vote,
+        return await self.finish(
+            wrong_quote_to_json(
+                wrong_quote,
+                vote,
+                self.next_id,
+                await self.get_rating_str(wrong_quote),
+                self.request.path.endswith("/full"),
             )
-        return await self.finish_dict(
-            id=wrong_quote.get_id_as_str(),
-            quote=str(wrong_quote.quote),
-            author=str(wrong_quote.author),
-            real_author=str(wrong_quote.quote.author),
-            real_author_id=wrong_quote.quote.author.id,
-            rating=await self.get_rating_str(wrong_quote),
-            vote=vote,
-            next=f"{next_q}-{next_a}",
         )

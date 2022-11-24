@@ -144,24 +144,35 @@ class UptimeHandler(HTMLRequestHandler):
     """The request handler for the uptime page."""
 
     COMPUTE_ETAG = False
+    POSSIBLE_CONTENT_TYPES = (
+        *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
+    )
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""
         self.set_header("Cache-Control", "no-cache")
         if head:
             return
+        if self.content_type in APIRequestHandler.POSSIBLE_CONTENT_TYPES:
+            return await self.finish(await self.get_uptime_data())
+        await self.render("pages/uptime.html", **(await self.get_uptime_data()))
+
+    async def get_uptime_data(
+        self,
+    ) -> dict[str, str | float | AvailabilityDict]:
+        """Get uptime data."""
         availability_data = (
             await get_availability_data(self.elasticsearch)
             if EVENT_ELASTICSEARCH.is_set()
             else (0, 0)
         )
-        availability = get_availability_dict(*availability_data)["percentage"]
-        await self.render(
-            "pages/uptime.html",
-            uptime=(uptime := calculate_uptime()),
-            uptime_str=uptime_to_str(uptime),
-            availability=availability,
-        )
+        return {
+            "uptime": (uptime := calculate_uptime()),
+            "uptime_str": uptime_to_str(uptime),
+            "start_time": time.time() - uptime - EPOCH,
+            "availability": get_availability_dict(*availability_data),
+        }
 
 
 class AvailabilityChartHandler(BaseRequestHandler):
@@ -203,24 +214,7 @@ class AvailabilityChartHandler(BaseRequestHandler):
         )
 
 
-class UptimeAPIHandler(APIRequestHandler):
+class UptimeAPIHandler(APIRequestHandler, UptimeHandler):
     """The request handler for the uptime API."""
 
-    COMPUTE_ETAG = False
-
-    async def get(self, *, head: bool = False) -> None:
-        """Handle GET requests."""
-        self.set_header("Cache-Control", "no-cache")
-        if head:
-            return
-        availability_data = (
-            await get_availability_data(self.elasticsearch)
-            if EVENT_ELASTICSEARCH.is_set()
-            else (0, 0)
-        )
-        return await self.finish_dict(
-            uptime=(uptime := calculate_uptime()),
-            uptime_str=uptime_to_str(uptime),
-            start_time=time.time() - uptime - EPOCH,
-            availability=get_availability_dict(*availability_data),
-        )
+    POSSIBLE_CONTENT_TYPES = APIRequestHandler.POSSIBLE_CONTENT_TYPES
