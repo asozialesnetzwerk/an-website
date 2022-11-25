@@ -15,7 +15,7 @@
     {% if availability and availability.get('percentage') %}
         <div>
             <br>Verfügbarkeit: {{f"{availability['percentage']:.2f}".replace(".", ",")}} %<br>
-            <img src="{{fix_url('/betriebszeit/verfuegbarkeit.svg', a=int(availability * 100) / (100.0 * 100))}}"
+            <img src="{{fix_url('/betriebszeit/verfuegbarkeit.svg', a=int(availability['percentage'] * 100) / (100.0 * 100))}}"
                  alt="Verfügbarkeits-Tortendiagramm"
                  width="100"
                  height="100">
