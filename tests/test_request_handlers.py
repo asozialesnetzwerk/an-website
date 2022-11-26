@@ -237,6 +237,8 @@ async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
     assert_valid_response(
         await fetch("/static/robots.txt"), "text/plain; charset=UTF-8"
     )
+    assert_valid_response(await fetch("/favicon.jxl"), "image/jxl")
+    assert_valid_response(await fetch("/static/favicon.jxl"), "image/jxl")
     assert_valid_response(await fetch("/favicon.png"), "image/png")
     assert_valid_response(await fetch("/static/favicon.png"), "image/png")
 

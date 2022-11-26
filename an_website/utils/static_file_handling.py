@@ -51,6 +51,7 @@ def create_file_hashes_dict() -> dict[str, str]:
         if path.is_file() and "openmoji-svg-" not in str(path)
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
+    file_hashes_dict["/favicon.jxl"] = file_hashes_dict["/static/favicon.jxl"]
     file_hashes_dict["/humans.txt"] = file_hashes_dict["/static/humans.txt"]
     return file_hashes_dict
 
@@ -66,7 +67,7 @@ def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
     handlers: list[Handler] = [
         (
-            r"(?i)(?:/static)?/(\.env|favicon\.png|humans\.txt|robots\.txt)",
+            r"(?i)(?:/static)?/(\.env|favicon\.(?:png|jxl)|humans\.txt|robots\.txt)",
             StaticFileHandler,
             {"path": STATIC_DIR},
         ),

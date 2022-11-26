@@ -153,7 +153,7 @@ def assert_url_query(url: str, /, **args: None | str) -> None:
     query_str = split_url.query
     is_static = split_url.path.startswith(
         ("/static/", "/soundboard/files/")
-    ) or split_url.path in {"/favicon.png", "/humans.txt"}
+    ) or split_url.path in {"/favicon.png", "/favicon.jxl", "/humans.txt"}
     query: dict[str, str] = (
         dict(urllib.parse.parse_qsl(query_str, True, True)) if query_str else {}
     )
