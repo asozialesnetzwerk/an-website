@@ -64,11 +64,11 @@
 }
 
 .nicht-witzig::after {
-    content: url(/static/img/StempelNichtWitzigKlein.svg?v=0);
+    content: url(/static/img/stamps/nichtwitzig.small.svg?v=252533840141546d);
 }
 
 .witzig::after {
-    content: url(/static/img/StempelWitzigKlein.svg?v=0);
+    content: url(/static/img/stamps/witzig.small.svg?v=af22bf11feffb9bb);
 }
 
 .invisible {

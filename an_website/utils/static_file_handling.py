@@ -70,11 +70,6 @@ def get_handlers() -> list[Handler]:
             StaticFileHandler,
             {"path": STATIC_DIR},
         ),
-        (
-            r"(?i)/favicon\.ico",
-            tornado.web.RedirectHandler,
-            {"url": fix_static_path("/favicon.png")},
-        ),
     ]
     if sys.flags.dev_mode:
         # add handlers for the unminified CSS files

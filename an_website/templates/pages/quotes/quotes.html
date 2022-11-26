@@ -78,7 +78,7 @@
                 {% if vote == 1 %} voted="1" {% end %}
                 value={% if vote == 1 %}"0"{% else %}"1"{% end %}
                 type="submit" id="upvote" name="vote">
-            <img src="{{fix_static('img/StempelWitzigKlein.svg')}}"
+            <img src="{{fix_static('img/stamps/witzig.small.svg')}}"
                  alt="WITZIG!">
         </button>
         <button class="form-button vote"
@@ -86,7 +86,7 @@
                 {% if vote == -1 %} voted="-1" {% end %}
                 value={% if vote == -1 %}"0"{% else %}"-1"{% end %}
                 type="submit" id="downvote" name="vote">
-            <img src="{{fix_static('img/StempelNichtWitzigKlein.svg')}}"
+            <img src="{{fix_static('img/stamps/nichtwitzig.small.svg')}}"
                  alt="NICHT WITZIG!">
         </button>
     </form>
