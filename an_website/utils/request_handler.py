@@ -71,11 +71,9 @@ class HTMLRequestHandler(BaseRequestHandler):
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
         """Finish the request."""
-        as_json: bool = (
-            self.content_type == "application/vnd.asozial.dynload+json"
-        )
-        as_plain_text: bool = self.content_type == "text/plain"
-        as_markdown: bool = self.content_type == "text/markdown"
+        as_json = self.content_type == "application/vnd.asozial.dynload+json"
+        as_plain_text = self.content_type == "text/plain"
+        as_markdown = self.content_type == "text/markdown"
 
         if (
             not isinstance(chunk, bytes | str)

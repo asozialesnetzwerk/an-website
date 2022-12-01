@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate content_types.json and media_types.json."""
+
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -12,6 +12,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+"""Generate content_types.json and media_types.json."""
 
 from __future__ import annotations
 
@@ -45,7 +47,7 @@ ADDITIONAL_MEDIA_TYPES: Final[MediaTypes] = {
 
 
 def dump_json(dictionary: Any, path: Path) -> None:
-    """Write json into a file."""
+    """Write JSON into a file."""
     text = json.dumps(dictionary, **JSON_OPTIONS)  # type: ignore[arg-type]
     path.write_text(
         text if text.endswith("\n") else f"{text}\n",
