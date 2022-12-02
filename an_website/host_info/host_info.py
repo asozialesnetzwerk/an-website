@@ -103,11 +103,16 @@ class HostInfo(HTMLRequestHandler):
             logo = minify_ansi_art((await run(SCREENFETCH_PATH, "-L"))[1])
             self.SCREENFETCH_CACHE.value = logo  # type: ignore[attr-defined]
 
+        screenfetch_bytes = (await run(SCREENFETCH_PATH, "-n", env=ENV))[1]
+
+        if self.content_type == "text/plain":
+            return await self.finish(logo + b"\n\n" + screenfetch_bytes)
+
         await self.render(
             "ansi2html.html",
             ansi=[
                 logo.decode("UTF-8"),
-                (await run(SCREENFETCH_PATH, "-n", env=ENV))[1].decode("UTF-8"),
+                screenfetch_bytes.decode("UTF-8"),
             ],
             powered_by="https://github.com/KittyKatt/screenFetch",
             powered_by_name="screenFetch",
@@ -150,6 +155,9 @@ class UwUHostInfo(HTMLRequestHandler):
 
         if head:
             return
+
+        if self.content_type == "text/plain":
+            return await self.finish(uwufetch_bytes)
 
         uwufetch = uwufetch_bytes.decode("UTF-8").split("\n\n")
         await self.render(
