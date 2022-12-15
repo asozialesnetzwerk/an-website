@@ -29,7 +29,8 @@ import orjson as json
 from Crypto.Hash.KangarooTwelve import new as kangaroo12
 from tornado.httpclient import AsyncHTTPClient
 
-from .. import DIR as ROOT_DIR, TRACEBACK_DIR
+from .. import DIR as ROOT_DIR
+from .. import TRACEBACK_DIR
 
 
 class AsyncHandler(logging.Handler):
@@ -159,6 +160,7 @@ class WebhookHandler(AsyncHandler):
         except Exception:  # pylint: disable=broad-except
             self.handleError(record)
 
+
 class TracebackUrlWebhookHandler(WebhookHandler):
     """A logging handler that sends logs to a webhook."""
 
@@ -187,14 +189,19 @@ class TracebackUrlWebhookHandler(WebhookHandler):
         """Send the request to the webhook."""
         try:
             text_tuple = (
-                f"{record.levelname} {record.message!r} "
-                f"({record.filename}:{record.funcName}:{record.lineno})",
+                (
+                    f"{record.levelname} {record.message!r} "
+                    f"({record.filename}:{record.funcName}:{record.lineno})"
+                ),
                 "",
                 record.exc_text or record.stack_info,
             )
-            text = "\n".join(
-                [line for line in text_tuple if line is not None]
-            ).strip() + "\n"
+            text = (
+                "\n".join(
+                    [line for line in text_tuple if line is not None]
+                ).strip()
+                + "\n"
+            )
             tb_name = kangaroo12(text.encode("UTF-8")).read(16).hex() + ".txt"
             url = f"{self.an_website_url}/tracebacks/{tb_name}"
             record.traceback_url = url

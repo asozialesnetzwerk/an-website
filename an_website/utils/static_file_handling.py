@@ -28,8 +28,8 @@ import orjson as json
 import tornado.web
 from blake3 import blake3  # type: ignore[import]
 
-from .. import DIR as ROOT_DIR, TRACEBACK_DIR
-from .. import STATIC_DIR
+from .. import DIR as ROOT_DIR
+from .. import STATIC_DIR, TRACEBACK_DIR
 from .utils import Handler
 
 LOGGER: Final = logging.getLogger(__name__)
