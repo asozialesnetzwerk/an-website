@@ -15,14 +15,14 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import ClassVar, cast
 
 import orjson as json
 from tornado.web import RedirectHandler
 
 from .. import ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, name_to_id
+from ..utils.utils import ModuleInfo, Permission, name_to_id
 
 
 def get_module_info() -> ModuleInfo:
@@ -63,16 +63,28 @@ class Endpoints(HTMLRequestHandler):
             api_paths: list[dict[str, str | list[str]]] = [
                 {
                     "path": handler[0],
-                    "methods": handler[1].get_allowed_methods(),
+                    "methods": methods,
                     "content_types": list(handler[1].POSSIBLE_CONTENT_TYPES),
                 }
                 for handler in module_info.handlers
                 if handler[0].startswith("/api/")
                 if issubclass(handler[1], APIRequestHandler)
                 if (
-                    handler[1].REQUIRED_PERMISSION is None
-                    or self.is_authorized(handler[1].REQUIRED_PERMISSION)
+                    methods := [
+                        method.upper()
+                        for method in handler[1].get_allowed_methods()
+                        if (
+                            perm := getattr(
+                                getattr(handler[1], method.lower()),
+                                "required_perms",
+                                None,
+                            )
+                        )
+                        is None
+                        or self.is_authorized(cast(Permission, perm))
+                    ]
                 )
+                if methods != ["OPTIONS"]
             ]
             if len(api_paths) > 0:
                 endpoints.append(

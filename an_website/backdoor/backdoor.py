@@ -32,6 +32,7 @@ import dill as pickle  # type: ignore[import]  # nosec: B403
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
+from ..utils.decorators import requires
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import Permission
 
@@ -57,10 +58,9 @@ class Backdoor(APIRequestHandler):
     )
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("POST",)
-    REQUIRED_PERMISSION: ClassVar[Permission] = Permission.BACKDOOR
     ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = False
 
-    sessions: dict[str, dict[str, Any]] = {}
+    sessions: ClassVar[dict[str, dict[str, Any]]] = {}
 
     async def backup_session(self) -> bool:
         """Backup a session using Redis and return whether it succeeded."""
@@ -152,6 +152,7 @@ class Backdoor(APIRequestHandler):
             self.sessions[session_id] = session
         return self.update_session(session)
 
+    @requires(Permission.BACKDOOR)
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle POST requests to the backdoor API."""

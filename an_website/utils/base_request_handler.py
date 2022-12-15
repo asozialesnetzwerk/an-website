@@ -66,7 +66,6 @@ from .utils import (
     OpenMojiValue,
     Permission,
     add_args_to_url,
-    anonymize_ip,
     bool_to_str,
     geoip,
     hash_bytes,
@@ -103,7 +102,6 @@ class BaseRequestHandler(RequestHandler):
     MAX_BODY_SIZE: ClassVar[None | int] = None
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET",)
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ()
-    REQUIRED_PERMISSION: ClassVar[None | Permission] = None
     # the following should be False on security relevant endpoints
     ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = True
 
@@ -644,7 +642,7 @@ class BaseRequestHandler(RequestHandler):
 
     async def prepare(self) -> None:  # noqa: C901
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
+        # pylint: disable=invalid-overridden-method, too-complex
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
                 if isinstance(transform, GZipContentEncoding):
@@ -669,28 +667,6 @@ class BaseRequestHandler(RequestHandler):
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
-            required_permission = self.REQUIRED_PERMISSION
-            required_permission_for_method = getattr(
-                self, f"REQUIRED_PERMISSION_{self.request.method}", None
-            )
-
-            if required_permission is None:
-                required_permission = required_permission_for_method
-            elif required_permission_for_method is not None:
-                required_permission |= required_permission_for_method
-
-            if not (
-                required_permission is None
-                or (is_authorized := self.is_authorized(required_permission))
-            ):
-                self.auth_failed = True
-                LOGGER.warning(
-                    "Unauthorized access to %s from %s",
-                    self.request.path,
-                    anonymize_ip(self.request.remote_ip),
-                )
-                raise HTTPError(401 if is_authorized is None else 403)
-
             if (
                 self.MAX_BODY_SIZE is not None
                 and len(self.request.body) > self.MAX_BODY_SIZE

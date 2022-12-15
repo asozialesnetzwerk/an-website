@@ -33,6 +33,7 @@ from urllib.parse import unquote
 from tornado.web import stream_request_body
 
 from .. import EVENT_SHUTDOWN, NAME
+from ..utils.decorators import requires
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
 
@@ -64,7 +65,6 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
     """The request handler for the update API."""
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("PUT",)
-    REQUIRED_PERMISSION: ClassVar[Permission] = Permission.UPDATE
 
     dir: TemporaryDirectory[str]
     file: _TemporaryFileWrapper[bytes]
@@ -87,6 +87,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
             None, write_from_queue, self.file, self.queue
         )
 
+    @requires(Permission.UPDATE)
     async def put(self, filename: str) -> None:
         """Handle PUT requests to the update API."""
         # pylint: disable=while-used
