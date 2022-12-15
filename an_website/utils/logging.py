@@ -26,9 +26,10 @@ from logging import LogRecord
 from typing import Any, cast
 
 import orjson as json
+from Crypto.Hash.KangarooTwelve import new as kangaroo12
 from tornado.httpclient import AsyncHTTPClient
 
-from .. import DIR as ROOT_DIR
+from .. import DIR as ROOT_DIR, TRACEBACK_DIR
 
 
 class AsyncHandler(logging.Handler):
@@ -119,6 +120,8 @@ class WebhookFormatter(DatetimeFormatter):
             record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
+        if not hasattr(record, "traceback_url"):
+            record.traceback_url = "https://youtube.com/watch?v=dQw4w9WgXcQ"
         return self.formatMessage(record)
 
 
@@ -155,3 +158,49 @@ class WebhookHandler(AsyncHandler):
             )
         except Exception:  # pylint: disable=broad-except
             self.handleError(record)
+
+class TracebackUrlWebhookHandler(WebhookHandler):
+    """A logging handler that sends logs to a webhook."""
+
+    an_website_url: str
+
+    def __init__(
+        self,
+        level: int | str = logging.NOTSET,
+        *,
+        loop: AbstractEventLoop,
+        url: str,
+        content_type: str,
+        an_website_domain: str,
+    ):
+        """Initialize the handler."""
+        super().__init__(
+            level=level, loop=loop, url=url, content_type=content_type
+        )
+        self.an_website_url = (
+            f"http://{an_website_domain}"
+            if an_website_domain.startswith("localhost:")
+            else f"https://{an_website_domain}"
+        )
+
+    async def emit(self, record: LogRecord) -> None:
+        """Send the request to the webhook."""
+        try:
+            text_tuple = (
+                f"{record.levelname} {record.message!r} "
+                f"({record.filename}:{record.funcName}:{record.lineno})",
+                "",
+                record.exc_text or record.stack_info,
+            )
+            text = "\n".join(
+                [line for line in text_tuple if line is not None]
+            ).strip() + "\n"
+            tb_name = kangaroo12(text.encode("UTF-8")).read(16).hex() + ".txt"
+            url = f"{self.an_website_url}/tracebacks/{tb_name}"
+            record.traceback_url = url
+            file_path = TRACEBACK_DIR / tb_name
+            if not file_path.is_file():
+                file_path.write_text(text)
+        except Exception:  # pylint: disable=broad-except
+            self.handleError(record)
+        return await super().emit(record)

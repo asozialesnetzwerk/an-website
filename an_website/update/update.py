@@ -80,7 +80,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
         loop = asyncio.get_running_loop()
-        self.dir = TemporaryDirectory()
+        self.dir = TemporaryDirectory(ignore_cleanup_errors=True)
         self.file = NamedTemporaryFile(dir=self.dir.name, delete=False)
         self.queue = SimpleQueue()
         self.future = loop.run_in_executor(
@@ -112,6 +112,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
             self.flush()
         await self.finish()
         await process.wait()
+        self.dir.cleanup()
         if process.returncode:
             LOGGER.error("Failed to install %s", filename)
         elif self.get_bool_argument("shutdown", True):

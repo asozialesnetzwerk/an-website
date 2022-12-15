@@ -28,7 +28,7 @@ import orjson as json
 import tornado.web
 from blake3 import blake3  # type: ignore[import]
 
-from .. import DIR as ROOT_DIR
+from .. import DIR as ROOT_DIR, TRACEBACK_DIR
 from .. import STATIC_DIR
 from .utils import Handler
 
@@ -71,6 +71,8 @@ def get_handlers() -> list[Handler]:
             StaticFileHandler,
             {"path": STATIC_DIR},
         ),
+        # TODO: require traceback permission??
+        (r"(?i)/tracebacks/(.+)", StaticFileHandler, {"path": TRACEBACK_DIR}),
     ]
     if sys.flags.dev_mode:
         # add handlers for the unminified CSS files

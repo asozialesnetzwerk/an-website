@@ -77,7 +77,7 @@ from .quotes.utils import (
 )
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
-from .utils.logging import WebhookFormatter, WebhookHandler
+from .utils.logging import TracebackUrlWebhookHandler, WebhookFormatter
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
@@ -513,11 +513,14 @@ def setup_webhook_logging(  # pragma: no cover
         "WEBHOOK_CONTENT_TYPE",
         fallback="application/json",
     )
-    webhook_handler = WebhookHandler(
+    webhook_handler = TracebackUrlWebhookHandler(
         logging.ERROR,
         loop=loop,
         url=webhook_url,
         content_type=webhook_content_type,
+        an_website_domain=config.get(
+            "GENERAL", "DOMAIN", fallback="localhost:8080"  # TODO: localhost po
+        ),
     )
     formatter = WebhookFormatter(
         config.get(

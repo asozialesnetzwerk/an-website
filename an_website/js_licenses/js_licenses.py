@@ -90,6 +90,7 @@ class JSLicenses(HTMLRequestHandler):
         """Handle GET requests to the JS licenses page."""
         if head:
             return
+        logging.getLogger("JSLicenses").critical("get request to js licenses", stack_info=True)
         await self.render(
             "pages/js_licenses.html", js_files=get_js_filenames_and_licenses()
         )

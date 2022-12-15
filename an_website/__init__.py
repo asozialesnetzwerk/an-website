@@ -21,6 +21,7 @@ import sys
 import time
 from asyncio import Event
 from pathlib import Path
+from tempfile import gettempdir
 from typing import Final, TypedDict
 
 import orjson as json
@@ -79,6 +80,19 @@ EVENT_SHUTDOWN: Final = multiprocessing.Event()
 EVENT_ELASTICSEARCH: Final = Event()
 EVENT_REDIS: Final = Event()
 
+
+def create_traceback_dir() -> Path:
+    """Create a tmp dir for the tracebacks and delete its contents."""
+    tmp_dir = Path(gettempdir()) / "an-website-tracebacks"
+    tmp_dir.mkdir(exist_ok=True)
+    for path in tmp_dir.iterdir():
+        os.remove(path)
+    return tmp_dir
+
+
+TRACEBACK_DIR: Final[Path] = create_traceback_dir()
+
+
 __all__ = (
     "CONTAINERIZED",
     "DIR",
@@ -96,6 +110,7 @@ __all__ = (
     "START_TIME_NS",
     "STATIC_DIR",
     "TEMPLATES_DIR",
+    "TRACEBACK_DIR",
     "VERSION",
     "pytest_is_running",
 )
