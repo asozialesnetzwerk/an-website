@@ -57,8 +57,8 @@ from .. import (
     ORJSON_OPTIONS,
     pytest_is_running,
 )
+from .decorators import is_authorized
 from .static_file_handling import FILE_HASHES_DICT
-from .token import InvalidTokenError, parse_token
 from .utils import (
     THEMES,
     BumpscosityValue,
@@ -66,7 +66,6 @@ from .utils import (
     OpenMojiValue,
     Permission,
     add_args_to_url,
-    anonymize_ip,
     bool_to_str,
     geoip,
     hash_bytes,
@@ -103,9 +102,6 @@ class BaseRequestHandler(RequestHandler):
     MAX_BODY_SIZE: ClassVar[None | int] = None
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET",)
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ()
-    REQUIRED_PERMISSION: ClassVar[None | Permission] = None
-    # the following should be False on security relevant endpoints
-    ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = True
 
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
@@ -564,50 +560,11 @@ class BaseRequestHandler(RequestHandler):
                 self.request.path
             ).description
 
-    def is_authorized(self, permission: Permission) -> None | bool:
+    def is_authorized(
+        self, permission: Permission, allow_cookie_auth: bool = True
+    ) -> bool | None:
         """Check whether the request is authorized."""
-        api_secrets: dict[str | None, Permission] = self.settings.get(
-            "TRUSTED_API_SECRETS", {}
-        )
-        auth_secret: str | bytes | None = self.settings.get("AUTH_TOKEN_SECRET")
-
-        def keydecode(token: str) -> None | Permission:
-            if auth_secret:
-                with contextlib.suppress(InvalidTokenError):
-                    return parse_token(token, secret=auth_secret).permissions
-            try:
-                return api_secrets.get(b64decode(token).decode("UTF-8"))
-            except ValueError:
-                return None
-
-        permissions: tuple[None | Permission, ...] = (
-            *(
-                (
-                    keydecode(_[7:])
-                    if _.lower().startswith("bearer ")
-                    else api_secrets.get(_)
-                )
-                for _ in self.request.headers.get_list("Authorization")
-            ),
-            *(keydecode(_) for _ in self.get_arguments("access_token")),
-            *(api_secrets.get(_) for _ in self.get_arguments("key")),
-            keydecode(cast(str, self.get_cookie("access_token", "")))
-            if self.ALLOW_COOKIE_AUTHENTICATION
-            else None,
-            api_secrets.get(self.get_cookie("key", None))
-            if self.ALLOW_COOKIE_AUTHENTICATION
-            else None,
-        )
-
-        if all(perm is None for perm in permissions):
-            return None
-
-        result = Permission(0)
-        for perm in permissions:
-            if perm:
-                result |= perm
-
-        return permission in result
+        return is_authorized(self, permission, allow_cookie_auth)
 
     def options(self, *args: Any, **kwargs: Any) -> None:
         """Handle OPTIONS requests."""
@@ -644,7 +601,7 @@ class BaseRequestHandler(RequestHandler):
 
     async def prepare(self) -> None:  # noqa: C901
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex, too-many-branches
+        # pylint: disable=invalid-overridden-method, too-complex
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
                 if isinstance(transform, GZipContentEncoding):
@@ -669,28 +626,6 @@ class BaseRequestHandler(RequestHandler):
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
-            required_permission = self.REQUIRED_PERMISSION
-            required_permission_for_method = getattr(
-                self, f"REQUIRED_PERMISSION_{self.request.method}", None
-            )
-
-            if required_permission is None:
-                required_permission = required_permission_for_method
-            elif required_permission_for_method is not None:
-                required_permission |= required_permission_for_method
-
-            if not (
-                required_permission is None
-                or (is_authorized := self.is_authorized(required_permission))
-            ):
-                self.auth_failed = True
-                LOGGER.warning(
-                    "Unauthorized access to %s from %s",
-                    self.request.path,
-                    anonymize_ip(self.request.remote_ip),
-                )
-                raise HTTPError(401 if is_authorized is None else 403)
-
             if (
                 self.MAX_BODY_SIZE is not None
                 and len(self.request.body) > self.MAX_BODY_SIZE
