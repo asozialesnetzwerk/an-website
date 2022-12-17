@@ -15,46 +15,127 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
+from base64 import b64decode
 from collections.abc import Callable
 from functools import wraps
-from inspect import isfunction
-from typing import Any, TypeVar
+from typing import Any, TypeVar, cast, overload
 
-from tornado.web import HTTPError
+from tornado.web import HTTPError, RequestHandler
 
-from .base_request_handler import BaseRequestHandler
+from .token import InvalidTokenError, parse_token
 from .utils import Permission, anonymize_ip
 
 Ret = TypeVar("Ret")
 
 
+def keydecode(
+    token: str,
+    api_secrets: dict[str | None, Permission],
+    token_secret: str | bytes | None,
+) -> None | Permission:
+    """Decode a key."""
+    if token_secret:
+        with contextlib.suppress(InvalidTokenError):
+            return parse_token(token, secret=token_secret).permissions
+    try:
+        return api_secrets.get(b64decode(token).decode("UTF-8"))
+    except ValueError:
+        return None
+
+
+def is_authorized(
+    inst: RequestHandler,
+    permission: Permission,
+    allow_cookie_auth: bool = True,
+) -> None | bool:
+    """Check whether the request is authorized."""
+    keys: dict[str | None, Permission] = inst.settings.get(
+        "TRUSTED_API_SECRETS", {}
+    )
+    token_secret: str | bytes | None = inst.settings.get("AUTH_TOKEN_SECRET")
+
+    permissions: tuple[None | Permission, ...] = (
+        *(
+            (
+                keydecode(_[7:], keys, token_secret)
+                if _.lower().startswith("bearer ")
+                else keys.get(_)
+            )
+            for _ in inst.request.headers.get_list("Authorization")
+        ),
+        *(
+            keydecode(_, keys, token_secret)
+            for _ in inst.get_arguments("access_token")
+        ),
+        *(keys.get(_) for _ in inst.get_arguments("key")),
+        keydecode(
+            cast(str, inst.get_cookie("access_token", "")), keys, token_secret
+        )
+        if allow_cookie_auth
+        else None,
+        keys.get(inst.get_cookie("key", None)) if allow_cookie_auth else None,
+    )
+
+    if all(perm is None for perm in permissions):
+        return None
+
+    result = Permission(0)
+    for perm in permissions:
+        if perm:
+            result |= perm
+
+    return permission in result
+
+
+_DefaultValue = object()
+
+
+@overload
 def requires(
-    permissions: Permission,
+    *perms: Permission,
+    return_instead_of_raising_error: Ret,
+    allow_cookie_auth: bool = True,
+) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
+    ...
+
+
+@overload
+def requires(
+    *perms: Permission,
+    allow_cookie_auth: bool = True,
+) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
+    ...
+
+
+def requires(
+    *perms: Permission,
+    return_instead_of_raising_error: Any = _DefaultValue,
+    allow_cookie_auth: bool = True,
 ) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
     """Handle required permissions."""
-    assert isinstance(permissions, Permission)
+    permissions = Permission(0)
+    for perm in perms:
+        permissions |= perm
 
     def internal(method: Callable[..., Ret]) -> Callable[..., Ret]:
-        assert isfunction(method)
-
         method.required_perms = permissions  # type: ignore[attr-defined]
         logger = logging.getLogger(f"{method.__module__}.{method.__qualname__}")
 
         @wraps(method)
-        def wrapper(
-            instance: BaseRequestHandler, *args: Any, **kwargs: Any
-        ) -> Ret:
-            assert isinstance(instance, BaseRequestHandler)
+        def wrapper(instance: RequestHandler, *args: Any, **kwargs: Any) -> Ret:
+            authorized = is_authorized(instance, permissions, allow_cookie_auth)
+            if not authorized:
+                if return_instead_of_raising_error is _DefaultValue:
+                    logger.warning(
+                        "Unauthorized access to %s from %s",
+                        instance.request.path,
+                        anonymize_ip(instance.request.remote_ip),
+                    )
+                    raise HTTPError(401 if authorized is None else 403)
 
-            if not (is_authorized := instance.is_authorized(permissions)):
-                instance.auth_failed = True
-                logger.warning(
-                    "Unauthorized access to %s from %s",
-                    instance.request.path,
-                    anonymize_ip(instance.request.remote_ip),
-                )
-                raise HTTPError(401 if is_authorized is None else 403)
+                return cast(Ret, return_instead_of_raising_error)
 
             return method(instance, *args, **kwargs)
 

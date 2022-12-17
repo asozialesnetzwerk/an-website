@@ -58,7 +58,6 @@ class Backdoor(APIRequestHandler):
     )
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("POST",)
-    ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = False
 
     sessions: ClassVar[dict[str, dict[str, Any]]] = {}
 
@@ -152,7 +151,7 @@ class Backdoor(APIRequestHandler):
             self.sessions[session_id] = session
         return self.update_session(session)
 
-    @requires(Permission.BACKDOOR)
+    @requires(Permission.BACKDOOR, allow_cookie_auth=False)
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle POST requests to the backdoor API."""

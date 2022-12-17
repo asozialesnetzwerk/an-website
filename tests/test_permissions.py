@@ -166,12 +166,22 @@ async def test_permissions_with_backdoor(
     assert response["result"] is None
 
     assert_valid_response(
-        await fetch("/api/backdoor/exec", headers={"Authorization": "unknown"}),
+        await fetch(
+            "/api/backdoor/exec",
+            headers={"Authorization": "unknown"},
+            method="POST",
+            body="42",
+        ),
         None,
         {401},  # unauthenticated request
     )
     assert_valid_response(
-        await fetch("/api/backdoor/exec", headers={"Authorization": "s3"}),
+        await fetch(
+            "/api/backdoor/exec",
+            headers={"Authorization": "s3"},
+            method="POST",
+            body="42",
+        ),
         None,
         {403},  # unauthorized request
     )

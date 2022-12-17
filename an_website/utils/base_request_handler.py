@@ -57,8 +57,8 @@ from .. import (
     ORJSON_OPTIONS,
     pytest_is_running,
 )
+from .decorators import is_authorized
 from .static_file_handling import FILE_HASHES_DICT
-from .token import InvalidTokenError, parse_token
 from .utils import (
     THEMES,
     BumpscosityValue,
@@ -102,8 +102,6 @@ class BaseRequestHandler(RequestHandler):
     MAX_BODY_SIZE: ClassVar[None | int] = None
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("GET",)
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ()
-    # the following should be False on security relevant endpoints
-    ALLOW_COOKIE_AUTHENTICATION: ClassVar[bool] = True
 
     module_info: ModuleInfo
     # info about page, can be overridden in module_info
@@ -562,50 +560,11 @@ class BaseRequestHandler(RequestHandler):
                 self.request.path
             ).description
 
-    def is_authorized(self, permission: Permission) -> None | bool:
+    def is_authorized(
+        self, permission: Permission, allow_cookie_auth: bool = True
+    ) -> bool | None:
         """Check whether the request is authorized."""
-        api_secrets: dict[str | None, Permission] = self.settings.get(
-            "TRUSTED_API_SECRETS", {}
-        )
-        auth_secret: str | bytes | None = self.settings.get("AUTH_TOKEN_SECRET")
-
-        def keydecode(token: str) -> None | Permission:
-            if auth_secret:
-                with contextlib.suppress(InvalidTokenError):
-                    return parse_token(token, secret=auth_secret).permissions
-            try:
-                return api_secrets.get(b64decode(token).decode("UTF-8"))
-            except ValueError:
-                return None
-
-        permissions: tuple[None | Permission, ...] = (
-            *(
-                (
-                    keydecode(_[7:])
-                    if _.lower().startswith("bearer ")
-                    else api_secrets.get(_)
-                )
-                for _ in self.request.headers.get_list("Authorization")
-            ),
-            *(keydecode(_) for _ in self.get_arguments("access_token")),
-            *(api_secrets.get(_) for _ in self.get_arguments("key")),
-            keydecode(cast(str, self.get_cookie("access_token", "")))
-            if self.ALLOW_COOKIE_AUTHENTICATION
-            else None,
-            api_secrets.get(self.get_cookie("key", None))
-            if self.ALLOW_COOKIE_AUTHENTICATION
-            else None,
-        )
-
-        if all(perm is None for perm in permissions):
-            return None
-
-        result = Permission(0)
-        for perm in permissions:
-            if perm:
-                result |= perm
-
-        return permission in result
+        return is_authorized(self, permission, allow_cookie_auth)
 
     def options(self, *args: Any, **kwargs: Any) -> None:
         """Handle OPTIONS requests."""
