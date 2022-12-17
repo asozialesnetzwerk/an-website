@@ -141,6 +141,8 @@ jobs:
         run: grep -E "^(html5lib|pylint|pytest)" requirements-ci.txt | xargs pip install
       - name: Run Pylint
         run: pylint -d fixme .
+        env:
+          DISABLE_PYSTON: 1
 
   bandit:
     name: Bandit
