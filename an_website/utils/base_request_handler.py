@@ -320,7 +320,7 @@ class BaseRequestHandler(RequestHandler):
         ignore_themes = ["random", "random-dark"]
 
         if theme == "random-dark":
-            ignore_themes.extend(("light", "light-blue", "fun"))
+            ignore_themes.extend(("light", "light_blue", "fun"))
 
         return random.choice(  # nosec: B311
             tuple(theme for theme in THEMES if theme not in ignore_themes)
