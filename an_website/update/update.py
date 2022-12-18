@@ -65,6 +65,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
     """The request handler for the update API."""
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("PUT",)
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ("text/plain",)
 
     dir: TemporaryDirectory[str]
     file: _TemporaryFileWrapper[bytes]
@@ -75,7 +76,8 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         self.queue.put(chunk)
 
     def on_finish(self) -> None:  # noqa: D102
-        self.queue.put(None)
+        if hasattr(self, "queue"):
+            self.queue.put(None)
 
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()

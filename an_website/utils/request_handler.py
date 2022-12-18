@@ -255,6 +255,7 @@ class APIRequestHandler(BaseRequestHandler):
         """Finish with the status code and the reason as dict."""
         if self.content_type == "text/plain":
             self.finish(f"{status_code} {self.get_error_message(**kwargs)}")
+            return
         self.finish_dict(
             status=status_code,
             reason=self.get_error_message(**kwargs),
