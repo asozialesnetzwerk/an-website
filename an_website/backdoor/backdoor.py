@@ -55,6 +55,7 @@ class Backdoor(APIRequestHandler):
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "application/vnd.python.pickle",
+        "text/plain",
     )
 
     ALLOWED_METHODS: ClassVar[tuple[str, ...]] = ("POST",)
@@ -238,10 +239,13 @@ class Backdoor(APIRequestHandler):
                 await self.backup_session()
         output_str = output.getvalue() if not output.closed else None
         output.close()
-        result_tuple: tuple[None | str, Any] = (
+        exception_text = (
             "".join(traceback.format_exception(exception)).strip()
             if exception is not None
-            else None,
+            else None
+        )
+        result_tuple: tuple[None | str, Any] = (
+            exception_text,
             exception or result,
         )
         try:
@@ -254,6 +258,10 @@ class Backdoor(APIRequestHandler):
                 result_tuple[0] or repr(result_tuple[1]),
                 None,
             )
+        if self.content_type == "text/plain":
+            if mode == "exec":
+                return await self.finish(exception_text or output_str)
+            return await self.finish(exception_text or repr(result))
         return await self.finish_pickled_dict(
             success=exception is None,
             output=output_str,
@@ -269,6 +277,8 @@ class Backdoor(APIRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""
+        if self.content_type != "application/vnd.python.pickle":
+            return super().write_error(status_code, **kwargs)
         if "exc_info" in kwargs:
             exc_info: tuple[
                 type[BaseException], BaseException, TracebackType
@@ -280,5 +290,6 @@ class Backdoor(APIRequestHandler):
                         self.get_protocol_version(),
                     )
                 )
-                return
+                return None
         self.finish(pickle.dumps(None, self.get_protocol_version()))
+        return None
