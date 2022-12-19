@@ -22,7 +22,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any, TypeVar, cast, overload
 
-from tornado.web import HTTPError, RequestHandler
+from tornado.web import RequestHandler
 
 from .token import InvalidTokenError, parse_token
 from .utils import Permission, anonymize_ip
@@ -95,7 +95,7 @@ _DefaultValue = object()
 @overload
 def requires(
     *perms: Permission,
-    return_instead_of_raising_error: Ret,
+    return_instead_of_finishing: Ret,
     allow_cookie_auth: bool = True,
 ) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
     ...
@@ -111,31 +111,39 @@ def requires(
 
 def requires(
     *perms: Permission,
-    return_instead_of_raising_error: Any = _DefaultValue,
+    return_instead_of_finishing: Any = _DefaultValue,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
+) -> Callable[[Callable[..., Ret]], Callable[..., Ret | None]]:
     """Handle required permissions."""
     permissions = Permission(0)
     for perm in perms:
         permissions |= perm
 
-    def internal(method: Callable[..., Ret]) -> Callable[..., Ret]:
+    finish_with_error = return_instead_of_finishing is _DefaultValue
+
+    def internal(method: Callable[..., Ret]) -> Callable[..., Ret | None]:
         method.required_perms = permissions  # type: ignore[attr-defined]
         logger = logging.getLogger(f"{method.__module__}.{method.__qualname__}")
 
         @wraps(method)
-        def wrapper(instance: RequestHandler, *args: Any, **kwargs: Any) -> Ret:
+        def wrapper(
+            instance: RequestHandler, *args: Any, **kwargs: Any
+        ) -> Ret | None:
             authorized = is_authorized(instance, permissions, allow_cookie_auth)
             if not authorized:
-                if return_instead_of_raising_error is _DefaultValue:
-                    logger.warning(
-                        "Unauthorized access to %s from %s",
-                        instance.request.path,
-                        anonymize_ip(instance.request.remote_ip),
-                    )
-                    raise HTTPError(401 if authorized is None else 403)
-
-                return cast(Ret, return_instead_of_raising_error)
+                if not finish_with_error:
+                    return cast(Ret, return_instead_of_finishing)
+                logger.warning(
+                    "Unauthorized access to %s from %s",
+                    instance.request.path,
+                    anonymize_ip(instance.request.remote_ip),
+                )
+                instance.clear()
+                instance.set_header("WWW-Authenticate", "Bearer")
+                status = 401 if authorized is None else 403
+                instance.set_status(status)
+                instance.write_error(status, **kwargs)
+                return None
 
             return method(instance, *args, **kwargs)
 

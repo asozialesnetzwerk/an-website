@@ -111,7 +111,6 @@ class BaseRequestHandler(RequestHandler):
 
     active_origin_trials: set[bytes]
     content_type: None | str = None
-    auth_failed: bool = False
     apm_script: None | str
     crawler: bool = False
     now: datetime
@@ -890,8 +889,6 @@ class BaseRequestHandler(RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
-        if self.auth_failed:
-            self.set_header("WWW-Authenticate", "Bearer")
         self.origin_trial(
             "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         )
