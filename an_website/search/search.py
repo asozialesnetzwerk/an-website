@@ -21,8 +21,10 @@ from typing import Final
 import orjson as json
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
 
+from .. import NAME
+from ..utils.decorators import get_setting_or_default, requires_settings
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import AwaitableValue, ModuleInfo
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -61,20 +63,27 @@ class Search(HTMLRequestHandler):
 
     async def search(self) -> list[dict[str, float | str]]:
         """Search the website."""
-        if (query := self.get_query()) and self.app_search:
+        result: list[dict[str, str | float]] | None = None
+        if query := self.get_query():
             try:
-                return await self.search_new(
-                    self.app_search, self.app_search_engine, query
-                )
+                result = await self.search_new(query)
             except Exception:  # pylint: disable=broad-except
                 LOGGER.exception("App Search request failed")
                 if self.apm_client:
                     self.apm_client.capture_exception()
+        if result is not None:
+            return result
         return await self.search_old(query)
 
+    @requires_settings("APP_SEARCH", return_=AwaitableValue(None))
+    @get_setting_or_default("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
     async def search_new(
-        self, client: AppSearch, engine: str, query: str
-    ) -> list[dict[str, str | float]]:
+        self,
+        query: str,
+        *,
+        app_search: AppSearch = ...,
+        app_search_engine: str = ...,  # type: ignore[assignment]
+    ) -> list[dict[str, str | float]] | None:
         """Search the website using Elastic App Search."""
         return [
             {
@@ -85,8 +94,8 @@ class Search(HTMLRequestHandler):
             }
             for result in (
                 await asyncio.to_thread(
-                    client.search,
-                    engine,
+                    app_search.search,
+                    app_search_engine,
                     body={
                         "query": query,
                         "filters": {

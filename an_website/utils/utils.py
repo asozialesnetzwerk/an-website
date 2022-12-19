@@ -23,7 +23,7 @@ import pathlib
 import random
 import time
 from base64 import b85encode
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Awaitable, Callable, Generator, Iterable, Sequence
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -104,6 +104,23 @@ SUS_PATHS: Final[set[str]] = {
     "/wp-login",
     "/wp-upload",
 }
+
+
+T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
+
+
+class AwaitableValue(Awaitable[T_Val]):
+    # pylint: disable=too-few-public-methods
+    """An awaitable that always returns the same value."""
+
+    def __await__(self) -> Generator[None, None, T_Val]:
+        """Return an iterator returning the value."""
+        yield
+        return self._value
+
+    def __init__(self, value: T_Val) -> None:
+        """Set the value."""
+        self._value = value
 
 
 class Permission(IntFlag):

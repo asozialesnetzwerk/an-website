@@ -20,14 +20,16 @@ import logging
 from base64 import b64decode
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, TypeVar, cast, overload
+from typing import Any, ParamSpec, TypeVar, cast, overload
 
 from tornado.web import RequestHandler
 
 from .token import InvalidTokenError, parse_token
 from .utils import Permission, anonymize_ip
 
+Default = TypeVar("Default")
 Ret = TypeVar("Ret")
+Args = ParamSpec("Args")
 
 
 def keydecode(
@@ -95,9 +97,9 @@ _DefaultValue = object()
 @overload
 def requires(
     *perms: Permission,
-    return_instead_of_finishing: Ret,
+    return_instead_of_finishing: Default,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]:
     ...
 
 
@@ -105,7 +107,7 @@ def requires(
 def requires(
     *perms: Permission,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[..., Ret]], Callable[..., Ret]]:
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret]]:
     ...
 
 
@@ -113,7 +115,7 @@ def requires(
     *perms: Permission,
     return_instead_of_finishing: Any = _DefaultValue,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[..., Ret]], Callable[..., Ret | None]]:
+) -> Callable[[Callable[Args, Ret]], Callable[..., Any]]:
     """Handle required permissions."""
     permissions = Permission(0)
     for perm in perms:
@@ -121,14 +123,17 @@ def requires(
 
     finish_with_error = return_instead_of_finishing is _DefaultValue
 
-    def internal(method: Callable[..., Ret]) -> Callable[..., Ret | None]:
+    def internal(method: Callable[Args, Ret]) -> Callable[Args, Any]:
         method.required_perms = permissions  # type: ignore[attr-defined]
         logger = logging.getLogger(f"{method.__module__}.{method.__qualname__}")
 
+        wraps(method)
+
         @wraps(method)
-        def wrapper(
-            instance: RequestHandler, *args: Any, **kwargs: Any
-        ) -> Ret | None:
+        def wrapper(*args: Args.args, **kwargs: Args.kwargs) -> Any:
+            instance = args[0]
+            if not isinstance(instance, RequestHandler):
+                raise TypeError(f"Instance has invalid type {type(instance)}")
             authorized = is_authorized(instance, permissions, allow_cookie_auth)
             if not authorized:
                 if not finish_with_error:
@@ -145,7 +150,87 @@ def requires(
                 instance.write_error(status, **kwargs)
                 return None
 
-            return method(instance, *args, **kwargs)
+            return method(*args, **kwargs)
+
+        return wrapper
+
+    return internal
+
+
+@overload
+def requires_settings(
+    *settings: str,
+    return_: Default,
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]:
+    ...
+
+
+@overload
+def requires_settings(
+    *settings: str,
+    status_code: int,
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | None]]:
+    ...
+
+
+def requires_settings(
+    *settings: str,
+    return_: Any = _DefaultValue,
+    status_code: int | None = None,
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Any]]:
+    """Require some settings to execute a method."""
+    finish_with_error = return_ is _DefaultValue
+    if not finish_with_error and isinstance(status_code, int):
+        raise ValueError("return_ and finish_status specified")
+    if finish_with_error and status_code is None:
+        status_code = 503
+
+    def internal(method: Callable[Args, Ret]) -> Callable[Args, Any]:
+        logger = logging.getLogger(f"{method.__module__}.{method.__qualname__}")
+
+        @wraps(method)
+        def wrapper(*args: Args.args, **kwargs: Args.kwargs) -> Any:
+            instance = args[0]
+            if not isinstance(instance, RequestHandler):
+                raise TypeError(f"Instance has invalid type {type(instance)}")
+            missing = [
+                setting
+                for setting in settings
+                if instance.settings.get(setting) is None
+            ]
+            if missing:
+                if not finish_with_error:
+                    return cast(Ret, return_)
+                logger.warning(
+                    "Missing settings %s for request to %s",
+                    ", ".join(missing),
+                    instance.request.path,
+                )
+                instance.send_error(cast(int, status_code))
+                return None
+            for setting in settings:
+                kwargs[setting.lower()] = instance.settings[setting]
+            return method(*args, **kwargs)
+
+        return wrapper
+
+    return internal
+
+
+def get_setting_or_default(
+    setting: str,
+    default: Any,
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret]]:
+    """Require some settings to execute a method."""
+
+    def internal(method: Callable[Args, Ret]) -> Callable[Args, Ret]:
+        @wraps(method)
+        def wrapper(*args: Args.args, **kwargs: Args.kwargs) -> Ret:
+            instance = args[0]
+            if not isinstance(instance, RequestHandler):
+                raise TypeError(f"Instance has invalid type {type(instance)}")
+            kwargs[setting.lower()] = instance.settings.get(setting, default)
+            return method(*args, **kwargs)
 
         return wrapper
 

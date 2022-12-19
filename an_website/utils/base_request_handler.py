@@ -39,7 +39,6 @@ import orjson as json
 import regex
 import yaml
 from accept_types import get_best_match  # type: ignore[import]
-from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
@@ -124,16 +123,6 @@ class BaseRequestHandler(RequestHandler):
     def apm_enabled(self) -> bool:
         """Return whether APM is enabled."""
         return bool(self.settings.get("ELASTIC_APM", {}).get("ENABLED"))
-
-    @property
-    def app_search(self) -> None | AppSearch:
-        """Get the App Search client from the settings."""
-        return self.settings.get("APP_SEARCH")
-
-    @property
-    def app_search_engine(self) -> str:
-        """Get the App Search engine from the settings."""
-        return self.settings.get("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
 
     def compute_etag(self) -> None | str:
         """Compute ETag with Base85 encoding."""
@@ -470,7 +459,7 @@ class BaseRequestHandler(RequestHandler):
         return self.get_saved_theme()
 
     async def get_time(self) -> datetime:
-        """Get the start time of the request in the users timezone."""
+        """Get the start time of the request in the users' timezone."""
         tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
