@@ -40,7 +40,7 @@ pep8-naming==0.13.3
 pipenv==2022.12.19
 platformdirs==2.6.0
 pluggy==1.0.0
-pre-commit==2.20.0
+pre-commit==2.21.0
 pycodestyle==2.9.1
 pydocstyle==6.1.1
 pyflakes==2.5.0
@@ -112,8 +112,8 @@ hyrule==0.2.1
 idna==3.4
 jsonpickle==3.0.1
 mpmath==1.2.1
-multidict==6.0.3
-numpy==1.24.0
+multidict==6.0.4
+numpy==1.24.1
 orjson==3.8.3
 pillow==9.3.0
 pycares==4.3.0

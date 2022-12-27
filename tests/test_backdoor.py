@@ -27,7 +27,6 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
     fetch,
 )
 
-
 Result = tuple[str, Any]  # tuple[str, bytes] before unpickling
 
 

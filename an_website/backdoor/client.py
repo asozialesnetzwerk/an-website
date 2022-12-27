@@ -695,7 +695,9 @@ Accepted arguments:
             )
             traceback.print_exc()
 
-    # patch the reader console to use our run function
+    # pylint: disable=redefined-variable-type
+
+    # patch the reader console to use our function
     rc_execute = ReaderConsole.execute
     ReaderConsole.execute = _run_and_print
 
