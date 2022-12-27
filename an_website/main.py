@@ -895,9 +895,9 @@ def supervise() -> None:
         time.sleep(1)
 
 
-def main(  # noqa: C901
+def main(  # noqa: C901  # pragma: no cover
     config: BetterConfigParser | None = None,
-) -> None | int | str:  # pragma: no cover
+) -> int | str:
     """
     Start everything.
 
@@ -911,7 +911,7 @@ def main(  # noqa: C901
     install_signal_handler()
 
     args = parse_command_line_arguments()
-    config = parse_config(*args.config) if config is None else config
+    config = config or parse_config(*args.config)
 
     setup_logging(config)
 
@@ -1051,7 +1051,7 @@ def main(  # noqa: C901
             config.write(file)
 
     if not sockets:
-        return None
+        return 0
 
     try:
         loop.run_forever()
@@ -1083,4 +1083,4 @@ def main(  # noqa: C901
                 loop.close()
                 HEARTBEAT = 0
 
-    return None
+    return 0

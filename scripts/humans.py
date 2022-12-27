@@ -167,11 +167,11 @@ def add_data_to_output(
             )
 
 
-def main() -> None | int | str:  # pylint: disable=useless-return
+def main() -> int | str:
     """Write the humans.txt file."""
     HUMANS_TXT.write_text(generate_humans_txt(), "UTF-8")
 
-    return None
+    return 0
 
 
 if __name__ == "__main__":

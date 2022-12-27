@@ -37,7 +37,7 @@ FunctionOrClassDef: TypeAlias = (
 )
 
 
-def main() -> None | int | str:
+def main() -> int | str:
     """Sort all the Python code in this repo."""
     errors = []
     changed_count = 0

@@ -77,7 +77,10 @@ class Response(TypedDict):  # noqa: D101
     result: None | tuple[str, None | bytes] | SystemExit
 
 
-async def create_socket(  # noqa: C901  # pylint: disable=too-many-arguments
+ErrorTuple = tuple[int, str]
+
+
+async def create_socket(  # noqa: C901
     addr: str,
     port: int | str,
     proxy_type: None | int = None,
@@ -88,7 +91,7 @@ async def create_socket(  # noqa: C901  # pylint: disable=too-many-arguments
     proxy_password: None | str = None,
 ) -> socket.socket | socks.socksocket:
     """Create a socket (optionally with a proxy)."""
-    # pylint: disable=too-complex
+    # pylint: disable=too-complex, too-many-arguments
     if proxy_type is not None and proxy_addr is None:
         raise TypeError(
             "proxy_addr should not be None if proxy_type is not None"
@@ -153,7 +156,7 @@ async def create_socket(  # noqa: C901  # pylint: disable=too-many-arguments
     )
 
 
-async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-locals
+async def request(  # noqa: C901
     method: str,
     url: str | SplitResult,
     headers: None | dict[str, str] = None,
@@ -167,7 +170,8 @@ async def request(  # noqa: C901  # pylint: disable=too-many-branches, too-many-
     proxy_password: None | str = None,
 ) -> tuple[int, dict[str, str], bytes]:
     """Insanely awesome HTTP client."""
-    # pylint: disable=invalid-name, line-too-long, too-complex, while-used
+    # pylint: disable=invalid-name, line-too-long, too-complex
+    # pylint: disable=too-many-branches, too-many-locals, while-used
     if isinstance(url, str):
         url = urlsplit(url)
     if url.scheme not in {"", "http", "https"}:
@@ -267,7 +271,7 @@ def send(
     proxy_rdns: None | bool = True,
     proxy_username: None | str = None,
     proxy_password: None | str = None,
-) -> tuple[int, dict[str, str], Response | str | None]:
+) -> tuple[int, dict[str, str], Response | ErrorTuple | str | None | bytes]:
     """Send code to the backdoor API."""
     body = code.encode("UTF-8")
     if isinstance(url, str):
@@ -277,7 +281,9 @@ def send(
     key = f"Bearer {b64encode(key.encode('UTF-8')).decode('ASCII')}"
     headers = {
         "Authorization": key,
-        "Accept": "application/vnd.python.pickle",
+        "Accept": "application/vnd.uqfoundation.dill"
+        if pickle.__name__ == "dill"
+        else "application/vnd.python.pickle",
         "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
     }
     if FLUFL:
@@ -308,7 +314,7 @@ def send(
         return (
             response[0],
             response[1],
-            None,
+            response[2],
         )
 
 
@@ -332,7 +338,7 @@ def lisp_always_active() -> bool:
     )
 
 
-def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many-locals
+def run_and_print(  # noqa: C901
     url: str,
     key: str,
     code: str,
@@ -349,8 +355,9 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
     # pylint: disable=redefined-builtin
     print: Callable[..., None] = print,
 ) -> None:
-    # pylint: disable=too-complex, too-many-branches
     """Run the code and print the output."""
+    # pylint: disable=too-complex, too-many-arguments, too-many-branches
+    # pylint: disable=too-many-locals, too-many-statements
     start_time = time.monotonic()
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read(code), True)
@@ -386,15 +393,17 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
         print(f"\033[{color}mTook: {took:.3f}s\033[0m")
     status, headers, body = response  # pylint: disable=unused-variable
     if status >= 400:
-        print(
-            "\033[91m" + f"{status} {http.client.responses[status]}" + "\033[0m"
+        reason = (
+            body[1]
+            if isinstance(body, tuple)
+            else http.client.responses[status]
         )
+        print("\033[91m" + f"{status} {reason}" + "\033[0m")
     if body is None:
-        return
-    if isinstance(body, str):
+        pass
+    elif isinstance(body, str):
         print("\033[91m" + body + "\033[0m")
-        return
-    if isinstance(body, dict):
+    elif isinstance(body, dict):
         if isinstance(body["success"], bool):
             print(f"Success: {body['success']}")
         if isinstance(body["output"], str) and body["output"]:
@@ -424,7 +433,8 @@ def run_and_print(  # noqa: C901  # pylint: disable=too-many-arguments, too-many
                 print("Result:")
                 print(body["result"][0])
     else:
-        print("Response has unknown type!")  # type: ignore[unreachable]
+        print(f"Response has unexpected type {type(body).__name__}!")
+        print(f"Status: {status} {http.client.responses[status]}")
         print(body)
 
 
@@ -457,10 +467,10 @@ del run_shell_50821273052022fbc283
 """
 
 
-def main() -> None | int | str:  # noqa: C901  # pylint: disable=useless-return
+def main() -> int | str:  # noqa: C901
+    """Parse arguments, load the config and start the backdoor client."""
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-    """Parse arguments, load the config and start the backdoor client."""
     if "--help" in sys.argv or "-h" in sys.argv:
         sys.exit(
             """
@@ -686,12 +696,17 @@ Accepted arguments:
             traceback.print_exc()
 
     # patch the reader console to use our run function
+    rc_execute = ReaderConsole.execute
     ReaderConsole.execute = _run_and_print
 
     # run the reader
     with contextlib.suppress(EOFError):
-        _main(print_banner=False)
-    return None
+        _main(print_banner=False, clear_main=False)
+
+    # restore the original method
+    ReaderConsole.execute = rc_execute
+
+    return 0
 
 
 if __name__ == "__main__":

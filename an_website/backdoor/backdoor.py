@@ -15,9 +15,9 @@
 
 from __future__ import annotations
 
-import contextlib
 import io
 import logging
+import pickle  # nosec: B403
 import pickletools  # nosec: B403
 import pydoc
 import traceback
@@ -28,7 +28,8 @@ from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any, ClassVar, Final, cast
 
-import dill as pickle  # type: ignore[import]  # nosec: B403
+import dill  # type: ignore[import]  # nosec: B403
+import jsonpickle  # type: ignore[import]
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
@@ -54,7 +55,9 @@ class Backdoor(APIRequestHandler):
     """The request handler for the backdoor API."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        "application/vnd.uqfoundation.dill",
         "application/vnd.python.pickle",
+        "application/json",
         "text/plain",
     )
 
@@ -74,7 +77,7 @@ class Backdoor(APIRequestHandler):
         for key, value in tuple(session.items()):
             try:
                 session[key] = pickletools.optimize(
-                    pickle.dumps(value, max(pickle.DEFAULT_PROTOCOL, 5))
+                    dill.dumps(value, max(dill.DEFAULT_PROTOCOL, 5))
                 )
             except Exception:  # pylint: disable=broad-except
                 del session[key]
@@ -82,13 +85,13 @@ class Backdoor(APIRequestHandler):
             await self.redis.setex(
                 f"{self.redis_prefix}:backdoor-session:{session_id}",
                 60 * 60 * 24 * 7,  # time to live in seconds (1 week)
-                b85encode(pickletools.optimize(pickle.dumps(session))),
+                b85encode(pickletools.optimize(dill.dumps(session))),
             )
         )
 
-    def finish_pickled_dict(self, **kwargs: Any) -> Future[None]:
-        """Finish with a pickled dictionary."""
-        return self.finish(pickle.dumps(kwargs, self.get_protocol_version()))
+    def finish_serialized_dict(self, **kwargs: Any) -> Future[None]:
+        """Finish with a serialized dictionary."""
+        return self.finish(self.serialize(kwargs))
 
     def get_flags(self, flags: int) -> int:
         """Get compiler flags."""
@@ -103,7 +106,7 @@ class Backdoor(APIRequestHandler):
     def get_protocol_version(self) -> int:
         """Get the protocol version for the response."""
         try:  # pylint: disable=line-too-long
-            return min(  # type: ignore[no-any-return]
+            return min(
                 int(
                     self.request.headers.get("X-Pickle-Protocol"), base=0  # type: ignore[arg-type]  # noqa: B950
                 ),
@@ -134,10 +137,10 @@ class Backdoor(APIRequestHandler):
                 else None
             )
             if session_pickle:
-                session = pickle.loads(b85decode(session_pickle))  # nosec: B301
+                session = dill.loads(b85decode(session_pickle))  # nosec: B301
                 for key, value in session.items():
                     try:
-                        session[key] = pickle.loads(value)  # nosec: B301
+                        session[key] = dill.loads(value)  # nosec: B301
                     except Exception:  # pylint: disable=broad-except
                         LOGGER.exception("Loading the session failed")
                         if self.apm_client:
@@ -154,11 +157,13 @@ class Backdoor(APIRequestHandler):
 
     @requires(Permission.BACKDOOR, allow_cookie_auth=False)
     async def post(self, mode: str) -> None:  # noqa: C901
-        # pylint: disable=too-complex, too-many-branches, too-many-statements
+        # pylint: disable=too-complex, too-many-branches
+        # pylint: disable=too-many-locals, too-many-statements
         """Handle POST requests to the backdoor API."""
         source, output = self.request.body, io.StringIO()
         exception: None | Exception = None
         output_str: None | str
+        result: Any
         try:
             parsed = compile(
                 source,
@@ -178,6 +183,7 @@ class Backdoor(APIRequestHandler):
             )
         except SyntaxError as exc:
             exception = exc
+            result = exc
         else:
             session = await self.load_session()
             if "print" not in session or isinstance(
@@ -190,21 +196,19 @@ class Backdoor(APIRequestHandler):
                 session["help"] = pydoc.Helper(io.StringIO(), output)
             try:
                 try:
-                    result: Any = (
-                        eval(  # pylint: disable=eval-used  # nosec: B307
-                            code, session
-                        )
+                    result = eval(  # pylint: disable=eval-used  # nosec: B307
+                        code, session
                     )
                     if code.co_flags & CO_COROUTINE:
                         result = await result
                 except KeyboardInterrupt:
                     EVENT_SHUTDOWN.set()
                     raise SystemExit("Shutdown initiated.") from None
-            except SystemExit as exc:
+            except SystemExit as exc:  # TODO: FIX BUG
                 new_args = []
                 for arg in exc.args:
                     try:
-                        pickle.dumps(arg, self.get_protocol_version())
+                        self.serialize(arg)
                     except Exception:  # pylint: disable=broad-except
                         new_args.append(repr(arg))
                     else:
@@ -212,13 +216,12 @@ class Backdoor(APIRequestHandler):
                 exc.args = tuple(new_args)
                 output_str = output.getvalue() if not output.closed else None
                 output.close()
-                return await self.finish_pickled_dict(
+                return await self.finish_serialized_dict(
                     success=..., output=output_str, result=exc
                 )
             except Exception as exc:  # pylint: disable=broad-except
                 exception = exc  # pylint: disable=redefined-variable-type
-                with contextlib.suppress(UnboundLocalError):
-                    del result
+                result = exc
             else:
                 if result is not None:  # noqa: F821
                     if result is session.get(  # noqa: F821
@@ -244,31 +247,34 @@ class Backdoor(APIRequestHandler):
             if exception is not None
             else None
         )
-        result_tuple: tuple[None | str, Any] = (
-            exception_text,
-            exception or result,
-        )
-        try:
-            result_tuple = (
-                result_tuple[0] or repr(result_tuple[1]),
-                pickle.dumps(result_tuple[1], self.get_protocol_version()),
-            )
-        except Exception:  # pylint: disable=broad-except
-            result_tuple = (
-                result_tuple[0] or repr(result_tuple[1]),
-                None,
-            )
         if self.content_type == "text/plain":
             if mode == "exec":
                 return await self.finish(exception_text or output_str)
             return await self.finish(exception_text or repr(result))
-        return await self.finish_pickled_dict(
+        try:
+            serialized_result: None | bytes = self.serialize(result)
+        except Exception:  # pylint: disable=broad-except
+            serialized_result = None
+        result_tuple: tuple[None | str, None | bytes] = (
+            exception_text or repr(result),
+            serialized_result,
+        )
+        return await self.finish_serialized_dict(
             success=exception is None,
             output=output_str,
             result=None
             if exception is None and result is None
             else result_tuple,
         )
+
+    def serialize(self, data: Any, protocol: None | int = None) -> bytes:
+        """Serialize the data and return it."""
+        if self.content_type == "application/json":
+            return cast(bytes, jsonpickle.encode(data))
+        protocol = protocol or self.get_protocol_version()
+        if self.content_type == "application/vnd.uqfoundation.dill":
+            return cast(bytes, dill.dumps(data, protocol))
+        return pickle.dumps(data, protocol)
 
     def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
         """Add request-specific stuff to the session."""
@@ -277,19 +283,17 @@ class Backdoor(APIRequestHandler):
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""
-        if self.content_type != "application/vnd.python.pickle":
-            return super().write_error(status_code, **kwargs)
+        if self.content_type not in {
+            "application/vnd.python.pickle",
+            "application/vnd.uqfoundation.dill",
+        }:
+            super().write_error(status_code, **kwargs)
+            return
         if "exc_info" in kwargs:
             exc_info: tuple[
                 type[BaseException], BaseException, TracebackType
             ] = kwargs["exc_info"]
             if not issubclass(exc_info[0], HTTPError):
-                self.finish(
-                    pickle.dumps(
-                        self.get_error_message(**kwargs),
-                        self.get_protocol_version(),
-                    )
-                )
-                return None
-        self.finish(pickle.dumps(None, self.get_protocol_version()))
-        return None
+                self.finish(self.serialize(self.get_error_message(**kwargs)))
+                return
+        self.finish(self.serialize((status_code, self._reason)))

@@ -22,10 +22,6 @@ import sys
 import tracemalloc
 import warnings
 
-from setproctitle import getproctitle
-
-getproctitle()  # 42
-
 if sys.flags.dev_mode and not (
     "PYTHONWARNINGS" in os.environ or " -W" in " ".join(sys.orig_argv)
 ):
@@ -35,6 +31,11 @@ if sys.flags.dev_mode and not (
     warnings.simplefilter("error", DeprecationWarning)
 warnings.filterwarnings("ignore", module="defusedxml")
 warnings.filterwarnings("ignore", module="dill._dill", category=EncodingWarning)
+
+
+from setproctitle import getproctitle
+
+getproctitle()  # 42
 
 
 from . import patches

@@ -27,7 +27,7 @@ import emoji
 REPO_ROOT = dirname(dirname(normpath(__file__)))
 
 
-def main(*args: str) -> str | int:
+def main(*args: str) -> int | str:
     """Run the commit script."""
     message = " ".join(args).strip() if args else input("Message: ")
     if not emoji.emoji_count(message):

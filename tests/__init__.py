@@ -225,7 +225,8 @@ def assert_valid_response(
         and response.headers["Content-Type"].startswith(
             ("application/", "text/")
         )
-        and response.headers["Content-Type"] != "application/vnd.python.pickle"
+        and response.headers["Content-Type"]
+        != "application/vnd.uqfoundation.dill"
         and response.body
     ):
         assert response.body.endswith(b"\n") or print(

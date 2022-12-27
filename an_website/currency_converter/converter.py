@@ -189,7 +189,7 @@ async def get_value_dict(
     """Create the value dict base on the euro."""
     values = convert(euro)
     value_dict: ValueDict = {}
-    for key, val in zip(KEYS, values):
+    for key, val in zip(KEYS, values):  # noqa: B905
         value_dict[key] = val
         value_dict[key + "_str"] = num_to_string(val)
 
@@ -279,7 +279,9 @@ class CurrencyConverterAPI(APIRequestHandler, CurrencyConverter):
             return
 
         if value_dict is None:
-            return await self.finish(dict(zip(KEYS, [None] * len(KEYS))))
+            return await self.finish(
+                dict(zip(KEYS, [None] * len(KEYS)))  # noqa: B905
+            )
 
         for key in KEYS:
             value_dict[key] = value_dict.pop(f"{key}_str")

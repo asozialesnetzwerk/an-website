@@ -394,7 +394,7 @@ async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
 
     assert_valid_response(
         await fetch("/api/backdoor/exec", method="POST", body="42"),
-        "application/vnd.python.pickle",
+        "application/vnd.uqfoundation.dill",
         {401},
     )
 

@@ -72,7 +72,7 @@ FILE_HASHES = hash_all_files()
 HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("UTF-8"))
 
 
-def main() -> None | int | str:  # pylint: disable=useless-return
+def main() -> int | str:
     """Hash all files and write to stdout."""
     print("Hash der Datei-Hashes:")
     print(HASH_OF_FILE_HASHES)
@@ -80,7 +80,7 @@ def main() -> None | int | str:  # pylint: disable=useless-return
     print("Datei-Hashes:")
     print(FILE_HASHES)
 
-    return None
+    return 0
 
 
 if __name__ == "__main__":

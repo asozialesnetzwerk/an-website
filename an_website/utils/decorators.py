@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The decorators module with useful decorators."""
+"""A module with useful decorators."""
 
 from __future__ import annotations
 
@@ -28,8 +28,8 @@ from .token import InvalidTokenError, parse_token
 from .utils import Permission, anonymize_ip
 
 Default = TypeVar("Default")
-Ret = TypeVar("Ret")
 Args = ParamSpec("Args")
+Ret = TypeVar("Ret")
 
 
 def keydecode(

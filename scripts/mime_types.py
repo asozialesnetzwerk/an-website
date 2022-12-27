@@ -25,7 +25,12 @@ from typing import Any, Final, cast
 
 from an_website.backdoor.client import request
 
-URL: Final = "https://raw.githubusercontent.com/jshttp/mime-db/master/db.json"
+VERSION: Final = "c9242a9b7d4bb25d7a0c9244adec74aeef08d8a1"
+
+URL: Final = (
+    f"https://raw.githubusercontent.com/jshttp/mime-db/{VERSION}/db.json"
+)
+
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
 CONTENT_TYPES_JSON: Final = REPO_ROOT / "an_website" / "content_types.json"
 MEDIA_TYPES_JSON: Final[Path] = REPO_ROOT / "an_website" / "media_types.json"
@@ -55,16 +60,19 @@ def dump_json(dictionary: Any, path: Path) -> None:
     )
 
 
-async def main() -> int:
+async def main() -> int | str:
     """Get the data and save it."""
     status, _, data = await request("GET", URL, HEADERS)
+
     if status != 200:
         return 1
+
     media_types: MediaTypes = json.loads(data.decode("UTF-8"))
     media_types.update(ADDITIONAL_MEDIA_TYPES)
     dump_json(media_types, MEDIA_TYPES_JSON)
 
     content_types: list[tuple[int, int, int, str, str]] = []
+
     for mime_type, mapping in media_types.items():
         preference: int = PREFERENCE.index(mapping.get("source"))
 
@@ -74,7 +82,9 @@ async def main() -> int:
         elif mime_type.startswith("text/"):
             # pylint: disable=redefined-loop-name
             mime_type += "; charset=UTF-8"
+
         extensions: list[str] = cast(list[str], mapping.get("extensions", []))
+
         for ext in extensions:
             content_types.append(
                 (
@@ -88,11 +98,11 @@ async def main() -> int:
                 )
             )
 
-    content_types_dict: dict[str, str] = {}
-    for _, _, _, ext, mime_type in sorted(content_types):
-        content_types_dict[ext] = mime_type
-
+    content_types_dict: dict[str, str] = {
+        ext: mime_type for _, _, _, ext, mime_type in sorted(content_types)
+    }
     dump_json(content_types_dict, CONTENT_TYPES_JSON)
+
     return 0
 
 

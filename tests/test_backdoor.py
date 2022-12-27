@@ -15,9 +15,10 @@
 
 from __future__ import annotations
 
-import pickle  # nosec: B403
 from types import EllipsisType
-from typing import Any, Literal
+from typing import Any, Literal, TypedDict, cast
+
+import dill  # type: ignore[import]  # nosec: B403
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
@@ -25,6 +26,19 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
     assert_valid_response,
     fetch,
 )
+
+
+Result = tuple[str, Any]  # tuple[str, bytes] before unpickling
+
+
+class Response(TypedDict):  # noqa: D101
+    # pylint: disable=missing-class-docstring
+    success: bool | EllipsisType
+    output: None | str
+    result: None | Result | SystemExit
+
+
+ErrorTuple = tuple[int, str]
 
 
 async def request_and_parse(
@@ -37,8 +51,8 @@ async def request_and_parse(
     auth_key: None | str = None,
     mode: Literal["exec", "eval"] = "eval",
     features: None | str = None,
-) -> dict[str, Any] | str | None:
-    """Make request to the backdoor and parse the response."""
+) -> Response | ErrorTuple | str | None:
+    """Make a request to the backdoor and parse the response."""
     auth_key = "123qweQWE!@#000000000" if auth_key is None else auth_key
     headers = {"Authorization": auth_key}
 
@@ -55,15 +69,19 @@ async def request_and_parse(
         body=code,
     )
 
-    assert_valid_response(http_response, "application/vnd.python.pickle")
+    assert_valid_response(http_response, "application/vnd.uqfoundation.dill")
 
-    response: dict[str, Any] | str | None = pickle.loads(  # nosec: B301
+    response: Response | ErrorTuple | str | None = dill.loads(  # nosec: B301
         http_response.body
     )
 
-    assert isinstance(response, dict | str | None)
+    assert isinstance(response, dict | tuple | str | None)
 
     if not isinstance(response, dict):
+        if isinstance(response, tuple):
+            assert len(response) == 2
+            assert isinstance(response[0], int)
+            assert isinstance(response[1], str)
         return response
 
     assert len(response) == 3
@@ -76,8 +94,8 @@ async def request_and_parse(
         assert isinstance(response["result"][1], bytes | None)
         if isinstance(response["result"][1], bytes):
             result = list(response["result"])
-            result[1] = pickle.loads(result[1])  # nosec: B301
-            response["result"] = tuple(result)
+            result[1] = dill.loads(result[1])  # nosec: B301
+            response["result"] = cast(Result, tuple(result))
 
     return response
 
@@ -103,6 +121,7 @@ async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
     assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
+    assert isinstance(response["result"], tuple)
     assert isinstance(response["result"][1], SyntaxError)
 
     response = await request_and_parse(fetch, "print('spam');", mode="exec")
@@ -135,12 +154,14 @@ async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
+    assert isinstance(response["result"], tuple)
     assert response["result"][1] is print
 
     response = await request_and_parse(fetch, "help")
     assert isinstance(response, dict)
     assert response["success"]
     assert not response["output"]
+    assert isinstance(response["result"], tuple)
     assert type(response["result"][1]) is type(help)
 
     response = await request_and_parse(
@@ -155,6 +176,7 @@ async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
     assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
+    assert isinstance(response["result"], tuple)
     assert response["result"][0].startswith("Traceback (most recent call last)")
     assert isinstance(response["result"][1], NameError)
 
@@ -211,6 +233,7 @@ async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
     assert isinstance(response, dict)
     assert not response["success"]
     assert not response["output"]
+    assert isinstance(response["result"], tuple)
     assert response["result"][0].startswith("Traceback (most recent call last)")
     assert response["result"][1].args == ("division by zero",)
     assert isinstance(response["result"][1], ZeroDivisionError)

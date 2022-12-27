@@ -29,6 +29,7 @@ from typing import Any, Final
 
 import certifi
 import defusedxml  # type: ignore[import]
+import jsonpickle  # type: ignore[import]
 import orjson
 import tornado.httputil
 import yaml
@@ -105,6 +106,9 @@ def apply() -> None:
         patch_json()
     anonymize_logs()
     patch_emoji()
+    jsonpickle.load_backend("orjson")
+    jsonpickle.set_preferred_backend("orjson")
+    jsonpickle.enable_fallthrough(False)
 
 
 def patch_emoji() -> None:

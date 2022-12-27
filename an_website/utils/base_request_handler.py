@@ -696,11 +696,9 @@ class BaseRequestHandler(RequestHandler):
 
         if ratelimited:
             if self.now.date() == date(self.now.year, 4, 20):
-                self.set_status(420)
-                self.write_error(420)
+                self.send_error(420)
             else:
-                self.set_status(429)
-                self.write_error(429)
+                self.send_error(429)
 
         return ratelimited
 
