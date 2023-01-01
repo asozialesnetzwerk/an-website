@@ -336,8 +336,10 @@ class QuoteAsImage(QuoteReadyCheckHandler):
 
         self.set_header(
             "Content-Disposition",
-            f"inline; filename={self.request.host.replace('.', '-')}_z_"
-            f"{wrong_quote.get_id_as_str()}.{file_extension.lower()}",
+            (
+                f"inline; filename={self.request.host.replace('.', '-')}_z_"
+                f"{wrong_quote.get_id_as_str()}.{file_extension.lower()}"
+            ),
         )
 
         if head:

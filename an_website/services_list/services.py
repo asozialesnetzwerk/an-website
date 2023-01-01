@@ -45,10 +45,12 @@ class Service:
 SERVICES: tuple[Service, ...] = (
     Service(
         "Minceraft-Server",
-        "Der Survival-Minceraft-Server des Asozialen Netzwerks funktioniert "
-        "auch ohne einen Minceraft-Account und hat dafür eine Integration mit "
-        "ely.by, damit auch Spieler, die ihren Minceraft-Account nicht "
-        "verraten möchten, einen eigenen Skin nutzen können.",
+        (
+            "Der Survival-Minceraft-Server des Asozialen Netzwerks funktioniert"
+            " auch ohne einen Minceraft-Account und hat dafür eine Integration"
+            " mit ely.by, damit auch Spieler, die ihren Minceraft-Account nicht"
+            " verraten möchten, einen eigenen Skin nutzen können."
+        ),
         {
             "Domain": "minceraft.asozial.org",
             "Version": "1.15.2 (1.7-1.19 wird unterstützt)",
@@ -57,8 +59,10 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "SuperTuxKart-Server",
-        "Der SuperTuxKart-Server des Asozialen Netzwerks ist durchgehend "
-        "online.",
+        (
+            "Der SuperTuxKart-Server des Asozialen Netzwerks ist durchgehend "
+            "online."
+        ),
         {
             "Name": "Das Asoziale Netzwerk",
             "SuperTuxKart-Download": "https://supertuxkart.net/Download",
@@ -66,8 +70,10 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "Syncplay-Server",
-        "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
-        "zusammen Sachen gucken.",
+        (
+            "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
+            "zusammen Sachen gucken."
+        ),
         {
             "Domain": "syncplay.asozial.org:8999",
             "Installations-Guide": "https://syncplay.pl/guide/install",
@@ -75,10 +81,12 @@ SERVICES: tuple[Service, ...] = (
     ),
     Service(
         "Matrix-Heimserver",
-        "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und "
-        "nutzt im Gegensatz zu den meisten anderen Servern Dendrite anstatt "
-        "Synapse. Die Erstellung eines Accounts ist 100% kostenlos und ohne "
-        "E-Mail-Adresse oder Telefonnummer möglich.",
+        (
+            "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und"
+            " nutzt im Gegensatz zu den meisten anderen Servern Dendrite"
+            " anstatt Synapse. Die Erstellung eines Accounts ist 100% kostenlos"
+            " und ohne E-Mail-Adresse oder Telefonnummer möglich."
+        ),
         {
             "Domain": "asozial.org",
             "Matrix-Client": "https://chat.asozial.org",

@@ -648,8 +648,10 @@ class BaseRequestHandler(RequestHandler):
 
         if not EVENT_REDIS.is_set():
             LOGGER.warning(
-                "Ratelimits are enabled, but Redis is not available. "
-                "This can happen shortly after starting the website.",
+                (
+                    "Ratelimits are enabled, but Redis is not available. "
+                    "This can happen shortly after starting the website."
+                ),
             )
             raise HTTPError(503)
 
@@ -696,9 +698,11 @@ class BaseRequestHandler(RequestHandler):
 
         if ratelimited:
             if self.now.date() == date(self.now.year, 4, 20):
-                self.send_error(420)
+                self.set_status(420)
+                self.write_error(420)
             else:
-                self.send_error(429)
+                self.set_status(429)
+                self.write_error(429)
 
         return ratelimited
 

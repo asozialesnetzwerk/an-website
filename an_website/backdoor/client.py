@@ -311,11 +311,7 @@ def send(
             pickle.loads(response[2]),  # data  # nosec: B301
         )
     except pickle.UnpicklingError:
-        return (
-            response[0],
-            response[1],
-            response[2],
-        )
+        return response
 
 
 def lisp_always_active() -> bool:
@@ -635,12 +631,14 @@ Accepted arguments:
 
     if "--no-patch-help" not in sys.argv:
         body = send_to_remote(
+            # fmt: off
             "def help(*args, **kwargs):\n"
             "    import io\n"
             "    import pydoc\n"
             "    helper_output = io.StringIO()\n"
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'PagerTuple', helper_output.getvalue()",
+            # fmt: on
             mode="exec",
         )
         if not (isinstance(body, dict) and body["success"]):

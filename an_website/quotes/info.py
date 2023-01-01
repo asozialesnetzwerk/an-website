@@ -74,8 +74,10 @@ async def search_wikipedia(
         return None
     # try to get the info from wikipedia
     response = await AsyncHTTPClient().fetch(
-        f"{api}?action=opensearch&namespace=0&profile=normal&"
-        f"search={quote_url(query)}&limit=1&redirects=resolve&format=json",
+        (
+            f"{api}?action=opensearch&namespace=0&profile=normal&"
+            f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
+        ),
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     response_json = json.loads(response.body)
@@ -99,8 +101,10 @@ async def get_wikipedia_page_content(
 ) -> None | str:
     """Get content from a Wikipedia page and return it."""
     response = await AsyncHTTPClient().fetch(
-        f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
-        f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5",
+        (
+            f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
+            f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5"
+        ),
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     response_json = json.loads(response.body)

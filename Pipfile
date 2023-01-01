@@ -41,14 +41,14 @@ regex = "*"
 setproctitle = "==1.*"
 sympy = "==1.*"
 tornado = "==6.*"
-tzdata = "==2022.2"
+tzdata = "==2022.7"
 UltraDict = "<2"
 uvloop = "<2"
 
 [dev-packages]
 autoflake = "==1.*"
 bandit = {version = "==1.*", extras = ["toml"]}
-black = "==22.8.*"
+black = "==22.12.*"
 coverage = "==6.*"
 flake8 = "==5.*"
 flake8-bugbear = "*"

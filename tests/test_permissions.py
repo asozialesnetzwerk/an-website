@@ -144,8 +144,11 @@ async def test_permissions_with_backdoor(
 
     response = await request_and_parse(
         fetch,
-        "from an_website.utils.utils import Permission\n"
-        "print(self.is_authorized(Permission.TRACEBACK | Permission.BACKDOOR))",
+        (
+            "from an_website.utils.utils import"
+            " Permission\nprint(self.is_authorized(Permission.TRACEBACK |"
+            " Permission.BACKDOOR))"
+        ),
         auth_key="s4",
         mode="exec?key=s3",  # type: ignore[arg-type]
     )
@@ -156,8 +159,10 @@ async def test_permissions_with_backdoor(
 
     response = await request_and_parse(
         fetch,
-        "from an_website.utils.utils import Permission\n"
-        "print(self.is_authorized(Permission.RATELIMITS))",
+        (
+            "from an_website.utils.utils import Permission\n"
+            "print(self.is_authorized(Permission.RATELIMITS))"
+        ),
         mode="exec",
     )
     assert isinstance(response, dict)

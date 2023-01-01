@@ -136,8 +136,10 @@ def app() -> tornado.web.Application:
             if not EVENT_REDIS.is_set():
                 loop.run_until_complete(
                     redis.setex(
-                        f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
-                        f"by-date:{datetime.utcnow().date().isoformat()}",
+                        (
+                            f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
+                            f"by-date:{datetime.utcnow().date().isoformat()}"
+                        ),
                         300,
                         "1-2",
                     )

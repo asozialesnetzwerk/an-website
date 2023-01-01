@@ -291,7 +291,8 @@ class NotFoundHandler(HTMLRequestHandler):
         new_path = replace_umlauts(new_path)
 
         if new_path.lower() in SUS_PATHS:
-            return self.send_error(469, reason="Nice Try")
+            self.set_status(469, reason="Nice Try")
+            return self.write_error(469)
 
         if new_path != self.request.path:
             return self.redirect(self.fix_url(new_path=new_path), True)
@@ -337,7 +338,8 @@ class NotFoundHandler(HTMLRequestHandler):
             if dist <= max_dist:
                 return self.redirect(self.fix_url(new_path=path), False)
 
-        self.send_error(404)
+        self.set_status(404)
+        self.write_error(404)
 
 
 class ErrorPage(HTMLRequestHandler):

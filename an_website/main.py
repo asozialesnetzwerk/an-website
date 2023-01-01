@@ -127,8 +127,10 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             module_infos.extend(_module_infos)
             loaded_modules.append(potential_module)
             LOGGER.debug(
-                "Found module_infos in %s.__init__.py, "
-                "not searching in other modules in the package.",
+                (
+                    "Found module_infos in %s.__init__.py, "
+                    "not searching in other modules in the package."
+                ),
                 potential_module,
             )
             continue
