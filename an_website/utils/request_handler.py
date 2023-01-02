@@ -275,7 +275,7 @@ class NotFoundHandler(HTMLRequestHandler):
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
 
-        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
+        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES, strict=False)
 
         if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)

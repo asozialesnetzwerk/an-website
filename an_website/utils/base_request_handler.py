@@ -30,7 +30,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timezone, tzinfo
-from typing import Any, ClassVar, Final, cast
+from typing import Any, ClassVar, Final, NoReturn, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
@@ -43,6 +43,7 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
 from tornado.web import (
+    Finish,
     GZipContentEncoding,
     HTTPError,
     MissingArgumentError,
@@ -498,7 +499,7 @@ class BaseRequestHandler(RequestHandler):
         return user_id
 
     def handle_accept_header(
-        self, possible_content_types: tuple[str, ...]
+        self, possible_content_types: tuple[str, ...], strict: bool = True
     ) -> None:
         """Handle the Accept header and set `self.content_type`."""
         if not possible_content_types:
@@ -508,8 +509,9 @@ class BaseRequestHandler(RequestHandler):
             possible_content_types,
         )
         if content_type is None:
-            self.raise_non_acceptable(possible_content_types)
-            return
+            if strict:
+                self.raise_not_acceptable(possible_content_types)
+            content_type = possible_content_types[0]
         self.content_type = content_type
         self.set_content_type_header()
 
@@ -628,13 +630,13 @@ class BaseRequestHandler(RequestHandler):
             if not await self.ratelimit(True):
                 await self.ratelimit()
 
-    def raise_non_acceptable(
+    def raise_not_acceptable(
         self, possible_content_types: tuple[str, ...]
-    ) -> None:
+    ) -> NoReturn:
         """Only call this if we cannot respect the Accept header."""
         self.clear_header("Content-Type")
         self.set_status(406)
-        self.finish("\n".join(possible_content_types) + "\n")
+        raise Finish("\n".join(possible_content_types) + "\n")
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
