@@ -26,9 +26,6 @@ from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
-from unexpected_isaves import (  # type: ignore[import]
-    save_image as unexpected_isaves,
-)
 
 from .. import patches
 from .utils import (
@@ -37,6 +34,11 @@ from .utils import (
     get_wrong_quote,
     get_wrong_quotes,
 )
+
+from unexpected_isaves import (  # type: ignore[import]  # isort:skip
+    save_image as unexpected_isaves,
+)
+
 
 LOGGER: Final = logging.getLogger(__name__)
 
