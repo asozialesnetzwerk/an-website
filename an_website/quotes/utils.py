@@ -721,8 +721,14 @@ class QuoteReadyCheckHandler(HTMLRequestHandler):
             await self.check_ready()
 
         if (
-            self.request.path.endswith(".xlsx")
-            or self.content_type == "application/vnd.ms-excel"
+            self.settings.get("RATELIMITS")
+            and self.request.method not in {"HEAD", "OPTIONS"}
+            and not self.is_authorized(Permission.RATELIMITS)
+            and not self.crawler
+            and (
+                self.request.path.endswith(".xlsx")
+                or self.content_type == "application/vnd.ms-excel"
+            )
         ):
             if self.settings.get("UNDER_ATTACK") or not EVENT_REDIS.is_set():
                 raise HTTPError(503)
