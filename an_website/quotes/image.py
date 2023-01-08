@@ -21,10 +21,14 @@ import math
 import os
 import sys
 import textwrap
+from tempfile import NamedTemporaryFile
 from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
+from unexpected_isaves import (  # type: ignore[import]
+    save_image as unexpected_isaves,
+)
 
 from .. import patches
 from .utils import (
@@ -53,6 +57,24 @@ HOST_NAME_FONT: Final = ImageFont.truetype(
     font=os.path.join(DIR, "files/oswald.regular.ttf"),
     size=23,
 )
+
+FILE_EXTENSIONS = {
+    "png": "png",
+    "gif": "gif",
+    "jpeg": "jpeg",
+    "jpg": "jpeg",
+    "jfif": "jpeg",
+    "jpe": "jpeg",
+    "webp": "webp",
+    "bmp": "bmp",
+    "pdf": "pdf",
+    "spi": "spider",
+    "tiff": "tiff",
+    "xlsx": "xlsx",
+}
+
+if hasattr(patches, "JXLImagePlugin"):
+    FILE_EXTENSIONS["jxl"] = "jxl"
 
 
 def load_png(filename: str) -> Image.Image:
@@ -251,6 +273,11 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             stroke_width=0,
         )
 
+    if file_type == "xlsx":
+        with NamedTemporaryFile(suffix=".xlsx") as file:
+            unexpected_isaves.to_excel(image, file.name, lower_image_size_by=10)
+            return file.read()
+
     buffer = io.BytesIO()
     kwargs: dict[str, Any] = {
         "format": file_type,
@@ -275,29 +302,17 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     return buffer.getvalue()
 
 
-FILE_EXTENSIONS = {
-    "png": "png",
-    "gif": "gif",
-    "jpeg": "jpeg",
-    "jpg": "jpeg",
-    "jfif": "jpeg",
-    "jpe": "jpeg",
-    "webp": "webp",
-    "bmp": "bmp",
-    "pdf": "pdf",
-    "spi": "spider",
-    "tiff": "tiff",
-}
-
-if hasattr(patches, "JXLImagePlugin"):
-    FILE_EXTENSIONS["jxl"] = "jxl"
-
-
 class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
-        *{f"image/{type}" for type in FILE_EXTENSIONS.values()},
+        *{
+            f"image/{type}"
+            for type in FILE_EXTENSIONS.values()
+            if type not in {"pdf", "xlsx"}
+        },
+        "application/pdf",
+        "application/vnd.ms-excel",
     )
     RATELIMIT_GET_LIMIT: ClassVar[int] = 15
     IS_NOT_HTML: ClassVar[bool] = True
@@ -319,9 +334,19 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             self.set_status(400, reason=reason)
             self.content_type = "text/plain"
             return await self.finish(reason)
+
         file_type = FILE_EXTENSIONS[file_extension]
-        self.handle_accept_header((f"image/{file_type}",))
-        self.set_header("Content-Type", f"image/{file_type}")
+
+        content_type = (
+            f"image/{file_type}"
+            if file_type not in {"pdf", "xlsx"}
+            else {"pdf": "application/pdf", "xlsx": "application/vnd.ms-excel"}[
+                file_type
+            ]
+        )
+
+        self.handle_accept_header((content_type,))
+        self.set_header("Content-Type", content_type)
 
         int_quote_id = int(quote_id)
         wrong_quote = (
@@ -353,6 +378,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
 
         if file_type == "gif" and self.get_bool_argument("small", False):
             file_type = "4-color-gif"
+
         return await self.finish(
             create_image(
                 wrong_quote.quote.quote,

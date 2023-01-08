@@ -45,7 +45,7 @@ from .. import (
     pytest_is_running,
 )
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import emojify
+from ..utils.utils import emojify, ratelimit
 
 DIR: Final = os.path.dirname(__file__)
 
@@ -719,3 +719,32 @@ class QuoteReadyCheckHandler(HTMLRequestHandler):
         await super().prepare()
         if self.request.method != "OPTIONS":
             await self.check_ready()
+
+        if (
+            self.request.path.endswith(".xlsx")
+            or self.content_type == "application/vnd.ms-excel"
+        ):
+            if self.settings.get("UNDER_ATTACK") or not EVENT_REDIS.is_set():
+                raise HTTPError(503)
+
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
+                bucket="quotes:image:xlsx",
+                max_burst=4,
+                count_per_period=1,
+                period=60,
+                tokens=1 if self.request.method != "HEAD" else 0,
+            )
+
+            for header, value in headers.items():
+                self.set_header(header, value)
+
+            if ratelimited:
+                if self.now.date() == date(self.now.year, 4, 20):
+                    self.set_status(420)
+                    self.write_error(420)
+                else:
+                    self.set_status(429)
+                    self.write_error(429)

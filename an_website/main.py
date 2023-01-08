@@ -92,6 +92,11 @@ from .utils.utils import (
     time_function,
 )
 
+try:
+    import perf8  # type: ignore[import]
+except ImportError:
+    perf8 = None
+
 IGNORED_MODULES: Final[set[str]] = {
     "patches.*",
     "static.*",
@@ -1055,27 +1060,23 @@ def main(  # noqa: C901  # pragma: no cover
     if not sockets:
         return 0
 
+    if perf8:
+        loop.run_until_complete(perf8.enable())
+
     try:
         loop.run_forever()
         EVENT_SHUTDOWN.set()
     finally:
-        try:
+        try:  # pylint: disable=too-many-try-statements
             server.stop()
             loop.run_until_complete(asyncio.sleep(1))
-            loop.run_until_complete(
-                asyncio.wait_for(server.close_all_connections(), 5)
-            )
-
+            loop.run_until_complete(server.close_all_connections())
+            if perf8:
+                loop.run_until_complete(perf8.disable())
             if redis := app.settings.get("REDIS"):
-                loop.run_until_complete(
-                    asyncio.wait_for(redis.close(close_connection_pool=True), 5)
-                )
-
+                loop.run_until_complete(redis.close(close_connection_pool=True))
             if elasticsearch := app.settings.get("ELASTICSEARCH"):
-                loop.run_until_complete(
-                    asyncio.wait_for(elasticsearch.close(), 5)
-                )
-
+                loop.run_until_complete(elasticsearch.close())
         finally:
             try:
                 _cancel_all_tasks(loop)

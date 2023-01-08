@@ -24,16 +24,16 @@ flake8-simplify==0.19.3
 gitdb==4.0.10 ; python_version >= '3.7'
 gitpython==3.1.30 ; python_version >= '3.7'
 html5lib==1.1
-identify==2.5.11 ; python_version >= '3.7'
-iniconfig==1.1.1
+identify==2.5.12 ; python_version >= '3.7'
+iniconfig==2.0.0 ; python_version >= '3.7'
 isort==5.11.4
-lazy-object-proxy==1.8.0 ; python_version >= '3.7'
+lazy-object-proxy==1.9.0 ; python_version >= '3.7'
 lxml==4.9.2
 mccabe==0.7.0 ; python_version >= '3.6'
 mypy==0.991
 mypy-extensions==0.4.3
 nodeenv==1.7.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
-packaging==22.0 ; python_version >= '3.7'
+packaging==23.0 ; python_version >= '3.7'
 pathspec==0.10.3 ; python_version >= '3.7'
 pbr==5.11.0 ; python_version >= '2.6'
 pep8-naming==0.13.3
@@ -42,9 +42,9 @@ platformdirs==2.6.2 ; python_version >= '3.7'
 pluggy==1.0.0 ; python_version >= '3.6'
 pre-commit==2.21.0
 pycodestyle==2.9.1 ; python_version >= '3.6'
-pydocstyle==6.1.1 ; python_version >= '3.6'
+pydocstyle==6.2.3 ; python_version >= '3.6'
 pyflakes==2.5.0 ; python_version >= '3.6'
-pygments==2.13.0 ; python_version >= '3.6'
+pygments==2.14.0 ; python_version >= '3.6'
 pylint==3.0.0a5
 pylint-pytest==1.1.2
 git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
@@ -63,15 +63,16 @@ toml==0.10.2 ; python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2,
 tomli==2.0.1 ; python_version < '3.11'
 tomlkit==0.11.6 ; python_version >= '3.6'
 tornado==6.2
-types-beautifulsoup4==4.11.6.1
+types-beautifulsoup4==4.11.6.2
 types-editdistance==0.6.3.2
 types-emoji==2.1.0.1
+types-html5lib==1.1.11.10
 types-lxml==2022.11.8
 types-orjson==3.6.2
-types-pillow==9.3.0.4
+types-pillow==9.4.0.0
 types-python-dateutil==2.8.19.5
 types-pyyaml==6.0.12.2
-types-redis==4.3.21.7
+types-redis==4.4.0.0
 types-regex==2022.10.31.3
 types-setuptools==63.4.1
 typing-extensions==4.4.0 ; python_version >= '3.7'
@@ -91,6 +92,8 @@ brotli==1.0.9
 cffi==1.15.1
 charset-normalizer==2.1.1 ; python_full_version >= '3.6.0'
 colorama==0.4.6 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
+contourpy==1.0.6 ; python_version >= '3.7'
+cycler==0.11.0 ; python_version >= '3.6'
 defity==0.3.1
 defusedxml==0.7.1
 dunamai==1.15.0 ; python_version >= '3.5' and python_version < '4.0'
@@ -101,6 +104,8 @@ elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 elasticsearch[async]==7.17.8
 emoji==2.2.0
+et-xmlfile==1.1.0 ; python_version >= '3.6'
+fonttools==4.38.0 ; python_version >= '3.7'
 frozendict==2.3.4
 frozenlist==1.3.3
 funcparserlib==1.0.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
@@ -111,29 +116,36 @@ hy==0.25.0 ; python_version < '3.12' and python_version >= '3.7'
 hyrule==0.2.1
 idna==3.4 ; python_version >= '3.5'
 jsonpickle==3.0.1
+kiwisolver==1.4.4 ; python_version >= '3.7'
+matplotlib==3.6.2 ; python_version >= '3.8'
 mpmath==1.2.1
 multidict==6.0.4 ; python_version >= '3.7'
 numpy==1.24.1
-orjson==3.8.3
-pillow==9.3.0
+openpyxl==3.0.10 ; python_version >= '3.6'
+orjson==3.8.4
+pandas==1.5.2 ; python_version >= '3.8'
+pillow==9.4.0
 pycares==4.3.0
 pycparser==2.21
 pycryptodome==3.16.0
 pycurl==7.45.2
 pyjwt==2.6.0 ; python_version >= '3.7'
+pyparsing==3.0.9 ; python_full_version >= '3.6.8'
 pysocks==1.7.1
 pyston-lite==2.3.5 ; python_version < '3.11'
 pyston-lite-autoload==2.3.5 ; python_version < '3.11'
 python-dateutil==2.8.2
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
-redis[hiredis]==4.4.0
+pytz==2022.7
+redis[hiredis]==4.4.1
 regex==2022.10.31
 setproctitle==1.3.2
 soupsieve==2.3.2.post1 ; python_version >= '3.6'
 sympy==1.11.1
 tzdata==2022.7
 ultradict==0.0.6
+unexpected-isaves==1.4.0
 urllib3==1.26.13 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 uvloop==0.17.0
 yarl==1.8.2 ; python_version >= '3.7'

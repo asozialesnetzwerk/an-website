@@ -17,9 +17,7 @@
 from __future__ import annotations
 
 import os
-import pathlib
 import sys
-from datetime import datetime
 
 # add parent dir to sys.path
 # this makes importing an_website possible
@@ -39,9 +37,11 @@ patches.apply()
 
 
 import asyncio
+import pathlib
 import socket
 import urllib.parse
 from collections.abc import Awaitable, Callable, Set
+from datetime import datetime
 from typing import Any, cast
 
 import orjson as json
@@ -64,6 +64,7 @@ from an_website import (
     quotes,
     utils,
 )
+from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -223,13 +224,13 @@ def assert_valid_response(
         url, codes, response.code, response.body
     )
     if (
-        "Content-Type" in response.headers
-        and response.headers["Content-Type"].startswith(
-            ("application/", "text/")
+        response.body
+        and (content_type := response.headers.get("Content-Type"))
+        and (
+            content_type in TEXT_CONTENT_TYPES
+            or content_type.startswith("text/")
+            or content_type.endswith(("+xml", "+json"))
         )
-        and response.headers["Content-Type"]
-        != "application/vnd.uqfoundation.dill"
-        and response.body
     ):
         assert response.body.endswith(b"\n") or print(
             f"Body from {url} doesn't end with newline"

@@ -73,6 +73,7 @@ async def test_parsing_module_infos(
             if module_info.path not in {
                 "/chat",  # head not supported
                 "/api/update",
+                "/api/upload",
             }:
                 follow_redirects = module_info.path in {
                     "/redirect",

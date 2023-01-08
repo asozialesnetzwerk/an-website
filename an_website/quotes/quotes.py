@@ -166,7 +166,12 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
 
         This is done to show the users less out-of-date data.
         """
-        if len(self.FUTURES) > 1 or (self.content_type or "")[:6] == "image/":
+        if len(self.FUTURES) > 1 or (
+            self.content_type
+            and self.content_type.startswith("image/")
+            or self.content_type
+            in {"application/pdf", "application/vnd.ms-excel"}
+        ):
             return  # don't spam and don't do this for images
 
         user_agent = self.request.headers.get("User-Agent")
@@ -299,7 +304,16 @@ class QuoteById(QuoteBaseHandler):
                     self.LONG_PATH % (wqs[0].quote.id, wqs[0].author.id)
                 )
             )
-        if self.content_type and self.content_type.startswith("image/"):
+
+        if head:
+            return
+
+        if (
+            self.content_type
+            and self.content_type.startswith("image/")
+            or self.content_type
+            in {"application/pdf", "application/vnd.ms-excel"}
+        ):
             _wq = await get_wrong_quote(int_quote_id, int(author_id))
             return await self.finish(
                 create_image(
@@ -307,11 +321,15 @@ class QuoteById(QuoteBaseHandler):
                     _wq.author.name,
                     _wq.rating,
                     f"{self.request.host_name}/z/{_wq.get_id_as_str(True)}",
-                    self.content_type.removeprefix("image/"),
+                    self.content_type.removeprefix("image/")
+                    if self.content_type.startswith("image/")
+                    else {
+                        "application/pdf": "pdf",
+                        "application/vnd.ms-excel": "xlsx",
+                    }[self.content_type],
                 )
             )
-        if head:
-            return
+
         await self.render_quote(int_quote_id, int(author_id))
 
     async def get_old_vote(

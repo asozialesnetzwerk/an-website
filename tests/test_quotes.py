@@ -269,13 +269,15 @@ async def test_quote_request_handlers(
             await fetch("/zitate/1-1.gif?small=sure"), "image/gif"
         ).body
     )
-    assert_valid_response(await fetch("/zitate/1-2.png"), "image/png")
-    assert_valid_response(
-        await fetch("/zitate/1-2", headers={"Accept": "image/png"}), "image/png"
-    )
 
     for extension, name in FILE_EXTENSIONS.items():
-        content_type = f"image/{name}"
+        content_type = (
+            f"image/{name}"
+            if name not in {"pdf", "xlsx"}
+            else {"pdf": "application/pdf", "xlsx": "application/vnd.ms-excel"}[
+                name
+            ]
+        )
         image1 = assert_valid_response(
             await fetch(f"/zitate/1-1.{extension}"), content_type
         ).body

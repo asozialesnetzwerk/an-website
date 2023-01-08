@@ -34,7 +34,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: git push --tags
       - name: Install build frontend
-        run: pip install "build>=0.8,<2"
+        run: pip install "build>=0.9,<2"
       - name: Build
         run: python -m build
       - name: Upload as build artifact
