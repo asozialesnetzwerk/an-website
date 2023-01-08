@@ -720,7 +720,7 @@ class QuoteReadyCheckHandler(HTMLRequestHandler):
         if self.request.method != "OPTIONS":
             await self.check_ready()
 
-        if (
+        if (  # pylint: disable=too-many-boolean-expressions
             self.settings.get("RATELIMITS")
             and self.request.method not in {"HEAD", "OPTIONS"}
             and not self.is_authorized(Permission.RATELIMITS)
