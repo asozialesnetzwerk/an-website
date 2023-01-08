@@ -35,6 +35,7 @@ from .utils import (
     get_wrong_quotes,
 )
 
+# pylint: disable=wrong-import-order
 from unexpected_isaves import (  # type: ignore[import]  # isort:skip
     save_image as unexpected_isaves,
 )
