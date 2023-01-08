@@ -8,6 +8,7 @@ jobs:
   fix_stupid_mistakes:
     name: Fix stupid mistakes
     runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
     permissions:
       contents: write
     steps:

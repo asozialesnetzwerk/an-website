@@ -45,7 +45,7 @@ from .. import (
     pytest_is_running,
 )
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import emojify, ratelimit, Permission
+from ..utils.utils import Permission, emojify, ratelimit
 
 DIR: Final = os.path.dirname(__file__)
 

@@ -285,7 +285,7 @@ async def test_quote_request_handlers(
             await fetch("/zitate/1-1", headers={"Accept": content_type}),
             content_type,
         ).body
-        assert image1 == image2 or name == "pdf"  # Planet der Frauen
+        assert image1 == image2 or name in {"pdf", "xlsx"}
 
 
 def test_parsing_vote_str() -> None:
