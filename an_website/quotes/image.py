@@ -21,11 +21,12 @@ import math
 import os
 import sys
 import textwrap
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
+from unexpected_isaves.save_image import to_excel  # type: ignore[import]
 
 from .. import patches
 from .utils import (
@@ -34,12 +35,6 @@ from .utils import (
     get_wrong_quote,
     get_wrong_quotes,
 )
-
-# pylint: disable=wrong-import-order
-from unexpected_isaves import (  # type: ignore[import]  # isort:skip
-    save_image as unexpected_isaves,
-)
-
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -156,12 +151,12 @@ def draw_lines(  # pylint: disable=too-many-arguments
     for line in lines:
         width = font.getlength(line)
         draw_text(
-            image=image,
-            text=line,
-            x=padding_left + math.ceil((max_w - width) / 2),
-            y=y_start,
-            font=font,
-            stroke_width=stroke_width,
+            image,
+            line,
+            padding_left + math.ceil((max_w - width) / 2),
+            y_start,
+            font,
+            stroke_width,
         )
         y_start += max_h
     return y_start
@@ -176,6 +171,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     source: None | str,
     file_type: str = "png",
     font: ImageFont.FreeTypeFont = FONT,
+    *,
+    wq_id: None | str = None,
 ) -> bytes:
     """Create an image with the given quote and author."""
     image = BACKGROUND_IMAGE.copy()
@@ -205,7 +202,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         QUOTE_MAX_WIDTH,
         max_line_height,
         font,
-        stroke_width=1 if file_type == "4-color-gif" else 0,
+        0,
+        1 if file_type == "4-color-gif" else 0,
     )
 
     # draw author
@@ -227,18 +225,19 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         max_line_height,
         font,
         10,
-        stroke_width=1 if file_type == "4-color-gif" else 0,
+        1 if file_type == "4-color-gif" else 0,
     )
 
     if y_text > IMAGE_HEIGHT and font is FONT:
         LOGGER.info("Using smaller font for quote %s", source)
         return create_image(
-            quote=quote,
-            author=author,
-            rating=rating,
-            source=source,
-            file_type=file_type,
-            font=FONT_SMALLER,
+            quote,
+            author,
+            rating,
+            source,
+            file_type,
+            FONT_SMALLER,
+            wq_id=wq_id,
         )
 
     # draw rating
@@ -246,12 +245,12 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         _, y_off, width, height = FONT_SMALLER.getbbox(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - height
         draw_text(
-            image=draw,
-            text=str(rating),
-            x=25,
-            y=y_rating,
-            font=FONT_SMALLER,  # always use same font for rating
-            stroke_width=1,
+            draw,
+            str(rating),
+            25,
+            y_rating,
+            FONT_SMALLER,  # always use same font for rating
+            1,
         )
         # draw rating image
         icon = NICHT_WITZIG_IMAGE if rating < 0 else WITZIG_IMAGE
@@ -268,18 +267,20 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     if source:
         width, height = HOST_NAME_FONT.getbbox(source)[2:]
         draw_text(
-            image=draw,
-            text=source,
-            x=IMAGE_WIDTH - 5 - width,
-            y=IMAGE_HEIGHT - 5 - height,
-            font=HOST_NAME_FONT,
-            stroke_width=0,
+            draw,
+            source,
+            IMAGE_WIDTH - 5 - width,
+            IMAGE_HEIGHT - 5 - height,
+            HOST_NAME_FONT,
+            0,
         )
 
     if file_type == "xlsx":
-        with NamedTemporaryFile(suffix=".xlsx") as file:
-            unexpected_isaves.to_excel(image, file.name, lower_image_size_by=10)
-            return file.read()
+        with TemporaryDirectory() as tempdir_name:
+            filepath = os.path.join(tempdir_name, f"{wq_id or '0-0'}.xlsx")
+            to_excel(image, filepath, lower_image_size_by=10)
+            with open(filepath, "rb") as file:
+                return file.read()
 
     buffer = io.BytesIO()
     kwargs: dict[str, Any] = {
@@ -287,20 +288,22 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         "optimize": True,
         "save_all": False,
     }
+
     if file_type == "4-color-gif":
         colors: list[tuple[int, tuple[int, int, int]]]
         colors = image.getcolors(2**16)  # type: ignore[assignment]
         colors.sort(reverse=True)
-        values: list[int] = []
+        palette = bytearray()
         for _, color in colors[:4]:
-            values.extend(color)
-        kwargs.update(format="gif", palette=bytearray(values))
+            palette.extend(color)
+        kwargs.update(format="gif", palette=palette)
     elif file_type == "jxl":
         kwargs.update(lossless=True)
     elif file_type == "tiff":
         kwargs.update(compression="zlib")
     elif file_type == "webp":
         kwargs.update(lossless=True)
+
     image.save(buffer, **kwargs)
     return buffer.getvalue()
 
@@ -389,5 +392,6 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 wrong_quote.rating,
                 source,
                 file_type,
+                wq_id=wrong_quote.get_id_as_str(),
             )
         )

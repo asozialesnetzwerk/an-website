@@ -450,7 +450,7 @@ def shellify(code: str) -> str:
 async def run_shell_50821273052022fbc283():
     import asyncio
     proc = await asyncio.create_subprocess_shell(
-        "{code}",
+        {code!r},
         asyncio.subprocess.DEVNULL,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,

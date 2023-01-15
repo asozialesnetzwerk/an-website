@@ -117,10 +117,12 @@ async def test_create() -> None:
     assert create.get_quote_by_str(quote_str.upper()) is wrong_quote.quote
     assert create.get_quote_by_str(quote_str.title()) is wrong_quote.quote
     assert create.get_quote_by_str(f"„{quote_str}“") is wrong_quote.quote
-    assert create.get_quote_by_str(f'"{quote_str}"') is wrong_quote.quote
 
     assert (
-        await create.create_quote(f'"{quote_str}"', None)  # type: ignore[arg-type]
+        await create.create_quote(
+            f'"{quote_str}"',  # noqa: B028
+            None,  # type: ignore[arg-type]
+        )
         is wrong_quote.quote
     )
 

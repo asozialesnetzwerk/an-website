@@ -314,19 +314,20 @@ class QuoteById(QuoteBaseHandler):
             or self.content_type
             in {"application/pdf", "application/vnd.ms-excel"}
         ):
-            _wq = await get_wrong_quote(int_quote_id, int(author_id))
+            wrong_quote = await get_wrong_quote(int_quote_id, int(author_id))
             return await self.finish(
                 create_image(
-                    _wq.quote.quote,
-                    _wq.author.name,
-                    _wq.rating,
-                    f"{self.request.host_name}/z/{_wq.get_id_as_str(True)}",
+                    wrong_quote.quote.quote,
+                    wrong_quote.author.name,
+                    wrong_quote.rating,
+                    f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}",
                     self.content_type.removeprefix("image/")
                     if self.content_type.startswith("image/")
                     else {
                         "application/pdf": "pdf",
                         "application/vnd.ms-excel": "xlsx",
                     }[self.content_type],
+                    wq_id=wrong_quote.get_id_as_str(),
                 )
             )
 

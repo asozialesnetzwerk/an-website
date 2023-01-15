@@ -93,7 +93,7 @@ class BaseRequestHandler(RequestHandler):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
 
     ELASTIC_RUM_URL: ClassVar[str] = (
-        "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
+        "/@elastic/apm-rum@5.12.0/dist/bundles/elastic-apm-rum"
         f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
     )
 
@@ -129,7 +129,7 @@ class BaseRequestHandler(RequestHandler):
         """Compute ETag with Base85 encoding."""
         if not self.COMPUTE_ETAG:
             return None
-        return f'"{hash_bytes(*self._write_buffer)}"'
+        return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B028
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         """Do nothing."""
@@ -739,7 +739,7 @@ class BaseRequestHandler(RequestHandler):
 
     def set_content_type_header(self) -> None:
         """Set the Content-Type header based on `self.content_type`."""
-        if str(self.content_type).startswith("text/"):  # RFC2616 3.7.1
+        if str(self.content_type).startswith("text/"):  # RFC 2616 (3.7.1)
             self.set_header(
                 "Content-Type", f"{self.content_type};charset=utf-8"
             )
@@ -827,7 +827,7 @@ class BaseRequestHandler(RequestHandler):
         self.active_origin_trials = set()
         if self.settings.get("REPORTING"):
             endpoint = self.get_reporting_api_endpoint()
-            self.set_header("Reporting-Endpoints", f'default="{endpoint}"')
+            self.set_header("Reporting-Endpoints", f"default={endpoint!r}")
             self.set_header(
                 "Report-To",
                 json.dumps(

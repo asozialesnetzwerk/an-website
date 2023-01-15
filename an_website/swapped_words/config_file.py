@@ -270,7 +270,7 @@ class InvalidConfigError(Exception):
     def __str__(self) -> str:
         """Exception to str."""
         return (
-            f"Error in line {self.line_num}: '{self.line.strip()}' "
+            f"Error in line {self.line_num}: {self.line.strip()!r} "
             f"with reason: {self.reason}"
         )
 

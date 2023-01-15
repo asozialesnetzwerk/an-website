@@ -23,6 +23,7 @@
     "**/node_modules",
     "**/*-lock.json",
     "an_website/static/js",
+    "an_website/vendored",
     "venv"
   ],
   "plugins": [

@@ -111,9 +111,9 @@ async def get_authors(author_name: str) -> list[Author | str]:
     max_distance = min(5, len(author_name) // 2 + 1)
     authors: list[Author | str] = [
         *(
-            _a
-            for _a in AUTHORS_CACHE.values()
-            if distance(_a.name.lower(), author_name_lower) <= max_distance
+            author
+            for author in AUTHORS_CACHE.values()
+            if distance(author.name.lower(), author_name_lower) <= max_distance
         ),
         fix_author_name(author_name),
     ]
@@ -134,18 +134,18 @@ async def get_authors(author_name: str) -> list[Author | str]:
 def get_author_by_name(name: str) -> None | Author:
     """Get an author by its name."""
     lower_name = fix_author_name(name).lower()
-    for _a in AUTHORS_CACHE.values():
-        if _a.name.lower() == lower_name:
-            return _a
+    for author in AUTHORS_CACHE.values():
+        if author.name.lower() == lower_name:
+            return author
     return None
 
 
 def get_quote_by_str(quote_str: str) -> None | Quote:
     """Get an author by its name."""
     lower_quote = fix_quote_str(quote_str).lower()
-    for _q in QUOTES_CACHE.values():
-        if _q.quote.lower() == lower_quote:
-            return _q
+    for quote in QUOTES_CACHE.values():
+        if quote.quote.lower() == lower_quote:
+            return quote
     return None
 
 
@@ -159,9 +159,9 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
     max_distance = min(16, len(quote_str) // 2 + 1)
     quotes: list[Quote | str] = [
         *(
-            _q
-            for _q in QUOTES_CACHE.values()
-            if distance(_q.quote.lower(), lower_quote_str) <= max_distance
+            quote
+            for quote in QUOTES_CACHE.values()
+            if distance(quote.quote.lower(), lower_quote_str) <= max_distance
         ),
         fix_quote_str(quote_str),
     ]

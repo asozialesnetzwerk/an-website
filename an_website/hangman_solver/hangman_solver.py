@@ -224,7 +224,7 @@ def _solve_hangman(
 ) -> Hangman:
     """Generate a hangman object based on the input and return it."""
     if language not in LANGUAGES:
-        raise HTTPError(400, reason=f"'{language}' is an invalid language")
+        raise HTTPError(400, reason=f"{language!r} is an invalid language")
 
     input_str = fix_input_str(input_str)
     invalid = fix_invalid(invalid)

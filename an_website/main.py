@@ -207,7 +207,7 @@ def get_module_infos_from_module(
         errors.append(
             f"{module_name} has no 'get_module_info' and no 'get_module_infos' "
             "method. Please add at least one of the methods or add "
-            f"'{module_name.rsplit('.', 1)[0]}.*' or '{module_name}' to "
+            f"'{module_name.rsplit('.', 1)[0]}.*' or {module_name!r} to "
             "IGNORED_MODULES."
         )
         return None
@@ -598,25 +598,25 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
     }
 
     script_options = [
-        f"serviceName:'{app.settings['ELASTIC_APM']['SERVICE_NAME']}'",
-        f"serviceVersion:'{app.settings['ELASTIC_APM']['SERVICE_VERSION']}'",
-        f"environment:'{app.settings['ELASTIC_APM']['ENVIRONMENT']}'",
+        f"serviceName:{app.settings['ELASTIC_APM']['SERVICE_NAME']!r}",
+        f"serviceVersion:{app.settings['ELASTIC_APM']['SERVICE_VERSION']!r}",
+        f"environment:{app.settings['ELASTIC_APM']['ENVIRONMENT']!r}",
     ]
 
     rum_server_url = app.settings["ELASTIC_APM"]["RUM_SERVER_URL"]
 
     if rum_server_url is None:
         script_options.append(
-            f"serverUrl:'{app.settings['ELASTIC_APM']['SERVER_URL']}'"
+            f"serverUrl:{app.settings['ELASTIC_APM']['SERVER_URL']!r}"
         )
     elif rum_server_url:
-        script_options.append(f"serverUrl:'{rum_server_url}'")
+        script_options.append(f"serverUrl:{rum_server_url!r}")
     else:
         script_options.append("serverUrl:window.location.origin")
 
     if app.settings["ELASTIC_APM"]["RUM_SERVER_URL_PREFIX"]:
         script_options.append(
-            f"serverUrlPrefix:'{app.settings['ELASTIC_APM']['RUM_SERVER_URL_PREFIX']}'"
+            f"serverUrlPrefix:{app.settings['ELASTIC_APM']['RUM_SERVER_URL_PREFIX']!r}"
         )
 
     app.settings["ELASTIC_APM"]["INLINE_SCRIPT"] = (
@@ -1060,7 +1060,7 @@ def main(  # noqa: C901  # pragma: no cover
     if not sockets:
         return 0
 
-    if perf8:
+    if perf8 and "PERF8" in os.environ:
         loop.run_until_complete(perf8.enable())
 
     try:
@@ -1071,7 +1071,7 @@ def main(  # noqa: C901  # pragma: no cover
             server.stop()
             loop.run_until_complete(asyncio.sleep(1))
             loop.run_until_complete(server.close_all_connections())
-            if perf8:
+            if perf8 and "PERF8" in os.environ:
                 loop.run_until_complete(perf8.disable())
             if redis := app.settings.get("REDIS"):
                 loop.run_until_complete(redis.close(close_connection_pool=True))

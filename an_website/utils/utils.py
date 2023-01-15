@@ -374,7 +374,7 @@ def country_code_to_flag(code: str) -> str:
 
 def create_emoji_html(emoji: str, emoji_url: str) -> str:
     """Create an HTML element that can be used to display an emoji."""
-    return f'<img src="{emoji_url}" alt="{emoji}" class="emoji">'
+    return f"<img src={emoji_url!r} alt={emoji!r} class='emoji'>"
 
 
 def emoji2code(emoji: str) -> str:

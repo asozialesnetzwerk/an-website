@@ -119,8 +119,8 @@ class HeaderInfo(Info):
             else mark_query(self.text, query)
         )
         return (
-            f'<{self.tag} id="{_id}">'
-            f'{text}<a no-dynload href="#{_id}" class="header-id-link"></a>'
+            f"<{self.tag} id={_id!r}>"
+            f"{text}<a no-dynload href='#{_id}' class='header-id-link'></a>"
             f"</{self.tag}>"
         )
 
@@ -170,17 +170,17 @@ class SoundInfo(Info):
         file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
         return (
             "<li>"
-            f"<a href='{href}' class='a_hover'>"
+            f"<a href={href!r} class='a_hover'>"
             f"{mark_query(self.person.value, query)}"
             "</a>"
             ": »"
-            f"<a no-dynload href='{file_url}' class='quote-a'>"
+            f"<a no-dynload href={file_url!r} class='quote-a'>"
             f"{mark_query(self.get_text(), query)}"
             "</a>"
             "«"
             "<br>"
             "<audio controls>"
-            f"<source src='{file_url}' type='audio/mpeg'>"
+            f"<source src={file_url!r} type='audio/mpeg'>"
             "</audio>"
             "</li>"
         )
@@ -209,7 +209,7 @@ class SoundInfo(Info):
             f"<chapter>{self.chapter.name}</chapter>"
             f"<person>{self.person.value}</person>"
             f"<link>{link}</link>"
-            f"<enclosure url='{link}' type='audio/mpeg' length='{file_size}'>"
+            f"<enclosure url={link!r} type='audio/mpeg' length={str(file_size)!r}>"
             "</enclosure>"
             f"<guid>{filename}</guid>"
             f"<pubDate>{modification_time}</pubDate>"

@@ -24,6 +24,7 @@ import os
 from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
+from pathlib import Path
 from typing import Any, ClassVar, Final
 from urllib.parse import unquote, urlsplit
 
@@ -135,7 +136,7 @@ class HTMLRequestHandler(BaseRequestHandler):
         """Get HTML to add to forms to keep important query args."""
         form_appendix = (
             "<input name='no_3rd_party' class='hidden' "
-            f"value='{bool_to_str(self.get_no_3rd_party())}'>"
+            f"value={bool_to_str(self.get_no_3rd_party())!r}>"
             if "no_3rd_party" in self.request.query_arguments
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else ""
@@ -143,11 +144,11 @@ class HTMLRequestHandler(BaseRequestHandler):
         if self.get_dynload() != self.get_saved_dynload():
             form_appendix += (
                 "<input name='dynload' class='hidden' "
-                f"value='{bool_to_str(self.get_dynload())}'>"
+                f"value={bool_to_str(self.get_dynload())!r}>"
             )
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
-                f"<input name='theme' class='hidden' value='{theme}'>"
+                f"<input name='theme' class='hidden' value={theme!r}>"
             )
         return form_appendix
 
@@ -333,7 +334,7 @@ class NotFoundHandler(HTMLRequestHandler):
         if len(distances) > 0:
             # sort to get the one with the smallest distance in index 0
             distances.sort()
-            dist, path = distances[0]
+            dist, path = distances[0]  # pylint: disable=redefined-outer-name
             # redirect only if the distance is less than or equal {max_dist}
             if dist <= max_dist:
                 return self.redirect(self.fix_url(new_path=path), False)
@@ -380,7 +381,7 @@ class ElasticRUM(BaseRequestHandler):
     POSSIBLE_CONTENT_TYPES = (
         "application/javascript",
         "application/json",
-        "text/javascript",  # see: rfc9239
+        "text/javascript",  # RFC 9239 (6)
     )
 
     URL: ClassVar[str] = (
@@ -396,7 +397,6 @@ class ElasticRUM(BaseRequestHandler):
         spam: str = "",
         eggs: str = "",
         *,
-        # pylint: disable=unused-argument
         head: bool = False,
     ) -> None:
         """Serve the RUM script."""
@@ -406,7 +406,8 @@ class ElasticRUM(BaseRequestHandler):
             else ("application/javascript", "text/javascript")
         )
 
-        if (key := version + spam + eggs) not in self.SCRIPTS:
+        # pylint: disable=redefined-outer-name
+        if (key := version + spam + eggs) not in self.SCRIPTS and not head:
             response = await AsyncHTTPClient().fetch(
                 self.URL.format(version, spam, eggs),
                 raise_error=False,
@@ -430,7 +431,18 @@ class ElasticRUM(BaseRequestHandler):
         self.set_header("Expires", datetime.utcnow() + timedelta(days=365))
         self.set_header(
             "Cache-Control",
-            f"public, min-fresh={60 * 60 * 24 * 365}, immutable",
+            f"public, immutable, max-age={60 * 60 * 24 * 365}",
         )
 
-        return await self.finish(self.SCRIPTS[key])
+        return await self.finish(self.SCRIPTS[key] or b"")
+
+
+for key, file in {
+    "5.12.0": "elastic-apm-rum.umd.js",
+    "5.12.0.min": "elastic-apm-rum.umd.min.js",
+    "5.12.0.min.map": "elastic-apm-rum.umd.min.js.map",
+}.items():
+    path = os.path.join(ROOT_DIR, "vendored", "apm-rum", file)
+    ElasticRUM.SCRIPTS[key] = Path(path).read_bytes()
+
+del key, file, path  # pylint: disable=undefined-loop-variable
