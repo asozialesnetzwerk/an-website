@@ -755,9 +755,7 @@ async def setup_elasticsearch_configs(  # noqa: C901
                 path.read_bytes().replace(b"{prefix}", prefix.encode("ASCII"))
             )
 
-            name = (
-                f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
-            )
+            name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
             try:
                 if what == "ingest_pipelines":

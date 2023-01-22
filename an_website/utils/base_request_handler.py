@@ -129,7 +129,7 @@ class BaseRequestHandler(RequestHandler):
         """Compute ETag with Base85 encoding."""
         if not self.COMPUTE_ETAG:
             return None
-        return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B028
+        return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B907
 
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         """Do nothing."""

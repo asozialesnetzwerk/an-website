@@ -46,7 +46,7 @@ numpy==1.24.1
 openpyxl==3.0.10 ; python_version >= '3.6'
 orjson==3.8.5
 packaging==23.0 ; python_version >= '3.7'
-pandas==1.5.2 ; python_version >= '3.8'
+pandas==1.5.3 ; python_version >= '3.8'
 pillow==9.4.0
 pycares==4.3.0
 pycparser==2.21

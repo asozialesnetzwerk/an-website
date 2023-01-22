@@ -405,7 +405,7 @@ async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
 
     for boolean in (False, True):
         url = (
-            "/@elastic/apm-rum@^5/dist/bundles/elastic-apm-rum"
+            "/@elastic/apm-rum@5.12.0/dist/bundles/elastic-apm-rum"
             f".umd{'.min' if boolean else ''}.js"
         )
         assert_valid_response(

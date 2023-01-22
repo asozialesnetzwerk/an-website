@@ -120,7 +120,7 @@ async def test_create() -> None:
 
     assert (
         await create.create_quote(
-            f'"{quote_str}"',  # noqa: B028
+            f'"{quote_str}"',  # noqa: B907
             None,  # type: ignore[arg-type]
         )
         is wrong_quote.quote
@@ -198,8 +198,7 @@ async def test_quote_updating() -> None:
     quote = await quotes.get_quote_by_id(1)
 
     assert (
-        quote.quote
-        == "Frage nicht, was dein Land für dich tun kann, "
+        quote.quote == "Frage nicht, was dein Land für dich tun kann, "
         "frage, was du für dein Land tun kannst."
     )
     quote.quote = "test"
@@ -209,8 +208,7 @@ async def test_quote_updating() -> None:
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 
     assert (
-        quote.quote
-        == "Frage nicht, was dein Land für dich tun kann, "
+        quote.quote == "Frage nicht, was dein Land für dich tun kann, "
         "frage, was du für dein Land tun kannst."
     )
 

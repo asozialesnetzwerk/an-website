@@ -442,7 +442,7 @@ for key, file in {
     "5.12.0.min": "elastic-apm-rum.umd.min.js",
     "5.12.0.min.map": "elastic-apm-rum.umd.min.js.map",
 }.items():
-    path = os.path.join(ROOT_DIR, "vendored", "apm-rum", file)
-    ElasticRUM.SCRIPTS[key] = Path(path).read_bytes()
+    path = Path(ROOT_DIR) / "vendored" / "apm-rum" / file
+    ElasticRUM.SCRIPTS[key] = path.read_bytes()
 
 del key, file, path  # pylint: disable=undefined-loop-variable
