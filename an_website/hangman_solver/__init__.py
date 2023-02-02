@@ -17,14 +17,16 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import Final, cast
 
 import orjson as json
+from typed_stream import Stream
 
 DIR: Final = os.path.dirname(__file__)
 
 
-BASE_WORD_DIR: Final = os.path.join(DIR, "words")
+BASE_WORD_DIR: Final = Path(DIR) / "words"
 
 
 def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
@@ -34,25 +36,18 @@ def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
     The file names are each in a frozenset to guarantee immutability.
     """
     languages: set[str] = set()
-    filenames: set[str] = set()
-    # iterate over the folders in the words dir
-    for folder in os.listdir(BASE_WORD_DIR):
-        # check if the folder is a words folder
-        if folder.startswith("words_"):
-            # add the language found in the word dir to LANGUAGES
-            languages.add(folder[6:])  # without: "words_"
-            # the dir with the words in the current lang
-            words_dir = os.path.join(BASE_WORD_DIR, folder)
-            for filename in os.listdir(words_dir):
-                # ignore python files
-                if not filename.endswith(".py"):
-                    # the relativ file name
-                    rel_filename = f"{folder}/{filename}"
-
-                    # add the file name without the extension to filenames
-                    filenames.add(rel_filename.split(".", 1)[0])
-
-    return frozenset(filenames), frozenset(languages)
+    filenames = (
+        Stream(os.listdir(BASE_WORD_DIR))
+        .filter(lambda folder: folder.startswith("words_"))
+        .peek(lambda folder: languages.add(folder.removeprefix("words_")))
+        .flat_map(lambda folder: (BASE_WORD_DIR / folder).iterdir())
+        .filter(lambda file: file.suffix != ".py")
+        .map(lambda file: file.relative_to(BASE_WORD_DIR))
+        .map(str)
+        .map(lambda rel_filename: rel_filename.split(".", 1)[0])
+        .collect(frozenset)
+    )
+    return filenames, frozenset(languages)
 
 
 FILE_NAMES, LANGUAGES = get_filenames_and_languages()
