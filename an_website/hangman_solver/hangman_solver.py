@@ -232,7 +232,7 @@ def _solve_hangman(
     input_len = len(input_str)
 
     # to be short (is only the key of the words dict in __init__.py)
-    filename = f"words_{language}/{input_len}"
+    filename = f"{language}/{input_len}"
 
     if filename not in FILE_NAMES:
         # no words with the length

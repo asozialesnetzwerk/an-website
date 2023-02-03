@@ -15,9 +15,10 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Collection
 
 from editdistance import distance
+from typed_stream import Stream
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -42,51 +43,35 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def find_solutions(word: str, ignore: Iterable[str] = ()) -> set[str]:
+def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
     """Find words that have only one different letter."""
-    solutions: set[str] = set()
-
     word_len = len(word)
+    ignore = {*ignore, word}
 
-    if not word_len:
-        return solutions
-
-    ignore = (*ignore, word)
-
-    for sol_len in (word_len - 1, word_len, word_len + 1):
-        filename = f"words_de_basic/{sol_len}"
-
-        if filename not in FILE_NAMES:
-            # don't test with this length
-            # we don't have any words with this length
-            continue
-
-        solutions.update(
-            test_word
-            for test_word in get_words(filename)
-            if test_word not in ignore and distance(word, test_word) == 1
-        )
-
-    return solutions
+    return (
+        Stream((word_len - 1, word_len, word_len + 1))
+        .map("de_basic/%s".__mod__)
+        .filter(FILE_NAMES.__contains__)
+        .flat_map(get_words)
+        .exclude(ignore.__contains__)
+        .filter(lambda test_word: distance(word, test_word) == 1)
+    )
 
 
-async def get_ranked_solutions(
-    word: str, before: Iterable[str] = ()
+def get_ranked_solutions(
+    word: str, before: Collection[str] = ()
 ) -> list[tuple[int, str]]:
     """Find solutions for the word and rank them."""
-    sols = await find_solutions(word)
-
-    ranked_sols: list[tuple[int, str]] = [
+    if not word:
+        return []
+    before_with_word: set[str] = {*before, word}
+    return sorted(
         (
-            len(tuple(_s for _s in await find_solutions(sol, (*before, word)))),
-            sol,
-        )
-        for sol in sols
-        if sol != word and sol not in before
-    ]
-
-    ranked_sols.sort(reverse=True)
-    return ranked_sols
+            (find_solutions(sol, before_with_word).count(), sol)
+            for sol in find_solutions(word, before)
+        ),
+        reverse=True,
+    )
 
 
 class WordgameSolver(HTMLRequestHandler):
@@ -106,7 +91,7 @@ class WordgameSolver(HTMLRequestHandler):
         await self.render(
             "pages/wordgame_solver.html",
             word=word,
-            words=await get_ranked_solutions(word, before),
+            words=get_ranked_solutions(word, before),
             before=", ".join(before),
             new_before=", ".join(new_before),
         )
@@ -128,5 +113,5 @@ class WordgameSolverAPI(APIRequestHandler):
         return await self.finish_dict(
             before=before,
             word=word,
-            solutions=await get_ranked_solutions(word, before),
+            solutions=get_ranked_solutions(word, before),
         )

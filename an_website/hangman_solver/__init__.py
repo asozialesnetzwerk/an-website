@@ -36,18 +36,15 @@ def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
     The file names are each in a frozenset to guarantee immutability.
     """
     languages: set[str] = set()
-    filenames = (
-        Stream(os.listdir(BASE_WORD_DIR))
-        .filter(lambda folder: folder.startswith("words_"))
-        .peek(lambda folder: languages.add(folder.removeprefix("words_")))
-        .flat_map(lambda folder: (BASE_WORD_DIR / folder).iterdir())
-        .filter(lambda file: file.suffix != ".py")
-        .map(lambda file: file.relative_to(BASE_WORD_DIR))
+    return (
+        Stream(BASE_WORD_DIR.iterdir())
+        .filter(Path.is_dir)
+        .peek(lambda folder: languages.add(folder.name))
+        .flat_map(lambda folder: folder.glob("[0123456789]*.json"))
+        .map(lambda file: file.relative_to(BASE_WORD_DIR).with_suffix(""))
         .map(str)
-        .map(lambda rel_filename: rel_filename.split(".", 1)[0])
         .collect(frozenset)
-    )
-    return filenames, frozenset(languages)
+    ), frozenset(languages)
 
 
 FILE_NAMES, LANGUAGES = get_filenames_and_languages()
