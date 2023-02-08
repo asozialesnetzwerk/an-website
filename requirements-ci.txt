@@ -95,7 +95,6 @@ beautifulsoup4==4.11.2
 blake3==0.3.3
 brotli==1.0.9
 charset-normalizer==2.1.1
-colorama==0.4.6
 contourpy==1.0.7
 cycler==0.11.0
 defity==0.3.1
@@ -116,8 +115,8 @@ funcparserlib==1.0.1
 get-version==3.5.4
 hiredis==2.2.1
 html2text==2020.1.16
-hy==0.25.0
-hyrule==0.2.1
+hy==0.26.0
+hyrule==0.3.0
 idna==3.4
 jsonpickle==3.0.1
 kiwisolver==1.4.4

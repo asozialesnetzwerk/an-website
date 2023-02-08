@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Final, cast
 
 import orjson as json
-from typed_stream import Stream
+from typed_stream import FileStream, Stream
 
 DIR: Final = os.path.dirname(__file__)
 
@@ -53,17 +53,13 @@ FILE_NAMES, LANGUAGES = get_filenames_and_languages()
 @lru_cache(10)
 def get_words(filename: str) -> frozenset[str]:
     """Get the words with the filename and return them."""
-    with open(
-        os.path.join(BASE_WORD_DIR, f"{filename}.txt"), encoding="UTF-8"
-    ) as file:
-        return frozenset(file.read().splitlines())
+    return frozenset(
+        FileStream(BASE_WORD_DIR / f"{filename}.txt").map(str.rstrip)
+    )
 
 
 @lru_cache(10)
 def get_letters(filename: str) -> dict[str, int]:
     """Get the letters dict with the filename and return it."""
-    with open(
-        os.path.join(BASE_WORD_DIR, f"{filename}.json"), encoding="UTF-8"
-    ) as file:
-        # we know the files, so we know the type
-        return cast(dict[str, int], json.loads(file.read()))
+    file = BASE_WORD_DIR / f"{filename}.json"
+    return cast(dict[str, int], json.loads(file.read_text(encoding="UTF-8")))
