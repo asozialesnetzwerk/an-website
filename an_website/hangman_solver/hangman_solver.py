@@ -16,11 +16,12 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Callable, Iterable, Mapping, Set
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from operator import itemgetter
 from typing import Any, Final
 
+import regex
 from tornado.web import HTTPError
 from typed_stream import Stream
 
@@ -28,8 +29,6 @@ from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
-
-import regex
 
 WILDCARD_CHARS: Final = b"_?-"
 WHITE_SPACES: Final = regex.compile(r"\s+")
@@ -79,10 +78,14 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
             "lang": self.lang,
         }
         if self.letters or not for_json:
-            data["letters"] = {
-                bytes((byte,)).decode("CP1252"): count
-                for byte, count in self.letters.items()
-            } if self.letters else {}
+            data["letters"] = (
+                {
+                    bytes((byte,)).decode("CP1252"): count
+                    for byte, count in self.letters.items()
+                }
+                if self.letters
+                else {}
+            )
         return data
 
 
@@ -103,7 +106,10 @@ def create_words_filter(
         # add if not cw_mode
         invalid += input_str
 
-    return WordsFilter(fix_input_str(input_str).encode("CP1252"), fix_input_str(invalid).encode("CP1252"))
+    return WordsFilter(
+        fix_input_str(input_str).encode("CP1252"),
+        fix_input_str(invalid).encode("CP1252"),
+    )
 
 
 class WordsFilter:
@@ -115,8 +121,7 @@ class WordsFilter:
 
     def __init__(self, pattern: bytes, invalid_letters: bytes) -> None:
         invalid_letters_tpl = tuple(
-            idx in invalid_letters
-            for idx in range(256)
+            idx in invalid_letters for idx in range(256)
         )
         self.first_letter = None if pattern[0] in WILDCARD_CHARS else pattern[0]
         self.filters = tuple(

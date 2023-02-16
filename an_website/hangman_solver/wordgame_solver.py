@@ -15,8 +15,6 @@
 
 from __future__ import annotations
 
-import operator
-
 from collections.abc import Collection
 
 from editdistance import distance
@@ -53,7 +51,7 @@ def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
         *(w.encode("CP1252") for w in ignore),
         word_bytes,
     }
-    
+
     return (
         Stream((word_len - 1, word_len, word_len + 1))
         .map("de_basic/%s".__mod__)

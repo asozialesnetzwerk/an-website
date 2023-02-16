@@ -62,6 +62,5 @@ def get_letters(filename: str) -> dict[int, int]:
     file = BASE_WORD_DIR / f"{filename}.json"
     data = cast(dict[str, int], json.loads(file.read_text(encoding="UTF-8")))
     return {  # TODO: update the files
-        key.encode("CP1252")[0]: value
-        for key, value in data.items()
+        key.encode("CP1252")[0]: value for key, value in data.items()
     }
