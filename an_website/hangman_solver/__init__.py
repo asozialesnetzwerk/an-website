@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Final, cast
 
 import orjson as json
-from typed_stream import FileStream, Stream
+from typed_stream import BinaryFileStream, Stream
 
 DIR: Final = os.path.dirname(__file__)
 
@@ -41,8 +41,9 @@ def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
         .filter(Path.is_dir)
         .filter(lambda folder: folder.name != "__pycache__")
         .peek(lambda folder: languages.add(folder.name))
-        .flat_map(lambda folder: folder.glob("[0123456789]*.json"))
-        .map(lambda file: file.relative_to(BASE_WORD_DIR).with_suffix(""))
+        .flat_map(Path.glob, "[0123456789]*.json")
+        .map(Path.relative_to, BASE_WORD_DIR)
+        .map(Path.with_suffix, "")
         .map(str)
     ), frozenset(languages)
 
@@ -50,16 +51,17 @@ def get_filenames_and_languages() -> tuple[frozenset[str], frozenset[str]]:
 FILE_NAMES, LANGUAGES = get_filenames_and_languages()
 
 
-@lru_cache(10)
-def get_words(filename: str) -> frozenset[str]:
+def get_words(filename: str) -> Stream[bytes]:
     """Get the words with the filename and return them."""
-    return frozenset(
-        FileStream(BASE_WORD_DIR / f"{filename}.txt").map(str.rstrip)
-    )
+    return BinaryFileStream(BASE_WORD_DIR / f"{filename}.txt")
 
 
 @lru_cache(10)
-def get_letters(filename: str) -> dict[str, int]:
+def get_letters(filename: str) -> dict[int, int]:
     """Get the letters dict with the filename and return it."""
     file = BASE_WORD_DIR / f"{filename}.json"
-    return cast(dict[str, int], json.loads(file.read_text(encoding="UTF-8")))
+    data = cast(dict[str, int], json.loads(file.read_text(encoding="UTF-8")))
+    return {  # TODO: update the files
+        key.encode("CP1252")[0]: value
+        for key, value in data.items()
+    }

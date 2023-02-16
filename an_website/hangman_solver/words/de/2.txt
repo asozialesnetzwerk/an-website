@@ -7,10 +7,10 @@ an
 ar
 at
 au
-aร
+a฿
 bh
 bp
-bรถ
+b๖
 cd
 ch
 cm
@@ -96,5 +96,5 @@ xi
 xp
 zk
 zu
-รถd
-รถl
+๖d
+๖l

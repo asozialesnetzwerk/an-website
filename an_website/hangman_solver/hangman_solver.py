@@ -16,20 +16,23 @@
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Set
-from dataclasses import asdict, dataclass, field
-from functools import cache
+from collections.abc import Callable, Iterable, Mapping, Set
+from dataclasses import dataclass
+from operator import itemgetter
+from typing import Any, Final
 
-import regex
 from tornado.web import HTTPError
+from typed_stream import Stream
 
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, length_of_match, n_from_set
+from ..utils.utils import ModuleInfo
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
-WILDCARDS_REGEX = regex.compile(r"[_?-]+")
-NOT_WORD_CHAR = regex.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
+import regex
+
+WILDCARD_CHARS: Final = b"_?-"
+WHITE_SPACES: Final = regex.compile(r"\s+")
 
 
 def get_module_info() -> ModuleInfo:
@@ -57,31 +60,40 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
     input: str = ""
     invalid: str = ""
-    words: frozenset[str] = field(default_factory=frozenset)
+    words: Iterable[bytes] = ()
     word_count: int = 0
-    letters: dict[str, int] = field(default_factory=dict)
+    letters: Mapping[int, int] | None = None
     crossword_mode: bool = False
     max_words: int = 20
     lang: str = "de_only_a-z"
 
+    def to_dict(self, for_json: bool = False) -> dict[str, Any]:
+        """Return as a normalized dictionary representation."""
+        data = {
+            "input": self.input.replace("?", "_").replace("-", "_"),
+            "invalid": Stream(self.invalid).distinct().collect("".join),
+            "words": [word.decode("CP1252") for word in self.words],
+            "word_count": self.word_count,
+            "crossword_mode": self.crossword_mode,
+            "max_words": self.max_words,
+            "lang": self.lang,
+        }
+        if self.letters or not for_json:
+            data["letters"] = {
+                bytes((byte,)).decode("CP1252"): count
+                for byte, count in self.letters.items()
+            } if self.letters else {}
+        return data
 
-def fix_input_str(_input: str) -> str:
-    """Make the input lower case, strips it and replace wildcards with _."""
-    return WILDCARDS_REGEX.sub(
-        lambda m: "_" * length_of_match(m), _input.lower().strip()
-    )[:100]
+
+def fix_input_str(input_: str) -> str:
+    """Make the input lower case and remove whitespaces."""
+    return WHITE_SPACES.sub("", input_.lower())
 
 
-def fix_invalid(invalid: str) -> str:
-    """Replace chars that aren't word chars and remove duplicate chars."""
-    return NOT_WORD_CHAR.sub(
-        "", "".join(set(invalid.lower()))
-    )  # replace stuff that could be bad
-
-
-def generate_pattern_str(
+def create_words_filter(
     input_str: str, invalid: str, crossword_mode: bool
-) -> str:
+) -> WordsFilter:
     """Generate a pattern string that matches a word."""
     input_str = input_str.lower()
 
@@ -91,107 +103,86 @@ def generate_pattern_str(
         # add if not cw_mode
         invalid += input_str
 
-    invalid_chars = fix_invalid(invalid)
+    return WordsFilter(fix_input_str(input_str).encode("CP1252"), fix_input_str(invalid).encode("CP1252"))
 
-    if not invalid_chars:
-        # there are no invalid chars,
-        # so the wildcard can be replaced with just "."
-        return WILDCARDS_REGEX.sub(
-            lambda m: "." * length_of_match(m), input_str
+
+class WordsFilter:
+    """Class to filter words based on a simple pattern."""
+
+    filters: Final[tuple[Callable[[int], bool], ...]]
+    first_letter: Final[int | None]
+    __slots__ = "filters", "first_letter"
+
+    def __init__(self, pattern: bytes, invalid_letters: bytes) -> None:
+        invalid_letters_tpl = tuple(
+            idx in invalid_letters
+            for idx in range(256)
+        )
+        self.first_letter = None if pattern[0] in WILDCARD_CHARS else pattern[0]
+        self.filters = tuple(
+            (
+                invalid_letters_tpl.__getitem__
+                if letter in WILDCARD_CHARS
+                else letter.__ne__
+            )
+            for letter in pattern
         )
 
-    wild_card_replacement = "[^" + invalid_chars + "]"
+    def matches(self, word: bytes) -> bool:
+        for fun, letter in zip(self.filters, word, strict=True):
+            if fun(letter):
+                return False
+        return True
 
-    return WILDCARDS_REGEX.sub(
-        lambda m: (wild_card_replacement + "{" + str(length_of_match(m)) + "}"),
-        input_str,
+    def pre_filter(self, words: Stream[bytes]) -> Stream[bytes]:
+        if self.first_letter is None:
+            return words
+        first_letter = self.first_letter
+        return words.drop_while(lambda w: w[0] != first_letter).take_while(
+            lambda w: w[0] == first_letter
+        )
+
+
+def filter_words(
+    words_path: str,
+    words_filter: WordsFilter | None,
+) -> Stream[bytes]:
+    """Filter a set of words to get only those that match the regex."""
+    stream = get_words(words_path)
+    return (
+        words_filter.pre_filter(stream).filter(words_filter.matches)
+        if words_filter
+        else stream
     )
 
 
-def fix_letter_counter_crossword_mode(
-    letter_counter: Counter[str], input_letters: str, matched_words_count: int
-) -> None:
-    """Fix the letter count for crossword mode."""
-    n_word_count = -1 * matched_words_count
-    update_dict: dict[str, int] = {}
-    for key, value in Counter(input_letters).most_common(30):
-        update_dict[key] = n_word_count * value
-    letter_counter.update(update_dict)
-
-
-@cache
-def filter_words(
-    words: Set[str] | str,
-    pattern: regex.Pattern[str],
-    input_letters: str,
-    crossword_mode: bool = False,
-    matches_always: bool = False,
-) -> tuple[frozenset[str], dict[str, int]]:
-    """Filter a set of words to get only those that match the regex."""
-    # if "words" is string it is a filename
-    if isinstance(words, str):
-        words = get_words(words)
-
-    matched_words: set[str] = set()
-    letter_list: list[str] = []
-    for line in words:
-        if matches_always or pattern.fullmatch(line) is not None:
-            matched_words.add(line)
-
-            # add letters to list
-            if crossword_mode:
-                letter_list.extend(line)
-            else:
-                # add every letter only once
-                letter_list.extend(set(line))
-
-    # count letters
-    letter_counter = Counter(letter_list)
-
-    # fix count for crossword_mode
-    if crossword_mode:
-        fix_letter_counter_crossword_mode(
-            letter_counter,
-            input_letters,
-            len(matched_words),
-        )
-
-    # put letters in sorted dict
-    sorted_letters: dict[str, int] = dict(
-        letter_counter.most_common(30)
-    )  # 26 + äöüß
-
-    if not crossword_mode:
-        # remove letters that are already in input
-        for letter in set(input_letters.lower()):
-            if letter in sorted_letters:
-                del sorted_letters[letter]
-
-    return frozenset(matched_words), sorted_letters
+def get_letters_from_words(
+    words: Iterable[bytes], input_letters: bytes
+) -> Mapping[int, int]:
+    """Get a letters dictionary from words."""
+    stream: Stream[int] = Stream(words).flat_map(set)
+    return Counter(stream.exclude(input_letters.__contains__))
 
 
 def get_words_and_letters(
     filename: str,
     input_str: str,
     invalid: str,
-    crossword_mode: bool,
-) -> tuple[frozenset[str], dict[str, int]]:
+) -> tuple[tuple[bytes, ...], Mapping[int, int]]:
     """Generate a word set and a letters dict and return them in a tuple."""
-    input_letters: str = WILDCARDS_REGEX.sub("", input_str)
+    input_letters: str = fix_input_str(input_str)
     matches_always = not invalid and not input_letters
 
-    if matches_always and not crossword_mode:
-        return get_words(filename), get_letters(filename)
+    if matches_always:
+        return tuple(get_words(filename)), get_letters(filename)
 
-    pattern = generate_pattern_str(input_str, invalid, crossword_mode)
-
-    return filter_words(
+    words = filter_words(
         filename,
-        regex.compile(pattern, regex.ASCII),  # pylint: disable=no-member
-        input_letters,
-        crossword_mode,
-        matches_always,
-    )
+        None
+        if matches_always
+        else create_words_filter(input_str, invalid, False),
+    ).collect(tuple)
+    return words, get_letters_from_words(words, input_letters.encode("CP1252"))
 
 
 @dataclass(slots=True)
@@ -228,7 +219,7 @@ def _solve_hangman(
         raise HTTPError(400, reason=f"{language!r} is an invalid language")
 
     input_str = fix_input_str(input_str)
-    invalid = fix_invalid(invalid)
+    invalid = fix_input_str(invalid)
 
     input_len = len(input_str)
 
@@ -244,18 +235,29 @@ def _solve_hangman(
             max_words=max_words,
             lang=language,
         )
-
-    # do the solving
-    matched_words, letters = get_words_and_letters(
-        filename, input_str, invalid, crossword_mode
-    )
+    if crossword_mode:
+        matched_words = tuple(
+            filter_words(
+                filename, create_words_filter(input_str, invalid, True)
+            )
+        )
+        letters = None
+        found_words_count = len(matched_words)
+    else:
+        # do the solving
+        matched_words, letters = get_words_and_letters(
+            filename, input_str, invalid
+        )
+        found_words_count = len(matched_words)
 
     return Hangman(
         input_str,
         invalid,
-        frozenset(n_from_set(matched_words, max_words)),
-        len(matched_words),
-        letters,
+        matched_words[:max_words],
+        found_words_count,
+        dict(sorted(letters.items(), key=itemgetter(1), reverse=True))
+        if letters is not None
+        else None,
         crossword_mode,
         max_words,
         language,
@@ -273,7 +275,7 @@ class HangmanSolver(HTMLRequestHandler):
         if head:
             return
         hangman = solve_hangman(data)
-        await self.render("pages/hangman_solver.html", **asdict(hangman))
+        await self.render("pages/hangman_solver.html", **hangman.to_dict())
 
 
 class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
@@ -287,8 +289,4 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
         """Handle GET requests to the hangman solver API."""
         if head:
             return
-        hangman = solve_hangman(data)
-        hangman_dict = asdict(hangman)
-        # convert set to list, because the set can't be converted to JSON
-        hangman_dict["words"] = list(hangman_dict["words"])
-        await self.finish(hangman_dict)
+        await self.finish(solve_hangman(data).to_dict(True))

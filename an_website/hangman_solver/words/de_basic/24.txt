@@ -1,183 +1,64 @@
 abfallverbrennungsanlage
 abfallwirtschaftsbetrieb
-abgeschrägtes dodekaeder
-abwarten und tee trinken
 abwasserreinigungsanlage
-adjektivisches satzglied
-an allen ecken und enden
-an der tagesordnung sein
 arbeitslosenversicherung
 architekturgeschichtlich
-asche auf jemandes haupt
-asche aufs haupt streuen
-auf der bärenhaut liegen
-auf die barrikaden gehen
-auf freiersfüßen wandeln
-auf krawall bürsten sein
-aus allen himmeln fallen
-aus dem hinterhalt pupen
-aus kindern werden leute
-ausreiseverbotsverfügung
-austroasiatische sprache
+ausreiseverbotsverf�gung
 autoaggressionskrankheit
 automatenpostwertzeichen
-außendienstmitarbeiterin
-bad homburg vor der höhe
+au�endienstmitarbeiterin
 baubesprechungsprotokoll
 baustellensonderfahrplan
 beachvolleyballspielerin
 beitragsbemessungsgrenze
-beschaffungskriminalität
-beschreibungsadäquatheit
-beschäftigungsverhältnis
+beschaffungskriminalit�t
+beschreibungsad�quatheit
+besch�ftigungsverh�ltnis
 betriebswirtschaftslehre
-bevölkerungswissenschaft
+bev�lkerungswissenschaft
 bewusstseinswissenschaft
 bildbearbeitungsprogramm
 bildungswissenschaftlich
-bis oberkante unterlippe
 blutalkoholkonzentration
-bootsmanns-maaten-pfeife
-brandenburg an der havel
 brennstoffzellenfahrzeug
-bundesagentur für arbeit
 bundesbildungsministerin
 bundesverfassungsgericht
-cis-ethylendicarbonsäure
-commonwealth der bahamas
-das kriegsbeil ausgraben
-dasselbe in#deutsch grün
-den kochlöffel schwingen
-der#artikel große bruder
-deutsche gebärdensprache
-die bombe platzen lassen
-die herren der schöpfung
-die hosen herunterlassen
-die hüllen fallen lassen
-die katze im sack kaufen
-die kuh vom eis schieben
-die schere im kopf haben
-die schotten dichtmachen
-die seele baumeln lassen
-die würfel sind gefallen
-die zweite geige spielen
-die zähne zusammenbeißen
-die#artikel straße fegen
-dieselbe couleur in grün
 donnerstagsveranstaltung
 doppelhubkolbenluftpumpe
-doppelt verkettete liste
-drehpunkt und angelpunkt
-durchschnittsbevölkerung
+durchschnittsbev�lkerung
 eichenprozessionsspinner
-eierlegende wollmilchsau
-ein fass ohne boden sein
-ein königreich für ein …
-ein wetter zum eierlegen
-einander nichts schenken
-eine bauchlandung machen
-eine lange leitung haben
-einem schatten nachjagen
-einen in der krone haben
-einen kloß im hals haben
-einen metzgergang machen
-einkommensteuererklärung
-elektronenstoßionisation
+einkommensteuererkl�rung
+elektronensto�ionisation
 energieeffizienzberatung
-entlassungsproduktivität
-entscheidungsüberdeckung
-es geben sone und solche
-es jemandem recht machen
-es sich anders überlegen
-etwas an die wand fahren
-etwas ausgefressen haben
-etwas in den sand setzen
-etwas in die hand nehmen
-etwas in die wege leiten
-etwas keinen abbruch tun
-etwas zu den akten legen
-etwas übers knie brechen
-eu-erweiterungskommissar
-eu-gesundheitsministerin
-europäischer gerichtshof
+entlassungsproduktivit�t
+entscheidungs�berdeckung
 finanztransaktionssteuer
-flüchtlingsangelegenheit
-flüchtlingshochkommissar
-flüchtlingsunterbringung
-französisch verteidigung
+fl�chtlingsangelegenheit
+fl�chtlingshochkommissar
+fl�chtlingsunterbringung
 frauenrechtsorganisation
-friedensnobelpreisträger
-friedrichshain-kreuzberg
-frisch von der leber weg
-fröhliche urständ feiern
-fußballnationalspielerin
-fußballweltmeisterschaft
-fürstentum liechtenstein
-gamma-hydroxybuttersäure
-gegen windmühlen kämpfen
-gegeneinander ausspielen
+friedensnobelpreistr�ger
+fu�ballnationalspielerin
+fu�ballweltmeisterschaft
 geisteswissenschaftlerin
-gelegenheit machen diebe
 gemeinschaftsschulsystem
-gesetz der großen zahlen
-gewöhnlicher schweinswal
-grammatisches geschlecht
 gravitationslinseneffekt
-gregorianischer kalender
-gutr freund des menschen
-haare auf den zahn haben
 handlungsutilitaristisch
 haushaltsbruttoeinkommen
-heulen und zähneklappern
 hochquellenwasserleitung
-hochsicherheitsgefängnis
-holländisch verteidigung
-holz vor der hütte haben
-humanistisches gymnasium
-hummeln im hintern haben
-hundertjähriger kalender
-hypothetischer imperativ
-händel-werke-verzeichnis
-im munde zergehen lassen
-improvisationskünstlerin
-in den startlöchern sein
-in morpheus’ armen ruhen
+hochsicherheitsgef�ngnis
+improvisationsk�nstlerin
 industrialisierungsmotor
-infektionsschutzmaßnahme
+infektionsschutzma�nahme
 informationsspezialistin
-informationsübermittlung
+informations�bermittlung
 ingenieurwissenschaftler
 inhalationsszintigraphie
-inhaltbezogene grammatik
-innere sulzfelder straße
 integrationsbeauftragter
-islamische republik iran
-jemandem ans bein pissen
-jemandem das fell gerben
-jemandem das ohr abkauen
-jemandem den zahn ziehen
-jemandem die füße küssen
-jemandem die horn zeigen
-jemandem die zunge lösen
-jemandem ein ohr abkauen
-jemandem ein ohr abreden
-jemandem eins auswischen
-jemandem nichts abgucken
-jemandem zur last fallen
-jemanden für voll nehmen
-jemanden im stich lassen
 kapitalverkehrskontrolle
-kapländische zimmerlinde
-karatschai-tscherkessien
-keinen pfennig wert sein
-kirschroter speitäubling
-klagenfurt am wörthersee
-klassisches hocharabisch
-kleinere brötchen backen
 kommunikationswirtschaft
-komplementärgesellschaft
+komplement�rgesellschaft
 kooperationsbereitschaft
-kosten-nutzen-verhältnis
 kraftfahrzeugkennzeichen
 kreisjugendjungtierschau
 kriegsberichterstatterin
@@ -185,109 +66,52 @@ kriegsdienstverweigerung
 kriminalpolizeidirektion
 kriminalschriftstellerin
 kugelkopfschreibmaschine
-kunststoffschweißtechnik
+kunststoffschwei�technik
 kunststoffspritzgussteil
-käse schließen den magen
-königreich saudi-arabien
-landespolizeipräsidentin
+landespolizeipr�sidentin
 landwirtschaftskommissar
 langzeitblutdruckmessung
-lebensabschnittsgefährte
+lebensabschnittsgef�hrte
 lebensmittelverarbeitung
-lexikalische solidarität
-liebe und grießschmarren
 literaturwissenschaftler
 luftionisationsgenerator
-längsschnittuntersuchung
-lüftungsverantwortlicher
+l�ngsschnittuntersuchung
+l�ftungsverantwortlicher
 magnetresonanztomografie
-makgadikgadi-salzpfannen
-marxistisch-leninistisch
-marxistische philosophie
-mathematische linguistik
-mausgrauer erdritterling
-meeresströmungskraftwerk
+meeresstr�mungskraftwerk
 menschenrechtsaktivistin
 menschenrechtsverletzung
-menzerath-altmann-gesetz
 minderwertigkeitskomplex
 mindesthaltbarkeitsdatum
-minimaler konsonantismus
-mit dem zaunpfahl winken
-mit den schultern zucken
-mit pauken und trompeten
-mit zweierlei maß messen
-mitgefangen, mitgehangen
-mitgegangen, mitgefangen
-mitgegangen, mitgehangen
-mitteilungsbedürftigkeit
-morphologische kategorie
+mitteilungsbed�rftigkeit
 musterfeststellungsklage
-mädesüß-perlmutterfalter
-nach den sternen greifen
 nachmittagsveranstaltung
-nahrungsergänzungsmittel
+nahrungserg�nzungsmittel
 nahrungsmittelproduktion
 nahrungsmittelvergiftung
 nahrungsmittelversorgung
-nebelgrauer trichterling
-nerven wie stricke haben
-neufundland und labrador
-nicht der rede wert sein
-nicht jemandes bier sein
-nicht nur … sondern auch
-niederländische antillen
-nilosaharanische sprache
-nonverbale kommunikation
-offenbarung des johannes
 organisationsverschulden
-ortho-hydroxybenzoesäure
-ostafrikanische seenpost
 photoionisationsdetektor
 phrasenstrukturgrammatik
 politikwissenschaftlerin
-produktivitätssteigerung
-präsidentschaftskandidat
-pteroylmonoglutaminsäure
-pyrogallol-5-carbonsäure
-pünktlich wie die maurer
+produktivit�tssteigerung
+pr�sidentschaftskandidat
+pteroylmonoglutamins�ure
 querschnittsuntersuchung
 querschnittswissenschaft
 rauchfangkehrermeisterin
 rechtsschutzversicherung
-reden wie ein wasserfall
 religionswissenschaftler
-republik der philippinen
 rotationsgeschwindigkeit
-rötlicher holzritterling
-rückbezügliches pronomen
-rückbezügliches zeitwort
-saccharomyces cerevisiae
 schallplattenunterhalter
-scheibenwaschflüssigkeit
+scheibenwaschfl�ssigkeit
 schifffahrtsgesellschaft
-schloß holte-stukenbrock
 schreibmaschinentastatur
 schwangerschaftsdiabetes
 schwangerschaftsstreifen
-sehnenscheidenentzündung
-seinem ärger luft machen
+sehnenscheidenentz�ndung
 seitenblickegesellschaft
-selber essen machen fett
-serbisch-montenegrinisch
 serienstandsverbesserung
-sich den arsch aufreißen
-sich den kopf zerbrechen
-sich die augen ausweinen
-sich die hörner abstoßen
-sich in die brust werfen
-sich in die haare fahren
-sich in die riemen legen
-sich in schale schmeißen
-sich kein bein ausreißen
-sich krümmen wie ein aal
-sich nicht lumpen lassen
-skandinavische halbinsel
 snookerweltmeisterschaft
 sonderberichterstatterin
 spracherkennungsprogramm
@@ -295,59 +119,34 @@ spracherkennungssoftware
 spracherwerbsmechanismus
 stabsoffiziersdienstgrad
 standardnormalverteilung
-stimulus-response-modell
 stoffmengenkonzentration
-strömungsarbeitsmaschine
-substitutionselastizität
+str�mungsarbeitsmaschine
+substitutionselastizit�t
 suchmaschinenoptimierung
-sulcus lateralis linguae
-suprasegmentales merkmal
-syntagmatische beziehung
-technikfolgenabschätzung
-tot#adjektiv briefkasten
+technikfolgenabsch�tzung
 transformationsgrammatik
-transphrastische analyse
 umweltschutzorganisation
-unabhängiger staat samoa
-unabhängigkeitserklärung
-undank ist der welt lohn
-unter den hammer bringen
-unter den teppich kehren
+unabh�ngigkeitserkl�rung
 unteroffiziersdienstgrad
 unterschriftserfordernis
-unterwasserarchäologisch
-veneninnenhautentzündung
+unterwasserarch�ologisch
+veneninnenhautentz�ndung
 verhandlungsbereitschaft
-verschlüsselungsmaschine
-verschwörungstheoretiker
+verschl�sselungsmaschine
+verschw�rungstheoretiker
 versorgungsschwierigkeit
 verteidigungsministerium
 verteilungsgerechtigkeit
 verwandtschaftsbeziehung
-von luft und liebe leben
-vulkanexplosivitätsindex
+vulkanexplosivit�tsindex
 wachstumsgeschwindigkeit
 waffenstillstandsvertrag
-wasser hat keinen balken
-welle-teilchen-dualismus
-wenn alle stricke reißen
 wertguthabenvereinbarung
-wie bei den hottentotten
-wie’s katzenmachen gehen
-winner-takes-all-prinzip
 wissenschaftsministerium
-yellowstone-nationalpark
-zahlungsbilanzüberschuss
-zeit verstreichen lassen
+zahlungsbilanz�berschuss
 zeitgeschichtsschreibung
-zu tief ins glas blicken
-zu tief ins glas schauen
-zweihundert-franken-note
 zweihundertfrankenschein
-öffentlichkeitsoffensive
-österreichisch-ungarisch
-über die schnur schlagen
-über die strang schlagen
-überlichtgeschwindigkeit
-übernachtungsmöglichkeit
-überraschungsweltmeister
+�ffentlichkeitsoffensive
+�berlichtgeschwindigkeit
+�bernachtungsm�glichkeit
+�berraschungsweltmeister

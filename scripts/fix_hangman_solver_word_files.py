@@ -28,13 +28,13 @@ def fix_word_files() -> int | str:
     )
 
     for file in folder.rglob("*.txt"):
-        text = file.read_text(encoding="UTF-8")
+        text = file.read_text(encoding="CP1252")
         lines = text.strip().split("\n")
-        new_text = "\n".join(sorted(frozenset(lines))) + "\n"
+        new_text = "\n".join(sorted(frozenset(map(str.lower, lines)))) + "\n"
         if text == new_text:
             continue
         print(f"Fixing {file}", file=sys.stderr)
-        file.write_text(new_text, encoding="UTF-8")
+        file.write_text(new_text, encoding="CP1252")
 
     return 0
 

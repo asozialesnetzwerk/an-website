@@ -18,8 +18,12 @@
 from __future__ import annotations
 
 import json  # pylint: disable=preferred-module
+from collections import Counter
+from pathlib import Path
 
-FILE = "full_wordlist.txt"
+DIR = Path(__file__).parent
+FILE = DIR / "full_wordlist.txt"
+
 
 if __name__ == "__main__":
     with open(FILE, encoding="UTF-8") as file:
@@ -27,28 +31,22 @@ if __name__ == "__main__":
     words = text.splitlines()
     words_sorted = sorted(set(words))  # sort words unique
 
-    letters: dict[str, dict[str, int]] = {}
+    letters: dict[int, Counter[str]] = {}
     for word in words_sorted:
-        length = str(len(word))
-        with open(length + ".txt", "a", encoding="UTF-8") as file:
-            file.write(word)
-            file.write("\n")
-        print(word)
-        m = letters.get(length, {})
-        for index, letter in enumerate(word):
-            if word.index(letter) is index:
-                m[letter] = m.get(letter, 0) + 1
-        letters[length] = m
+        length = len(word)
+        with open(DIR / f"{length}.txt", "ab") as file:
+            file.write(word.encode("CP1252"))
+            file.write(b"\n")
+        counter = letters.setdefault(length, Counter())
+        counter.update(set(word))
 
-    print("Generating letters:")
+    print("Generating letters")
 
     for key, value in letters.items():
-        letters_items: list[tuple[str, int]] = list(value.items())
         sorted_letters: list[tuple[str, int]] = sorted(
-            letters_items, key=lambda item: item[1], reverse=True
+            value.items(), key=lambda item: item[1], reverse=True
         )
         sorted_letters_json = json.dumps(dict(sorted_letters))
-        print(key, sorted_letters_json)
 
-        with open(key + ".json", "w", encoding="UTF-8") as file:
+        with open(DIR / f"{key}.json", "w", encoding="UTF-8") as file:
             file.write(sorted_letters_json)

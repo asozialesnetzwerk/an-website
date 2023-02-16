@@ -1,20 +1,3 @@
--a
--i
-0.
-1.
-2.
-2d
-3.
-3d
-4.
-4d
-5.
-5g
-6.
-7.
-8.
-9.
-a.
 aa
 ab
 ac
@@ -36,8 +19,6 @@ au
 av
 aw
 az
-b$
-b.
 ba
 bb
 bc
@@ -59,12 +40,6 @@ bt
 bw
 by
 bz
-c.
-c0
-c1
-c2
-c3
-c4
 ca
 cb
 cc
@@ -76,7 +51,6 @@ ci
 co
 ct
 cu
-d.
 da
 db
 dc
@@ -97,7 +71,6 @@ du
 dv
 dw
 dz
-e.
 ec
 ee
 eg
@@ -114,8 +87,6 @@ eu
 ex
 ey
 ez
-f.
-f1
 fa
 fc
 ff
@@ -128,7 +99,6 @@ ft
 fu
 fv
 fw
-g.
 gb
 gd
 gf
@@ -153,7 +123,6 @@ hq
 hr
 hu
 hz
-i.
 ia
 id
 ig
@@ -164,12 +133,10 @@ iq
 ir
 is
 it
-j.
 ja
 je
 jg
 jo
-k2
 ka
 kg
 kh
@@ -184,7 +151,6 @@ kt
 kv
 kw
 kz
-l.
 la
 lb
 ld
@@ -197,7 +163,6 @@ lp
 lt
 lw
 lx
-m.
 ma
 md
 mg
@@ -212,7 +177,6 @@ mt
 mv
 mw
 my
-n.
 na
 nb
 nc
@@ -232,7 +196,6 @@ nu
 nv
 nw
 ny
-o.
 ob
 oe
 og
@@ -241,7 +204,6 @@ on
 op
 os
 ot
-p.
 pa
 pb
 pc
@@ -255,7 +217,6 @@ pp
 pr
 ps
 pu
-q.
 qb
 qc
 qf
@@ -266,7 +227,6 @@ qr
 qs
 qt
 qz
-r.
 ra
 rb
 rc
@@ -278,7 +238,6 @@ rl
 rm
 rt
 rz
-s.
 sa
 sb
 sc
@@ -297,8 +256,6 @@ su
 sv
 sw
 sz
-s’
-t$
 ta
 te
 tg
@@ -309,8 +266,6 @@ tt
 tu
 tv
 tz
-t€
-u.
 ud
 ue
 ug
@@ -323,8 +278,6 @@ up
 ur
 us
 uz
-v.
-v4
 va
 vb
 vc
@@ -339,7 +292,6 @@ vr
 vu
 vv
 vz
-w.
 wa
 wc
 wd
@@ -353,15 +305,11 @@ wr
 ws
 wu
 ww
-x!
 xi
 xl
-y!
-y.
 yc
 yd
 yi
-z.
 za
 zh
 zi
@@ -369,11 +317,3 @@ zk
 zr
 zu
 zv
-°f
-°r
-ås
-āā
-μc
-μm
-’n
-’s

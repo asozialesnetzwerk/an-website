@@ -1,11 +1,3 @@
--coel, coel-, coel-
-1,2-dihydroxypropan
-1-benzolethansaeure
-1000-franken-schein
-2-methyl-1-propanol
-2-methyl-2-propanol
-3-phenylacrylsaeure
-ab durch die mitte!
 abbruchsgenehmigung
 abenteuergeschichte
 abenteuerspielplatz
@@ -14,68 +6,48 @@ abfallsortieranlage
 abfertigungsbaracke
 abfertigungsbeamter
 abfertigungsbeamtin
-ablativus absolutus
 ablenkungsmassnahme
 abschiedserklaerung
 abschlagsmarkierung
-abschlusskommuniqué
 abschreckungseffekt
 abschreibungsobjekt
-absolute temperatur
-absoluter nominativ
-absoluter nullpunkt
 absorptionsspektrum
 abstimmungsergebnis
 abtreibungsgegnerin
 abtreibungsparagraf
 accipiesholzschnitt
-accusativus graecus
-acer monspessulanum
 acetylsalicylsaeure
-addax nasomaculatus
 adenosintriphosphat
 adhaesionsverfahren
 admiralitaetsinseln
 adressenverzeichnis
 adverbialbestimmung
-aegyptisch-arabisch
 aequatordurchmesser
 aequivalenzrelation
 afrikameisterschaft
 aktivierungsenergie
 aktivitaetsdiagramm
-akustische phonetik
 alleineigentuemerin
 alleinunterhalterin
 allgemeinverfuegung
 allgemeinwortschatz
 alligatorsalamander
-allzu klug ist dumm
 altbuergermeisterin
 altbundespraesident
 alternativhypothese
 altkleidercontainer
 altweibergeschwaetz
-aluminium-legierung
 aluminiumproduktion
-alzheimer-krankheit
-am hungertuch nagen
 amateurfussballerin
 amateurwissenschaft
-analytische sprache
-anatolische sprache
 anbiederungsversuch
 anforderungskatalog
-angst und schrecken
 annaeherungsversuch
 annahmebestaetigung
-anorganische chemie
 anschreibeverfahren
 anschriftenpruefung
-anti-terror-mission
 antibolschewistisch
 antiferromagnetisch
-antigua und barbuda
 antiinflammatorisch
 antikommutativitaet
 anwesenheitspflicht
@@ -83,9 +55,7 @@ anwohnerparkausweis
 apartheidsregierung
 apfelbluetenstecher
 apfelsaftkonzentrat
-apostolische kammer
 aprikosenkonfituere
-arabische halbinsel
 arbeitnehmerverband
 arbeitserleichternd
 arbeitsgemeinschaft
@@ -95,31 +65,15 @@ arbeitsniederlegung
 arbeitsplatzverlust
 arbeitsunfaehigkeit
 arbeitswissenschaft
-argentinischer peso
 argumentationslinie
 artikulationsstelle
 arzneimittelskandal
-aserbaidschan-manat
 asteroideneinschlag
 atemwegsbeschwerden
 atemwegsschleimhaut
 atombombenexplosion
-auf den geist gehen
-auf den hund kommen
-auf der hand liegen
-auf die kacke hauen
-auf die nase binden
-auf die nase fallen
-auf die pauke hauen
-auf eigene rechnung
-auf offener strasse
-auf punkt und komma
 aufsichtsratschefin
 aufsichtsratsposten
-aus dem hut zaubern
-aus den fugen gehen
-aus der haut fahren
-aus freien stuecken
 ausbildungsrichtung
 auseinanderfliessen
 ausgrabungsleiterin
@@ -134,11 +88,8 @@ ausschlusskriterium
 ausschlussverfahren
 aussenhandelsbilanz
 aussenverteidigerin
-ausser stand setzen
-ausserm pfarrgarten
 austauschschuelerin
 austeritaetspolitik
-australian football
 austrittserklaerung
 auswaertsmannschaft
 auswaertsniederlage
@@ -150,15 +101,11 @@ automobilgeschichte
 autoritaetsglaeubig
 autotransplantation
 azetylsalizylsaeure
-bachelor of science
 backofenthermometer
-bad frankenhausener
-bad muenstereifeler
 bahnhofsgaststaette
 bahnhofslichtspiele
 bahnhofsvorsteherin
 balkenspiralgalaxie
-bandar seri begawan
 bandenkriminalitaet
 bandscheibenschaden
 bandscheibenvorfall
@@ -186,7 +133,6 @@ beharrungsvermoegen
 beherbergungsverbot
 behoerdensprachlich
 behoerdensprecherin
-bei wind und wetter
 beitrittserklaerung
 bemessungsgrundlage
 benutzeranforderung
@@ -219,28 +165,18 @@ bildschirmdiagonale
 bildungsministerium
 bildungspolitikerin
 bildwechselfrequenz
-binaere nomenklatur
 binnenwasserstrasse
 binomialkoeffizient
 biologieprofessorin
 biosphaerenreservat
 biowissenschaftlich
-birken-blaettereule
-birken-eulenspinner
-birken-gabelschwanz
-birken-jungfernkind
-bis einschliesslich
 blechblasinstrument
 blutdruckmanschette
 blutdruckmessgeraet
-blutplasma-therapie
-blutroter taeubling
 blutsverwandtschaft
 bodenseeschiffspost
-bosnien-herzegowina
 boutiquenbesitzerin
 branchenverzeichnis
-brandenburg / havel
 brandschutzbegehung
 brandschutznachweis
 braunkohlekraftwerk
@@ -248,17 +184,13 @@ brennstoffzellenbus
 briefmarkenhaendler
 briefmarkensammlung
 bronchokonstriktion
-bruck an der leitha
 brustvergroesserung
 brustwarzenpiercing
 bruttoinlandprodukt
 bruttoregistertonne
 bruttosozialprodukt
-budd-chiari-syndrom
-buddenbrook-syndrom
 buergerbeauftragter
 buergergesellschaft
-buergernahe sprache
 buergerwissenschaft
 bundesinnenminister
 bundespatentgericht
@@ -269,62 +201,32 @@ bundestagswahlrecht
 bundeswahlausschuss
 burgenlandkroatisch
 butzenscheibenlyrik
-candle-light-dinner
 carbonsaeurederivat
 chefwissenschaftler
-christi himmelfahrt
 christophoruskirche
-colchicum autumnale
 computertomographie
 curriculumforschung
 dachaufsatzlueftung
 dachgeschosswohnung
-dann wollen wir mal
-das handtuch werfen
 daseinsberechtigung
 datenbankschluessel
 datenschutzverstoss
-dativus possessivus
-dativus sympathicus
 dauerkartenbesitzer
 dazwischenquetschen
 delegationsleiterin
 delegationsmitglied
-delitzscher strasse
 demonstrationsbrett
-den bogen raushaben
-den faden verlieren
-den kaffee aufhaben
-den lang atem haben
-den loeffel abgeben
-den scherm aufhaben
-den schleier nehmen
-den schnabel halten
-den spiess umdrehen
 dendrochronologisch
 dentinbildungszelle
-der stand der dinge
 desinfektionsmittel
 deutlichkeitshalber
-deutsch-verzeichnis
 deutschordensritter
 deutschstudierender
-diamantene hochzeit
 dickschnabelpinguin
-die honneurs machen
-die nase voll haben
-die nase vorn haben
-die schnauze halten
-die segel streichen
-die waffen strecken
-die zelte abbrechen
 dienstagnachmittags
 dienstbeflissenheit
 dienstgradabzeichen
 dienststellenleiter
-dinarisches gebirge
-diplom-betriebswirt
-diplom-bibliothekar
 direktionsgeschaeft
 diskussionsleiterin
 dispensationalismus
@@ -334,23 +236,16 @@ dogmengeschichtlich
 donnerstagvormittag
 doppelkernprozessor
 doppelstaatsbuerger
-doppelte verneinung
 doppelweltmeisterin
 dorfschuetzersystem
-dravidische sprache
 drehfluegelflugzeug
 drehgeschwindigkeit
-drei-zimmer-wohnung
 dreieckskomposition
 dreiviertelmehrheit
-dreizylinder-diesel
-dritte zwischenzeit
 drogenabhaengigkeit
 drogenkriminalitaet
 droschkenkutscherin
-drunter und drueber
 dschihadistengruppe
-duesterer roehrling
 durchbruchinfektion
 durcheinanderkommen
 durchfallerkrankung
@@ -363,27 +258,14 @@ durchschnittsgewinn
 durchschnittslaenge
 durchschnittsmensch
 durchschnittstalent
-durchsichtiges wort
 dyslipoproteinaemie
-d’hondtsches system
 effizienzsteigerung
 ehrenbuergerurkunde
 eicosapentaensaeure
 eigenheimbesitzerin
 eigenkapitalrendite
 eigensprachlichkeit
-ein abbrechen riese
-ein auge zudruecken
-ein geruettelt mass
-ein-stopp-strategie
 einbuergerungsfeier
-eine aktie zeichnen
-einen abflug machen
-einen abgang machen
-einen besen fressen
-einen fahren lassen
-einen korb bekommen
-einen tuerken bauen
 einheitskurzschrift
 einhundertprozentig
 einpersonenhaushalt
@@ -401,13 +283,10 @@ elektroinstallation
 elektronegativitaet
 elektronenmikroskop
 elementarunterricht
-en passant schlagen
-ende gut, alles gut
 energiebeauftragter
 entbuerokratisieren
 entdeckungsreisende
 entemotionalisieren
-entfernen freibauer
 entfuehrungsversuch
 entkeimungsleistung
 entkolonialisierung
@@ -429,21 +308,11 @@ ernaehrungsstoerung
 erschuetterungsfrei
 erwerbsunfaehigkeit
 erzeugungsgrammatik
-etwas auf eis legen
-etwas im auge haben
-etwas im kopf haben
-etwas im urin haben
-europaeischen union
-europaeischer union
 europameisterschaft
-eustachische roehre
-everybody’s darling
-ex-und-hopp-flasche
 expeditionsleiterin
 experimentierbuehne
 experimentierfreude
 experimentiergeraet
-explizite ableitung
 explosionsgeraeusch
 explosionszeichnung
 fabrikationsprozess
@@ -457,7 +326,6 @@ fahrwerksabstimmung
 fakultativprotokoll
 familienangehoerige
 familienunternehmen
-faschierte laibchen
 fehlbelegungsabgabe
 fensterhandwerkerin
 fernsehgottesdienst
@@ -466,7 +334,6 @@ fernwaermekraftwerk
 fertigungsverfahren
 feuchtigkeitsgehalt
 feuerschutzanstrich
-fischer-kontroverse
 fischereiministerin
 fleischhauermeister
 fleischverarbeitung
@@ -496,7 +363,6 @@ flugzeugentfuehrung
 flussgebietseinheit
 foederationssubjekt
 foerdermittelzusage
-formikonisches wort
 forschungsdesiderat
 forschungsinteresse
 forschungsliteratur
@@ -506,7 +372,6 @@ fortbewegungsmittel
 fortpflanzungsorgan
 frankoprovenzalisch
 franziskanerkloster
-franzoesischer kuss
 frauenfeindlichkeit
 freihaltebeduerftig
 freihandelsabkommen
@@ -526,28 +391,21 @@ friedenstheoretisch
 friedensvereinigung
 friedensverhandlung
 friedhofsgaertnerin
-fritz-walter-wetter
 fruehneuhochdeutsch
 fruehstuecksbuefett
 fruehstuecksfleisch
 fruehstueckspension
 fuehrerscheinentzug
 fuehrungsfaehigkeit
-fuenf-finger-rabatt
 fuenfuhrvorstellung
 fuenfzigfrankennote
-fuer den arsch sein
-fuerstentum andorra
 funktionalstilistik
-funktionelle gruppe
-fussball-bundesliga
 fussballanhaengerin
 fussballfunktionaer
 fussballsportverein
 fussballtorhueterin
 fussballweltmeister
 fusstruppenoffizier
-gabunische republik
 ganzkoerperschleier
 ganzstoffhollaender
 ganztagsvolksschule
@@ -564,7 +422,6 @@ gebrauchtwagenmarkt
 geburtshelferkroete
 geburtstagsgeschenk
 geburtstagsstimmung
-gedaechtnis-t-zelle
 gefaehrderansprache
 gefaelligkeitsluege
 gefaelligkeitszeuge
@@ -581,8 +438,6 @@ geisteswissenschaft
 gelbschnabeltaucher
 gelegenheitsbildung
 gelegenheitsgedicht
-gemeine wiesenwanze
-gemeiner hallimasch
 gemeinschaftsdusche
 gemeinschaftsgarten
 gemeinschaftspraxis
@@ -601,7 +456,6 @@ geowissenschaftlich
 gerichtsgutachterin
 gerichtsmedizinisch
 gerichtsverhandlung
-germanische sprache
 geruchsaehnlichkeit
 geruchsbelaestigung
 geruchsbeschreibung
@@ -616,7 +470,6 @@ geschaeftsfuehrerin
 geschaeftsgeheimnis
 geschaeftsinteresse
 geschaeftspartnerin
-gescheiterter staat
 geschichtslosigkeit
 geschichtsprofessor
 geschichtsschreiber
@@ -624,7 +477,6 @@ geschichtstraechtig
 geschlechtermedizin
 geschlechtsgenossin
 geschlechtsselektiv
-geschlossener vokal
 geschworenengericht
 gesellschaftsfaehig
 gesellschaftskritik
@@ -633,7 +485,6 @@ gesellschaftszimmer
 gespraechsgrundlage
 gespraechspartnerin
 gespraechsprotokoll
-gesprochene sprache
 gestaltungsfreiheit
 gesundheitsbehoerde
 gesundheitsexpertin
@@ -648,18 +499,11 @@ gleichstrommaschine
 gletscherforscherin
 gliederungspartikel
 glueckwunschadresse
-goldener fallschirm
 goldgraeberstimmung
 grammatikalisierung
 gravitationsenergie
 gravitationskollaps
-greifswalder bodden
-griechisch-orthodox
-griechisch-roemisch
-grosse augen machen
-grosser schmierling
 grossmachtphantasie
-gruenes licht geben
 grundlagenforschung
 grundnahrungsmittel
 grundrechtsverstoss
@@ -667,7 +511,6 @@ grundsatzdiskussion
 grundstoffindustrie
 gummimantelgeschoss
 gutenachtgeschichte
-guter hoffnung sein
 gymnasialcurriculum
 gymnasialunterricht
 gymnastikunterricht
@@ -679,15 +522,10 @@ hagebuttenmarmelade
 halbleiterindustrie
 halbstoffhollaender
 hallenhockeyturnier
-hals- und beinbruch
 halskrausenerdstern
-hand und fuss haben
 handballweltmeister
 handelsgesellschaft
-hannoversch muenden
 hardwareentwicklung
-hart im nehmen sein
-hartz-iv-empfaenger
 haupteinnahmequelle
 hauptgesellschafter
 hauptnahrungsmittel
@@ -695,7 +533,6 @@ hauptsacheverfahren
 hauptschiedsrichter
 hauptschulabschluss
 hauptstadtflughafen
-hausfrau und mutter
 haushaltsaufloesung
 haushaltsgegenstand
 hausratversicherung
@@ -703,14 +540,12 @@ hauswirtschaftsraum
 heiratsschwindlerin
 heiratsvermittlerin
 heisswassergetraenk
-herkunfts-typenwein
 herstellungsprozess
 herumschwadronieren
 heruntermarschieren
 herztransplantation
 heteronormativitaet
 heuschreckenschwarm
-hieb- und stichfest
 hieroglyphenschrift
 hinauskatapultieren
 hindurchmarschieren
@@ -723,39 +558,21 @@ hochmittelalterlich
 hochschulcurriculum
 hoeflichkeitshalber
 holunderbluetensekt
-homo steinheimensis
 hormonausschuettung
 hubschrauberabsturz
 hubschrauberpilotin
 hubschraubertraeger
-hundert-euro-schein
-hundert-mark-schein
 hungerdemonstration
 hutschenschleuderer
 hygienebeauftragter
 hypothekenschuldner
-identity-management
 idiosynkrasiekredit
-illokutionaerer akt
-im besten zuge sein
-im dreieck springen
-im zusammenhang mit
 immanenzphilosophie
 immobilienkaeuferin
 impfstoffhersteller
 impfstoffproduktion
 impfstoffversorgung
-implizite ableitung
 impulswahlverfahren
-in aller munde sein
-in bausch und bogen
-in bester hand sein
-in der tinte sitzen
-in die binsen gehen
-in die luft fliegen
-in flammen aufgehen
-indoarische sprache
-indol-3-essigsaeure
 industriearbeiterin
 industriekapazitaet
 industrieobligation
@@ -777,10 +594,6 @@ ingenieurconsulting
 ingenieurgeologisch
 inkompatibilistisch
 inkompressibilitaet
-ins bockshorn jagen
-ins kraut schiessen
-ins reine schreiben
-ins stocken geraten
 inschriftensammlung
 inskriptionspflicht
 instrumentalisieren
@@ -791,7 +604,6 @@ interdenominational
 interessenabwaegung
 interessenkollision
 interessenskonflikt
-intern vertriebener
 internatsschuelerin
 internetwoerterbuch
 interpetiolarstipel
@@ -805,20 +617,16 @@ ionisationsleistung
 ionisationsspannung
 ionisierungsenergie
 ionisierungsprozess
-isolierende sprache
 italienischlehrerin
 italienischsprachig
 jahrhundertleistung
-je oller, je doller
 journalistenausweis
 jugendgruppenleiter
 jugendkriminalitaet
 jungnationalspieler
-kabardino-balkarien
 kadaversammelstelle
 kaffeehausliteratin
 kahlschlagsanierung
-kalte fuss bekommen
 kampfmittelraeumung
 kanalschalldaempfer
 kaninchenzuechterin
@@ -827,24 +635,15 @@ kapellenarchitektur
 kapitalismusanalyse
 kapitalistenschwein
 kapitulationsbefehl
-kapverdische inseln
 kardinalprotodiakon
 karrieresprungbrett
 kartellentscheidung
-kastilien-la mancha
 katastrophentheorie
 katastrophentourist
 katharinenschwester
-katholische koenige
-katz-und-maus-spiel
-kaukasische sprache
 kausalitaetsprinzip
 kautschukproduktion
 kehlkopfentzuendung
-kein einsehen haben
-kein#deutsch wunder
-keine menschenseele
-keine rolle spielen
 kentuckywaldsaenger
 kernspintomographie
 kernwaffenexplosion
@@ -854,27 +653,15 @@ kindersterblichkeit
 kinderzahnheilkunde
 kindheitserinnerung
 klaerungsbeduerftig
-klappe zu, affe tot
 klassengesellschaft
 klassenlehrersystem
-klassisches nahuatl
 klaubsteinmauerwerk
 klausurvorbereitung
-klebriger hoernling
-klein-klein spielen
 koalitionspartnerin
 koalitionspolitiker
 koalitionsregierung
-koechel-verzeichnis
-koenigreich bahrain
-koenigreich belgien
-koenigreich lesotho
-koenigreich marokko
-koenigreich spanien
-koenigsberger klops
 koerperbeherrschung
 koerperfluessigkeit
-kognitive dissonanz
 kohlenstoffmolekuel
 kolbenrueckholfeder
 kollisionsresistenz
@@ -886,7 +673,6 @@ kommunalpolitikerin
 kommunikationsethik
 kommunikationslehre
 kommunikationsreihe
-kompetenz-kompetenz
 kompressionsverband
 kompromissvorschlag
 konferenzteilnehmer
@@ -906,8 +692,6 @@ konzertveranstalter
 kooperationsprinzip
 kooperationsversuch
 kooperationsvertrag
-kopenhagener schule
-kopf-an-kopf-rennen
 kopfschmerztablette
 kopulativkompositum
 korbbluetengewaechs
@@ -919,7 +703,6 @@ kraftstoffverbrauch
 krankenversicherung
 kreditkartenzahlung
 kreislaufbeschwerde
-kreucht und fleucht
 kreuzrippengewoelbe
 kriminaldauerdienst
 kronprinzenportraet
@@ -951,7 +734,6 @@ kurzschlussreaktion
 kurzstreckenlaeufer
 kurzzeitgedaechtnis
 kurzzeitkennzeichen
-kz-haeftlingsnummer
 ladekontrollleuchte
 landesgeschichtlich
 landschaftsaquarell
@@ -975,11 +757,9 @@ leistungskondiktion
 leistungssportlerin
 leitungsanaesthesie
 lenkradwinkelsensor
-levantinisches meer
 lichtundurchlaessig
 lieblingsgegenstand
 lieblingsgeschichte
-links liegen lassen
 literarhistorikerin
 literaturgeschichte
 literaturhistoriker
@@ -999,7 +779,6 @@ lueftungsspezialist
 lueftungsventilator
 maastrichtkriterium
 machtvollkommenheit
-maedchen fuer alles
 maennerfreundschaft
 maennergesangverein
 maennergesellschaft
@@ -1013,7 +792,6 @@ mannschaftssportart
 mannschaftstraining
 manuduktionspflicht
 marktwirtschaftlich
-marzahn-hellersdorf
 maschinenfaehigkeit
 massendemonstration
 massenkommunikation
@@ -1028,8 +806,6 @@ medizinschraenkchen
 mehrfachoptionsfeld
 mehrsprachenlexikon
 mehrwegpfandflasche
-mein lieber scholli
-meiner ansicht nach
 meinungsfreudigkeit
 merkmalsauspraegung
 meteoriteneinschlag
@@ -1043,28 +819,18 @@ minderheitensprache
 mineraloelindustrie
 ministerialdirigent
 ministerratssitzung
-mit allen schikanen
-mit den wolf heulen
-mit einem zislaweng
-mit haken und oesen
-mit list und tuecke
-mit wehenden fahnen
 mitgliederentscheid
 mittelfeldspielerin
 mittelniederdeutsch
 mittelschullehrerin
 mittwochnachmittags
-moerfelden-walldorf
 molekulardiagnostik
-mongolische sprache
 mornellregenpfeifer
 mucksmaeuschenstill
 muenzwechselautomat
 multimomentaufnahme
 musterbeutelklammer
 mutterschaftsurlaub
-nach dem mond gehen
-nach lust und laune
 nachbarwissenschaft
 nachhilfeunterricht
 nachkriegsjahrzehnt
@@ -1074,14 +840,11 @@ nachlassverwalterin
 nachrichtensprecher
 nachttischlaempchen
 naehmaschinenfabrik
-nah am wasser bauen
 nationaleigenschaft
 nationalratssitzung
 nationalsozialismus
 nationalsozialistin
 nationalversammlung
-natuerliche auslese
-natuerliche sprache
 navigationssatellit
 navigationssoftware
 nebelschlussleuchte
@@ -1090,32 +853,17 @@ nebeneinandersitzen
 nebeneinanderstehen
 nebenklagevertreter
 nervenzusammenbruch
-nervus mandibularis
-nervus ophthalmicus
 netzhautentzuendung
-neumarkt-sankt veit
-neunzig-grad-winkel
 neutronentomografie
-nicht lange fackeln
-nicht ums verrecken
 nichtraucherbereich
 nichtterminalsymbol
 niederoesterreicher
 niederschlagsmesser
 niederschlagswasser
-niet- und nagelfest
-niger-kongo-sprache
 nobelpreistraegerin
-noerdliche marianen
-noerdliches eismeer
-nominales satzglied
-non-hodgkin-lymphom
-nordrhein-westfalen
 nordwesteuropaeisch
-normative grammatik
 notfallsanitaeterin
 notverordnungsrecht
-null-acht-fuenfzehn
 oberflaechenprotein
 oberkommandierender
 oberleitungsomnibus
@@ -1126,10 +874,7 @@ oberschenkelknochen
 oberstaatsanwaeltin
 oberstudiendirektor
 obligationsfunktion
-oeffentliches recht
-oekologische nische
 offiziersdienstgrad
-ohne fehl und tadel
 olympiateilnehmerin
 omnibusgesellschaft
 onlinekommunikation
@@ -1138,10 +883,8 @@ oppositionskaempfer
 organisationsfehler
 oscarpreistraegerin
 ostermarschbewegung
-ostfriesische insel
 oxidationsvermoegen
 oxydationsvermoegen
-pacta sunt servanda
 paedagogikprofessor
 palaeoanthropologie
 palaeoanthropologin
@@ -1154,12 +897,10 @@ parlamentsbeschluss
 parteifunktionaerin
 parteitagsbeschluss
 parteiuebergreifend
-partielles kurzwort
 partikularinteresse
 partisanenfuehrerin
 partizipialadjektiv
 parusieverzoegerung
-passiver wortschatz
 patientenverfuegung
 patriarchalbasilika
 pennsylvaniadeutsch
@@ -1174,16 +915,12 @@ pflegeabhaengigkeit
 phenylameisensaeure
 philologieprofessor
 phonemverschmelzung
-phonologisches wort
 phosphorsaeureester
 photopolymerisation
 pilzbestimmungsbuch
 planetenoberflaeche
 plantagenarbeiterin
 plantagenbesitzerin
-platz des 18. maerz
-platzhalter-element
-pluralis majestatis
 plutoniumproduktion
 pockenschutzimpfung
 politikwissenschaft
@@ -1193,9 +930,7 @@ polizeihubschrauber
 polizeipraesidentin
 populationsstruktur
 populationswachstum
-portmanteau-morphem
 possessivkompositum
-post christus natus
 postleitgebietszahl
 praenataldiagnostik
 praeparandenanstalt
@@ -1203,10 +938,8 @@ praesidentenfamilie
 praesidententochter
 praesidialregierung
 praesidiumsmitglied
-praeterito-praesens
 praeventivgewahrsam
 praezisierungsfrage
-prager fenstersturz
 primfaktorzerlegung
 produktbeschreibung
 produktionsleiterin
@@ -1216,13 +949,9 @@ programmzeitschrift
 projektstrukturplan
 promotionsausschuss
 pronominalnebensatz
-propositionaler akt
 prosaschriftsteller
-protokoll errichten
 pruefungskommission
-prunus laurocerasus
 psalmenuebersetzung
-psychische epidemie
 publikationssprache
 publizitaetspflicht
 puddingvegetarierin
@@ -1239,10 +968,8 @@ quarantaenebescheid
 quasisouveraenitaet
 quecksilberfulminat
 querschnittlaehmung
-quod erat faciendum
 raketenabwehrsystem
 randbereichsbeamter
-raum-zeit-kontinuum
 raumzeithintergrund
 rauschgiftschmuggel
 reaktionsfaehigkeit
@@ -1252,9 +979,7 @@ rechenschaftsablage
 rechtsextremistisch
 rechtsgeschichtlich
 rechtsstaatlichkeit
-rechtweisender kurs
 redegeschwindigkeit
-regelmaessiges verb
 regelungsbeduerfnis
 regenerationsfaehig
 regierungsbeschluss
@@ -1280,51 +1005,29 @@ repraesentantenhaus
 repraesentativitaet
 reproduktionsfaehig
 reproduktionsfaktor
-republik costa rica
-republik indonesien
-republik kasachstan
-republik madagaskar
-republik mazedonien
-republik san marino
-republik seychellen
-republik suedafrika
-republik usbekistan
 republikfluechtling
 respekteinfloessend
-restringierter code
-restringierter kode
 rettungsschwimmerin
-reziprokes pronomen
-rheinischer faecher
-rhythmisches gesetz
-roemisch-katholisch
 roentgenbestrahlung
 rollgabelschluessel
 rollstuhlbasketball
 romanschriftsteller
-rosmarin-seidelbast
 routineuntersuchung
 rueckflussdaempfung
 ruestungsproduktion
-ruhig blut bewahren
 rundfunkintendantin
-russisches roulette
 sachaufwandstraeger
 sachkundeunterricht
-sagen und schreiben
 salpetersaeureester
-salpingo-oophoritis
 samstagmorgenstunde
 sanitaereinrichtung
 sanitaetsdienstgrad
 satellitenfernsehen
 satellitenschuessel
-satz des pythagoras
 sauerstoffoxidation
 sauerstoffoxydation
 sauerstofftransport
 sauerstoffverbrauch
-saufen wie ein loch
 schachmeisterschaft
 schachweltmeisterin
 schadensersatzklage
@@ -1333,19 +1036,14 @@ schadensregulierung
 schadstoffbelastung
 schadstoffgrenzwert
 schadstoffimmission
-schalten und walten
 schaufensterpolitik
 scheibenwaschwasser
 scheidendammschnitt
-schem ham-meforasch
-schengener abkommen
 schenkelhalsfraktur
 schenkgerechtigkeit
-schere stein papier
 schicksalsgefaehrte
 schicksalstraechtig
 schiedsrichterwesen
-schief wickeln sein
 schifffahrtsgericht
 schifffahrtspolizei
 schifffahrtsstrasse
@@ -1373,12 +1071,10 @@ schnurrbarthaerchen
 schoenfussroehrling
 schoenheitskoenigin
 schokoladennikolaus
-schottisch-gaelisch
 schraubenschluessel
 schreckensherrscher
 schreckensnachricht
 schriftspracherwerb
-schroedingers katze
 schrumpfungsprozess
 schuhmacherzugehoer
 schulabbrecherquote
@@ -1388,7 +1084,6 @@ schulstrukturreform
 schulungsteilnehmer
 schutzmantelmadonna
 schutzmaskenpflicht
-schwarzer burgunder
 schwarzfussindianer
 schwefelsaeureester
 schwefelwasserstoff
@@ -1401,12 +1096,9 @@ schwerwasserreaktor
 schwiegermuttersitz
 schwiegerverwandter
 schwingungsdaempfer
-sechsgang-automatik
 sechsuhrvorstellung
 seeraumueberwachung
 seewettervorhersage
-sein dasein fristen
-seine klappe halten
 seitenlaeuferdynamo
 selbstgenuegsamkeit
 selbstgerechtigkeit
@@ -1418,12 +1110,6 @@ selbstzufriedenheit
 seminarteilnehmerin
 sendungsbewusstsein
 sexualstraftaeterin
-sich aufs ohr hauen
-sich aufs ohr legen
-sich die hand geben
-sich in acht nehmen
-sich ins zeug legen
-sich zu tode lachen
 sichelzellenanaemie
 sicherheitsabkommen
 sicherheitsbehoerde
@@ -1444,9 +1130,7 @@ silvesternachmittag
 simultandolmetscher
 simultanuebersetzer
 sinusvenenthrombose
-software-entwickler
 softwareentwicklung
-sokolski-eroeffnung
 solidaritaetsbeweis
 sommergoldhaehnchen
 sonderschullehrerin
@@ -1457,7 +1141,6 @@ sonntagsausfluegler
 sonntagsschullehrer
 sonntagsspaziergang
 sozialdarwinistisch
-soziale haengematte
 soziologieprofessor
 spendenbereitschaft
 spielautomatensalon
@@ -1476,18 +1159,13 @@ sprengstoffanschlag
 sprengstoffattentat
 spritzgiessmaschine
 spritzgiesswerkzeug
-ss-sturmbannfuehrer
-st. kitts und nevis
 staatengemeinschaft
 staatsangelegenheit
 staatsbuergerschaft
 stalaktitengewoelbe
-stasi-vergangenheit
 stecknadelkopfgross
 steckschluesselsatz
-steglitz-zehlendorf
 steigerungspartikel
-stein des anstosses
 steinkohlekraftwerk
 stellvertreterkrieg
 steuerhinterziehung
@@ -1495,13 +1173,11 @@ steuernachforderung
 stickstoffbelastung
 stockmacherhandwerk
 stoerungsmanagement
-stop-and-go-verkehr
 stosswellentherapie
 strafrechtsexpertin
 strahlenschutzzelle
 strandgerechtigkeit
 strangziehverfahren
-strassauf, strassab
 strassenbahnschiene
 strassenbahnstation
 strassenbahnverkehr
@@ -1514,16 +1190,11 @@ stripteasetaenzerin
 studentenverbindung
 studentenvertretung
 stuhlschiedsrichter
-stumm wie ein fisch
-sturm im wasserglas
 substitutionalitaet
 substitutionsklasse
 suedwestdeutschland
 suesswarenindustrie
-super-acht-farbfilm
-superspreader-event
 systemprogrammierer
-t-zellen-immunitaet
 tabellenkalkulation
 tabernakelbildstock
 tablettenmissbrauch
@@ -1534,7 +1205,6 @@ tankstellenpaechter
 tapferkeitsmedaille
 taschenspielertrick
 tauschgerechtigkeit
-tausend-mark-schein
 tausendgueldenkraut
 technikwissenschaft
 technologietransfer
@@ -1550,7 +1220,6 @@ tetramethylenglykol
 teufelsaustreiberin
 teufelsbeschwoerung
 theaterwissenschaft
-theoretische chemie
 thessalonicherbrief
 tiefenpsychologisch
 tiefensensibilitaet
@@ -1562,7 +1231,6 @@ traenenfluessigkeit
 traenenueberstroemt
 trainingsteilnehmer
 traktorenhersteller
-trans-butendisaeure
 transmissionsriemen
 transportverpackung
 transsubstantiation
@@ -1574,8 +1242,6 @@ trichlorethansaeure
 triebunterdrueckung
 trifluoressigsaeure
 trifluorethansaeure
-trinidad und tobago
-triticum monococcum
 trittschalldaemmung
 trockenlebensmittel
 troepfcheninfektion
@@ -1583,12 +1249,7 @@ truppenuebungsplatz
 truppenverstaerkung
 tschaggelevernatsch
 tuernotentriegelung
-tunesische republik
 turnierteilnehmerin
-type-token-relation
-ueber dem berg sein
-ueber den berg sein
-ueber leichen gehen
 ueberdimensionieren
 uebereinanderliegen
 ueberfremdungsangst
@@ -1606,7 +1267,6 @@ ueberwachungskamera
 ueberweisungsschein
 ueberzeugungsarbeit
 ultraleichtflugzeug
-ums verrecken nicht
 umweltverschmutzung
 unabhaengigkeitstag
 unaussprechlichkeit
@@ -1620,9 +1280,6 @@ universitaetsmuseum
 universitaetssystem
 unmissverstaendlich
 unsicherheitsfaktor
-unter dach und fach
-unter ferner liefen
-unter waffen stehen
 unterhaltungskosten
 unternehmensanleihe
 unternehmensleitung
@@ -1703,19 +1360,12 @@ verzichtserklaerung
 videoschiedsrichter
 viehhaendlersprache
 vielfliegerprogramm
-vier-sterne-general
 vierschanzentournee
 vizeeuropameisterin
 voelkerrechtswidrig
-volksrepublik china
 volksschauspielerin
 volleyballspielerin
 vollmilchschokolade
-vom laster gefallen
-von den socken sein
-von frueh bis spaet
-von kindesbeinen an
-vor die hunde gehen
 vorbereitungspartie
 vorgaengerregierung
 vornamenverzeichnis
@@ -1729,8 +1379,6 @@ waehrungsumstellung
 wahlkampfmuedigkeit
 wahlkreiskandidatur
 waldorfkindergarten
-washington monument
-wasser-mohrenfalter
 wasserballspielerin
 wasserschutzpolizei
 wasserstandsanzeige
@@ -1756,9 +1404,7 @@ weltoeffentlichkeit
 weltranglistenerste
 weltraumspaziergang
 weltrekordinhaberin
-westindische inseln
 westoesterreichisch
-wet-t-shirt-contest
 wetterschutzschiene
 wetterverhaeltnisse
 widerstandsbewegung
@@ -1767,7 +1413,6 @@ wiederholungstaeter
 wildursprungsschein
 wimpernschlagfinale
 windgeschwindigkeit
-winke, winke machen
 wintergoldhaehnchen
 winterreifenpflicht
 wirklichkeitsflucht
@@ -1782,7 +1427,6 @@ wirtschaftsminister
 wirtschaftsprognose
 wirtschaftsspionage
 wirtschaftswachstum
-wischnewsky-flecken
 wissenschaftsbetrug
 wissenschaftsgebiet
 wohlfahrtsausschuss
@@ -1799,7 +1443,6 @@ wunschkaiserschnitt
 wurstigkeitsgefuehl
 wurstigkeitsspritze
 xenotransplantation
-z-9-octadecensaeure
 zahlungsaufstellung
 zahlungsbilanzhilfe
 zahlungseinstellung
@@ -1807,8 +1450,6 @@ zahlungsinformation
 zahlungstransaktion
 zahlungsversprechen
 zahnheilkundegesetz
-zehn-franken-schein
-zehn-pfennig-stueck
 zeitungsschreiberin
 zentralnervensystem
 zentralverriegelung
@@ -1820,31 +1461,19 @@ zigarettenraucherin
 zigarettenschachtel
 zigarettenschmuggel
 zitronenwaldsaenger
-zoologischer garten
 zuechtungsforschung
 zufallsentscheidung
 zukunftsvorstellung
 zulassungsverfahren
-zum anknabbern sein
-zur flasche greifen
-zur#deutsch genuege
 zuzahlungspflichtig
 zwangsislamisierung
 zwangsprostituierte
 zwangssterilisation
 zwangsversteigerung
 zwangsvollstreckung
-zwanzig-cent-muenze
-zwanzig-cent-stueck
-zwanzig-euro-schein
-zwanzig-mark-schein
-zwei-zimmer-wohnung
 zweidrittelmehrheit
-zweite zwischenzeit
-zwischen den jahren
 zwischeneiszeitlich
 zwischenfinanzieren
 zwoelfprophetenbuch
 zwoelfzylindermotor
 zylinderabschaltung
-γ-aminobuttersaeure

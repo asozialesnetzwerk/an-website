@@ -73,7 +73,7 @@
             {% for letter in letters %}
                 {{ letter }}: {{ letters[letter]}},
             {% end %}
-        {% else %}Nichts gefunden.{% end %}
+        {% elif not word_count %}Nichts gefunden.{% end %}
     </div>
 
     {% if word_count > 0 %}

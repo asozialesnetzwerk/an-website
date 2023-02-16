@@ -1,35 +1,3 @@
--aesthesie
--gewaltige
--mycetidae
--pflichtig
--prozentig
--schwanger
--traechtig
-1-euro-job
-1-minuetig
-1-pentanol
-10-jaehrig
-10-uhr-zug
-10-woechig
-11-woechig
-12-woechig
-2-minuetig
-2-propanol
-2-propenal
-2-propenol
-3-minuetig
-4-minuetig
-5-minuetig
-59-jaehrig
-5g-auktion
-6-minuetig
-7-minuetig
-8-minuetig
-9-minuetig
-a cappella
-a nei gahr
-a-a machen
-a. n. chr.
 aachenerin
 aakerbeere
 aalbestand
@@ -66,7 +34,6 @@ abbroeseln
 abbrunften
 abbuersten
 abbuessung
-abc-waffen
 abchasisch
 abdaempfen
 abdasseler
@@ -191,7 +158,6 @@ abruestung
 abrufvideo
 abruptheit
 abrutschen
-abs-, abs-
 absatzplus
 abschaelen
 abschaffen
@@ -236,7 +202,6 @@ abtreibung
 abtrennung
 abtrocknen
 abtruennig
-abu simbel
 abwaehlbar
 abwanderer
 abwanderin
@@ -261,7 +226,6 @@ accessoire
 accoucheur
 accountant
 accrochage
-ace-hemmer
 acetanilid
 acetonurie
 acetylenid
@@ -269,7 +233,6 @@ achleitner
 achromasie
 achromatin
 achselhaar
-acht geben
 achteljude
 achtelnote
 achterbahn
@@ -285,7 +248,6 @@ achtzehner
 achtzehnte
 achtzigmal
 achtzigste
-acid house
 ackerbauer
 ackerboden
 ackerleute
@@ -296,16 +258,12 @@ ackerwagen
 ackerwalze
 ackerwinde
 acquedolci
-acr-, acr-
 acrylfarbe
 acrylfaser
 acrylstoff
 actionfilm
 actionheld
 acylierung
-ad interim
-ad libitum
-ad nauseam
 adalbrecht
 adamsapfel
 adaptation
@@ -349,7 +307,6 @@ aengstlich
 aeolsharfe
 aepfelchen
 aequimolar
-aer-, aer-
 aergerlich
 aeromantie
 aeronautin
@@ -377,8 +334,6 @@ affinitaet
 affirmativ
 affizieren
 afghanisch
-afr-, afr-
-afranzoes.
 afrikaaner
 aftermovie
 aftershave
@@ -396,12 +351,10 @@ agrarstaat
 agrarzweig
 agrikultur
 agrochemie
-aha-formel
 ahnungslos
 ahornblatt
 ahornsirup
 ahrensburg
-aids-toter
 aidskranke
 airbrushen
 akademiker
@@ -430,7 +383,6 @@ akupunktur
 akzentfrei
 akzeptabel
 akzeptiert
-al-andalus
 alabastern
 alabastron
 alarmieren
@@ -454,7 +406,6 @@ aliquotton
 alkalitaet
 alkoholarm
 alkoholika
-all-, all-
 allaussage
 allbekannt
 allbereits
@@ -475,7 +426,6 @@ allergiker
 allergisch
 allerorten
 allerseits
-allez hopp
 allfaellig
 allgewuerz
 alliierter
@@ -491,7 +441,6 @@ allozieren
 allquantor
 allrounder
 allwissend
-alma mater
 almabtrieb
 almosenamt
 alpabtrieb
@@ -503,7 +452,6 @@ alpinismus
 alpinistin
 alpirsbach
 alsergrund
-alt ruppin
 altamerika
 altarweihe
 altbekannt
@@ -511,7 +459,6 @@ altbestand
 altbischof
 altdeutsch
 altensteig
-alter hase
 alterieren
 alteritaet
 altermarkt
@@ -521,21 +468,17 @@ altersheim
 alterssitz
 alterswerk
 altgedient
-althochdt.
 altindisch
 altkanzler
 altmeister
 altmodisch
 altoetting
-altpreuss.
 altreaktor
 altruismus
 altruistin
-am bahnhof
 amanuensis
 amarantrot
 amarettino
-amb-, amb-
 ambivalent
 ambivalenz
 amblygonit
@@ -577,7 +520,6 @@ amuesieren
 amylacetat
 amylhydrid
 amyloidose
-ana-, ana-
 anabolikum
 anakalangu
 analogfunk
@@ -691,11 +633,9 @@ anlaecheln
 anlagenbau
 anlatschen
 anleuchten
-anm.d.red.
 annaehernd
 annakatrin
 annkathrin
-anno tobak
 annotieren
 anorthosit
 anpflanzen
@@ -746,14 +686,12 @@ anstricken
 anstuecken
 anstuermen
 anstuerzen
-ant-, ant-
 antagonist
 antarktika
 antatschen
 antezedens
 antezedenz
 anthologie
-anti-aging
 antichrese
 antichrist
 antifebrin
@@ -792,11 +730,9 @@ apfelgruen
 apfelkraut
 apfelsorte
 apfeltorte
-aph-, aph-
 aphaeresis
 aphorismus
 aphoristik
-apo-, apo-
 apokalypse
 apokarpium
 apokryphon
@@ -840,7 +776,6 @@ archetypus
 archilexem
 archimedes
 archisemem
-architekt.
 archivarin
 archivbild
 arcularius
@@ -855,7 +790,6 @@ aristokrat
 arithmetik
 arkebusier
 arlesbeere
-arm ritter
 armageddon
 armbanduhr
 armeeeigen
@@ -903,7 +837,6 @@ ascheregen
 aschewolke
 aschfarben
 aschkenasi
-ascii-code
 aseismisch
 asianismus
 asienreise
@@ -962,10 +895,6 @@ audiogramm
 audioguide
 auditieren
 auditorium
-auf anhieb
-auf seiten
-auf und ab
-auf-, auf-
 aufbaeumen
 aufbeissen
 aufbersten
@@ -1111,9 +1040,6 @@ augenzeuge
 augsburger
 auguration
 augustheft
-aur-, aur-
-aus daffke
-aus-, aus-
 ausaperung
 ausbaetzen
 ausbaggern
@@ -1280,10 +1206,8 @@ ausziehbar
 auszirkeln
 auszischen
 auszuegler
-aut-, aut-
 autarkisch
 autistisch
-auto-cross
 autochorie
 autochthon
 autodesign
@@ -1337,7 +1261,6 @@ azentrisch
 azetometer
 azetonurie
 azetylenid
-azo-, azo-
 azorenhoch
 azotometer
 azotorrhoe
@@ -1364,19 +1287,6 @@ backpinsel
 backpulver
 backschaft
 backzucker
-bad aachen
-bad blumau
-bad dueben
-bad erlach
-bad honnef
-bad koenig
-bad koesen
-bad muskau
-bad rodach
-bad sachsa
-bad sooden
-bad suelze
-bad vilbel
 badekultur
 bademantel
 bademuetze
@@ -1399,11 +1309,9 @@ baesweiler
 baeuchlein
 baeuerchen
 baeuerlich
-baffin bay
 bagdaderin
 bahamaerin
 bahamaisch
-bahncard{{
 bahnfahrer
 bahnkundin
 bahnstreik
@@ -1411,7 +1319,6 @@ bahntrasse
 bahrenfeld
 baierbrunn
 baiersdorf
-bain-marie
 bakschisch
 bakteriell
 bakterioid
@@ -1432,14 +1339,12 @@ ballonpost
 ballsicher
 balmachome
 balsamduft
-baltoslaw.
 balustrade
 bambusrohr
 bambuswald
 bamigoreng
 banachraum
 banalitaet
-bancomat{{
 bandbreite
 bandelwerk
 banderilla
@@ -1451,9 +1356,6 @@ bangigkeit
 bankbesuch
 bankbilanz
 bankkundin
-bankomat{{
-bar mitzwa
-bar-, bar-
 barbadisch
 barbaricum
 barbarisch
@@ -1485,7 +1387,6 @@ bassgesang
 bassstimme
 bastelraum
 bastfarben
-batak toba
 bauabnahme
 bauauftrag
 baubetrieb
@@ -1539,7 +1440,6 @@ beantragen
 bearbeiten
 beauflagen
 beaujolais
-beauty-doc
 bebaendern
 becherchen
 becherglas
@@ -1559,7 +1459,6 @@ bedrohlich
 bedruecken
 beduerfnis
 beduerftig
-beef jerky
 beelzebock
 beendigung
 beerdigung
@@ -1622,7 +1521,6 @@ beherrscht
 beherzigen
 behilflich
 behinderte
-bei-, bei-
 beibleiben
 beibringen
 beichtiger
@@ -1736,7 +1634,6 @@ berlinisch
 berueckend
 beruehmung
 beruehrung
-berufsbez.
 berufsbild
 berufsfeld
 berufsname
@@ -1804,7 +1701,6 @@ besprengen
 bespringen
 bespritzen
 bespruehen
-best-of-cd
 bestaender
 bestaendig
 bestaerken
@@ -1911,7 +1807,6 @@ bezugnahme
 bezugsnorm
 bezugswort
 bezweifeln
-bgh-urteil
 bhikschuni
 bhutanerin
 bhutanisch
@@ -1970,12 +1865,10 @@ bierverbot
 bierverlag
 bierwuerze
 bierzipfel
-big crunch
 bigamistin
 bigfootski
 bigotterie
 bijouterie
-bijoutière
 bilanziell
 bilderbuch
 bildhauern
@@ -1992,7 +1885,6 @@ billiglohn
 billionaer
 billionste
 billiontel
-bin-, bin-
 binaercode
 binaerzahl
 binaritaet
@@ -2003,8 +1895,6 @@ bindevokal
 binnenland
 binnenreim
 binsenkorb
-bio-, bio-
-bio-banane
 bioalkohol
 biodynamik
 bioethanol
@@ -2058,7 +1948,6 @@ biwakfeuer
 biwakieren
 biwakplatz
 bizyklisch
-black jack
 blackberry
 blaessgans
 blaesshuhn
@@ -2083,11 +1972,9 @@ blattrippe
 blattsalat
 blattsalbe
 blattstiel
-blau-birke
 blauaeugig
 blaubeuren
 blauelster
-blauer nil
 blaukissen
 blaukommen
 blaumachen
@@ -2111,7 +1998,6 @@ bleiwueste
 blessieren
 blickachse
 blickdicht
-blind date
 blindlings
 blindspiel
 blitzblank
@@ -2152,7 +2038,6 @@ blutschnee
 blutspecht
 blutspende
 blutzucker
-bobbycar{{
 bochumerin
 bockleiter
 bocksprung
@@ -2177,7 +2062,6 @@ bohrfutter
 bohrhammer
 bohrkaefer
 boizenburg
-boko haram
 bolivianer
 bollerkopf
 bolognesin
@@ -2210,7 +2094,6 @@ boxenluder
 boxenstopp
 boxermotor
 boxershort
-boxing day
 braeunlich
 braeutigam
 braindrain
@@ -2241,7 +2124,6 @@ bratpfanne
 bratroehre
 bratschist
 braugerste
-braun senf
 braunkohle
 brautkleid
 brautleute
@@ -2249,7 +2131,6 @@ brautnacht
 bravouroes
 brecheisen
 bredouille
-breitband-
 breitenlee
 breithaupt
 breitseite
@@ -2265,7 +2146,6 @@ brennweite
 bretonisch
 brettleben
 brettspiel
-brevi manu
 bridgetown
 bridgmanit
 briefbogen
@@ -2281,7 +2161,6 @@ brimborium
 brisolette
 britannien
 britannier
-broad peak
 broeckchen
 bromhaltig
 bronchitis
@@ -2349,7 +2228,6 @@ buerostuhl
 buerowesen
 buerstchen
 bueterling
-buffetière
 buhlschaft
 bukarester
 bukephalos
@@ -2387,7 +2265,6 @@ burkinisch
 burmesisch
 burschikos
 burundisch
-burúshaski
 busbahnhof
 buschbrand
 buschfeuer
@@ -2403,9 +2280,6 @@ butterpilz
 buttstaedt
 byronismus
 byzantiner
-c-kommando
-cache-sexe
-cafébesuch
 caipirinha
 callcenter
 camouflage
@@ -2425,15 +2299,12 @@ cartesisch
 cartoonist
 cashewnuss
 catenaccio
-cd-brenner
-cd-spieler
 cellomusik
 centbetrag
 centmuenze
 centstueck
 chabarowsk
 chachapoya
-chai latte
 chakassien
 chamaeleon
 champagner
@@ -2500,7 +2371,6 @@ chronistin
 chthonisch
 chueschtig
 cincinnati
-cis-, cis-
 cladogramm
 claqueurin
 clavichord
@@ -2510,12 +2380,10 @@ clownfisch
 clubobfrau
 clubobmann
 clubsessel
-code civil
 coffeinarm
 cognacglas
 comedienne
 comicstrip
-coming-out
 commitment
 compliance
 conchieren
@@ -2527,22 +2395,17 @@ containern
 contenance
 controller
 cookinseln
-coq au vin
 cornerback
 cornerball
 cornflakes
-corona-app
 coronafall
 coronatest
 coronieren
-costa rica
 couchtisch
 couragiert
 courtoisie
 covidiotie
 covidiotin
-cox orange
-co₂-steuer
 crailsheim
 credomanie
 creglingen
@@ -2550,11 +2413,7 @@ cremeartig
 cremesuppe
 cremetorte
 cronenberg
-cross-over
 crunchtime
-crèmeartig
-crèmesuppe
-crèmetorte
 csaterberg
 curricular
 curriculum
@@ -2570,7 +2429,6 @@ cytokinese
 cytoplasma
 czernowitz
 dabehalten
-dabei sein
 dabeihaben
 dachausbau
 dachbalken
@@ -2596,7 +2454,6 @@ dahineilen
 dahingegen
 dahingehen
 daktylisch
-dalai lama
 dalmatiner
 damaszener
 damenbauer
@@ -2613,11 +2470,9 @@ dampfradio
 dampframme
 dampfwalze
 dancefloor
-dank sagen
 dankesgabe
 dankeswort
 dappenglas
-dar-, dar-
 darangehen
 darbietung
 darbringen
@@ -2650,7 +2505,6 @@ daunenbett
 davidstern
 davoneilen
 davongehen
-day-trader
 daytrading
 dazubitten
 dazupassen
@@ -2676,9 +2530,6 @@ defraudant
 degenduell
 deggendorf
 dehnuebung
-dehnungs-e
-dehnungs-h
-dehnungs-i
 dehydriert
 deichbruch
 deichkrone
@@ -2699,7 +2550,6 @@ delinquent
 delinquenz
 delirieren
 delogieren
-dem-, dem-
 demgemaess
 demjenigen
 demnaechst
@@ -2754,8 +2604,6 @@ derogieren
 derohalben
 dersaeufen
 derwischen
-des moines
-des-, des-
 desastroes
 desfallsig
 designatum
@@ -2775,7 +2623,6 @@ detonieren
 dettelbach
 deutschtum
 devanagari
-devanāgarī
 deverbativ
 dewanagari
 dextrograd
@@ -2783,13 +2630,11 @@ dezidieren
 dezimation
 dezimieren
 dhaulagiri
-dia-, dia-
 diabetiker
 diabetisch
 diabolisch
 diachronie
 diagnostik
-diakonie{{
 diakonisse
 diaphragma
 diapositiv
@@ -2799,7 +2644,6 @@ diavortrag
 dibbelsaat
 dichotomie
 dichtkunst
-dicke luft
 dickleibig
 dickmacher
 didaktisch
@@ -2824,7 +2668,6 @@ dieselruss
 dieseltank
 diesseitig
 dietenheim
-dif-, dif-
 diffusibel
 digerieren
 digitaluhr
@@ -2840,10 +2683,6 @@ dingolfing
 dinosaurus
 dionysisch
 diphtherie
-dipl.-ing.
-dipl.-kff.
-dipl.-kfm.
-dipl.-kfr.
 diplomatie
 diplomatik
 diplomatin
@@ -2858,7 +2697,6 @@ direktrice
 dirigentin
 dirigieren
 dirimieren
-dis-, dis-
 discjockey
 discokugel
 discordato
@@ -2899,15 +2737,12 @@ doerrbohne
 dogmatisch
 doketismus
 doktorgrad
-dolce vita
 dolchstoss
 dollbergen
 domestikin
 dominieren
-dominikan.
 dommitzsch
 dompteurin
-donau-ufer
 donaudelta
 donauinsel
 donaukanal
@@ -3048,7 +2883,6 @@ dunkelheit
 dunschdich
 dunstkreis
 duplikatur
-dura mater
 durchatmen
 durchbeben
 durchblick
@@ -3078,12 +2912,9 @@ duschtasse
 duschwanne
 dutzendmal
 dutzendste
-dvd-player
-dwd-gesetz
 dynamismus
 dynamograf
 dynastisch
-dys-, dys-
 dysarthrie
 dyschromie
 dysembryom
@@ -3107,12 +2938,6 @@ dysthermie
 dystonisch
 dystopisch
 dystrophie
-dépendance
-déshabillé
-d’hondtsch
-e-learning
-easy peasy
-easy-peasy
 ebendieser
 ebengleich
 ebergeruch
@@ -3189,7 +3014,6 @@ eilmeldung
 eilschritt
 eilsendung
 eimerweise
-ein-, ein-
 einaeugige
 einarmiger
 einbauteil
@@ -3217,7 +3041,6 @@ eindeichen
 eindieseln
 eindrillen
 eindringen
-eine reihe
 eineinhalb
 einermenge
 einerseits
@@ -3467,7 +3290,6 @@ emissaerin
 emittieren
 emmentaler
 emmetropie
-emmy award
 empathisch
 empathogen
 empfaenger
@@ -3477,7 +3299,6 @@ empfindung
 emphatisch
 empirismus
 emporheben
-en passant
 enchondrom
 encomienda
 endgueltig
@@ -3509,7 +3330,6 @@ ennealogie
 ennigerloh
 ennuyieren
 enormitaet
-ent-, ent-
 entaktogen
 entbehrung
 entbindung
@@ -3631,8 +3451,6 @@ entzundern
 enzephalon
 enzianblau
 epenthesis
-eph-, eph-
-epi-, epi-
 epideiktik
 epidemisch
 epifaszial
@@ -3683,7 +3501,6 @@ erfrischen
 erfuellbar
 erfuellung
 erfurterin
-erg-, erg-
 ergaenzung
 erglaenzen
 ergophobie
@@ -3781,7 +3598,6 @@ erwerbslos
 erwiderung
 erwuenscht
 erythrozyt
-erz-, erz-
 erzaehlung
 erzbischof
 erzeugerin
@@ -3837,7 +3653,6 @@ etruskerin
 etruskisch
 etymologie
 etymologin
-eu-buerger
 eubakterie
 eudiometer
 euertwegen
@@ -3871,7 +3686,6 @@ evangelium
 everglades
 everkverwg
 evolvieren
-ex-partner
 exaltation
 exaltieren
 examinator
@@ -3887,7 +3701,6 @@ exhumieren
 exiliraner
 existieren
 exkusation
-exo-, exo-
 exorbitant
 exorzieren
 exorzismus
@@ -3925,7 +3738,6 @@ fabelwesen
 fabulieren
 fabulistin
 facebooken
-facebook{{
 fachabitur
 fachanwalt
 fachgebiet
@@ -3971,7 +3783,6 @@ fahrschule
 fahrstunde
 fahrverbot
 fahrwasser
-fair trade
 fakultativ
 faliskisch
 falkenberg
@@ -4136,7 +3947,6 @@ fettsaeure
 fettuccine
 fetzenball
 feuchtkalt
-feuer frei
 feueralarm
 feuereifer
 feuereimer
@@ -4154,8 +3964,6 @@ feuersturm
 feuerwache
 feuerwaffe
 feuilleton
-ffp2-maske
-ffp3-maske
 fianchetto
 fibroblast
 fideicomis
@@ -4165,7 +3973,6 @@ fieberfrei
 fieberhaft
 fieberklee
 fieberwahn
-field goal
 figelinsch
 figuerchen
 figuerlich
@@ -4198,8 +4005,6 @@ firmenchef
 firmenlogo
 firmenname
 firmensitz
-first down
-first lady
 fischadler
 fischamend
 fischartig
@@ -4219,7 +4024,6 @@ fischzucht
 fiskalisch
 fitzelchen
 fixstarter
-fkk-strand
 flachbogen
 flachfeile
 flachfisch
@@ -4279,7 +4083,6 @@ fluchtziel
 fluegelrad
 fluesschen
 fluesterer
-flug-hafer
 flugabwehr
 flugfaehig
 fluggeraet
@@ -4383,7 +4186,6 @@ frauenteam
 frauenwelt
 fraunhofer
 frechdachs
-frei geben
 freiaeugig
 freibetrag
 freibeuter
@@ -4471,7 +4273,6 @@ fruehreife
 fruehrente
 fruehsport
 frustriert
-fsme-virus
 fuchswelpe
 fudschaira
 fuechschen
@@ -4485,7 +4286,6 @@ fuenfkampf
 fuenfmalig
 fuenfstern
 fuenfziger
-fuer immer
 fuerbitten
 fuerderhin
 fuersorgen
@@ -4498,7 +4298,6 @@ fuertherin
 fuesillade
 fuetterung
 fuhrwerken
-full house
 fundgebiet
 fundstelle
 fundstueck
@@ -4564,7 +4363,6 @@ galvanisch
 gametophyt
 gammablitz
 gangkueche
-ganze zahl
 ganzrandig
 ganztaegig
 ganzzahlig
@@ -4658,7 +4456,6 @@ gegenueber
 gegenwende
 gegenzeuge
 gegnerisch
-geh kacken
 gehabstand
 gehaltvoll
 geheimakte
@@ -4730,7 +4527,6 @@ generalist
 generation
 generieren
 genevienne
-genfer see
 gengenbach
 genickfang
 geniessbar
@@ -4739,7 +4535,6 @@ gentechnik
 gentilname
 genuesisch
 genugtuung
-geo-, geo-
 geobotanik
 geocaching
 geodreieck
@@ -4762,7 +4557,6 @@ geratewohl
 geretsried
 geriaterin
 germanisch
-gern haben
 gernegross
 gerolstein
 gersthofen
@@ -4863,7 +4657,6 @@ glaspulver
 glasrahmen
 glasschale
 glaziologe
-gleichbed.
 gleichberg
 gleichheit
 gleichmass
@@ -4884,7 +4677,6 @@ gloeckchen
 glomerulum
 glomerulus
 glossieren
-glueck auf
 gluecklich
 glueckstag
 gluehbirne
@@ -4929,7 +4721,6 @@ goldzunder
 golfemirat
 golflehrer
 golfregion
-gon-, gon-
 gondoliere
 goniometer
 googolplex
@@ -4966,7 +4757,6 @@ grafikerin
 grafikkern
 grafschaft
 granadille
-grand prix
 grandhotel
 grantlerin
 granulozyt
@@ -4986,7 +4776,6 @@ gravierend
 gravierung
 gravimeter
 gravitativ
-green card
 greenpeace
 greifswald
 greifvogel
@@ -5017,7 +4806,6 @@ grossalarm
 grossartig
 grossbauer
 grossbrand
-grosse aue
 grossistin
 grosskatze
 grosskreis
@@ -5084,7 +4872,6 @@ guerillero
 guetersloh
 guetigkeit
 guillotine
-guinness{{
 gummibelag
 gummierung
 gummifluss
@@ -5103,7 +4890,6 @@ gustometer
 gutbesucht
 gutbetucht
 gutduenken
-gute nacht
 gutgelaunt
 gutheissen
 gutmeldung
@@ -5112,16 +4898,13 @@ gutsgarten
 gutsherrin
 gutsitzend
 guttempler
-guttiole{{
 gutturalis
 gymnasiast
 gymnologie
-gyn-, gyn-
 gynaekeion
 gynatresie
 gynogenese
 gyrocopter
-gôgen-witz
 haaransatz
 haarbrueck
 haarersatz
@@ -5170,9 +4953,7 @@ haigerloch
 haiterbach
 hakenkreuz
 hakenpflug
-hal-, hal-
 halachisch
-halb links
 halbbruder
 halbdackel
 halbdunkel
@@ -5202,7 +4983,6 @@ halbwissen
 halbwollen
 halbwueste
 halfvolley
-halleluja!
 hallenberg
 hallendach
 halligalli
@@ -5246,13 +5026,10 @@ handwurzel
 handyvideo
 hanfgeruch
 hangematte
-hans wurst
 hanschmann
 hansestadt
 hantelbank
 haplologie
-happy hour
-hard drink
 hardrocker
 haremsdame
 haremsfrau
@@ -5296,7 +5073,6 @@ hauptstadt
 haupttrieb
 hauptzeuge
 hauptzweck
-hausa-frau
 hausarbeit
 hausarrest
 hausbacken
@@ -5357,7 +5133,6 @@ heidekraut
 heidelberg
 heidenheim
 heidesheim
-heil-ziest
 heilerfolg
 heilfieber
 heiligkeit
@@ -5416,7 +5191,6 @@ hemdkragen
 hemdtasche
 hemdzipfel
 hemerothek
-hemi-motor
 hemiplegie
 hendekagon
 hengstbuch
@@ -5508,13 +5282,11 @@ heumueller
 heuschober
 heutzutage
 heverhagen
-hex-, hex-
 hexaldehyd
 hexenbesen
 hexenmilch
 hexenwesen
 hibernakel
-hie-, hie-
 hierarchie
 hieratisch
 hieronymos
@@ -5535,7 +5307,6 @@ himbeereis
 himbeerrot
 himmelbett
 himmelblau
-hin-, hin-
 hinabsehen
 hinauswurf
 hinbewegen
@@ -5573,7 +5344,6 @@ hinterteil
 hintertuer
 hinwendung
 hinzulegen
-hip-hopper
 hippologie
 hirnschale
 hirschbart
@@ -5684,8 +5454,6 @@ hofmeister
 hoftheater
 hofzwergin
 hoheitlich
-hohes tier
-hohes venn
 hohlkasten
 hohlleiter
 hohlziegel
@@ -5742,9 +5510,7 @@ holzstueck
 holzteller
 holztreppe
 holzzucker
-hom-, hom-
 homeoffice
-homo faber
 homophobie
 homophonie
 homunkulus
@@ -5768,7 +5534,6 @@ hosenanzug
 hosenboden
 hosenrolle
 hosenstall
-hotel mama
 hotelhalle
 hotelierin
 hotellerie
@@ -5779,7 +5544,6 @@ hottelmann
 hubbruecke
 hubstapler
 hubsteiger
-hudson bay
 hueftsteak
 hueftsteif
 huegelgrab
@@ -5816,7 +5580,6 @@ hundertpro
 hundertste
 hundewelpe
 hundhammer
-hunds-rose
 hundsmuede
 hundsstern
 hundszunge
@@ -5836,7 +5599,6 @@ hustenreiz
 hustensaft
 hutschmuck
 huttraeger
-hws-trauma
 hybridauto
 hybridrebe
 hydrologie
@@ -5847,7 +5609,6 @@ hygienisch
 hygrometer
 hymnologie
 hymnologin
-hyp-, hyp-
 hyperaktiv
 hyperbaton
 hyperebene
@@ -5863,9 +5624,6 @@ hypostylos
 hypotenuse
 hypothekar
 hysterisch
-i-propanol
-ic-analyse
-ich-synton
 ichthyosis
 idealismus
 idealistin
@@ -5895,7 +5653,6 @@ imbissbude
 imitatorin
 immenstadt
 immenstock
-immer noch
 immergruen
 immortelle
 immunitaet
@@ -5916,12 +5673,6 @@ impresario
 impression
 imprimatur
 imputation
-in betrieb
-in der tat
-in effectu
-in pectore
-in scharen
-in zukunft
 inadaequat
 indexfonds
 indexieren
@@ -6036,10 +5787,7 @@ inzwischen
 ionenfalle
 ionisation
 ionisieren
-ip-adresse
-ipso facto
 irgendwann
-irish stew
 irisierend
 irokesisch
 irrational
@@ -6062,7 +5810,6 @@ islamistin
 islandhund
 islandsaga
 islandtief
-iso-, iso-
 isolierung
 isomorphie
 isosthenie
@@ -6070,9 +5817,6 @@ isotonisch
 israelisch
 israelitin
 istzustand
-it-bereich
-it-branche
-it-service
 italianist
 italienzug
 iterativum
@@ -6139,7 +5883,6 @@ jobangebot
 jobnomadin
 jobsharing
 johanniter
-jom kippur
 jonglieren
 jordanisch
 josefstadt
@@ -6171,7 +5914,6 @@ jugendhaft
 jugendjahr
 jugendkult
 jugendlich
-jugendspr.
 jugendstil
 jugendwahn
 jugendwort
@@ -6197,8 +5939,6 @@ justizmord
 jutebeutel
 juwelierin
 juxtarenal
-k.-o.-sieg
-k.oe.st.v.
 kabelbrand
 kabelbruch
 kabelkanal
@@ -6372,7 +6112,6 @@ kastilisch
 kastration
 kastrieren
 kasusrolle
-kat-, kat-
 katachrese
 katalepsie
 katalonien
@@ -6405,14 +6144,12 @@ kaulquappe
 kausalsatz
 kavallerie
 kavitation
-kbc-waffen
 kegelschub
 kehlbalken
 kehrtwende
 keimbefall
 keimdruese
 keimplasma
-kein arsch
 keineswegs
 kelchblatt
 kellerbier
@@ -6443,20 +6180,16 @@ kettenhund
 kettensatz
 ketzerisch
 keuschheit
-key-visual
 keyboarder
-kfz-mucker
 kidnapping
 kielwasser
 kieshaltig
 kiesstrand
-kiewer rus
 kiezschule
 kilonewton
 kiloparsec
 kilopascal
 kiloschwer
-kin-, kin-
 kinderarzt
 kinderauge
 kinderbett
@@ -6634,7 +6367,6 @@ koinzidenz
 koketterie
 kokosmilch
 kokospalme
-kol-, kol-
 kolbenhieb
 kolbermoor
 kollateral
@@ -6648,7 +6380,6 @@ kolorieren
 koloskopie
 kolportage
 kolporteur
-kom-, kom-
 komantsche
 komasaufen
 kombattant
@@ -6676,7 +6407,6 @@ kompressor
 kompromiss
 komputativ
 komsomolze
-kon-, kon-
 konautorin
 konditorei
 konditorin
@@ -6767,7 +6497,6 @@ koprolalie
 koprostase
 kopulation
 kopulieren
-kor-, kor-
 korallogen
 koranismus
 korbjaeger
@@ -6892,7 +6621,6 @@ kronvasall
 kronzeugin
 kruemeltee
 kruschteln
-kry-, kry-
 kryovulkan
 kryptologe
 kschatrija
@@ -6998,7 +6726,6 @@ kuwaiterin
 kuwaitisch
 kybernetik
 kyrillisch
-kz-insasse
 labiallaut
 labilitaet
 labiovelar
@@ -7084,7 +6811,6 @@ langenfeld
 langenzenn
 langeweile
 langfinger
-langobard.
 langobarde
 langschiff
 langspiess
@@ -7113,7 +6839,6 @@ latinitaet
 lattenrost
 lattenzaun
 latthammer
-latènezeit
 laubengang
 laubfrosch
 laubhaufen
@@ -7126,7 +6851,6 @@ laugenfass
 laugenweck
 laurentius
 lauscherin
-laut geben
 lauterbach
 lauterkeit
 lauterwerb
@@ -7161,7 +6885,6 @@ lebenswerk
 lebenswert
 lebenszeit
 lebensziel
-leber-reim
 leberfleck
 leberhaken
 leberkaese
@@ -7260,8 +6983,6 @@ lesothisch
 letalitaet
 lettgallen
 letztmalig
-let’s fetz
-let’s play
 leuchtturm
 leukotomie
 leutenberg
@@ -7289,7 +7010,6 @@ lichtquant
 lichtspiel
 lichtstock
 lichtwoche
-lieb haben
 liebesfilm
 liebesgier
 liebesgott
@@ -7300,7 +7020,6 @@ liebestoll
 liebeswort
 liebkosung
 lieblingin
-lieblings-
 liebschaft
 liederbuch
 liederlich
@@ -7330,7 +7049,6 @@ linienflug
 linientreu
 linksherum
 linkskurve
-linotype{{
 linotypist
 lippenbaer
 lippenlaut
@@ -7342,8 +7060,6 @@ livestream
 liveticker
 lizenziert
 lizitieren
-lkw-fahrer
-lkw-reifen
 lobbyieren
 lobbyismus
 lobbyistin
@@ -7367,7 +7083,6 @@ loewenfell
 loewenherz
 loewenmaul
 loewenzahn
-log-, log-
 loganbeere
 logenreihe
 logistisch
@@ -7388,10 +7103,8 @@ lokalrunde
 lokfuehrer
 lokomobile
 lokomotive
-lolli-test
 lommatzsch
 londonerin
-long covid
 longhitter
 losbrechen
 losflitzen
@@ -7404,7 +7117,6 @@ lotsenboot
 lotterbett
 lottospiel
 loveparade
-lower hutt
 loyalitaet
 lucianerin
 lucianisch
@@ -7415,7 +7127,6 @@ luederjahn
 luegenbold
 luenendonk
 luetmarsen
-luft holen
 luftabwehr
 luftballon
 luftfilter
@@ -7450,7 +7161,6 @@ luzernerin
 luziditaet
 lymphoedem
 lymphzelle
-m. d. tit.
 maarvulkan
 maastricht
 machtblock
@@ -7458,7 +7168,6 @@ machthaber
 machtkampf
 machtspiel
 machtwille
-mach’s gut
 madagaskar
 madagassin
 madegassin
@@ -7563,7 +7272,6 @@ mariengarn
 marienglas
 mariengras
 marienhaar
-marinespr.
 marinieren
 mariologie
 marionette
@@ -7641,8 +7349,6 @@ mauszeiger
 mautstelle
 maximieren
 maximilian
-maya-ruine
-maya-stadt
 mayonnaise
 mazedonien
 mazedonier
@@ -7667,7 +7373,6 @@ meerestier
 meeresufer
 meerwaerts
 meerwasser
-meg-, meg-
 megaparsec
 megapascal
 mehlspeise
@@ -7683,7 +7388,6 @@ mehrspurig
 mehrstufig
 mehrtaegig
 mehrteilig
-meier-loch
 meilenweit
 meinerzeit
 meisenheim
@@ -7707,7 +7411,6 @@ memelstrom
 memorandum
 memorieren
 menagieren
-mendel’sch
 menetekeln
 meningitis
 menschheit
@@ -7721,7 +7424,6 @@ merkmallos
 merkspruch
 merovinger
 merowinger
-mes-, mes-
 mesnerhaus
 mesodermal
 mesokosmos
@@ -7736,7 +7438,6 @@ messgeraet
 messgewand
 messmittel
 messstelle
-met-, met-
 metabotrop
 metallatom
 metallband
@@ -7771,7 +7472,6 @@ meublement
 meuselwitz
 michelbach
 mickerkram
-micky maus
 miesepeter
 miesepriem
 miesmachen
@@ -7780,7 +7480,6 @@ mietbetrag
 mietkosten
 mietnomade
 mietspreis
-miez, miez
 miezekatze
 mikrofaser
 mikrogramm
@@ -7807,7 +7506,6 @@ millimeter
 millionaer
 millionste
 miltenberg
-mim-, mim-
 mindelheim
 minderheit
 minderzahl
@@ -7852,8 +7550,6 @@ misthaufen
 mistkaefer
 mistkuebel
 mistwetter
-mit fleiss
-mit-, mit-
 mitangeben
 mitansehen
 mitautorin
@@ -7948,7 +7644,6 @@ moldawisch
 molinismus
 mollakkord
 moltebeere
-mon-, mon-
 monastisch
 monatelang
 monatsende
@@ -7978,14 +7673,11 @@ monopteros
 monotheist
 monovalent
 monsignore
-mont blanc
 montenegro
 montevideo
 montgomery
 montserrat
 monumental
-mood-board
-moonboot{{
 moorleiche
 moralismus
 moralistin
@@ -8024,9 +7716,7 @@ motorsense
 motorsport
 mottoparty
 moussieren
-moustérien
 mozzarella
-mp3-player
 mpbetreibv
 mudschahed
 muedigkeit
@@ -8148,7 +7838,6 @@ myxosarkom
 myzetismus
 nabelbruch
 nabelschau
-nach links
 nachaeffen
 nachahmung
 nacharbeit
@@ -8320,7 +8009,6 @@ natalicium
 natalitaet
 nativismus
 nativitaet
-nato-staat
 natriumarm
 natuerlich
 naturalien
@@ -8373,7 +8061,6 @@ neidhammel
 nekrologie
 nekrotomie
 nelkenwurz
-neo-, neo-
 neoliberal
 neonroehre
 nephrologe
@@ -8402,7 +8089,6 @@ netzschkau
 netzspinne
 netzwerken
 netzwerker
-neu-mexiko
 neuauflage
 neubildung
 neubuerger
@@ -8412,14 +8098,12 @@ neuengland
 neuenstadt
 neuenstein
 neuerdings
-neues jahr
 neugeboren
 neukirchen
 neukloster
 neumodisch
 neundarter
 neunerrest
-neunorweg.
 neuntaegig
 neuntoeter
 neunzehnte
@@ -8435,13 +8119,9 @@ neuseeland
 neusilbern
 neuspanien
 neustrisch
-new jersey
-new mexico
-new yorker
 newcomerin
 newsletter
 nganasanin
-nichts als
 nichtsnutz
 nickerchen
 nickkoppen
@@ -8464,30 +8144,20 @@ nistkasten
 nitropenta
 niueanerin
 niueanisch
-no-go-area
 nobelhotel
 nobelpreis
 nobilitaet
-noch immer
 noerglerin
-nom-, nom-
 nomadentum
-nomen acti
 nomenstamm
 nominalist
 nominieren
 nomokratie
 nomophobie
-non-, non-
-non-binaer
 nonchalant
 nonkonform
 nonnengans
-noo-, noo-
 noosphaere
-nor-, nor-
-nord-efate
-nord-sotho
 nordafrika
 norddakota
 nordeuropa
@@ -8497,11 +8167,9 @@ nordhimmel
 nordirland
 nordkanada
 nordkueste
-nordostdt.
 nordseitig
 nordspitze
 nordwaerts
-nordwestd.
 nordwesten
 nordwinter
 nordzypern
@@ -8528,7 +8196,6 @@ notkapelle
 notlandung
 notleidend
 notloesung
-notre-dame
 nottoetung
 nottrauung
 notverkauf
@@ -8541,7 +8208,6 @@ nudelsorte
 nudelsuppe
 nuertingen
 nukleophil
-nukuʻalofa
 nullbudget
 nullleiter
 nullnummer
@@ -8550,7 +8216,6 @@ nullvektor
 numismatik
 nummerisch
 nupturient
-nur-sultan
 nurfluegel
 nusskuchen
 nussschale
@@ -8562,7 +8227,6 @@ nylonbluse
 nylonfaden
 nylonfaser
 nylonsaite
-nécessaire
 oasenstadt
 obdachlose
 obduzentin
@@ -8570,7 +8234,6 @@ obduzieren
 oberasbach
 oberbayern
 oberbefehl
-oberer see
 oberfraese
 obergaerig
 obergewand
@@ -8633,7 +8296,6 @@ oenotannin
 oesophagus
 oesterlich
 oestringen
-ofaehnr zs
 ofenfrisch
 ofensetzer
 ofenwaerme
@@ -8654,13 +8316,11 @@ ohrwaschel
 oinomantie
 okkupation
 okkupieren
-okt-, okt-
 oktavieren
 oktobertag
 oktroyiert
 okzitanien
 okzitanier
-oleum vini
 oligarchie
 oligarchin
 oligotroph
@@ -8700,11 +8360,9 @@ opiumkrieg
 opponentin
 opponieren
 opposition
-opt-, opt-
 optimieren
 optimismus
 optimistin
-orang-utan
 oranjemund
 ordensburg
 ordensfrau
@@ -8738,9 +8396,7 @@ ortsschild
 ortstermin
 ortsvektor
 ortsverein
-osi-modell
 osnabrueck
-ost-berlin
 ostausgang
 ostbelgien
 ostbetrieb
@@ -8772,7 +8428,6 @@ ostfildern
 ostfluegel
 ostfriesin
 osthaelfte
-ostpreuss.
 ostpreusse
 ostsachsen
 ostschweiz
@@ -8782,7 +8437,6 @@ osymandias
 osymandyas
 oszillator
 otjiherero
-oto-, oto-
 otterndorf
 outsourcen
 outwachler
@@ -8797,7 +8451,6 @@ oxalsaeure
 oxidimeter
 oxydimeter
 oxyuriasis
-ozapft is!
 ozeanarium
 ozeanautin
 ozeanboden
@@ -8832,7 +8485,6 @@ paketieren
 paketkarte
 pakistaner
 palaeozaen
-palaestin.
 palaestina
 palasthund
 palimpsest
@@ -8845,7 +8497,6 @@ palmenwald
 palmfrucht
 pampashase
 pampelmuse
-pan-, pan-
 panamaerin
 panamaisch
 panaritium
@@ -8868,7 +8519,6 @@ panoptikum
 panscherin
 pansexuell
 pansfloete
-panta rhei
 panterfell
 pantolette
 pantomimin
@@ -8896,7 +8546,6 @@ pappschild
 pappteller
 papstkrone
 papstmesse
-par-, par-
 paradefall
 paradeiser
 paradieren
@@ -8938,7 +8587,6 @@ parteichef
 parteiisch
 partikular
 partisanin
-partizip i
 partyloewe
 partyluder
 partyspiel
@@ -9007,7 +8655,6 @@ pentarchie
 pentateuch
 pentathlon
 pentelisch
-per-, per-
 perchlorat
 perfektion
 performant
@@ -9051,7 +8698,6 @@ pestspital
 petersilie
 petersroda
 peterwagen
-petit four
 pfadfinder
 pfaelzerin
 pfaelzisch
@@ -9076,7 +8722,6 @@ pferdemist
 pferdenarr
 pferdeoper
 pferdewirt
-pfiat euch
 pflanzlich
 pflanzloch
 pflegefall
@@ -9106,7 +8751,6 @@ philologie
 philologin
 philosemit
 phlogiston
-phnom penh
 phobikerin
 phoenizien
 phoenizier
@@ -9139,8 +8783,6 @@ piccadilly
 picknicken
 pietaetlos
 piezometer
-piff, paff
-pik-sieben
 pikanterie
 pikardisch
 piktogramm
@@ -9157,7 +8799,6 @@ pinakothek
 pinienkern
 pinienwald
 pinkepinke
-pinot noir
 pirschgang
 pitchgabel
 pitschnass
@@ -9228,7 +8869,6 @@ polarstern
 polenreise
 policieren
 poliklinik
-polit-talk
 politbuero
 politclown
 politologe
@@ -9236,7 +8876,6 @@ politprofi
 politsekte
 polizistin
 pollenkorn
-polo-shirt
 polonismus
 polonistik
 polonistin
@@ -9269,9 +8908,7 @@ poriomanie
 pornoqueen
 pornoszene
 porositaet
-port louis
 portamento
-porto novo
 portokasse
 portomarke
 portugiese
@@ -9290,7 +8927,6 @@ postludium
 postmodern
 postmortal
 postnutzer
-postomat{{
 postpersrg
 postrakete
 postreiter
@@ -9304,7 +8940,6 @@ potentatin
 potentiell
 potenziell
 potenzturm
-potz blitz
 poussieren
 powergamer
 prachtbett
@@ -9365,7 +9000,6 @@ prinzipiat
 prioritaer
 prioritaet
 pritscheln
-priv.-doz.
 privatarzt
 privatauto
 privatbank
@@ -9378,8 +9012,6 @@ privatmann
 privatpark
 privatpost
 privatraum
-pro-, pro-
-pro-adverb
 probealarm
 probefahrt
 probespiel
@@ -9426,7 +9058,6 @@ provenienz
 provenzale
 provinzler
 provokativ
-proz.-bev.
 prozentual
 prozession
 prozesstag
@@ -9473,7 +9104,6 @@ puppenkopf
 puristisch
 purzelbaum
 pusteblume
-put-option
 putschauto
 putzfetzen
 putzfimmel
@@ -9539,7 +9169,6 @@ racheengel
 rachenlaut
 rachenraum
 rachitisch
-rad fahren
 radakovits
 radarfalle
 raderalbus
@@ -9567,8 +9196,6 @@ raffgierig
 raffinerie
 raffinesse
 raffiniert
-ragout fin
-ragoût fin
 rahmdeckel
 rahnwerden
 raiffeisen
@@ -9627,8 +9254,6 @@ rauspumpen
 rausrupfen
 ravensburg
 ravenstein
-ready-made
-reality-tv
 realkredit
 realsatire
 realschule
@@ -9652,7 +9277,6 @@ rechtswert
 reckholder
 recycelbar
 recyclebar
-red-, red-
 redeverbot
 redewasser
 redigieren
@@ -9761,8 +9385,6 @@ reitlehrer
 reitschule
 reitstunde
 reiturlaub
-reiwa-aera
-reiwa-zeit
 rekordflug
 rekordhoch
 rekordjagd
@@ -9787,7 +9409,6 @@ renommiert
 renovieren
 rentenmark
 rentierkuh
-repaircafé
 reparation
 reparieren
 repertoire
@@ -9839,13 +9460,9 @@ rezeptfrei
 rezipieren
 rezitation
 rezitieren
-rg.-praes.
-rh-negativ
-rh-positiv
 rheinbogen
 rheinebene
 rheinfahrt
-rheinhess.
 rheinlotse
 rheinreise
 rheinsberg
@@ -9896,7 +9513,6 @@ ritterlich
 rittersaal
 ritualmord
 rivalitaet
-rna-strang
 robbenbaby
 robbenfell
 robbenjagd
@@ -9944,16 +9560,7 @@ rosenzucht
 rostbefall
 rostbraten
 roststelle
-roséfarben
 rotarierin
-rote armee
-rote beete
-rote karte
-rote linie
-rote ruebe
-roter hahn
-roter hund
-rotes meer
 rotfaehrte
 rotgipfler
 rothenburg
@@ -9963,11 +9570,8 @@ rotschwanz
 rottenburg
 rottweiler
 rotzkocher
-routine-op
 routiniert
-royal navy
 royalistin
-ruck, zuck
 ruderblatt
 rudersport
 rudolstadt
@@ -10032,11 +9636,9 @@ russengrab
 russfilter
 rutengeher
 rutschbahn
-rye whisky
 saaldiener
 saalkirche
 saalordner
-saat-hafer
 saatkraehe
 sabbatical
 sabbatjahr
@@ -10061,11 +9663,9 @@ saeugetier
 saeurefest
 saeurefrei
 safaripark
-safety-car
 saftkugler
 saftpresse
 sagazitaet
-sagen, tun
 sahnetorte
 saisonende
 saisoniere
@@ -10124,10 +9724,7 @@ samniterin
 samoanerin
 samoanisch
 samschdich
-san marino
 sanatorium
-sand-birke
-sand-hafer
 sandbunker
 sanderling
 sandhering
@@ -10140,21 +9737,17 @@ sandstrand
 sandwueste
 sangiovese
 sanitaeter
-sankt goar
 saphirblau
-sapperlot!
 sardinisch
 sardonisch
 sargdeckel
 sargmacher
-sars-cov-2
 sassenberg
 satanismus
 satanistin
 satanspilz
 satinieren
 satinkleid
-satt essen
 satteldach
 sattelfest
 sattelgurt
@@ -10177,7 +9770,6 @@ satzmodell
 satzmuster
 satzrahmen
 satzwertig
-sau-, sau-
 sauberkeit
 sauerkraut
 sauerstoff
@@ -10197,7 +9789,6 @@ saxofonist
 scaphismus
 schabracke
 schachbuch
-schachcafé
 schachclub
 schachklub
 schachlich
@@ -10576,7 +10167,6 @@ schwerelos
 schweriner
 schwerlich
 schwertwal
-schwieger-
 schwimmart
 schwimmbad
 schwimmend
@@ -10588,7 +10178,6 @@ schwuchtel
 schwurbeln
 schwurwort
 scorekarte
-scrabble{{
 screencast
 screenshot
 seaborgium
@@ -10625,7 +10214,6 @@ segelsport
 segeltoern
 segeltrimm
 segelyacht
-sehen auch
 sehenswert
 sehnennaht
 sehnenriss
@@ -10692,7 +10280,6 @@ sensenbaum
 sensenmann
 sensenwurf
 sensitiver
-sensu lato
 separation
 separatist
 separieren
@@ -10713,7 +10300,6 @@ sesterhenn
 setzfehler
 setzkasten
 sewastopol
-sex-appeal
 sexagesima
 sexgoettin
 sexistisch
@@ -10729,7 +10315,6 @@ shanghaien
 shorttrack
 showmaster
 showtreppe
-si-einheit
 siamesisch
 sichelklee
 sicherheit
@@ -10753,7 +10338,6 @@ siegellack
 siegerland
 siegerrebe
 siegerwort
-siehe oben
 signalgast
 signalhorn
 signalmast
@@ -10829,22 +10413,15 @@ slipanlage
 slovenisch
 slowakisch
 slowenisch
-small talk
 smaragdsee
 smartphone
 smartwatch
-snuff-film
-so genannt
-so gut wie
-social bot
 sodalitaet
 sodawasser
 sodbrennen
 sodbrunnen
 soeldnerin
 sofakissen
-soft drink
-soft skill
 sohnschaft
 sokratisch
 solarmodul
@@ -10859,7 +10436,6 @@ solosonate
 solstitium
 somalierin
 somaliland
-sommelière
 sommerfest
 sommergast
 sommerhaus
@@ -10907,7 +10483,6 @@ soucouyant
 souffleuse
 soundkarte
 soundtrack
-sour cream
 souterrain
 sowjetisch
 sowjetvolk
@@ -10949,9 +10524,7 @@ spassvogel
 spateneder
 spationaut
 spazierweg
-spd-chefin
 speckdaene
-spee-kurve
 speerfisch
 speierling
 speisebrei
@@ -11039,7 +10612,6 @@ spondieren
 spongiform
 sporadisch
 sportbogen
-sportcoupé
 sportdress
 sporthalle
 sportlerin
@@ -11092,11 +10664,6 @@ sprungseil
 sprungtuch
 sprungturm
 spuelstein
-sri lanker
-sri-lanker
-ss-uniform
-st. gallen
-st. helena
 staatenlos
 staatsbahn
 staatschef
@@ -11106,7 +10673,6 @@ staatsoper
 staatsvolk
 stabkirche
 stabmagnet
-stade zeit
 stadtatlas
 stadtderby
 stadthagen
@@ -11181,7 +10747,6 @@ statikerin
 stationaer
 stattgeben
 statuieren
-status quo
 staubecken
 staubfahne
 staubkappe
@@ -11277,7 +10842,6 @@ stierkampf
 stierspiel
 stiersucht
 stigmawort
-stil-ikone
 stilbluete
 stilepoche
 stilkritik
@@ -11422,8 +10986,6 @@ sturzregen
 stutenkerl
 stvollstro
 stylesheet
-styropor{{
-sub-, sub-
 subdivisio
 subfamilia
 subglazial
@@ -11452,9 +11014,6 @@ suchtkrank
 sudatorium
 sudetengau
 suechtiger
-sued-efate
-sued-sotho
-suedafrik.
 suedafrika
 sueddakota
 suedeuropa
@@ -11464,12 +11023,9 @@ suedhessen
 suedhimmel
 suedirland
 suedkueste
-suedl. br.
-suedostdt.
 suedslawin
 suedspitze
 suedwaerts
-suedwestd.
 suedwesten
 suedwester
 sueffisant
@@ -11478,21 +11034,16 @@ suendteuer
 suesssauer
 suessstoff
 suetterlin
-suez-kanal
-suf-, suf-
 suffizient
 suffizienz
-sug-, sug-
 sugardaddy
 suggestion
-suk-, suk-
 sukzession
 sukzessive
 summarisch
 sumoringer
 sumpfporst
 sunnitisch
-sup-, sup-
 superjumbo
 superlativ
 supermacht
@@ -11513,7 +11064,6 @@ supplikant
 suppressiv
 supraporte
 suprematie
-sur-, sur-
 surfschule
 surjektion
 surrealist
@@ -11522,13 +11072,10 @@ suszeption
 swakopmund
 sweatshirt
 swerdlowsk
-syl-, syl-
-sym-, sym-
 symbolbild
 symbolfoto
 symbolisch
 symptomlos
-syn-, syn-
 synchronie
 syndetisch
 synekdoche
@@ -11541,8 +11088,6 @@ systemisch
 systemweit
 systemwort
 szenetreff
-são-toméer
-t-o-schema
 tabakladen
 tabakrauch
 tabaksdose
@@ -11578,7 +11123,6 @@ tagschicht
 tagungsort
 tagwaesche
 taillieren
-taipei 101
 taiwanerin
 taiwanesin
 taiwanisch
@@ -11595,7 +11139,6 @@ talmudisch
 talstation
 tamagotchi
 tamburizza
-tamil nadu
 tamilistik
 tandaradei
 tankdeckel
@@ -11609,7 +11152,6 @@ tannenduft
 tannenholz
 tannenpilz
 tannenwald
-tannu-tuwa
 tansanisch
 tanzkultur
 tanzlehrer
@@ -11625,7 +11167,6 @@ tarentiner
 tartelette
 taschelhit
 taschenuhr
-task-force
 tasmanisch
 tassenrand
 tassenwand
@@ -11638,7 +11179,6 @@ tathergang
 tatortfoto
 tatschkerl
 tatverlauf
-taube nuss
 taubenblau
 taubenfach
 taubengrau
@@ -11672,7 +11212,6 @@ teamleiter
 technetium
 technokrat
 technolekt
-tee-export
 teebaumoel
 teebuechse
 teegebaeck
@@ -11694,7 +11233,6 @@ teilnehmer
 teilstueck
 teilsystem
 tektonisch
-tel-, tel-
 telefonist
 telefonsex
 telegrafie
@@ -11713,7 +11251,6 @@ tempelgott
 temperatur
 temperofen
 tempolimit
-tempomat{{
 temporeich
 tempusform
 tenazitaet
@@ -11728,7 +11265,6 @@ terminator
 termingeld
 terminplan
 terrakotta
-tesafilm{{
 tessendorf
 tessinerin
 testanlage
@@ -11841,7 +11377,6 @@ titulieren
 titusbrief
 tobianisch
 tocharisch
-tod-, tod-
 todansagen
 todesangst
 todesdatum
@@ -11879,7 +11414,6 @@ tonsprache
 tonstaerke
 tontraeger
 tonzeichen
-top-, top-
 topfavorit
 topfdeckel
 topflappen
@@ -11918,8 +11452,6 @@ totenschau
 totenstadt
 totenvogel
 totenwache
-toter code
-toter kode
 totgeboren
 totipotent
 totogewinn
@@ -11929,7 +11461,6 @@ touchieren
 tournieren
 tourniquet
 toxizitaet
-tra-, tra-
 traegerlos
 traenengas
 traenkchen
@@ -11994,7 +11525,6 @@ tretkurbel
 tretmuehle
 tretroller
 treuherzig
-tri-, tri-
 triagieren
 trialismus
 tribologie
@@ -12098,7 +11628,6 @@ turnverein
 tuttlingen
 tuvaluerin
 tuvaluisch
-tv-koechin
 typenlehre
 typhusfall
 typisieren
@@ -12106,13 +11635,9 @@ typizitaet
 typografie
 typoskript
 tyrannisch
-u-bahn-bau
-u. a. w. g
-u. dgl. m.
 ubiquitaer
 ubiquitaet
 udmurtisch
-ue30-party
 ueberbauen
 ueberblick
 ueberdacht
@@ -12154,7 +11679,6 @@ uebervater
 ueberzogen
 ukrainerin
 ukrainisch
-ulan-bator
 ultraismus
 ultrareich
 umarbeiten
@@ -12227,7 +11751,6 @@ umweltzone
 umzaeunung
 umzeichnen
 umzuengeln
-un-mission
 unabsehbar
 unangenehm
 unbefangen
@@ -12286,9 +11809,7 @@ unguenstig
 unheilvoll
 unheimlich
 unhoeflich
-uni-, uni-
 unilateral
-union jack
 unionistin
 universell
 unklarheit
@@ -12318,7 +11839,6 @@ unstillbar
 unstrittig
 untauglich
 untenherum
-unter tage
 unterbauch
 unterbauen
 unterboden
@@ -12379,7 +11899,6 @@ unzaehmbar
 unzensiert
 unzuechtig
 unzumutbar
-up to date
 upanischad
 upperclass
 urangehalt
@@ -12404,13 +11923,9 @@ urologisch
 urslawisch
 urverwandt
 urzeitlich
-us-magazin
-us-student
-us-tourist
 usbekistan
 usurpation
 usurpieren
-vae-dirham
 vaeterlich
 vagabundin
 vagilitaet
@@ -12444,7 +11959,6 @@ velozitaet
 venezianer
 ventilator
 ventilhorn
-ver-, ver-
 verabreden
 verachtung
 veraendern
@@ -12854,7 +12368,6 @@ vestibulum
 veterinaer
 vexierbild
 vibrierend
-vice versa
 vicomtesse
 videoabend
 videoprint
@@ -12890,24 +12403,20 @@ vierzeiler
 vierzigmal
 vierzigste
 vietnamese
-vieux saxe
 viktualien
 villarreal
 vilsbiburg
 vindeliker
 violettton
-vip-ticket
 virilitaet
 virusgenom
 viruskopie
-visegráder
 visitieren
 visualizer
 visumsfrei
 visumzwang
 vitalismus
 vitalitaet
-vitamin b9
 vitaminarm
 vitaminkur
 vitrioloel
@@ -12961,11 +12470,7 @@ vollwinkel
 vollziehen
 voluminoes
 vomitorium
-von dannen
-von hinnen
-von wannen
 vonstatten
-vor-, vor-
 vorabdruck
 vorangehen
 vorannahme
@@ -13010,7 +12515,6 @@ vorjammern
 vorkaeufer
 vorkehrung
 vorkommnis
-vorkriegs-
 vorlaeufer
 vorlaeufig
 vorleserin
@@ -13096,7 +12600,6 @@ waggontuer
 waghaeusel
 wagnertuba
 wahhabitin
-wahl-krimi
 wahlbetrug
 wahlerfolg
 wahlheimat
@@ -13154,13 +12657,11 @@ wandnische
 wandschirm
 wandspruch
 wangerooge
-wap-portal
 wappentier
 wappenzelt
 warenlager
 warmhalten
 warmherzig
-warming-up
 warmmachen
 warmwasser
 warnschild
@@ -13320,8 +12821,6 @@ weinzehnte
 weinzeiger
 weisgerber
 weismachen
-weiss gott
-weiss senf
 weissagung
 weissblech
 weissbuche
@@ -13329,7 +12828,6 @@ weissensee
 weissfisch
 weissfuchs
 weisskraut
-weissruss.
 weissrusse
 weisstanne
 weisswurst
@@ -13396,7 +12894,6 @@ wesenskern
 wesentlich
 wesleyaner
 wespennest
-west-samoa
 westafrika
 westberlin
 westerburg
@@ -13443,7 +12940,6 @@ widerstand
 widerwille
 widescreen
 widrigkeit
-wie geht’s
 wiedergabe
 wiederkehr
 wiederwahl
@@ -13470,7 +12966,6 @@ wildlebend
 wildmuskat
 wildunfall
 wilhelmine
-will sagen
 willfahren
 willibrord
 willkommen
@@ -13493,7 +12988,6 @@ winterwein
 winterzeit
 winzerfest
 winzersekt
-winzerspr.
 winzigkeit
 wipproller
 wirbeltanz
@@ -13551,7 +13045,6 @@ wonnemonat
 wonzeichen
 workaholic
 workaround
-worst case
 wortakzent
 wortanfang
 wortfetzen
@@ -13592,7 +13085,6 @@ wunschsohn
 wunschwelt
 wurfmesser
 wurfspiess
-wurm baden
 wurmbefall
 wurschteln
 wurstblatt
@@ -13606,23 +13098,19 @@ wurzelverb
 wurzelwerk
 wutbuerger
 wutgeladen
-x-beliebig
 xantenerin
 xanthoderm
 xanthopsie
-xen-, xen-
 xenizitaet
 xenokratie
 xenonlampe
 xenophilie
 xenophobie
-xer-, xer-
 xerodermie
 xerografie
 xerophilie
 xerostomie
 xiphopagie
-xyl-, xyl-
 xylografie
 xylografin
 yachthafen
@@ -13725,7 +13213,6 @@ zentralrat
 zentrieren
 zentrifuge
 zentrismus
-zer-, zer-
 zerbaetzen
 zerbeissen
 zerbersten
@@ -13820,7 +13307,6 @@ zirbelnuss
 zirkumflex
 zirkusbaer
 zirkuszelt
-zis-, zis-
 ziseleurin
 ziselieren
 zittergras
@@ -13839,7 +13325,6 @@ zoellnerin
 zollplombe
 zollstelle
 zombiefilm
-zoo-, zoo-
 zoologisch
 zsifkovits
 zuarbeiten
@@ -13899,7 +13384,6 @@ zukuenftig
 zulaecheln
 zulieferer
 zulieferin
-zum glueck
 zungenkuss
 zuordenbar
 zuruecktun
@@ -13986,6 +13470,3 @@ zytochemie
 zytokinese
 zytoplasma
 zytoskopie
-à la carte
-à la diane
-ålaenderin

@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+import operator
+
 from collections.abc import Collection
 
 from editdistance import distance
@@ -46,15 +48,20 @@ def get_module_info() -> ModuleInfo:
 def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
     """Find words that have only one different letter."""
     word_len = len(word)
-    ignore = {*ignore, word}
-
+    word_bytes = word.encode("CP1252")
+    ignore_bytes: set[bytes] = {
+        *(w.encode("CP1252") for w in ignore),
+        word_bytes,
+    }
+    
     return (
         Stream((word_len - 1, word_len, word_len + 1))
         .map("de_basic/%s".__mod__)
         .filter(FILE_NAMES.__contains__)
         .flat_map(get_words)
-        .exclude(ignore.__contains__)
-        .filter(lambda test_word: distance(word, test_word) == 1)
+        .exclude(ignore_bytes.__contains__)
+        .filter(lambda test_word: distance(word_bytes, test_word) == 1)
+        .map(bytes.decode, "CP1252")
     )
 
 

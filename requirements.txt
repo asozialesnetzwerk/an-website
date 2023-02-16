@@ -1,6 +1,6 @@
 accept-types==0.4.1
 aiodns==3.0.0
-aiohttp[speedups]==3.8.3
+aiohttp[speedups]==3.8.4
 aiosignal==1.3.1 ; python_version >= '3.7'
 ansi2html==1.8.0
 async-timeout==4.0.2 ; python_version >= '3.6'
@@ -10,7 +10,7 @@ blake3==0.3.3
 brotli==1.0.9
 certifi==2022.12.7
 cffi==1.15.1
-charset-normalizer==2.1.1 ; python_full_version >= '3.6.0'
+charset-normalizer==3.0.1 ; python_full_version >= '3.6.0'
 contourpy==1.0.7 ; python_version >= '3.8'
 cycler==0.11.0 ; python_version >= '3.6'
 defity==0.3.1
@@ -30,7 +30,7 @@ frozendict==2.3.4
 frozenlist==1.3.3 ; python_version >= '3.7'
 funcparserlib==1.0.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
 get-version==3.5.4
-hiredis==2.2.1
+hiredis==2.2.2
 html2text==2020.1.16
 hy==0.26.0 ; python_version < '3.12' and python_version >= '3.7'
 hyrule==0.3.0
@@ -38,11 +38,11 @@ idna==3.4 ; python_version >= '3.5'
 jsonpickle==3.0.1
 kiwisolver==1.4.4 ; python_version >= '3.7'
 lxml==4.9.2
-matplotlib==3.6.3 ; python_version >= '3.8'
+matplotlib==3.7.0 ; python_version >= '3.8'
 mpmath==1.2.1
 multidict==6.0.4 ; python_version >= '3.7'
 numpy==1.24.2
-openpyxl==3.1.0 ; python_version >= '3.6'
+openpyxl==3.1.1 ; python_version >= '3.6'
 orjson==3.8.6
 packaging==23.0 ; python_version >= '3.7'
 pandas==1.5.3 ; python_version >= '3.8'
@@ -65,11 +65,11 @@ redis[hiredis]==4.5.1
 regex==2022.10.31
 setproctitle==1.3.2
 six==1.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
-soupsieve==2.3.2.post1 ; python_version >= '3.6'
+soupsieve==2.4 ; python_version >= '3.7'
 sympy==1.11.1
 tornado==6.2
-typed-stream==0.0.4
-typing-extensions==4.4.0 ; python_version < '3.12'
+typed-stream==0.4.0
+typing-extensions==4.5.0 ; python_version < '3.12'
 tzdata==2022.7
 ultradict==0.0.6
 unexpected-isaves==2.0.2

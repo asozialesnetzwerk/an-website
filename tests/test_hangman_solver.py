@@ -15,11 +15,32 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 import regex
 from tornado.web import HTTPError
 
 from an_website.hangman_solver import hangman_solver as solver
+
+
+def test_word_files_correct() -> None:
+    """Test whether the word-files are correct."""
+    folder = (
+        Path(__file__).parent.parent / "an_website" / "hangman_solver" / "words"
+    )
+    for file in folder.rglob("[0123456789]*.txt"):
+        text = file.read_text(encoding="UTF-8")
+        assert text.endswith("\n"), file
+        assert text.rstrip() == text.removesuffix("\n"), file
+        lines = text.removesuffix("\n").split("\n")
+        set_lines = set(lines)
+        assert len(lines) == len(
+            set_lines
+        ), f"{len(lines)}!={len(set_lines)}, {file}"
+        assert lines == sorted(set_lines)
+
+    assert file
 
 
 def test_filter_words() -> None:
@@ -60,24 +81,24 @@ def test_filter_words() -> None:
 
 def test_generate_pattern_str() -> None:
     """Test generating the pattern string."""
-    pattern_str = solver.generate_pattern_str(
+    pattern_str = solver.create_words_filter(
         input_str="_", invalid="", crossword_mode=False
     )
     assert pattern_str == "."
 
-    pattern_str = solver.generate_pattern_str(
+    pattern_str = solver.create_words_filter(
         input_str="___", invalid="", crossword_mode=False
     )
     assert pattern_str == "..."
 
-    pattern_str = solver.generate_pattern_str(
+    pattern_str = solver.create_words_filter(
         input_str="_",
         invalid="ABCcccccccccccccccccccccc",
         crossword_mode=False,
     )
     assert regex.fullmatch(r"^\[\^[abc]{3}]\{1}$", pattern_str)
 
-    pattern_str = solver.generate_pattern_str(
+    pattern_str = solver.create_words_filter(
         input_str="___", invalid="abc", crossword_mode=False
     )
     assert regex.fullmatch(r"^\[\^[abc]{3}]\{3}$", pattern_str)

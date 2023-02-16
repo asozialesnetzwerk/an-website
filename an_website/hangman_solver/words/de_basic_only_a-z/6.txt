@@ -1,97 +1,7 @@
--aceae
--acid-
--aemie
--affin
--algie
--arium
--artig
--ation
--azid-
--braeu
--brunn
--busch
--druff
--ergie
--erich
--felde
--flach
--fonie
--forst
--furth
--gonie
--gramm
--graph
--hagen
--heide
--heini
--horst
--hoven
--husen
--iater
--ingen
--isier
--ismus
--itaet
--ition
--kirch
--kunde
--leben
--legen
--logie
--magen
--manie
--markt
--meter
--moele
--molen
--morph
--muehl
--nomie
--ohrig
--phage
--physe
--phyta
--plast
--polis
--roese
--selig
--stadt
--stedt
--stein
--therm
--thiol
--thion
--tiger
--tomie
--tonie
--topie
--troph
--urgie
--walde
--weise
--wesen
--wolde
-1 koen
-1 makk
-1 petr
-100pro
-2 koen
-2 makk
-2 petr
-3 makk
-4 makk
-a-, a-
-a-laut
-a-moll
-a. rh.
-a. st.
-a.d.d.
-a.g.o.
 aachen
 aaners
 aargau
 aarhus
-ab ovo
 abachi
 abadan
 abadon
@@ -107,7 +17,6 @@ abbink
 abbiss
 abdach
 abdeel
-abdiël
 abelie
 abends
 aberle
@@ -117,7 +26,6 @@ abflug
 abfuhr
 abgabe
 abgang
-abgek.
 abgott
 abguss
 abhang
@@ -126,7 +34,6 @@ abiose
 abitur
 abjekt
 abkehr
-abl.eg
 ablage
 ablass
 ablauf
@@ -139,14 +46,12 @@ abrede
 abrego
 abriss
 abrupt
-abrégé
 absage
 absatz
 absent
 absenz
 absurd
 abteil
-abulg.
 abulie
 abusir
 abusiv
@@ -156,9 +61,6 @@ abwahl
 abwehr
 abwind
 abwurf
-abzgl.
-abéché
-accel.
 access
 acerra
 acesal
@@ -185,11 +87,9 @@ ackern
 acolon
 acquit
 action
-ad hoc
 adagio
 adalar
 adamek
-add-on
 adebar
 adelar
 adelig
@@ -221,7 +121,6 @@ aeffin
 aegeus
 aegide
 aeneas
-aengl.
 aeolus
 aequer
 aerger
@@ -239,7 +138,6 @@ affekt
 affsfj
 afghan
 afkult
-afrik.
 afrika
 agadez
 agadir
@@ -274,7 +172,6 @@ airolo
 akanje
 akazie
 akelei
-akkad.
 akkade
 akkord
 aktant
@@ -290,7 +187,6 @@ alalie
 alanin
 alanus
 alaska
-alban.
 albedo
 albern
 albero
@@ -327,7 +223,6 @@ alioth
 alkuin
 alldem
 allein
-aller-
 allhie
 allier
 allium
@@ -335,12 +230,10 @@ alltag
 almund
 alpaka
 alrich
-als ob
 alsenz
 alster
 alston
 altach
-altai.
 altair
 altane
 altbau
@@ -348,9 +241,7 @@ alteln
 altena
 altern
 alters
-altgr.
 althen
-altis.
 altman
 altoel
 altona
@@ -361,7 +252,6 @@ alumna
 alunit
 alvier
 alzerl
-alëut.
 amalfi
 amalia
 amalie
@@ -372,7 +262,6 @@ ambros
 ameise
 amelia
 amelie
-amhar.
 amhare
 amiant
 amiens
@@ -387,12 +276,10 @@ amorph
 ampere
 ampfer
 amplex
-ampère
 amrita
 amuzgo
 amylen
 amylum
-an. g.
 anabol
 analog
 ananas
@@ -440,7 +327,6 @@ anomer
 anomie
 anonym
 anorak
-anord.
 anrede
 anreiz
 ansage
@@ -458,7 +344,6 @@ aorist
 apache
 apakwa
 apatit
-aperçu
 aphthe
 apikal
 aplomb
@@ -472,7 +357,6 @@ apuler
 aquila
 araber
 aragon
-aragón
 ararat
 arawak
 arbeit
@@ -494,7 +378,6 @@ arktis
 armada
 armagh
 armbad
-armen.
 arnika
 arnold
 arrest
@@ -505,7 +388,6 @@ arthur
 artist
 arznei
 arzten
-as-dur
 asbest
 asbirg
 aschen
@@ -517,14 +399,12 @@ asemie
 asiate
 askari
 askese
-aslaw.
 asmara
 aspekt
 asperg
 aspern
 assisi
 asslar
-assyr.
 astana
 asthma
 astral
@@ -549,7 +429,6 @@ attika
 attila
 atzung
 aubade
-audi{{
 aufbau
 aufhin
 auflad
@@ -570,7 +449,6 @@ ausruf
 aussen
 ausser
 aussie
-ausst.
 auster
 austun
 ausweg
@@ -590,7 +468,6 @@ averbo
 aviaer
 avital
 awarin
-awest.
 axinit
 aymara
 azalee
@@ -601,18 +478,14 @@ azetyl
 azimut
 azonal
 azoren
-aztek.
 azteke
 azulen
 azurit
 azymit
 azymon
-b-moll
-b-plan
 babett
 babist
 babuza
-babyl.
 bacile
 backen
 backes
@@ -666,14 +539,12 @@ bangui
 banjar
 banjul
 banker
-bankw.
 bannen
 banner
 bannig
 banoni
 bantje
 baobab
-baoulé
 bappen
 barada
 baratt
@@ -719,7 +590,6 @@ baurog
 bausch
 bauxit
 bauzvo
-bayer.
 bayern
 bayvgh
 bbankg
@@ -779,7 +649,6 @@ beredt
 bereit
 bergab
 bergan
-bergb.
 bergen
 berger
 bergig
@@ -791,7 +660,6 @@ berlin
 berner
 berzgg
 besatz
-besch.
 besitz
 besoin
 besser
@@ -838,7 +706,6 @@ bikini
 bilanz
 bilbao
 bilden
-bildl.
 billet
 billig
 bimbes
@@ -849,7 +716,6 @@ binden
 binder
 bingen
 binnen
-bio-ei
 biogas
 bionik
 biotee
@@ -919,7 +785,6 @@ bochum
 bocken
 bockig
 bodden
-boehm.
 boehme
 boerek
 boerge
@@ -928,17 +793,14 @@ boersg
 boeses
 bofist
 bogner
-bogotá
 boheme
 bohnen
 bohren
 bohrer
-bohème
 boidae
 boiler
 boinae
 bokkie
-bokmål
 bolide
 bollen
 bolzen
@@ -974,8 +836,6 @@ bowlen
 bpatge
 bpolak
 bpolbg
-br. m.
-br.-m.
 brache
 bracke
 brakel
@@ -1030,9 +890,7 @@ bstatg
 bubele
 buchen
 buchse
-buchw.
 buckel
-buddh.
 buddha
 budern
 budget
@@ -1085,7 +943,6 @@ byline
 bypass
 byssus
 byzanz
-c-moll
 cabrio
 cachen
 cacher
@@ -1110,7 +967,6 @@ carsta
 casino
 casten
 castor
-cd-rom
 celler
 center
 centre
@@ -1120,11 +976,9 @@ ceylon
 chaine
 chaise
 chakra
-chald.
 chalet
 chamez
 chance
-chant.
 chante
 charge
 charme
@@ -1140,7 +994,6 @@ cheops
 cherub
 chichi
 chilbi
-chiloé
 chinin
 chintz
 chiral
@@ -1152,7 +1005,6 @@ chomez
 choral
 chorda
 christ
-chron.
 chuzpe
 cicero
 cirage
@@ -1179,7 +1031,6 @@ cochem
 codein
 coelbe
 coelom
-coeno-
 cognac
 coitus
 collie
@@ -1205,10 +1056,7 @@ coyote
 cremen
 cremig
 creole
-cresc.
-croisé
 crozon
-crèmig
 cserny
 cuepli
 curium
@@ -1219,10 +1067,6 @@ cutter
 cyborg
 cymbal
 cypern
-d-mark
-d-moll
-d. ae.
-d. gr.
 dachau
 dackel
 dacken
@@ -1279,8 +1123,6 @@ davida
 davina
 daweil
 dazien
-dbzgl.
-ddr-ig
 dealen
 dealer
 debian
@@ -1320,7 +1162,6 @@ depotg
 derart
 derlei
 dermal
-desgl.
 design
 desmal
 desman
@@ -1361,7 +1202,6 @@ diffus
 digger
 diktat
 diktum
-dimin.
 dimmen
 dimmer
 dingel
@@ -1425,7 +1265,6 @@ dortig
 dosage
 dotter
 double
-doublé
 downer
 doxale
 dozent
@@ -1433,8 +1272,6 @@ drache
 dracht
 dragee
 dravit
-drchf.
-drcks.
 drehen
 dreher
 drehko
@@ -1499,44 +1336,6 @@ dynode
 dyopol
 dysmel
 dyston
-e 101a
-e 150a
-e 150b
-e 150c
-e 150d
-e 160a
-e 160b
-e 160c
-e 160d
-e 160e
-e 160f
-e 161b
-e 161g
-e 407a
-e 470a
-e 470b
-e 472a
-e 472b
-e 472c
-e 472d
-e 472e
-e 472f
-e 479b
-e 553a
-e 553b
-e 927b
-e 943a
-e 943b
-e-, e-
-e-auto
-e-bike
-e-book
-e-buch
-e-laut
-e-mail
-e-moll
-e-zine
-ebay{{
 ebenda
 ebenso
 eberau
@@ -1574,7 +1373,6 @@ eigelb
 eigens
 eignen
 eigner
-eigtl.
 eiklar
 eiland
 eilers
@@ -1585,7 +1383,6 @@ einehe
 einige
 einmal
 einrad
-eins a
 einsam
 einser
 eintel
@@ -1645,7 +1442,6 @@ enigma
 entere
 entern
 entree
-entrée
 entzug
 enzian
 eozaen
@@ -1689,20 +1485,17 @@ erogen
 erongo
 erotik
 ersatz
-ersch.
 erster
 erstrg
 ertrag
 erweis
 erwerb
 erzamt
-es-dur
 escape
 eschel
 eschen
 eselei
 esfamr
-eskim.
 eskimo
 esprit
 espuma
@@ -1710,7 +1503,6 @@ essbar
 essenz
 esther
 eszett
-et al.
 etalon
 etappe
 ethnie
@@ -1728,15 +1520,12 @@ eumeln
 eunuch
 euroeg
 eurone
-europ.
 europa
 eustbv
-evang.
 evasiv
 evchen
 evertr
 ewenin
-ewenk.
 ewenke
 examen
 exarch
@@ -1754,16 +1543,12 @@ exonym
 exotik
 expert
 export
-exposé
 extase
 extasy
 extern
 extrem
 exuvie
 exzess
-f-loch
-f-moll
-f-plan
 fabeln
 fabian
 fabrik
@@ -1829,7 +1614,6 @@ fellah
 fellow
 felsen
 feluke
-femto-
 fender
 fennek
 fenzen
@@ -1872,7 +1656,6 @@ fiesta
 fiktiv
 filder
 filius
-fillér
 filmen
 filter
 filzen
@@ -1906,7 +1689,6 @@ fjaerd
 flachs
 flacon
 fladen
-flaem.
 flagge
 flakon
 flamin
@@ -1965,26 +1747,21 @@ formel
 formen
 forsch
 fortan
-forts.
 fossil
 fotzen
 foulen
 fpersg
-fr. h.
 fracht
 fraese
 fragen
 frager
 fragil
-fragm.
 framen
 franco
 franka
 franke
 franko
 franse
-franz.
-frappé
 fratze
 freien
 freier
@@ -2003,7 +1780,6 @@ friaul
 fridge
 frieda
 friede
-fries.
 friese
 frigid
 frisch
@@ -2011,17 +1787,13 @@ frisur
 fritte
 fritze
 frivol
-frnhd.
 froede
 fronen
 frosch
-frspr.
-frstl.
 frucht
 fruehe
 frugal
 fschjg
-fschr.
 fucose
 fuedle
 fuegen
@@ -2056,7 +1828,6 @@ futter
 future
 fuzerl
 fylgja
-g-moll
 gaaden
 gabbro
 gabeln
@@ -2098,7 +1869,6 @@ garaus
 garnen
 garten
 garung
-garçon
 gatsch
 gatten
 gatter
@@ -2151,7 +1921,6 @@ geizig
 gelage
 gelass
 gelbes
-geleg.
 gelege
 geleit
 gelenk
@@ -2175,9 +1944,7 @@ genmaj
 gentil
 genuin
 genuss
-geogr.
 geonym
-georg.
 gepard
 gerade
 geraet
@@ -2200,7 +1967,6 @@ gerstl
 geruch
 gesamt
 gesang
-gesch.
 gesche
 gescho
 geseke
@@ -2208,7 +1974,6 @@ gesell
 gesetz
 gesims
 gesine
-gespr.
 gestik
 gestus
 gesuch
@@ -2238,13 +2003,9 @@ gezeug
 gfoehl
 gfrast
 gfrett
-gfsch.
 ggbefg
-ggbfs.
-ggfls.
 ghasel
 ghetto
-ghzgt.
 gibbon
 giebel
 gieren
@@ -2277,7 +2038,6 @@ glasig
 glasur
 glatze
 glaube
-glchz.
 gleich
 glidin
 glimpf
@@ -2317,6 +2077,7 @@ golfer
 gomera
 gonade
 gondel
+google
 googol
 gorani
 gorges
@@ -2334,12 +2095,10 @@ graete
 grafem
 grafie
 grafik
-gramm.
 grammy
 granat
 granit
 granne
-graph.
 grappa
 grasen
 gratin
@@ -2352,9 +2111,6 @@ gravur
 grazer
 grazie
 grazil
-grchl.
-grdfl.
-grdst.
 gregor
 grenze
 grestg
@@ -2421,8 +2177,6 @@ guttun
 guyana
 gynoid
 gyttja
-h-moll
-h.-qu.
 haamit
 haaren
 haarig
@@ -2475,7 +2229,6 @@ hameln
 hammel
 hammer
 handel
-handw.
 handwo
 hanfen
 hangar
@@ -2513,7 +2266,6 @@ hastig
 hatten
 hauben
 haufen
-haupt-
 hausen
 hauser
 hausha
@@ -2521,7 +2273,6 @@ haussa
 hausse
 hawaii
 hbeglg
-hdlbg.
 header
 hebbar
 hebeln
@@ -2554,7 +2305,6 @@ heizen
 heizer
 hektar
 hektik
-hekto-
 heldin
 helena
 helene
@@ -2639,12 +2389,10 @@ hissen
 hitler
 hitzen
 hitzig
-hjber.
 hleban
 hlupan
 hobbit
 hobeln
-hochd.
 hocken
 hocker
 hockey
@@ -2678,16 +2426,12 @@ hornen
 horror
 horten
 hospiz
-hossa!
 hostel
 hostie
 hotdog
 hotfix
 hotter
-hptpl.
-hptst.
 hubbel
-hubbr.
 hubert
 huchen
 huckel
@@ -2730,7 +2474,6 @@ husche
 hussen
 hussit
 husten
-hut ab
 hutung
 hutzel
 hyaden
@@ -2739,23 +2482,18 @@ hybrid
 hybris
 hydrid
 hymnus
-i bims
-i.g.o.
 iambus
 iatrik
 ibadit
 iberer
 icener
-ich-ag
 ideell
 idefix
-ident.
 idylle
 ihrzen
 ilduea
 illern
 illing
-illyr.
 imamin
 imbiss
 imfall
@@ -2766,20 +2504,13 @@ impala
 impfen
 import
 impuls
-in spe
 indaba
-indef.
 indien
 indigo
-indir.
 indium
-indiv.
-indog.
-indon.
 indore
 infant
 infekt
-ingen-
 ingrid
 ingwer
 inhalt
@@ -2787,7 +2518,6 @@ inland
 inlaut
 inlett
 innena
-inner-
 innert
 insekt
 insult
@@ -2797,7 +2527,6 @@ intron
 invers
 invorg
 inzest
-ipod{{
 iraker
 iraner
 irgend
@@ -2813,7 +2542,6 @@ isabel
 ischgl
 ischia
 ischim
-islam.
 island
 isodom
 isolde
@@ -2834,9 +2562,7 @@ jaeten
 jaeter
 jagsch
 jaguar
-jahrh.
 jakobi
-jakut.
 jakute
 jambus
 jamila
@@ -2849,7 +2575,6 @@ jannik
 jannis
 jansen
 januar
-japan.
 japsen
 jargon
 jarmen
@@ -2873,7 +2598,6 @@ jeetze
 jehova
 jemals
 jemand
-jemen.
 jenaer
 jensen
 jersey
@@ -2906,7 +2630,6 @@ jordan
 joruri
 jorzig
 joseph
-journ.
 jovial
 jubeln
 juchee
@@ -2935,7 +2658,6 @@ juschg
 jussiv
 justiz
 justus
-k.u.k.
 kaarst
 kabale
 kabane
@@ -2994,7 +2716,6 @@ kamenz
 kamera
 kammel
 kammer
-kanad.
 kanada
 kanake
 kanari
@@ -3026,7 +2747,6 @@ karbon
 karden
 karenz
 kargen
-karib.
 karibe
 karien
 karies
@@ -3052,7 +2772,6 @@ kassia
 kassie
 kasten
 kasuar
-katal.
 katana
 kation
 katode
@@ -3061,7 +2780,6 @@ katten
 kaudal
 kauern
 kaufen
-kaufm.
 kaunas
 kausal
 kausch
@@ -3159,7 +2877,6 @@ klampe
 klappe
 klapse
 klarer
-klass.
 klasse
 klauen
 klause
@@ -3294,7 +3011,6 @@ kotten
 kotter
 kotzen
 kowsch
-kpt zs
 krabbe
 kraehe
 kragen
@@ -3319,7 +3035,6 @@ kreide
 krejci
 krekel
 krempe
-kreol.
 kreole
 krepis
 kresde
@@ -3327,14 +3042,11 @@ kreske
 kresse
 kreter
 kretin
-kreuz-
 kribbe
 krimoi
 krippe
 krisis
 kritik
-krkhs.
-kroat.
 kroate
 kroese
 kroete
@@ -3345,7 +3057,6 @@ kruppe
 kruste
 krypta
 krypte
-kuban.
 kubbuz
 kuchen
 kucken
@@ -3387,7 +3098,6 @@ kurven
 kurvig
 kurzer
 kurzum
-kurzw.
 kusine
 kuskus
 kustos
@@ -3399,7 +3109,6 @@ kwanza
 kyklop
 kyritz
 kyushu
-la paz
 laabla
 labeln
 laberl
@@ -3411,7 +3120,6 @@ lacher
 lackel
 lacken
 lactat
-ladin.
 ladino
 ladung
 ladwig
@@ -3437,10 +3145,8 @@ landau
 landei
 landen
 lander
-landw.
 langen
 langer
-langj.
 langos
 langue
 laotin
@@ -3478,8 +3184,6 @@ lausen
 lausig
 lauten
 lauter
-lautl.
-lautm.
 lavabo
 lavant
 lavoir
@@ -3604,7 +3308,6 @@ loesen
 loeten
 loewen
 loewin
-log-in
 loggen
 logger
 loggia
@@ -3676,8 +3379,6 @@ lykien
 lymphe
 lyoner
 lyzeum
-m. br.
-m.a.w.
 maaike
 maasai
 machen
@@ -3693,7 +3394,6 @@ maehen
 maeher
 maehne
 maehre
-maestà
 maezen
 mafios
 magern
@@ -3718,7 +3418,6 @@ makron
 malabo
 malade
 malaga
-malai.
 malaie
 malawi
 malbec
@@ -3819,8 +3518,6 @@ mausen
 mauser
 maxime
 mazzen
-maïlys
-meckl.
 medial
 median
 mediat
@@ -3859,7 +3556,6 @@ menage
 menden
 mendig
 mengen
-mengl.
 menhir
 menora
 mensch
@@ -3886,11 +3582,9 @@ metall
 meteor
 methan
 metier
-meton.
 metope
 metrik
 metrum
-mexik.
 mexiko
 mezzie
 miasma
@@ -3908,7 +3602,6 @@ mikado
 milben
 milena
 milieu
-milit.
 mimese
 mimose
 mindel
@@ -3931,7 +3624,6 @@ missis
 mistel
 misten
 mister
-mitgl.
 mithin
 mithra
 mitose
@@ -3939,7 +3631,6 @@ mitral
 mittag
 mittel
 mitten
-mittw.
 mitzwa
 mixtur
 mizell
@@ -3953,7 +3644,6 @@ modern
 modrig
 modulo
 moebel
-moebl.
 moegen
 moehre
 moelln
@@ -4009,7 +3699,6 @@ motten
 motzen
 movens
 mozart
-mschr.
 mucken
 mucker
 muckis
@@ -4044,7 +3733,6 @@ muschi
 muschv
 museal
 museum
-musik.
 muskat
 muskel
 muslim
@@ -4074,16 +3762,8 @@ myrrhe
 mystik
 mythos
 mythus
-málaga
-mèchen
-n-wort
-n. br.
-n. st.
-na und
 nabeln
 nachen
-nachf.
-nachm.
 nachts
 nachwg
 nachwv
@@ -4093,7 +3773,6 @@ nadeln
 nadine
 naehen
 naeher
-naeml.
 naenie
 naesse
 naevus
@@ -4168,7 +3847,6 @@ neuner
 neunte
 neural
 neuron
-neutr.
 neutra
 nevada
 newari
@@ -4225,22 +3903,17 @@ noetig
 noetik
 nomade
 nonius
-nor ni
-nordd.
 norden
 normal
 norman
 normen
 nossen
-not-op
 notruf
 nottun
 nougat
-nouméa
 novara
 novial
 novize
-nu wor
 nuance
 nubien
 nuckel
@@ -4261,8 +3934,6 @@ nutzev
 nyanja
 nympha
 nymphe
-o-laut
-o. ae.
 obacht
 obadja
 obazda
@@ -4271,7 +3942,6 @@ obelix
 obenan
 oberer
 oberin
-obers.
 oberst
 obeser
 obfrau
@@ -4291,16 +3961,10 @@ oceana
 ochsen
 odense
 odessa
-oe. l.
 oeamtc
 oednis
-oekol.
-oekon.
-oekum.
 oerder
-oestl.
 ofarzt
-offiz.
 ogmios
 ohrlos
 ojibwa
@@ -4318,9 +3982,7 @@ olfert
 oliver
 olivin
 olmeke
-olt zs
 omaner
-omertà
 onager
 onanie
 onkoid
@@ -4352,7 +4014,6 @@ ortung
 oshana
 osiris
 osloer
-osman.
 osmane
 osmium
 osmose
@@ -4360,7 +4021,6 @@ ossaer
 ossete
 ostalb
 ostara
-ostdt.
 ostern
 ostler
 ostrau
@@ -4374,7 +4034,6 @@ outfit
 outing
 outlaw
 ouvert
-ouvrée
 ovambo
 ovipar
 ovizid
@@ -4393,7 +4052,6 @@ ozalid
 ozelle
 ozelot
 ozonid
-pa6.10
 paaren
 paarig
 packen
@@ -4468,7 +4126,6 @@ pauken
 pauker
 pausen
 pavian
-pay-tv
 pecher
 pecken
 pedale
@@ -4495,8 +4152,6 @@ pentin
 pepita
 pepsin
 peptid
-per os
-per se
 perfid
 perlen
 pernod
@@ -4530,7 +4185,6 @@ pfuehl
 pfunds
 pfusch
 pharao
-pharm.
 phaser
 phenol
 phloem
@@ -4540,7 +4194,6 @@ phonem
 phonie
 photon
 phrase
-phryg.
 phylum
 physik
 physis
@@ -4561,12 +4214,10 @@ pikass
 pikoer
 piksen
 pilger
-pilot-
 pilsen
 piment
 pimmel
 pimock
-pin-up
 pingen
 pinkel
 pinnen
@@ -4584,7 +4235,6 @@ pixeln
 plache
 plagen
 plakat
-plan b
 planar
 planen
 planer
@@ -4631,8 +4281,6 @@ pokern
 polder
 police
 polier
-polit-
-polit.
 polken
 pollen
 poller
@@ -4647,7 +4295,6 @@ pongau
 pongid
 ponton
 pontus
-pop-up
 popanz
 popeln
 poppen
@@ -4669,10 +4316,7 @@ potenz
 poufer
 powern
 powidl
-pr-gau
 pracht
-praed.
-praes.
 prager
 pragma
 pranke
@@ -4726,7 +4370,6 @@ prunus
 prusik
 prusse
 pruzze
-psych.
 psyche
 pucken
 pudeln
@@ -4777,19 +4420,15 @@ pzgren
 pzkpfw
 qigong
 qindar
-qmstr.
 quaack
 quabbe
 quader
-quadr.
 quaeke
 quagga
 quaken
 qualle
 quandt
-quant.
 quarre
-quart.
 quarta
 quasar
 quasen
@@ -4800,17 +4439,13 @@ quenya
 queren
 quesen
 quiche
-quiché
 quinoa
 quinta
 quinte
-quitt.
 quitte
 quokka
 quorum
 quotal
-québec
-r-wert
 rabatt
 rabatz
 rabiat
@@ -4887,7 +4522,6 @@ raunen
 rausch
 raziel
 razzia
-rderl.
 rebbau
 rebell
 rebeln
@@ -4945,7 +4579,6 @@ rektor
 rektum
 relais
 relief
-relig.
 relikt
 reling
 remake
@@ -4977,13 +4610,10 @@ review
 rezent
 rezept
 rezess
-rgstr.
 rhaphe
-rhein.
 rheine
 rhetor
 rheuma
-rhfrk.
 rhinow
 rhizom
 rianne
@@ -5047,7 +4677,6 @@ roland
 rollen
 roller
 rollig
-roman.
 romane
 romani
 rommel
@@ -5094,10 +4723,6 @@ russig
 russin
 rustag
 rutsch
-s-bahn
-s-laut
-s. br.
-s. em.
 saatvg
 sabbat
 sabbel
@@ -5331,7 +4956,6 @@ selbst
 selfie
 sellen
 selten
-semit.
 semmel
 senana
 senden
@@ -5377,8 +5001,6 @@ shisha
 shorts
 shrimp
 shukan
-shōgun
-sibir.
 sichel
 sicher
 sickel
@@ -5427,8 +5049,6 @@ sirene
 sirius
 sirren
 sirwal
-sit-in
-sit-up
 sitcom
 sitten
 sitter
@@ -5436,7 +5056,6 @@ sitzen
 sixtus
 skalar
 skalde
-skand.
 skaten
 sketch
 skizze
@@ -5472,7 +5091,6 @@ soenne
 sofern
 sofort
 softie
-sogen.
 sohlen
 soiree
 solala
@@ -5484,7 +5102,6 @@ solide
 solist
 sollen
 soltau
-somal.
 somali
 sommer
 sonant
@@ -5568,7 +5185,6 @@ spulen
 spuren
 sputen
 sputum
-spvgg.
 squash
 squire
 sranan
@@ -5629,7 +5245,6 @@ stigma
 stille
 stimme
 stirne
-stock-
 stokes
 stolle
 storch
@@ -5678,8 +5293,6 @@ stylus
 styrol
 subito
 sublim
-subsp.
-subst.
 subtil
 suburb
 suchen
@@ -5689,9 +5302,7 @@ sudern
 sudoku
 sueben
 suecke
-suedd.
 sueden
-suedl.
 suehne
 suelze
 suende
@@ -5711,7 +5322,6 @@ sultan
 sulzen
 sulzig
 sumbwa
-sumer.
 summen
 summer
 sumsen
@@ -5742,8 +5352,6 @@ system
 szenar
 szenig
 szylla
-séance
-t-wert
 tabgha
 tablar
 tablet
@@ -5753,7 +5361,6 @@ tacker
 tackle
 tadeln
 tadler
-taegl.
 taeter
 taetig
 tafeln
@@ -5781,7 +5388,6 @@ talmud
 tamale
 tamara
 tambow
-tamil.
 tammus
 tampen
 tampon
@@ -5806,7 +5412,6 @@ taroko
 tasche
 tasten
 tatami
-tatar.
 tatius
 tatort
 tattag
@@ -5823,16 +5428,13 @@ tausch
 taxler
 teaken
 tebeth
-techn.
 techno
-tee-ei
 teenie
 teeren
 teilen
 teiler
 tektur
 telben
-telef.
 telege
 telgte
 teller
@@ -5849,7 +5451,6 @@ tensid
 tensor
 tentgv
 tenuis
-tereré
 termin
 terpen
 terror
@@ -5880,11 +5481,9 @@ tholos
 thomas
 thorax
 thorid
-thrak.
 thread
 thrill
 thrips
-thuer.
 thymin
 ticino
 ticken
@@ -5908,11 +5507,9 @@ tippen
 tippse
 tirade
 tirana
-tirol.
 titelg
 titeln
 tivoli
-tixo{{
 tjumen
 tmesis
 tobias
@@ -5967,7 +5564,6 @@ trafik
 tragen
 tralje
 trance
-trans.
 transe
 trapez
 trappe
@@ -6035,9 +5631,7 @@ tuchen
 tuecke
 tuelle
 tuerbe
-tuerk.
 tuerke
-tuev{{
 tugend
 tumult
 tundra
@@ -6057,7 +5651,6 @@ turner
 turnus
 turoyo
 turren
-turrón
 tusche
 tutand
 tuttel
@@ -6068,18 +5661,9 @@ tycoon
 typhus
 tyrann
 tyrnau
-u-bahn
-u-boot
-u-haft
-u-laut
-u. ae.
-u. zw.
-ue. m.
-ue. w.
 ueberm
 uebern
 uebers
-ueblw.
 uebrig
 uebung
 uecker
@@ -6111,7 +5695,6 @@ umsatz
 umsehn
 umwelt
 umwstg
-unang.
 unband
 unbefg
 unbill
@@ -6128,13 +5711,8 @@ unfair
 unfall
 unfern
 unflat
-unfol.
-ungar.
 ungarn
-ungel.
-ungen.
 ungern
-unges.
 ungras
 unheil
 unhold
@@ -6145,7 +5723,6 @@ unikat
 unikum
 unimog
 unisex
-unix{{
 unklar
 unlust
 unmass
@@ -6183,13 +5760,11 @@ urerde
 urform
 urgenz
 urinal
-urkdl.
 urlaub
 urmitz
 urmund
 urning
 urnitz
-urspr.
 ursula
 urteil
 urtext
@@ -6210,8 +5785,6 @@ uterus
 utopia
 utopie
 uvular
-v-mann
-v-stil
 vadium
 vagant
 vagina
@@ -6243,7 +5816,6 @@ verden
 verein
 verena
 verfgh
-vergl.
 verhau
 verlag
 vermbg
@@ -6263,7 +5835,6 @@ vetter
 vexier
 vgraeg
 viabel
-viell.
 vienne
 vierer
 vierte
@@ -6288,7 +5859,6 @@ voener
 voerde
 vogtei
 vogten
-voilà!
 voipen
 volant
 volker
@@ -6320,7 +5890,6 @@ voyeur
 vreden
 vuelta
 vulkan
-w-wort
 wabern
 wachau
 wachen
@@ -6390,7 +5959,6 @@ wehrig
 wehtun
 weibel
 weiben
-weibl.
 weiche
 weiden
 weifen
@@ -6439,10 +6007,7 @@ werner
 werten
 wertig
 wessen
-westd.
 westen
-westf.
-westl.
 wetten
 wetter
 wettin
@@ -6463,7 +6028,6 @@ wiegen
 wiener
 wiesel
 wiesen
-wifi{{
 wiglaf
 wigwam
 wildau
@@ -6547,7 +6111,6 @@ wurzel
 wurzen
 wuseln
 wuzeln
-x-fach
 xander
 xandra
 xanten
@@ -6555,7 +6118,6 @@ xanthi
 xavier
 xeller
 xenion
-xerok.
 xerose
 xerxes
 xoanon
@@ -6565,7 +6127,6 @@ xylose
 xystos
 xystus
 yakuza
-yalçın
 yankee
 yannic
 yantra
@@ -6575,14 +6136,11 @@ yeoman
 yezide
 yippie
 yogini
-yokto-
 yoruba
-yotta-
 yperit
 yuppie
 yurumi
 yvonne
-z. zt.
 zabern
 zacken
 zackig
@@ -6635,17 +6193,14 @@ zendal
 zensor
 zensur
 zensus
-zenti-
 zephir
 zephyr
 zepter
-zepto-
 zerbst
 zerfen
 zergen
 zerren
 zetern
-zetta-
 zettel
 zeugen
 zeugin
@@ -6679,7 +6234,6 @@ zinnen
 zinsen
 zipfel
 zippen
-zipp{{
 zirbel
 zirkel
 zirkon
@@ -6705,8 +6259,6 @@ zopfen
 zornig
 zossen
 zottel
-zoïlus
-zssgn.
 zubrot
 zucken
 zucker
@@ -6756,5 +6308,3 @@ zypern
 zyprer
 zythos
 zytode
-à jour
-ålborg
