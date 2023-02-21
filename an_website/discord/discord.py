@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import time
+from typing import Final
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -26,7 +27,7 @@ from .. import DIR as ROOT_DIR
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-GUILD_ID = "367648314184826880"
+GUILD_ID: Final[str] = "367648314184826880"
 
 INVITE_CACHE: dict[
     str,

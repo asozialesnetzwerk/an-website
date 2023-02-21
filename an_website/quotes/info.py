@@ -58,8 +58,8 @@ class QuotesInfoPage(HTMLRequestHandler):
         )
 
 
-WIKI_API_DE = "https://de.wikipedia.org/w/api.php"
-WIKI_API_EN = "https://en.wikipedia.org/w/api.php"
+WIKI_API_DE: Final[str] = "https://de.wikipedia.org/w/api.php"
+WIKI_API_EN: Final[str] = "https://en.wikipedia.org/w/api.php"
 
 
 async def search_wikipedia(
@@ -135,7 +135,7 @@ def fix_author_for_wikipedia_search(author: str) -> str:
 
 
 # time to live in seconds (1 month)
-AUTHOR_INFO_NEW_TTL = 60 * 60 * 24 * 30
+AUTHOR_INFO_NEW_TTL: Final[int] = 60 * 60 * 24 * 30
 
 
 class AuthorsInfoPage(HTMLRequestHandler):

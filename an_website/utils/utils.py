@@ -37,7 +37,17 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import IO, Any, Final, Literal, TypeVar, Union, cast, get_args
+from typing import (
+    IO,
+    Any,
+    Final,
+    Literal,
+    TypeAlias,
+    TypeVar,
+    Union,
+    cast,
+    get_args,
+)
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
@@ -59,26 +69,26 @@ T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
 TOptionalStr = TypeVar("TOptionalStr", None, str)
 
 # pylint: disable=consider-alternative-union-syntax
-Handler = Union[
+Handler: TypeAlias = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-OpenMojiValue = Literal[False, "img"]  # , "font"]
-BumpscosityValue = Literal[0, 1, 12, 50, 76, 100, 1000]
+OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "font"]
+BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
 )
 
-IP_HASH_SALT = {
+IP_HASH_SALT: Final = {
     "date": datetime.utcnow().date(),
     "hasher": blake3(
         blake3(datetime.utcnow().date().isoformat().encode("ASCII")).digest()
     ),
 }
 
-SUS_PATHS: Final[set[str]] = {
+SUS_PATHS: Final[Set[str]] = {
     "/-profiler/phpinfo",
     "/.aws/credentials",
     "/.env",

@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import re  # pylint: disable=preferred-module
 import sys
-from collections.abc import MutableSequence, Reversible
+from collections.abc import Mapping, MutableSequence, Reversible, Set
 from hashlib import sha3_512
 from os.path import dirname, normpath
 from pathlib import Path
@@ -32,13 +32,13 @@ REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
 HUMANS_TXT: Final[Path] = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt
-BOTS: Final[set[str]] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
-ALIASES: Final[dict[str, str]] = {
+BOTS: Final[Set[str]] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
+ALIASES: Final[Mapping[str, str]] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",
     "Not Committed Yet": "Das Gürteltier",
 }
-MAINTAINERS: Final[dict[str, dict[str, str]]] = {
+MAINTAINERS: Final[Mapping[str, Mapping[str, str]]] = {
     "Joshix": {
         "Location": "NRW, Germany",
         "Email": "joshix@asozial.org",
@@ -50,7 +50,7 @@ MAINTAINERS: Final[dict[str, dict[str, str]]] = {
         "__role": "Backend developer",
     },
 }
-CONTRIBUTORS: Final[dict[str, dict[str, str]]] = {
+CONTRIBUTORS: Final[Mapping[str, Mapping[str, str]]] = {
     "Jimi": {"__role": "README destroyer"},
     "h4ckerle": {"__role": "CSS wizard"},
 }

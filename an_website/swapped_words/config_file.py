@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import lru_cache
+from typing import TypeAlias
 
 import regex
 from regex import Match, Pattern
@@ -172,7 +173,7 @@ class TwoWayPair(WordPair):
         return f"{self.word1}|{self.word2}"
 
 
-WORDS_TUPLE = tuple[ConfigLine, ...]  # pylint: disable=invalid-name
+WORDS_TUPLE: TypeAlias = tuple[ConfigLine, ...]
 
 LINE_END_REGEX: Pattern[str] = regex.compile(
     r"(?m)[\n;]",  # ";" or new line

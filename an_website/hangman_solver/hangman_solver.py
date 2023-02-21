@@ -19,6 +19,7 @@ from collections import Counter
 from collections.abc import Set
 from dataclasses import asdict, dataclass, field
 from functools import cache
+from typing import Final
 
 import regex
 from tornado.web import HTTPError
@@ -28,8 +29,8 @@ from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
-WILDCARDS_REGEX = regex.compile(r"[_?-]+")
-NOT_WORD_CHAR = regex.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
+WILDCARDS_REGEX: Final = regex.compile(r"[_?-]+")
+NOT_WORD_CHAR: Final = regex.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
 
 
 def get_module_info() -> ModuleInfo:

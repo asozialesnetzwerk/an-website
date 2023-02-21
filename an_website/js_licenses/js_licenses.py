@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Mapping
 from functools import cache
 from pathlib import Path
 from typing import Final
@@ -51,7 +52,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-LICENSES = {
+LICENSES: Final[Mapping[str, str]] = {
     "magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt": (
         "https://www.gnu.org/licenses/agpl-3.0.html"
     ),

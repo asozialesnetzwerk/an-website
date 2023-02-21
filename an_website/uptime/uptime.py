@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import math
 import time
-from typing import TypedDict
+from typing import Final, TypedDict
 
 import regex
 from elasticsearch import AsyncElasticsearch
@@ -121,7 +121,7 @@ def get_availability_dict(up: int, down: int) -> AvailabilityDict:
     }
 
 
-AVAILABILITY_CHART = regex.sub(
+AVAILABILITY_CHART: Final[str] = regex.sub(
     r"\s+",
     " ",
     """

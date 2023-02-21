@@ -34,7 +34,7 @@ import uuid
 from base64 import b64encode
 from collections.abc import Callable, Iterable, MutableMapping
 from types import EllipsisType
-from typing import Any, TypedDict
+from typing import Any, TypeAlias, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 with contextlib.suppress(ImportError):
@@ -77,7 +77,7 @@ class Response(TypedDict):  # noqa: D101
     result: None | tuple[str, None | bytes] | SystemExit
 
 
-ErrorTuple = tuple[int, str]
+ErrorTuple: TypeAlias = tuple[int, str]
 
 
 async def create_socket(  # noqa: C901

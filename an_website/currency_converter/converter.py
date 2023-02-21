@@ -16,18 +16,18 @@
 from __future__ import annotations
 
 import random
-from typing import cast
+from typing import Final, TypeAlias, cast
 
 import regex
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
-ValueDict = dict[str, str | int | bool]
-ValuesTuple = tuple[int, int, int, int]
+ValueDict: TypeAlias = dict[str, str | int | bool]
+ValuesTuple: TypeAlias = tuple[int, int, int, int]
 
-KEYS = ("euro", "mark", "ost", "schwarz")
-MULTIPLIERS = (1, 2, 4, 20)
+KEYS: Final = ("euro", "mark", "ost", "schwarz")
+MULTIPLIERS: Final = (1, 2, 4, 20)
 
 
 def get_module_info() -> ModuleInfo:

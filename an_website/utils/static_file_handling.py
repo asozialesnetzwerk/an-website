@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Mapping
 from functools import cache
 from pathlib import Path
 from typing import Any, Final, cast
@@ -41,7 +41,7 @@ def hash_file(path: str | Path) -> str:
         return cast(str, blake3(file.read()).hexdigest(8))
 
 
-def create_file_hashes_dict() -> dict[str, str]:
+def create_file_hashes_dict() -> Mapping[str, str]:
     """Create a dict of file hashes."""
     file_hashes_dict = {
         str(path)
@@ -56,9 +56,9 @@ def create_file_hashes_dict() -> dict[str, str]:
     return file_hashes_dict
 
 
-FILE_HASHES_DICT = create_file_hashes_dict()
+FILE_HASHES_DICT: Final[Mapping[str, str]] = create_file_hashes_dict()
 
-CONTENT_TYPES: dict[str, str] = json.loads(
+CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
     Path(os.path.join(ROOT_DIR, "content_types.json")).read_bytes()
 )
 

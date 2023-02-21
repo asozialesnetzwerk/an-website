@@ -57,8 +57,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-MAX_MESSAGE_SAVE_COUNT = 100
-MAX_MESSAGE_LENGTH = 20
+MAX_MESSAGE_SAVE_COUNT: Final[Literal[100]] = 100
+MAX_MESSAGE_LENGTH: Final[Literal[20]] = 20
 
 
 def get_ms_timestamp() -> int:

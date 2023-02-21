@@ -20,6 +20,7 @@ import os
 import sys
 import time
 from asyncio import Event
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Final, TypedDict
 
@@ -47,7 +48,7 @@ DIR: Final[str] = os.path.dirname(__file__)
 
 START_TIME_NS: Final[int] = time.monotonic_ns()
 
-MEDIA_TYPES: Final[dict[str, MediaType]] = json.loads(
+MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
     Path(os.path.join(DIR, "media_types.json")).read_bytes()
 )
 

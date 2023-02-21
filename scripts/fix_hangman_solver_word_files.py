@@ -40,4 +40,4 @@ def fix_word_files() -> int | str:
 
 
 if __name__ == "__main__":
-    fix_word_files()
+    sys.exit(fix_word_files())

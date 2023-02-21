@@ -22,7 +22,7 @@ import logging
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Final
+from typing import Final, TypeAlias
 
 import emoji
 from tornado.httpclient import AsyncHTTPClient
@@ -50,8 +50,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-Commit = tuple[datetime, str]
-Commits = dict[str, Commit]
+Commit: TypeAlias = tuple[datetime, str]
+Commits: TypeAlias = dict[str, Commit]
 COMMIT_DATA: dict[str, Commits] = {}
 
 

@@ -36,7 +36,7 @@ from configparser import ConfigParser
 from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
-from typing import Any, Final, Literal, cast
+from typing import Any, Final, Literal, TypeAlias, cast
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -97,7 +97,7 @@ try:
 except ImportError:
     perf8 = None
 
-ES_WHAT_LITERAL = Literal[  # pylint: disable=invalid-name
+ES_WHAT_LITERAL: TypeAlias = Literal[
     "component_templates", "index_templates", "ingest_pipelines"
 ]
 
