@@ -32,6 +32,14 @@ class Query:
     _data: tuple[str, Sequence[str], int]
     __slots__ = ("_data",)
 
+    def __bool__(self) -> bool:
+        """Return False if this query matches everything."""
+        return bool(self.words)
+
+    def __hash__(self) -> int:
+        """Hash this."""
+        return hash(self.query)
+
     def __init__(self, query: str) -> None:
         """Initialize this."""
         if hasattr(self, "_data"):
@@ -47,27 +55,9 @@ class Query:
         raise AttributeError("Cannot modify Query.")
 
     @property
-    def words_len(self) -> int:
-        """Return sum(len(word) for word in self.words)."""
-        return self._data[2]
-
-    @property
-    def words(self) -> Sequence[str]:
-        """The words in the query."""
-        return self._data[1]
-
-    @property
     def query(self) -> str:
         """The original query."""
         return self._data[0]
-
-    def __bool__(self) -> bool:
-        """Return False if this query matches everything."""
-        return bool(self.words)
-
-    def __hash__(self) -> int:
-        """Hash this."""
-        return hash(self.query)
 
     def score(self, field_values: tuple[str, ...]) -> float:
         """Field values needs to be a tuple of lower cased strings."""
@@ -80,6 +70,16 @@ class Query:
             )
             for word in self.words
         ) / len(field_values)
+
+    @property
+    def words(self) -> Sequence[str]:
+        """The words in the query."""
+        return self._data[1]
+
+    @property
+    def words_len(self) -> int:
+        """Return sum(len(word) for word in self.words)."""
+        return self._data[2]
 
 
 @dataclasses.dataclass(frozen=True, slots=True, order=True)
@@ -110,11 +110,6 @@ class DataProvider(Generic[T, U]):
         self._key = key
         self._convert = convert
 
-    @property
-    def data(self) -> Iterable[T]:
-        """Return the data."""
-        return self._data if isinstance(self._data, Iterable) else self._data()
-
     def _value_to_fields(self, value: T) -> tuple[str, ...]:
         """Convert a value to a tuple of strings."""
         return (
@@ -122,6 +117,11 @@ class DataProvider(Generic[T, U]):
             if isinstance(cpv := self._key(value), str)
             else tuple(map(str.lower, cpv))  # pylint: disable=bad-builtin
         )
+
+    @property
+    def data(self) -> Iterable[T]:
+        """Return the data."""
+        return self._data if isinstance(self._data, Iterable) else self._data()
 
     def search(
         self, query: Query, excl_min_score: float = 0.0

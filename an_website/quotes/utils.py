@@ -106,6 +106,10 @@ class Author(QuotesObjBase):
         """Fetch new data from the API."""
         return parse_author(await make_api_request(f"authors/{self.id}"))
 
+    def get_path(self) -> str:
+        """Return the path to the author info."""
+        return f"/zitate/info/a/{self.id}"
+
     def to_json(self) -> dict[str, Any]:
         """Get the author as JSON."""
         return {
@@ -129,10 +133,6 @@ class Author(QuotesObjBase):
             self.info = None
             self.name = name
 
-    def get_path(self) -> str:
-        """Return the path to the author info."""
-        return f"/zitate/info/a/{self.id}"
-
 
 @dataclass(slots=True)
 class Quote(QuotesObjBase):
@@ -153,6 +153,10 @@ class Quote(QuotesObjBase):
         """Fetch new data from the API."""
         return parse_quote(await make_api_request(f"quotes/{self.id}"), self)
 
+    def get_path(self) -> str:
+        """Return the path to the quote info."""
+        return f"/zitate/info/z/{self.id}"
+
     def to_json(self) -> dict[str, Any]:
         """Get the quote as JSON."""
         return {
@@ -161,10 +165,6 @@ class Quote(QuotesObjBase):
             "author": self.author.to_json(),
             "path": self.get_path(),
         }
-
-    def get_path(self) -> str:
-        """Return the path to the quote info."""
-        return f"/zitate/info/z/{self.id}"
 
     def update_quote(
         self, quote: str, author_id: int, author_name: str
@@ -230,6 +230,10 @@ class WrongQuote(QuotesObjBase):
             return str(self.id)
         return f"{self.quote.id}-{self.author.id}"
 
+    def get_path(self) -> str:
+        """Return the path to the wrong quote."""
+        return f"/zitate/{self.get_id_as_str()}"
+
     def to_json(self) -> dict[str, Any]:
         """Get the wrong quote as JSON."""
         return {
@@ -239,10 +243,6 @@ class WrongQuote(QuotesObjBase):
             "rating": self.rating,
             "path": self.get_path(),
         }
-
-    def get_path(self) -> str:
-        """Return the path to the wrong quote."""
-        return f"/zitate/{self.get_id_as_str()}"
 
     async def vote(
         # pylint: disable=unused-argument

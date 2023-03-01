@@ -86,6 +86,40 @@ class Search(HTMLRequestHandler):
             return result
         return self.search_old(query)
 
+    def search_authors_and_quotes(
+        self, query: str
+    ) -> Sequence[OldSearchPageInfo]:
+        """Search authors and quotes."""
+        if not (query_object := search.Query(query)):
+            return ()
+        authors: search.DataProvider[
+            Author, UnscoredPageInfo
+        ] = search.DataProvider(
+            get_authors,
+            lambda author: author.name,
+            lambda a: (
+                ("url", self.fix_url(a.get_path())),
+                ("title", "Autoren-Info"),
+                ("description", a.name),
+            ),
+        )
+        quotes: search.DataProvider[
+            Quote, UnscoredPageInfo
+        ] = search.DataProvider(
+            get_quotes,
+            lambda quote: (quote.quote, quote.author.name),
+            lambda q: (
+                ("url", self.fix_url(q.get_path())),
+                ("title", "Zitat-Info"),
+                ("description", str(q)),
+            ),
+        )
+        return search.search(
+            query_object,
+            cast(search.DataProvider[object, UnscoredPageInfo], authors),
+            cast(search.DataProvider[object, UnscoredPageInfo], quotes),
+        )
+
     @requires_settings("APP_SEARCH", return_=AwaitableValue(None))
     @get_setting_or_default("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
     async def search_new(  # type: ignore[no-any-unimported]
@@ -178,40 +212,6 @@ class Search(HTMLRequestHandler):
             dict(scored_value.value + (("score", scored_value.score),))
             for scored_value in page_infos
         ]
-
-    def search_authors_and_quotes(
-        self, query: str
-    ) -> Sequence[OldSearchPageInfo]:
-        """Search authors and quotes."""
-        if not (query_object := search.Query(query)):
-            return ()
-        authors: search.DataProvider[
-            Author, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_authors,
-            lambda author: author.name,
-            lambda a: (
-                ("url", self.fix_url(a.get_path())),
-                ("title", "Autoren-Info"),
-                ("description", a.name),
-            ),
-        )
-        quotes: search.DataProvider[
-            Quote, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_quotes,
-            lambda quote: (quote.quote, quote.author.name),
-            lambda q: (
-                ("url", self.fix_url(q.get_path())),
-                ("title", "Zitat-Info"),
-                ("description", str(q)),
-            ),
-        )
-        return search.search(
-            query_object,
-            cast(search.DataProvider[object, UnscoredPageInfo], authors),
-            cast(search.DataProvider[object, UnscoredPageInfo], quotes),
-        )
 
 
 class SearchAPIHandler(APIRequestHandler, Search):
