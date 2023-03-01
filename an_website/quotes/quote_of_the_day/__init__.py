@@ -22,12 +22,7 @@ from typing import ClassVar, Final
 from tornado.web import HTTPError
 
 from ...utils.request_handler import APIRequestHandler
-from ..utils import (
-    QuoteReadyCheckHandler,
-    WrongQuote,
-    get_wrong_quote,
-    get_wrong_quotes,
-)
+from ..utils import QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 from .data import QuoteOfTheDayData
 from .store import (
     QUOTE_COUNT_TO_SHOW_IN_FEED,
@@ -64,9 +59,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         quote_data = await self.get_quote_by_date(today)
         if quote_data:  # if was saved already
             return quote_data
-        quotes: tuple[WrongQuote, ...] = get_wrong_quotes(
-            lambda wq: wq.rating > 1, shuffle=True
-        )
+        quotes = get_wrong_quotes(lambda wq: wq.rating > 1, shuffle=True)
         if not quotes:
             LOGGER.error("No quotes available")
             return None

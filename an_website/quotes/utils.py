@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import abc
 import asyncio
 import contextlib
 import logging
@@ -22,7 +23,7 @@ import os
 import random
 import sys
 import time
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 from multiprocessing import Value
@@ -64,11 +65,12 @@ MAX_AUTHORS_ID = Value("Q", 0)
 
 
 @dataclass(init=False, slots=True)
-class QuotesObjBase:
+class QuotesObjBase(abc.ABC):
     """An object with an id."""
 
     id: int  # pylint: disable=invalid-name
 
+    @abc.abstractmethod
     async def fetch_new_data(self) -> QuotesObjBase:
         """Fetch new data from the API."""
         raise NotImplementedError
@@ -77,6 +79,11 @@ class QuotesObjBase:
     def get_id_as_str(self, minify: bool = False) -> str:
         """Get the id of the object as a string."""
         return str(self.id)
+
+    @abc.abstractmethod
+    def get_path(self) -> str:
+        """Return the path to the Object."""
+        raise NotImplementedError
 
 
 @dataclass(slots=True)
@@ -104,7 +111,7 @@ class Author(QuotesObjBase):
         return {
             "id": self.id,
             "name": str(self),
-            "path": f"/zitate/info/a/{self.id}",
+            "path": self.get_path(),
             "info": {
                 "source": self.info[0],
                 "text": self.info[1],
@@ -121,6 +128,10 @@ class Author(QuotesObjBase):
             # name changed -> info should change too
             self.info = None
             self.name = name
+
+    def get_path(self) -> str:
+        """Return the path to the author info."""
+        return f"/zitate/info/a/{self.id}"
 
 
 @dataclass(slots=True)
@@ -148,8 +159,12 @@ class Quote(QuotesObjBase):
             "id": self.id,
             "quote": str(self),
             "author": self.author.to_json(),
-            "path": f"/zitate/info/z/{self.id}",
+            "path": self.get_path(),
         }
+
+    def get_path(self) -> str:
+        """Return the path to the quote info."""
+        return f"/zitate/info/z/{self.id}"
 
     def update_quote(
         self, quote: str, author_id: int, author_name: str
@@ -222,8 +237,12 @@ class WrongQuote(QuotesObjBase):
             "quote": self.quote.to_json(),
             "author": self.author.to_json(),
             "rating": self.rating,
-            "path": f"/zitate/{self.get_id_as_str()}",
+            "path": self.get_path(),
         }
+
+    def get_path(self) -> str:
+        """Return the path to the wrong quote."""
+        return f"/zitate/{self.get_id_as_str()}"
 
     async def vote(
         # pylint: disable=unused-argument
@@ -258,7 +277,7 @@ def get_wrong_quotes(
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
     shuffle: bool = False,
-) -> tuple[WrongQuote, ...]:
+) -> Sequence[WrongQuote]:
     """Get cached wrong quotes."""
     if shuffle and sort:
         raise ValueError("Sort and shuffle can't be both true.")
@@ -276,7 +295,7 @@ def get_wrong_quotes(
         random.shuffle(wqs_list)
     if sort:
         wqs_list.sort(key=lambda wq: wq.rating, reverse=True)
-    return tuple(wqs_list)
+    return wqs_list
 
 
 def get_quotes(
