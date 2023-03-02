@@ -23,14 +23,7 @@ import pathlib
 import random
 import time
 from base64 import b85encode
-from collections.abc import (
-    Awaitable,
-    Callable,
-    Generator,
-    Iterable,
-    Sequence,
-    Set,
-)
+from collections.abc import Awaitable, Callable, Generator, Iterable, Set
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -155,54 +148,6 @@ class PageInfo:
     hidden: bool = False  # whether to hide this page info on the page
     short_name: None | str = None  # short name for the page
 
-    def search(self, query: str | Sequence[str]) -> float:  # noqa: C901
-        # pylint: disable=too-complex
-        """
-        Check whether this should be shown on the search page.
-
-        0   → doesn't contain any part of the string
-        > 0 → parts of the string are contained, the higher, the better
-        """
-        if self.hidden or self.path is None:
-            return 0
-
-        score: float = 0
-        words: Sequence[str]
-
-        if isinstance(query, str):
-            words = regex.split(r"\s+", query)
-            query = query.lower()
-            if query in self.description.lower() or query in self.name.lower():
-                score = len(query) / 2
-        else:
-            words = query
-
-        # remove empty strings from words and make the rest lowercase
-        if not (words := [word.lower() for word in words if len(word) > 0]):
-            # query empty, so find everything
-            return 1.0
-
-        for word in words:
-            if len(self.name) > 0 and word in self.name.lower():
-                # multiply by 3, so the title is most important
-                score += 3 * (len(word) / len(self.name))
-            if len(self.description) > 0 and word in self.description.lower():
-                # multiply by 2, so the description is second-most important
-                score += 2 * (len(word) / len(self.description))
-
-            if word in self.keywords:
-                # word is directly in the keywords (really good)
-                score += 1
-            elif len(self.keywords) > 0:
-                # check if word is partially in the keywords
-                kw_score = 0.0
-                for keyword in self.keywords:
-                    if word in keyword.lower():
-                        kw_score += len(word) / len(keyword)
-                score += kw_score / len(self.keywords)
-
-        return score / len(words)
-
 
 @dataclass(order=True, frozen=True, slots=True)
 class ModuleInfo(PageInfo):
@@ -234,18 +179,6 @@ class ModuleInfo(PageInfo):
                 return page_info
 
         return self
-
-    def search(self, query: str | Sequence[str]) -> float:  # noqa: D102
-        # pylint: disable=super-with-arguments
-        score = super(ModuleInfo, self).search(query)
-
-        if len(self.sub_pages) > 0:
-            sp_score = 0.0
-            for page in self.sub_pages:
-                sp_score += page.search(query)
-            score += sp_score / len(self.sub_pages)
-
-        return score
 
 
 class Timer:

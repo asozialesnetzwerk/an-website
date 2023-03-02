@@ -16,18 +16,26 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Sequence
 from typing import Final, Literal, TypeAlias, cast
 
 import orjson as json
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
+from typed_stream import Stream
 
 from .. import NAME
-from ..quotes.utils import Author, Quote, get_authors, get_quotes
+from ..quotes.utils import (
+    Author,
+    Quote,
+    WrongQuote,
+    get_authors,
+    get_quotes,
+    get_wrong_quotes,
+)
+from ..soundboard.data import ALL_SOUNDS, SoundInfo
 from ..utils import search
 from ..utils.decorators import get_setting_or_default, requires_settings
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import AwaitableValue, ModuleInfo
+from ..utils.utils import AwaitableValue, ModuleInfo, PageInfo
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -57,15 +65,33 @@ def get_module_info() -> ModuleInfo:
 class Search(HTMLRequestHandler):
     """The request handler for the search page."""
 
+    def convert_page_info_to_simple_tuple(
+        self, page_info: PageInfo
+    ) -> UnscoredPageInfo:
+        """Convert PageInfo to tuple of tuples."""
+        return (
+            ("url", self.fix_url(page_info.path)),
+            ("title", page_info.name),
+            ("description", page_info.description),
+        )
+
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the search page."""
         if head:
             return
-        print(await self.search())
         await self.render(
             "pages/search.html",
             query=self.get_query(),
             results=await self.search(),
+        )
+
+    def get_all_page_info(self) -> Stream[PageInfo]:
+        """Return all page infos that can be found."""
+        return (
+            Stream(self.get_module_infos())
+            .flat_map(lambda mi: mi.sub_pages + (mi,))
+            .exclude(lambda pi: pi.hidden)
+            .filter(lambda pi: pi.path)
         )
 
     def get_query(self) -> str:
@@ -85,40 +111,6 @@ class Search(HTMLRequestHandler):
         if result is not None:
             return result
         return self.search_old(query)
-
-    def search_authors_and_quotes(
-        self, query: str
-    ) -> Sequence[OldSearchPageInfo]:
-        """Search authors and quotes."""
-        if not (query_object := search.Query(query)):
-            return ()
-        authors: search.DataProvider[
-            Author, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_authors,
-            lambda author: author.name,
-            lambda a: (
-                ("url", self.fix_url(a.get_path())),
-                ("title", "Autoren-Info"),
-                ("description", a.name),
-            ),
-        )
-        quotes: search.DataProvider[
-            Quote, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_quotes,
-            lambda quote: (quote.quote, quote.author.name),
-            lambda q: (
-                ("url", self.fix_url(q.get_path())),
-                ("title", "Zitat-Info"),
-                ("description", str(q)),
-            ),
-        )
-        return search.search(
-            query_object,
-            cast(search.DataProvider[object, UnscoredPageInfo], authors),
-            cast(search.DataProvider[object, UnscoredPageInfo], quotes),
-        )
 
     @requires_settings("APP_SEARCH", return_=AwaitableValue(None))
     @get_setting_or_default("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
@@ -172,46 +164,95 @@ class Search(HTMLRequestHandler):
             )["results"]
         ]
 
-    def search_old(self, query: str) -> list[dict[str, str | float]]:
+    def search_old(
+        self, query: str, limit: int = 20
+    ) -> list[dict[str, str | float]]:
         """Search the website using the old search engine."""
-        page_infos: list[OldSearchPageInfo] = []
-
-        for module_info in self.get_module_infos():
-            score = module_info.search(query)
-            if score > 0:
-                page_infos.append(
-                    search.ScoredValue(
-                        score,
-                        (
-                            ("url", self.fix_url(module_info.path)),
-                            ("title", module_info.name),
-                            ("description", module_info.description),
-                        ),
-                    )
-                )
-            for sub_page in module_info.sub_pages:
-                score = sub_page.search(query)
-                if score > 0:
-                    page_infos.append(
-                        search.ScoredValue(
-                            score,
-                            (
-                                ("url", self.fix_url(sub_page.path)),
-                                ("title", sub_page.name),
-                                ("description", sub_page.description),
-                            ),
-                        )
-                    )
-
-        if query:
-            page_infos.extend(self.search_authors_and_quotes(query))
+        page_infos = self.search_old_internal(query)
 
         page_infos.sort(reverse=True)
 
         return [
             dict(scored_value.value + (("score", scored_value.score),))
-            for scored_value in page_infos
+            for scored_value in page_infos[:limit]
         ]
+
+    def search_old_internal(self, query: str) -> list[OldSearchPageInfo]:
+        """Search authors and quotes."""
+        if not (query_object := search.Query(query)):
+            return list(
+                self.get_all_page_info()
+                .map(self.convert_page_info_to_simple_tuple)
+                .map(lambda unscored: search.ScoredValue(1, unscored))
+            )
+        pages: search.DataProvider[
+            PageInfo, UnscoredPageInfo
+        ] = search.DataProvider(
+            self.get_all_page_info,
+            lambda page_info: (
+                page_info.name,
+                page_info.description,
+                *page_info.keywords,
+            ),
+            self.convert_page_info_to_simple_tuple,
+        )
+        soundboard: search.DataProvider[
+            SoundInfo, UnscoredPageInfo
+        ] = search.DataProvider(
+            ALL_SOUNDS,
+            lambda sound_info: (sound_info.get_text(), sound_info.person.value),
+            lambda sound_info: (
+                (
+                    "url",
+                    self.fix_url(
+                        f"/soundboard/{sound_info.person.name}#{sound_info.get_filename()}"
+                    ),
+                ),
+                ("title", f"Soundboard ({sound_info.person.value})"),
+                ("description", sound_info.get_text()),
+            ),
+        )
+        authors: search.DataProvider[
+            Author, UnscoredPageInfo
+        ] = search.DataProvider(
+            get_authors,
+            lambda author: author.name,
+            lambda author: (
+                ("url", self.fix_url(author.get_path())),
+                ("title", "Autoren-Info"),
+                ("description", author.name),
+            ),
+        )
+        quotes: search.DataProvider[
+            Quote, UnscoredPageInfo
+        ] = search.DataProvider(
+            get_quotes,
+            lambda quote: (quote.quote, quote.author.name),
+            lambda q: (
+                ("url", self.fix_url(q.get_path())),
+                ("title", "Zitat-Info"),
+                ("description", str(q)),
+            ),
+        )
+        wrong_quotes: search.DataProvider[
+            WrongQuote, UnscoredPageInfo
+        ] = search.DataProvider(
+            lambda: get_wrong_quotes(lambda wq: wq.rating > 0),
+            lambda wq: (wq.quote.quote, wq.author.name),
+            lambda wq: (
+                ("url", self.fix_url(wq.get_path())),
+                ("title", "Falsches Zitat"),
+                ("description", str(wq)),
+            ),
+        )
+        return search.search(
+            query_object,
+            cast(search.DataProvider[object, UnscoredPageInfo], pages),
+            cast(search.DataProvider[object, UnscoredPageInfo], soundboard),
+            cast(search.DataProvider[object, UnscoredPageInfo], authors),
+            cast(search.DataProvider[object, UnscoredPageInfo], quotes),
+            cast(search.DataProvider[object, UnscoredPageInfo], wrong_quotes),
+        )
 
 
 class SearchAPIHandler(APIRequestHandler, Search):

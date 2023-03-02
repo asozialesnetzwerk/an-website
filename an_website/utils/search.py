@@ -46,9 +46,17 @@ class Query:
             raise ValueError("Already initialized.")
         query = query.lower()
         # pylint: disable=bad-builtin
-        words = tuple(filter(None, re.split(query, r"\W+")))
+        words = tuple(filter(None, re.split(r"\W+", query)))
         words_len = sum(len(word) for word in words)
         object.__setattr__(self, "_data", (query, words, words_len))
+
+    def __reduce__(self) -> tuple[type[Query], tuple[str]]:
+        """Reduce this object."""
+        return Query, (self.query,)
+
+    def __repr__(self) -> str:
+        """Return a string representation of self."""
+        return f"Query({self.query!r})"
 
     def __setattr__(self, key: object, value: object) -> NoReturn:
         """Raise an AttributeError."""
@@ -137,7 +145,7 @@ def search(
     query: Query,
     *providers: DataProvider[object, T],
     excl_min_score: float = 0.0,
-) -> Sequence[ScoredValue[T]]:
+) -> list[ScoredValue[T]]:
     """Search through data."""
     return sorted(
         Stream(providers).flat_map(lambda x: x.search(query, excl_min_score)),

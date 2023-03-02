@@ -169,7 +169,7 @@ class SoundInfo(Info):
         path = f"files/{file}.mp3"
         file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
         return (
-            "<li>"
+            f"<li id={file!r}>"
             f"<a href={href!r} class='a_hover'>"
             f"{mark_query(self.person.value, query)}"
             "</a>"
