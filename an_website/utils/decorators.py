@@ -38,13 +38,21 @@ def keydecode(
     token_secret: str | bytes | None,
 ) -> None | Permission:
     """Decode a key."""
-    if token_secret:
-        with contextlib.suppress(InvalidTokenError):
-            return parse_token(token, secret=token_secret).permissions
+    tokens: list[str] = [token]
+    decoded: str | None
     try:
-        return api_secrets.get(b64decode(token).decode("UTF-8"))
+        decoded = b64decode(token).decode("UTF-8")
     except ValueError:
+        decoded = None
+    else:
+        tokens.append(decoded)
+    if token_secret:
+        for _ in tokens:
+            with contextlib.suppress(InvalidTokenError):
+                return parse_token(_, secret=token_secret).permissions
+    if decoded is None:
         return None
+    return api_secrets.get(decoded)
 
 
 def is_authorized(
@@ -58,7 +66,7 @@ def is_authorized(
     )
     token_secret: str | bytes | None = inst.settings.get("AUTH_TOKEN_SECRET")
 
-    permissions: tuple[None | Permission, ...] = (
+    permissions: tuple[None | Permission, ...] = (  # TODO: CLEAN-UP THIS MESS!!
         *(
             (
                 keydecode(_[7:], keys, token_secret)

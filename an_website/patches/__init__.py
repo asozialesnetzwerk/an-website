@@ -341,8 +341,7 @@ def patch_tornado_redirect() -> None:
         if status is None:
             status = 308 if permanent else 307
         else:
-            # pylint: disable=line-too-long
-            assert isinstance(status, int) and 300 <= status <= 399  # type: ignore[redundant-expr]  # nosec: B101  # noqa: B950
+            assert isinstance(status, int) and 300 <= status <= 399
         self.set_status(status)
         self.set_header("Location", url)
         self.finish()

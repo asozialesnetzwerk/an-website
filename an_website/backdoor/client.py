@@ -397,7 +397,7 @@ def run_and_print(  # noqa: C901
             else http.client.responses[status]
         )
         print("\033[91m" + f"{status} {reason}" + "\033[0m")
-    if body is None:
+    elif body is None:
         pass
     elif isinstance(body, str):
         print("\033[91m" + body + "\033[0m")
