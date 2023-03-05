@@ -432,7 +432,6 @@ def run_and_print(  # noqa: C901
                 print(body["result"][0])
     else:
         print(f"Response has unexpected type {type(body).__name__}!")
-        print(f"Status: {status} {http.client.responses[status]}")
         print(body)
 
 
@@ -634,12 +633,16 @@ Accepted arguments:
     if "--no-patch-help" not in sys.argv:
         body = send_to_remote(
             # fmt: off
-            "def help(*args, **kwargs):\n"
+            "class _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab:\n"
+            "  def __call__(self, *args, **kwargs):\n"
             "    import io\n"
             "    import pydoc\n"
             "    helper_output = io.StringIO()\n"
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
-            "    return 'PagerTuple', helper_output.getvalue()",
+            "    return 'PagerTuple', helper_output.getvalue()\n"
+           f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
+            "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n"
+            "del _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab",
             # fmt: on
             mode="exec",
         )
