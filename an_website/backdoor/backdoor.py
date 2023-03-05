@@ -248,13 +248,13 @@ class Backdoor(APIRequestHandler):
         if self.content_type == "text/plain":
             if mode == "exec":
                 return await self.finish(exception_text or output_str)
-            return await self.finish(exception_text or repr(result))
+            return await self.finish(exception_text or repr(result))  # TODO: FIX BUG
         try:
             serialized_result: None | bytes = self.serialize(result)
         except Exception:  # pylint: disable=broad-except
             serialized_result = None
         result_tuple: tuple[None | str, None | bytes] = (
-            exception_text or repr(result),
+            exception_text or repr(result),  # TODO: FIX BUG
             serialized_result,
         )
         return await self.finish_serialized_dict(
