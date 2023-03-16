@@ -32,6 +32,7 @@ from typing import Any, ClassVar, Final, cast
 
 import dill  # type: ignore[import]  # nosec: B403
 import jsonpickle  # type: ignore[import]
+import regex
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS, EVENT_SHUTDOWN, pytest_is_running
@@ -40,6 +41,7 @@ from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import Permission
 
 LOGGER: Final = logging.getLogger(__name__)
+SEPARATOR: Final = regex.compile(r"[,\s]+")
 
 
 class PrintWrapper:  # pylint: disable=too-few-public-methods
@@ -105,8 +107,10 @@ class Backdoor(APIRequestHandler):
         """Get compiler flags."""
         import __future__  # pylint: disable=import-outside-toplevel
 
-        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
-            if (feature := ftr.strip()) in __future__.all_feature_names:
+        for feature in SEPARATOR.split(
+            self.request.headers.get("X-Future-Feature", "")
+        ):
+            if feature in __future__.all_feature_names:
                 flags |= getattr(__future__, feature).compiler_flag
 
         return flags
