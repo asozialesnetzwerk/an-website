@@ -77,6 +77,10 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "webp": "webp",
     **({"xlsx": "xlsx"} if to_excel else {}),
 }
+FILE_EXTENSION_CONTENT_TYPE_MAPPING: Final[Mapping[str, str]] = {
+    "pdf": "application/pdf",
+    "xlsx": "application/vnd.ms-excel",
+}
 
 
 def load_png(filename: str) -> Image.Image:
@@ -318,12 +322,10 @@ class QuoteAsImage(QuoteReadyCheckHandler):
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/html",
         *{
-            f"image/{type}"
-            for type in FILE_EXTENSIONS.values()
-            if type not in {"pdf", "xlsx"}
+            FILE_EXTENSION_CONTENT_TYPE_MAPPING.get(type_, f"image/{type_}")
+            for type_ in FILE_EXTENSIONS.values()
         },
-        "application/pdf",
-    ) + (("application/vnd.ms-excel",) if to_excel else ())
+    )
     RATELIMIT_GET_LIMIT: ClassVar[int] = 15
     IS_NOT_HTML: ClassVar[bool] = True
 
@@ -336,23 +338,17 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         head: bool = False,
     ) -> None:
         """Handle GET requests to this page and render the quote as image."""
-        if (file_extension := file_extension.lower()) not in FILE_EXTENSIONS:
+        if not (file_type := FILE_EXTENSIONS.get(file_extension.lower())):
             reason = (
-                f"Unsupported file extension: {file_extension} (supported:"
+                f"Unsupported file extension: {file_extension.lower()} (supported:"
                 f" {', '.join(sorted(set(FILE_EXTENSIONS.values())))})"
             )
-            self.set_status(400, reason=reason)
             self.content_type = "text/plain"
+            self.set_status(404, reason=reason)
             return await self.finish(reason)
 
-        file_type = FILE_EXTENSIONS[file_extension]
-
-        content_type = (
-            f"image/{file_type}"
-            if file_type not in {"pdf", "xlsx"}
-            else {"pdf": "application/pdf", "xlsx": "application/vnd.ms-excel"}[
-                file_type
-            ]
+        content_type = FILE_EXTENSION_CONTENT_TYPE_MAPPING.get(
+            file_type, f"image/{file_type}"
         )
 
         self.handle_accept_header((content_type,))

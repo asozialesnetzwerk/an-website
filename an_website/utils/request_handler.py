@@ -247,7 +247,14 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Render the error page with the status_code as a HTML page."""
+        """Render the error page with the status_code as an HTML page."""
+        if self.content_type != "text/html":
+            self.handle_accept_header(("text/plain", "text/html"), strict=False)
+            if self.content_type == "text/plain":
+                self.finish(  # type: ignore[unused-awaitable]  # noqa: B950
+                    f"{status_code} {self.get_error_message(**kwargs)}"
+                )
+                return
         self.render(  # type: ignore[unused-awaitable]
             "error.html",
             status=status_code,
