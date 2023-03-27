@@ -72,6 +72,14 @@ def get_module_info() -> ModuleInfo:
                 r"/zitate/([0-9]{1,10})()\.([a-zA-Z]+)",
                 QuoteAsImage,
             ),
+            (
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/(image)",
+                QuoteAsImage,
+            ),
+            (
+                r"/zitate/([0-9]{1,10})()/(image)",
+                QuoteAsImage,
+            ),
             (  # redirect to the new URL (changed because of robots.txt)
                 r"/zitate/([0-9]{1,10})-([0-9]{1,10})/share",
                 RedirectHandler,

@@ -21,7 +21,7 @@ import math
 import os
 import sys
 import textwrap
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Set
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
@@ -83,9 +83,13 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "webp": "webp",
     **({"xlsx": "xlsx"} if to_excel else {}),
 }
-IMAGE_CONTENT_TYPES: Final[set[str]] = {
-    CONTENT_TYPES[ext] for ext in FILE_EXTENSIONS.values()
+CONTENT_TYPE_FILE_TYPE_MAPPING: Final[Mapping[str, str]] = {
+    CONTENT_TYPES[ext]: ext for ext in FILE_EXTENSIONS.values()
 }
+IMAGE_CONTENT_TYPES: Final[Set[str]] = frozenset(CONTENT_TYPE_FILE_TYPE_MAPPING)
+IMAGE_CONTENT_TYPES_WITHOUT_TXT: Final[tuple[str, ...]] = tuple(
+    IMAGE_CONTENT_TYPES - {"text/plain"}
+)
 
 
 def load_png(filename: str) -> Image.Image:
@@ -331,12 +335,16 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         self,
         quote_id: str,
         author_id: str,
-        file_extension: str = "txt",
+        file_extension: str = "image",
         *,
         head: bool = False,
     ) -> None:
         """Handle GET requests to this page and render the quote as image."""
-        if not (file_type := FILE_EXTENSIONS.get(file_extension.lower())):
+        if file_extension == "image":
+            self.handle_accept_header(IMAGE_CONTENT_TYPES_WITHOUT_TXT)
+            file_type = CONTENT_TYPE_FILE_TYPE_MAPPING[self.content_type]
+            file_extension = file_type
+        elif not (file_type := FILE_EXTENSIONS.get(file_extension.lower())):
             reason = (
                 f"Unsupported file extension: {file_extension.lower()} (supported:"
                 f" {', '.join(sorted(set(FILE_EXTENSIONS.values())))})"
