@@ -178,7 +178,6 @@ class SoundboardRSSHandler(SoundboardHTMLHandler):
         "application/rss+xml",
         "application/xml",
     )
-    IS_NOT_HTML: ClassVar[bool] = True
 
     async def get(self, path: str = "/", *, head: bool = False) -> None:
         """Handle GET requests and generate the feed content."""

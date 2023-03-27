@@ -22,35 +22,23 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from asyncio import Future
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from http.client import responses
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Final
 from urllib.parse import unquote, urlsplit
 
-import html2text
 import regex
-from ansi2html import Ansi2HTMLConverter
-from bs4 import BeautifulSoup
-from dateutil.easter import easter
-from sympy.ntheory import isprime
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
 from .. import DIR as ROOT_DIR
-from .. import GH_ORG_URL, GH_PAGES_URL, GH_REPO_URL, pytest_is_running
 from .base_request_handler import BaseRequestHandler
-from .static_file_handling import fix_static_path
 from .utils import (
     SUS_PATHS,
-    Permission,
-    bool_to_str,
-    emoji2html,
     normalized_levenshtein,
     remove_suffix_ignore_case,
     replace_umlauts,
-    str_to_bool,
 )
 
 if TYPE_CHECKING:
@@ -73,242 +61,19 @@ class HTMLRequestHandler(BaseRequestHandler):
         "text/markdown",
         "application/vnd.asozial.dynload+json",
     )
-    IS_NOT_HTML: ClassVar[bool]
-
-    used_render = False
-
-    @override
-    def finish(
-        self, chunk: None | str | bytes | dict[Any, Any] = None
-    ) -> Future[None]:
-        """Finish the request."""
-        as_json = self.content_type == "application/vnd.asozial.dynload+json"
-        as_plain_text = self.content_type == "text/plain"
-        as_markdown = self.content_type == "text/markdown"
-
-        if (
-            not isinstance(chunk, bytes | str)
-            or not self.used_render
-            or getattr(self, "IS_NOT_HTML", False)
-            or not (as_json or as_plain_text or as_markdown)
-        ):
-            return super().finish(chunk)
-
-        chunk = chunk.decode("UTF-8") if isinstance(chunk, bytes) else chunk
-
-        if as_markdown:
-            return super().finish(
-                f"# {self.title}\n\n"
-                + html2text.html2text(chunk, self.request.full_url()).strip()
-            )
-
-        soup = BeautifulSoup(chunk, features="lxml")
-
-        if as_plain_text:
-            return super().finish(soup.get_text("\n", True))
-
-        dictionary: dict[str, Any] = {
-            "url": self.fix_url(),
-            "title": self.title,
-            "short_title": self.short_title
-            if self.title != self.short_title
-            else None,
-            "body": "".join(
-                str(element)
-                for element in soup.find_all(name="main")[0].contents
-            ).strip(),
-            "scripts": [
-                {
-                    "src": script.get("src"),
-                    # "script": script.string,  # not in use because of CSP
-                    # "onload": script.get("onload"),  # not in use because of CSP
-                }
-                for script in soup.find_all("script")
-            ]
-            if soup.head
-            else [],
-            "stylesheets": [
-                str(stylesheet.get("href")).strip()
-                for stylesheet in soup.find_all("link", rel="stylesheet")
-            ]
-            if soup.head
-            else [],
-            "css": "\n".join(
-                str(style.string or "") for style in soup.find_all("style")
-            )
-            if soup.head
-            else "",
-        }
-
-        return super().finish(dictionary)
-
-    def get_form_appendix(self) -> str:
-        """Get HTML to add to forms to keep important query args."""
-        form_appendix = (
-            "<input name='no_3rd_party' class='hidden' "
-            f"value={bool_to_str(self.get_no_3rd_party())!r}>"
-            if "no_3rd_party" in self.request.query_arguments
-            and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
-            else ""
-        )
-        if (dynload := self.get_dynload()) != self.get_saved_dynload():
-            form_appendix += (
-                "<input name='dynload' class='hidden' "
-                f"value={bool_to_str(dynload)!r}>"
-            )
-        if (theme := self.get_theme()) != self.get_saved_theme():
-            form_appendix += (
-                f"<input name='theme' class='hidden' value={theme!r}>"
-            )
-        if (effects := self.get_effects()) != self.get_saved_effects():
-            form_appendix += (
-                "<input name='effects' class='hidden' "
-                f"value={bool_to_str(effects)!r}>"
-            )
-        if (
-            compatibility := self.get_compatibility()
-        ) != self.get_saved_compatibility():
-            form_appendix += (
-                "<input name='compatibility' class='hidden' "
-                f"value={bool_to_str(compatibility)!r}>"
-            )
-        return form_appendix
-
-    @override
-    def get_template_namespace(self) -> dict[str, Any]:
-        """
-        Add useful things to the template namespace and return it.
-
-        They are mostly needed by most of the pages (like title,
-        description and no_3rd_party).
-        """
-        namespace = super().get_template_namespace()
-        namespace.update(
-            ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
-            as_html=self.content_type == "text/html",
-            bumpscosity=self.get_bumpscosity(),
-            c=self.now.date() == date(self.now.year, 4, 1)
-            or str_to_bool(self.get_cookie("c", "f") or "f", False),
-            canonical_url=self.fix_url(
-                self.request.full_url().upper()
-                if self.request.path.upper().startswith("/LOLWUT")
-                else self.request.full_url().lower()
-            ).split("?")[0],
-            compatibility=self.get_compatibility(),
-            description=self.description,
-            dynload=self.get_dynload(),
-            effects=self.get_effects(),
-            elastic_rum_url=self.ELASTIC_RUM_URL,
-            fix_static=lambda path: self.fix_url(fix_static_path(path)),
-            fix_url=self.fix_url,
-            openmoji=self.get_openmoji(),
-            emoji2html=emoji2html
-            if self.get_openmoji() == "img"
-            else lambda emoji: emoji,
-            form_appendix=self.get_form_appendix(),
-            GH_ORG_URL=GH_ORG_URL,
-            GH_PAGES_URL=GH_PAGES_URL,
-            GH_REPO_URL=GH_REPO_URL,
-            keywords="Asoziales Netzwerk, Känguru-Chroniken"
-            + (
-                f", {self.module_info.get_keywords_as_str(self.request.path)}"
-                if self.module_info  # type: ignore[truthy-bool]
-                else ""
-            ),
-            lang="de",  # TODO: add language support
-            no_3rd_party=self.get_no_3rd_party(),
-            now=self.now,
-            settings=self.settings,
-            short_title=self.short_title,
-            testing=pytest_is_running(),
-            theme=self.get_display_theme(),
-            title=self.title,
-            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
-            if self.apm_enabled
-            else None,
-        )
-        namespace.update(
-            {
-                "🥚": pytest_is_running()
-                or timedelta()
-                <= self.now.date() - easter(self.now.year)
-                < timedelta(days=2),
-                "🦘": pytest_is_running()
-                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
-            }
-        )
-        return namespace
-
-    @override
-    def render(self, template_name: str, **kwargs: Any) -> Future[None]:
-        """Render a template."""
-        self.used_render = True
-        return super().render(template_name, **kwargs)
-
-    @override
-    def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Render the error page with the status_code as an HTML page."""
-        if self.content_type != "text/html":
-            self.handle_accept_header(("text/plain", "text/html"), strict=False)
-            if self.content_type == "text/plain":
-                self.finish(  # type: ignore[unused-awaitable]  # noqa: B950
-                    f"{status_code} {self.get_error_message(**kwargs)}"
-                )
-                return
-        self.render(  # type: ignore[unused-awaitable]
-            "error.html",
-            status=status_code,
-            reason=self.get_error_message(**kwargs),
-            description=self.get_error_page_description(status_code),
-            is_traceback="exc_info" in kwargs
-            and not issubclass(kwargs["exc_info"][0], HTTPError)
-            and (
-                self.settings.get("serve_traceback")
-                or self.is_authorized(Permission.TRACEBACK)
-            ),
-        )
 
 
 class APIRequestHandler(BaseRequestHandler):
-    """
-    The base API request handler.
-
-    It overrides the write error method to return errors as JSON.
-    """
+    """The base API request handler."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "application/json",
         "application/yaml",
     )
-    IS_NOT_HTML: ClassVar[bool] = True
-
-    def finish_dict(self, **kwargs: Any) -> Future[None]:
-        """Finish the request with a JSON response."""
-        return self.finish(kwargs)
-
-    @override
-    def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Finish with the status code and the reason as dict."""
-        if self.content_type == "text/plain":
-            # pylint: disable=line-too-long
-            self.finish(f"{status_code} {self.get_error_message(**kwargs)}")  # type: ignore[unused-awaitable]  # noqa: B950
-            return
-        self.finish_dict(  # type: ignore[unused-awaitable]
-            status=status_code,
-            reason=self.get_error_message(**kwargs),
-        )
 
 
-class NotFoundHandler(HTMLRequestHandler):
+class NotFoundHandler(BaseRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
-
-    @override
-    def handle_not_acceptable(
-        self, possible_content_types: tuple[str, ...]
-    ) -> None:
-        """Use text/plain as fallback."""
-        self.content_type = "text/plain"
-        self.set_content_type_header()
 
     @override
     def initialize(self, *args: Any, **kwargs: Any) -> None:
@@ -321,8 +86,6 @@ class NotFoundHandler(HTMLRequestHandler):
     async def prepare(self) -> None:  # pylint: disable=too-complex # noqa: C901
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
-
-        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)
@@ -411,7 +174,7 @@ class ErrorPage(HTMLRequestHandler):
         )
 
 
-class ZeroDivision(HTMLRequestHandler):
+class ZeroDivision(BaseRequestHandler):
     """A request handler that raises an error."""
 
     @override

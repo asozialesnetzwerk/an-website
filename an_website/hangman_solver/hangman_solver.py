@@ -281,7 +281,6 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
     """Request handler for the hangman solver API."""
 
     RATELIMIT_GET_LIMIT = 10
-    IS_NOT_HTML = True
 
     @parse_args(type_=HangmanArguments, name="data")
     async def get(self, *, data: HangmanArguments, head: bool = False) -> None:

@@ -258,8 +258,6 @@ class Search(HTMLRequestHandler):
 class SearchAPIHandler(APIRequestHandler, Search):
     """The request handler for the search API."""
 
-    IS_NOT_HTML = True
-
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the search page."""
         if head:

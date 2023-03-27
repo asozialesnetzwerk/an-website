@@ -17,6 +17,8 @@ The base request handler used by other modules.
 This should only contain the BaseRequestHandler class.
 """
 
+# pylint: disable=too-many-lines
+
 from __future__ import annotations
 
 import contextlib
@@ -29,19 +31,24 @@ import uuid
 from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
-from datetime import date, datetime, timezone, tzinfo
+from datetime import date, datetime, timedelta, timezone, tzinfo
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
 import elasticapm  # type: ignore[import]
+import html2text
 import orjson as json
 import regex
 import yaml
 from accept_types import get_best_match  # type: ignore[import]
+from ansi2html import Ansi2HTMLConverter
+from bs4 import BeautifulSoup
+from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
+from sympy.ntheory import isprime
 from tornado.web import (
     Finish,
     GZipContentEncoding,
@@ -53,12 +60,15 @@ from tornado.web import (
 from .. import (
     EVENT_ELASTICSEARCH,
     EVENT_REDIS,
+    GH_ORG_URL,
+    GH_PAGES_URL,
+    GH_REPO_URL,
     NAME,
     ORJSON_OPTIONS,
     pytest_is_running,
 )
 from .decorators import is_authorized
-from .static_file_handling import FILE_HASHES_DICT
+from .static_file_handling import FILE_HASHES_DICT, fix_static_path
 from .utils import (
     THEMES,
     BumpscosityValue,
@@ -67,6 +77,7 @@ from .utils import (
     Permission,
     add_args_to_url,
     bool_to_str,
+    emoji2html,
     geoip,
     hash_bytes,
     parse_bumpscosity,
@@ -117,11 +128,46 @@ class BaseRequestHandler(RequestHandler):
     short_title: str = "Asoziales Netzwerk"
     description: str = "Die tolle Webseite des Asozialen Netzwerks"
 
+    used_render: bool = False
+
     active_origin_trials: set[bytes]
     content_type: None | str = None
     apm_script: None | str
     crawler: bool = False
     now: datetime
+
+    def _super_finish(
+        self, chunk: None | str | bytes | dict[str, Any] = None
+    ) -> Future[None]:
+        """Finish this response, ending the HTTP request.
+
+        Passing a ``chunk`` to ``finish()`` is equivalent to passing that
+        chunk to ``write()`` and then calling ``finish()`` with no arguments.
+
+        Returns a ``Future`` which may optionally be awaited to track the sending
+        of the response to the client. This ``Future`` resolves when all the response
+        data has been sent, and raises an error if the connection is closed before all
+        data can be sent.
+        """
+        if self._finished:
+            raise RuntimeError("finish() called twice")
+
+        if chunk is not None:
+            self.write(chunk)
+
+        if (  # pylint: disable=too-many-boolean-expressions
+            (content_type := self.content_type)
+            and (
+                content_type in TEXT_CONTENT_TYPES
+                or content_type.startswith("text/")
+                or content_type.endswith(("+xml", "+json"))
+            )
+            and self._write_buffer
+            and not self._write_buffer[-1].endswith(b"\n")
+        ):
+            self.write(b"\n")
+
+        return super().finish()
 
     @property
     def apm_client(self) -> None | elasticapm.Client:  # type: ignore[no-any-unimported]
@@ -179,37 +225,72 @@ class BaseRequestHandler(RequestHandler):
 
     @override
     def finish(
-        self, chunk: None | str | bytes | dict[str, Any] = None
+        self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
-        """Finish this response, ending the HTTP request.
+        """Finish the request."""
+        as_json = self.content_type == "application/vnd.asozial.dynload+json"
+        as_plain_text = self.content_type == "text/plain"
+        as_markdown = self.content_type == "text/markdown"
 
-        Passing a ``chunk`` to ``finish()`` is equivalent to passing that
-        chunk to ``write()`` and then calling ``finish()`` with no arguments.
-
-        Returns a ``Future`` which may optionally be awaited to track the sending
-        of the response to the client. This ``Future`` resolves when all the response
-        data has been sent, and raises an error if the connection is closed before all
-        data can be sent.
-        """
-        if self._finished:
-            raise RuntimeError("finish() called twice")
-
-        if chunk is not None:
-            self.write(chunk)
-
-        if (  # pylint: disable=too-many-boolean-expressions
-            (content_type := self.content_type)
-            and (
-                content_type in TEXT_CONTENT_TYPES
-                or content_type.startswith("text/")
-                or content_type.endswith(("+xml", "+json"))
-            )
-            and self._write_buffer
-            and not self._write_buffer[-1].endswith(b"\n")
+        if (
+            not isinstance(chunk, bytes | str)
+            or self.content_type == "text/html"
+            or not self.used_render
+            or not (as_json or as_plain_text or as_markdown)
         ):
-            self.write(b"\n")
+            return self._super_finish(chunk)
 
-        return super().finish()
+        chunk = chunk.decode("UTF-8") if isinstance(chunk, bytes) else chunk
+
+        if as_markdown:
+            return super().finish(
+                f"# {self.title}\n\n"
+                + html2text.html2text(chunk, self.request.full_url()).strip()
+            )
+
+        soup = BeautifulSoup(chunk, features="lxml")
+
+        if as_plain_text:
+            return self._super_finish(soup.get_text("\n", True))
+
+        dictionary: dict[str, Any] = {
+            "url": self.fix_url(),
+            "title": self.title,
+            "short_title": self.short_title
+            if self.title != self.short_title
+            else None,
+            "body": "".join(
+                str(element)
+                for element in soup.find_all(name="main")[0].contents
+            ).strip(),
+            "scripts": [
+                {
+                    "src": script.get("src"),
+                    # "script": script.string,  # not in use because of CSP
+                    # "onload": script.get("onload"),  # not in use because of CSP
+                }
+                for script in soup.find_all("script")
+            ]
+            if soup.head
+            else [],
+            "stylesheets": [
+                str(stylesheet.get("href")).strip()
+                for stylesheet in soup.find_all("link", rel="stylesheet")
+            ]
+            if soup.head
+            else [],
+            "css": "\n".join(
+                str(style.string or "") for style in soup.find_all("style")
+            )
+            if soup.head
+            else "",
+        }
+
+        return self._super_finish(dictionary)
+
+    def finish_dict(self, **kwargs: Any) -> Future[None]:
+        """Finish the request with a dictionary."""
+        return self.finish(kwargs)
 
     def fix_url(  # noqa: C901  # pylint: disable=too-complex
         self,
@@ -395,6 +476,38 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} is not a valid HTTP response status code."
         )
 
+    def get_form_appendix(self) -> str:
+        """Get HTML to add to forms to keep important query args."""
+        form_appendix = (
+            "<input name='no_3rd_party' class='hidden' "
+            f"value={bool_to_str(self.get_no_3rd_party())!r}>"
+            if "no_3rd_party" in self.request.query_arguments
+            and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
+            else ""
+        )
+        if (dynload := self.get_dynload()) != self.get_saved_dynload():
+            form_appendix += (
+                "<input name='dynload' class='hidden' "
+                f"value={bool_to_str(dynload)!r}>"
+            )
+        if (theme := self.get_theme()) != self.get_saved_theme():
+            form_appendix += (
+                f"<input name='theme' class='hidden' value={theme!r}>"
+            )
+        if (effects := self.get_effects()) != self.get_saved_effects():
+            form_appendix += (
+                "<input name='effects' class='hidden' "
+                f"value={bool_to_str(effects)!r}>"
+            )
+        if (
+            compatibility := self.get_compatibility()
+        ) != self.get_saved_compatibility():
+            form_appendix += (
+                "<input name='compatibility' class='hidden' "
+                f"value={bool_to_str(compatibility)!r}>"
+            )
+        return form_appendix
+
     def get_int_argument(
         self,
         name: str,
@@ -493,6 +606,71 @@ class BaseRequestHandler(RequestHandler):
         ) in THEMES:
             return theme
         return "default"
+
+    @override
+    def get_template_namespace(self) -> dict[str, Any]:
+        """
+        Add useful things to the template namespace and return it.
+
+        They are mostly needed by most of the pages (like title,
+        description and no_3rd_party).
+        """
+        namespace = super().get_template_namespace()
+        namespace.update(
+            ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
+            as_html=self.content_type == "text/html",
+            bumpscosity=self.get_bumpscosity(),
+            c=self.now.date() == date(self.now.year, 4, 1)
+            or str_to_bool(self.get_cookie("c", "f") or "f", False),
+            canonical_url=self.fix_url(
+                self.request.full_url().upper()
+                if self.request.path.upper().startswith("/LOLWUT")
+                else self.request.full_url().lower()
+            ).split("?")[0],
+            compatibility=self.get_compatibility(),
+            description=self.description,
+            dynload=self.get_dynload(),
+            effects=self.get_effects(),
+            elastic_rum_url=self.ELASTIC_RUM_URL,
+            fix_static=lambda path: self.fix_url(fix_static_path(path)),
+            fix_url=self.fix_url,
+            openmoji=self.get_openmoji(),
+            emoji2html=emoji2html
+            if self.get_openmoji() == "img"
+            else lambda emoji: emoji,
+            form_appendix=self.get_form_appendix(),
+            GH_ORG_URL=GH_ORG_URL,
+            GH_PAGES_URL=GH_PAGES_URL,
+            GH_REPO_URL=GH_REPO_URL,
+            keywords="Asoziales Netzwerk, Känguru-Chroniken"
+            + (
+                f", {self.module_info.get_keywords_as_str(self.request.path)}"
+                if self.module_info  # type: ignore[truthy-bool]
+                else ""
+            ),
+            lang="de",  # TODO: add language support
+            no_3rd_party=self.get_no_3rd_party(),
+            now=self.now,
+            settings=self.settings,
+            short_title=self.short_title,
+            testing=pytest_is_running(),
+            theme=self.get_display_theme(),
+            title=self.title,
+            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
+            if self.apm_enabled
+            else None,
+        )
+        namespace.update(
+            {
+                "🥚": pytest_is_running()
+                or timedelta()
+                <= self.now.date() - easter(self.now.year)
+                < timedelta(days=2),
+                "🦘": pytest_is_running()
+                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
+            }
+        )
+        return namespace
 
     def get_theme(self) -> str:
         """Get the theme currently selected."""
@@ -783,6 +961,12 @@ class BaseRequestHandler(RequestHandler):
         """Get the Redis prefix from the settings."""
         return self.settings.get("REDIS_PREFIX", NAME)
 
+    @override
+    def render(self, template_name: str, **kwargs: Any) -> Future[None]:
+        """Render a template."""
+        self.used_render = True
+        return super().render(template_name, **kwargs)
+
     def set_content_type_header(self) -> None:
         """Set the Content-Type header based on `self.content_type`."""
         if str(self.content_type).startswith("text/"):  # RFC 2616 (3.7.1)
@@ -975,3 +1159,51 @@ class BaseRequestHandler(RequestHandler):
                 )
 
         super().write(chunk)
+
+    @override
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        """Render the error page with the status_code as an HTML page."""
+        dict_content_types: tuple[str, str] = (
+            "application/json",
+            "application/yaml",
+        )
+        all_error_content_types: tuple[str, ...] = (
+            # text/plain as first (default), to not screw up output in terminals
+            "text/plain",
+            "text/html",
+            "text/markdown",
+            *dict_content_types,
+            "application/vnd.asozial.dynload+json",
+        )
+
+        if self.content_type not in all_error_content_types:
+            # don't send 406, instead default with text/plain
+            self.handle_accept_header(all_error_content_types, strict=False)
+
+        if self.content_type == "text/html":
+            self.render(  # type: ignore[unused-awaitable]
+                "error.html",
+                status=status_code,
+                reason=self.get_error_message(**kwargs),
+                description=self.get_error_page_description(status_code),
+                is_traceback="exc_info" in kwargs
+                and not issubclass(kwargs["exc_info"][0], HTTPError)
+                and (
+                    self.settings.get("serve_traceback")
+                    or self.is_authorized(Permission.TRACEBACK)
+                ),
+            )
+            return
+
+        if self.content_type in dict_content_types:
+            self.finish(  # type: ignore[unused-awaitable]
+                {
+                    "status": status_code,
+                    "reason": self.get_error_message(**kwargs),
+                }
+            )
+            return
+
+        self.finish(  # type: ignore[unused-awaitable]  # noqa: B950
+            f"{status_code} {self.get_error_message(**kwargs)}\n"
+        )
