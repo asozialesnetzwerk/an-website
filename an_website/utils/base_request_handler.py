@@ -17,8 +17,9 @@ The base request handler used by other modules.
 This should only contain the BaseRequestHandler class.
 """
 
-# pylint: disable=too-many-lines
+from __future__ import annotations
 
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import contextlib
