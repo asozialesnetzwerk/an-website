@@ -31,7 +31,7 @@ from tornado.web import HTTPError
 from .. import EVENT_REDIS
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import hash_ip
-from .image import QuoteAsImage, create_image
+from .image import IMAGE_CONTENT_TYPES, create_image
 from .quote_of_the_day import QuoteOfTheDayBaseHandler
 from .utils import (
     WRONG_QUOTES_CACHE,
@@ -285,7 +285,7 @@ class QuoteById(QuoteBaseHandler):
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *HTMLRequestHandler.POSSIBLE_CONTENT_TYPES,
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
-        *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
+        *IMAGE_CONTENT_TYPES,
     )
 
     LONG_PATH: ClassVar[str] = "/zitate/%d-%d"
@@ -485,7 +485,7 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
-        *QuoteAsImage.POSSIBLE_CONTENT_TYPES,
+        *IMAGE_CONTENT_TYPES,
     )
 
     LONG_PATH: ClassVar[str] = "/api/zitate/%d-%d"
@@ -494,6 +494,8 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
         self, wrong_quote: WrongQuote, vote: int
     ) -> None:
         """Return the relevant data for the quotes page as JSON."""
+        if self.content_type == "text/plain":
+            return await self.finish(str(wrong_quote))
         return await self.finish(
             wrong_quote_to_json(
                 wrong_quote,

@@ -279,7 +279,14 @@ async def test_quote_request_handlers(
             await fetch("/zitate/1-1", headers={"Accept": content_type}),
             content_type,
         ).body
-        assert image1 == image2 or name in {"pdf", "xlsx"}
+        image3 = assert_valid_response(
+            await fetch("/api/zitate/1-1", headers={"Accept": content_type}),
+            content_type,
+        ).body
+        if name == "txt":
+            assert image1 == image3
+        else:
+            assert image1 == image2 == image3 or name in {"pdf", "txt", "xlsx"}
 
 
 def test_parsing_vote_str() -> None:

@@ -90,7 +90,6 @@ class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
         "application/rss+xml",
         "application/xml",
     )
-    IS_NOT_HTML: ClassVar[bool] = True
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests."""

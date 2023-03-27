@@ -185,6 +185,9 @@ def fetch(
             url = f"{host}/{url.removeprefix('/')}"
         kwargs.setdefault("raise_error", False)
         kwargs.setdefault("follow_redirects", False)
+        if not kwargs.get("headers"):
+            kwargs["headers"] = {}
+        kwargs["headers"].setdefault("Accept", "text/html, */*")
         try:
             return await http_client.fetch(url, **kwargs)
         except tornado.httpclient.HTTPClientError:
