@@ -163,3 +163,4 @@ tzdata==2022.7
 ultradict==0.0.6
 uvloop==0.17.0
 yarl==1.8.2 ; python_version >= '3.7'
+redis>=4.5.4 # not directly required, pinned by Snyk to avoid a vulnerability
