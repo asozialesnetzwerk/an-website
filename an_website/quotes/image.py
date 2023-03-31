@@ -77,7 +77,7 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     **({"jxl": "jxl"} if hasattr(patches, "JXLImagePlugin") else {}),
     "pdf": "pdf",
     "png": "png",
-    "ppm": "ppm",
+    # "ppm": "ppm",
     "sgi": "sgi",
     "spi": "spider",
     "spider": "spider",
