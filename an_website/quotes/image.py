@@ -78,7 +78,7 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "pdf": "pdf",
     "png": "png",
     # "ppm": "ppm",
-    "sgi": "sgi",
+    # "sgi": "sgi",
     "spi": "spider",
     "spider": "spider",
     "tga": "tga",
