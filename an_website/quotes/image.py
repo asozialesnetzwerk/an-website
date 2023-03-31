@@ -63,7 +63,8 @@ HOST_NAME_FONT: Final = ImageFont.truetype(
 )
 
 CONTENT_TYPES: Final[Mapping[str, str]] = static_file_handling.CONTENT_TYPES | {
-    "spider": "image/x-spider"
+    "spider": "image/x-spider",
+    "tga": "image/x-tga",
 }
 
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
@@ -76,8 +77,11 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     **({"jxl": "jxl"} if hasattr(patches, "JXLImagePlugin") else {}),
     "pdf": "pdf",
     "png": "png",
+    "ppm": "ppm",
+    "sgi": "sgi",
     "spi": "spider",
     "spider": "spider",
+    "tga": "tga",
     "tiff": "tiff",
     "txt": "txt",
     "webp": "webp",
@@ -316,6 +320,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         kwargs.update(format="gif", palette=palette)
     elif file_type == "jxl":
         kwargs.update(lossless=True)
+    elif file_type == "tga":
+        kwargs.update(compression="tga_rle")
     elif file_type == "tiff":
         kwargs.update(compression="zlib")
     elif file_type == "webp":
