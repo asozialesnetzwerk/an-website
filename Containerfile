@@ -45,9 +45,10 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=nss \
     PIP_NO_CACHE_DIR=1
-ARG AIOHTTP_NO_EXTENSIONS=1 \
-    FROZENLIST_NO_EXTENSIONS=1 \
-    YARL_NO_EXTENSIONS=1
+# TODO: merge this into one (https://github.com/openshift/imagebuilder/pull/210 fixes the bug)
+ARG AIOHTTP_NO_EXTENSIONS=1
+ARG FROZENLIST_NO_EXTENSIONS=1
+ARG YARL_NO_EXTENSIONS=1
 COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \

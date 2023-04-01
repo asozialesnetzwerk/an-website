@@ -17,12 +17,15 @@
 
 from __future__ import annotations
 
+import contextlib
+import importlib.metadata
 import os
 import warnings
 from pathlib import Path
 
 import trove_classifiers
-from get_version import get_version
+from get_version import NoVersionFound
+from get_version import get_version as _get_version
 from setuptools import setup
 
 warnings.filterwarnings("ignore", "", UserWarning, "setuptools.dist")
@@ -50,6 +53,14 @@ for classifier in classifiers:
     assert classifier in trove_classifiers.classifiers
 
 
+def get_version() -> str:
+    """Get the version of this package."""
+    with contextlib.suppress(NoVersionFound):
+        return _get_version(__file__, vcs="git", dist_name="an-website")
+    directory = Path(__file__).resolve().parent / "an_website.egg-info"
+    return importlib.metadata.Distribution.at(directory).version
+
+
 def read(filename: str) -> str:
     """Load the contents of a file."""
     root_dir = os.path.dirname(__file__)
@@ -66,7 +77,7 @@ setup(
     description="#1 Website in the Worlds",
     long_description_content_type="text/markdown",
     long_description=read("README.md"),
-    version=get_version(__file__, vcs="git", dist_name="an-website"),
+    version=get_version(),
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=classifiers,
     packages=["an_website"],
