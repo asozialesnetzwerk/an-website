@@ -72,13 +72,14 @@ def get_handlers() -> list[Handler]:
             {"path": STATIC_DIR},
         ),
     ]
-    if sys.flags.dev_mode:
+    debug_style_dir = Path(ROOT_DIR).absolute().parent / "style"
+    if sys.flags.dev_mode and debug_style_dir.exists():
         # add handlers for the unminified CSS files
         handlers.append(
             (
                 r"(?i)/static/css/(.+\.css)",
                 StaticFileHandler,
-                {"path": os.path.join(os.path.dirname(ROOT_DIR), "style")},
+                {"path": str(debug_style_dir)},
             )
         )
     handlers.append(

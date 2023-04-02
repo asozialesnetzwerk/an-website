@@ -333,7 +333,7 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
 def ignore_modules(config: BetterConfigParser) -> None:
     """Read ignored modules from the config."""
     IGNORED_MODULES.update(
-        config.getset("GENERAL", "IGNORED_MODULES", fallback="")
+        config.getset("GENERAL", "IGNORED_MODULES", fallback={})
     )
 
 
@@ -434,7 +434,7 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
             else (1 << len(Permission)) - 1  # should be all permissions
         )
         for secret in config.getset(
-            "GENERAL", "TRUSTED_API_SECRETS", fallback="xyzzy"
+            "GENERAL", "TRUSTED_API_SECRETS", fallback={"xyzzy"}
         )
         if (key_perms := [part.strip() for part in secret.split("=")])
         if key_perms[0]
@@ -998,9 +998,7 @@ def main(  # noqa: C901  # pragma: no cover
 
     ports = {
         *args.port,
-        config.getint(
-            "GENERAL", "PORT", fallback=8888 if CONTAINERIZED else None
-        ),
+        config.getint("GENERAL", "PORT", fallback=None),
     }
 
     for port in ports:

@@ -105,4 +105,4 @@ WORKDIR /data
 VOLUME /data
 EXPOSE 8888
 ENV DISABLE_UVLOOP=1
-CMD ["/venv/bin/an-website"]
+CMD ["/venv/bin/an-website", "--port", "8888"]
