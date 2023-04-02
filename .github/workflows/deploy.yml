@@ -44,29 +44,53 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact
+      - name: Extract source distribution
+        run: |
+          tar -xf *.tar.gz
+          rm *.tar.gz
       - name: Install podman
         run: |
           sudo apt-get update
           sudo apt-get install -y podman
+      - name: Pull last image
+        run: podman pull ghcr.io/asozialesnetzwerk/an-website:git
       - name: Build container
         run: |
-          tar -xf *.tar.gz
-          rm *.tar.gz
           cd an-website*
           # TODO: use --all-platforms
           podman build -t an-website:git .
           cd ..
       - name: Save image
         run: |
-          mkdir build
+          mkdir -p build
           podman save an-website:git -o build/an-website.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
           path: build
+
+  publish-container:
+    name: Publish container
+    runs-on: ubuntu-latest
+    needs:
+      - build-container
+      - tests
+    permissions:
+      packages: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      - name: Install podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+      - name: Load image
+        run: |
+          podman load -i an-website.tar
       - name: Push image
         run: |
-          # TODO: only do this with successful tests lol
           echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u $ --password-stdin
           podman push an-website:git ghcr.io/asozialesnetzwerk/an-website:git
 
@@ -100,10 +124,6 @@ jobs:
       - name: Test starting
         timeout-minutes: 1
         run: python -m an_website -c
-      - name: Upload as build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          path: dist
 
   tests:
     name: Run tests

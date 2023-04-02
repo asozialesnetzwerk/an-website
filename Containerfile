@@ -91,7 +91,14 @@ RUN set -eux \
     done \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
- && rm -f *.deb
+ && rm -f *.deb \
+ && curl -sSLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
+ && tar -xvf uwufetch_2.1-linux.tar.gz \
+ && rm uwufetch_2.1-linux.tar.gz \
+ && cd uwufetch* \
+ && bash install.sh \
+ && cd .. \
+ && rm -fr uwufetch*
 COPY --from=builder /venv /venv
 RUN mkdir /data
 WORKDIR /data
