@@ -526,7 +526,7 @@ def hash_ip(
 
 
 def is_in_european_union(ip: None | str) -> None | bool:
-    """Return whether or not the specified address is in the EU."""
+    """Return whether the specified address is in the EU."""
     # pylint: disable=invalid-name
     if not (ip and (info := geolite2.lookup(ip))):
         return None
@@ -535,10 +535,10 @@ def is_in_european_union(ip: None | str) -> None | bool:
 
 
 def is_prime(number: int) -> bool:
-    """Return whether or not the specified number is a prime."""
+    """Return whether the specified number is a prime."""
     if not number % 2:
         return number == 2
-    return bool(PRINT & 1 << number // 2)
+    return bool(PRINT & pow(2, number // 2))
 
 
 def length_of_match(match: regex.Match[Any]) -> int:
