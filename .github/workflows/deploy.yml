@@ -45,6 +45,14 @@ jobs:
         run: |
           wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
           sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b2_amd64.deb
+      - name: Cache
+        uses: pat-s/always-upload-cache@v2
+        with:
+          path: cache
+          key: oci-images-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: oci-images-${{ github.repository }}-${{ github.ref }}-
+      - name: Read cache dir
+        run: ls -1 cache | while read line ; do buildah pull -a "oci:cache/${line}" ; done
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -64,6 +72,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: oci-archive.tar
+      - name: Write to cache dir
+        run: buildah images -a --format="{{.ID}}" | while read line ; do mkdir -p "cache/${line}" && buildah push --all --format=oci $line "oci:cache/${line}" ; done
 
   push-oci-image:
     name: Push OCI image
