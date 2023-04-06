@@ -2,7 +2,7 @@ FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a3
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
- && rm -rf /var/lib/apt/lists/* \
+ && rm -fr /var/lib/apt/lists/* \
  && for pkg in \
         b/binutils/binutils_2.40-2 \
         b/binutils/binutils-common_2.40-2 \
@@ -77,7 +77,7 @@ LABEL org.opencontainers.image.authors="contact@asozial.org"
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 \
- && rm -rf /var/lib/apt/lists/* \
+ && rm -fr /var/lib/apt/lists/* \
  && for pkg in \
         g/gcc-12/gcc-12-base_12.2.0-14 \
         g/gcc-12/libstdc++6_12.2.0-14 \

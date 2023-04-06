@@ -53,7 +53,10 @@ jobs:
           key: oci-images-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: oci-images-${{ github.repository }}-${{ github.ref }}-
       - name: Read cache dir
-        run: ls -1 cache | while read line ; do buildah pull "oci:cache/${line}" ; done
+        run: |
+          REPOSITORIES="ghcr.io/asozialesnetzwerk/an-website"
+          ls -1 cache | while read line ; do REPOSITORIES="${REPOSITORIES},oci:${PWD}/cache/${line}" ; done
+          echo "REPOSITORIES=${REPOSITORIES}" >> $GITHUB_ENV
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -65,7 +68,7 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          buildah build -t an-website:git .
+          buildah build --cache-from="${REPOSITORIES}" -t an-website:git .
           cd ..
       - name: Save image
         run: buildah push --all --format=oci --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
@@ -73,6 +76,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: oci-archive.tar
+      - name: Clean-up cache
+        run: rm -fr cache
       - name: Write to cache dir
         run: buildah images -a --format="{{.ID}}" | while read line ; do mkdir -p "cache/${line}" && buildah push --all --format=oci $line "oci:cache/${line}" ; done
 
