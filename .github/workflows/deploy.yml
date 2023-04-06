@@ -52,7 +52,7 @@ jobs:
           key: oci-images-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: oci-images-${{ github.repository }}-${{ github.ref }}-
       - name: Read cache dir
-        run: ls -1 cache | while read line ; do buildah pull -a "oci:cache/${line}" ; done
+        run: ls -1 cache | while read line ; do buildah pull "oci:cache/${line}" ; done
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
