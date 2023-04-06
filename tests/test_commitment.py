@@ -114,10 +114,12 @@ async def test_yaml_api(fetch: FetchCallable) -> None:  # noqa: F811
             "/api/commitment?hash=7335914237808031fa15f32a854ba1e6b1544420"
         )
         del response["permalink"]
-        assert response == {
-            "commit_message": "no_js → no_3rd_party",
-            "hash": "7335914237808031fa15f32a854ba1e6b1544420",
-            "date": datetime(2021, 7, 21, 22, 29, 26),  # yaml > json
+        assert len(response) == 3
+        assert response["commit_message"] == "no_js → no_3rd_party"
+        assert response["hash"] == "7335914237808031fa15f32a854ba1e6b1544420"
+        assert response["date"] in {
+            "2021-07-21T22:29:26Z",
+            datetime(2021, 7, 21, 22, 29, 26),
         }
 
 

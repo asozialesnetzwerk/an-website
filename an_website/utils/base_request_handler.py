@@ -192,23 +192,28 @@ class BaseRequestHandler(RequestHandler):
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
         """Get the function for dumping the output."""
-        if self.content_type in {
+        yaml_subset = self.content_type in {
             "application/json",
             "application/vnd.asozial.dynload+json",
-        }:
+        }
+
+        if self.content_type == "application/yaml":
+            if self.now.timetuple()[2:0:-1] == (1, 4):
+                yaml_subset = True
+            else:
+                return lambda spam: cast(
+                    str,
+                    yaml.dump(
+                        spam,
+                        width=self.get_int_argument("yaml_width", 80, min_=80),
+                    ),
+                )
+
+        if yaml_subset:
             option = ORJSON_OPTIONS
             if self.get_bool_argument("pretty", False):
                 option |= json.OPT_INDENT_2
             return lambda spam: json.dumps(spam, option=option)
-
-        if self.content_type == "application/yaml":
-            return lambda spam: cast(
-                str,
-                yaml.dump(
-                    spam,
-                    width=self.get_int_argument("yaml_width", 80, min_=80),
-                ),
-            )
 
         return lambda spam: spam  # type: ignore[no-any-return]
 
