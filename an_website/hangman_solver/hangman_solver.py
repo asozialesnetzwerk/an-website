@@ -18,7 +18,6 @@ from __future__ import annotations
 from collections import Counter
 from collections.abc import Set
 from dataclasses import asdict, dataclass, field
-from functools import cache
 from typing import Final
 
 import regex
@@ -58,7 +57,7 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
     input: str = ""
     invalid: str = ""
-    words: frozenset[str] = field(default_factory=frozenset)
+    words: Set[str] = field(default_factory=frozenset)
     word_count: int = 0
     letters: dict[str, int] = field(default_factory=dict)
     crossword_mode: bool = False
@@ -120,14 +119,13 @@ def fix_letter_counter_crossword_mode(
     letter_counter.update(update_dict)
 
 
-@cache
 def filter_words(
     words: Set[str] | str,
     pattern: regex.Pattern[str],
     input_letters: str,
     crossword_mode: bool = False,
     matches_always: bool = False,
-) -> tuple[frozenset[str], dict[str, int]]:
+) -> tuple[set[str], dict[str, int]]:
     """Filter a set of words to get only those that match the regex."""
     # if "words" is string it is a filename
     if isinstance(words, str):
@@ -168,7 +166,7 @@ def filter_words(
             if letter in sorted_letters:
                 del sorted_letters[letter]
 
-    return frozenset(matched_words), sorted_letters
+    return matched_words, sorted_letters
 
 
 def get_words_and_letters(
@@ -176,7 +174,7 @@ def get_words_and_letters(
     input_str: str,
     invalid: str,
     crossword_mode: bool,
-) -> tuple[frozenset[str], dict[str, int]]:
+) -> tuple[Set[str], dict[str, int]]:
     """Generate a word set and a letters dict and return them in a tuple."""
     input_letters: str = WILDCARDS_REGEX.sub("", input_str)
     matches_always = not invalid and not input_letters
@@ -254,7 +252,7 @@ def _solve_hangman(
     return Hangman(
         input_str,
         invalid,
-        frozenset(n_from_set(matched_words, max_words)),
+        n_from_set(matched_words, max_words),
         len(matched_words),
         letters,
         crossword_mode,
