@@ -57,7 +57,6 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps funcparserlib==1.0.1 \
  && /venv/bin/pip install --no-deps --ignore-requires-python hy==0.26.0 \
  && /venv/bin/pip install --no-deps --no-build-isolation hyrule==0.3.0 \
- && /venv/bin/pip install --no-deps --no-build-isolation numpy==1.24.2 \
  && /venv/bin/pip install --no-deps --no-build-isolation UltraDict==0.0.6 \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
  && /venv/bin/pip install --no-deps --no-build-isolation https://github.com/roy-ht/editdistance/archive/v0.6.2.tar.gz \
