@@ -99,7 +99,7 @@ RUN set -eux \
  && cd uwufetch_2.1-linux \
  && bash install.sh \
  && cd .. \
- && rm -rf uwufetch*
+ && rm -fr uwufetch*
 COPY --from=builder /venv /venv
 RUN mkdir /data
 WORKDIR /data
