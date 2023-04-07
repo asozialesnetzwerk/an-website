@@ -538,7 +538,7 @@ def is_prime(number: int) -> bool:
     """Return whether the specified number is prime."""
     if not number % 2:
         return number == 2
-    return bool(PRINT & 1 << number // 2)
+    return bool(PRINT & (1 << (number // 2)))
 
 
 def length_of_match(match: regex.Match[Any]) -> int:

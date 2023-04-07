@@ -66,7 +66,7 @@ jobs:
           sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
           dart compile exe bin/sass.dart --output /opt/dart-sass
           cd ..
-          rm -rf ${VERSION}.tar.gz dart-sass-${VERSION}
+          rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
           VERSION: 1.60.0
