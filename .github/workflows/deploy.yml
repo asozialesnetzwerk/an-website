@@ -62,11 +62,9 @@ jobs:
           tar xvf *.tar.gz
           rm -f *.tar.gz
       - name: Build image
-        env:
-          BUILDAH_LAYERS: "true"
         run: |
           cd an-website*
-          buildah build --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
+          buildah build --layers --cache-ttl=30d --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
           cd ..
       - name: Save image
         run: buildah push --all --format=oci --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
