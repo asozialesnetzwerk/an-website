@@ -114,7 +114,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install mypy + stuff required for checking the tests
-        run: grep -E "^(html5lib|mypy|pytest|trove-classifiers|types-)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(html5lib|mypy|numpy|pytest|trove-classifiers|types-)" requirements-ci.txt | xargs pip install
       - name: Run mypy
         run: mypy
 
