@@ -31,7 +31,7 @@ REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
 HUMANS_TXT: Final[Path] = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt
-BOTS: Final[Set[str]] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
+BOTS: Final[Set[str]] = {"Bot", "ImgBotApp", "snyk-bot", "pyup-bot"}
 ALIASES: Final[Mapping[str, str]] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",
