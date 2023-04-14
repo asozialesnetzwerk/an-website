@@ -8,9 +8,9 @@
 	Location:NRW, Germany ​‍
 ​  ​	
 /* ​THANKS ​*/‌   
-	Contributor: binarynoise​‌ 
-
-	Contributor:Bot‍‍
+	Contributor:Bot
+ 
+	Contributor:   binarynoise
 ‌  ​	
 	CSS wizard:​  h4ckerle ‌	
  		
