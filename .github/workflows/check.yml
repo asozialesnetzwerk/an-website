@@ -82,10 +82,18 @@ jobs:
         run: ./scripts/fix_hangman_solver_word_files.py
       - name: Generate config.ini.default
         run: python3 -m an_website --save-config-to config.ini.default -c
+      - name: Update env
+        run: |
+          D=$(python -c "print((_:=__import__('datetime')).datetime.now(tz=_.timezone.utc).replace(minute=0, second=0, microsecond=0).isoformat())")
+          echo "GIT_AUTHOR_DATE=${D}" >> "${GITHUB_ENV}"
+          echo "GIT_COMMITTER_DATE=${D}" >> "${GITHUB_ENV}"
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          commit_author: Bot <>
           commit_message: "🤦"
+          commit_user_name: Bot
+          commit_user_email:
 
   mypy:
     name: mypy
