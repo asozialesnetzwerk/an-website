@@ -140,7 +140,7 @@ def get_whitespaces(
     random: Random,
     min_: int,
     max_: int,
-    whitespaces: str = " \t \t\u200B\u200C\u200D",
+    whitespaces: str = "  \u200B\u200C\u200D\t\t",
 ) -> str:
     """Get random whitespaces."""
     return "".join(
