@@ -17,6 +17,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.GH_PUSH_TOKEN }}
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -94,7 +95,6 @@ jobs:
           commit_message: "🤦"
           commit_user_name: Bot
           commit_user_email:
-          token: ${{ secrets.GH_PUSH_TOKEN }}
 
   mypy:
     name: mypy
