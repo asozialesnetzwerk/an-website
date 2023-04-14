@@ -94,6 +94,7 @@ jobs:
           commit_message: "🤦"
           commit_user_name: Bot
           commit_user_email:
+          token: ${{ secrets.GH_PUSH_TOKEN }}
 
   mypy:
     name: mypy
