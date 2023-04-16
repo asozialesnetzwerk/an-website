@@ -92,7 +92,7 @@ CONTENT_TYPE_FILE_TYPE_MAPPING: Final[Mapping[str, str]] = {
 }
 IMAGE_CONTENT_TYPES: Final[Set[str]] = frozenset(CONTENT_TYPE_FILE_TYPE_MAPPING)
 IMAGE_CONTENT_TYPES_WITHOUT_TXT: Final[tuple[str, ...]] = tuple(
-    IMAGE_CONTENT_TYPES - {"text/plain"}
+    sorted(IMAGE_CONTENT_TYPES - {"text/plain"}, key="image/gif".__ne__)
 )
 
 
@@ -341,13 +341,13 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         self,
         quote_id: str,
         author_id: str,
-        file_extension: str = "image",
+        file_extension: None | str = None,
         *,
         head: bool = False,
     ) -> None:
         """Handle GET requests to this page and render the quote as image."""
         file_type: None | str
-        if file_extension == "image":
+        if file_extension is None:
             self.handle_accept_header(IMAGE_CONTENT_TYPES_WITHOUT_TXT)
             assert self.content_type
             file_type = CONTENT_TYPE_FILE_TYPE_MAPPING[self.content_type]

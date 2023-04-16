@@ -188,6 +188,8 @@ class ModuleInfo(PageInfo):
 class Timer:
     """Timer class used for timing stuff."""
 
+    __slots__ = ("_execution_time", "_start_time")
+
     def __init__(self) -> None:
         """Start the timer."""
         self._execution_time: None | float = None
@@ -213,8 +215,6 @@ class Timer:
         if self._execution_time is not None:
             raise ValueError("Timer has been stopped before.")
         self._execution_time = time.perf_counter() - self._start_time
-
-        del self._start_time
         return self._execution_time
 
 

@@ -73,7 +73,7 @@ def get_module_info() -> ModuleInfo:
                 QuoteAsImage,
             ),
             (
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/(image)",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image",
                 QuoteAsImage,
             ),
             (
