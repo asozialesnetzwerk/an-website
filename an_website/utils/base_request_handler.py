@@ -956,7 +956,10 @@ class BaseRequestHandler(RequestHandler):
 
     @property
     def redis(self) -> Redis[str]:
-        """Get the Redis client from the settings."""
+        """Get the Redis client from the settings.
+
+        This returns None if redis is not enabled.
+        """
         return cast("Redis[str]", self.settings.get("REDIS"))
 
     @property

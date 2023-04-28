@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import abc
+from collections.abc import Mapping
 from datetime import date, datetime
 from typing import ClassVar, Final
 
@@ -142,3 +143,35 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
             60 * 60 * 24 * 420,  # TTL
             1,  # True
         )
+
+
+class CacheQuoteOfTheDayStore(QuoteOfTheDayStore):
+    """The class representing the store for the quote of the day."""
+
+    __slots__ = ()
+
+    CACHE: ClassVar[Mapping[date, tuple[int, int]]]
+    _CACHE: ClassVar[dict[date, tuple[int, int]]] = {}
+    _USED: ClassVar[set[tuple[int, int]]] = set()
+
+    async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
+        """Get the quote ID for the given date."""
+        return self.CACHE.get(date_) or self._CACHE.get(date_)
+
+    async def has_quote_been_used(self, quote_id: tuple[int, int]) -> bool:
+        """Check if the quote has been used already."""
+        return (
+            quote_id in self._USED
+            or quote_id in self.CACHE.values()
+            or quote_id in self._CACHE.values()
+        )
+
+    async def set_quote_id_by_date(
+        self, date_: date, quote_id: tuple[int, int]
+    ) -> None:
+        """Set the quote ID for the given date."""
+        self._CACHE[date_] = quote_id
+
+    async def set_quote_to_used(self, quote_id: tuple[int, int]) -> None:
+        """Set the quote as used."""
+        self._USED.add(quote_id)

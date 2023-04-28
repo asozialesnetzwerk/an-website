@@ -26,6 +26,7 @@ from ..utils import QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 from .data import QuoteOfTheDayData
 from .store import (
     QUOTE_COUNT_TO_SHOW_IN_FEED,
+    CacheQuoteOfTheDayStore,
     QuoteOfTheDayStore,
     RedisQuoteOfTheDayStore,
 )
@@ -80,6 +81,8 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
     @property
     def qod_store(self) -> QuoteOfTheDayStore:
         """Get the store used to storing the quote of the day."""
+        if self.redis is None:
+            return CacheQuoteOfTheDayStore()
         return RedisQuoteOfTheDayStore(self.redis, self.redis_prefix)
 
 
