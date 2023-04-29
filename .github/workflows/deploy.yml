@@ -87,11 +87,24 @@ jobs:
         with:
           path: oci-archive.tar
 
+  test-running-oci-image:
+    name: Test running OCI image
+    runs-on: ubuntu-latest
+    needs:
+      - build-oci-image
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      - name: Run image
+        run: podman run -it oci-archive:oci-archive.tar /venv/bin/an-website -c
+
   push-oci-image:
     name: Push OCI image
     runs-on: ubuntu-latest
     needs:
-      - build-oci-image
+      - test-running-oci-image
       - tests
     permissions:
       packages: write

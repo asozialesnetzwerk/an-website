@@ -66,7 +66,6 @@ from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
 
 from . import (
-    CONTAINERIZED,
     DIR,
     EVENT_ELASTICSEARCH,
     EVENT_REDIS,
@@ -1049,7 +1048,7 @@ def main(  # noqa: C901  # pragma: no cover
     unix_socket_path = config.get(
         "GENERAL",
         "UNIX_SOCKET_PATH",
-        fallback="/data" if CONTAINERIZED else None,
+        fallback=None,
     )
 
     if unix_socket_path:
