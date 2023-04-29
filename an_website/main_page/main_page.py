@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+import contextlib
+
 from ..quotes.quote_of_the_day import QuoteOfTheDayBaseHandler
 from ..utils.utils import ModuleInfo
 
@@ -41,8 +43,8 @@ class MainPage(QuoteOfTheDayBaseHandler):
         """Handle GET requests to the main page."""
         if head:
             return
-        try:
-            quote_data = await self.get_quote_of_today()
-        except Exception:  # pylint: disable=broad-except
-            quote_data = None
+        quote_data = None
+        if self.redis:  # type: ignore[truthy-bool]
+            with contextlib.suppress(Exception):
+                quote_data = await self.get_quote_of_today()
         await self.render("pages/main_page.html", quote_data=quote_data)

@@ -28,7 +28,6 @@ from .store import (
     QUOTE_COUNT_TO_SHOW_IN_FEED,
     QuoteOfTheDayStore,
     RedisQuoteOfTheDayStore,
-    SharedMemoryQuoteOfTheDayStore,
 )
 
 LOGGER: Final = logging.getLogger(__name__)
@@ -81,8 +80,6 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
     @property
     def qod_store(self) -> QuoteOfTheDayStore:
         """Get the store used for storing the quote of the day."""
-        if self.redis is None:
-            return SharedMemoryQuoteOfTheDayStore()  # type: ignore[unreachable]
         return RedisQuoteOfTheDayStore(self.redis, self.redis_prefix)
 
 

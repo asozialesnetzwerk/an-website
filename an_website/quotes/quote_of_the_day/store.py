@@ -21,7 +21,6 @@ from typing import ClassVar, Final
 
 from redis.asyncio import Redis
 from tornado.web import HTTPError
-from UltraDict import UltraDict  # type: ignore[import]
 
 from ... import EVENT_REDIS
 
@@ -32,26 +31,6 @@ class QuoteOfTheDayStore(abc.ABC):
     """The class representing the store for the quote of the day."""
 
     __slots__ = ()
-
-    CACHE: ClassVar[dict[date, tuple[int, int]]] = {}
-
-    @classmethod
-    def _get_quote_id_from_cache(cls, date_: date) -> None | tuple[int, int]:
-        """Get a quote_id from the cache if it is present."""
-        return cls.CACHE.get(date_)
-
-    @classmethod
-    def _populate_cache(cls, date_: date, quote_id: tuple[int, int]) -> None:
-        """Populate the cache for the quote of today."""
-        today = datetime.utcnow().date()
-        # old entries are rarely used, they don't need to be cached
-        if (today - date_).days > QUOTE_COUNT_TO_SHOW_IN_FEED:
-            cls.CACHE[date_] = quote_id
-
-        for key in tuple(cls.CACHE):
-            # remove old entries from cache to save memory
-            if (today - key).days > QUOTE_COUNT_TO_SHOW_IN_FEED:
-                del cls.CACHE[key]
 
     @abc.abstractmethod
     async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
@@ -76,10 +55,36 @@ class QuoteOfTheDayStore(abc.ABC):
         raise NotImplementedError
 
 
-class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
+class QuoteOfTheDayStoreWithCache(QuoteOfTheDayStore, abc.ABC):
+    """Quote of the day store with an in memory cache."""
+
+    CACHE: ClassVar[dict[date, tuple[int, int]]]
+
+    @classmethod
+    def _get_quote_id_from_cache(cls, date_: date) -> None | tuple[int, int]:
+        """Get a quote_id from the cache if it is present."""
+        return cls.CACHE.get(date_)
+
+    @classmethod
+    def _populate_cache(cls, date_: date, quote_id: tuple[int, int]) -> None:
+        """Populate the cache for the quote of today."""
+        today = datetime.utcnow().date()
+        # old entries are rarely used, they don't need to be cached
+        if (today - date_).days > QUOTE_COUNT_TO_SHOW_IN_FEED:
+            cls.CACHE[date_] = quote_id
+
+        for key in tuple(cls.CACHE):
+            # remove old entries from cache to save memory
+            if (today - key).days > QUOTE_COUNT_TO_SHOW_IN_FEED:
+                del cls.CACHE[key]
+
+
+class RedisQuoteOfTheDayStore(QuoteOfTheDayStoreWithCache):
     """A quote of the day store that stores the quote of the day in Redis."""
 
     __slots__ = ("redis", "redis_prefix")
+
+    CACHE: ClassVar[dict[date, tuple[int, int]]] = {}
 
     redis_prefix: str
     redis: Redis[str]
@@ -144,35 +149,3 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
             60 * 60 * 24 * 420,  # TTL
             1,  # True
         )
-
-
-class SharedMemoryQuoteOfTheDayStore(QuoteOfTheDayStore):
-    """A quote of the day store that stores the quote of the day in shared memory."""
-
-    __slots__ = ()
-
-    CACHE: ClassVar[dict[date, tuple[int, int]]]
-    _CACHE: ClassVar[dict[date, tuple[int, int]]] = UltraDict()
-    _USED: ClassVar[set[tuple[int, int]]] = set()  # TODO: make shared
-
-    async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
-        """Get the quote id for the given date."""
-        return self.CACHE.get(date_) or self._CACHE.get(date_)
-
-    async def has_quote_been_used(self, quote_id: tuple[int, int]) -> bool:
-        """Check if the quote has been used already."""
-        return (
-            quote_id in self._USED
-            or quote_id in self.CACHE.values()
-            or quote_id in self._CACHE.values()
-        )
-
-    async def set_quote_id_by_date(
-        self, date_: date, quote_id: tuple[int, int]
-    ) -> None:
-        """Set the quote id for the given date."""
-        self._CACHE[date_] = quote_id
-
-    async def set_quote_to_used(self, quote_id: tuple[int, int]) -> None:
-        """Set the quote as used."""
-        self._USED.add(quote_id)

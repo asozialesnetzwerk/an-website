@@ -217,7 +217,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
                 rating_param="w",
             ),
             random_quote_url=self.id_to_url(*self.next_id),
-            quote_of_the_day=await self.get_quote_of_today(),
+            quote_of_the_day=self.redis and await self.get_quote_of_today(),  # type: ignore[truthy-bool]
             one_stone_url=self.get_author_url("Albert Einstein"),
             kangaroo_url=self.get_author_url("Das Känguru"),
             muk_url=self.get_author_url("Marc-Uwe Kling"),
