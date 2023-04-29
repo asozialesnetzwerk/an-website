@@ -21,6 +21,7 @@ import contextlib
 import os
 import pathlib
 import random
+import sys
 import time
 from base64 import b85encode
 from collections.abc import Awaitable, Callable, Generator, Iterable, Set
@@ -744,14 +745,13 @@ class ArgparseNamespace(argparse.Namespace):
     """A class to fake type hints for argparse Namespace."""
 
     # pylint: disable=too-few-public-methods
-    __slots__ = ("config", "port", "save_config_to")
+    __slots__ = ("config", "save_config_to")
 
     config: list[pathlib.Path]
-    port: list[int]
     save_config_to: pathlib.Path | None
 
 
-def parse_command_line_arguments() -> ArgparseNamespace:
+def create_argument_parser() -> argparse.ArgumentParser:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -764,15 +764,6 @@ def parse_command_line_arguments() -> ArgparseNamespace:
         type=pathlib.Path,
     )
     parser.add_argument(
-        "--port",
-        "-p",
-        default=[],
-        help="the port to use",
-        metavar="PORT",
-        nargs="*",
-        type=int,
-    )
-    parser.add_argument(
         "--save-config-to",
         default=None,
         help="save the configuration to a file",
@@ -780,16 +771,25 @@ def parse_command_line_arguments() -> ArgparseNamespace:
         nargs="?",
         type=pathlib.Path,
     )
-    return parser.parse_args(namespace=ArgparseNamespace())
+    return parser
+
+
+def get_arguments_without_help() -> tuple[str, ...]:
+    """Get arguments without help."""
+    return tuple(arg for arg in sys.argv[1:] if arg not in {"-h", "--help"})
 
 
 class BetterConfigParser(ConfigParser):
     """A better config parser."""
 
     getset: Callable[..., set[str]]
+    _arg_parser: None | argparse.ArgumentParser
+    _arg_parser_options_added: set[tuple[str, str]]
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
         """Initialize this config parser."""
+        self._arg_parser_options_added = set()
+        self._arg_parser = None
         converters = kwargs.setdefault("converters", {})
         converters["set"] = str_to_set
         kwargs.setdefault("interpolation", None)
@@ -822,21 +822,44 @@ class BetterConfigParser(ConfigParser):
     def _get_conv(
         self, section: str, option: str, conv: Callable[[str], T], **kwargs: Any
     ) -> T:
-        value: T = super()._get_conv(section, option, conv, **kwargs)
-        if "fallback" in kwargs:
-            self._add_fallback_to_config(
-                section, option, kwargs.get("fallback")
+        self._add_fallback_to_config(section, option, kwargs.get("fallback"))
+        if (val := self._get_from_args(section, option, conv)) is not None:
+            return val
+        return cast(T, super()._get_conv(section, option, conv, **kwargs))
+
+    def _get_from_args(
+        self, section: str, option: str, conv: Callable[[str], T]
+    ) -> None | T:
+        """Try to get the value from the command line arguments."""
+        if self._arg_parser is None:
+            return None
+        option_name = f"{section}-{option}".lower().removeprefix("general-")
+        if (section, option) not in self._arg_parser_options_added:
+            self._arg_parser.add_argument(
+                f"--{option_name}".replace("_", "-"),
+                required=False,
+                type=conv,
+                help=f"Override {option!r} in the {section!r} section of the config",
             )
-        return value
+            self._arg_parser_options_added.add((section, option))
+        return getattr(
+            self._arg_parser.parse_known_args(get_arguments_without_help())[0],
+            option_name.replace("-", "_"),
+            None,
+        )
+
+    def add_override_argument_parser(
+        self, parser: argparse.ArgumentParser
+    ) -> None:
+        """Add an argument parser to override config values."""
+        self._arg_parser = parser
 
     def get(self, section: str, option: str, **kwargs: Any) -> None | str:  # type: ignore[override]  # noqa: B950
         """Get an option in a section."""
-        value: None | str = super().get(section, option, **kwargs)
-        if "fallback" in kwargs:
-            self._add_fallback_to_config(
-                section, option, kwargs.get("fallback")
-            )
-        return value
+        self._add_fallback_to_config(section, option, kwargs.get("fallback"))
+        if (val := self._get_from_args(section, option, str)) is not None:
+            return val
+        return cast("None | str", super().get(section, option, **kwargs))
 
 
 def parse_config(*path: pathlib.Path) -> BetterConfigParser:

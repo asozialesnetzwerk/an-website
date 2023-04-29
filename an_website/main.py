@@ -88,13 +88,15 @@ from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
+    ArgparseNamespace,
     BetterConfigParser,
     Handler,
     ModuleInfo,
     Permission,
     Timer,
+    create_argument_parser,
     geoip,
-    parse_command_line_arguments,
+    get_arguments_without_help,
     parse_config,
     time_function,
 )
@@ -522,51 +524,81 @@ def setup_logging(  # pragma: no cover
         root_logger.addHandler(file_handler)
 
 
-def setup_webhook_logging(  # pragma: no cover
-    config: ConfigParser,
-    loop: AbstractEventLoop,
-) -> None:
-    """Setup WebHook logging."""  # noqa: D401
-    if not (webhook_url := config.get("LOGGING", "WEBHOOK_URL", fallback=None)):
-        return
+class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
+    """WebHook logging options."""
 
-    spam = regex.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT)
-
-    root_logger = logging.getLogger()
-
-    webhook_content_type = config.get(
-        "LOGGING",
-        "WEBHOOK_CONTENT_TYPE",
-        fallback="application/json",
+    __slots__ = (
+        "url",
+        "content_type",
+        "body_format",
+        "timestamp_format",
+        "timestamp_timezone",
+        "escape_message",
     )
-    webhook_handler = WebhookHandler(
-        logging.ERROR,
-        loop=loop,
-        url=webhook_url,
-        content_type=webhook_content_type,
-    )
-    formatter = WebhookFormatter(
-        config.get(
+
+    url: str | None
+    content_type: str
+    body_format: str
+    timestamp_format: str | None
+    timestamp_timezone: str | None
+    escape_message: bool
+
+    def __init__(self, config: ConfigParser) -> None:
+        """Initialize WebHook logging options."""
+        self.url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
+        self.content_type = config.get(
+            "LOGGING",
+            "WEBHOOK_CONTENT_TYPE",
+            fallback="application/json",
+        )
+        spam = regex.sub(r"%\((end_)?color\)s", "", LogFormatter.DEFAULT_FORMAT)
+        self.body_format = config.get(
             "LOGGING",
             "WEBHOOK_BODY_FORMAT",
             fallback='{"text":"' + spam + '"}',
-        ),
-        config.get(
+        )
+        self.timestamp_format = config.get(
             "LOGGING",
             "WEBHOOK_TIMESTAMP_FORMAT",
             fallback=None,
-        ),
+        )
+        self.timestamp_timezone = config.get(
+            "LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE", fallback=None
+        )
+        self.escape_message = config.getboolean(
+            "LOGGING",
+            "WEBHOOK_ESCAPE_MESSAGE",
+            fallback=True,
+        )
+
+
+def setup_webhook_logging(  # pragma: no cover
+    options: WebhookLoggingOptions,
+    loop: AbstractEventLoop,
+) -> None:
+    """Setup WebHook logging."""  # noqa: D401
+    if not options.url:
+        return
+
+    root_logger = logging.getLogger()
+
+    webhook_content_type = options.content_type
+    webhook_handler = WebhookHandler(
+        logging.ERROR,
+        loop=loop,
+        url=options.url,
+        content_type=webhook_content_type,
+    )
+    formatter = WebhookFormatter(
+        options.body_format,
+        options.timestamp_format,
     )
     formatter.timezone = (
-        ZoneInfo(config.get("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE"))
-        if config.has_option("LOGGING", "WEBHOOK_TIMESTAMP_TIMEZONE")
-        else None
+        None
+        if options.timestamp_format is None
+        else ZoneInfo(options.timestamp_format)
     )
-    formatter.escape_message = config.getboolean(
-        "LOGGING",
-        "WEBHOOK_ESCAPE_MESSAGE",
-        fallback=True,
-    )
+    formatter.escape_message = options.escape_message
     webhook_handler.setFormatter(formatter)
     root_logger.addHandler(webhook_handler)
 
@@ -962,9 +994,14 @@ def main(  # noqa: C901  # pragma: no cover
 
     install_signal_handler()
 
-    args = parse_command_line_arguments()
+    parser = create_argument_parser()
+    args, _ = parser.parse_known_args(
+        get_arguments_without_help(), ArgparseNamespace()
+    )
 
     config = config or parse_config(*args.config)
+    assert config is not None
+    config.add_override_argument_parser(parser)
 
     setup_logging(config)
 
@@ -1000,18 +1037,14 @@ def main(  # noqa: C901  # pragma: no cover
 
     sockets = []
 
-    ports = {
-        *args.port,
-        config.getint("GENERAL", "PORT", fallback=None),
-    }
+    port = config.getint("GENERAL", "PORT", fallback=None)
 
-    for port in ports:
-        if port:
-            sockets.extend(
-                tornado.netutil.bind_sockets(
-                    port, "localhost" if behind_proxy else ""
-                )
+    if port:
+        sockets.extend(
+            tornado.netutil.bind_sockets(
+                port, "localhost" if behind_proxy else ""
             )
+        )
 
     unix_socket_path = config.get(
         "GENERAL",
@@ -1038,6 +1071,22 @@ def main(  # noqa: C901  # pragma: no cover
         processes = tornado.process.cpu_count()
 
     task_id: int | None = None
+
+    run_supervisor_thread = config.getboolean(
+        "GENERAL", "SUPERVISE", fallback=False
+    )
+    elasticsearch_is_enabled = config.getboolean(
+        "ELASTICSEARCH", "ENABLED", fallback=False
+    )
+    redis_is_enabled = config.getboolean("REDIS", "ENABLED", fallback=False)
+    webhook_logging_options = WebhookLoggingOptions(config)
+    # all config options should be read before forking
+    if args.save_config_to:
+        with open(args.save_config_to, "w", encoding="UTF-8") as file:
+            config.write(file)
+    del config
+    # show help message if --help is given (after reading config, before forking)
+    parser.parse_args()
 
     if processes and sockets:
         setproctitle(f"{NAME} - Master")
@@ -1081,7 +1130,7 @@ def main(  # noqa: C901  # pragma: no cover
     if perf8 and "PERF8" in os.environ:
         loop.run_until_complete(perf8.enable())
 
-    setup_webhook_logging(config, loop)
+    setup_webhook_logging(webhook_logging_options, loop)
 
     with catch_warnings():  # TODO: remove after dropping support for 3.11
         simplefilter("ignore", DeprecationWarning)
@@ -1094,10 +1143,10 @@ def main(  # noqa: C901  # pragma: no cover
 
         task_shutdown = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-        if config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
+        if elasticsearch_is_enabled:
             task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-        if config.getboolean("REDIS", "ENABLED", fallback=False):
+        if redis_is_enabled:
             task_redis = loop.create_task(check_redis(app))  # noqa: F841
 
         if not task_id:  # update from one process only
@@ -1107,15 +1156,11 @@ def main(  # noqa: C901  # pragma: no cover
 
         # pylint: enable=unused-variable
 
-    if config.getboolean("GENERAL", "SUPERVISE", fallback=False) and sockets:
+    if run_supervisor_thread and sockets:
         HEARTBEAT = time.monotonic()
         threading.Thread(
             target=supervise, name="supervisor", daemon=True
         ).start()
-
-    if args.save_config_to:
-        with open(args.save_config_to, "w", encoding="UTF-8") as file:
-            config.write(file)
 
     if not sockets:
         return 0
