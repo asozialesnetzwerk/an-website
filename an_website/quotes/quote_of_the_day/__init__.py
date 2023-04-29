@@ -123,9 +123,7 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
     ) -> None:
         """Handle GET requests."""
         quote_data = await (
-            self.get_quote_by_date(date)
-            if date
-            else self.get_quote_of_today()
+            self.get_quote_by_date(date) if date else self.get_quote_of_today()
         )
 
         if not quote_data:
@@ -156,9 +154,7 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
     ) -> None:
         """Handle GET requests."""
         wrong_quote_data = await (
-            self.get_quote_by_date(date)
-            if date
-            else self.get_quote_of_today()
+            self.get_quote_by_date(date) if date else self.get_quote_of_today()
         )
 
         if not wrong_quote_data:

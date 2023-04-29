@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import abc
-from collections.abc import Mapping
 from datetime import date, datetime
 from typing import ClassVar, Final
 
