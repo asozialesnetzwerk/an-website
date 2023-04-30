@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
+import logging
 import os
 import pathlib
 import random
@@ -57,6 +58,8 @@ from UltraDict import UltraDict  # type: ignore[import]
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
+
+LOGGER: Final = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
@@ -785,11 +788,13 @@ class BetterConfigParser(ConfigParser):
     getset: Callable[..., set[str]]
     _arg_parser: None | argparse.ArgumentParser
     _arg_parser_options_added: set[tuple[str, str]]
+    _all_options_should_be_parsed: bool
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
         """Initialize this config parser."""
         self._arg_parser_options_added = set()
         self._arg_parser = None
+        self._all_options_should_be_parsed = False
         converters = kwargs.setdefault("converters", {})
         converters["set"] = str_to_set
         kwargs.setdefault("interpolation", None)
@@ -804,17 +809,10 @@ class BetterConfigParser(ConfigParser):
     ) -> None:
         if section in self and option in self[section]:
             return
-        if isinstance(fallback, str):
-            pass
-        elif isinstance(fallback, Iterable):
-            fallback = ", ".join([str(val) for val in fallback])
-        elif isinstance(fallback, bool):
-            fallback = bool_to_str(fallback)
-        elif fallback is None:
+        fallback = self._val_to_str(fallback)
+        if fallback is None:
             fallback = ""
             option = f"#{option}"
-        else:
-            fallback = str(fallback)  # float, int
         if section not in self.sections():
             self.add_section(section)
         self.set(section, option.lower(), fallback)
@@ -835,6 +833,12 @@ class BetterConfigParser(ConfigParser):
             return None
         option_name = f"{section}-{option}".lower().removeprefix("general-")
         if (section, option) not in self._arg_parser_options_added:
+            if self._all_options_should_be_parsed:
+                LOGGER.error(
+                    "Option %r in section %r should have been queried before.",
+                    option,
+                    section,
+                )
             self._arg_parser.add_argument(
                 f"--{option_name}".replace("_", "-"),
                 required=False,
@@ -842,11 +846,27 @@ class BetterConfigParser(ConfigParser):
                 help=f"Override {option!r} in the {section!r} section of the config",
             )
             self._arg_parser_options_added.add((section, option))
-        return getattr(
+        value = getattr(
             self._arg_parser.parse_known_args(get_arguments_without_help())[0],
             option_name.replace("-", "_"),
             None,
         )
+        if value is None:
+            return None
+        self.set(section, option, self._val_to_str(value))
+        return cast(T, value)
+
+    def _val_to_str(self, value: object | None) -> str | None:
+        """Convert a value to a string."""
+        if value is None or isinstance(value, str):
+            return value
+        if isinstance(value, Iterable):
+            return ", ".join(
+                [cast(str, self._val_to_str(val)) for val in value]
+            )
+        if isinstance(value, bool):
+            return bool_to_str(value)
+        return str(value)  # float, int
 
     def add_override_argument_parser(
         self, parser: argparse.ArgumentParser
@@ -860,6 +880,10 @@ class BetterConfigParser(ConfigParser):
         if (val := self._get_from_args(section, option, str)) is not None:
             return val
         return cast("None | str", super().get(section, option, **kwargs))
+
+    def set_all_options_should_be_parsed(self) -> None:
+        """Set all options should be parsed."""
+        self._all_options_should_be_parsed = True
 
 
 def parse_config(*path: pathlib.Path) -> BetterConfigParser:

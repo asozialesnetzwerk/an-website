@@ -1083,6 +1083,7 @@ def main(  # noqa: C901  # pragma: no cover
     if args.save_config_to:
         with open(args.save_config_to, "w", encoding="UTF-8") as file:
             config.write(file)
+    config.set_all_options_should_be_parsed()
     del config
     # show help message if --help is given (after reading config, before forking)
     parser.parse_args()
