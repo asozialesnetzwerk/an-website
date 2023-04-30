@@ -102,7 +102,7 @@ class SwappedWords(HTMLRequestHandler):
                 value=b64encode(args.config.encode("UTF-8")).decode("UTF-8"),
                 expires_days=1000,
                 path=self.request.path,
-                SameSite="Strict",
+                samesite="Strict",
             )
 
         try:
