@@ -287,8 +287,6 @@ jobs:
           tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /opt/youki
           rm -f youki_0_0_5_linux.tar.gz
           chmod +x /opt/youki
-      - name: Install qemu-user-static
-        run: sudo apt-get install -y qemu-user-static
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
