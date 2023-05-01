@@ -31,6 +31,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
+from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -625,7 +626,10 @@ class BaseRequestHandler(RequestHandler):
         """
         namespace = super().get_template_namespace()
         namespace.update(
-            ansi2html=Ansi2HTMLConverter(inline=True, scheme="xterm"),
+            ansi2html=partial(
+                Ansi2HTMLConverter(inline=True, scheme="xterm").convert,
+                full=False,
+            ),
             as_html=self.content_type == "text/html",
             bumpscosity=self.get_bumpscosity(),
             c=self.now.date() == date(self.now.year, 4, 1)

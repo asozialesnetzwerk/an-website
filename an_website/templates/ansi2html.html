@@ -10,11 +10,11 @@
     {% if isinstance(ansi, list) %}
 <div>
         {% for _ in ansi %}
-<div class="pre">{% raw ansi2html.convert(_, full=False) %}</div>
+<div class="pre">{% raw ansi2html(_) %}</div>
         {% end %}
 </div>
     {% else %}
-<div class="pre">{% raw ansi2html.convert(ansi, full=False) %}</div>
+<div class="pre">{% raw ansi2html(ansi) %}</div>
     {% end %}
 
     {% whitespace oneline %}

@@ -160,10 +160,10 @@ class UwUHostInfo(HTMLRequestHandler):
         if self.content_type == "text/plain":
             return await self.finish(uwufetch_bytes)  # type: ignore[possibly-undefined]
 
-        uwufetch = uwufetch_bytes.decode("UTF-8").split("\n\n")  # type: ignore[possibly-undefined]  # noqa: B950
+        uwufetch = uwufetch_bytes.decode("UTF-8")  # type: ignore[possibly-undefined]
         await self.render(
             "ansi2html.html",
-            ansi=uwufetch,
+            ansi=uwufetch.removesuffix("\033[-2B").split("\n\n"),
             powered_by="https://github.com/TheDarkBug/uwufetch",
             powered_by_name="UwUFetch",
         )
