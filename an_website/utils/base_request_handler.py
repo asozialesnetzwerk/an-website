@@ -105,6 +105,10 @@ TEXT_CONTENT_TYPES: Final[set[str]] = {
     "application/yaml",
 }
 
+FIXED_ANSI_REGEX: Final = __import__("re").compile(
+    "\033\\[([-\\d;:]*)([a-zA-z])"
+)
+
 
 class BaseRequestHandler(RequestHandler):
     """The base request handler used by every page and API."""
@@ -625,11 +629,10 @@ class BaseRequestHandler(RequestHandler):
         description and no_3rd_party).
         """
         namespace = super().get_template_namespace()
+        converter = Ansi2HTMLConverter(inline=True, scheme="xterm")
+        converter.ansi_codes_prog = FIXED_ANSI_REGEX
         namespace.update(
-            ansi2html=partial(
-                Ansi2HTMLConverter(inline=True, scheme="xterm").convert,
-                full=False,
-            ),
+            ansi2html=partial(converter.convert, full=False),
             as_html=self.content_type == "text/html",
             bumpscosity=self.get_bumpscosity(),
             c=self.now.date() == date(self.now.year, 4, 1)

@@ -163,7 +163,7 @@ class UwUHostInfo(HTMLRequestHandler):
         uwufetch = uwufetch_bytes.decode("UTF-8")  # type: ignore[possibly-undefined]
         await self.render(
             "ansi2html.html",
-            ansi=uwufetch.removesuffix("\033[-2B").split("\n\n"),
+            ansi=uwufetch.split("\n\n"),
             powered_by="https://github.com/TheDarkBug/uwufetch",
             powered_by_name="UwUFetch",
         )
