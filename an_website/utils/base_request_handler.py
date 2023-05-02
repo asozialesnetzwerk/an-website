@@ -31,7 +31,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
-from functools import partial
+from functools import partial, reduce
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -75,6 +75,9 @@ from .utils import (
     OpenMojiValue,
     Permission,
     add_args_to_url,
+    ansi_replace,
+    apply,
+    backspace_replace,
     bool_to_str,
     emoji2html,
     geoip,
@@ -625,10 +628,13 @@ class BaseRequestHandler(RequestHandler):
         description and no_3rd_party).
         """
         namespace = super().get_template_namespace()
-        ansi2html = Ansi2HTMLConverter(inline=True, scheme="xterm").convert
-        ansi_b_replace = partial(regex.sub, "\033\\[-?\\dB", "")
+        ansi2html = partial(
+            Ansi2HTMLConverter(inline=True, scheme="xterm").convert, full=False
+        )
         namespace.update(
-            ansi2html=lambda _: ansi_b_replace(ansi2html(_, full=False)),
+            ansi2html=partial(
+                reduce, apply, (ansi2html, ansi_replace, backspace_replace)
+            ),
             as_html=self.content_type == "text/html",
             bumpscosity=self.get_bumpscosity(),
             c=self.now.date() == date(self.now.year, 4, 1)

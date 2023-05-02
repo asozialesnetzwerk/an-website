@@ -30,7 +30,7 @@ from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
-from functools import cache
+from functools import cache, partial
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 from pathlib import Path
 from typing import (
@@ -900,3 +900,14 @@ def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
 
 
 THEMES: Final[tuple[str, ...]] = get_themes()
+
+ansi_replace = partial(regex.sub, "\033" + r"\[-?\d+[a-zA-Z]", "")
+ansi_replace.__doc__ = "Remove ANSI escape sequences from a string."
+
+backspace_replace = partial(regex.sub, ".?\x08", "")
+ansi_replace.__doc__ = "Remove backspaces from a string."
+
+
+def apply(value: T_Val, fun: Callable[[T_Val], T]) -> T:
+    """Apply a function to a value and return the result."""
+    return fun(value)
