@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import urllib.parse
 from datetime import datetime
 from datetime import timezone as tz
 from functools import cache
@@ -318,6 +319,19 @@ def test_parsing_vote_str() -> None:
 
     with pytest.raises(ValueError):
         main_page.vote_to_int("x")
+
+
+async def test_quote_redirect_api(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the quote redirect API."""
+    response = await fetch(
+        "/api/zitate?show-rating=s&r=all", follow_redirects=True
+    )
+    url = urllib.parse.urlsplit(response.effective_url)
+    assert "show-rating=sure" in url.query
+    assert "r=all" in url.query
+    json_ = assert_valid_json_response(response)
+    assert url.path == f"/api/zitate/{json_['id']}"
+    assert json_["rating"] != "???"
 
 
 async def test_quote_apis(fetch: FetchCallable) -> None:  # noqa: F811
