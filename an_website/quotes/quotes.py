@@ -244,10 +244,15 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
         self, suffix: str = "", *, head: bool = False
     ) -> None:
         """Redirect to a random funny quote."""
-        quote_id, author_id = get_next_id("w")
+        next_filter = parse_rating_filter(self.get_argument("r", "") or "w")
+        quote_id, author_id = get_next_id(next_filter)
+        kwargs: dict[str, str | bool] = {"r": next_filter}
+        if self.get_show_rating():
+            kwargs["show-rating"] = True
         return self.redirect(
             self.fix_url(
                 f"/api/zitate/{quote_id}-{author_id}{suffix}",
+                **kwargs,
             )
         )
 
