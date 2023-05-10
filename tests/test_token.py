@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The tests for the token module."""
+
 from __future__ import annotations
 
 from datetime import datetime

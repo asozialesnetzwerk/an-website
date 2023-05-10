@@ -50,17 +50,20 @@ class Option(ABC, Generic[T]):
 
     @overload
     def __get__(  # noqa: D105
-        self, obj: None, _: "type[Options] | None" = None, /  # noqa: W504
+        self, obj: None, _: type[Options] | None = None, /  # noqa: W504
     ) -> Option[T]:
         ...
 
     @overload
-    def __get__(self, obj: Options, _: "type[Options] | None" = None, /) -> T:
+    def __get__(self, obj: Options, _: type[Options] | None = None, /) -> T:
         """Get the value for this option."""
 
-    def __get__(  # noqa: W504
-        self, obj: "Options | None", _: "type[Options] | None" = None, /
-    ) -> T | "Option[T]":
+    def __get__(
+        self,  # comment to make flake8 happy
+        obj: "Options | None",
+        _: "type[Options] | None" = None,
+        /,
+    ) -> T | Option[T]:
         """Get the value for this option."""
         if obj is None:
             return self

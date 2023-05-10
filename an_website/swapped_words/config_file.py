@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Config file for the page that swaps words."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

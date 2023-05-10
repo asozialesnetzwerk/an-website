@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """Info page to show information about authors and quotes."""
+
 from __future__ import annotations
 
 import logging

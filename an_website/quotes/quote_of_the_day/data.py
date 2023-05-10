@@ -12,6 +12,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """The dataclass representing a quote of the day."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
