@@ -31,7 +31,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
-from functools import partial, reduce
+from functools import cached_property, partial, reduce
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -67,12 +67,11 @@ from .. import (
     pytest_is_running,
 )
 from .decorators import is_authorized
+from .options import Options
 from .static_file_handling import FILE_HASHES_DICT, fix_static_path
 from .utils import (
     THEMES,
-    BumpscosityValue,
     ModuleInfo,
-    OpenMojiValue,
     Permission,
     add_args_to_url,
     ansi_replace,
@@ -83,8 +82,6 @@ from .utils import (
     geoip,
     hash_bytes,
     is_prime,
-    parse_bumpscosity,
-    parse_openmoji_arg,
     ratelimit,
     str_to_bool,
 )
@@ -304,7 +301,7 @@ class BaseRequestHandler(RequestHandler):
         """Finish the request with a dictionary."""
         return self.finish(kwargs)
 
-    def fix_url(  # noqa: C901  # pylint: disable=too-complex
+    def fix_url(
         self,
         url: None | str | SplitResult = None,
         new_path: None | str = None,
@@ -325,36 +322,19 @@ class BaseRequestHandler(RequestHandler):
         path = url.path if new_path is None else new_path  # the path of the url
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
-                theme=None,
-                effects=None,
-                dynload=None,
-                openmoji=None,
-                bumpscosity=None,
-                no_3rd_party=None,
-                compatibility=None,
+                {key: None for key in self.user_settings.iter_option_names()}
             )
         else:
-            query_args.setdefault("theme", self.get_theme())
-            query_args.setdefault("effects", self.get_effects())
-            query_args.setdefault("dynload", self.get_dynload())
-            query_args.setdefault("openmoji", self.get_openmoji())
-            query_args.setdefault("bumpscosity", self.get_bumpscosity())
-            query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
-            query_args.setdefault("compatibility", self.get_compatibility())
-            if query_args["compatibility"] == self.get_saved_compatibility():
-                query_args["compatibility"] = None
-            if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
-                query_args["no_3rd_party"] = None
-            if query_args["bumpscosity"] == self.get_saved_bumpscosity():
-                query_args["bumpscosity"] = None
-            if query_args["openmoji"] == self.get_saved_openmoji():
-                query_args["openmoji"] = None
-            if query_args["dynload"] == self.get_saved_dynload():
-                query_args["dynload"] = None
-            if query_args["effects"] == self.get_saved_effects():
-                query_args["effects"] = None
-            if query_args["theme"] == self.get_saved_theme():
-                query_args["theme"] = None
+            for (
+                key,
+                value,
+            ) in self.user_settings.as_dict_with_str_values().items():
+                query_args.setdefault(key, value)
+            for key, value in self.user_settings.as_dict_with_str_values(
+                include_argument=False
+            ).items():
+                if value == query_args[key]:
+                    query_args[key] = None
 
         return add_args_to_url(
             urlunsplit(
@@ -407,21 +387,9 @@ class BaseRequestHandler(RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a boolean") from err
 
-    def get_bumpscosity(self) -> BumpscosityValue:
-        """Get the value for the bumpscosity."""
-        if spam := self.get_argument("bumpscosity", ""):
-            return parse_bumpscosity(spam)
-        return self.get_saved_bumpscosity()
-
-    def get_compatibility(self) -> bool:
-        """Return the compatibility query argument as boolean."""
-        return self.get_bool_argument(
-            "compatibility", self.get_saved_compatibility()
-        )
-
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
-        if (theme := self.get_theme()).split("_")[0] != "random":
+        if (theme := self.user_settings.theme).split("_")[0] != "random":
             return theme
 
         ignore_themes = ["random", "random_dark", "christmas"]
@@ -432,14 +400,6 @@ class BaseRequestHandler(RequestHandler):
         return random.choice(  # nosec: B311
             tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
-
-    def get_dynload(self) -> bool:
-        """Return the dynload query argument as boolean."""
-        return self.get_bool_argument("dynload", self.get_saved_dynload())
-
-    def get_effects(self) -> bool:
-        """Return the effects query argument as boolean."""
-        return self.get_bool_argument("effects", self.get_saved_effects())
 
     def get_error_message(self, **kwargs: Any) -> str:
         """
@@ -488,38 +448,6 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} is not a valid HTTP response status code."
         )
 
-    def get_form_appendix(self) -> str:
-        """Get HTML to add to forms to keep important query args."""
-        form_appendix = (
-            "<input name='no_3rd_party' class='hidden' "
-            f"value={bool_to_str(self.get_no_3rd_party())!r}>"
-            if "no_3rd_party" in self.request.query_arguments
-            and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
-            else ""
-        )
-        if (dynload := self.get_dynload()) != self.get_saved_dynload():
-            form_appendix += (
-                "<input name='dynload' class='hidden' "
-                f"value={bool_to_str(dynload)!r}>"
-            )
-        if (theme := self.get_theme()) != self.get_saved_theme():
-            form_appendix += (
-                f"<input name='theme' class='hidden' value={theme!r}>"
-            )
-        if (effects := self.get_effects()) != self.get_saved_effects():
-            form_appendix += (
-                "<input name='effects' class='hidden' "
-                f"value={bool_to_str(effects)!r}>"
-            )
-        if (
-            compatibility := self.get_compatibility()
-        ) != self.get_saved_compatibility():
-            form_appendix += (
-                "<input name='compatibility' class='hidden' "
-                f"value={bool_to_str(compatibility)!r}>"
-            )
-        return form_appendix
-
     def get_int_argument(
         self,
         name: str,
@@ -554,22 +482,6 @@ class BaseRequestHandler(RequestHandler):
         """Get the module infos."""
         return self.settings.get("MODULE_INFOS") or ()
 
-    def get_no_3rd_party(self) -> bool:
-        """Return the no_3rd_party query argument as boolean."""
-        return self.get_bool_argument(
-            "no_3rd_party", self.get_saved_no_3rd_party()
-        )
-
-    def get_no_3rd_party_default(self) -> bool:
-        """Get the default value for the no_3rd_party param."""
-        return self.request.host_name.endswith((".onion", ".i2p"))
-
-    def get_openmoji(self) -> OpenMojiValue:
-        """Return the openmoji query argument as boolean."""
-        return parse_openmoji_arg(
-            self.get_argument("openmoji", ""), self.get_saved_openmoji()
-        )
-
     def get_reporting_api_endpoint(self) -> None | str:
         """Get the endpoint for the Reporting API™️."""
         if not self.settings.get("REPORTING"):
@@ -580,44 +492,6 @@ class BaseRequestHandler(RequestHandler):
             return endpoint
 
         return f"{self.request.protocol}://{self.request.host}{endpoint}"
-
-    def get_saved_bumpscosity(self) -> BumpscosityValue:
-        """Get the saved value for the bumpscosity."""
-        return parse_bumpscosity(self.get_cookie("bumpscosity", ""))
-
-    def get_saved_compatibility(self) -> bool:
-        """Get the saved value for compatibility."""
-        return str_to_bool(self.get_cookie("compatibility"), False)
-
-    def get_saved_dynload(self) -> bool:
-        """Get the saved value for dynload."""
-        return str_to_bool(self.get_cookie("dynload"), False)
-
-    def get_saved_effects(self) -> bool:
-        """Get the saved value for effects."""
-        return str_to_bool(self.get_cookie("effects"), True)
-
-    def get_saved_no_3rd_party(self) -> bool:
-        """Get the saved value for no_3rd_party."""
-        return str_to_bool(
-            self.get_cookie("no_3rd_party"), self.get_no_3rd_party_default()
-        )
-
-    def get_saved_openmoji(self) -> OpenMojiValue:
-        """Get the saved value for openmoji."""
-        return parse_openmoji_arg(
-            cast(str, self.get_cookie("openmoji", "")), False
-        )
-
-    def get_saved_theme(self) -> str:
-        """Get the theme saved in the cookie."""
-        if (
-            theme := cast(str, self.get_cookie("theme", ""))
-            .replace("-", "_")
-            .lower()
-        ) in THEMES:
-            return theme
-        return "default"
 
     @override
     def get_template_namespace(self) -> dict[str, Any]:
@@ -631,12 +505,12 @@ class BaseRequestHandler(RequestHandler):
         ansi2html = partial(
             Ansi2HTMLConverter(inline=True, scheme="xterm").convert, full=False
         )
+        namespace.update(self.user_settings.as_dict())
         namespace.update(
             ansi2html=partial(
                 reduce, apply, (ansi2html, ansi_replace, backspace_replace)
             ),
             as_html=self.content_type == "text/html",
-            bumpscosity=self.get_bumpscosity(),
             c=self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
             canonical_url=self.fix_url(
@@ -644,18 +518,14 @@ class BaseRequestHandler(RequestHandler):
                 if self.request.path.upper().startswith("/LOLWUT")
                 else self.request.full_url().lower()
             ).split("?")[0],
-            compatibility=self.get_compatibility(),
             description=self.description,
-            dynload=self.get_dynload(),
-            effects=self.get_effects(),
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,
-            openmoji=self.get_openmoji(),
             emoji2html=emoji2html
-            if self.get_openmoji() == "img"
+            if self.user_settings.openmoji == "img"
             else lambda emoji: emoji,
-            form_appendix=self.get_form_appendix(),
+            form_appendix=self.user_settings.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
             GH_PAGES_URL=GH_PAGES_URL,
             GH_REPO_URL=GH_REPO_URL,
@@ -666,12 +536,11 @@ class BaseRequestHandler(RequestHandler):
                 else ""
             ),
             lang="de",  # TODO: add language support
-            no_3rd_party=self.get_no_3rd_party(),
             now=self.now,
             settings=self.settings,
             short_title=self.short_title,
             testing=pytest_is_running(),
-            theme=self.get_display_theme(),
+            display_theme=self.get_display_theme(),
             title=self.title,
             apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
             if self.apm_enabled
@@ -687,14 +556,6 @@ class BaseRequestHandler(RequestHandler):
             }
         )
         return namespace
-
-    def get_theme(self) -> str:
-        """Get the theme currently selected."""
-        if (
-            theme := self.get_argument("theme", "").replace("-", "_").lower()
-        ) in THEMES:
-            return theme
-        return self.get_saved_theme()
 
     async def get_time(self) -> datetime:
         """Get the start time of the request in the users' timezone."""
@@ -1151,6 +1012,11 @@ class BaseRequestHandler(RequestHandler):
             and signature.parameters["head"].kind
             == inspect.Parameter.KEYWORD_ONLY
         )
+
+    @cached_property
+    def user_settings(self) -> Options:
+        """Get the user settings."""
+        return Options(self)
 
     @override
     def write(self, chunk: str | bytes | dict[str, Any]) -> None:

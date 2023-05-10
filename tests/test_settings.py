@@ -138,12 +138,14 @@ async def test_setting_stuff_and_saving_to_cookies(
             assert morsel["path"] == "/"
             assert morsel["samesite"] == "Strict"
             assert morsel.key in {
-                "theme",
-                "no_3rd_party",
-                "dynload",
-                "openmoji",
-                "bumpscosity",
                 "advanced_settings",
+                "bumpscosity",
+                "compatibility",
+                "dynload",
+                "effects",
+                "no_3rd_party",
+                "openmoji",
+                "theme",
             }
             if morsel.key == "theme":
                 assert morsel.value == "pink"
@@ -151,7 +153,7 @@ async def test_setting_stuff_and_saving_to_cookies(
                 assert morsel.value == "img"
             elif morsel.key == "bumpscosity":
                 assert morsel.value == "0"
-            elif morsel.key == "advanced_settings":
+            elif morsel.key in {"advanced_settings", "compatibility"}:
                 assert morsel.value == "nope"
             else:
                 assert morsel.value == "sure"

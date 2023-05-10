@@ -24,8 +24,6 @@ from ..utils.utils import (
     THEMES,
     ModuleInfo,
     bool_to_str,
-    parse_bumpscosity,
-    parse_openmoji_arg,
     str_to_bool,
 )
 
@@ -56,14 +54,12 @@ class SettingsPage(HTMLRequestHandler):
         await self.render(  # nosec: B106
             "pages/settings.html",
             advanced_settings=self.show_advanced_settings(),
-            bumpscosity=self.get_bumpscosity(),
             bumpscosity_values=BUMPSCOSITY_VALUES,
-            dynload=self.get_dynload(),
-            no_3rd_party_default=self.get_no_3rd_party_default(),
-            openmoji=self.get_openmoji(),
+            no_3rd_party_default=self.user_settings.as_dict(
+                include_argument=False, include_cookie=False
+            )["no_3rd_party"],
             save_in_cookie=self.get_bool_argument("save_in_cookie", True),
             show_token_input=self.get_bool_argument("auth", False),
-            theme_name=self.get_theme(),
             themes=THEMES,
             token="",
         )
@@ -71,16 +67,7 @@ class SettingsPage(HTMLRequestHandler):
     async def post(self) -> None:
         """Handle POST requests to the settings page."""
         advanced_settings = self.get_bool_argument("advanced_settings", False)
-        bumpscosity = parse_bumpscosity(self.get_argument("bumpscosity", ""))
-        dynload: bool = self.get_bool_argument("dynload", False)
-        no_3rd_party: bool = self.get_bool_argument(
-            "no_3rd_party", self.get_no_3rd_party_default()
-        )
-        openmoji = parse_openmoji_arg(self.get_argument("openmoji", ""), False)
-        theme: str = self.get_argument("theme", None) or "default"
-
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
-
         token = self.get_argument("access_token", "")
         access_token: None | str = (
             b64encode(token.encode("UTF-8")).decode("ASCII") if token else None
@@ -90,35 +77,25 @@ class SettingsPage(HTMLRequestHandler):
             if access_token:
                 self.set_cookie("access_token", access_token)
             self.set_cookie("advanced_settings", bool_to_str(advanced_settings))
-            if self.get_argument("bumpscosity", ""):
-                self.set_cookie("bumpscosity", str(bumpscosity))
-            self.set_cookie("dynload", bool_to_str(dynload))
-            self.set_cookie("no_3rd_party", bool_to_str(no_3rd_party))
-            self.set_cookie("openmoji", openmoji if openmoji else "nope")
-            self.set_cookie("theme", theme)
+            for option in self.user_settings.iter_options():
+                self.set_cookie(
+                    option.name, option.value_to_string(option.get_value(self))
+                )
 
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 access_token=None,
                 advanced_settings=None,
-                bumpscosity=None,
-                dynload=None,
-                no_3rd_party=None,
-                openmoji=None,
                 save_in_cookie=None,
-                theme=None,
+                **{key: None for key in self.user_settings.iter_option_names()},
             )
         else:
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 access_token=access_token,
                 advanced_settings=advanced_settings,
-                bumpscosity=bumpscosity,
-                dynload=dynload,
-                no_3rd_party=no_3rd_party,
-                openmoji=openmoji,
                 save_in_cookie=False,
-                theme=theme,
+                **self.user_settings.as_dict_with_str_values(),
             )
 
         if replace_url_with != self.request.full_url():
@@ -127,16 +104,13 @@ class SettingsPage(HTMLRequestHandler):
         await self.render(
             "pages/settings.html",
             advanced_settings=self.show_advanced_settings(),
-            bumpscosity=bumpscosity,
             bumpscosity_values=BUMPSCOSITY_VALUES,
-            dynload=dynload,
-            no_3rd_party=no_3rd_party,
-            no_3rd_party_default=self.get_no_3rd_party_default(),
-            openmoji=openmoji,
+            no_3rd_party_default=self.user_settings.as_dict(
+                include_argument=False, include_cookie=False
+            )["no_3rd_party"],
             save_in_cookie=save_in_cookie,
             show_token_input=token or self.get_bool_argument("auth", False),
             themes=THEMES,
-            theme_name=theme,
             token=token,
         )
 
