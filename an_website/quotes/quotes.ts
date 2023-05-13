@@ -143,16 +143,14 @@ function startQuotes() {
                 alert(data.reason);
             }
             return false;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         } else if (data?.data.id) {
             updateQuoteId(data.id);
             nextQuoteId[0] = data.next;
             quote.innerText = `»${data.quote}«`;
             author.innerText = `- ${data.author}`;
             realAuthor.innerText = data.real_author;
-            realAuthor.href = `/zitate/info/a/${
-                data.real_author_id
-            }${params}`;
+            realAuthor.href = `/zitate/info/a/${data.real_author_id}${params}`;
             if (reportButton) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
@@ -229,8 +227,7 @@ for (
         "auto-submit-element",
     ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
-    autoSubmitEl.onchange = () =>
-        (autoSubmitEl.form!).submit();
+    autoSubmitEl.onchange = () => (autoSubmitEl.form!).submit();
 }
 
 startQuotes();
