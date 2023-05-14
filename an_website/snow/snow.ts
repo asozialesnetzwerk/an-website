@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
-window.showSnow = (()=>{
+window.showSnow = (() => {
     const random = Math.random;
     const snow = document.getElementById("snow") as HTMLDivElement;
 
@@ -56,9 +56,13 @@ window.showSnow = (()=>{
 
     // Create style for snowflake
     function spawnSnowCSS(snowDensity = 200): void {
-        const getTransform = (translateX: string, translateY: string, scale: number): string => {
+        const getTransform = (
+            translateX: string,
+            translateY: string,
+            scale: number,
+        ): string => {
             return `transform: translate(${translateX}, ${translateY}) scale(${scale});`;
-        }
+        };
 
         let rule = "";
 
@@ -80,7 +84,9 @@ window.showSnow = (()=>{
   animation: fall-${i} ${fallDuration}s ${fallDelay}s linear infinite;
 }
 @keyframes fall-${i} {
-  ${randomYoyoTime * 100}% {${getTransform(randomXEnd + "vw", randomYoyoY + "vh", randomScale)}}
+  ${randomYoyoTime * 100}% {${
+                getTransform(randomXEnd + "vw", randomYoyoY + "vh", randomScale)
+            }}
   to {${getTransform(randomXEndYoyo + "vw", "100vh", randomScale)}}
 }`;
         }
@@ -102,8 +108,7 @@ window.showSnow = (()=>{
     // this should be easy as CSS rerenders after display block -> none -> block;
     // TODO add progress bar for slower clients
 
-
-    return (value: boolean): void => {  // showSnow
+    return (value: boolean): void => { // showSnow
         if (value) {
             snow.style.display = "block";
         } else {
