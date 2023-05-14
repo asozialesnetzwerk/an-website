@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
-window.showSnow = (() => {
+window["showSnow"] = (() => {
     const random = Math.random;
     const snow = document.getElementById("snow") as HTMLDivElement;
 
@@ -61,7 +61,7 @@ window.showSnow = (() => {
             translateY: string,
             scale: number,
         ): string => {
-            return `transform: translate(${translateX}, ${translateY}) scale(${scale});`;
+            return `transform: translate(${translateX},${translateY}) scale(${scale});`;
         };
 
         let rule = "";
@@ -80,14 +80,14 @@ window.showSnow = (() => {
             rule += `
 #snow p:nth-child(${i}) {
   opacity: ${random()};
-  ${getTransform(randomX + "vw", "-10px", randomScale)}
+  ${getTransform(`${randomX}vw`, "-10px", randomScale)}
   animation: fall-${i} ${fallDuration}s ${fallDelay}s linear infinite;
 }
 @keyframes fall-${i} {
   ${randomYoyoTime * 100}% {${
-                getTransform(randomXEnd + "vw", randomYoyoY + "vh", randomScale)
+                getTransform(`${randomXEnd}vw`, `${randomYoyoY}vh`, randomScale)
             }}
-  to {${getTransform(randomXEndYoyo + "vw", "100vh", randomScale)}}
+  to {${getTransform(`${randomXEndYoyo}vw`, "100vh", randomScale)}}
 }`;
         }
         addCss(rule);
