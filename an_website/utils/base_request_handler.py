@@ -135,7 +135,6 @@ class BaseRequestHandler(RequestHandler):
     content_type: None | str = None
     apm_script: None | str
     crawler: bool = False
-    now: datetime
     nonce: str
 
     def _super_finish(
@@ -665,6 +664,17 @@ class BaseRequestHandler(RequestHandler):
     ) -> bool | None:
         """Check whether the request is authorized."""
         return is_authorized(self, permission, allow_cookie_auth)
+
+    @cached_property
+    def now(self) -> datetime:
+        """Get the current time."""
+        if pytest_is_running():
+            raise AssertionError("Now accessed before it was set")
+        LOGGER.error("Now accessed before it was set")
+        return datetime.fromtimestamp(
+            self.request._start_time,  # pylint: disable=protected-access
+            tz=timezone.utc,
+        )
 
     @override
     async def options(self, *args: Any, **kwargs: Any) -> None:
