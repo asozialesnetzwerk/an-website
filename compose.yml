@@ -1,0 +1,52 @@
+networks:
+  podman:
+    ipam:
+      driver: slirp4netns:port_handler=slirp4netns
+      config:
+        - subnet: "10.0.2.0/24"
+  default:
+    ipam:
+      driver: "default"
+volumes:
+  sockets:
+    name: "sockets"
+services:
+  redis:
+    image: "docker.io/redis/redis-stack-server:6.2.6-v7"
+    expose:
+      - "6379"
+    volumes:
+      - "./compose/.data/redis/:/data/:z"
+    networks:
+      podman:
+        ipv4_address: "10.0.2.10"
+  an-website:
+    image: "ghcr.io/asozialesnetzwerk/an-website:git"
+    depends_on:
+      - "redis"
+    volumes:
+      - "sockets:/var/run/an-website/:z"
+      - "./config.ini:/data/config.ini:z,ro"
+    command:
+      - "--processes=-1"
+      - "--unix-socket-path=/var/run/an-website/"
+      - "--config=/data/config.ini"
+      - "--redis-port=6379"
+      - "--redis-host=10.0.2.10"
+      - "--redis-enabled=sure"
+      - "--elastic-apm-rum-server-url-prefix=/apm/intake/v2/rum-events"
+      - "--elastic-apm-rum-server-url="
+      # redis doesn't provide CL.THROTTLE per default
+      - "--ratelimits=nope"
+    networks:
+      podman: {}
+      default: {}
+  nginx:
+    image: "docker.io/nginx"
+    depends_on:
+      - "an-website"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./compose/nginx.conf.d/:/etc/nginx/conf.d/:z,ro"
+      - "sockets:/var/run/an-website/:z"

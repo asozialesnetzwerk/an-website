@@ -1,0 +1,56 @@
+proxy_set_header Host              $http_host;
+proxy_set_header X-Real-IP         $remote_addr;
+proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+
+proxy_http_version 1.1;
+proxy_send_timeout 20s;
+proxy_read_timeout 20s;
+
+gzip off;
+
+location / {
+    proxy_pass http://an-website;
+}
+
+location /api/backdoor {
+    if ($arg_worker !~ '^(0|1|2|3)$') {
+        set $arg_worker '0';
+    }
+    proxy_pass http://unix:/var/run/an-website/an-website.$arg_worker.sock;
+}
+
+location /api/update {
+    proxy_pass http://an-website;
+
+    proxy_request_buffering off;
+    client_max_body_size    50M;
+}
+
+location /websocket/ {
+    proxy_pass http://unix:/var/run/an-website/an-website.1.sock;
+
+    proxy_set_header Host              $http_host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Connection        upgrade;
+    proxy_set_header Upgrade           $http_upgrade;
+}
+
+location = /apm/intake/v2/rum-events {
+    resolver   1.1.1.1;
+    set $apm_domain apm.asozial.org;
+    proxy_pass https://$apm_domain:8200/intake/v2/rum/events;
+    add_header Access-Control-Allow-Origin: "*";
+#    proxy_ssl_verify on;
+
+    proxy_set_header Host       $apm_domain;
+    proxy_set_header X-Real-IP  $remote_addr;
+
+    proxy_ssl_protocols TLSv1.3;
+    proxy_ssl_name apm.asozial.org;
+    proxy_http_version 1.1;
+    proxy_pass_request_headers on;
+    proxy_pass_request_body on;
+}
