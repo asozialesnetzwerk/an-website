@@ -28,8 +28,10 @@ from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, length_of_match, n_from_set
 from . import FILE_NAMES, LANGUAGES, get_letters, get_words
 
-WILDCARDS_REGEX: Final = regex.compile(r"[_?-]+")
-NOT_WORD_CHAR: Final = regex.compile(r"[^a-zA-ZäöüßÄÖÜẞ]+")
+WILDCARDS_REGEX: Final = regex.compile(r"[*_?-]+")
+WORD_CHARS: Final = "a-zA-ZäöüßÄÖÜẞ"
+NOT_WORD_CHAR: Final = regex.compile(rf"[^{WORD_CHARS}]+")
+NOT_WORD_CHAR_OR_WILDCARD: Final = regex.compile(rf"[^_{WORD_CHARS}]")
 
 
 def get_module_info() -> ModuleInfo:
@@ -67,9 +69,10 @@ class Hangman:  # pylint: disable=too-many-instance-attributes
 
 def fix_input_str(_input: str) -> str:
     """Make the input lower case, strips it and replace wildcards with _."""
-    return WILDCARDS_REGEX.sub(
+    wild_cards_normalized = WILDCARDS_REGEX.sub(
         lambda m: "_" * length_of_match(m), _input.lower().strip()
     )[:100]
+    return NOT_WORD_CHAR_OR_WILDCARD.sub("", wild_cards_normalized)
 
 
 def fix_invalid(invalid: str) -> str:
