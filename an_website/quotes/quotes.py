@@ -321,7 +321,7 @@ class QuoteById(QuoteBaseHandler):
         ):
             wrong_quote = await get_wrong_quote(int_quote_id, int(author_id))
             return await self.finish(
-                create_image(
+                await create_image(
                     wrong_quote.quote.quote,
                     wrong_quote.author.name,
                     wrong_quote.rating,

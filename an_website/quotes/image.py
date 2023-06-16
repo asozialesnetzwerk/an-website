@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import io
 import logging
 import math
@@ -110,7 +111,7 @@ WITZIG_IMAGE: Final = load_png("StempelWitzig")
 NICHT_WITZIG_IMAGE: Final = load_png("StempelNichtWitzig")
 
 
-def get_lines_and_max_height(
+async def get_lines_and_max_height(
     text: str,
     max_width: int,
     font: ImageFont.FreeTypeFont,
@@ -121,6 +122,7 @@ def get_lines_and_max_height(
 
     max_line_length = max_width + 1
     while max_line_length > max_width:  # pylint: disable=while-used
+        await asyncio.sleep(0)
         lines = textwrap.wrap(text, width=column_count)
         max_line_length = max(font.getlength(line) for line in lines)
         column_count -= 1
@@ -158,7 +160,7 @@ def draw_text(  # pylint: disable=too-many-arguments
         )
 
 
-def draw_lines(  # pylint: disable=too-many-arguments
+async def draw_lines(  # pylint: disable=too-many-arguments
     image: ImageDraw.ImageDraw,
     lines: Iterable[str],
     y_start: int,
@@ -170,6 +172,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
 ) -> int:
     """Draw the lines on the image and return the last y position."""
     for line in lines:
+        await asyncio.sleep(0)
         width = font.getlength(line)
         draw_text(
             image,
@@ -183,7 +186,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
     return y_start
 
 
-def create_image(  # noqa: C901  # pylint: disable=too-complex
+async def create_image(  # noqa: C901  # pylint: disable=too-complex
     # pylint: disable=too-many-arguments, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     quote: str,
@@ -205,7 +208,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     if width <= AUTHOR_MAX_WIDTH:
         quote_lines = [quote_str]
     else:
-        quote_lines, max_line_height = get_lines_and_max_height(
+        quote_lines, max_line_height = await get_lines_and_max_height(
             quote_str, QUOTE_MAX_WIDTH, font
         )
     if len(quote_lines) < 3:
@@ -216,7 +219,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         y_start = 75
     else:
         y_start = 50
-    y_text = draw_lines(
+    y_text = await draw_lines(
         draw,
         quote_lines,
         y_start,
@@ -226,17 +229,17 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         0,
         1 if file_type == "4-color-gif" else 0,
     )
-
+    await asyncio.sleep(0)
     # draw author
     author_str = f"- {author}"
     width, max_line_height = font.getbbox(author_str)[2:]
     if width <= AUTHOR_MAX_WIDTH:
         author_lines = [author_str]
     else:
-        author_lines, max_line_height = get_lines_and_max_height(
+        author_lines, max_line_height = await get_lines_and_max_height(
             author_str, AUTHOR_MAX_WIDTH, font
         )
-    y_text = draw_lines(
+    y_text = await draw_lines(
         draw,
         author_lines,
         max(
@@ -248,10 +251,10 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         10,
         1 if file_type == "4-color-gif" else 0,
     )
-
+    await asyncio.sleep(0)
     if y_text > IMAGE_HEIGHT and font is FONT:
         LOGGER.info("Using smaller font for quote %s", source)
-        return create_image(
+        return await create_image(
             quote,
             author,
             rating,
@@ -283,7 +286,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             ),
             mask=icon,
         )
-
+    await asyncio.sleep(0)
     # draw host name
     if source:
         width, height = HOST_NAME_FONT.getbbox(source)[2:]
@@ -300,6 +303,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         with TemporaryDirectory() as tempdir_name:
             filepath = os.path.join(tempdir_name, f"{wq_id or '0-0'}.xlsx")
             to_excel(image, filepath, lower_image_size_by=10)
+            await asyncio.sleep(0)
             with open(filepath, "rb") as file:
                 return file.read()
 
@@ -327,7 +331,9 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     elif file_type == "webp":
         kwargs.update(lossless=True)
 
+    await asyncio.sleep(0)
     image.save(buffer, **kwargs)
+    await asyncio.sleep(0)
     return buffer.getvalue()
 
 
@@ -401,7 +407,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             file_type = "4-color-gif"
 
         return await self.finish(
-            create_image(
+            await create_image(
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
                 wrong_quote.rating,
