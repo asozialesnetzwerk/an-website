@@ -33,6 +33,10 @@ rss.svg:
 kangarooface.svg:
 - Creator: UNKNOWN
 
+logo.svg:
+- Source of path: kangarooface.svg
+- Creator: Joshix
+
 netcup-oekostrom2.png,
 netcup-oekostrom2.jxl:
 - Source: https://www.netcup-wiki.de/wiki/Werbemittel

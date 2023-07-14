@@ -4,14 +4,10 @@
            tabindex="-1"
            href="{{fix_url('/')}}"
            class="no-style-a-emoji"
-           id="back-to-home"></a>
+           id="back-to-home">
+            <img src="{{fix_static('img/logo.svg')}}" alt="Zurück zur Startseite">
+        </a>
         <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
-        {#
-            ugly workaround because Chromium (sadly most used) is stupid
-            see: https://bugs.chromium.org/p/chromium/issues/detail?id=109212&q=clip-path&can=2
-            the path is set in base.css, because it is huge
-        #}
-        <svg width="0" height="0"><clipPath id="kangaroo-face" clipPathUnits="objectBoundingBox"><path d=""/></clipPath></svg>
     </section>
     {% if settings %}
         <img id="open-pane"
