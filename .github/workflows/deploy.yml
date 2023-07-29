@@ -301,6 +301,9 @@ jobs:
           popd
       - name: Download youki
         run: |
+          ls -l /usr/local || true
+          mkdir -p /usr/local/bin
+          ls -l /usr/local/bin
           wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
           tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /usr/local/bin/youki
           rm -f youki_0_0_5_linux.tar.gz
