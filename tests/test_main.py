@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import pathlib
 
 import regex
@@ -47,66 +48,64 @@ async def test_parsing_module_infos(
     main.sort_module_infos(module_infos_list)
     assert module_infos == tuple(module_infos_list)
 
+    arguments = set()
+
     # tests about module infos
     for module_info in module_infos:
-        if module_info.path is not None:
-            assert module_info.path.isascii()
-            assert module_info.path.strip() == module_info.path
-            assert not module_info.path.endswith("/") or module_info.path == "/"
-            assert module_info.path in {module_info.path.lower(), "/LOLWUT"}
+        if module_info.path is None:
+            continue
+        assert module_info.path.isascii()
+        assert module_info.path.strip() == module_info.path
+        assert not module_info.path.endswith("/") or module_info.path == "/"
+        assert module_info.path in {module_info.path.lower(), "/LOLWUT"}
 
-            for alias in module_info.aliases:
-                assert alias.startswith("/")
-                assert not alias.endswith("/")
-                if module_info.path != "/chat" and alias.isascii():
-                    await assert_valid_redirect(fetch, alias, module_info.path)
+        for alias in module_info.aliases:
+            assert alias.startswith("/")
+            assert not alias.endswith("/")
+            if module_info.path != "/chat" and alias.isascii():
+                await assert_valid_redirect(fetch, alias, module_info.path)
 
-            if module_info.path != "/api/update":
-                # check if at least one handler matches the path
-                handler_matches_path = False
-                for handler in module_info.handlers:
-                    if regex.fullmatch("(?i)" + handler[0], module_info.path):
-                        handler_matches_path = True
-                        break
-                assert handler_matches_path
+        if module_info.path != "/api/update":
+            # check if at least one handler matches the path
+            handler_matches_path = False
+            for handler in module_info.handlers:
+                if regex.fullmatch("(?i)" + handler[0], module_info.path):
+                    handler_matches_path = True
+                    break
+            assert handler_matches_path
 
-            if module_info.path not in {
-                "/chat",  # head not supported
-                "/api/update",
-                "/api/upload",
-            }:
-                follow_redirects = module_info.path in {
-                    "/redirect",
-                    "/zitat-des-tages",
-                }
-                valid_response_codes = {200, 503}
-                if module_info.path == "/api/reports":
-                    valid_response_codes.add(404)
-                head_response = await fetch(
-                    module_info.path,
-                    method="HEAD",
-                    raise_error=False,
-                    follow_redirects=follow_redirects,
-                )
-                assert head_response.code in valid_response_codes
-                assert head_response.body == b""
-                get_response = await fetch(
-                    module_info.path,
-                    method="GET",
-                    raise_error=False,
-                    follow_redirects=follow_redirects,
-                )
-                assert get_response.code in valid_response_codes
-                assert get_response.body != b""
-                for header in (
-                    "Content-Type",
-                    "Onion-Location",
-                    "Permissions-Policy",
-                ):
-                    assert (
-                        get_response.headers[header]
-                        == head_response.headers[header]
-                    )
+        if module_info.path in {
+            "/chat",  # head not supported
+            "/api/update",
+            "/api/upload",
+        }:
+            continue
+        if module_info.path.startswith("/api/"):
+            should = (
+                "text/plain"
+                if module_info.path in {"/api/commitment", "/api/ping"}
+                else "application/json"
+            )
+            arguments.update((
+                (module_info.path, "*/*", should),
+                (module_info.path, should),
+            ))
+            continue
+        arguments.update((
+            (module_info.path, "*/*", "text/html"),
+            (module_info.path, "text/html"),
+            (module_info.path, "text/markdown"),
+            (module_info.path, "text/plain"),
+            (module_info.path, "application/vnd.asozial.dynload+json"),
+        ))
+
+    # test all arguments
+    await asyncio.gather(
+        *(
+            assert_valid_response(fetch, *argument)
+            for argument in arguments
+        )
+    )
 
     # handlers should all be at least 3 long
     assert (
@@ -116,6 +115,46 @@ async def test_parsing_module_infos(
             if issubclass(handler[1], BaseRequestHandler)
         )
         == 3
+    )
+
+
+async def assert_valid_response(
+    fetch: FetchCallable, path: str, accept_header: str, content_type: str = ""
+) -> None:
+    """Assert that the response is valid."""
+    follow_redirects = path in {
+        "/redirect",
+        "/zitat-des-tages",
+    }
+    valid_response_codes = {200, 503}
+    if path == "/api/reports":
+        valid_response_codes.add(404)
+    head_response = await fetch(
+        path,
+        headers={"Accept": accept_header},
+        method="HEAD",
+        raise_error=False,
+        follow_redirects=follow_redirects,
+    )
+    assert head_response.code in valid_response_codes
+    assert not head_response.body
+    get_response = await fetch(
+        path,
+        headers={"Accept": accept_header},
+        method="GET",
+        raise_error=False,
+        follow_redirects=follow_redirects,
+    )
+    assert get_response.code == head_response.code
+    assert get_response.body.endswith(b"\n")
+    for header in (
+        "Content-Type",
+        "Onion-Location",
+        "Permissions-Policy",
+    ):
+        assert get_response.headers[header] == head_response.headers[header]
+    assert get_response.headers["Content-Type"].startswith(
+        content_type or accept_header
     )
 
 
