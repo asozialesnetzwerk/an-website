@@ -120,7 +120,7 @@ async def test_parsing_module_infos(
 
 
 async def assert_valid_response(
-    fetch: FetchCallable, path: str, accept_header: str, content_type: str = ""
+    _fetch: FetchCallable, path: str, accept_header: str, content_type: str = ""
 ) -> None:
     """Assert that the response is valid."""
     follow_redirects = path in {
@@ -130,7 +130,7 @@ async def assert_valid_response(
     valid_response_codes = {200, 503}
     if path == "/api/reports":
         valid_response_codes.add(404)
-    head_response = await fetch(
+    head_response = await _fetch(
         path,
         headers={"Accept": accept_header},
         method="HEAD",
@@ -139,7 +139,7 @@ async def assert_valid_response(
     )
     assert head_response.code in valid_response_codes
     assert not head_response.body
-    get_response = await fetch(
+    get_response = await _fetch(
         path,
         headers={"Accept": accept_header},
         method="GET",

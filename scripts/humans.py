@@ -92,7 +92,7 @@ def generate_humans_txt() -> str:
     for line in result.stdout.split("\n"):
         if not (line := line.strip()):
             continue
-        count, name = re.split(r"\s+", line, 1)
+        count, name = re.split(r"\s+", line, maxsplit=1)
         if name in BOTS:
             continue
         people.setdefault(name, 0)
