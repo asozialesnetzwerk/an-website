@@ -48,7 +48,7 @@ async def test_parsing_module_infos(
     main.sort_module_infos(module_infos_list)
     assert module_infos == tuple(module_infos_list)
 
-    arguments = set()
+    arguments: set[tuple[str, str] | tuple[str, str, str]] = set()
 
     # tests about module infos
     for module_info in module_infos:
