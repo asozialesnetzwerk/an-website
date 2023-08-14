@@ -253,6 +253,7 @@ class BaseRequestHandler(RequestHandler):
             return super().finish(
                 f"# {self.title}\n\n"
                 + html2text.html2text(chunk, self.request.full_url()).strip()
+                + "\n"
             )
 
         soup = BeautifulSoup(chunk, features="lxml")
