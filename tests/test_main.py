@@ -86,25 +86,26 @@ async def test_parsing_module_infos(
                 if module_info.path in {"/api/commitment", "/api/ping"}
                 else "application/json"
             )
-            arguments.update((
-                (module_info.path, "*/*", should),
-                (module_info.path, should),
-            ))
+            arguments.update(
+                (
+                    (module_info.path, "*/*", should),
+                    (module_info.path, should),
+                )
+            )
             continue
-        arguments.update((
-            (module_info.path, "*/*", "text/html"),
-            (module_info.path, "text/html"),
-            (module_info.path, "text/markdown"),
-            (module_info.path, "text/plain"),
-            (module_info.path, "application/vnd.asozial.dynload+json"),
-        ))
+        arguments.update(
+            (
+                (module_info.path, "*/*", "text/html"),
+                (module_info.path, "text/html"),
+                (module_info.path, "text/markdown"),
+                (module_info.path, "text/plain"),
+                (module_info.path, "application/vnd.asozial.dynload+json"),
+            )
+        )
 
     # test all arguments
     await asyncio.gather(
-        *(
-            assert_valid_response(fetch, *argument)
-            for argument in arguments
-        )
+        *(assert_valid_response(fetch, *argument) for argument in arguments)
     )
 
     # handlers should all be at least 3 long
