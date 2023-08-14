@@ -79,7 +79,7 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
 
     await assert_valid_redirect(fetch, "/services.html", "/services", {308})
     await assert_valid_redirect(fetch, "/services/", "/services", {308})
-    await assert_valid_redirect(fetch, f"/services////////", "/services", {308})
+    await assert_valid_redirect(fetch, "/services/////////", "/services", {308})
 
     await assert_valid_redirect(fetch, "/serices/index.htm", "/serices", {308})
     await assert_valid_redirect(fetch, "/serices", "/services", {307})
