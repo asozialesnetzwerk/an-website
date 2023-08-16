@@ -8,8 +8,8 @@
 	Location:NRW, Germany   
   
 /* THANKS */ 
-	Contributor: binarynoise   
-     
-	CSS wizard:​  h4ckerle  　
+	CSS wizard: h4ckerle 
+ 
+	Contributor:   binarynoise
   　
 	README destroyer:Jimi  
