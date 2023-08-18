@@ -9,6 +9,10 @@
   filter: contrast(120%) brightness(120%);
 }
 
+.share-btn {
+  color: #fff;
+}
+
 .share-btn--mastodon {
   background-color: #2B90D9
 }
