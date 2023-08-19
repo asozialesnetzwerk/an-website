@@ -20,10 +20,10 @@ from pathlib import Path
 from random import Random
 from typing import ClassVar
 
-from . import DIR
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
+from . import DIR
 
 
 def get_module_info() -> ModuleInfo:
