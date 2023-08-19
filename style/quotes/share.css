@@ -1,11 +1,11 @@
-#share-buttons {
+#main div {
   min-width: 42%;
   max-width: 100%;
   margin-top: 2rem;
 }
 
-#share-buttons a:focus,
-#share-buttons a:hover {
+#main div a:focus,
+#main div a:hover {
   transform: scale(1.01);
   filter: contrast(120%) brightness(120%);
 }
@@ -15,7 +15,7 @@
 }
 
 /* Initially generated using https://sharingbuttons.io since then improved. */
-#share-buttons a {
+#main div a {
   text-decoration: none;
   color: #fff;
   margin: .8rem;
@@ -25,46 +25,54 @@
   padding: .75rem 1rem;
 }
 
-#share-buttons a svg {
+#main div a svg {
   background-color: transparent;
   display: block;
-  width: 1rem;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   margin-bottom: .1rem;
   margin-right: 0.4rem;
-  vertical-align: top
+  vertical-align: top;
 }
 
-/* Non solid icons get a stroke */
-#share-buttons a svg {
+#main div a svg:not(.fill) {
   stroke: #fff;
-  fill: none
+  fill: none;
+}
+
+.fill {
+  fill: #fff;
+  stroke: none;
+}
+
+.stroke-2x {
+  stroke-width: 2px;
 }
 
 #twitter {
-  background-color: #55acee;
+  background: #55acee;
 }
 
 #pinterest {
-  background-color: #bd081c;
+  background: #bd081c;
 }
 
 #facebook {
-  background-color: #3b5998;
+  background: #3b5998;
 }
 
 #reddit {
-  background-color: #ff4400;
+  background: #ff4400;
 }
 
 #email {
-  background-color: #777;
+  background: #777;
 }
 
 #whatsapp {
-  background-color: #25D366;
+  background: #25D366;
 }
 
 #telegram {
-  background-color: #54A9EB;
+  background: #54A9EB;
 }
