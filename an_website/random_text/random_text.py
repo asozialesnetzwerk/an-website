@@ -20,6 +20,8 @@ from pathlib import Path
 from random import Random
 from typing import ClassVar
 
+import regex
+
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
@@ -57,35 +59,53 @@ WORDS = tuple(
     .splitlines()
 )
 
-HTML = (
+HTML: str = (
     "<!DOCTYPE html>"
     '<html lang="de">'
     "<head>"
     "<title>{title}</title>"
     "</head>"
     "<body>"
+    "<h1>{title}</h1>"
     "{text}"
     "</body>"
     "</html>"
 )
+HTML_BLOCKS: tuple[str, ...] = (
+    "<blockquote>{p}</blockquote>",
+    "<code>{p}</code>",
+    "<pre>{p}</pre>",
+)
 
 
-def generate_random_word(random: Random) -> str:
+def generate_random_word(random: Random, title: bool = False) -> str:
     """Generate a random word."""
-    return random.choice(WORDS)
+    word = random.choice(WORDS)
+    return word.title() if title else word
 
 
 def generate_random_text(random: Random, length: int, end: str = "") -> str:
     """Generate a random text."""
     text: list[str] = []
 
-    for _ in range(length):
-        word = generate_random_word(random)
-        if random.random() < 0.1:
-            word += random.choice(".?!,")
-        text.append(word)
+    title_next = True
 
-    return " ".join(text).removesuffix(end) + end
+    for _ in range(length - 1):
+        text.append(generate_random_word(random, title=title_next))
+        add_punctuation = not random.randrange(9) and not title_next
+        title_next = False
+        if add_punctuation:
+            text.append(random.choice(".?!.?!,;"))
+            if text[-1] not in ",;":
+                title_next = True
+                if not random.randrange(4):
+                    text.append("\n\n")
+                    continue
+        text.append(" ")
+
+    text.extend((generate_random_word(random, title=title_next), end))
+
+    return "".join(text)
 
 
 class RandomText(APIRequestHandler):
@@ -104,10 +124,18 @@ class RandomText(APIRequestHandler):
         text = generate_random_text(random, args.words, end=".")
         if self.content_type == "text/plain":
             return await self.finish(text)
-        if self.content_type == "text/html":
-            return await self.finish(
-                HTML.format(
-                    title=generate_random_text(random, 2),
-                    text=text,
-                )
+
+        title = regex.sub(
+            r"[.?!,;]*\s+",
+            " ",
+            generate_random_text(random, random.randint(2, 4)),
+        )
+        text = "".join(
+            (
+                f"<p>{paragraph}</p>"
+                if random.randrange(3)
+                else random.choice(HTML_BLOCKS).format(p=paragraph)
             )
+            for paragraph in text.split("\n\n")
+        )
+        return await self.finish(HTML.format(title=title, text=text))

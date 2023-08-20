@@ -78,8 +78,16 @@ async def test_parsing_module_infos(
             "/chat",  # head not supported
             "/api/update",
             "/api/upload",
-            "/api/zufaelliger-text",
         }:
+            continue
+        if module_info.path == "/api/zufaelliger-text":
+            arguments.update(
+                (
+                    (module_info.path, "*/*", "text/plain"),
+                    (module_info.path, "text/plain"),
+                    (module_info.path, "text/html"),
+                )
+            )
             continue
         if module_info.path.startswith("/api/"):
             should = (

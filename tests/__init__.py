@@ -335,6 +335,7 @@ def assert_valid_html_response(
     response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
     effective_url: None | str = None,
+    assert_canonical: bool = True,
 ) -> HTTPResponse:
     """Assert a valid HTML response with the given status code."""
     assert_valid_response(response, "text/html;charset=utf-8", codes)
@@ -348,11 +349,16 @@ def assert_valid_html_response(
         print(repr(body))
         raise
     assert not spam.errors or print(effective_url, spam.errors, body)
-    # check if the canonical link is present in the document
-    assert (
-        (url_in_doc := root.find("./head/link[@rel='canonical']").get("href"))
-        == effective_url.split("?")[0].rstrip("/")
-    ) or print(url_in_doc, effective_url)
+    if assert_canonical:
+        # check if the canonical link is present in the document
+        assert (
+            (
+                url_in_doc := root.find("./head/link[@rel='canonical']").get(
+                    "href"
+                )
+            )
+            == effective_url.split("?")[0].rstrip("/")
+        ) or print(url_in_doc, effective_url)
     # check for template strings that didn't get replaced
     matches = regex.findall(
         r"{\s*[a-zA-Z_]+\s*}", response.body.decode("UTF-8")
