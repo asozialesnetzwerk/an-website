@@ -232,15 +232,13 @@ class CurrencyConverter(HTMLRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the currency converter page."""
+        # pylint: disable=unused-argument
         value_dict = await self.create_value_dict()
         if value_dict is None:
             value_dict = await get_value_dict(0)
             description = self.description
         else:
             description = cast(str, value_dict["text"])
-
-        if head:
-            return
 
         if value_dict.get("too_many_params", False):
             used_key = value_dict.get("key_used")

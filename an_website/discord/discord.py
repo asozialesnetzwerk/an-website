@@ -173,8 +173,7 @@ class DiscordAPI(APIRequestHandler):
         self, guild_id: str = GUILD_ID, *, head: bool = False
     ) -> None:
         """Get the Discord invite and render it as JSON."""
-        if head:
-            return
+        # pylint: disable=unused-argument
         invite, source_url = await get_invite_with_cache(guild_id)
         return await self.finish_dict(invite=invite, source=source_url)
 

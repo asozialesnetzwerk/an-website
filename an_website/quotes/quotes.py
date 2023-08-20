@@ -198,8 +198,7 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Render the main quote page, with a few links."""
-        if head:
-            return
+        # pylint: disable=unused-argument
         quote = self.get_argument("quote", "")
         author = self.get_argument("author", "")
         if (quote or author) and regex.fullmatch(r"^[0-9]+$", quote + author):
