@@ -570,6 +570,7 @@ def name_to_id(val: str) -> str:
         replace_umlauts(val).lower(),
     ).strip("-")
 
+
 def parse_bumpscosity(value: str | int | None) -> BumpscosityValue:
     """Parse a string to a valid bumpscosity value."""
     if isinstance(value, str):

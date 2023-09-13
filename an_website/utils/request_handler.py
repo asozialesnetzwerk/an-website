@@ -35,11 +35,7 @@ from tornado.web import HTTPError
 
 from .. import DIR as ROOT_DIR
 from .base_request_handler import BaseRequestHandler
-from .utils import (
-    SUS_PATHS,
-    remove_suffix_ignore_case,
-    replace_umlauts,
-)
+from .utils import SUS_PATHS, remove_suffix_ignore_case, replace_umlauts
 
 if TYPE_CHECKING or sys.hexversion >= 0x30C00A6:
     # pylint: disable=no-name-in-module, ungrouped-imports

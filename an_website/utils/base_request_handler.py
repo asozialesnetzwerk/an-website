@@ -311,7 +311,7 @@ class BaseRequestHandler(RequestHandler):
         if url.netloc and url.netloc.lower() != self.request.host.lower():
             path = "/redirect"
             query_args["to"] = quote(url.geturl())
-            url = self.request.full_url()
+            url = urlsplit(self.request.full_url())
         else:
             path = url.path if new_path is None else new_path
         path = f"/{path.strip('/')}".lower()

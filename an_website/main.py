@@ -53,8 +53,6 @@ from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore[import]
-from typed_stream import Stream
-
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from redis.asyncio import (
     BlockingConnectionPool,
@@ -66,6 +64,7 @@ from setproctitle import setproctitle
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
 from tornado.web import Application, RedirectHandler
+from typed_stream import Stream
 
 from . import (
     DIR,
@@ -345,7 +344,7 @@ def ignore_modules(config: BetterConfigParser) -> None:
 
 
 def get_normed_paths_from_module_infos(
-    module_infos: Iterable[ModuleInfo]
+    module_infos: Iterable[ModuleInfo],
 ) -> tuple[str, ...]:
     """Get all paths from the module infos."""
 
