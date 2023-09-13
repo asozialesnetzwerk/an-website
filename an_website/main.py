@@ -53,6 +53,8 @@ from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore[import]
+from typed_stream import Stream
+
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from redis.asyncio import (
     BlockingConnectionPool,
@@ -342,6 +344,30 @@ def ignore_modules(config: BetterConfigParser) -> None:
     )
 
 
+def get_normed_paths_from_module_infos(
+    module_infos: Iterable[ModuleInfo]
+) -> tuple[str, ...]:
+    """Get all paths from the module infos."""
+
+    def info_to_paths(info: ModuleInfo) -> Iterable[str | None]:
+        return (
+            info.path,
+            *info.aliases,
+            *Stream(info.sub_pages).map(lambda page: page.path),
+        )
+
+    return (
+        Stream(module_infos)
+        .flat_map(info_to_paths)
+        .filter()
+        .map(str.strip, "/")
+        .filter(lambda p: len(p) > 1)
+        .map(str.lower)
+        .distinct()
+        .collect(tuple)
+    )
+
+
 def make_app(config: ConfigParser) -> str | Application:
     """Create the Tornado application and return it."""
     module_infos, duration = time_function(get_module_infos)
@@ -356,6 +382,7 @@ def make_app(config: ConfigParser) -> str | Application:
     return Application(
         handlers,  # type: ignore[arg-type]
         MODULE_INFOS=module_infos,
+        NORMED_PATHS=get_normed_paths_from_module_infos(module_infos),
         HANDLERS=handlers,
         # General settings
         autoreload=False,

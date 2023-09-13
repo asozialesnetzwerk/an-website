@@ -19,6 +19,7 @@ This should only contain request handlers and the get_module_info function.
 
 from __future__ import annotations
 
+import difflib
 import logging
 import os
 import sys
@@ -36,7 +37,6 @@ from .. import DIR as ROOT_DIR
 from .base_request_handler import BaseRequestHandler
 from .utils import (
     SUS_PATHS,
-    normalized_levenshtein,
     remove_suffix_ignore_case,
     replace_umlauts,
 )
@@ -110,41 +110,10 @@ class NotFoundHandler(BaseRequestHandler):
         if len(this_path_normalized) == 1:
             return self.redirect(self.fix_url(new_path="/"))
 
-        distances: list[tuple[float, str]] = []
-        max_dist = 0.5
-
-        for module_info in self.get_module_infos():
-            if module_info.path is not None:
-                dist = min(  # get the smallest distance with the aliases
-                    normalized_levenshtein(
-                        this_path_normalized, path.strip("/").lower()
-                    )
-                    for path in (*module_info.aliases, module_info.path)
-                    if path != "/z"  # do not redirect to /z
-                )
-                if dist <= max_dist:
-                    # only if the distance is less than or equal {max_dist}
-                    distances.append((dist, module_info.path))
-            if len(module_info.sub_pages) > 0:
-                distances.extend(
-                    (
-                        normalized_levenshtein(
-                            this_path_normalized,
-                            sub_page.path.strip("/").lower(),
-                        ),
-                        sub_page.path,
-                    )
-                    for sub_page in module_info.sub_pages
-                    if sub_page.path is not None
-                )
-
-        if len(distances) > 0:
-            # sort to get the one with the smallest distance in index 0
-            distances.sort()
-            dist, path = distances[0]  # pylint: disable=redefined-outer-name
-            # redirect only if the distance is less than or equal {max_dist}
-            if dist <= max_dist:
-                return self.redirect(self.fix_url(new_path=path), False)
+        paths: tuple[str, ...] = self.settings.get("NORMED_PATHS") or ()
+        matches = difflib.get_close_matches(this_path_normalized, paths, n=1)
+        if matches:
+            return self.redirect(self.fix_url(new_path=matches[0]), False)
 
         self.set_status(404)
         self.write_error(404)

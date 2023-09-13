@@ -309,8 +309,14 @@ class BaseRequestHandler(RequestHandler):
         if isinstance(url, str):
             url = urlsplit(url)
         if url.netloc and url.netloc.lower() != self.request.host.lower():
-            url = urlsplit(f"/redirect?to={quote(url.geturl())}")
-        path = url.path if new_path is None else new_path  # the path of the url
+            path = "/redirect"
+            query_args["to"] = quote(url.geturl())
+            url = self.request.full_url()
+        else:
+            path = url.path if new_path is None else new_path
+        path = f"/{path.strip('/')}".lower()
+        if path == "/lolwut":
+            path = path.upper()
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
                 {key: None for key in self.user_settings.iter_option_names()}
@@ -332,7 +338,7 @@ class BaseRequestHandler(RequestHandler):
                 (
                     self.request.protocol,
                     self.request.host,
-                    path.rstrip("/"),
+                    path,
                     url.query,
                     url.fragment,
                 )

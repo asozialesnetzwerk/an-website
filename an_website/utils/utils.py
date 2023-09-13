@@ -49,7 +49,6 @@ from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 import elasticapm  # type: ignore[import]
 import regex
 from blake3 import blake3  # type: ignore[import]
-from editdistance import distance
 from elasticsearch import AsyncElasticsearch, ElasticsearchException
 from geoip import geolite2  # type: ignore[import]
 from redis.asyncio import Redis
@@ -570,12 +569,6 @@ def name_to_id(val: str) -> str:
         "-",
         replace_umlauts(val).lower(),
     ).strip("-")
-
-
-def normalized_levenshtein(string1: str, string2: str) -> float:
-    """Calculate the normalized Levenshtein distance between two strings."""
-    return float(distance(string1, string2)) / max(len(string1), len(string2))
-
 
 def parse_bumpscosity(value: str | int | None) -> BumpscosityValue:
     """Parse a string to a valid bumpscosity value."""
