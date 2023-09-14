@@ -56,6 +56,7 @@ class QuoteOfTheDayStore(abc.ABC):
 
 
 class QuoteOfTheDayStoreWithCache(QuoteOfTheDayStore, abc.ABC):
+    # pylint: disable=abstract-method
     """Quote of the day store with an in memory cache."""
 
     CACHE: ClassVar[dict[date, tuple[int, int]]]
@@ -91,6 +92,7 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStoreWithCache):
 
     def __init__(self, redis: Redis[str], redis_prefix: str) -> None:
         """Initialize the Redis quote of the day store."""
+        super().__init__()
         self.redis = redis
         self.redis_prefix = redis_prefix
 

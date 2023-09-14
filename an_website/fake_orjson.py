@@ -70,7 +70,7 @@ class JSONEncodeError(TypeError):
     """Nobody inspects the spammish repetition."""
 
 
-def _default(
+def _default(  # pylint: disable=too-complex
     default: None | Callable[[Any], Any], option: int, spam: object
 ) -> Any:
     serialize_dataclass = not option & OPT_PASSTHROUGH_DATACLASS
@@ -86,7 +86,7 @@ def _default(
         if type(spam) in (datetime, time):
             if option & OPT_OMIT_MICROSECONDS:
                 spam = spam.replace(microsecond=0)  # type: ignore[attr-defined]
-            if type(spam) is datetime:
+            if type(spam) is datetime:  # pylint: disable=unidiomatic-typecheck
                 if option & OPT_NAIVE_UTC and not spam.tzinfo:
                     spam = spam.replace(tzinfo=timezone.utc)
                 if (
@@ -98,7 +98,7 @@ def _default(
         return spam.isoformat()  # type: ignore[attr-defined]
     if isinstance(spam, Enum):
         return spam.value
-    if type(spam) is UUID:
+    if type(spam) is UUID:  # pylint: disable=unidiomatic-typecheck
         return str(spam)
     if default:
         return default(spam)
