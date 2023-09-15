@@ -11,7 +11,7 @@ const args = parse(Deno.args, {
 const {
     list,
     targets,
-// @ts-expect-error TS2379
+    // @ts-expect-error TS2379
 } = compat({
     modules: "core-js/stable",
     targets: args.targets,
