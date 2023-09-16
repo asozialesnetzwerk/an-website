@@ -359,6 +359,7 @@ def get_normed_paths_from_module_infos(
         Stream(module_infos)
         .flat_map(info_to_paths)
         .filter()
+        .filter(lambda path: path.startswith("/"))
         .map(str.strip, "/")
         .filter(lambda p: len(p) > 1)
         .map(str.lower)
