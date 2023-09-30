@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
+import heapq
 import logging
 import os
 import pathlib
@@ -575,6 +576,41 @@ def name_to_id(val: str) -> str:
 def normalized_levenshtein(string1: str, string2: str) -> float:
     """Calculate the normalized Levenshtein distance between two strings."""
     return float(distance(string1, string2)) / max(len(string1), len(string2))
+
+
+def get_close_matches(  # based on difflib.get_close_matches
+    word: str,
+    possibilities: Iterable[str],
+    count: int = 3,
+    cutoff: float = 0.5,
+) -> tuple[str, ...]:
+    """Use normalized_levenshtein to return list of the best "good enough" matches.
+
+    word is a sequence for which close matches are desired (typically a string).
+
+    possibilities is a list of sequences against which to match word
+    (typically a list of strings).
+
+    Optional arg count (default 3) is the maximum number of close matches to
+    return.  count must be > 0.
+
+    Optional arg cutoff (default 0.5) is a float in [0, 1].  Possibilities
+    that don't score at least that similar to word are ignored.
+
+    The best (no more than count) matches among the possibilities are returned
+    in a tuple, sorted by similarity score, most similar first.
+    """
+    if count <= 0:
+        raise ValueError(f"count must be > 0: {count}")
+    if not 0.0 <= cutoff <= 1.0:
+        raise ValueError(f"cutoff must be in [0.0, 1.0]: {cutoff}")
+    result: list[tuple[float, str]] = []
+    for possibility in possibilities:
+        ratio: float = normalized_levenshtein(possibility, word)
+        if ratio <= cutoff:
+            result.append((ratio, possibility))
+    # Strip scores for the best count matches
+    return tuple(word for score, word in heapq.nsmallest(count, result))
 
 
 def parse_bumpscosity(value: str | int | None) -> BumpscosityValue:

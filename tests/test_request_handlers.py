@@ -76,6 +76,12 @@ async def test_json_apis(fetch: FetchCallable) -> None:  # noqa: F811
 async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the NotFoundHandler works."""
     assert_valid_html_response(await fetch("/qwertzuiop"), {404})
+    assert_valid_html_response(
+        await fetch(
+            "/https:/github.com/asozialesnetzwerk/vertauschtewoerterplugin"
+        ),
+        {404},
+    )
 
     await assert_valid_redirect(fetch, "/services.html", "/services", {308})
     await assert_valid_redirect(fetch, "/services/", "/services", {308})
