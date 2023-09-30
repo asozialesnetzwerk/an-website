@@ -28,7 +28,7 @@ from os.path import abspath, dirname
 from pathlib import Path
 from threading import Thread
 from types import MethodType
-from typing import Any, Final, cast
+from typing import Any, Final
 from urllib.parse import urlsplit
 
 import certifi
