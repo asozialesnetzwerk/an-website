@@ -23,16 +23,22 @@ runs:
         sudo apt-get install -y libcurl4-openssl-dev
         pip install -r pip-requirements.txt
         pip install -c pip-constraints.txt autoflake black isort
+      shell: bash
     - name: Run autoflake
       run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
+      shell: bash
     - name: Run isort
       run: isort .
+      shell: bash
     - name: Run Black
       run: black .
+      shell: bash
     - name: Install dprint
       run: curl -sSf https://dprint.dev/install.sh | sh -s 0.41.0
+      shell: bash
     - name: Run dprint
       run: ~/.dprint/bin/dprint fmt --diff
+      shell: bash
     - name: Install dart-sass
       run: |
         wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v${VERSION_BUF}/buf-$(uname -s)-$(uname -m)
@@ -48,26 +54,34 @@ runs:
         cd ..
         rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
         popd
+      shell: bash
       env:
         VERSION: 1.68.0
         VERSION_BUF: 1.26.1
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
+      shell: bash
     - name: Build JS & CSS
       run: deno task clean && deno task build
+      shell: bash
     - name: Generate humans.txt
       run: ./scripts/humans.py
+      shell: bash
     - name: Sort methods
       run: ./scripts/sort_python_code.py
+      shell: bash
     - name: Fix word-files for hangman solver
       run: ./scripts/fix_hangman_solver_word_files.py
+      shell: bash
     - name: Generate config.ini.default
       run: python3 -m an_website --save-config-to example-configurations/config.ini.default -c
+      shell: bash
     - name: Update env
       run: |
         D=$(python -c "print((_:=__import__('datetime')).datetime.now(tz=_.timezone.utc).replace(minute=0, second=0, microsecond=0).isoformat())")
         echo "GIT_AUTHOR_DATE=${D}" >> "${GITHUB_ENV}"
         echo "GIT_COMMITTER_DATE=${D}" >> "${GITHUB_ENV}"
+      shell: bash
     - name: Push changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
