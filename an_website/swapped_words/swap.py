@@ -121,15 +121,15 @@ class SwappedWords(HTMLRequestHandler):
                 MAX_CHAR_COUNT=MAX_CHAR_COUNT,
                 error_msg=str(exc),
             )
-        else:  # everything went well
-            return self.render(
-                "pages/swapped_words.html",
-                text=args.text,
-                output=sw_config.swap_words(args.text),
-                config=sw_config.to_config_str(),
-                MAX_CHAR_COUNT=MAX_CHAR_COUNT,
-                error_msg=None,
-            )
+        # everything went well
+        return self.render(
+            "pages/swapped_words.html",
+            text=args.text,
+            output=sw_config.swap_words(args.text),
+            config=sw_config.to_config_str(),
+            MAX_CHAR_COUNT=MAX_CHAR_COUNT,
+            error_msg=None,
+        )
 
     @parse_args(type_=SwArgs, validation_method="validate_require_text")
     async def post(self, *, args: SwArgs) -> None:

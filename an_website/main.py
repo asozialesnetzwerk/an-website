@@ -106,7 +106,7 @@ try:
 except ModuleNotFoundError:
     perf8 = None  # pylint: disable=invalid-name
 
-ES_WHAT_LITERAL: TypeAlias = Literal[
+ES_WHAT_LITERAL: TypeAlias = Literal[  # pylint: disable=invalid-name
     "component_templates", "index_templates", "ingest_pipelines"
 ]
 
@@ -737,7 +737,7 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
 def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     """Setup Elasticsearch."""  # noqa: D401
     config = app.settings["CONFIG"]
-    kwargs = dict(  # noqa: C408
+    kwargs = dict(  # noqa: C408  # pylint: disable=use-dict-literal
         cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         hosts=tuple(config.getset("ELASTICSEARCH", "HOSTS"))
         if config.has_option("ELASTICSEARCH", "HOSTS")
@@ -1165,6 +1165,7 @@ def main(  # noqa: C901  # pragma: no cover
         asyncio.set_event_loop(loop)
 
     if sys.version_info >= (3, 13) and not loop.get_task_factory():
+        # pylint: disable=no-member
         loop.set_task_factory(asyncio.eager_task_factory)
 
     if perf8 and "PERF8" in os.environ:

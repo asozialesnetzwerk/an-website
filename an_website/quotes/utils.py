@@ -382,6 +382,7 @@ def get_author_updated_with(author_id: int, name: str) -> Author:
 
     author = AUTHORS_CACHE.get(author_id)
     if author is None:  # author not in cache, create new one
+        # pylint: disable=too-many-function-args
         author = Author(author_id, name, None)
         MAX_AUTHORS_ID.value = max(  # type: ignore[attr-defined]
             MAX_AUTHORS_ID.value, author_id  # type: ignore[attr-defined]
@@ -423,6 +424,7 @@ def parse_quote(
     if quote is None:  # no quote supplied, try getting it from cache
         quote = QUOTES_CACHE.get(quote_id)
     if quote is None:  # new quote
+        # pylint: disable=too-many-function-args
         quote = Quote(quote_id, quote_str, author)
         MAX_QUOTES_ID.value = max(  # type: ignore[attr-defined]
             MAX_QUOTES_ID.value, quote.id  # type: ignore[attr-defined]
@@ -449,7 +451,7 @@ def parse_wrong_quote(
     if wrong_quote is None:
         wrong_quote = WRONG_QUOTES_CACHE.get(id_tuple)
         if wrong_quote is None:
-            wrong_quote = WrongQuote(
+            wrong_quote = WrongQuote(  # pylint: disable=unexpected-keyword-arg
                 id=wrong_quote_id,
                 quote=quote,
                 author=author,
@@ -651,7 +653,7 @@ async def get_wrong_quote(
     if use_cache and quote_id in QUOTES_CACHE and author_id in AUTHORS_CACHE:
         # we don't need to request anything, as the wrong_quote probably has
         # no ratings just use the cached quote and author
-        return WrongQuote(
+        return WrongQuote(  # pylint: disable=too-many-function-args
             -1,
             QUOTES_CACHE[quote_id],
             AUTHORS_CACHE[author_id],

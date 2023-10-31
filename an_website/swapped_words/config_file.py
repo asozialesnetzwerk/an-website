@@ -173,7 +173,7 @@ class TwoWayPair(WordPair):
         return f"{self.word1}|{self.word2}"
 
 
-WORDS_TUPLE: TypeAlias = tuple[ConfigLine, ...]
+WORDS_TUPLE: TypeAlias = tuple[ConfigLine, ...]  # pylint: disable=invalid-name
 
 LINE_END_REGEX: Pattern[str] = regex.compile(
     r"(?m)[\n;]",  # ";" or new line
@@ -253,8 +253,10 @@ def parse_config_line(  # pylint: disable=too-complex
             raise InvalidConfigError(
                 line_num, line, f"Right is invalid regex: {exc}"
             ) from exc
+        # pylint: disable=too-many-function-args
         return TwoWayPair(left_re.pattern, right_re.pattern)
     if separator == "=>":
+        # pylint: disable=too-many-function-args
         return OneWayPair(left_re.pattern, right)
 
     raise InvalidConfigError(line_num, line, "Something went wrong.")

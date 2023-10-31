@@ -64,7 +64,7 @@ def is_prime(n: int) -> bool:
     while d * d <= n:
         if not n % d:
             return False
-        d = d + 2
+        d += 2
     return n != 1
 
 

@@ -39,6 +39,7 @@ from typing import Any, TypeAlias, TypedDict, cast
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 with contextlib.suppress(ModuleNotFoundError):
+    # pylint: disable=shadowed-import
     import dill as pickle  # type: ignore[import, no-redef]  # noqa: F811  # nosec: B403
 
 try:
@@ -158,7 +159,7 @@ async def create_socket(
     )
 
 
-async def request(  # noqa: C901
+async def request(  # noqa: C901  # pylint: disable=too-many-arguments
     method: str,
     url: str | SplitResult,
     headers: None | MutableMapping[str, str] = None,
@@ -262,7 +263,7 @@ def detect_mode(code: str) -> str:
         return "exec"
 
 
-def send(
+def send(  # pylint: disable=too-many-arguments
     url: str | SplitResult,
     key: str,
     code: str,

@@ -51,7 +51,7 @@ def get_caller_name() -> None | str:  # noqa: D103
     return caller
 
 
-def dumps(  # noqa: D103
+def dumps(  # noqa: D103  # pylint: disable=too-many-arguments
     obj: Any,
     *,
     skipkeys: bool = False,

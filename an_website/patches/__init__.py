@@ -180,13 +180,10 @@ def patch_threading() -> None:
 
 def patch_tornado_418() -> None:
     """Add support for RFC 7168."""
-    RequestHandler.SUPPORTED_METHODS = (
-        RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
-        + (
-            "PROPFIND",
-            "BREW",
-            "WHEN",
-        )
+    RequestHandler.SUPPORTED_METHODS += (  # type: ignore[assignment]
+        "PROPFIND",
+        "BREW",
+        "WHEN",
     )
     _ = RequestHandler._unimplemented_method
     RequestHandler.propfind = _  # type: ignore[attr-defined]
@@ -336,6 +333,7 @@ def patch_tornado_redirect() -> None:
         status: None | int = None,
     ) -> None:
         if self._headers_written:
+            # pylint: disable=broad-exception-raised
             raise Exception("Cannot redirect after headers have been written")
         if status is None:
             status = 308 if permanent else 307

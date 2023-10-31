@@ -82,7 +82,7 @@ def parse_token(  # pylint: disable=inconsistent-return-statements
         raise InvalidTokenError from exc
 
 
-def create_token(
+def create_token(  # pylint: disable=too-many-arguments
     permissions: Permission,
     *,
     secret: bytes | str,

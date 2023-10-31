@@ -241,6 +241,7 @@ def sort_classes(
         filename = cast(str | bytes, os.fspath(filename))
 
     if isinstance(filename, str):
+        # pylint: disable=redefined-variable-type
         filename = filename.encode("UTF-8")
 
     for class_ in classes:

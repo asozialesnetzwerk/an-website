@@ -66,7 +66,9 @@ T = TypeVar("T")
 
 T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
 
-TOptionalStr = TypeVar("TOptionalStr", None, str)
+TOptionalStr = TypeVar(  # pylint: disable=invalid-name
+    "TOptionalStr", None, str
+)
 
 # pylint: disable=consider-alternative-union-syntax
 Handler: TypeAlias = Union[
@@ -632,7 +634,7 @@ def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
     return default
 
 
-async def ratelimit(
+async def ratelimit(  # pylint: disable=too-many-arguments
     redis: Redis[str],
     redis_prefix: str,
     remote_ip: str,
