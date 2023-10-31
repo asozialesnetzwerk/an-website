@@ -23,7 +23,7 @@ interface SwappedWordsData { // this is a mix of error data and success data
 }
 
 function ondata(
-    data: SwappedWordsData,
+    data: SwappedWordsData | undefined,
     onpopstate = false,
 ) {
     if (!data) {
@@ -90,7 +90,6 @@ function onerror(
         onerror,
     );
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 PopStateHandlers.swappedWords = (event: PopStateEvent) => {
     event.state && ondata(event.state as SwappedWordsData, true);
 };

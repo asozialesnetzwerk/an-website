@@ -88,7 +88,7 @@ function startLoadingComics() {
             date2.getDate(),
         );
 
-    const isSunday = (date: Date) => (
+    const isSunday = (date: Date | undefined) => (
         date &&
         date.getDay() === 0 &&
         // exception for 2020-12-20 (sunday) because there was a comic

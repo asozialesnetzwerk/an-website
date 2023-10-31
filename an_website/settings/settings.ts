@@ -4,7 +4,7 @@ export {};
 function createBumpscositySlider() {
     const select = document.getElementById(
         "bumpscosity-select",
-    ) as HTMLSelectElement;
+    ) as HTMLSelectElement | undefined;
 
     if (!select) {
         return;

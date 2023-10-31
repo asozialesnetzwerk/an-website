@@ -5,6 +5,7 @@ ignorePatterns:
   - "vendored"
 rules:
   compat/compat: "error"
+  "@typescript-eslint/no-non-null-assertion": "off"
 settings:
   lintAllEsApis: true
   polyfills:

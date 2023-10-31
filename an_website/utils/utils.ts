@@ -32,15 +32,13 @@ export function post(
 
 export function get(
     url: string,
-    params = {},
+    params: Record<string, string> = {},
     ondata = console.log,
     onerror = console.error,
     accept = "application/json",
 ): Promise<void> {
-    if (params) {
-        url += "?" + (new URLSearchParams(params)).toString();
-    }
-    return fetch(url, {
+    const paramsString = (new URLSearchParams(params)).toString();
+    return fetch(paramsString ? `${url}?${paramsString}` : url, {
         method: "GET",
         headers: { Accept: accept },
     })
@@ -52,11 +50,7 @@ export function get(
         .catch(onerror);
 }
 
-export const PopStateHandlers: any = {
-    replaceURL: (state: { origin: string }) => {
-        // reload if the last location was not the one that got replaced
-        lastLocation === state.origin || window.location.reload();
-    },
+export const PopStateHandlers: Record<string, (state: PopStateEvent) => unknown> = {
     // always reload the location if URLParamChange
     URLParamChange: () => {
         window.location.reload();
@@ -66,7 +60,7 @@ export const PopStateHandlers: any = {
 export function setURLParam(
     param: string,
     value: string,
-    state: any,
+    state: unknown,
     stateType = "URLParamChange",
     push = true,
 ) {
@@ -119,17 +113,15 @@ window.onpopstate = (event: PopStateEvent) => {
     }
     if (event.state) {
         const state = event.state as { stateType: string };
-        if (
-            state.stateType &&
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            PopStateHandlers[state.stateType]
-        ) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-            PopStateHandlers[state.stateType](event);
-            lastLocation = window.location.href;
+        const stateHandler = PopStateHandlers[state.stateType];
+        if (stateHandler) {
             event.preventDefault();
+            stateHandler(event);
+            lastLocation = window.location.href;
             scrollToId();
             return;
+        } else {
+            console.error("Couldn't find state handler for state", state);
         }
     }
 

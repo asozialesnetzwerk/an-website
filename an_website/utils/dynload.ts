@@ -21,7 +21,7 @@ interface DynloadData {
 }
 
 function dynLoadOnData(
-    data: DynloadData,
+    data: DynloadData | undefined,
     onpopstate: boolean,
 ) {
     if (!data) {
@@ -65,25 +65,21 @@ function dynLoadOnData(
         style.innerHTML = data.css;
         contentContainer.appendChild(style);
     }
-    if (data.stylesheets) {
-        for (const scriptURL of data.stylesheets) {
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.type = "text/css";
-            link.href = scriptURL;
-            contentContainer.appendChild(link);
-        }
+    for (const scriptURL of data.stylesheets) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.type = "text/css";
+        link.href = scriptURL;
+        contentContainer.appendChild(link);
     }
-    if (data.scripts) {
-        for (const script of data.scripts) {
-            if (script.src) {
-                const scriptElement = document.createElement("script");
-                scriptElement.type = script.type;
-                scriptElement.src = script.src;
-                contentContainer.appendChild(scriptElement);
-            } else {
-                console.error("Script without src", script);
-            }
+    for (const script of data.scripts) {
+        if (script.src) {
+            const scriptElement = document.createElement("script");
+            scriptElement.type = script.type;
+            scriptElement.src = script.src;
+            contentContainer.appendChild(scriptElement);
+        } else {
+            console.error("Script without src", script);
         }
     }
 
@@ -195,7 +191,7 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return await get(url, "", (data) => dynLoadOnData(data, false), (error) => {
+    await get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
             window.location.reload();
@@ -205,7 +201,7 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     }, "application/vnd.asozial.dynload+json");
 }
 
-function dynLoadOnPopState(event: PopStateEvent) {
+async function dynLoadOnPopState(event: PopStateEvent) {
     if (event.state) {
         const state = event.state as DynloadData;
         console.log("Popstate", state);
@@ -214,7 +210,7 @@ function dynLoadOnPopState(event: PopStateEvent) {
                 dynLoadOnData(state, true))
         ) {
             // when the data did not get handled properly
-            dynLoadSwitchToURL(
+            await dynLoadSwitchToURL(
                 state.url || window.location.href,
                 true,
             );
@@ -231,7 +227,6 @@ function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 PopStateHandlers.dynLoad = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();
