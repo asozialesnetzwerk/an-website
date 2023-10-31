@@ -159,8 +159,8 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
 
     // TODO: this is broken because of CSP
     anchor.onclick = (e) => {
-        dynLoad(href);
         e.preventDefault();
+        return dynLoad(href);
     };
 }
 
@@ -179,10 +179,10 @@ function dynLoad(url: string) {
         document.title,
         window.location.href,
     );
-    dynLoadSwitchToURL(url);
+    return dynLoadSwitchToURL(url);
 }
 
-function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
+async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     if (!allowSameUrl && url === window.location.href) {
         console.log("URL is the same as current, just hide site pane");
         // @ts-expect-error TS2774
@@ -195,7 +195,7 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
+    return await get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
             window.location.reload();
