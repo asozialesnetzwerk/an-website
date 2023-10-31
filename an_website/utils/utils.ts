@@ -50,7 +50,10 @@ export function get(
         .catch(onerror);
 }
 
-export const PopStateHandlers: Record<string, (state: PopStateEvent) => unknown> = {
+export const PopStateHandlers: Record<
+    string,
+    (state: PopStateEvent) => unknown
+> = {
     // always reload the location if URLParamChange
     URLParamChange: () => {
         window.location.reload();
