@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
-from editdistance import distance
+from rapidfuzz.distance.Levenshtein import distance
 from tornado.web import HTTPError, MissingArgumentError
 
 from ..utils.data_parsing import parse_args

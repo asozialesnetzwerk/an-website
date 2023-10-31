@@ -20,7 +20,7 @@ import logging
 from typing import Final, Literal, TypeAlias, cast
 
 import orjson as json
-from elastic_enterprise_search import AppSearch  # type: ignore[import]
+from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
 from typed_stream import Stream
 
 from .. import NAME

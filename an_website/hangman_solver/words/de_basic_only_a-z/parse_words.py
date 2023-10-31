@@ -18,7 +18,7 @@
 from __future__ import annotations
 
 import regex
-from defusedxml.etree.ElementTree import parse  # type: ignore[import]
+from defusedxml.etree.ElementTree import parse  # type: ignore[import-untyped]
 
 if __name__ == "__main__":
     # how to get the file:

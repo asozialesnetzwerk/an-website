@@ -26,7 +26,7 @@ from typing import Any, Final, cast
 import defity
 import orjson as json
 import tornado.web
-from blake3 import blake3  # type: ignore[import]
+from blake3 import blake3  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR

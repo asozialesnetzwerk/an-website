@@ -48,7 +48,7 @@ import orjson as json
 import pytest
 import regex
 import yaml
-from blake3 import blake3  # type: ignore[import]
+from blake3 import blake3  # type: ignore[import-untyped]
 from lxml import etree  # nosec: B410
 from lxml.html import document_fromstring  # nosec: B410
 from lxml.html.html5parser import HTMLParser  # nosec: B410

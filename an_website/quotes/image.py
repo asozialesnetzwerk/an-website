@@ -40,7 +40,9 @@ from .utils import (
 )
 
 try:
-    from unexpected_isaves.save_image import to_excel  # type: ignore[import]
+    from unexpected_isaves.save_image import (  # type: ignore[import-not-found]
+        to_excel,
+    )
 except ModuleNotFoundError:
     to_excel = None  # pylint: disable=invalid-name
 

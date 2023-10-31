@@ -123,7 +123,7 @@ def requires(
     *perms: Permission,
     return_instead_of_finishing: Any = _DefaultValue,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[Args, Ret]], Callable[..., Any]]:
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Any]]:
     """Handle required permissions."""
     permissions = Permission(0)
     for perm in perms:

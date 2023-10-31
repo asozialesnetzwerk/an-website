@@ -30,8 +30,8 @@ from random import Random
 from types import TracebackType
 from typing import Any, ClassVar, Final, cast
 
-import dill  # type: ignore[import]  # nosec: B403
-import jsonpickle  # type: ignore[import]
+import dill  # type: ignore[import-untyped]  # nosec: B403
+import jsonpickle  # type: ignore[import-untyped]
 import regex
 from tornado.web import HTTPError
 
@@ -224,7 +224,7 @@ class Backdoor(APIRequestHandler):
             except SystemExit as exc:
                 if self.content_type == "text/plain":
                     return await self.finish(
-                        traceback.format_exception_only(exc)[0]  # type: ignore[arg-type]  # noqa: B950
+                        traceback.format_exception_only(exc)[0]
                     )
                 session.pop("self", None)
                 session.pop("app", None)

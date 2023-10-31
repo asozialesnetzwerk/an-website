@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Collection
 
-from editdistance import distance
+from rapidfuzz.distance.Levenshtein import distance
 from typed_stream import Stream
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler

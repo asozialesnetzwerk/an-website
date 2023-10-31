@@ -37,12 +37,12 @@ from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
-import elasticapm  # type: ignore[import]
+import elasticapm  # type: ignore[import-untyped]
 import html2text
 import orjson as json
 import regex
 import yaml
-from accept_types import get_best_match  # type: ignore[import]
+from accept_types import get_best_match  # type: ignore[import-untyped]
 from ansi2html import Ansi2HTMLConverter
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
@@ -218,7 +218,9 @@ class BaseRequestHandler(RequestHandler):
     @property
     def elasticsearch_prefix(self) -> str:
         """Get the Elasticsearch prefix from the settings."""
-        return self.settings.get("ELASTICSEARCH_PREFIX", NAME)
+        return self.settings.get(  # type: ignore[no-any-return]
+            "ELASTICSEARCH_PREFIX", NAME
+        )
 
     @override
     def finish(  # noqa: D102
@@ -840,7 +842,9 @@ class BaseRequestHandler(RequestHandler):
     @property
     def redis_prefix(self) -> str:
         """Get the Redis prefix from the settings."""
-        return self.settings.get("REDIS_PREFIX", NAME)
+        return self.settings.get(  # type: ignore[no-any-return]
+            "REDIS_PREFIX", NAME
+        )
 
     @override
     def render(  # noqa: D102

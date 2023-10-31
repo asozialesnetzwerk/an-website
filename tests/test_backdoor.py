@@ -18,7 +18,7 @@ from __future__ import annotations
 from types import EllipsisType
 from typing import Any, Literal, TypedDict, cast
 
-import dill  # type: ignore[import]  # nosec: B403
+import dill  # type: ignore[import-untyped]  # nosec: B403
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,

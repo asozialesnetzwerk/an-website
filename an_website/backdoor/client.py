@@ -40,10 +40,10 @@ from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 with contextlib.suppress(ModuleNotFoundError):
     # pylint: disable=shadowed-import
-    import dill as pickle  # type: ignore[import, no-redef]  # noqa: F811  # nosec: B403
+    import dill as pickle  # type: ignore[import-untyped, no-redef]  # noqa: F811, B950  # nosec: B403
 
 try:
-    import hy  # type: ignore[import]
+    import hy  # type: ignore[import-untyped]
 except ModuleNotFoundError:
     hy = None  # pylint: disable=invalid-name
 
@@ -53,7 +53,7 @@ except ModuleNotFoundError:
     idna = None  # type: ignore[assignment]  # pylint: disable=invalid-name
 
 try:
-    import socks  # type: ignore[import]
+    import socks  # type: ignore[import-untyped]
 except ModuleNotFoundError:
     socks = None  # pylint: disable=invalid-name
 
@@ -378,11 +378,7 @@ def run_and_print(  # noqa: C901
             proxy_password=proxy_password,
         )
     except SyntaxError as exc:
-        print(
-            "".join(
-                traceback.format_exception_only(exc)  # type: ignore[arg-type]
-            ).strip()
-        )
+        print("".join(traceback.format_exception_only(exc)).strip())
         return
     if time_requests:
         took = time.monotonic() - start_time
@@ -673,7 +669,9 @@ def main() -> int | str:  # noqa: C901
     )
 
     # pylint: disable=import-outside-toplevel, import-error, useless-suppression
-    from pyrepl.python_reader import ReaderConsole  # type: ignore[import]
+    from pyrepl.python_reader import (  # type: ignore[import-untyped]
+        ReaderConsole,
+    )
     from pyrepl.python_reader import main as _main
 
     def _run_and_print(  # type: ignore[no-any-unimported]

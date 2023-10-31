@@ -30,12 +30,12 @@ from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
 
-import elasticapm  # type: ignore[import]
+import elasticapm  # type: ignore[import-untyped]
 import orjson as json
 from redis.asyncio import Redis
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import Application, HTTPError
-from UltraDict import UltraDict  # type: ignore[import]
+from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
 from .. import (

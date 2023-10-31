@@ -47,15 +47,15 @@ from typing import (
 )
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
-import elasticapm  # type: ignore[import]
+import elasticapm  # type: ignore[import-untyped]
 import regex
-from blake3 import blake3  # type: ignore[import]
-from editdistance import distance
+from blake3 import blake3  # type: ignore[import-untyped]
 from elasticsearch import AsyncElasticsearch, ElasticsearchException
-from geoip import geolite2  # type: ignore[import]
+from geoip import geolite2  # type: ignore[import-untyped]
+from rapidfuzz.distance.Levenshtein import normalized_distance
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
-from UltraDict import UltraDict  # type: ignore[import]
+from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
@@ -572,18 +572,13 @@ def name_to_id(val: str) -> str:
     ).strip("-")
 
 
-def normalized_levenshtein(string1: str, string2: str) -> float:
-    """Calculate the normalized Levenshtein distance between two strings."""
-    return float(distance(string1, string2)) / max(len(string1), len(string2))
-
-
 def get_close_matches(  # based on difflib.get_close_matches
     word: str,
     possibilities: Iterable[str],
     count: int = 3,
     cutoff: float = 0.5,
 ) -> tuple[str, ...]:
-    """Use normalized_levenshtein to return list of the best "good enough" matches.
+    """Use normalized_distance to return list of the best "good enough" matches.
 
     word is a sequence for which close matches are desired (typically a string).
 
@@ -605,7 +600,7 @@ def get_close_matches(  # based on difflib.get_close_matches
         raise ValueError(f"cutoff must be in [0.0, 1.0]: {cutoff}")
     result: list[tuple[float, str]] = []
     for possibility in possibilities:
-        ratio: float = normalized_levenshtein(possibility, word)
+        ratio: float = normalized_distance(possibility, word)
         if ratio <= cutoff:
             result.append((ratio, possibility))
     # Strip scores for the best count matches

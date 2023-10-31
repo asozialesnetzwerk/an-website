@@ -23,7 +23,7 @@ from collections.abc import Awaitable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
-from typing import Any, cast
+from typing import Any
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -73,7 +73,7 @@ class AsyncHandler(logging.Handler):
         self, record: LogRecord
     ) -> bool | LogRecord:
         """Handle incoming log records."""
-        rv = cast(bool | LogRecord, self.filter(record))
+        rv = self.filter(record)
         if isinstance(rv, LogRecord):
             record = rv
         if rv and not self.loop.is_closed():

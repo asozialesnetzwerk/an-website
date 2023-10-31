@@ -32,8 +32,8 @@ from typing import Any, Final
 from urllib.parse import urlsplit
 
 import certifi
-import defusedxml  # type: ignore[import]
-import jsonpickle  # type: ignore[import]
+import defusedxml  # type: ignore[import-untyped]
+import jsonpickle  # type: ignore[import-untyped]
 import orjson
 import pycurl
 import tornado.httputil
@@ -54,7 +54,9 @@ DIR: Final = abspath(dirname(__file__))
 
 with suppress(ModuleNotFoundError):
     # pylint: disable=import-error, useless-suppression
-    from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
+    from jxlpy import (  # type: ignore[import-not-found]  # noqa: F401
+        JXLImagePlugin,
+    )
 
 
 def apply() -> None:
