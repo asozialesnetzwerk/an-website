@@ -669,7 +669,7 @@ def main() -> int | str:  # noqa: C901
     )
 
     # pylint: disable=import-outside-toplevel, import-error, useless-suppression
-    from pyrepl.python_reader import (  # type: ignore[import-untyped]
+    from pyrepl.python_reader import (  # type: ignore[import-not-found]
         ReaderConsole,
     )
     from pyrepl.python_reader import main as _main
