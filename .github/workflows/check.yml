@@ -175,7 +175,9 @@ jobs:
       - name: Install tsc
         run: pnpm install
       - name: Run tsc
-        run: pnpm tsc -p an_website
+        run: |
+          pnpm tsc -p an_website
+          pnpm tsc -p scripts
 
   shellcheck:
     name: ShellCheck

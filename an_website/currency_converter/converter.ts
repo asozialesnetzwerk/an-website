@@ -103,7 +103,7 @@ function strToBigInt(str: string): bigint | number {
     return BigInt(int + dec);
 }
 
-PopStateHandlers.currencyConverter = (e: PopStateEvent) => {
+PopStateHandlers["currencyConverter"] = (e: PopStateEvent) => {
     setAllFields(
         strToBigInt((e.state as { euro: string }).euro.toString()),
     );

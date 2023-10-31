@@ -23,7 +23,7 @@ function displayResults(results: Result[]) {
     }
 }
 
-PopStateHandlers.search = (event: PopStateEvent) => {
+PopStateHandlers["search"] = (event: PopStateEvent) => {
     const state = event.state as { query: string; results: Result[] };
     searchInput.value = state.query;
     displayResults(state.results);

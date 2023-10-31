@@ -176,7 +176,7 @@ function startQuotes() {
         return false;
     }
 
-    PopStateHandlers.quotes = (event: PopStateEvent) => {
+    PopStateHandlers["quotes"] = (event: PopStateEvent) => {
         event.state && handleData(event.state as API_DATA);
     };
 

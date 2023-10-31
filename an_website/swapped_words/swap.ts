@@ -90,7 +90,7 @@ function onerror(
         onerror,
     );
 
-PopStateHandlers.swappedWords = (event: PopStateEvent) => {
+PopStateHandlers["swappedWords"] = (event: PopStateEvent) => {
     event.state && ondata(event.state as SwappedWordsData, true);
 };
 // @license-end

@@ -32,7 +32,7 @@ export function post(
 
 export function get(
     url: string,
-    params: Record<string, string> = {},
+    params: Record<string, string> | string = {},
     ondata = console.log,
     onerror = console.error,
     accept = "application/json",

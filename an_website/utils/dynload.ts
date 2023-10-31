@@ -227,7 +227,7 @@ async function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
-PopStateHandlers.dynLoad = dynLoadOnPopState;
+PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();
 // @license-end
