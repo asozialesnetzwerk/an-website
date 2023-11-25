@@ -126,6 +126,7 @@ emoji==2.8.0
 frozenlist==1.4.0
 funcparserlib==1.0.1
 get-version==3.5.5
+hangman-solver-rs==0.1.1
 hiredis==2.2.3
 html2text==2020.1.16
 hy==0.27.0

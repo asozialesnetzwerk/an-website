@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "67b5f01c4cac7e26ed8507c5dad46951be2f879e36e1aac20ea81bed13040b52"
+            "sha256": "ed417296a934fba5ad28e5f1cb2715feba499223d2b77c355831868f100862bf"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -627,6 +627,14 @@
             ],
             "index": "pypi",
             "version": "==3.5.5"
+        },
+        "hangman-solver-rs": {
+            "hashes": [
+                "sha256:8cded504eccce558b08eb3bf4dc0eb067695de9243e32171ae4418710f70c307",
+                "sha256:cd3d9351db6a585ce10442598c79d4bec87e45986228eb1e1d75f7bac30851db"
+            ],
+            "index": "pypi",
+            "version": "==0.1.1"
         },
         "hiredis": {
             "hashes": [

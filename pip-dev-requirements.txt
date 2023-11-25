@@ -126,6 +126,7 @@ emoji==2.8.0
 frozenlist==1.4.0; python_version >= '3.8'
 funcparserlib==1.0.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
 get-version==3.5.5
+hangman-solver-rs==0.1.1
 hiredis==2.2.3
 html2text==2020.1.16
 hy==0.27.0; python_version < '3.13' and python_version >= '3.8'

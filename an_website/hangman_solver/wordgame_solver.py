@@ -17,12 +17,12 @@ from __future__ import annotations
 
 from collections.abc import Collection
 
+from hangman_solver import Language, read_words_with_length
 from rapidfuzz.distance.Levenshtein import distance
 from typed_stream import Stream
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
-from . import FILE_NAMES, get_words
 
 
 def get_module_info() -> ModuleInfo:
@@ -50,9 +50,11 @@ def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
 
     return (
         Stream((word_len - 1, word_len, word_len + 1))
-        .map("de_basic/%s".__mod__)
-        .filter(FILE_NAMES.__contains__)
-        .flat_map(get_words)
+        .flat_map(
+            lambda length: read_words_with_length(
+                Language.DeBasicUmlauts, length
+            )
+        )
         .exclude(ignore.__contains__)
         .filter(lambda test_word: distance(word, test_word) == 1)
     )

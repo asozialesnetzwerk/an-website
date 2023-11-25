@@ -16,71 +16,9 @@
 from __future__ import annotations
 
 import pytest
-import regex
 from tornado.web import HTTPError
 
 from an_website.hangman_solver import hangman_solver as solver
-
-
-def test_filter_words() -> None:
-    """Test filtering words."""
-    words = frozenset(
-        {
-            # r"[01]"
-            "0",
-            "1",
-            # r"[01]{2}"
-            "01",
-            "10",
-            # r"[ab]"
-            "a",
-            "b",
-            # r"[ab]{2}"
-            "ab",
-            "ba",
-            # match none
-            "a0",
-            "b1",
-        }
-    )
-
-    for pattern in (r"[01]", r"[01]{2}", r"[ab]", r"[ab]{2}"):
-        matched_words, sorted_letters = solver.filter_words(
-            words,
-            regex.compile(pattern),
-            "0b",
-            False,
-            False,
-        )
-        assert len(matched_words) == 2
-        assert "0" not in sorted_letters
-        assert "b" not in sorted_letters
-        assert len(sorted_letters) == 1
-
-
-def test_generate_pattern_str() -> None:
-    """Test generating the pattern string."""
-    pattern_str = solver.generate_pattern_str(
-        input_str="_", invalid="", crossword_mode=False
-    )
-    assert pattern_str == "."
-
-    pattern_str = solver.generate_pattern_str(
-        input_str="___", invalid="", crossword_mode=False
-    )
-    assert pattern_str == "..."
-
-    pattern_str = solver.generate_pattern_str(
-        input_str="_",
-        invalid="ABCcccccccccccccccccccccc",
-        crossword_mode=False,
-    )
-    assert regex.fullmatch(r"^\[\^[abc]{3}]\{1}$", pattern_str)
-
-    pattern_str = solver.generate_pattern_str(
-        input_str="___", invalid="abc", crossword_mode=False
-    )
-    assert regex.fullmatch(r"^\[\^[abc]{3}]\{3}$", pattern_str)
 
 
 def test_solving_hangman() -> None:
@@ -89,7 +27,7 @@ def test_solving_hangman() -> None:
     hangman: solver.Hangman = solver._solve_hangman(
         input_str="te_t",
         invalid="x",
-        language="de_only_a-z",
+        language="de",
         max_words=10,
         crossword_mode=False,
     )
@@ -101,7 +39,7 @@ def test_solving_hangman() -> None:
     hangman = solver._solve_hangman(
         input_str="_est",
         invalid="n",
-        language="de_only_a-z",
+        language="de",
         max_words=10,
         crossword_mode=False,
     )
@@ -112,7 +50,7 @@ def test_solving_hangman() -> None:
     hangman = solver._solve_hangman(
         input_str="_est",
         invalid="x",
-        language="de_only_a-z",
+        language="de",
         max_words=10,
         crossword_mode=False,
     )
@@ -123,7 +61,7 @@ def test_solving_hangman() -> None:
     hangman = solver._solve_hangman(
         input_str="_est",
         invalid="x",
-        language="de_only_a-z",
+        language="de",
         max_words=10,
         crossword_mode=True,
     )
@@ -135,7 +73,7 @@ def test_solving_hangman() -> None:
     hangman = solver._solve_hangman(
         input_str="______",
         invalid="e",
-        language="de_only_a-z",
+        language="de",
         max_words=10,
         crossword_mode=False,
     )
@@ -150,7 +88,7 @@ def test_solving_hangman() -> None:
     hangman = solver._solve_hangman(
         input_str="______",
         invalid="",
-        language="de",
+        language="de_umlauts",
         max_words=10,
         crossword_mode=False,
     )
@@ -170,5 +108,4 @@ def test_solving_hangman() -> None:
 
 
 if __name__ == "__main__":
-    test_filter_words()
     test_solving_hangman()

@@ -20,6 +20,7 @@ elasticsearch = {version = "==7.*", extras = ["async"]}
 emoji = "==2.*"
 # frozendict = "==2.*"
 get_version = "==3.*"
+hangman-solver-rs = "==0.1.*"
 html2text = "==2020.1.16"
 hyrule = {version = "<2", markers = "python_version < '3.13'"}
 jsonpickle = "==3.*"
