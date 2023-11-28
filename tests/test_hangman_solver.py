@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import pytest
+from hangman_solver import HangmanResult
 from tornado.web import HTTPError
 
 from an_website.hangman_solver import hangman_solver as solver
@@ -23,87 +24,100 @@ from an_website.hangman_solver import hangman_solver as solver
 
 def test_solving_hangman() -> None:
     """Test solving hangman puzzles."""
-    # pylint: disable=protected-access
-    hangman: solver.Hangman = solver._solve_hangman(
-        input_str="te_t",
-        invalid="x",
-        language="de",
-        max_words=10,
-        crossword_mode=False,
+    hangman: HangmanResult = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="te_t",
+            invalid="x",
+            lang="de",
+            max_words=10,
+            crossword_mode=False,
+        ),
     )
 
     assert len(hangman.words) <= 10
     assert "test" in hangman.words
-    assert hangman.letters["s"] == 1
+    assert dict(hangman.letter_frequency)["s"] == 1
 
-    hangman = solver._solve_hangman(
-        input_str="_est",
-        invalid="n",
-        language="de",
-        max_words=10,
-        crossword_mode=False,
+    hangman = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="_est",
+            invalid="n",
+            lang="de",
+            max_words=10,
+            crossword_mode=False,
+        ),
     )
 
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = solver._solve_hangman(
-        input_str="_est",
-        invalid="x",
-        language="de",
-        max_words=10,
-        crossword_mode=False,
+    hangman = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="_est",
+            invalid="x",
+            lang="de",
+            max_words=10,
+            crossword_mode=False,
+        )
     )
 
     assert len(hangman.words) <= 10
     assert "test" not in hangman.words
 
-    hangman = solver._solve_hangman(
-        input_str="_est",
-        invalid="x",
-        language="de",
-        max_words=10,
-        crossword_mode=True,
+    hangman = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="_est",
+            invalid="x",
+            lang="de",
+            max_words=10,
+            crossword_mode=True,
+        )
     )
 
     assert len(hangman.words) <= 10
     assert "test" in hangman.words
-    assert hangman.letters["t"] == 1
+    assert dict(hangman.letter_frequency)["t"] == 1
 
-    hangman = solver._solve_hangman(
-        input_str="______",
-        invalid="e",
-        language="de",
-        max_words=10,
-        crossword_mode=False,
+    hangman = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="______",
+            invalid="e",
+            lang="de",
+            max_words=10,
+            crossword_mode=False,
+        )
     )
 
     assert len(hangman.words) <= 10
-    assert hangman.word_count > 10
-    assert "e" not in hangman.letters
-    assert "ä" not in hangman.letters
-    assert "ö" not in hangman.letters
-    assert "ü" not in hangman.letters
+    assert hangman.matching_words_count > 10
+    assert "e" not in dict(hangman.letter_frequency)
+    assert "ä" not in dict(hangman.letter_frequency)
+    assert "ö" not in dict(hangman.letter_frequency)
+    assert "ü" not in dict(hangman.letter_frequency)
 
-    hangman = solver._solve_hangman(
-        input_str="______",
-        invalid="",
-        language="de_umlauts",
-        max_words=10,
-        crossword_mode=False,
+    hangman = solver.solve_hangman(
+        solver.HangmanArguments(
+            input="______",
+            invalid="",
+            lang="de_umlauts",
+            max_words=10,
+            crossword_mode=False,
+        )
     )
 
     assert len(hangman.words) <= 10
-    assert hangman.word_count > 10
-    assert "ä" in hangman.letters
+    assert hangman.matching_words_count > 10
+    assert "ä" in dict(hangman.letter_frequency)
 
     with pytest.raises(HTTPError):
-        solver._solve_hangman(
-            input_str="",
-            invalid="",
-            language="invalid",
-            max_words=0,
-            crossword_mode=False,
+        solver.solve_hangman(
+            solver.HangmanArguments(
+                input="",
+                invalid="",
+                lang="invalid",
+                max_words=0,
+                crossword_mode=False,
+            )
         )
 
 

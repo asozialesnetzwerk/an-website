@@ -11,14 +11,14 @@
             Eingabe (Nutze "_" für nicht bekannte Buchstaben)
             <input type="text"
                    name="input"
-                   value="{{input}}">
+                   value="{{hangman_result.input}}">
         </label>
 
         <label class="form-element">
             Falsche Buchstaben
             <input type="text"
                    name="invalid"
-                   value="{{invalid}}">
+                   value="{{''.join(hangman_result.invalid)}}">
         </label>
 
         <div class="form-element">
@@ -26,7 +26,7 @@
                    tooltip-position="right">Kreuzworträtselmodus
                 <input type="checkbox"
                    id="crossword-mode"
-                   {% if crossword_mode %} checked {% end %}
+                   {% if data.crossword_mode %} checked {% end %}
                    name="crossword_mode">
             </label>
         </div>
@@ -40,22 +40,22 @@
                    min="0"
                    max="100"
                    step="1"
-                   value="{{max_words}}">
+                   value="{{data.get_max_words()}}">
             </label>
         </div>
 
         <label class="form-element">
             Sprache der Wörter
             <select name="lang">
-                <option {% if lang == "de" %}selected{% end %}
+                <option {% if hangman_result.language.value == "de" %}selected{% end %}
                     value="de">Deutsch ohne Umlaute</option>
-                <option {% if lang == "de_umlauts" %}selected{% end %}
+                <option {% if hangman_result.language.value == "de_umlauts" %}selected{% end %}
                     value="de_umlauts">Deutsch</option>
-                <option {% if lang == "de_basic" %}selected{% end %}
+                <option {% if hangman_result.language.value == "de_basic" %}selected{% end %}
                     value="de_basic">Deutsch (Grundformen) ohne Umlaute</option>
-                <option {% if lang == "de_basic" %}selected{% end %}
+                <option {% if hangman_result.language.value == "de_basic" %}selected{% end %}
                     value="de_basic_umlauts">Deutsch (Grundformen)</option>
-                <option {% if lang == "en" %}selected{% end %}
+                <option {% if hangman_result.language.value == "en" %}selected{% end %}
                     value="en">Englisch</option>
             </select>
         </label>
@@ -68,17 +68,15 @@
     </form>
 
     <div>
-        {% if letters %}
+        {% if hangman_result.letter_frequency %}
             Mögliche Buchstaben:
-            {% for letter in letters %}
-                {{ letter }}: {{ letters[letter]}},
-            {% end %}
+            {{ ", ".join([f"{char}: {count}" for char, count in hangman_result.letter_frequency]) }}
         {% else %}Nichts gefunden.{% end %}
     </div>
 
-    {% if word_count > 0 %}
-        {{min(word_count, max_words)}}/{{word_count}} passenden Wörter:
-        <ul>{% for word in words %}<li>{{word}}</li>{% end %}</ul>
+    {% if hangman_result.matching_words_count > 0 %}
+        {{min(hangman_result.matching_words_count, data.get_max_words())}}/{{hangman_result.matching_words_count}} passenden Wörter:
+        <ul>{% for word in hangman_result.words %}<li>{{word}}</li>{% end %}</ul>
     {% end %}
 
 {% end %}
