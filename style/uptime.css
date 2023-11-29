@@ -8,10 +8,9 @@ main {
     font-style: normal;
 
     /*! See: /static/fonts/NOTICE.txt */
-    src: url("/static/fonts/CursedTimerUlil-Aznm.woff2?v=0") format("woff2");
+    src: url("/static/fonts/cursedtimerulil-aznm.woff2?v=0") format("woff2");
 }
 
 #uptime {
-    font-family: monospace;
     font-style: normal;
 }
