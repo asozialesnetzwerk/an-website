@@ -15,9 +15,9 @@
     font-style: normal;
 
     /*! See: /static/fonts/NOTICE.txt */
-    src: url("/static/fonts/ComicMono.woff2?v=0") format("woff2");
+    src: url("/static/fonts/comicmono.woff2?v=0") format("woff2");
 }
 
-pre *, .pre * {
-    font-family: comic-mono, monospace;
+pre *, .pre *, .mono-font {
+    font-family: comic-mono, ui-monospace, monospace !important;
 }

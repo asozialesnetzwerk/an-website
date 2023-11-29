@@ -8,7 +8,6 @@
 }
 
 #reason {
-    font-family: monospace;
     font-size: max(1rem, min(4rem, 8vw));
     hyphens: none;
 }

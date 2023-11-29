@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../style/comic.css"],
-  "sourcesContent": ["@font-face {\n    font-family: comic;\n    font-style: normal;\n\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/comic.woff2?v=0\") format(\"woff2\");\n}\n\n* {\n    font-family: comic, \"Comic Sans MS\", serif;\n}\n\n@font-face {\n    font-family: comic-mono;\n    font-style: normal;\n\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/ComicMono.woff2?v=0\") format(\"woff2\");\n}\n\npre *, .pre * {\n    font-family: comic-mono, monospace;\n}\n"],
-  "mappings": "AAAA,WACI,YAAa,MACb,WAAY,OAGZ,IAAK,mCAAqC,OAAO,QACrD,CAEA,EACI,YAAa,KAAK,CAAE,aAAe,CAAE,KACzC,CAEA,WACI,YAAa,WACb,WAAY,OAGZ,IAAK,uCAAyC,OAAO,QACzD,CAEA,IAAI,EAAG,CAAC,IAAI,EACR,YAAa,UAAU,CAAE,SAC7B",
+  "sourcesContent": ["@font-face {\n    font-family: comic;\n    font-style: normal;\n\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/comic.woff2?v=0\") format(\"woff2\");\n}\n\n* {\n    font-family: comic, \"Comic Sans MS\", serif;\n}\n\n@font-face {\n    font-family: comic-mono;\n    font-style: normal;\n\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/comicmono.woff2?v=0\") format(\"woff2\");\n}\n\npre *, .pre *, .mono-font {\n    font-family: comic-mono, ui-monospace, monospace !important;\n}\n"],
+  "mappings": "AAAA,WACI,YAAa,MACb,WAAY,OAGZ,IAAK,mCAAqC,OAAO,QACrD,CAEA,EACI,YAAa,KAAK,CAAE,aAAe,CAAE,KACzC,CAEA,WACI,YAAa,WACb,WAAY,OAGZ,IAAK,uCAAyC,OAAO,QACzD,CAEA,IAAI,EAAG,CAAC,IAAI,EAAG,CAAC,UACZ,YAAa,UAAU,CAAE,YAAY,CAAE,mBAC3C",
   "names": []
 }
