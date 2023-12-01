@@ -59,7 +59,7 @@ jobs:
           buildah build -t an-website:git .
           cd ..
       - name: Save image
-        run: buildah push --compress-format=zstd --compress-level=20 an-website:git oci-archive:oci-archive.tar
+        run: buildah push --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
