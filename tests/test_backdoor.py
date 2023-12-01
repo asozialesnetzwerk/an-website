@@ -41,7 +41,7 @@ ErrorTuple = tuple[int, str]
 
 
 async def request_and_parse(
-    # pylint: disable=redefined-outer-name
+    # pylint: disable=redefined-outer-name, too-many-arguments
     fetch: FetchCallable,  # noqa: F811
     /,
     code: str,

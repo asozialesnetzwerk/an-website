@@ -61,7 +61,7 @@ pydocstyle==6.3.0; python_version >= '3.6'
 pyflakes==3.1.0; python_version >= '3.8'
 pygments==2.16.1; python_version >= '3.7'
 pylint==3.0.2
-pylint-pytest==1.1.2
+pylint-pytest @ git+https://github.com/irtazaakram/pylint-pytest.git@d5c61a89fffb9a026cae6d07d912441afd302be4
 pyproject-hooks==1.0.0; python_version >= '3.7'
 pyrepl @ git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31
 pytest==7.4.3

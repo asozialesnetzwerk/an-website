@@ -57,7 +57,7 @@ runs:
       shell: bash
       env:
         VERSION: 1.69.5
-        VERSION_BUF: 1.27.1
+        VERSION_BUF: 1.28.0
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash

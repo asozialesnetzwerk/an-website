@@ -155,6 +155,7 @@ def test_parsing_config() -> None:
 
 def test_two_way_word_pair() -> None:
     """Test the two-way word pair."""
+    # pylint: disable=too-many-function-args
     pair = sw_config.TwoWayPair("x", "y")  # x <=> y
     assert pair.to_pattern_str() == "x|y"
     assert pair.get_replacement("x") == "y"
@@ -167,6 +168,7 @@ def test_two_way_word_pair() -> None:
 
 def test_one_way_word_pair() -> None:
     """Test the one-way word pair."""
+    # pylint: disable=too-many-function-args
     pair = sw_config.OneWayPair("x", "y")  # x => y
     assert pair.to_pattern_str() == "x"
     assert pair.get_replacement("x") == "y"
@@ -300,7 +302,7 @@ async def test_sw_json_request_handlers(
     assert response["text"] == "x z o"
     assert response["replaced_text"] == "y o z"
     assert response["return_config"] is True
-    assert response["minify_config"] is False  # pylint: disable=compare-to-zero
+    assert response["minify_config"] is False
     assert response["config"] == "x  => y\nz <=> o"
 
     response = assert_valid_json_response(

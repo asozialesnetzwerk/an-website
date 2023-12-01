@@ -24,7 +24,7 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
-    "std/": "https://deno.land/std@0.204.0/",
+    "std/": "https://deno.land/std@0.205.0/",
     "dax": "https://deno.land/x/dax@0.35.0/mod.ts",
     "esbuild/": "https://deno.land/x/esbuild@v0.19.5/"
   },

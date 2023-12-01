@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "67b5f01c4cac7e26ed8507c5dad46951be2f879e36e1aac20ea81bed13040b52"
+            "sha256": "95b15a4a159776b5213d4c54589724e252247c2ada8a413311c53afe6c343252"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -2755,11 +2755,8 @@
             "version": "==3.0.2"
         },
         "pylint-pytest": {
-            "hashes": [
-                "sha256:fb20ef318081cee3d5febc631a7b9c40fa356b05e4f769d6e60a337e58c8879b"
-            ],
-            "index": "pypi",
-            "version": "==1.1.2"
+            "git": "https://github.com/irtazaakram/pylint-pytest.git",
+            "ref": "d5c61a89fffb9a026cae6d07d912441afd302be4"
         },
         "pyproject-hooks": {
             "hashes": [
