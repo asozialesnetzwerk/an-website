@@ -67,7 +67,7 @@ body {
     margin: 0;
 }
 
-#body {
+main {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,7 +78,7 @@ body {
     padding: 0.5rem 2vw 0 2vw;
 }
 /* .text is for version page */
-#body, .text, a {
+main, .text, a {
     white-space: normal;
     line-break: auto;
     hyphens: auto;
@@ -88,20 +88,21 @@ body {
     text-align: center;
 }
 
-a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
+a:not(.no-style-a, .no-style-a-block, .no-style-a-emoji) {
     color: var(--main)
 }
 
-.no-style-a {
-    color: var(--text-color);
-}
-
-.no-style-a, .no-style-a-in, .no-style-a-emoji {
+.no-style-a, .no-style-a-block, .no-style-a-emoji {
     text-decoration: none;
+    color: inherit;
 }
 
-.no-style-a:hover, .no-style-a-in:hover {
+.no-style-a:hover, .no-style-a-block:hover {
     text-decoration: underline;
+}
+
+.no-style-a-block {
+    display: block;
 }
 
 .hidden {
@@ -118,7 +119,7 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 
 
 /* footer */
-#footer {
+footer {
     width: 100vw;
     max-width: 100%;
     text-align: center;
@@ -129,7 +130,7 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
 
 
 /* header */
-#header {
+header {
     position: -webkit-sticky; /* Safari */
     position: sticky;
     top: 0;

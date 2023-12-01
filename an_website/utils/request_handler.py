@@ -105,7 +105,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             else None,
             "body": "".join(
                 str(element)
-                for element in soup.find_all(name="div", id="body")[0].contents
+                for element in soup.find_all(name="main")[0].contents
             ).strip(),
             "scripts": [
                 {

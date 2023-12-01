@@ -51,14 +51,15 @@
                     </div>
                 {% end %}
             {% end %}
-            <a href="#body"
+            <a href="#main"
                no-dynload
                id="skip-to-content"
                data-elastic-exclude>Skip to content.</a>
             {% include "header.html" %}
         {% end %}
 
-        <div data-elastic-include id="body">{% block body %}{{content}}{% end %}</div>
+        <main data-elastic-include
+              id="main">{% block body %}{{content}}{% end %}</main>
 
         {% if as_html %}
             {% include "footer.html" %}

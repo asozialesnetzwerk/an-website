@@ -25,11 +25,11 @@
     background: linear-gradient(white, white); /* Workaround for Chromium's selective color inversion */
 }
 
-#snow p, #body {
+main, #snow p {
     filter: drop-shadow(0 0 10px white);
 }
 
-#header, #site-pane {
+header, #site-pane {
     box-shadow: 0 0 10px white
 }
 

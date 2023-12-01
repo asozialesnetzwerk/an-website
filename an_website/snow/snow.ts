@@ -1,16 +1,16 @@
-const snow = document.getElementById("snow");
+const snow = document.getElementById("snow") as HTMLDivElement;
 
 let snowflakesCount = 200;
 
-let bodyHeightPx = null;
-let pageHeightVh = null;
+let bodyHeightPx: number;
+let pageHeightVh: number;
 
-function setHeightVariables() {
+function setHeightVariables(): void {
     bodyHeightPx = document.documentElement.getBoundingClientRect().height;
     pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
 }
 
-function getSnowAttributes() {
+function getSnowAttributes(): void {
     if (snow) {
         snowflakesCount = Number(
             snow.attributes?.count?.value || snowflakesCount,
@@ -20,7 +20,7 @@ function getSnowAttributes() {
 
 // This function allows you to turn the snow on and off
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function showSnow(value) {
+function showSnow(value: boolean): void {
     if (value) {
         snow.style.display = "block";
     } else {
@@ -29,7 +29,7 @@ function showSnow(value) {
 }
 
 // Creating snowflakes
-function spawnSnow(snowDensity = 200) {
+function spawnSnow(snowDensity = 200): void {
     for (let i = 1; i <= snowDensity; i++) {
         const flake = document.createElement("p");
         snow.appendChild(flake);
@@ -37,29 +37,29 @@ function spawnSnow(snowDensity = 200) {
 }
 
 // Append style for each snowflake to the head
-function addCss(rule) {
+function addCss(rule: string): void {
     const css = document.createElement("style");
     css.appendChild(document.createTextNode(rule)); // Support for the rest
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 
 // Math
-function randomInt(value = 100) {
+function randomInt(value = 100): number {
     return Math.floor(Math.random() * value) + 1;
 }
 
-function randomIntRange(min, max) {
+function randomIntRange(min: number, max: number): number {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getRandomArbitrary(min, max) {
+function getRandomArbitrary(min: number, max: number): number {
     return Math.random() * (max - min) + min;
 }
 
 // Create style for snowflake
-function spawnSnowCSS(snowDensity = 200) {
+function spawnSnowCSS(snowDensity = 200): void {
     let rule = "";
 
     for (let i = 1; i <= snowDensity; i++) {
@@ -94,7 +94,7 @@ function spawnSnowCSS(snowDensity = 200) {
 }
 
 // Load the rules and execute after the DOM loads
-function createSnow() {
+function createSnow(): void {
     setHeightVariables();
     getSnowAttributes();
     spawnSnowCSS(snowflakesCount);

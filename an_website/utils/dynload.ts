@@ -1,20 +1,20 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt GNU-AGPL-3.0-or-later
 "use strict";
-const bodyDiv = elById("body") as HTMLDivElement;
+const contentContainer = elById("main") as HTMLDivElement;
 let urlData = {};
 
 const lastLoaded: [string] | [] = [];
 
 interface DynloadData {
-    redirect: string;
-    url: string;
-    title: string;
     body: string;
     css: string;
-    stylesheets: string[];
-    short_title: string;
+    redirect: string;
     scripts: { src: string }[];
     scrollPos?: [number, number];
+    short_title: string;
+    stylesheets: string[];
+    title: string;
+    url: string;
 }
 
 function dynLoadOnData(
@@ -57,11 +57,11 @@ function dynLoadOnData(
     document.onkeydown = () => {}; // remove keydown listeners
     /* eslint-enable @typescript-eslint/no-empty-function */
 
-    bodyDiv.innerHTML = data["body"];
+    contentContainer.innerHTML = data["body"];
     if (data["css"]) {
         const style = document.createElement("style");
         style.innerHTML = data["css"];
-        bodyDiv.appendChild(style);
+        contentContainer.appendChild(style);
     }
     if (data["stylesheets"]) {
         for (const scriptURL of data["stylesheets"]) {
@@ -69,7 +69,7 @@ function dynLoadOnData(
             link.rel = "stylesheet";
             link.type = "text/css";
             link.href = scriptURL;
-            bodyDiv.appendChild(link);
+            contentContainer.appendChild(link);
         }
     }
     if (data["scripts"]) {
@@ -77,7 +77,7 @@ function dynLoadOnData(
             if (script["src"]) {
                 const scriptElement = document.createElement("script");
                 scriptElement.src = script["src"];
-                bodyDiv.appendChild(scriptElement);
+                contentContainer.appendChild(scriptElement);
             } else {
                 console.error("Script without src", script);
             }
@@ -185,7 +185,7 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         }
         return;
     }
-    bodyDiv.prepend(
+    contentContainer.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
