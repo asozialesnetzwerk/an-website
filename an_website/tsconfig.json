@@ -9,6 +9,7 @@
       {
         "name": "typescript-eslint-language-service"
       }
-    ]
+    ],
+    "verbatimModuleSyntax": true
   }
 }

@@ -24,8 +24,10 @@ from pathlib import Path
 from subprocess import run
 from warnings import filterwarnings
 
-import trove_classifiers as trove
 from setuptools import setup
+from setuptools.build_meta import SetupRequirementsError
+
+EXTRA_BUILD_DEPS = []
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -46,11 +48,6 @@ classifiers = [
     "Typing :: Typed",
 ]
 
-assert classifiers == sorted(classifiers)
-
-for classifier in classifiers:
-    assert classifier in trove.classifiers
-
 
 def get_version() -> str:
     """Get the version."""
@@ -60,11 +57,9 @@ def get_version() -> str:
             from get_version import get_version
 
             return get_version(__file__, vcs="git")
-        except ModuleNotFoundError as exc:
-            from setuptools.build_meta import SetupRequirementsError
-
-            raise SetupRequirementsError(["get_version==3.5.4"]) from exc
-    return Distribution.at(path("an_website.egg-info")).version
+        except ModuleNotFoundError:
+            EXTRA_BUILD_DEPS.append("get_version==3.5.4")
+    return Distribution.at(path(".")).version
 
 
 def path(path: str | PathLike[str]) -> Path:
@@ -78,11 +73,19 @@ if path(".git").exists():
         run(
             ("git", "rev-parse", "HEAD"),
             capture_output=True,
+            cwd=path("."),
             timeout=True,
             check=True,
         ).stdout
     )
 
+    try:
+        import trove_classifiers as trove
+    except ModuleNotFoundError:
+        EXTRA_BUILD_DEPS.append("trove-classifiers==2022.12.22")
+    else:
+        assert all(_ in trove.classifiers for _ in classifiers)
+        assert classifiers == sorted(classifiers)
 
 setup(
     name="an-website",
@@ -109,3 +112,6 @@ setup(
         ]
     },
 )
+
+if EXTRA_BUILD_DEPS:
+    raise SetupRequirementsError(EXTRA_BUILD_DEPS)

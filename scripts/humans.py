@@ -26,6 +26,7 @@ from pathlib import Path
 from random import Random
 from subprocess import run  # nosec: B404
 from typing import Final
+from unicodedata import category
 
 REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
 HUMANS_TXT: Final[Path] = Path(REPO_ROOT, "an_website/static/humans.txt")
@@ -53,6 +54,27 @@ CONTRIBUTORS: Final[Mapping[str, Mapping[str, str]]] = {
     "Jimi": {"__role": "README destroyer"},
     "h4ckerle": {"__role": "CSS wizard"},
 }
+
+WHITESPACE: Final[str] = "".join(
+    chr(_) for _ in range(sys.maxunicode + 1) if category(chr(_)) == "Zs"
+)
+
+
+def is_prime(n: int) -> bool:
+    """Return whether the specified number is prime."""
+    # pylint: disable=invalid-name
+    if not n & 1:
+        return n == 2
+    d = 3
+    # pylint: disable=while-used
+    while d * d <= n:
+        if not n % d:
+            return False
+        d = d + 2
+    return n != 1
+
+
+assert is_prime(len(WHITESPACE))
 
 
 def get_random_number() -> int:
@@ -131,18 +153,20 @@ def generate_humans_txt() -> str:
 
 def name_to_section_line(name: str, random: Random) -> str:
     """Generate a section line based on the name."""
-    sep = random.choice("\u200B\u200C\u200D")
-    sep = sep + " " if random.randint(0, 1) else " " + sep
-    return f"/*{sep}{name}{sep}*/{get_whitespaces(random, 0, 4)}"
+    sep1: int
+    sep2: int
+    sep1, sep2 = get_whitespaces(random, 2)  # type: ignore[misc]
+    return f"/*{sep1}{name}{sep2}*/{get_whitespaces(random, 0, 4)}"
 
 
 def get_whitespaces(
     random: Random,
     min_: int,
-    max_: int,
-    whitespaces: str = "  \u200B\u200C\u200D\t\t",
+    max_: None | int = None,
+    whitespaces: str = WHITESPACE,
 ) -> str:
     """Get random whitespaces."""
+    max_ = max_ or min_
     return "".join(
         random.choices(
             whitespaces, cum_weights=None, k=random.randint(min_, max_)
