@@ -75,6 +75,11 @@ from .utils import (
     str_to_bool,
 )
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
+
 LOGGER: Final = logging.getLogger(__name__)
 
 TEXT_CONTENT_TYPES: Final[set[str]] = {
@@ -125,12 +130,14 @@ class BaseRequestHandler(RequestHandler):
         """Return whether APM is enabled."""
         return bool(self.settings.get("ELASTIC_APM", {}).get("ENABLED"))
 
+    @override
     def compute_etag(self) -> None | str:
         """Compute ETag with Base85 encoding."""
         if not self.COMPUTE_ETAG:
             return None
         return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B907
 
+    @override
     def data_received(self, chunk: bytes) -> None | Awaitable[None]:
         """Do nothing."""
 
@@ -167,6 +174,7 @@ class BaseRequestHandler(RequestHandler):
         """Get the Elasticsearch prefix from the settings."""
         return self.settings.get("ELASTICSEARCH_PREFIX", NAME)
 
+    @override
     def finish(
         self, chunk: None | str | bytes | dict[str, Any] = None
     ) -> Future[None]:
@@ -551,6 +559,7 @@ class BaseRequestHandler(RequestHandler):
         kwargs["head"] = True
         return self.get(*args, **kwargs)
 
+    @override
     def initialize(
         self,
         *,
@@ -582,6 +591,7 @@ class BaseRequestHandler(RequestHandler):
         """Check whether the request is authorized."""
         return is_authorized(self, permission, allow_cookie_auth)
 
+    @override
     def options(self, *args: Any, **kwargs: Any) -> None:
         """Handle OPTIONS requests."""
         # pylint: disable=unused-argument
@@ -615,6 +625,7 @@ class BaseRequestHandler(RequestHandler):
         self.active_origin_trials.add(data)
         return True
 
+    @override
     async def prepare(self) -> None:  # noqa: C901
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=invalid-overridden-method, too-complex
@@ -764,6 +775,7 @@ class BaseRequestHandler(RequestHandler):
         elif self.content_type is not None:
             self.set_header("Content-Type", self.content_type)
 
+    @override
     def set_cookie(  # pylint: disable=too-many-arguments
         self,
         name: str,
@@ -839,6 +851,7 @@ class BaseRequestHandler(RequestHandler):
             ),
         )
 
+    @override
     def set_default_headers(self) -> None:
         """Set default headers."""
         self.set_csp_header()
@@ -917,6 +930,7 @@ class BaseRequestHandler(RequestHandler):
             == inspect.Parameter.KEYWORD_ONLY
         )
 
+    @override
     def write(self, chunk: str | bytes | dict[str, Any]) -> None:
         """Write the given chunk to the output buffer.
 
