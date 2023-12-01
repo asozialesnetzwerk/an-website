@@ -386,13 +386,13 @@ jobs:
           popd
       - name: Download youki
         run: |
-          MAJOR_MINOR_PATCH=$(echo $MAJOR.MINOR.PATCH|sed "s/\./_/g")
-          wget https://github.com/containers/youki/releases/download/v${MAJOR.MINOR.PATCH}/youki_${MAJOR_MINOR_PATCH}_linux.tar.gz
-          tar xOf youki_${MAJOR_MINOR_PATCH}_linux.tar.gz youki_${MAJOR_MINOR_PATCH}_linux/youki-${MAJOR.MINOR.PATCH}/youki > /opt/youki
-          rm -f youki_${MAJOR_MINOR_PATCH}_linux.tar.gz
+          VERSION_U_005F_LL=$(echo $VERSION_U_002E_FS|sed "s/\./_/g")
+          wget https://github.com/containers/youki/releases/download/v${VERSION_U_002E_FS}/youki_${VERSION_U_005F_LL}_linux.tar.gz
+          tar xOf youki_${VERSION_U_005F_LL}_linux.tar.gz youki_${VERSION_U_005F_LL}_linux/youki-${VERSION_U_002E_FS}/youki > /opt/youki
+          rm -f youki_${VERSION_U_005F_LL}_linux.tar.gz
           chmod +x /opt/youki
         env:
-          "MAJOR.MINOR.PATCH": 0.2.0
+          VERSION_U_002E_FS: 0.2.0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:

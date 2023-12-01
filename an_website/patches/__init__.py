@@ -345,11 +345,14 @@ def patch_tornado_redirect() -> None:
         self.set_header("Location", url)
         self.finish()  # type: ignore[unused-awaitable]
 
-    redirect.__doc__ = (
-        cast(str, RequestHandler.redirect.__doc__)
-        .replace("301", "308")
-        .replace("302", "307")
-    )
+    if RequestHandler.redirect.__doc__:
+        # fmt: off
+        redirect.__doc__ = (
+            RequestHandler.redirect.__doc__
+            .replace("301", "308")
+            .replace("302", "307")
+        )
+        # fmt: on
 
     RequestHandler.redirect = redirect  # type: ignore[method-assign]
 
