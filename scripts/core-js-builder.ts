@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --unstable --allow-env --allow-read --allow-write
+#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
 import builder from "npm:core-js-builder@3.28.0";
 
 await builder({

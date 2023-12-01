@@ -37,6 +37,7 @@ from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, Final, Literal, TypeAlias, cast
+from weakref import ReferenceType
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -926,8 +927,12 @@ def supervise() -> None:
             LOGGER.fatal(
                 "Heartbeat timed out for worker %d (pid %d)", task_id, pid
             )
-            with contextlib.suppress(OSError):
-                os.kill(pid, getattr(signal, "CTRL_BREAK_EVENT", 9))
+            # pylint: disable=protected-access
+            guga: ReferenceType[logging.Handler]
+            for guga in tuple(logging._handlerList):  # type: ignore[attr-defined]
+                if stronk := guga():
+                    stronk.flush()
+            os.abort()
         time.sleep(1)
 
 

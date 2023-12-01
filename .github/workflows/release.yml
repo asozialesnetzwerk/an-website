@@ -34,7 +34,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: git push --tags
       - name: Install build frontend
-        run: pip install "build>=0.10,<2"
+        run: pip install "build<2"
       - name: Build
         run: python -m build
       - name: Upload as build artifact
@@ -209,8 +209,9 @@ jobs:
         run: |
           cd an-website-*/an_website
           find static/js -type f -name "*.js" -exec \
-            curl -sSf https://apm.asozial.org:8200/assets/v1/sourcemaps \
-              -H "Authorization: Bearer ${{ secrets.APM_SECRET_TOKEN }}" \
+            curl -sSf https://kibana.asozial.org:5601/api/apm/sourcemaps \
+              -H "Authorization: ApiKey ${{ secrets.SOURCEMAP_API_KEY }}" \
+              -H "kbn-xsrf: true" \
               -F service_name="an-website" \
               -F service_version="${{ steps.version.outputs.VERSION }}" \
               -F bundle_filepath="/{}" \

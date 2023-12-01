@@ -26,8 +26,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.0-200.0.dev
-          flavor: raw
+          sdk: 3.0.0-218.1.beta
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:

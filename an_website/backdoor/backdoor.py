@@ -68,10 +68,10 @@ class Backdoor(APIRequestHandler):
 
     async def backup_session(self) -> bool:
         """Backup a session using Redis and return whether it succeeded."""
-        session_id: None | str = self.request.headers.get("X-Backdoor-Session")
+        session_id = self.request.headers.get("X-Backdoor-Session")
         if not (EVENT_REDIS.is_set() and session_id in self.sessions):
             return False
-        session: dict[str, Any] = self.sessions[session_id].copy()
+        session = self.sessions[session_id].copy()
         session.pop("self", None)
         session.pop("app", None)
         session.pop("settings", None)

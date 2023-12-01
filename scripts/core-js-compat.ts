@@ -1,5 +1,5 @@
-#!/usr/bin/env -S deno run --unstable --allow-env --allow-read
-import { parse } from "https://deno.land/std@0.177.0/flags/mod.ts";
+#!/usr/bin/env -S deno run --allow-env --allow-read
+import { parse } from "std/flags/mod.ts";
 import compat from "npm:core-js-compat@3";
 
 const args = parse(Deno.args, {
