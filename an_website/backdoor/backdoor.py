@@ -105,9 +105,9 @@ class Backdoor(APIRequestHandler):
         """Get compiler flags."""
         import __future__  # pylint: disable=import-outside-toplevel
 
-        for spam in self.request.headers.get("X-Future-Feature", "").split(" "):
-            if spam in __future__.all_feature_names:
-                flags |= getattr(__future__, spam).compiler_flag
+        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
+            if (feature := ftr.strip()) in __future__.all_feature_names:
+                flags |= getattr(__future__, feature).compiler_flag
 
         return flags
 

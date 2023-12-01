@@ -289,8 +289,9 @@ def send(
         else "application/vnd.python.pickle",
         "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
     }
+    headers["X-Future-Feature"] = "annotations"
     if FLUFL:
-        headers["X-Future-Feature"] = "annotations barry_as_FLUFL"
+        headers["X-Future-Feature"] += ", barry_as_FLUFL"
     if session:
         headers["X-Backdoor-Session"] = session
     response = asyncio.run(
