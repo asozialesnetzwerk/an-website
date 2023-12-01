@@ -18,7 +18,6 @@ COPY pip-requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps git+https://github.com/MagicStack/uvloop.git@v0.17.0 \
  && /venv/bin/pip install --no-deps https://codeload.github.com/roy-ht/editdistance/tar.gz/v0.6.2 \
  && /venv/bin/pip install --no-deps setuptools wheel Cython \
  && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/762f62c5a1ab62ce37397aeeab2c27fdcc14ca66 \

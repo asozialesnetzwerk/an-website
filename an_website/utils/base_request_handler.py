@@ -958,6 +958,7 @@ class BaseRequestHandler(RequestHandler):
                 ),
             )
             self.set_header("NEL", '{"report_to":"default","max_age":2592000}')
+        self.set_header("X-Content-Type-Options", "nosniff")
         self.set_header("Access-Control-Max-Age", "7200")
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "*")
@@ -965,7 +966,7 @@ class BaseRequestHandler(RequestHandler):
             "Access-Control-Allow-Methods",
             ", ".join(self.get_allowed_methods()),
         )
-        self.set_header("X-Content-Type-Options", "nosniff")
+        self.set_header("Cross-Origin-Resource-Policy", "cross-origin")
         self.set_header("Permissions-Policy", "interest-cohort=()")
         self.set_header("Referrer-Policy", "same-origin")
         self.set_header(
