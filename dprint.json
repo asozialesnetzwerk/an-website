@@ -21,9 +21,10 @@
   ],
   "excludes": [
     "**/node_modules",
-    "**/*-lock.json",
+    "an_website/static/css",
     "an_website/static/js",
     "an_website/vendored",
+    "style/snow.css",
     "venv"
   ],
   "plugins": [
@@ -32,5 +33,6 @@
     "https://plugins.dprint.dev/markdown-0.15.2.wasm",
     "https://plugins.dprint.dev/toml-0.5.4.wasm",
     "https://plugins.dprint.dev/dockerfile-0.3.0.wasm"
+    // "https://plugins.dprint.dev/disrupted/css-0.2.2.wasm" (currently broken)
   ]
 }

@@ -58,8 +58,7 @@
             {% include "header.html" %}
         {% end %}
 
-        <main data-elastic-include
-              id="body">{% block body %}{{content}}{% end %}</main>
+        <div data-elastic-include id="body">{% block body %}{{content}}{% end %}</div>
 
         {% if as_html %}
             {% include "footer.html" %}

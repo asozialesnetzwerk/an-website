@@ -6,7 +6,7 @@ let bodyHeightPx = null;
 let pageHeightVh = null;
 
 function setHeightVariables() {
-    bodyHeightPx = document.body.parentElement.getBoundingClientRect().height;
+    bodyHeightPx = document.documentElement.getBoundingClientRect().height;
     pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
 }
 
@@ -68,10 +68,10 @@ function spawnSnowCSS(snowDensity = 200) {
         const randomXEnd = randomX + randomOffset;
         const randomXEndYoyo = randomX + (randomOffset / 2);
         const randomYoyoTime = getRandomArbitrary(0.3, 0.8);
-        const randomYoyoY = randomYoyoTime * pageHeightVh; // vh
+        const randomYoyoY = randomYoyoTime * 100; // vh
         const randomScale = Math.random();
-        const fallDuration = randomIntRange(10, pageHeightVh / 10 * 3); // s
-        const fallDelay = randomInt(pageHeightVh / 10 * 3) * -1; // s
+        const fallDuration = randomIntRange(10, 30); // s
+        const fallDelay = randomInt(30) * -1; // s
         const opacity = Math.random();
 
         rule += `
@@ -85,7 +85,7 @@ function spawnSnowCSS(snowDensity = 200) {
           transform: translate(${randomXEnd}vw, ${randomYoyoY}vh) scale(${randomScale});
         }
         to {
-          transform: translate(${randomXEndYoyo}vw, ${pageHeightVh}vh) scale(${randomScale});
+          transform: translate(${randomXEndYoyo}vw, 100vh) scale(${randomScale});
         }
       }
     `;

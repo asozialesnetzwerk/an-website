@@ -20,7 +20,7 @@
 # nano backup files
 *~
 
-# Jetbrains
+# JetBrains
 /.idea
 
 # hangman-solver word lists
