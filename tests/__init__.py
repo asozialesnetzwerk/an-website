@@ -158,7 +158,7 @@ def assert_url_query(url: str, /, **args: None | str) -> None:
     for key, value in args.items():
         if value is None or (is_static and key != "v"):
             assert key not in query
-        else:
+        elif not split_url.path.startswith("/static/js/utils/"):
             assert key in query or print(url, key, value)
             assert query[key] == value or print(url, key, value)
 

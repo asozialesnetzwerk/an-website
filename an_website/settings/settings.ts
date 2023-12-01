@@ -1,6 +1,10 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
+export {};
+
 function createBumpscositySlider() {
-    const select = elById("bumpscosity-select") as HTMLSelectElement;
+    const select = document.getElementById(
+        "bumpscosity-select",
+    ) as HTMLSelectElement;
 
     if (!select) {
         return;
@@ -41,13 +45,14 @@ function createBumpscositySlider() {
             .toString() + "%";
     };
 
-    rangeSlider.onpointerleave = () =>
+    rangeSlider.onpointerleave = () => {
         currentValueDiv.classList.remove("show-tooltip");
+    };
 
     rangeSlider.onchange = () => {
         let sliderVal = parseInt(rangeSlider.value);
         const promptStart = `Willst du die Bumpscosity wirklich auf ${
-            possibleLevels[sliderVal] // eslint-disable-line @typescript-eslint/restrict-template-expressions
+            possibleLevels[sliderVal]
         } setzen? `;
         if (sliderVal === select.options.length - 1) {
             if (

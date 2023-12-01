@@ -1,25 +1,23 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 const snow = document.getElementById("snow") as HTMLDivElement;
 
-const snowflakesCount = 200;
+let snowflakesCount = 200;
 
-// let bodyHeightPx: number;
-// let pageHeightVh: number;
+let bodyHeightPx: number;
+let pageHeightVh: number;
 
-// function setHeightVariables(): void {
-//     bodyHeightPx = document.documentElement.getBoundingClientRect().height;
-//     pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
-// }
+function setHeightVariables(): void {
+    bodyHeightPx = document.documentElement.getBoundingClientRect().height;
+    pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
+}
 
-// function getSnowAttributes(): void {
-//     if (snow) {
-//         snowflakesCount = Number(
-//             // @ts-expect-error TS2339
-//             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-//             snow.attributes?.count?.value ?? snowflakesCount,
-//         );
-//     }
-// }
+function getSnowAttributes(): void {
+    snowflakesCount = Number(
+        // @ts-expect-error TS2339
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        snow.attributes.count?.value ?? snowflakesCount,
+    );
+}
 
 // This function allows you to turn the snow on and off
 export function showSnow(value: boolean): void {
@@ -31,12 +29,12 @@ export function showSnow(value: boolean): void {
 }
 
 // Creating snowflakes
-// function spawnSnow(snowDensity = 200): void {
-//     for (let i = 1; i <= snowDensity; i++) {
-//         const flake = document.createElement("p");
-//         snow.appendChild(flake);
-//     }
-// }
+function spawnSnow(snowDensity = 200): void {
+    for (let i = 1; i <= snowDensity; i++) {
+        const flake = document.createElement("p");
+        snow.appendChild(flake);
+    }
+}
 
 // Append style for each snowflake to the head
 function addCss(rule: string): void {

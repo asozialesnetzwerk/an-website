@@ -1,12 +1,23 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
+import {
+    get,
+    PopStateHandlers,
+    post,
+    setLastLocation,
+} from "../utils/utils.js";
+
 function startQuotes() {
-    const nextButton = elById("next") as HTMLAnchorElement;
-    const upvoteButton = elById("upvote") as HTMLButtonElement;
-    const downvoteButton = elById("downvote") as HTMLButtonElement;
-    const reportButton = elById("report") as HTMLAnchorElement | null;
+    const nextButton = document.getElementById("next") as HTMLAnchorElement;
+    const upvoteButton = document.getElementById("upvote") as HTMLButtonElement;
+    const downvoteButton = document.getElementById(
+        "downvote",
+    ) as HTMLButtonElement;
+    const reportButton = document.getElementById("report") as
+        | HTMLAnchorElement
+        | null;
 
     const thisQuoteId = [
-        (elById("top")!).getAttribute("quote-id")!,
+        (document.getElementById("top")!).getAttribute("quote-id")!,
     ];
     const nextQuoteId = [nextButton.getAttribute("quote-id")!];
     const params = window.location.search;
@@ -25,41 +36,39 @@ function startQuotes() {
         }
     })(); // currently only letter keys are supported
 
-    (elById("wasd")!).innerText =
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    (document.getElementById("wasd")!).innerText =
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
     document.onkeydown = (event) => {
         switch (event.code) {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[0]}`:
                 upvoteButton.click();
                 break;
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[1]}`:
                 window.history.back();
                 break;
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[2]}`:
                 downvoteButton.click();
                 break;
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[3]}`:
                 nextButton.click();
         }
     };
 
-    const shareButton = elById("share") as HTMLAnchorElement;
-    const downloadButton = elById("download") as HTMLAnchorElement;
+    const shareButton = document.getElementById("share") as HTMLAnchorElement;
+    const downloadButton = document.getElementById(
+        "download",
+    ) as HTMLAnchorElement;
 
-    const author = elById("author") as HTMLAnchorElement;
-    const quote = elById("quote") as HTMLAnchorElement;
-    const realAuthor = elById("real-author-name") as HTMLAnchorElement;
+    const author = document.getElementById("author") as HTMLAnchorElement;
+    const quote = document.getElementById("quote") as HTMLAnchorElement;
+    const realAuthor = document.getElementById(
+        "real-author-name",
+    ) as HTMLAnchorElement;
 
-    const ratingText = elById("rating-text") as HTMLDivElement;
-    const ratingImageContainer = elById(
+    const ratingText = document.getElementById("rating-text") as HTMLDivElement;
+    const ratingImageContainer = document.getElementById(
         "rating-img-container",
     ) as HTMLDivElement;
 
@@ -69,9 +78,7 @@ function startQuotes() {
         shareButton.href = `/zitate/share/${quoteId}${params}`;
         downloadButton.href = `/zitate/${quoteId}.gif${params}`;
         const [q_id, a_id] = quoteId.split("-", 2);
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         quote.href = `/zitate/info/z/${q_id}${params}`;
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         author.href = `/zitate/info/a/${a_id}${params}`;
         thisQuoteId[0] = quoteId;
     }
@@ -132,6 +139,7 @@ function startQuotes() {
         real_author_id: number;
         next: string;
     }
+
     function handleData(
         data: API_DATA,
     ): boolean {
@@ -142,7 +150,7 @@ function startQuotes() {
                 alert(data.reason);
             }
             return false;
-        } else if (data?.id) {
+        } else if (data.id) {
             updateQuoteId(data.id);
             nextQuoteId[0] = data.next;
             quote.innerText = `»${data.quote}«`;
@@ -168,6 +176,7 @@ function startQuotes() {
         return false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers.quotes = (event: PopStateEvent) => {
         event.state && handleData(event.state as API_DATA);
     };
@@ -179,7 +188,6 @@ function startQuotes() {
 
     nextButton.onclick = () =>
         get(
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             `/api/zitate/${nextQuoteId[0]}`,
             params,
             (data: POP_STATE_API_DATA) => {
@@ -196,7 +204,6 @@ function startQuotes() {
 
     const vote = (vote: string): Promise<void> =>
         post(
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             `/api/zitate/${thisQuoteId[0]}`,
             { vote: vote },
             (data: API_DATA) => void handleData(data),
@@ -225,7 +232,9 @@ for (
         "auto-submit-element",
     ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
-    autoSubmitEl.onchange = () => (autoSubmitEl.form!).submit();
+    autoSubmitEl.onchange = () => {
+        (autoSubmitEl.form!).submit();
+    };
 }
 
 startQuotes();

@@ -1,20 +1,15 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-const elById = (id: string) => document.getElementById(id);
-
 let lastLocation = String(window.location);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getLastLocation(): string {
+export function getLastLocation(): string {
     return lastLocation;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function setLastLocation(url: string): void {
+export function setLastLocation(url: string): void {
     lastLocation = url;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function post(
+export function post(
     url: string,
     params = {},
     ondata = console.log,
@@ -36,8 +31,7 @@ function post(
         .catch(onerror);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function get(
+export function get(
     url: string,
     params = {},
     ondata = console.log,
@@ -59,17 +53,18 @@ function get(
         .catch(onerror);
 }
 
-const PopStateHandlers: any = {
+export const PopStateHandlers: any = {
     replaceURL: (state: { origin: string }) => {
         // reload if the last location was not the one that got replaced
         lastLocation === state.origin || window.location.reload();
     },
     // always reload the location if URLParamChange
-    URLParamChange: () => window.location.reload(),
+    URLParamChange: () => {
+        window.location.reload();
+    },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function setURLParam(
+export function setURLParam(
     param: string,
     value: string,
     state: any,
@@ -96,7 +91,7 @@ function scrollToId() {
     if (window.location.hash === "") {
         return;
     }
-    const header = elById("header");
+    const header = document.getElementById("header");
     if (!header) {
         return;
     }
@@ -127,9 +122,10 @@ window.onpopstate = (event: PopStateEvent) => {
         const state = event.state as { stateType: string };
         if (
             state.stateType &&
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             PopStateHandlers[state.stateType]
         ) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             PopStateHandlers[state.stateType](event);
             lastLocation = window.location.href;
             event.preventDefault();

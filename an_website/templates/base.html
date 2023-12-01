@@ -32,10 +32,10 @@
                     createSnow();
                 </script>
             {% end %}
-            <script defer src="{{fix_static('js/utils/utils.js')}}"></script>
-            <script defer src="{{fix_static('js/utils/better_ui.js')}}"></script>
+            <script type="module" src="{{fix_static('js/utils/utils.js')}}"></script>
+            <script type="module" src="{{fix_static('js/utils/better_ui.js')}}"></script>
             {% if dynload %}
-                <script defer src="{{fix_static('js/utils/dynload.js')}}"></script>
+                <script type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
             {% if openmoji == "font" %}
                 <style>:root {font-family:OpenMojiColor,sans-serif}</style>

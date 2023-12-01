@@ -1,4 +1,6 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
+export {};
+
 function startLoadingComics() {
     const getDateBy = (year: number, month: number, dayOfMonth: number): Date =>
         new Date(year, month - 1, dayOfMonth, 6, 0, 0, 0);
@@ -210,12 +212,14 @@ administratives/kaenguru-comics/kaenguru-045/original
         }
     }
 
-    const currentImgHeader = elById(
+    const currentImgHeader = document.getElementById(
         "current-comic-header",
     ) as HTMLAnchorElement;
-    const currentImg = elById("current-img") as HTMLImageElement;
+    const currentImg = document.getElementById(
+        "current-img",
+    ) as HTMLImageElement;
     currentImg.onmouseover = removeAllPopups;
-    // const currentImgContainer = elById("current-img-container");
+    // const currentImgContainer = document.getElementById("current-img-container");
     function setCurrentComic(date: Date) {
         let link = generateComicLink(date);
         link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
@@ -312,8 +316,8 @@ administratives/kaenguru-comics/kaenguru-045/original
     }
 
     const comicCountToLoadOnCLick = 7;
-    const loadButton = elById("load-button")!;
-    const list = elById("old-comics-list")!;
+    const loadButton = document.getElementById("load-button")!;
+    const list = document.getElementById("old-comics-list")!;
     let loaded = 0;
 
     const loadMoreComics = () => {
@@ -328,12 +332,10 @@ administratives/kaenguru-comics/kaenguru-045/original
             // @ts-expect-error TS2345
             const date = getDateFromLink(link);
             if (date === null) {
-                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 console.error("No date found for " + link);
                 continue;
             }
             // @ts-expect-error TS2532
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
 
             const listItem = document.createElement("li");
@@ -351,7 +353,9 @@ administratives/kaenguru-comics/kaenguru-045/original
             // @ts-expect-error TS2322
             image.src = link;
             image.alt = getDateString(date);
-            image.onclick = () => createImgPopup(image);
+            image.onclick = () => {
+                createImgPopup(image);
+            };
             image.onerror = () => {
                 if (isSunday(date)) {
                     // normally the image is not available on sundays
@@ -371,15 +375,19 @@ administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.visibility = "invisible";
         }
     };
-    (elById("load-button")!).onclick = loadMoreComics;
+    (document.getElementById("load-button")!).onclick = loadMoreComics;
 
     const createImgPopup = (image: HTMLImageElement) => {
         removeAllPopups();
 
         const popupContainer = document.createElement("div");
         popupContainer.classList.add("popup-container");
-        popupContainer.onmouseleave = () => popupContainer.remove();
-        popupContainer.onclick = () => removeAllPopups();
+        popupContainer.onmouseleave = () => {
+            popupContainer.remove();
+        };
+        popupContainer.onclick = () => {
+            removeAllPopups();
+        };
 
         const clone = image.cloneNode(true) as HTMLElement;
         clone.classList.remove("normal-img");
@@ -410,21 +418,19 @@ administratives/kaenguru-comics/kaenguru-045/original
     };
 }
 
-(() => {
-    const startButton = elById("start-button-no_3rd_party");
-    if (startButton !== null) {
-        const contentContainer = elById(
-            "comic-content-container",
-        )!;
-        // no_3rd_party is activated
-        startButton.onclick = () => {
-            startButton.remove();
-            contentContainer.classList.remove("hidden");
-            startLoadingComics();
-        };
-        contentContainer.classList.add("hidden");
-    } else {
+const startButton = document.getElementById("start-button-no_3rd_party");
+if (startButton !== null) {
+    const contentContainer = document.getElementById(
+        "comic-content-container",
+    )!;
+    // no_3rd_party is activated
+    startButton.onclick = () => {
+        startButton.remove();
+        contentContainer.classList.remove("hidden");
         startLoadingComics();
-    }
-})();
+    };
+    contentContainer.classList.add("hidden");
+} else {
+    startLoadingComics();
+}
 // @license-end

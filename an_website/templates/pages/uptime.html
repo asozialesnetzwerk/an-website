@@ -3,7 +3,7 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/uptime.css')}}">
-    <script defer src="{{fix_static('js/uptime/uptime.js')}}"></script>
+    <script type="module" src="{{fix_static('js/uptime/uptime.js')}}"></script>
 {% end %}
 
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}

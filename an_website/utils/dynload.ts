@@ -1,5 +1,8 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-const contentContainer = elById("main") as HTMLDivElement;
+import { get, PopStateHandlers, setLastLocation } from "./utils.js";
+import { hideSitePane } from "./better_ui.js";
+
+const contentContainer = document.getElementById("main") as HTMLDivElement;
 
 let urlData = {};
 
@@ -9,7 +12,7 @@ interface DynloadData {
     body: string;
     css: string;
     redirect: string;
-    scripts: { src: string }[];
+    scripts: { type: string; src: string | null }[];
     scrollPos?: [number, number];
     short_title: string;
     stylesheets: string[];
@@ -45,7 +48,7 @@ function dynLoadOnData(
             data.title,
             url,
         );
-        lastLocation = url;
+        setLastLocation(url);
     }
     if (!data.body) {
         window.location.reload();
@@ -75,6 +78,7 @@ function dynLoadOnData(
         for (const script of data.scripts) {
             if (script.src) {
                 const scriptElement = document.createElement("script");
+                scriptElement.type = script.type;
                 scriptElement.src = script.src;
                 contentContainer.appendChild(scriptElement);
             } else {
@@ -89,7 +93,7 @@ function dynLoadOnData(
     }
 
     document.title = data.title;
-    const titleElement = elById("title");
+    const titleElement = document.getElementById("title");
     if (titleElement) {
         titleElement.setAttribute(
             "short_title",
@@ -148,7 +152,6 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
     if (
         // URL to the same page, but with hash
         href.startsWith("#") ||
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         href.startsWith(window.location.href.split("#")[0] + "#")
     ) {
         return;
@@ -191,6 +194,7 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     contentContainer.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
@@ -227,6 +231,7 @@ function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 PopStateHandlers.dynLoad = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();
