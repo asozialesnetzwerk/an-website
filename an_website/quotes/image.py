@@ -68,13 +68,13 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "jpe": "jpeg",
     "jpeg": "jpeg",
     "jpg": "jpeg",
+    **({"jxl": "jxl"} if hasattr(patches, "JXLImagePlugin") else {}),
     "pdf": "pdf",
     "png": "png",
     "spi": "spider",
     "tiff": "tiff",
     "webp": "webp",
     **({"xlsx": "xlsx"} if to_excel else {}),
-    **({"jxl": "jxl"} if hasattr(patches, "JXLImagePlugin") else {}),
 }
 
 

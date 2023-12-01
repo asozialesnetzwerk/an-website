@@ -26,6 +26,7 @@ You need:
 - Depending on the used version of CPython: Rust
 - For formatting TypeScript and Markdown: dprint
 - For building TypeScript and CSS: Deno
+  (`./deno upgrade --output ~/.local/bin/deno`)
 - For linting TypeScript: Node.js and pnpm
   (`npm i -g pnpm && pnpm add -g pnpm && npm r -g pnpm`)
 

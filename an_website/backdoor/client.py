@@ -34,7 +34,7 @@ import uuid
 from base64 import b64encode
 from collections.abc import Callable, Iterable, MutableMapping
 from types import EllipsisType
-from typing import Any, TypeAlias, TypedDict
+from typing import Any, TypeAlias, TypedDict, cast
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 with contextlib.suppress(ImportError):
@@ -89,7 +89,7 @@ async def create_socket(  # noqa: C901
     proxy_rdns: None | bool = True,
     proxy_username: None | str = None,
     proxy_password: None | str = None,
-) -> socket.socket | socks.socksocket:
+) -> socket.socket:
     """Create a socket (optionally with a proxy)."""
     # pylint: disable=too-complex, too-many-arguments
     if proxy_type is not None and proxy_addr is None:
@@ -116,18 +116,19 @@ async def create_socket(  # noqa: C901
     for address_info in address_infos:
         sock = None
         try:
-            sock = (
+            sock = cast(
+                socket.socket,
                 socks.socksocket(
                     address_info[0], address_info[1], address_info[2]
                 )
                 if proxy_type is not None
                 else socket.socket(
                     address_info[0], address_info[1], address_info[2]
-                )
+                ),
             )
             sock.setblocking(False)
             if proxy_type is not None:
-                sock.set_proxy(
+                sock.set_proxy(  # type: ignore[attr-defined]
                     proxy_type,
                     proxy_addr,
                     proxy_port,

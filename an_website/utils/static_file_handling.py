@@ -41,7 +41,7 @@ def hash_file(path: str | Path) -> str:
         return cast(str, blake3(file.read()).hexdigest(8))
 
 
-def create_file_hashes_dict() -> Mapping[str, str]:
+def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
     file_hashes_dict = {
         str(path)
