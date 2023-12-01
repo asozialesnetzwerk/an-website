@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/emoji_chat.css"],
+  "sourcesContent": ["#connection-state {\n    width: 1.375em;\n    height: 1.375em;\n    display: inline-block;\n    border-radius: 50%;\n    vertical-align: bottom;\n}\n#connection-state[state=disconnected] {\n    background-color: red;\n}\n#connection-state[state=connected] {\n    background-color: green;\n}\n#connection-state[state=connecting] {\n    background-color: orange;\n}\n\n#current-user {\n    display: inline;\n}\n"],
+  "mappings": "AAAA,kBACI,cACA,eACA,qBAHJ,kBAKI,sBAEJ,sCACI,qBAEJ,mCACI,uBAEJ,oCACI,wBAGJ,cACI",
+  "names": []
+}

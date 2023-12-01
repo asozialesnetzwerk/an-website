@@ -141,14 +141,19 @@ class HTMLRequestHandler(BaseRequestHandler):
             and self.get_no_3rd_party() != self.get_saved_no_3rd_party()
             else ""
         )
-        if self.get_dynload() != self.get_saved_dynload():
+        if (dynload := self.get_dynload()) != self.get_saved_dynload():
             form_appendix += (
                 "<input name='dynload' class='hidden' "
-                f"value={bool_to_str(self.get_dynload())!r}>"
+                f"value={bool_to_str(dynload)!r}>"
             )
         if (theme := self.get_theme()) != self.get_saved_theme():
             form_appendix += (
                 f"<input name='theme' class='hidden' value={theme!r}>"
+            )
+        if (effects := self.get_effects()) != self.get_saved_effects():
+            form_appendix += (
+                "<input name='effects' class='hidden' "
+                f"value={bool_to_str(effects)!r}>"
             )
         return form_appendix
 
@@ -173,6 +178,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             ).split("?")[0],
             description=self.description,
             dynload=self.get_dynload(),
+            effects=self.get_effects(),
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,
@@ -266,6 +272,13 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFoundHandler(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
+    def handle_not_acceptable(
+        self, possible_content_types: tuple[str, ...]
+    ) -> None:
+        """Use text/plain as fallback."""
+        self.content_type = "text/plain"
+        self.set_content_type_header()
+
     def initialize(self, *args: Any, **kwargs: Any) -> None:
         """Do nothing to have default title and description."""
         if "module_info" not in kwargs:
@@ -276,7 +289,7 @@ class NotFoundHandler(HTMLRequestHandler):
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
 
-        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES, strict=False)
+        self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method not in {"GET", "HEAD"}:
             raise HTTPError(404)

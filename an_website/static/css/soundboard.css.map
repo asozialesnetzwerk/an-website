@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/soundboard.css"],
+  "sourcesContent": [".quote-a {\n    color: var(--secondary-text-color) !important;\n}\n\nh1:hover .header-id-link::before,\n  h1:focus-within .header-id-link::before,\n  h2:hover .header-id-link::before,\n  h2:focus-within .header-id-link::before {\n    content: \"🔗\";\n}\n\n#soundboard-rss {\n    position: fixed;\n    top: calc(var(--header-height) + 0.9rem);\n    right: 0.9rem;\n    z-index: 0;\n}\n\n#soundboard-rss img {\n    width: 1.7rem;\n    height: 1.7rem;\n}\n\n/* for search */\ninput {\n    margin-bottom: 0.3125rem;\n}\n\n.marked {\n    display: inline !important;\n    color: var(--contrast-2);\n}\n/* for search end */\n"],
+  "mappings": "AAAA,SACI,4CAGJ,8IAII,aAGJ,gBACI,eACA,uCACA,YACA,UAGJ,oBACI,aACA,cAIJ,MACI,uBAGJ,QACI,yBACA",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/themes/green.css"],
+  "sourcesContent": [":root {\n    color-scheme: dark;\n    /* colors: */\n    --main: hsl(100, 100%, 40%);\n    --main-2: hsl(100, 100%, 30%);\n\n    --text-color: hsl(100, 0%, 90%);\n    --secondary-text-color: hsl(250, 0%, 60%);\n\n    --bg: hsl(0, 0%, 0%);\n    --secondary-bg: hsl(0, 0%, 9%);\n    --tertiary-bg: hsl(0, 0%, 18%);\n\n    --contrast: hsl(0, 90%, 48%);\n    --contrast-2: hsl(0, 90%, 62%);\n}\n"],
+  "mappings": "AAAA,MACI,kBAEA,4BACA,8BAEA,gCACA,0CAEA,qBACA,+BACA,+BAEA,6BACA",
+  "names": []
+}

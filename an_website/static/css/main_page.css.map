@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/main_page.css"],
+  "sourcesContent": ["#quote-of-the-day {\n    text-align: center;\n}\n\n#page-list {\n    padding: 1rem;\n}\n\n#onion-address-section {\n    margin-top: 2rem;\n}\n\n#pages-list li {\n    margin-top: 0.2rem;\n}\n"],
+  "mappings": "AAAA,kBACI,kBAGJ,WAJA,aAQA,uBACI,gBAGJ,eACI",
+  "names": []
+}

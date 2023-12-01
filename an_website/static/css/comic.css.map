@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/comic.css"],
+  "sourcesContent": ["@font-face {\n    font-family: \"comic\";\n    font-style: normal;\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/comic.woff2?v=0\") format(\"woff2\");\n}\n\n* {\n    font-family: \"comic\", \"Comic Sans MS\", serif;\n}\n\n@font-face {\n    font-family: \"comic-mono\";\n    font-style: normal;\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/ComicMono.woff2?v=0\") format(\"woff2\");\n}\n\npre *, .pre * {\n    font-family: \"comic-mono\", monospace, monospace;\n}\n"],
+  "mappings": "AAAA,WACI,kBACA,kBAEA,uDAGJ,EACI,sCAGJ,WACI,uBACA,kBAEA,2DAGJ,aACI",
+  "names": []
+}

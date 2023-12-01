@@ -43,7 +43,7 @@ def get_module_info() -> ModuleInfo:
             ),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
-                r"/@elastic/apm-rum@(5.12.0)/dist/bundles"
+                r"/@elastic/apm-rum@(5\.12\.0)/dist/bundles"
                 r"/elastic-apm-rum.umd(\.min|).js(\.map|)",
                 ElasticRUM,
             ),

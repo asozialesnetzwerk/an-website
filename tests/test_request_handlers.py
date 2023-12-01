@@ -207,7 +207,7 @@ async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
     # pylint: disable=too-many-statements
     response = await fetch("/")
     assert response.code == 200
-    for theme in ("default", "blue", "random", "random-dark"):
+    for theme in ("default", "random-dark", "fun", "christmas"):
         assert_valid_html_response(await fetch(f"/?theme={theme}"))
     for bool1, bool2 in (("sure", "true"), ("nope", "false")):
         response = await check_html_page(fetch, f"/?no_3rd_party={bool1}")

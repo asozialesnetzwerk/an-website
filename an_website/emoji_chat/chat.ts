@@ -102,7 +102,7 @@
     };
 
     const handleWebSocketData = (event: { data: string }) => {
-        const data = (JSON.parse(event.data) as {
+        const data = JSON.parse(event.data) as {
             type: string;
             // the following are only present depending on the type
             message: Message;
@@ -111,7 +111,7 @@
             "Retry-After": number;
             users: string[];
             error: string;
-        });
+        };
         switch (data["type"]) {
             case "messages": {
                 messageSection.innerText = "";

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/themes/light.css"],
+  "sourcesContent": [":root {\n    color-scheme: light;\n    /* colors: */\n    --main: hsl(0, 100%, 33%);\n    --main-2: hsl(5, 90%, 22%);\n\n    --text-color: hsl(0, 0%, 0%);\n    --secondary-text-color: hsl(0, 0%, 15%);\n\n    --bg: hsl(180, 30%, 90%);\n    --secondary-bg: hsl(180, 10%, 75%);\n    --tertiary-bg: hsl(180, 10%, 60%);\n\n    --contrast: hsl(195, 100%, 26%);\n    --contrast-2: hsl(240, 100%, 50%);\n}\n"],
+  "mappings": "AAAA,MACI,mBAEA,0BACA,2BAEA,6BACA,wCAEA,yBACA,mCACA,kCAEA,gCACA",
+  "names": []
+}

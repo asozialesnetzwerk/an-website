@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/quotes/info.css"],
+  "sourcesContent": ["table {\n    margin-left: auto;\n    margin-right: auto;\n}\n\nth {\n    width: 45%;\n}\n\n.rating {\n    display: inline;\n    color: var(--secondary-text-color);\n}\n\n.positive {\n    color: green;\n}\n\n.negative {\n    color: red;\n}\n\n.wrong-quote-a {\n    color: var(--text-color)!important;\n}\n\n#disclaimer {\n    margin-top: 2rem;\n    display: flex;\n    flex-direction: row;\n}\n\n.button-container-a {\n    display: inline-block;\n    height: 1rem;\n    width: 1rem;\n}\n\n#report{\n    display: block;\n    height: 3.2rem;\n    width: 3.2rem;\n}\n\n.button-container-a  img {\n    width: 100%;\n    height: 100%;\n}\n\n/* author info page */\n#author-info {\n    background-color: var(--secondary-bg);\n    padding: 0.3125rem;\n    border-right: 0.3125rem;\n}\n"],
+  "mappings": "AAAA,MACI,iBACA,kBAGJ,GACI,UAGJ,QACI,eACA,kCAGJ,UACI,YAGJ,UACI,UAGJ,eACI,kCAGJ,YACI,gBACA,aACA,mBAGJ,oBACI,qBACA,YACA,WAGJ,QACI,cACA,cACA,aAGJ,wBACI,WACA,YAIJ,aACI,qCAnDJ,iBAqDI",
+  "names": []
+}

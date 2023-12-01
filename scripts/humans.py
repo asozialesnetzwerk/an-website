@@ -34,6 +34,7 @@ BOTS: set[str] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
 ALIASES: dict[str, str] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",
+    "Not Committed Yet": "Das Gürteltier",
 }
 MAINTAINERS: dict[str, dict[str, str]] = {
     "Joshix": {

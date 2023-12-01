@@ -21,6 +21,10 @@
             <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
             {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('css/comic.css')}}">{% end %}
             <link rel="stylesheet" type="text/css" href="{{fix_static(f'css/themes/{theme}.css')}}">
+            {% if effects and theme == "christmas" %}
+                <noscript><link rel="stylesheet" type="text/css" href="{{fix_static('css/snow.css')}}"></noscript>
+                <script defer src="{{fix_static('js/snow/snow.js')}}"></script>
+            {% end %}
             <script defer src="{{fix_static('js/utils/utils.js')}}"></script>
             <script defer src="{{fix_static('js/utils/better_ui.js')}}"></script>
             {% if dynload %}
@@ -38,6 +42,15 @@
     </head>
     <body>
         {% if as_html %}
+            {% if effects %}
+                {% if theme == "christmas" %}
+                    <div id="snow">
+                    {% for _ in range(200) %}
+                        <p>
+                    {% end %}
+                    </div>
+                {% end %}
+            {% end %}
             <a href="#body"
                no-dynload
                id="skip-to-content"

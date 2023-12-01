@@ -50,7 +50,7 @@ uvloop = "<2"
 [dev-packages]
 autoflake = "==1.*"
 bandit = {version = "==1.*", extras = ["toml"]}
-black = ">=23.1a1,<24"
+black = "==23.*"
 coverage = "==6.*"
 flake8 = "==5.*"
 flake8-bugbear = "*"

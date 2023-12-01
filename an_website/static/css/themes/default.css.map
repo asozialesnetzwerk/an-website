@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/themes/default.css"],
+  "sourcesContent": [":root {\n    color-scheme: dark;\n    /* colors: */\n    --main: hsl(0, 90%, 48%);\n    --main-2: hsl(0, 90%, 62%);\n\n    --text-color: hsl(0, 0%, 90%);\n    --secondary-text-color: hsl(0, 0%, 70%);\n\n    --bg: hsl(0, 0%, 0%);\n    --secondary-bg: hsl(0, 0%, 9%);\n    --tertiary-bg: hsl(0, 0%, 18%);\n\n    --contrast: hsl(240, 100%, 50%);\n    --contrast-2: hsl(195, 100%, 50%);\n}\n"],
+  "mappings": "AAAA,MACI,kBAEA,yBACA,2BAEA,8BACA,wCAEA,qBACA,+BACA,+BAEA,gCACA",
+  "names": []
+}

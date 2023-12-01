@@ -30,7 +30,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timezone, tzinfo
-from typing import Any, ClassVar, Final, NoReturn, cast
+from typing import Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
@@ -223,6 +223,7 @@ class BaseRequestHandler(RequestHandler):
             query_args.update(
                 no_3rd_party=None,
                 theme=None,
+                effects=None,
                 dynload=None,
                 openmoji=None,
                 bumpscosity=None,
@@ -230,6 +231,7 @@ class BaseRequestHandler(RequestHandler):
         else:
             query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
             query_args.setdefault("theme", self.get_theme())
+            query_args.setdefault("effects", self.get_effects())
             query_args.setdefault("dynload", self.get_dynload())
             query_args.setdefault("openmoji", self.get_openmoji())
             query_args.setdefault("bumpscosity", self.get_bumpscosity())
@@ -237,6 +239,8 @@ class BaseRequestHandler(RequestHandler):
                 query_args["no_3rd_party"] = None
             if query_args["theme"] == self.get_saved_theme():
                 query_args["theme"] = None
+            if query_args["effects"] == self.get_saved_effects():
+                query_args["effects"] = None
             if query_args["dynload"] == self.get_saved_dynload():
                 query_args["dynload"] = None
             if query_args["openmoji"] == self.get_saved_openmoji():
@@ -296,19 +300,19 @@ class BaseRequestHandler(RequestHandler):
             raise HTTPError(400, f"{value} is not a boolean") from err
 
     def get_bumpscosity(self) -> BumpscosityValue:
-        """Get the saved value for the bumpscosity."""
+        """Get the value for the bumpscosity."""
         if spam := self.get_argument("bumpscosity", ""):
             return parse_bumpscosity(spam)
         return self.get_saved_bumpscosity()
 
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
-        if "random" not in (theme := self.get_theme()):
+        if (theme := self.get_theme()).split("_")[0] != "random":
             return theme
 
-        ignore_themes = ["random", "random-dark"]
+        ignore_themes = ["random", "random_dark", "christmas"]
 
-        if theme == "random-dark":
+        if theme == "random_dark":
             ignore_themes.extend(("light", "light_blue", "fun"))
 
         return random.choice(  # nosec: B311
@@ -318,6 +322,10 @@ class BaseRequestHandler(RequestHandler):
     def get_dynload(self) -> bool:
         """Return the dynload query argument as boolean."""
         return self.get_bool_argument("dynload", self.get_saved_dynload())
+
+    def get_effects(self) -> bool:
+        """Return the effects query argument as boolean."""
+        return self.get_bool_argument("effects", self.get_saved_effects())
 
     def get_error_message(self, **kwargs: Any) -> str:
         """
@@ -435,6 +443,10 @@ class BaseRequestHandler(RequestHandler):
         """Get the saved value for dynload."""
         return str_to_bool(self.get_cookie("dynload"), False)
 
+    def get_saved_effects(self) -> bool:
+        """Get the saved value for effects."""
+        return str_to_bool(self.get_cookie("effects"), True)
+
     def get_saved_no_3rd_party(self) -> bool:
         """Get the saved value for no_3rd_party."""
         return str_to_bool(
@@ -449,13 +461,17 @@ class BaseRequestHandler(RequestHandler):
 
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
-        if (theme := self.get_cookie("theme")) in THEMES:
+        if (
+            theme := cast(str, self.get_cookie("theme", "")).replace("-", "_")
+        ) in THEMES:
             return theme
         return "default"
 
     def get_theme(self) -> str:
         """Get the theme currently selected."""
-        if (theme := self.get_argument("theme", None)) in THEMES:
+        if (
+            theme := self.get_argument("theme", "").replace("-", "_")
+        ) in THEMES:
             return theme
         return self.get_saved_theme()
 
@@ -498,7 +514,7 @@ class BaseRequestHandler(RequestHandler):
 
         return user_id
 
-    def handle_accept_header(
+    def handle_accept_header(  # pylint: disable=inconsistent-return-statements
         self, possible_content_types: tuple[str, ...], strict: bool = True
     ) -> None:
         """Handle the Accept header and set `self.content_type`."""
@@ -510,10 +526,18 @@ class BaseRequestHandler(RequestHandler):
         )
         if content_type is None:
             if strict:
-                self.raise_not_acceptable(possible_content_types)
+                return self.handle_not_acceptable(possible_content_types)
             content_type = possible_content_types[0]
         self.content_type = content_type
         self.set_content_type_header()
+
+    def handle_not_acceptable(
+        self, possible_content_types: tuple[str, ...]
+    ) -> None:
+        """Only call this if we cannot respect the Accept header."""
+        self.clear_header("Content-Type")
+        self.set_status(406)
+        raise Finish("\n".join(possible_content_types) + "\n")
 
     def head(self, *args: Any, **kwargs: Any) -> None | Awaitable[None]:
         """Handle HEAD requests."""
@@ -629,14 +653,6 @@ class BaseRequestHandler(RequestHandler):
 
             if not await self.ratelimit(True):
                 await self.ratelimit()
-
-    def raise_not_acceptable(
-        self, possible_content_types: tuple[str, ...]
-    ) -> NoReturn:
-        """Only call this if we cannot respect the Accept header."""
-        self.clear_header("Content-Type")
-        self.set_status(406)
-        raise Finish("\n".join(possible_content_types) + "\n")
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
@@ -827,7 +843,10 @@ class BaseRequestHandler(RequestHandler):
         self.active_origin_trials = set()
         if self.settings.get("REPORTING"):
             endpoint = self.get_reporting_api_endpoint()
-            self.set_header("Reporting-Endpoints", f"default={endpoint!r}")
+            self.set_header(
+                "Reporting-Endpoints",
+                f'default="{endpoint}"',  # noqa: B907
+            )
             self.set_header(
                 "Report-To",
                 json.dumps(

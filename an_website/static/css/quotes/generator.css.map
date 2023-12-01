@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/quotes/generator.css"],
+  "sourcesContent": ["input[type=radio]:checked + label[for] {\n    color: var(--contrast-2);\n}\n\ninput[type=radio] {\n    margin-right: 0.2rem;\n    display: inline-block;\n}\n\n.label-input-group {\n    display: block;\n    max-width: calc(100% - 0.4rem);\n    padding: 0.25rem;\n    border-radius: 0.1rem;\n}\n\nfieldset {\n    padding: 0.3rem;\n    border-color: var(--main);\n    border-radius: 0.5rem;\n}\n\nfieldset .label-input-group:nth-of-type(odd) {\n    background-color: var(--bg);\n}\n\nfieldset .label-input-group:nth-of-type(even) {\n    background-color: var(--secondary-bg);\n}\n"],
+  "mappings": "AAAA,qCACI,wBAGJ,kBACI,mBACA,qBAGJ,mBACI,cACA,6BAXJ,mCAgBA,SAhBA,cAkBI,yBAlBJ,oBAsBA,6CACI,2BAGJ,8CACI",
+  "names": []
+}

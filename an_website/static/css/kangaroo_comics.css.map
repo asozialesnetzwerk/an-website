@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/kangaroo_comics.css"],
+  "sourcesContent": [".comic-header {\n    color: var(--text-color);\n    text-decoration: none;\n}\n\ninput {\n    width: 100%;\n    font-size: 1.44rem;\n}\n\n.normal-img {\n    display: block;\n    margin: 0 auto;\n    max-width: 100%;\n    max-height: 90%;\n    height: auto;\n}\n\n#current-img {\n    width: 100%;\n    max-height: 80%;\n}\n\n#old-comics-list {\n    padding: 0;\n    list-style-type: none;\n    margin: 0 auto;\n    max-width: 58%;\n}\n\n.popup-container {\n    position: fixed;\n    left: 50%;\n    top: 50%;\n    transform: translate(-50%, -50%);\n    display: block;\n    margin: 0 auto;\n    max-height: 80%;\n    overflow: auto;\n    width: 100%;\n}\n\n.popup-img {\n    max-width: 100%;\n    max-height: 100%;\n}\n\n.close-button {\n    position: absolute;\n    top: 0.1rem;\n    right: 0.1rem;\n    width: 2.625rem;\n}\n"],
+  "mappings": "AAAA,cACI,wBACA,qBAGJ,MACI,WACA,kBAGJ,YACI,cAXJ,cAaI,eACA,eACA,YAGJ,aACI,WACA,eAGJ,iBAvBA,UAyBI,qBAzBJ,cA2BI,cAGJ,iBACI,eACA,SACA,QACA,+BACA,cAnCJ,cAqCI,eACA,cACA,WAGJ,WACI,eACA,gBAGJ,cACI,kBACA,UACA,YACA",
+  "names": []
+}

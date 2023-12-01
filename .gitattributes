@@ -1,4 +1,5 @@
-an_website/vendored/** linguist-vendored
-an_website/static/js/** linguist-generated
-an_website/static/css/** linguist-generated
 an_website/elasticsearch/component_templates/ecs/** linguist-vendored
+an_website/static/css/** linguist-generated
+an_website/static/js/** linguist-generated
+an_website/vendored/** linguist-vendored
+style/snow.css linguist-generated

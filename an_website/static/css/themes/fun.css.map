@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/themes/fun.css"],
+  "sourcesContent": ["@import url(\"/static/css/comic.css?v=0\");\n:root {\n    /* colors: */\n    --main: hsl(48, 100%, 50%);\n    --main-2: hsl(30, 100%, 50%);\n\n    --text-color: hsl(106, 100%, 50%);\n    --secondary-text-color: hsl(159, 100%, 50%);\n\n    --bg: hsl(303, 100%, 50%);\n    --secondary-bg: hsl(289, 100%, 50%);\n    --tertiary-bg: hsl(264, 100%, 50%);\n\n    --contrast: hsl(207, 100%, 50%);\n    --contrast-2: hsl(195, 100%, 50%);\n}\n"],
+  "mappings": "mCACA,MAEI,2BACA,6BAEA,kCACA,4CAEA,0BACA,oCACA,mCAEA,gCACA",
+  "names": []
+}

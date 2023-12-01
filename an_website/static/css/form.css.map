@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/form.css"],
+  "sourcesContent": [".form, form {\n    width: min(50rem, calc(100% - 2rem));\n}\n\ntextarea,\nselect,\ninput[type=email],\ninput[type=range],\ninput[type=search],\ninput[type=text],\ninput[type=text],\ninput[type=number] {\n    width: 100%;\n    background: var(--bg);\n    padding: 0.75rem 1.25rem;\n    margin: 0.5rem 0;\n    display: block;\n    border: 0.125rem solid var(--main-2);\n    border-radius: 0.625rem;\n    box-sizing: border-box;\n}\n\ninput[type=submit],\nbutton[type=submit],\n.form-button {\n    width: 100%;\n    background-color: var(--secondary-bg);\n    padding: 0.875rem 1.25rem;\n    margin: 0.5rem 0;\n    border: none;\n    border-radius: 0.25rem;\n    cursor: pointer;\n}\n\ninput[type=submit]:hover,\nbutton[type=submit]:hover,\n.form-button:hover {\n    background-color: var(--main);\n}\n\n.form-element {\n    display: block;\n    width: 100%;\n    margin-bottom: 0.625rem;\n}\n"],
+  "mappings": "AAAA,WACI,mCAGJ,4HAQI,WACA,qBAbJ,sCAgBI,cACA,mCAjBJ,sBAmBI,sBAGJ,oDAGI,WACA,qCA1BJ,uCA6BI,YA7BJ,qBA+BI,eAGJ,sEAGI,6BAGJ,cACI,cACA,WACA",
+  "names": []
+}

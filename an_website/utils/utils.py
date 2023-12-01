@@ -544,7 +544,7 @@ def get_themes() -> tuple[str, ...]:
     return (
         *(file[:-4] for file in files if file.endswith(".css")),
         "random",  # add random to the list of themes
-        "random-dark",
+        "random_dark",
     )
 
 

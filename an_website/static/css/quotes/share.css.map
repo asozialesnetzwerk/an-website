@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/quotes/share.css"],
+  "sourcesContent": ["#share-button-container {\n  min-width: 42%;\n  max-width: 100%;\n}\n\n.share-btn__link:hover .share-btn,\n.share-btn__link:focus .share-btn {\n  transform: scale(1.01);\n  filter: contrast(120%) brightness(120%);\n}\n\n.share-btn--mastodon {\n  background-color: #2B90D9\n}\n\n/*Generated using https://sharingbuttons.io/*/\n.share-btn__link,\n.share-btn__icon {\n  background-color: transparent;\n}\n\n.share-btn__link {\n  text-decoration: none;\n  color: #fff;\n  margin: 0.5rem\n}\n\n.share-btn {\n  border-radius: 0.3125rem;\n  transition: 25ms ease-out;\n  padding: 0.5rem 0.75rem;\n}\n\n.share-btn__icon svg {\n  width: 1rem;\n  height: 1rem;\n  margin-right: 0.4rem;\n  vertical-align: top\n}\n\n/* Non solid icons get a stroke */\n.share-btn__icon {\n  stroke: #fff;\n  fill: none\n}\n\n.share-btn--twitter {\n  background-color: #55acee\n}\n\n.share-btn--pinterest {\n  background-color: #bd081c\n}\n\n.share-btn--facebook {\n  background-color: #3b5998\n}\n\n.share-btn--reddit {\n  background-color: #ff4400\n}\n\n.share-btn--email {\n  background-color: #777\n}\n\n.share-btn--whatsapp {\n  background-color: #25D366\n}\n\n.share-btn--telegram {\n  background-color: #54A9EB;\n}\n"],
+  "mappings": "AAAA,wBACE,cACA,eAGF,oEAEE,sBACA,uCAGF,qBACE,yBAIF,kCAEE,6BAGF,iBACE,qBACA,WAvBF,aA2BA,WA3BA,uBA6BE,yBA7BF,qBAiCA,qBACE,WACA,YACA,mBACA,mBAIF,iBACE,YACA,UAGF,oBACE,yBAGF,sBACE,yBAGF,qBACE,yBAGF,mBACE,sBAGF,kBACE,sBAGF,qBACE,yBAGF,qBACE",
+  "names": []
+}

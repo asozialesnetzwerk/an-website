@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../style/uptime.css"],
+  "sourcesContent": ["#body {\n    font-size: 2rem;\n    text-align: center;\n}\n\n@font-face { /* used in js */\n    font-family: \"clock-face\";\n    font-style: normal;\n    /*! See: /static/fonts/NOTICE.txt */\n    src: url(\"/static/fonts/CursedTimerUlil-Aznm.woff2?v=0\") format(\"woff2\");\n}\n\n#uptime {\n    font-style: normal;\n    font-family: monospace;\n}\n"],
+  "mappings": "AAAA,MACI,eACA,kBAGJ,WACI,uBACA,kBAEA,sEAGJ,QACI,kBACA",
+  "names": []
+}
