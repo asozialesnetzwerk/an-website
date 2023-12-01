@@ -26,9 +26,9 @@ from ..utils import QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
 from .data import QuoteOfTheDayData
 from .store import (
     QUOTE_COUNT_TO_SHOW_IN_FEED,
-    CacheQuoteOfTheDayStore,
     QuoteOfTheDayStore,
     RedisQuoteOfTheDayStore,
+    SharedMemoryQuoteOfTheDayStore,
 )
 
 LOGGER: Final = logging.getLogger(__name__)
@@ -80,13 +80,13 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 
     @property
     def qod_store(self) -> QuoteOfTheDayStore:
-        """Get the store used to storing the quote of the day."""
+        """Get the store used for storing the quote of the day."""
         if self.redis is None:
-            return CacheQuoteOfTheDayStore()
+            return SharedMemoryQuoteOfTheDayStore()  # type: ignore[unreachable]
         return RedisQuoteOfTheDayStore(self.redis, self.redis_prefix)
 
 
-class QuoteOfTheDayRss(QuoteOfTheDayBaseHandler):
+class QuoteOfTheDayRSS(QuoteOfTheDayBaseHandler):
     """The request handler for the quote of the day RSS feed."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
@@ -117,19 +117,19 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
 
     async def get(
         self,
-        date_str: None | str = None,
+        date: None | str = None,
         *,
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
         quote_data = await (
-            self.get_quote_by_date(date_str)
-            if date_str
+            self.get_quote_by_date(date)
+            if date
             else self.get_quote_of_today()
         )
 
         if not quote_data:
-            raise HTTPError(404 if date_str else 503)
+            raise HTTPError(404 if date else 503)
 
         if self.request.path.endswith("/full"):
             return await self.finish(quote_data.to_json())
@@ -150,19 +150,19 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
 
     async def get(
         self,
-        date_str: None | str = None,
+        date: None | str = None,
         *,
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
         wrong_quote_data = await (
-            self.get_quote_by_date(date_str)
-            if date_str
+            self.get_quote_by_date(date)
+            if date
             else self.get_quote_of_today()
         )
 
         if not wrong_quote_data:
-            raise HTTPError(404 if date_str else 503)
+            raise HTTPError(404 if date else 503)
 
         self.redirect(
             self.fix_url(

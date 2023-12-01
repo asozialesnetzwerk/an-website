@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Stores that contain the ids of old quote of the day."""
+"""Stores that contain the ids of old quotes of the day."""
+
 from __future__ import annotations
 
 import abc
@@ -21,6 +22,7 @@ from typing import ClassVar, Final
 
 from redis.asyncio import Redis
 from tornado.web import HTTPError
+from UltraDict import UltraDict  # type: ignore[import]
 
 from ... import EVENT_REDIS
 
@@ -54,7 +56,7 @@ class QuoteOfTheDayStore(abc.ABC):
 
     @abc.abstractmethod
     async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
-        """Get the quote ID for the given date."""
+        """Get the quote id for the given date."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -66,7 +68,7 @@ class QuoteOfTheDayStore(abc.ABC):
     async def set_quote_id_by_date(
         self, date_: date, quote_id: tuple[int, int]
     ) -> None:
-        """Set the quote ID for the given date."""
+        """Set the quote id for the given date."""
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -76,7 +78,7 @@ class QuoteOfTheDayStore(abc.ABC):
 
 
 class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
-    """A quote of the day store that stores the quote of the day in redis."""
+    """A quote of the day store that stores the quote of the day in Redis."""
 
     __slots__ = ("redis", "redis_prefix")
 
@@ -84,12 +86,12 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
     redis: Redis[str]
 
     def __init__(self, redis: Redis[str], redis_prefix: str) -> None:
-        """Initialize the redis quote of the day store."""
+        """Initialize the Redis quote of the day store."""
         self.redis = redis
         self.redis_prefix = redis_prefix
 
     async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
-        """Get the quote ID for the given date."""
+        """Get the quote id for the given date."""
         if date_ in self.CACHE:
             return self.CACHE[date_]
         if not EVENT_REDIS.is_set():
@@ -122,7 +124,7 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
     async def set_quote_id_by_date(
         self, date_: date, quote_id: tuple[int, int]
     ) -> None:
-        """Set the quote ID for the given date."""
+        """Set the quote id for the given date."""
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
         await self.redis.setex(
@@ -145,17 +147,17 @@ class RedisQuoteOfTheDayStore(QuoteOfTheDayStore):
         )
 
 
-class CacheQuoteOfTheDayStore(QuoteOfTheDayStore):
-    """The class representing the store for the quote of the day."""
+class SharedMemoryQuoteOfTheDayStore(QuoteOfTheDayStore):
+    """A quote of the day store that stores the quote of the day in shared memory."""
 
     __slots__ = ()
 
-    CACHE: ClassVar[Mapping[date, tuple[int, int]]]
-    _CACHE: ClassVar[dict[date, tuple[int, int]]] = {}
-    _USED: ClassVar[set[tuple[int, int]]] = set()
+    CACHE: ClassVar[dict[date, tuple[int, int]]]
+    _CACHE: ClassVar[dict[date, tuple[int, int]]] = UltraDict()
+    _USED: ClassVar[set[tuple[int, int]]] = set()  # TODO: make shared
 
     async def get_quote_id_by_date(self, date_: date) -> tuple[int, int] | None:
-        """Get the quote ID for the given date."""
+        """Get the quote id for the given date."""
         return self.CACHE.get(date_) or self._CACHE.get(date_)
 
     async def has_quote_been_used(self, quote_id: tuple[int, int]) -> bool:
@@ -169,7 +171,7 @@ class CacheQuoteOfTheDayStore(QuoteOfTheDayStore):
     async def set_quote_id_by_date(
         self, date_: date, quote_id: tuple[int, int]
     ) -> None:
-        """Set the quote ID for the given date."""
+        """Set the quote id for the given date."""
         self._CACHE[date_] = quote_id
 
     async def set_quote_to_used(self, quote_id: tuple[int, int]) -> None:

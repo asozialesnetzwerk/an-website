@@ -10,6 +10,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=too-many-lines
 
 """
 The base request handler used by other modules.
@@ -17,7 +18,6 @@ The base request handler used by other modules.
 This should only contain the BaseRequestHandler class.
 """
 
-# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import contextlib
@@ -219,7 +219,9 @@ class BaseRequestHandler(RequestHandler):
 
     @property
     def elasticsearch(self) -> AsyncElasticsearch:
-        """Get the Elasticsearch client from the settings."""
+        """Get the Elasticsearch client from the settings.
+
+        This is None if Elasticsearch is not enabled."""
         return cast(AsyncElasticsearch, self.settings.get("ELASTICSEARCH"))
 
     @property
@@ -958,7 +960,7 @@ class BaseRequestHandler(RequestHandler):
     def redis(self) -> Redis[str]:
         """Get the Redis client from the settings.
 
-        This returns None if redis is not enabled.
+        This is None if Redis is not enabled.
         """
         return cast("Redis[str]", self.settings.get("REDIS"))
 

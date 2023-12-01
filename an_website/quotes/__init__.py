@@ -28,7 +28,7 @@ from .info import AuthorsInfoPage, QuotesInfoPage
 from .quote_of_the_day import (
     QuoteOfTheDayAPI,
     QuoteOfTheDayRedirect,
-    QuoteOfTheDayRss,
+    QuoteOfTheDayRSS,
 )
 from .quotes import QuoteAPIHandler, QuoteById, QuoteMainPage, QuoteRedirectAPI
 from .share import ShareQuote
@@ -102,7 +102,7 @@ def get_module_info() -> ModuleInfo:
             (r"/zitate/generator", QuoteGenerator),
             (r"/api/zitate/generator", QuoteGeneratorAPI),
             # quote of the day
-            (r"/zitat-des-tages/feed", QuoteOfTheDayRss),
+            (r"/zitat-des-tages/feed", QuoteOfTheDayRSS),
             (r"/zitat-des-tages", QuoteOfTheDayRedirect),
             (
                 r"/zitat-des-tages/([0-9]{4}-[0-9]{2}-[0-9]{2})",

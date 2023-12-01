@@ -27,7 +27,9 @@ from warnings import filterwarnings
 from setuptools import setup
 from setuptools.build_meta import SetupRequirementsError
 
-EXTRA_BUILD_DEPS = []
+EXTRA_BUILD_DEPS = set()
+GET_VERSION = "get_version==3.5.4"
+TROVE_CLASSIFIERS = "trove-classifiers==2022.12.22"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -58,7 +60,7 @@ def get_version() -> str:
 
             return get_version(__file__, vcs="git")
         except ModuleNotFoundError:
-            EXTRA_BUILD_DEPS.append("get_version==3.5.4")
+            EXTRA_BUILD_DEPS.add(GET_VERSION)
     return Distribution.at(path(".")).version
 
 
@@ -82,15 +84,15 @@ if path(".git").exists():
     try:
         import trove_classifiers as trove
     except ModuleNotFoundError:
-        EXTRA_BUILD_DEPS.append("trove-classifiers==2022.12.22")
+        EXTRA_BUILD_DEPS.add(TROVE_CLASSIFIERS)
     else:
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
 
 setup(
     name="an-website",
-    license="AGPLv3+",
-    platforms=["OS Independent"],
+    license="AGPL-3.0-or-later",
+    platforms="OS Independent",
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
@@ -106,10 +108,10 @@ setup(
     include_package_data=True,
     zip_safe=False,
     entry_points={
-        "console_scripts": [
+        "console_scripts": (
             "an-website = an_website.__main__:main",
             "an-backdoor-client = an_website.backdoor.client:main",
-        ]
+        )
     },
 )
 
