@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../style/table.css"],
   "sourcesContent": [".table {\n    border-collapse: collapse;\n    margin: 1.5625rem 0;\n    min-width: 40%;\n}\n\n.table thead tr {\n    background-color: var(--contrast);\n    color: var(--text-color);\n    text-align: left;\n}\n\n.table th, .table td {\n    padding: 0.75rem 0.94rem;\n    word-break: break-all;\n    hyphens: manual;\n}\n\n.table tbody tr {\n    border-bottom: thin solid var(--contrast-2);\n}\n\n.table tbody tr:nth-child(2n) {\n    background-color: var(--secondary-bg);\n}\n\n.table tbody tr:last-child {\n    border-bottom: medium solid var(--contrast-2);\n}\n"],
-  "mappings": "AAAA,OACI,yBADJ,mBAGI,cAGJ,gBACI,iCACA,wBACA,gBAGJ,oBAZA,sBAcI,qBACA,eAGJ,gBACI,2CAGJ,8BACI,qCAGJ,2BACI",
+  "mappings": "AAAA,CAAC,MACG,gBAAiB,SADrB,OAEY,UAAU,EAClB,UAAW,GACf,CAEA,CAAC,MAAM,MAAM,GACT,iBAAkB,IAAI,YACtB,MAAO,IAAI,cACX,WAAY,IAChB,CAEA,CAAC,MAAM,GAAI,CAAC,MAAM,GAZlB,QAaa,OAAQ,OACjB,WAAY,UACZ,QAAS,MACb,CAEA,CAAC,MAAM,MAAM,GACT,cAAe,KAAK,MAAM,IAAI,aAClC,CAEA,CAAC,MAAM,MAAM,EAAE,eACX,iBAAkB,IAAI,eAC1B,CAEA,CAAC,MAAM,MAAM,EAAE,YACX,cAAe,OAAO,MAAM,IAAI,aACpC",
   "names": []
 }

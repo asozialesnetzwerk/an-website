@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../style/main_page.css"],
   "sourcesContent": ["#quote-of-the-day {\n    text-align: center;\n}\n\n#page-list {\n    padding: 1rem;\n}\n\n#onion-address-section {\n    margin-top: 2rem;\n}\n\n#pages-list li {\n    margin-top: 0.2rem;\n}\n"],
-  "mappings": "AAAA,kBACI,kBAGJ,WAJA,aAQA,uBACI,gBAGJ,eACI",
+  "mappings": "AAAA,CAAC,iBACG,WAAY,MAChB,CAEA,CAAC,UAJD,QAKa,IACb,CAEA,CAAC,sBACG,WAAY,IAChB,CAEA,CAAC,WAAW,GACR,WAAY,KAChB",
   "names": []
 }

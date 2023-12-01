@@ -161,10 +161,7 @@ class Options:
         get_default_value=lambda _: "default",
         normalize_string=lambda s: s.replace("-", "_").lower(),
     )
-    compatibility: Option[bool] = BoolOption(
-        name="compatibility",
-        get_default_value=false,
-    )
+    compat: Option[bool] = BoolOption(name="compat", get_default_value=false)
     dynload: Option[bool] = BoolOption(name="dynload", get_default_value=false)
     effects: Option[bool] = BoolOption(name="effects", get_default_value=true)
     openmoji: Option[OpenMojiValue] = Option(

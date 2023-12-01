@@ -3,7 +3,7 @@ ARG BASE=docker.io/library/python:3.12-rc-slim-bookworm
 FROM $BASE AS builder
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends automake curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libjxl-dev libopenjp2-7-dev libraqm-dev libtiff-dev libtool libwebp-dev libxml2-dev libxslt1-dev make zlib1g-dev \
+ && apt-get install -y --no-install-recommends automake curl git g++ libcurl4-gnutls-dev libffi-dev libgnutls28-dev libjxl-dev libtool libxml2-dev libxslt1-dev make zlib1g-dev \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.70 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
@@ -20,7 +20,7 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps git+https://github.com/MagicStack/uvloop.git@v0.17.0 \
  && /venv/bin/pip install --no-deps https://codeload.github.com/roy-ht/editdistance/tar.gz/v0.6.2 \
  && /venv/bin/pip install --no-deps setuptools wheel Cython \
- && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/0268b8eb3287655303869e7b4e617ff0734fdfc4 \
+ && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/57d328d611ea5b3f49a6c132617e37f29a36525e \
  && /venv/bin/pip uninstall -y setuptools wheel Cython \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
  && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-deps https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
@@ -35,7 +35,7 @@ RUN /venv/bin/pip install --no-deps .
 FROM $BASE
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libjxl0.7 libopenjp2-7 libraqm0 libtiff6 libwebp7 libwebpdemux2 libwebpmux3 libxml2 libxslt1.1 \
+ && apt-get install -y --no-install-recommends curl libcurl3-gnutls libjxl0.7 libxml2 libxslt1.1 \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
  && tar xvf uwufetch_2.1-linux.tar.gz \
@@ -62,6 +62,6 @@ LABEL org.opencontainers.image.authors="contact@asozial.org" \
       org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
       org.opencontainers.image.licenses="AGPL-3.0-or-later" \
       org.opencontainers.image.title="an-website" \
-      org.opencontainers.image.description="podman run --detach --name an-website --network slirp4netns:port_handler=slirp4netns --publish 8888:8888 --pull newer --volume .:/data:z IMAGE" \
+      org.opencontainers.image.description="podman run --detach --name an-website --network slirp4netns:port_handler=slirp4netns --publish 8888:8888 --volume .:/data:z IMAGE" \
       org.opencontainers.image.base.digest="$BASE_DIGEST" \
       org.opencontainers.image.base.name="$BASE_NAME"

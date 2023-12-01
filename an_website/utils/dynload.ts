@@ -139,7 +139,7 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
         // link is to file, not HTML page
         (
             // @ts-expect-error TS2532
-            (hrefWithoutQuery.split("/").pop() || "").includes(".") &&
+            (hrefWithoutQuery.split("/").pop() ?? "").includes(".") &&
             // URLs to redirect page are HTML pages
             hrefWithoutQuery !== (window.location.origin + "/redirect")
         ) ||
@@ -227,7 +227,7 @@ function dynLoadOnPopState(event: PopStateEvent) {
             return;
         }
     }
-    console.error("Couldn't handle state. ", event.state);
+    console.error("Couldn't handle state.", event.state);
     window.location.reload();
 }
 

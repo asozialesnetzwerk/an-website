@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../../style/themes/blue.css"],
   "sourcesContent": [":root {\n    color-scheme: dark;\n    /* colors: */\n    --main: hsl(230, 100%, 64%);\n    --main-2: hsl(195, 100%, 60%);\n\n    --text-color: hsl(0, 0%, 90%);\n    --secondary-text-color: hsl(0, 0%, 70%);\n\n    --bg: hsl(0, 0%, 0%);\n    --secondary-bg: hsl(0, 0%, 9%);\n    --tertiary-bg: hsl(0, 0%, 18%);\n\n    --contrast: hsl(0, 90%, 48%);\n    --contrast-2: hsl(0, 90%, 62%);\n}\n"],
-  "mappings": "AAAA,MACI,kBAEA,4BACA,8BAEA,8BACA,wCAEA,qBACA,+BACA,+BAEA,6BACA",
+  "mappings": "AAAA,MACI,aAAc,KAEd,QAAQ,IAAI,GAAG,EAAE,IAAI,EAAE,KACvB,UAAU,IAAI,GAAG,EAAE,IAAI,EAAE,KAEzB,cAAc,IAAI,CAAC,EAAE,EAAE,EAAE,KACzB,wBAAwB,IAAI,CAAC,EAAE,EAAE,EAAE,KAEnC,MAAM,IAAI,CAAC,EAAE,EAAE,EAAE,IACjB,gBAAgB,IAAI,CAAC,EAAE,EAAE,EAAE,IAC3B,eAAe,IAAI,CAAC,EAAE,EAAE,EAAE,KAE1B,YAAY,IAAI,CAAC,EAAE,GAAG,EAAE,KACxB,cAAc,IAAI,CAAC,EAAE,GAAG,EAAE,IAC9B",
   "names": []
 }

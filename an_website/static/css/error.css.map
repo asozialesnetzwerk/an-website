@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../style/error.css"],
   "sourcesContent": ["#container * {\n    text-align: center;\n    color: var(--main-2);\n}\n\n#status {\n    font-size: max(4rem, min(16rem, 32vw));\n}\n\n#reason {\n    font-size: max(1rem, min(4rem, 8vw));\n    font-family: monospace;\n    hyphens: none;\n}\n"],
-  "mappings": "AAAA,aACI,kBACA,oBAGJ,QACI,oCAGJ,QACI,kCACA,sBACA",
+  "mappings": "AAAA,CAAC,UAAU,EACP,WAAY,OACZ,MAAO,IAAI,SACf,CAEA,CAAC,OACG,UAAW,IAAI,IAAI,CAAE,IAAI,KAAK,CAAE,MACpC,CAEA,CAAC,OACG,UAAW,IAAI,IAAI,CAAE,IAAI,IAAI,CAAE,MAC/B,YAAa,UACb,QAAS,IACb",
   "names": []
 }

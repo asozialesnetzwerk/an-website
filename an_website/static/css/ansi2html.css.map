@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../style/ansi2html.css"],
   "sourcesContent": [".pre {\n    display: inline-block;\n    vertical-align: top;\n    white-space: pre-wrap;\n    font-family: ui-monospace, monospace, monospace;\n}\n"],
-  "mappings": "AAAA,KACI,qBACA,mBACA,qBACA",
+  "mappings": "AAAA,CAAC,IACG,QAAS,aACT,eAAgB,IAChB,YAAa,SACb,YAAa,YAAY,CAAE,SAAS,CAAE,SAC1C",
   "names": []
 }

@@ -6,7 +6,7 @@
     "clean": "deno task clean:css && deno task clean:js",
     "clean:css": "rm -fr an_website/static/css",
     "clean:js": "rm -fr an_website/static/js",
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.18.10/mod.js --target=$(deno task target) --charset=utf8 --tree-shaking=true",
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.18.17/mod.js --target=$(deno task target) --charset=utf8 --tree-shaking=true",
     "find:css": "find style -type f -name '*.css'",
     "find:ts": "find an_website -type f -name '*.ts'",
     "target": "echo es$(python3 -c 'from datetime import datetime, timezone; print(min((now := datetime.now(timezone.utc)).year - (5 + (now.month < 7)), 2022))')",
@@ -25,9 +25,9 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
-    "std/": "https://deno.land/std@0.192.0/",
+    "std/": "https://deno.land/std@0.196.0/",
     "dax": "https://deno.land/x/dax@0.32.0/mod.ts",
-    "esbuild/": "https://deno.land/x/esbuild@v0.18.10/"
+    "esbuild/": "https://deno.land/x/esbuild@v0.18.17/"
   },
   "nodeModulesDir": false,
   "lint": {

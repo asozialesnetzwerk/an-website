@@ -379,20 +379,6 @@ class BaseRequestHandler(RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a boolean") from err
 
-    def get_display_theme(self) -> str:
-        """Get the theme currently displayed."""
-        if (theme := self.user_settings.theme).split("_")[0] != "random":
-            return theme
-
-        ignore_themes = ["random", "random_dark", "christmas"]
-
-        if theme == "random_dark":
-            ignore_themes.extend(("light", "light_blue", "fun"))
-
-        return random.choice(  # nosec: B311
-            tuple(theme for theme in THEMES if theme not in ignore_themes)
-        )
-
     def get_error_message(self, **kwargs: Any) -> str:
         """
         Get the error message and return it.
@@ -533,7 +519,7 @@ class BaseRequestHandler(RequestHandler):
             settings=self.settings,
             short_title=self.short_title,
             testing=pytest_is_running(),
-            display_theme=self.get_display_theme(),
+            theme=self.get_theme(),
             title=self.title,
             apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
             if self.apm_enabled
@@ -549,6 +535,20 @@ class BaseRequestHandler(RequestHandler):
             }
         )
         return namespace
+
+    def get_theme(self) -> str:
+        """Get the current theme."""
+        if (theme := self.user_settings.theme).split("_")[0] != "random":
+            return theme
+
+        ignore_themes = ["random", "random_dark", "christmas"]
+
+        if theme == "random_dark":
+            ignore_themes.extend(("light", "light_blue", "fun"))
+
+        return random.choice(  # nosec: B311
+            tuple(theme for theme in THEMES if theme not in ignore_themes)
+        )
 
     async def get_time(self) -> datetime:
         """Get the start time of the request in the users' timezone."""

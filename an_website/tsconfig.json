@@ -11,6 +11,7 @@
       }
     ],
     "alwaysStrict": false,
+    "noUnusedLocals": false,
     "verbatimModuleSyntax": true
   }
 }

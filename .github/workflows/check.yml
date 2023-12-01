@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.5
+          sdk: 3.0.6
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -43,7 +43,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.37.1
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.40.2
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
@@ -62,8 +62,8 @@ jobs:
           rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
-          VERSION: 1.63.6
-          VERSION_BUF: 1.23.1
+          VERSION: 1.64.2
+          VERSION_BUF: 1.25.0
       - name: Generate snow
         run: dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS
