@@ -1,4 +1,5 @@
 build
 perf8-report
 scripts/deno
+scripts/vendored
 venv

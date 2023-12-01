@@ -21,13 +21,14 @@ import logging
 import os
 import sys
 from asyncio import Future
+from collections.abc import Sequence
 from queue import SimpleQueue
 from tempfile import (  # pylint: disable=import-private-name
     NamedTemporaryFile,
     TemporaryDirectory,
     _TemporaryFileWrapper,
 )
-from typing import Any, ClassVar, Final
+from typing import Any, ClassVar, Final, cast
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -79,6 +80,25 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         if hasattr(self, "queue"):
             self.queue.put(None)
 
+    async def pip_install(self, args: Sequence[str]) -> int:
+        """Install something and write the output."""
+        process = await asyncio.create_subprocess_exec(
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--require-virtualenv",
+            *args,
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+        )
+        while not process.stdout.at_eof():  # type: ignore[union-attr]
+            self.write(await process.stdout.read(1))  # type: ignore[union-attr]
+            self.flush()  # type: ignore[unused-awaitable]
+        await process.wait()
+        return cast(int, process.returncode)
+
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()
         loop = asyncio.get_running_loop()
@@ -95,27 +115,19 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         # pylint: disable=while-used
         self.queue.put(None)
         await self.future
+
         filepath = os.path.join(self.dir.name, unquote(filename))
         os.rename(self.file.name, filepath)
-        process = await asyncio.create_subprocess_exec(
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--require-virtualenv",
-            filepath,
-            stdin=asyncio.subprocess.DEVNULL,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT,
-        )
+
         self.set_status(202)
         self.set_header("X-Accel-Buffering", "no")
-        while not process.stdout.at_eof():  # type: ignore[union-attr]
-            self.write(await process.stdout.read(1))  # type: ignore[union-attr]
-            self.flush()  # type: ignore[unused-awaitable]
+
+        for args in (("-U", "pip"), (filepath,)):
+            returncode = await self.pip_install(args)
+
         await self.finish()
-        await process.wait()
-        if process.returncode:
+
+        if returncode:  # type: ignore[possibly-undefined]
             LOGGER.error("Failed to install %s", filename)
         elif self.get_bool_argument("shutdown", True):
             EVENT_SHUTDOWN.set()

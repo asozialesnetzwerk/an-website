@@ -551,7 +551,7 @@ def setup_logging(  # pragma: no cover
 
 
 class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
-    """WebHook logging options."""
+    """Webhook logging options."""
 
     __slots__ = (
         "url",
@@ -570,7 +570,7 @@ class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
     escape_message: bool
 
     def __init__(self, config: ConfigParser) -> None:
-        """Initialize WebHook logging options."""
+        """Initialize Webhook logging options."""
         self.url = config.get("LOGGING", "WEBHOOK_URL", fallback=None)
         self.content_type = config.get(
             "LOGGING",
@@ -602,7 +602,7 @@ def setup_webhook_logging(  # pragma: no cover
     options: WebhookLoggingOptions,
     loop: AbstractEventLoop,
 ) -> None:
-    """Setup WebHook logging."""  # noqa: D401
+    """Setup Webhook logging."""  # noqa: D401
     if not options.url:
         return
 
@@ -1096,7 +1096,11 @@ def main(  # noqa: C901  # pragma: no cover
     )
 
     if processes < 0:
-        processes = tornado.process.cpu_count()
+        processes = (
+            os.process_cpu_count()  # type: ignore[attr-defined]
+            if sys.version_info >= (3, 13)
+            else os.cpu_count()
+        )
 
     task_id: int | None = None
 
@@ -1160,7 +1164,7 @@ def main(  # noqa: C901  # pragma: no cover
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-    if sys.version_info >= (3, 12) and not loop.get_task_factory():
+    if sys.version_info >= (3, 13) and not loop.get_task_factory():
         loop.set_task_factory(asyncio.eager_task_factory)
 
     if perf8 and "PERF8" in os.environ:

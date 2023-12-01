@@ -34,7 +34,7 @@ runs:
       run: black .
       shell: bash
     - name: Install dprint
-      run: curl -sSf https://dprint.dev/install.sh | sh -s 0.41.0
+      run: curl -sSf https://dprint.dev/install.sh | sh -s 0.42.5
       shell: bash
     - name: Run dprint
       run: ~/.dprint/bin/dprint fmt --diff
@@ -56,8 +56,8 @@ runs:
         popd
       shell: bash
       env:
-        VERSION: 1.68.0
-        VERSION_BUF: 1.26.1
+        VERSION: 1.69.5
+        VERSION_BUF: 1.27.1
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash

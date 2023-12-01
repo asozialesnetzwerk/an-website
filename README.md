@@ -36,11 +36,9 @@ You need:
 - C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
 - For formatting TypeScript and Markdown: dprint
-- For building JavaScript and CSS: Deno
-  \
+- For building JavaScript and CSS: Deno\
   (`./deno upgrade --output ~/.local/bin/deno`)
-- For linting TypeScript: Node.js and pnpm
-  \
+- For linting TypeScript: Node.js and pnpm\
   (`npm i -g pnpm@8 && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8 && npm r -g pnpm`
   or use Corepack)\
   (`pnpm up -g` to update)
