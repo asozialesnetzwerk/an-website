@@ -17,7 +17,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Python
@@ -133,7 +133,7 @@ jobs:
             mapper-murmur3
             mapper-annotated-text
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -241,7 +241,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -301,10 +301,13 @@ jobs:
           popd
       - name: Download youki
         run: |
-          wget https://github.com/containers/youki/releases/download/v0.1.0/youki_0_1_0_linux.tar.gz
-          tar xOf youki_0_1_0_linux.tar.gz youki_0_1_0_linux/youki-0.1.0/youki > /opt/youki
-          rm -f youki_0_1_0_linux.tar.gz
+          MAJOR_MINOR_PATCH=$(echo $MAJOR.MINOR.PATCH|sed "s/\./_/g")
+          wget https://github.com/containers/youki/releases/download/v${MAJOR.MINOR.PATCH}/youki_${MAJOR_MINOR_PATCH}_linux.tar.gz
+          tar xOf youki_${MAJOR_MINOR_PATCH}_linux.tar.gz youki_${MAJOR_MINOR_PATCH}_linux/youki-${MAJOR.MINOR.PATCH}/youki > /opt/youki
+          rm -f youki_${MAJOR_MINOR_PATCH}_linux.tar.gz
           chmod +x /opt/youki
+        env:
+          MAJOR.MINOR.PATCH=0.2.0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -355,7 +358,7 @@ jobs:
       - build-oci-image
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:

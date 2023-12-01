@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../style/ansi2html.css"],
-  "sourcesContent": [".pre {\n    display: inline-block;\n    vertical-align: top;\n    white-space: pre-wrap;\n    font-family: ui-monospace, monospace, monospace;\n}\n"],
-  "mappings": "AAAA,CAAC,IACG,QAAS,aACT,eAAgB,IAChB,YAAa,SACb,YAAa,YAAY,CAAE,SAAS,CAAE,SAC1C",
+  "sourcesContent": [".pre {\n    display: inline-block;\n    font-family: ui-monospace, monospace;\n    vertical-align: top;\n    white-space: pre-wrap;\n}\n"],
+  "mappings": "AAAA,CAAC,IACG,QAAS,aACT,YAAa,YAAY,CAAE,UAC3B,eAAgB,IAChB,YAAa,QACjB",
   "names": []
 }

@@ -1,5 +1,5 @@
 [MAIN]
-ignore=build,node_modules,venv,.git
+ignore=.git,build,node_modules,venv
 load-plugins=
     pylint.extensions.bad_builtin,
     pylint.extensions.broad_try_clause,
@@ -32,6 +32,7 @@ extension-pkg-allow-list=
     pycurl,
 recursive=yes
 py-version=3.12
+# temporary bugfix
 ignored-modules=
     abc,
     codecs,
@@ -42,7 +43,7 @@ ignored-modules=
 [REPORTS]
 output-format=colorized
 
-[MESSAGES CONTROL]
+[MESSAGES_CONTROL]
 enable=all
 disable=
     file-ignored,

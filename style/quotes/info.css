@@ -1,6 +1,6 @@
 table {
-    margin-left: auto;
     margin-right: auto;
+    margin-left: auto;
 }
 
 th {
@@ -25,21 +25,21 @@ th {
 }
 
 #disclaimer {
-    margin-top: 2rem;
     display: flex;
     flex-direction: row;
+    margin-top: 2rem;
 }
 
 .button-container-a {
     display: inline-block;
-    height: 1rem;
     width: 1rem;
+    height: 1rem;
 }
 
 #report{
     display: block;
-    height: 3.2rem;
     width: 3.2rem;
+    height: 3.2rem;
 }
 
 .button-container-a  img {
@@ -49,7 +49,7 @@ th {
 
 /* author info page */
 #author-info {
-    background-color: var(--secondary-bg);
     padding: 0.3125rem;
     border-right: 0.3125rem;
+    background-color: var(--secondary-bg);
 }

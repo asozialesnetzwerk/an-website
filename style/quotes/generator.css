@@ -1,10 +1,10 @@
-input[type=radio]:checked + label[for] {
+input[type="radio"]:checked + label[for] {
     color: var(--contrast-2);
 }
 
-input[type=radio] {
-    margin-right: 0.2rem;
+input[type="radio"] {
     display: inline-block;
+    margin-right: 0.2rem;
 }
 
 .label-input-group {

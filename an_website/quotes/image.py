@@ -121,7 +121,7 @@ def get_lines_and_max_height(
     column_count = 46
     lines: list[str] = []
 
-    max_line_length = max_width + 1
+    max_line_length: float = max_width + 1
     while max_line_length > max_width:  # pylint: disable=while-used
         lines = textwrap.wrap(text, width=column_count)
         max_line_length = max(font.getlength(line) for line in lines)

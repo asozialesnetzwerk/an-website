@@ -1,10 +1,10 @@
 .button-img:hover {
+    filter: drop-shadow(3px 3px 2px rgb(139 0 0 / 50%));
     transform: scale(1.08);
-    filter: drop-shadow(3px 3px 2px rgba(139, 0, 0, 0.5));
 }
 
 .report-img:hover {
-    filter: drop-shadow(3px 3px 2px rgba(217, 229, 78, 0.5));
+    filter: drop-shadow(3px 3px 2px rgb(217 229 78 / 50%));
 }
 
 .button-img {
@@ -14,12 +14,13 @@
 }
 
 #quote-container {
-    background: transparent;
-    height: auto;
     display: block;
-    /*margin: 3rem auto;*/
-    text-align: center;
+    height: auto;
     padding: 4rem;
+
+    /* margin: 3rem auto; */
+    background: transparent;
+    text-align: center;
 }
 
 #top {
@@ -28,21 +29,21 @@
 
 .quote-text {
     font-size: 1.9rem;
-    text-align: left;
     line-height: 1.8rem;
+    text-align: left;
 }
 
 .quote-author {
-    font-size: 1.4rem;
-    text-align: right;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    font-size: 1.4rem;
+    text-align: right;
 }
 
 #rating-container {
+    align-items: start;
     font-size: 1.4rem;
     text-align: left;
-    align-items: start;
 }
 
 #rating-container .flex {
@@ -64,17 +65,17 @@
 }
 
 .nicht-witzig::after {
-    content: url(/static/img/stamps/nichtwitzig.small.svg?v=252533840141546d);
+    content: url("/static/img/stamps/nichtwitzig.small.svg?v=252533840141546d");
 }
 
 .witzig::after {
-    content: url(/static/img/stamps/witzig.small.svg?v=af22bf11feffb9bb);
+    content: url("/static/img/stamps/witzig.small.svg?v=af22bf11feffb9bb");
 }
 
 .invisible {
-    height: 0;
-    width: 0;
     display: none;
+    width: 0;
+    height: 0;
     opacity: 0;
 }
 
@@ -93,37 +94,36 @@
 }
 
 #buttons a {
-    color: darkred;
     position: relative;
     display: inline-block;
+    color: darkred;
 }
 
 .download-img {
     transform: rotate(90deg);
-    rotation: 90deg;
 }
 
 .download-img:hover {
+    filter: drop-shadow(3px -3px 2px rgb(139 0 0 / 50%));
     transform: scale(1.08) rotate(90deg);
-    filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
 }
 
 #vote-container {
     display: flex;
-    justify-content: center;
-    align-items: stretch;
-    align-content: stretch;
     min-width: 69%;
+    align-content: stretch;
+    align-items: stretch;
+    justify-content: center;
 }
 
 .vote {
-    width: auto !important;
-    flex-grow: 1;
     display: inline-block;
+    width: auto !important;
+    max-width: initial;
+    height: 3.75rem;
+    flex-grow: 1;
     padding: 0.625rem !important;
     margin: 0.3125rem;
-    height: 3.75rem;
-    max-width: initial;
 }
 
 .vote:hover:not([voted]) {
@@ -135,24 +135,25 @@
 }
 
 .vote img {
-    max-height: 2.5rem;
     width: auto;
+    max-height: 2.5rem;
     background-color: transparent !important;
 }
 
 @media (orientation:landscape) {
     #quote-container {
-        background: transparent url("/static/img/KangarooFace.svg?v=0") no-repeat right top 0.3125rem;
-        /*background-position: right 10px top 0.3125rem;*/
-        width: 50rem;
-        min-height: 23.75rem;
-        max-width: 90%;
-        display: block;
-        margin: 1rem auto;
-        text-align: center;
-        padding: 0 2rem 2rem;
         position: relative;
         z-index: 1;
+        display: block;
+        width: 50rem;
+        max-width: 90%;
+        min-height: 23.75rem;
+        padding: 0 2rem 2rem;
+        margin: 1rem auto;
+        background: transparent url("/static/img/KangarooFace.svg?v=0") no-repeat right top 0.3125rem;
+
+        /* background-position: right 10px top 0.3125rem; */
+        text-align: center;
     }
 
     .quote-text {
@@ -165,8 +166,8 @@
 
     #buttons {
         position: absolute;
-        bottom: 0;
         right: 0;
+        bottom: 0;
     }
 
     #rating-container {

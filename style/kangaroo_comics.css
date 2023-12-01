@@ -10,10 +10,10 @@ input {
 
 .normal-img {
     display: block;
-    margin: 0 auto;
     max-width: 100%;
-    max-height: 90%;
     height: auto;
+    max-height: 90%;
+    margin: 0 auto;
 }
 
 #current-img {
@@ -22,22 +22,22 @@ input {
 }
 
 #old-comics-list {
-    padding: 0;
-    list-style-type: none;
-    margin: 0 auto;
     max-width: 58%;
+    padding: 0;
+    margin: 0 auto;
+    list-style-type: none;
 }
 
 .popup-container {
     position: fixed;
-    left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    left: 50%;
     display: block;
-    margin: 0 auto;
-    max-height: 80%;
     overflow: auto;
     width: 100%;
+    max-height: 80%;
+    margin: 0 auto;
+    transform: translate(-50%, -50%);
 }
 
 .popup-img {

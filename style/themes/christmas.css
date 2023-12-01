@@ -1,32 +1,27 @@
 :root {
     color-scheme: dark;
+
     /* colors: */
-    --main: hsl(0, 90%, 48%);
-    --main-2: hsl(0, 90%, 62%);
-
-    --text-color: hsl(0, 0%, 90%);
-    --secondary-text-color: hsl(0, 0%, 70%);
-
+    --main: hsl(0deg 90% 48%);
+    --main-2: hsl(0deg 90% 62%);
+    --text-color: hsl(0deg 0% 90%);
+    --secondary-text-color: hsl(0deg 0% 70%);
     --bg: fixed radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-    --secondary-bg: hsl(0, 0%, 9%);
-    --tertiary-bg: hsl(0, 0%, 18%);
-
-    --contrast: hsl(240, 100%, 50%);
-    --contrast-2: hsl(195, 100%, 50%);
-    --tp-bg-color: hsl(0, 0%, 0%);
+    --secondary-bg: hsl(0deg 0% 9%);
+    --tertiary-bg: hsl(0deg 0% 18%);
+    --contrast: hsl(240deg 100% 50%);
+    --contrast-2: hsl(195deg 100% 50%);
+    --tp-bg-color: hsl(0deg 0% 0%);
 }
 
 #snow p {
+    position: fixed;
     width: 10px;
     height: 10px;
-    font-size: 0px;
-    position: fixed;
     border-radius: 50%;
     background: linear-gradient(white, white); /* Workaround for Chromium's selective color inversion */
-}
-
-#snow p {
     filter: drop-shadow(0 0 10px white);
+    font-size: 0;
 }
 
 main {
@@ -39,10 +34,10 @@ header, #site-pane {
 
 textarea,
 select,
-input[type=email],
-input[type=range],
-input[type=search],
-input[type=text],
-input[type=number] {
-    background: hsl(0, 0%, 0%) !important;
+input[type="email"],
+input[type="range"],
+input[type="search"],
+input[type="text"],
+input[type="number"] {
+    background: hsl(0deg 0% 0%) !important;
 }

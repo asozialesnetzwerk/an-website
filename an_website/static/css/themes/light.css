@@ -1,2 +1,2 @@
-:root{color-scheme:light;--main: hsl(0, 100%, 33%);--main-2: hsl(5, 90%, 22%);--text-color: hsl(0, 0%, 0%);--secondary-text-color: hsl(0, 0%, 15%);--bg: hsl(180, 30%, 90%);--secondary-bg: hsl(180, 10%, 75%);--tertiary-bg: hsl(180, 10%, 60%);--contrast: hsl(195, 100%, 26%);--contrast-2: hsl(240, 100%, 50%)}
+:root{color-scheme:light;--main: hsl(0deg 100% 33%);--main-2: hsl(5deg 90% 22%);--text-color: hsl(0deg 0% 0%);--secondary-text-color: hsl(0deg 0% 15%);--bg: hsl(180deg 30% 90%);--secondary-bg: hsl(180deg 10% 75%);--tertiary-bg: hsl(180deg 10% 60%);--contrast: hsl(195deg 100% 26%);--contrast-2: hsl(240deg 100% 50%)}
 /*# sourceMappingURL=light.css.map */

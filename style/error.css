@@ -1,6 +1,6 @@
 #container * {
-    text-align: center;
     color: var(--main-2);
+    text-align: center;
 }
 
 #status {
@@ -8,7 +8,7 @@
 }
 
 #reason {
-    font-size: max(1rem, min(4rem, 8vw));
     font-family: monospace;
+    font-size: max(1rem, min(4rem, 8vw));
     hyphens: none;
 }

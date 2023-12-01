@@ -4,35 +4,35 @@
 
 textarea,
 select,
-input[type=email],
-input[type=range],
-input[type=search],
-input[type=text],
-input[type=number] {
-    width: 100%;
-    background: var(--bg);
-    padding: 0.75rem 1.25rem;
-    margin: 0.5rem 0;
+input[type="email"],
+input[type="range"],
+input[type="search"],
+input[type="text"],
+input[type="number"] {
     display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1.25rem;
     border: 0.125rem solid var(--main-2);
     border-radius: 0.625rem;
-    box-sizing: border-box;
+    margin: 0.5rem 0;
+    background: var(--bg);
 }
 
-input[type=submit],
-button[type=submit],
+input[type="submit"],
+button[type="submit"],
 .form-button {
     width: 100%;
-    background-color: var(--secondary-bg);
     padding: 0.875rem 1.25rem;
-    margin: 0.5rem 0;
     border: none;
     border-radius: 0.25rem;
+    margin: 0.5rem 0;
+    background-color: var(--secondary-bg);
     cursor: pointer;
 }
 
-input[type=submit]:hover,
-button[type=submit]:hover,
+input[type="submit"]:hover,
+button[type="submit"]:hover,
 .form-button:hover {
     background-color: var(--main);
 }

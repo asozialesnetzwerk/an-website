@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../style/emoji_chat.css"],
-  "sourcesContent": ["#connection-state {\n    width: 1.375em;\n    height: 1.375em;\n    display: inline-block;\n    border-radius: 50%;\n    vertical-align: bottom;\n}\n#connection-state[state=disconnected] {\n    background-color: red;\n}\n#connection-state[state=connected] {\n    background-color: green;\n}\n#connection-state[state=connecting] {\n    background-color: orange;\n}\n\n#current-user {\n    display: inline;\n}\n"],
-  "mappings": "AAAA,CAAC,iBACG,MAAO,QACP,OAAQ,QACR,QAAS,aAHb,cAImB,IACf,eAAgB,MACpB,CACA,CAPC,gBAOgB,CAAC,oBACd,iBAAkB,GACtB,CACA,CAVC,gBAUgB,CAAC,iBACd,iBAAkB,KACtB,CACA,CAbC,gBAagB,CAAC,kBACd,iBAAkB,MACtB,CAEA,CAAC,aACG,QAAS,MACb",
+  "sourcesContent": ["#connection-state {\n    display: inline-block;\n    width: 1.375em;\n    height: 1.375em;\n    border-radius: 50%;\n    vertical-align: bottom;\n}\n\n#connection-state[state=\"disconnected\"] {\n    background-color: red;\n}\n\n#connection-state[state=\"connected\"] {\n    background-color: green;\n}\n\n#connection-state[state=\"connecting\"] {\n    background-color: orange;\n}\n\n#current-user {\n    display: inline;\n}\n"],
+  "mappings": "AAAA,CAAC,iBACG,QAAS,aACT,MAAO,QACP,OAAQ,QAHZ,cAImB,IACf,eAAgB,MACpB,CAEA,CARC,gBAQgB,CAAC,oBACd,iBAAkB,GACtB,CAEA,CAZC,gBAYgB,CAAC,iBACd,iBAAkB,KACtB,CAEA,CAhBC,gBAgBgB,CAAC,kBACd,iBAAkB,MACtB,CAEA,CAAC,aACG,QAAS,MACb",
   "names": []
 }

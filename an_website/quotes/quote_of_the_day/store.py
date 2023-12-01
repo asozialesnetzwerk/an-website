@@ -56,8 +56,8 @@ class QuoteOfTheDayStore(abc.ABC):
 
 
 class QuoteOfTheDayStoreWithCache(QuoteOfTheDayStore, abc.ABC):
-    # pylint: disable=abstract-method
     """Quote of the day store with an in memory cache."""
+    # pylint: disable=abstract-method
 
     CACHE: ClassVar[dict[date, tuple[int, int]]]
 

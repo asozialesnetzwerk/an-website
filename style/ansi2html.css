@@ -1,6 +1,6 @@
 .pre {
     display: inline-block;
+    font-family: ui-monospace, monospace;
     vertical-align: top;
     white-space: pre-wrap;
-    font-family: ui-monospace, monospace, monospace;
 }

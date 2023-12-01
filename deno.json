@@ -1,16 +1,15 @@
 {
   "tasks": {
     "build": "deno task build:css && deno task build:js",
-    "build:css": "deno task find:css -exec deno task esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css '{}' +",
-    "build:js": "deno task find:ts -exec deno task esbuild --minify --sourcemap --outbase=an_website --outdir=an_website/static/js '{}' +",
+    "build:css": "deno task esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
+    "build:js": "deno task esbuild --minify --sourcemap --outbase=an_website --outdir=an_website/static/js 'an_website/**/*.ts'",
     "clean": "deno task clean:css && deno task clean:js",
     "clean:css": "rm -fr an_website/static/css",
     "clean:js": "rm -fr an_website/static/js",
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.18.20/mod.js --target=$(deno task target) --charset=utf8 --tree-shaking=true",
-    "find:css": "find style -type f -name '*.css'",
-    "find:ts": "find an_website -type f -name '*.ts'",
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.19.3/mod.js --target=$(deno task target) --charset=utf8 --tree-shaking=true",
     "target": "echo es$(python3 -c 'from datetime import datetime, timezone; print(min((now := datetime.now(timezone.utc)).year - (5 + (now.month < 7)), 2022))')",
-    "watch": "deno task find:ts -exec deno task esbuild --outbase=an_website --outdir=an_website/static/js --minify --sourcemap --watch '{}' +",
+    "watch:css": "deno task esbuild --watch --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
+    "watch:js": "deno task esbuild --watch --minify --sourcemap --outbase=an_website --outdir=an_website/static/js 'an_website/**/*.ts'",
     "wat": "deno eval 'console.log(Array(16).join(\"wat\" - 1) + \" Batman!\")'"
   },
   "compilerOptions": {

@@ -6,8 +6,8 @@
 
 #main div a:focus,
 #main div a:hover {
-  transform: scale(1.01);
   filter: contrast(120%) brightness(120%);
+  transform: scale(1.01);
 }
 
 #mastodon {
@@ -16,28 +16,28 @@
 
 /* Initially generated using https://sharingbuttons.io since then improved. */
 #main div a {
-  text-decoration: none;
-  color: #fff;
-  margin: .8rem;
   display: block;
-  border-radius: 0.3125rem;
-  transition: 25ms ease-out;
   padding: .75rem 1rem;
+  border-radius: 0.3125rem;
+  margin: .8rem;
+  color: #fff;
+  text-decoration: none;
+  transition: 25ms ease-out;
 }
 
 #main div a svg {
-  background-color: transparent;
   display: block;
   width: 1.1rem;
   height: 1.1rem;
-  margin-bottom: .1rem;
   margin-right: 0.4rem;
+  margin-bottom: .1rem;
+  background-color: transparent;
   vertical-align: top;
 }
 
 #main div a svg:not(.fill) {
-  stroke: #fff;
   fill: none;
+  stroke: #fff;
 }
 
 .fill {
@@ -62,7 +62,7 @@
 }
 
 #reddit {
-  background: #ff4400;
+  background: #f40;
 }
 
 #email {

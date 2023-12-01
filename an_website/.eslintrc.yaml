@@ -1,3 +1,11 @@
+plugins:
+  - "compat"
 ignorePatterns:
   - "static/js"
   - "vendored"
+rules:
+  compat/compat: "error"
+settings:
+  lintAllEsApis: true
+  polyfills:
+    - "BigInt"

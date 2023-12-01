@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../style/themes/light.css"],
-  "sourcesContent": [":root {\n    color-scheme: light;\n    /* colors: */\n    --main: hsl(0, 100%, 33%);\n    --main-2: hsl(5, 90%, 22%);\n\n    --text-color: hsl(0, 0%, 0%);\n    --secondary-text-color: hsl(0, 0%, 15%);\n\n    --bg: hsl(180, 30%, 90%);\n    --secondary-bg: hsl(180, 10%, 75%);\n    --tertiary-bg: hsl(180, 10%, 60%);\n\n    --contrast: hsl(195, 100%, 26%);\n    --contrast-2: hsl(240, 100%, 50%);\n}\n"],
-  "mappings": "AAAA,MACI,aAAc,MAEd,QAAQ,IAAI,CAAC,EAAE,IAAI,EAAE,KACrB,UAAU,IAAI,CAAC,EAAE,GAAG,EAAE,KAEtB,cAAc,IAAI,CAAC,EAAE,EAAE,EAAE,IACzB,wBAAwB,IAAI,CAAC,EAAE,EAAE,EAAE,KAEnC,MAAM,IAAI,GAAG,EAAE,GAAG,EAAE,KACpB,gBAAgB,IAAI,GAAG,EAAE,GAAG,EAAE,KAC9B,eAAe,IAAI,GAAG,EAAE,GAAG,EAAE,KAE7B,YAAY,IAAI,GAAG,EAAE,IAAI,EAAE,KAC3B,cAAc,IAAI,GAAG,EAAE,IAAI,EAAE,IACjC",
+  "sourcesContent": [":root {\n    color-scheme: light;\n\n    /* colors: */\n    --main: hsl(0deg 100% 33%);\n    --main-2: hsl(5deg 90% 22%);\n    --text-color: hsl(0deg 0% 0%);\n    --secondary-text-color: hsl(0deg 0% 15%);\n    --bg: hsl(180deg 30% 90%);\n    --secondary-bg: hsl(180deg 10% 75%);\n    --tertiary-bg: hsl(180deg 10% 60%);\n    --contrast: hsl(195deg 100% 26%);\n    --contrast-2: hsl(240deg 100% 50%);\n}\n"],
+  "mappings": "AAAA,MACI,aAAc,MAGd,QAAQ,IAAI,KAAK,KAAK,KACtB,UAAU,IAAI,KAAK,IAAI,KACvB,cAAc,IAAI,KAAK,GAAG,IAC1B,wBAAwB,IAAI,KAAK,GAAG,KACpC,MAAM,IAAI,OAAO,IAAI,KACrB,gBAAgB,IAAI,OAAO,IAAI,KAC/B,eAAe,IAAI,OAAO,IAAI,KAC9B,YAAY,IAAI,OAAO,KAAK,KAC5B,cAAc,IAAI,OAAO,KAAK,IAClC",
   "names": []
 }

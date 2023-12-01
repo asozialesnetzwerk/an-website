@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../style/themes/fun.css"],
-  "sourcesContent": ["@import url(\"/static/css/comic.css?v=0\");\n:root {\n    /* colors: */\n    --main: hsl(48, 100%, 50%);\n    --main-2: hsl(30, 100%, 50%);\n\n    --text-color: hsl(106, 100%, 50%);\n    --secondary-text-color: hsl(159, 100%, 50%);\n\n    --bg: hsl(303, 100%, 50%);\n    --secondary-bg: hsl(289, 100%, 50%);\n    --tertiary-bg: hsl(264, 100%, 50%);\n\n    --contrast: hsl(207, 100%, 50%);\n    --contrast-2: hsl(195, 100%, 50%);\n}\n"],
-  "mappings": "mCACA,MAEI,QAAQ,IAAI,EAAE,EAAE,IAAI,EAAE,KACtB,UAAU,IAAI,EAAE,EAAE,IAAI,EAAE,KAExB,cAAc,IAAI,GAAG,EAAE,IAAI,EAAE,KAC7B,wBAAwB,IAAI,GAAG,EAAE,IAAI,EAAE,KAEvC,MAAM,IAAI,GAAG,EAAE,IAAI,EAAE,KACrB,gBAAgB,IAAI,GAAG,EAAE,IAAI,EAAE,KAC/B,eAAe,IAAI,GAAG,EAAE,IAAI,EAAE,KAE9B,YAAY,IAAI,GAAG,EAAE,IAAI,EAAE,KAC3B,cAAc,IAAI,GAAG,EAAE,IAAI,EAAE,IACjC",
+  "sourcesContent": ["@import \"/static/css/comic.css?v=0\";\n\n:root {\n    /* colors: */\n    --main: hsl(48deg 100% 50%);\n    --main-2: hsl(30deg 100% 50%);\n    --text-color: hsl(106deg 100% 50%);\n    --secondary-text-color: hsl(159deg 100% 50%);\n    --bg: hsl(303deg 100% 50%);\n    --secondary-bg: hsl(289deg 100% 50%);\n    --tertiary-bg: hsl(264deg 100% 50%);\n    --contrast: hsl(207deg 100% 50%);\n    --contrast-2: hsl(195deg 100% 50%);\n}\n"],
+  "mappings": "mCAEA,MAEI,QAAQ,IAAI,MAAM,KAAK,KACvB,UAAU,IAAI,MAAM,KAAK,KACzB,cAAc,IAAI,OAAO,KAAK,KAC9B,wBAAwB,IAAI,OAAO,KAAK,KACxC,MAAM,IAAI,OAAO,KAAK,KACtB,gBAAgB,IAAI,OAAO,KAAK,KAChC,eAAe,IAAI,OAAO,KAAK,KAC/B,YAAY,IAAI,OAAO,KAAK,KAC5B,cAAc,IAAI,OAAO,KAAK,IAClC",
   "names": []
 }
