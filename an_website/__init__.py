@@ -27,13 +27,12 @@ from typing import Final, TypedDict
 
 from get_version import get_version
 
-if sys.version_info < (3, 12):
-    with suppress(ModuleNotFoundError):
-        import orjson as json
+with suppress(ModuleNotFoundError):
+    import orjson as json
 
 if "orjson" not in sys.modules:
     from . import (  # type: ignore[no-redef]  # noqa: F811
-        orjson_temp_fix as json,
+        fake_orjson as json,
     )
 
     sys.modules["orjson"] = json

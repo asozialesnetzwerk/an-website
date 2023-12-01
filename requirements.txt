@@ -34,7 +34,7 @@ jsonpickle==3.0.1
 lxml==4.9.2
 multidict==6.0.4 ; python_version >= '3.7'
 orjson==3.8.10
-packaging==23.0 ; python_version >= '3.7'
+packaging==23.1 ; python_version >= '3.7'
 pillow==9.5.0
 pycares==4.3.0
 pycparser==2.21

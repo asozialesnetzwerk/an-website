@@ -43,6 +43,12 @@ jobs:
     env:
       CACHE_REPOSITORY: ghcr.io/${{ github.repository }}---cache
     steps:
+      - name: Download youki
+        run: |
+          wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
+          tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /opt/youki
+          rm -f youki_0_0_5_linux.tar.gz
+          chmod +x /opt/youki
       - name: Upgrade Buildah
         run: |
           wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
@@ -64,10 +70,10 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          buildah build --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
+          buildah build --runtime=/opt/youki --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
           cd ..
       - name: Save image
-        run: buildah push --all --format=oci --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
+        run: buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
