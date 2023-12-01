@@ -67,17 +67,17 @@ class UptimeTimer:
     def __init__(self) -> None:
         self.reset()
 
-    def reset(self) -> None:
-        """Reset the timer."""
-        self._start_time = time.monotonic_ns()
+    def get(self) -> float:
+        """Get the time since start in seconds."""
+        return self.get_ns() / 1_000_000_000
 
     def get_ns(self) -> int:
         """Get the time since start in nanoseconds."""
         return time.monotonic_ns() - self._start_time
 
-    def get(self) -> float:
-        """Get the time since start in seconds."""
-        return self.get_ns() / 1_000_000_000
+    def reset(self) -> None:
+        """Reset the timer."""
+        self._start_time = time.monotonic_ns()
 
 
 UPTIME: Final = UptimeTimer()
