@@ -294,7 +294,7 @@ async def check_html_page(
             or link_tuple[1] == "action"
         ):
             continue
-        if link_tuple[2] == response.effective_url + "#body":
+        if link_tuple[2] == response.effective_url + "#main":
             found_ref_to_body = True  # every page should have a skip to content
         link: str = link_tuple[2].split("#")[0]
         assert link == link.strip()
