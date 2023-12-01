@@ -14,7 +14,7 @@ function startQuotes() {
     const keys = (() => {
         const k = new URLSearchParams(params).get("keys");
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (!(k?.k.length)) {
+        if (!(k?.length)) {
             return "WASD";
         }
         // for vim-like set keys to khjl
@@ -144,7 +144,7 @@ function startQuotes() {
             }
             return false;
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        } else if (data?.data.id) {
+        } else if (data?.id) {
             updateQuoteId(data.id);
             nextQuoteId[0] = data.next;
             quote.innerText = `»${data.quote}«`;
