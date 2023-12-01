@@ -108,10 +108,10 @@ class HeaderInfo(Info):
         """
         Return an HTML element with the tag and the content of the HeaderInfo.
 
-        The HTML element gets an id and a href with a # to
-        itself based on the text content.
+        The HTML element gets an id and a href
+        with a # to itself based on the text content.
         """
-        _id = name_to_id(self.text)
+        id_ = name_to_id(self.text)
         text = (
             self.text  # no need to mark query if type
             # is  book as the book title is excluded from the search
@@ -119,8 +119,8 @@ class HeaderInfo(Info):
             else mark_query(self.text, query)
         )
         return (
-            f"<{self.tag} id={_id!r}>"
-            f"{text}<a no-dynload href='#{_id}' class='header-id-link'></a>"
+            f"<{self.tag} id={id_!r}>"
+            f"{text}<a no-dynload href='#{id_}' class='header-id-link'></a>"
             f"</{self.tag}>"
         )
 

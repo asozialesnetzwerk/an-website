@@ -26,8 +26,8 @@ def copy_case_letter(char_to_steal_case_from: str, char_to_change: str) -> str:
     """
     Copy the case of one string to another.
 
-    This method assumes that the whole string has the same case, like it is
-    the case for a letter.
+    This method assumes that the whole string has the same case,
+    like it is the case for a letter.
     """
     return (
         char_to_change.upper()  # char_to_steal_case_from is upper case

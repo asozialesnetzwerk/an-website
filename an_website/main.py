@@ -12,7 +12,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # pylint: disable=import-private-name, too-many-lines
 
-"""The website of the AN. Loads config and modules and starts Tornado."""
+"""
+The website of the AN.
+
+Loads config and modules and starts Tornado.
+"""
 
 from __future__ import annotations
 
@@ -271,8 +275,8 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
     """
     Parse the module information and return the handlers in a tuple.
 
-    If a handler has only 2 elements a dict with title and description gets
-    added. This information is gotten from the module info.
+    If a handler has only 2 elements a dict with title and description
+    gets added. This information is gotten from the module info.
     """
     handler: Handler | list[Any]
     handlers: list[Handler] = static_file_handling.get_handlers()

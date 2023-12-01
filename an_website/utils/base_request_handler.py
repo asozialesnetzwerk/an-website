@@ -219,7 +219,8 @@ class BaseRequestHandler(RequestHandler):
 
     @property
     def elasticsearch(self) -> AsyncElasticsearch:
-        """Get the Elasticsearch client from the settings.
+        """
+        Get the Elasticsearch client from the settings.
 
         This is None if Elasticsearch is not enabled.
         """
@@ -959,7 +960,8 @@ class BaseRequestHandler(RequestHandler):
 
     @property
     def redis(self) -> Redis[str]:
-        """Get the Redis client from the settings.
+        """
+        Get the Redis client from the settings.
 
         This is None if Redis is not enabled.
         """
@@ -1143,7 +1145,8 @@ class BaseRequestHandler(RequestHandler):
 
     @override
     def write(self, chunk: str | bytes | dict[str, Any]) -> None:
-        """Write the given chunk to the output buffer.
+        """
+        Write the given chunk to the output buffer.
 
         To write the output to the network, use the ``flush()`` method.
         """

@@ -64,7 +64,8 @@ LICENSES: Final[Mapping[str, str]] = {
 
 @cache
 def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
-    """Get the names of the JS files in this project.
+    """
+    Get the names of the JS files in this project.
 
     Returns a list of tuples with filename, license and license URL.
     """

@@ -23,7 +23,7 @@ if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
   exit 1
 fi
 
-python3 -m pre_commit install || echo "Running 'python3 -m pre_commit install' failed"
+python3 -m pre_commit install || echo 'Running "python3 -m pre_commit install" failed'
 
 FAILED=0
 

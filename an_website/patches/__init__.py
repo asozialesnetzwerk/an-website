@@ -169,12 +169,12 @@ def patch_threading() -> None:
     """Set thread names."""
     _bootstrap = Thread._bootstrap  # type: ignore[attr-defined]
 
-    def set_name(self: Thread) -> None:
+    def bootstrap(self: Thread) -> None:
         with suppress(Exception):
             setthreadtitle(self.name)
         _bootstrap(self)
 
-    Thread._bootstrap = set_name  # type: ignore[attr-defined]
+    Thread._bootstrap = bootstrap  # type: ignore[attr-defined]
 
 
 def patch_tornado_418() -> None:
@@ -322,7 +322,7 @@ def patch_tornado_logs() -> None:
 
 
 def patch_tornado_redirect() -> None:
-    """Use modern redirect codes and support HEAD."""
+    """Use modern redirect codes and support HEAD requests."""
 
     def redirect(
         self: RequestHandler,
@@ -330,13 +330,6 @@ def patch_tornado_redirect() -> None:
         permanent: bool = False,
         status: None | int = None,
     ) -> None:
-        """Send a redirect to the given (optionally relative) URL.
-
-        If the ``status`` argument is specified, that value is used as the
-        HTTP status code; otherwise either 308 (permanent) or 307
-        (temporary) is chosen based on the ``permanent`` argument.
-        The default is 307 (temporary).
-        """
         if self._headers_written:
             raise Exception("Cannot redirect after headers have been written")
         if status is None:
@@ -347,6 +340,7 @@ def patch_tornado_redirect() -> None:
         self.set_header("Location", url)
         self.finish()  # type: ignore[unused-awaitable]
 
+    redirect.__doc__ = RequestHandler.redirect.__doc__
     RequestHandler.redirect = redirect  # type: ignore[method-assign]
     RedirectHandler.head = RedirectHandler.get
 

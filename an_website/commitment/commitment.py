@@ -11,7 +11,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Get cool commit messages.
+"""
+Get cool commit messages.
 
 Based on: https://github.com/ngerakines/commitment
 """
@@ -55,17 +56,17 @@ Commits: TypeAlias = dict[str, Commit]
 COMMIT_DATA: dict[str, Commits] = {}
 
 
-async def get_commit_data(committers_uri: str) -> Commits:
+async def get_commit_data(commitment_uri: str) -> Commits:
     """Get data from URI."""
-    if committers_uri in COMMIT_DATA:
-        return COMMIT_DATA[committers_uri]
+    if commitment_uri in COMMIT_DATA:
+        return COMMIT_DATA[commitment_uri]
     file_content: bytes
-    if committers_uri.startswith(("https://", "http://")):
-        file_content = (await AsyncHTTPClient().fetch(committers_uri)).body
+    if commitment_uri.startswith(("https://", "http://")):
+        file_content = (await AsyncHTTPClient().fetch(commitment_uri)).body
     else:
-        if committers_uri.startswith("file:///"):
-            committers_uri = committers_uri.removeprefix("file://")
-        with open(committers_uri, "rb") as file:
+        if commitment_uri.startswith("file:///"):
+            commitment_uri = commitment_uri.removeprefix("file://")
+        with open(commitment_uri, "rb") as file:
             file_content = file.read()
 
     data: Commits = {}
@@ -76,7 +77,7 @@ async def get_commit_data(committers_uri: str) -> Commits:
         hash_, date, msg = line.split(" ", 2)
         data[hash_] = (datetime.utcfromtimestamp(int(date)), msg)
 
-    COMMIT_DATA[committers_uri] = data
+    COMMIT_DATA[commitment_uri] = data
     return data
 
 
@@ -101,7 +102,7 @@ class CommitmentAPI(APIRequestHandler):
         """Handle GET requests to the API."""
         # pylint: disable=unused-argument
         try:
-            data = await get_commit_data(self.settings["COMMITTERS_URI"])
+            data = await get_commit_data(self.settings["COMMITMENT_URI"])
         except Exception as exc:
             raise HTTPError(503) from exc
 
