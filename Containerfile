@@ -1,4 +1,4 @@
-FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42 AS builder
+FROM docker.io/library/python@sha256:347c255a73b2993ea75259a5ae69c71714d2ef94e4079b6e5876bcee7a265e9d AS builder
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
@@ -53,7 +53,7 @@ RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
  && /venv/bin/pip install --no-deps wheel==0.40.0 \
- && /venv/bin/pip install --no-deps https://github.com/cython/cython/archive/dacb26cec739a2afa2ba9d305f05504168612bf8.tar.gz \
+ && /venv/bin/pip install --no-deps https://github.com/cython/cython/archive/a5bb829bbc538467d1fe557b6001a4c1c5a88bd9.tar.gz \
  && /venv/bin/pip install --no-deps funcparserlib==1.0.1 \
  && /venv/bin/pip install --no-deps --ignore-requires-python hy==0.26.0 \
  && /venv/bin/pip install --no-deps --no-build-isolation hyrule==0.3.0 \
@@ -70,7 +70,7 @@ COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
 
-FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42
+FROM docker.io/library/python@sha256:347c255a73b2993ea75259a5ae69c71714d2ef94e4079b6e5876bcee7a265e9d
 LABEL org.opencontainers.image.authors="contact@asozial.org"
 RUN set -eux \
  && apt-get update \
