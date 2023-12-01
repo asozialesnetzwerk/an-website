@@ -905,7 +905,7 @@ ansi_replace = partial(regex.sub, "\033" + r"\[-?\d+[a-zA-Z]", "")
 ansi_replace.__doc__ = "Remove ANSI escape sequences from a string."
 
 backspace_replace = partial(regex.sub, ".?\x08", "")
-ansi_replace.__doc__ = "Remove backspaces from a string."
+backspace_replace.__doc__ = "Remove backspaces from a string."
 
 
 def apply(value: T_Val, fun: Callable[[T_Val], T]) -> T:
