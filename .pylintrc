@@ -29,6 +29,7 @@ extension-pkg-allow-list=
     blake3,
     lxml,
     orjson,
+    pycurl,
 recursive=yes
 py-version=3.10
 

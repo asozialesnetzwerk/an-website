@@ -26,18 +26,21 @@ from collections.abc import Callable
 from configparser import RawConfigParser
 from pathlib import Path
 from threading import Thread
+from urllib.parse import urlsplit
+from types import MethodType
 from typing import Any, Final
 
 import certifi
 import defusedxml  # type: ignore[import]
 import jsonpickle  # type: ignore[import]
 import orjson
+import pycurl
 import tornado.httputil
 import yaml
 from emoji import EMOJI_DATA
 from emoji import unicode_codes as euc
 from setproctitle import setthreadtitle
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
 from tornado.log import gen_log
 from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
@@ -52,22 +55,44 @@ with contextlib.suppress(ImportError):
     # pylint: disable=import-error, useless-suppression
     from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 
-_bootstrap = Thread._bootstrap  # type: ignore[attr-defined]
-
-
-def _boobstrap(self: Thread) -> None:
-    with contextlib.suppress(Exception):
-        setthreadtitle(self.name)
-    _bootstrap(self)
-
 
 def apply() -> None:
-    """Apply the patches."""
-    defusedxml.defuse_stdlib()
-    defusedxml.xmlrpc.monkey_patch()
-    Thread._bootstrap = _boobstrap  # type: ignore[attr-defined]
+    """Improve."""
+    patch_asyncio()
+    patch_certifi()
+    patch_configparser()
+    patch_emoji()
+    patch_http()
+    patch_json()
+    patch_jsonpickle()
+    patch_threading()
+    patch_xml()
+
+    patch_tornado_418()
+    patch_tornado_arguments()
+    patch_tornado_gzip()
+    patch_tornado_httpclient()
+    patch_tornado_logs()
+    patch_tornado_redirect()
+
+
+def patch_asyncio() -> None:
+    """Make stuff faster."""
+    # pylint: disable=import-outside-toplevel
+    if "DISABLE_UVLOOP" not in os.environ:
+        from uvloop import EventLoopPolicy
+
+        set_event_loop_policy(EventLoopPolicy())
+
+
+def patch_certifi() -> None:
+    """Make everything use our CA bundle."""
     certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
     certifi.contents = lambda: Path(certifi.where()).read_text("ASCII")
+
+
+def patch_configparser() -> None:
+    """Make configparser funky."""
     RawConfigParser.BOOLEAN_STATES.update(  # type: ignore[attr-defined]
         {
             "sure": True,
@@ -78,41 +103,6 @@ def apply() -> None:
             "disabled": False,
         }
     )
-    # pylint: disable=import-outside-toplevel
-    if "DISABLE_UVLOOP" not in os.environ:
-        from uvloop import EventLoopPolicy
-
-        set_event_loop_policy(EventLoopPolicy())
-    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
-    tornado.httputil.parse_body_arguments = parse_body_arguments
-    RedirectHandler.head = RedirectHandler.get
-    RequestHandler.redirect = redirect  # type: ignore[assignment]
-    RequestHandler.SUPPORTED_METHODS = (
-        RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
-        + (
-            "PROPFIND",
-            "BREW",
-            "WHEN",
-        )
-    )
-    _ = RequestHandler._unimplemented_method
-    RequestHandler.propfind = _  # type: ignore[attr-defined]
-    RequestHandler.brew = _  # type: ignore[attr-defined]
-    RequestHandler.when = _  # type: ignore[attr-defined]
-    GZipContentEncoding.CONTENT_TYPES = {
-        type for type, data in MEDIA_TYPES.items() if data.get("compressible")
-    }
-    http.client.responses[420] = "Enhance Your Calm"
-    if not getattr(stdlib_json, "_omegajson", False) and sys.version_info < (
-        3,
-        12,
-    ):
-        patch_json()
-    anonymize_logs()
-    patch_emoji()
-    jsonpickle.load_backend("orjson")
-    jsonpickle.set_preferred_backend("orjson")
-    jsonpickle.enable_fallthrough(False)
 
 
 def patch_emoji() -> None:
@@ -155,16 +145,151 @@ def patch_emoji() -> None:
     euc._ALIASES_UNICODE.clear()  # type: ignore[attr-defined]
 
 
+def patch_http() -> None:
+    """Add response code 420."""
+    http.client.responses[420] = "Enhance Your Calm"
+
+
 def patch_json() -> None:
     """Replace json with orjson."""
+    if getattr(stdlib_json, "_omegajson", False) or sys.version_info < (3, 12):
+        return
     stdlib_json.dumps = json.dumps
     stdlib_json.dump = json.dump  # type: ignore[assignment]
     stdlib_json.loads = json.loads
     stdlib_json.load = json.load
 
 
-def anonymize_logs() -> None:
-    """Anonymize logs."""
+def patch_jsonpickle() -> None:
+    """Make jsonpickle return bytes."""
+    jsonpickle.load_backend("orjson")
+    jsonpickle.set_preferred_backend("orjson")
+    jsonpickle.enable_fallthrough(False)
+
+
+def patch_threading() -> None:
+    """Set thread names."""
+    _bootstrap = Thread._bootstrap  # type: ignore[attr-defined]
+
+    def set_name(self: Thread) -> None:
+        with contextlib.suppress(Exception):
+            setthreadtitle(self.name)
+        _bootstrap(self)
+
+    Thread._bootstrap = set_name  # type: ignore[attr-defined]
+
+
+def patch_tornado_418() -> None:
+    """Add support for RFC 7168."""
+    RequestHandler.SUPPORTED_METHODS = (
+        RequestHandler.SUPPORTED_METHODS  # type: ignore[assignment]
+        + (
+            "PROPFIND",
+            "BREW",
+            "WHEN",
+        )
+    )
+    _ = RequestHandler._unimplemented_method
+    RequestHandler.propfind = _  # type: ignore[attr-defined]
+    RequestHandler.brew = _  # type: ignore[attr-defined]
+    RequestHandler.when = _  # type: ignore[attr-defined]
+
+
+def patch_tornado_arguments() -> None:  # noqa: C901
+    """Improve argument parsing."""
+    # pylint: disable=too-complex
+
+    def ensure_bytes(value: Any) -> bytes:
+        """Return the value as bytes."""
+        if isinstance(value, bool):
+            return b"true" if value else b"false"
+        if isinstance(value, bytes):
+            return value
+        return str(value).encode("UTF-8")
+
+    def parse_body_arguments(  # noqa: D103
+        content_type: str,
+        body: bytes,
+        arguments: dict[str, list[bytes]],
+        files: dict[str, list[HTTPFile]],
+        headers: None | HTTPHeaders = None,
+        *,
+        _: Callable[..., None] = tornado.httputil.parse_body_arguments,
+    ) -> None:
+        # pylint: disable=too-many-branches
+        if content_type.startswith("application/json"):
+            if headers and "Content-Encoding" in headers:
+                gen_log.warning(
+                    "Unsupported Content-Encoding: %s",
+                    headers["Content-Encoding"],
+                )
+                return
+            try:
+                spam = orjson.loads(body)
+            except Exception as exc:  # pylint: disable=broad-except
+                gen_log.warning("Invalid JSON body: %s", exc)
+            else:
+                for key, value in spam.items():
+                    if value is not None:
+                        arguments.setdefault(key, []).append(
+                            ensure_bytes(value)
+                        )
+        elif content_type.startswith("application/yaml"):
+            if headers and "Content-Encoding" in headers:
+                gen_log.warning(
+                    "Unsupported Content-Encoding: %s",
+                    headers["Content-Encoding"],
+                )
+                return
+            try:
+                spam = yaml.safe_load(body)
+            except Exception as exc:  # pylint: disable=broad-except
+                gen_log.warning("Invalid YAML body: %s", exc)
+            else:
+                for key, value in spam.items():
+                    if value is not None:
+                        arguments.setdefault(key, []).append(
+                            ensure_bytes(value)
+                        )
+        else:
+            _(content_type, body, arguments, files, headers)
+
+    tornado.httputil.parse_body_arguments = parse_body_arguments
+
+
+def patch_tornado_gzip() -> None:
+    """Use gzip for more content types."""
+    GZipContentEncoding.CONTENT_TYPES = {
+        type for type, data in MEDIA_TYPES.items() if data.get("compressible")
+    }
+
+
+def patch_tornado_httpclient() -> None:
+    """Make requests quick."""
+    BACON = 0x75800  # noqa: N806  # pylint: disable=invalid-name
+    EGGS = 1 << 25  # noqa: N806  # pylint: disable=invalid-name
+
+    AsyncHTTPClient.configure("tornado.curl_httpclient.CurlAsyncHTTPClient")
+
+    def prepare_curl_callback(self: HTTPRequest, curl: pycurl.Curl) -> None:
+        # pylint: disable=c-extension-no-member, useless-suppression
+        if urlsplit(self.url).scheme == "https":  # noqa: SIM102
+            if (ver := pycurl.version_info())[2] >= BACON and ver[4] & EGGS:
+                curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_3)
+
+    original_request_init = HTTPRequest.__init__
+
+    def request_init(self: HTTPRequest, *args: Any, **kwargs: Any) -> None:
+        if len(args) < 18:  # there are too many positional arguments here
+            prepare_curl_method = MethodType(prepare_curl_callback, self)
+            kwargs.setdefault("prepare_curl_callback", prepare_curl_method)
+        original_request_init(self, *args, **kwargs)
+
+    HTTPRequest.__init__ = request_init  # type: ignore[assignment]
+
+
+def patch_tornado_logs() -> None:
+    """Anonymize Tornado logs."""
     # pylint: disable=import-outside-toplevel
     from ..utils.utils import SUS_PATHS, anonymize_ip
 
@@ -198,76 +323,38 @@ def anonymize_logs() -> None:
     )
 
 
-def ensure_bytes(value: Any) -> bytes:
-    """Return the value as bytes."""
-    if isinstance(value, bool):
-        return b"true" if value else b"false"
-    if isinstance(value, bytes):
-        return value
-    return str(value).encode("UTF-8")
+def patch_tornado_redirect() -> None:
+    """Use modern redirect codes and support HEAD."""
 
+    def redirect(
+        self: RequestHandler,
+        url: str,
+        permanent: bool = False,
+        status: None | int = None,
+    ) -> None:
+        """Send a redirect to the given (optionally relative) URL.
 
-def parse_body_arguments(  # noqa: D103, C901
-    content_type: str,
-    body: bytes,
-    arguments: dict[str, list[bytes]],
-    files: dict[str, list[HTTPFile]],
-    headers: None | HTTPHeaders = None,
-    *,
-    _: Callable[..., None] = tornado.httputil.parse_body_arguments,
-) -> None:
-    # pylint: disable=missing-function-docstring, too-complex, too-many-branches
-    if content_type.startswith("application/json"):
-        if headers and "Content-Encoding" in headers:
-            gen_log.warning(
-                "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
-            )
-            return
-        try:
-            spam = orjson.loads(body)
-        except Exception as exc:  # pylint: disable=broad-except
-            gen_log.warning("Invalid JSON body: %s", exc)
+        If the ``status`` argument is specified, that value is used as the
+        HTTP status code; otherwise either 308 (permanent) or 307
+        (temporary) is chosen based on the ``permanent`` argument.
+        The default is 307 (temporary).
+        """
+        if self._headers_written:
+            raise Exception("Cannot redirect after headers have been written")
+        if status is None:
+            status = 308 if permanent else 307
         else:
-            for key, value in spam.items():
-                if value is not None:
-                    arguments.setdefault(key, []).append(ensure_bytes(value))
-    elif content_type.startswith("application/yaml"):
-        if headers and "Content-Encoding" in headers:
-            gen_log.warning(
-                "Unsupported Content-Encoding: %s", headers["Content-Encoding"]
-            )
-            return
-        try:
-            spam = yaml.safe_load(body)
-        except Exception as exc:  # pylint: disable=broad-except
-            gen_log.warning("Invalid YAML body: %s", exc)
-        else:
-            for key, value in spam.items():
-                if value is not None:
-                    arguments.setdefault(key, []).append(ensure_bytes(value))
-    else:
-        _(content_type, body, arguments, files, headers)
+            # pylint: disable=line-too-long
+            assert isinstance(status, int) and 300 <= status <= 399  # type: ignore[redundant-expr]  # nosec: B101  # noqa: B950
+        self.set_status(status)
+        self.set_header("Location", url)
+        self.finish()
+
+    RequestHandler.redirect = redirect  # type: ignore[assignment]
+    RedirectHandler.head = RedirectHandler.get
 
 
-def redirect(
-    self: RequestHandler,
-    url: str,
-    permanent: bool = False,
-    status: None | int = None,
-) -> None:
-    """Send a redirect to the given (optionally relative) URL.
-
-    If the ``status`` argument is specified, that value is used as the
-    HTTP status code; otherwise either 308 (permanent) or 307
-    (temporary) is chosen based on the ``permanent`` argument.
-    The default is 307 (temporary).
-    """
-    if self._headers_written:
-        raise Exception("Cannot redirect after headers have been written")
-    if status is None:
-        status = 308 if permanent else 307
-    else:
-        assert isinstance(status, int) and 300 <= status <= 399  # nosec: B101
-    self.set_status(status)
-    self.set_header("Location", url)
-    self.finish()
+def patch_xml() -> None:
+    """Make XML safer."""
+    defusedxml.defuse_stdlib()
+    defusedxml.xmlrpc.monkey_patch()
