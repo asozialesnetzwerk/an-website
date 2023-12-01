@@ -3,7 +3,7 @@ ARG BASE=docker.io/library/python:3.12.0b1-slim
 FROM $BASE AS builder
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
+ && apt-get install -y --no-install-recommends automake curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libtool libwebp-dev libxml2-dev libxslt1-dev make zlib1g-dev \
  && rm -fr /var/lib/apt/lists/* \
  && for pkg in \
         b/binutils/binutils_2.40-2 \

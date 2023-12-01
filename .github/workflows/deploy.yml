@@ -311,6 +311,8 @@ jobs:
         with:
           python-version: 3.12
           allow-prereleases: true
+      - name: Install Setuptools
+        run: pip install setuptools
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:

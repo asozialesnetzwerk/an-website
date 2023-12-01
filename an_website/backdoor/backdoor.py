@@ -187,7 +187,7 @@ class Backdoor(APIRequestHandler):
                 self.get_flags(PyCF_ONLY_AST | PyCF_TYPE_COMMENTS),
                 cast(bool, 0x5F3759DF),
                 random.randrange(3),
-                _feature_version=10,
+                _feature_version=12,
             )
             code = compile(
                 parsed,
@@ -196,7 +196,7 @@ class Backdoor(APIRequestHandler):
                 self.get_flags(PyCF_ALLOW_TOP_LEVEL_AWAIT),
                 cast(bool, 0x5F3759DF),
                 random.randrange(3),
-                _feature_version=10,
+                _feature_version=12,
             )
         except SyntaxError as exc:
             exception = exc

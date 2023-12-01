@@ -161,7 +161,7 @@ async def request(  # noqa: C901
     method: str,
     url: str | SplitResult,
     headers: None | MutableMapping[str, str] = None,
-    body: None | bytes | Iterable[bytes] | str = None,
+    body: None | bytes | bytearray | Iterable[bytes | bytearray] | str = None,
     *,
     proxy_type: None | int = None,
     proxy_addr: None | str = None,
