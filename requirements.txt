@@ -40,7 +40,7 @@ multidict==6.0.4 ; python_version >= '3.7'
 numpy==1.24.2
 orjson==3.8.9
 packaging==23.0 ; python_version >= '3.7'
-pillow==9.4.0
+pillow==9.5.0
 pycares==4.3.0
 pycparser==2.21
 pycryptodome==3.17

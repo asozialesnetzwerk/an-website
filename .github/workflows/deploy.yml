@@ -9,6 +9,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -32,8 +33,8 @@ jobs:
         with:
           path: dist
 
-  build-container:
-    name: Build container
+  build-oci-image:
+    name: Build OCI image
     runs-on: ubuntu-latest
     needs:
       - build
@@ -46,31 +47,28 @@ jobs:
           name: artifact
       - name: Extract source distribution
         run: |
-          tar -xf *.tar.gz
-          rm *.tar.gz
-      - name: Install podman
+          tar xvf *.tar.gz
+          rm -f *.tar.gz
+      - name: Install buildah
         run: |
           sudo apt-get update
-          sudo apt-get install -y podman
+          sudo apt-get install -y buildah
       - name: Pull last image
-        run: podman pull ghcr.io/asozialesnetzwerk/an-website:git
-      - name: Build container
+        run: buildah pull ghcr.io/asozialesnetzwerk/an-website:git
+      - name: Build image
         run: |
           cd an-website*
-          # TODO: use --all-platforms
-          podman build -t an-website:git .
+          buildah build -t an-website:git .
           cd ..
       - name: Save image
-        run: |
-          mkdir -p build
-          podman save an-website:git -o build/an-website.tar
+        run: buildah push an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
-          path: build
+          path: oci-archive.tar
 
-  publish-container:
-    name: Publish container
+  push-oci-image:
+    name: Push OCI image
     runs-on: ubuntu-latest
     needs:
       - build-container
@@ -82,17 +80,17 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact
-      - name: Install podman
+      - name: Install buildah
         run: |
           sudo apt-get update
-          sudo apt-get install -y podman
+          sudo apt-get install -y buildah
       - name: Load image
         run: |
-          podman load -i an-website.tar
+          buildah pull oci-archive:oci-archive.tar
       - name: Push image
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | podman login ghcr.io -u $ --password-stdin
-          podman push an-website:git ghcr.io/asozialesnetzwerk/an-website:git
+          echo "${{ secrets.GITHUB_TOKEN }}" | buildah login ghcr.io -u $ --password-stdin
+          buildah push an-website:git ghcr.io/asozialesnetzwerk/an-website:git
 
   test-wheel:
     name: Test wheel

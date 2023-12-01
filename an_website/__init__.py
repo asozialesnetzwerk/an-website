@@ -21,17 +21,20 @@ import sys
 import time
 from asyncio import Event
 from collections.abc import Mapping
+from contextlib import suppress
 from pathlib import Path
 from typing import Final, TypedDict
 
 from get_version import get_version
 
-if sys.version_info >= (3, 12):
-    from . import orjson_temp_fix as json
+if sys.version_info < (3, 12):
+    with suppress(ModuleNotFoundError):
+        import orjson as json
+
+if "orjson" not in sys.modules:
+    from . import orjson_temp_fix as json  # noqa: F811
 
     sys.modules["orjson"] = json
-else:
-    import orjson as json
 
 try:
     from pytest_is_running import is_running as pytest_is_running

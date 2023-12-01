@@ -1,4 +1,4 @@
-FROM docker.io/library/python@sha256:26f59e25cb77919a8b9cf962899fc453ddd4d86674af202db91734b1f6a98fb8 AS builder
+FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42 AS builder
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl git g++ libcurl4-nss-dev libffi-dev libfreetype-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
@@ -71,7 +71,7 @@ COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
 
-FROM docker.io/library/python@sha256:26f59e25cb77919a8b9cf962899fc453ddd4d86674af202db91734b1f6a98fb8
+FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl libcurl3-nss libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 nss-plugin-pem \
@@ -92,13 +92,12 @@ RUN set -eux \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
- && tar -xvf uwufetch_2.1-linux.tar.gz \
- && rm uwufetch_2.1-linux.tar.gz \
- && cd uwufetch* \
+ && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
+ && tar xvf uwufetch_2.1-linux.tar.gz \
+ && cd uwufetch_2.1-linux \
  && bash install.sh \
  && cd .. \
- && rm -fr uwufetch*
+ && rm -rf uwufetch*
 COPY --from=builder /venv /venv
 RUN mkdir /data
 WORKDIR /data

@@ -6,7 +6,7 @@
     "clean": "deno task clean:css && deno task clean:js",
     "clean:css": "rm -rf an_website/static/css",
     "clean:js": "rm -rf an_website/static/js",
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.17.14/mod.js --log-override:unsupported-regexp=error --target=$(deno task target) --charset=utf8",
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.17.15/mod.js --log-override:unsupported-regexp=error --target=$(deno task target) --charset=utf8",
     "find:css": "find style -type f -name '*.css'",
     "find:ts": "find an_website -type f -name '*.ts'",
     "target": "echo es$(python3 -c 'from datetime import datetime; print(min((now := datetime.utcnow()).year - (5 + (now.month < 7)), 2022))')",

@@ -17,10 +17,10 @@
 
 from __future__ import annotations
 
-import contextlib
-import importlib.metadata
 import os
 import warnings
+from contextlib import suppress
+from importlib.metadata import Distribution
 from pathlib import Path
 
 import trove_classifiers
@@ -54,11 +54,11 @@ for classifier in classifiers:
 
 
 def get_version() -> str:
-    """Get the version of this package."""
-    with contextlib.suppress(NoVersionFound):
+    """Get the version."""
+    with suppress(NoVersionFound):
         return _get_version(__file__, vcs="git", dist_name="an-website")
     directory = Path(__file__).resolve().parent / "an_website.egg-info"
-    return importlib.metadata.Distribution.at(directory).version
+    return Distribution.at(directory).version
 
 
 def read(filename: str) -> str:
