@@ -462,7 +462,9 @@ class BaseRequestHandler(RequestHandler):
     def get_saved_theme(self) -> str:
         """Get the theme saved in the cookie."""
         if (
-            theme := cast(str, self.get_cookie("theme", "")).replace("-", "_")
+            theme := cast(str, self.get_cookie("theme", ""))
+            .replace("-", "_")
+            .lower()
         ) in THEMES:
             return theme
         return "default"
@@ -470,7 +472,7 @@ class BaseRequestHandler(RequestHandler):
     def get_theme(self) -> str:
         """Get the theme currently selected."""
         if (
-            theme := self.get_argument("theme", "").replace("-", "_")
+            theme := self.get_argument("theme", "").replace("-", "_").lower()
         ) in THEMES:
             return theme
         return self.get_saved_theme()

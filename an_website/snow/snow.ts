@@ -1,3 +1,4 @@
+// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 const snow = document.getElementById("snow") as HTMLDivElement;
 
 let snowflakesCount = 200;
@@ -104,6 +105,7 @@ function createSnow(): void {
 }
 
 window.onload = createSnow;
+// @license-end
 
 // TODO add option to easily re-render scenery. For example when window resizes.
 // this should be easy as CSS rerenders after display block -> none -> block;
