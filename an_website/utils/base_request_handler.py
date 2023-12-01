@@ -200,7 +200,7 @@ class BaseRequestHandler(RequestHandler):
 
         return super().finish()
 
-    def fix_url(  # noqa: C901
+    def fix_url(  # noqa: C901  # pylint: disable=too-complex
         self,
         url: None | str | SplitResult = None,
         new_path: None | str = None,

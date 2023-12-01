@@ -92,12 +92,12 @@ a:not(.no-style-a, .no-style-a-in, .no-style-a-emoji) {
     color: var(--main)
 }
 
-.no-style-a, .no-style-a-in, .no-style-a-emoji {
-    text-decoration: none;
+.no-style-a {
+    color: var(--text-color);
 }
 
-.no-style-a {
-    display: block;
+.no-style-a, .no-style-a-in, .no-style-a-emoji {
+    text-decoration: none;
 }
 
 .no-style-a:hover, .no-style-a-in:hover {
