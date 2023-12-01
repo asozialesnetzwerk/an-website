@@ -474,7 +474,7 @@ def parse_wrong_quote(
     return wrong_quote
 
 
-def parse_list_of_quote_data(
+async def parse_list_of_quote_data(
     json_list: str | Iterable[Mapping[str, Any]],
     parse_fun: Callable[[Mapping[str, Any]], QuotesObjBase],
 ) -> tuple[QuotesObjBase, ...]:
@@ -483,7 +483,12 @@ def parse_list_of_quote_data(
         return ()
     if isinstance(json_list, str):
         json_list = cast(list[dict[str, Any]], json.loads(json_list))
-    return tuple(parse_fun(json_data) for json_data in json_list)
+    return_list = []
+    for json_data in json_list:
+        _ = parse_fun(json_data)
+        await asyncio.sleep(0)
+        return_list.append(_)
+    return tuple(return_list)
 
 
 async def update_cache_periodically(app: Application) -> None:  # noqa: C901
@@ -495,15 +500,15 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     apm: None | elasticapm.Client  # type: ignore[no-any-unimported]
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
             parse_wrong_quote,
         )
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950
             parse_quote,
         )
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
             parse_author,
         )
@@ -568,7 +573,7 @@ async def update_cache(
     redis_available = EVENT_REDIS.is_set()
 
     if update_wrong_quotes:
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             wq_data := await make_api_request("wrongquotes"),
             parse_wrong_quote,
         )
@@ -580,7 +585,7 @@ async def update_cache(
             )
 
     if update_quotes:
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             quotes_data := await make_api_request("quotes"),
             parse_quote,
         )
@@ -592,7 +597,7 @@ async def update_cache(
             )
 
     if update_authors:
-        parse_list_of_quote_data(
+        await parse_list_of_quote_data(
             authors_data := await make_api_request("authors"),
             parse_author,
         )

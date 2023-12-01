@@ -116,6 +116,6 @@ LABEL org.opencontainers.image.authors="contact@asozial.org" \
       org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
       org.opencontainers.image.licenses="AGPL-3.0-or-later" \
       org.opencontainers.image.title="an-website" \
-      org.opencontainers.image.description="podman run -d -v .:/data:z -p 8888:8888 --name an-website --network slirp4netns:port_handler=slirp4netns --pull newer IMAGE" \
+      org.opencontainers.image.description="podman run --detach --name an-website --network slirp4netns:port_handler=slirp4netns --publish 8888:8888 --pull newer --volume .:/data:z IMAGE" \
       org.opencontainers.image.base.digest="$BASE_DIGEST" \
       org.opencontainers.image.base.name="$BASE_NAME"
