@@ -363,7 +363,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
 
             if ratelimited:
                 return await self.write_message(
-                    {"type": "ratelimit", **headers}
+                    {"type": "ratelimit", "retry_after": headers["Retry-After"]}
                 )
 
         return await save_new_message(

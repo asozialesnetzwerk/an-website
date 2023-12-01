@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read
+#!/usr/bin/env -S deno run --no-prompt --allow-read=.
 import compat from "npm:core-js-compat@3";
 import modules from "./core-js-modules.ts";
 import { parse } from "std/flags/mod.ts";

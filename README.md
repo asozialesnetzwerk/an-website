@@ -22,7 +22,7 @@ You need:
 - Git (obviously)
 - CPython 3.10+
 - Packages from requirements-dev.txt
-- GCC and G++ for building some of the dependencies
+- C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
 - For formatting TypeScript and Markdown: dprint
 - For building JavaScript and CSS: Deno
@@ -30,9 +30,8 @@ You need:
   (`./deno upgrade --output ~/.local/bin/deno`)
 - For linting TypeScript: Node.js and pnpm
   \
-  (`npm i -g pnpm@8 && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8 && npm r -g pnpm`)\
-  (`corepack enable && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8`
-  can also be used)\
+  (`npm i -g pnpm@8 && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8 && npm r -g pnpm`
+  or use Corepack)\
   (`pnpm up -g` to update)
 
 ### How to check
@@ -52,7 +51,7 @@ You need:
 You need:
 
 - CPython 3.10+
-- GCC and G++ for building some of the dependencies
+- C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
 - Supervisord
 - Redis 6.2

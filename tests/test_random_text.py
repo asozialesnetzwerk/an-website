@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The tests for the troet page."""
+"""The tests for the random text API."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ PATH = "/api/zufaelliger-text"
 
 
 async def test_random_text_api(fetch: FetchCallable) -> None:  # noqa: F811
-    """Test the troet page."""
+    """Test the random text API."""
     assert_valid_response(await fetch(PATH), "text/plain", {200})
 
     assert_valid_html_response(
@@ -38,7 +38,7 @@ async def test_random_text_api(fetch: FetchCallable) -> None:  # noqa: F811
 
 
 async def test_random_text_seed(fetch: FetchCallable) -> None:  # noqa: F811
-    """Test the troet page."""
+    """Test the random text API."""
     seeded_path = f"{PATH}?seed=xyz"
 
     assert (await fetch(seeded_path)).body == (await fetch(seeded_path)).body

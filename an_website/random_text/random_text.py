@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""The ping API of the website."""
+"""The random text API of the website."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ def get_module_info() -> ModuleInfo:
 
 @dataclass(slots=True)
 class Arguments:
-    """The arguments for the example page."""
+    """The arguments for the random text API."""
 
     seed: str = ""
     words: int = 500
@@ -109,7 +109,7 @@ def generate_random_text(random: Random, length: int, end: str = "") -> str:
 
 
 class RandomText(APIRequestHandler):
-    """The request handler for the ping API."""
+    """The request handler for the random text API."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/plain",
@@ -118,7 +118,7 @@ class RandomText(APIRequestHandler):
 
     @parse_args(type_=Arguments, validation_method="validate")
     async def get(self, args: Arguments, *, head: bool = False) -> None:
-        """Handle GET requests to the ping API."""
+        """Handle GET requests to the random text API."""
         # pylint: disable=unused-argument
         random = Random(args.seed or None)
         text = generate_random_text(random, args.words, end=".")

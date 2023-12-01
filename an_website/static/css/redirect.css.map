@@ -2,6 +2,6 @@
   "version": 3,
   "sources": ["../../../style/redirect.css"],
   "sourcesContent": [".button, p {\n    max-width: 50rem;\n    font-size: 1.1rem;\n}\n\n.button {\n    color: var(--text-color);\n\n    margin: 0.5rem 0;\n    padding: 0.875rem 1.25rem;\n\n    border: none;\n    border-radius: 0.25rem;\n\n    cursor: pointer;\n    text-align: center;\n    /* subtract padding (both sides) so it doesn't become to wide*/\n    width: calc(100% - 2.5rem);\n    max-width: 47.5rem; /* calc(50rem - 2.5rem) */\n}\n\n.button:hover {\n    transform: scale(1.01);\n    filter: contrast(120%) brightness(120%);\n}\n\n.leave {\n    background-color: var(--main)!important;\n}\n\n.stay {\n    background-color: var(--contrast)!important;\n}\n"],
-  "mappings": "AAAA,CAAC,OAAQ,EACL,UAAW,MACX,UAAW,MACf,CAEA,CAAC,OACG,MAAO,IAAI,cANf,OAQY,MAAO,EARnB,QASa,QAAS,QAElB,OAAQ,KAXZ,cAYmB,OAEf,OAAQ,QACR,WAAY,OAEZ,MAAO,KAAK,KAAK,EAAE,QACnB,UAAW,OACf,CAEA,CAAC,MAAM,OACH,UAAW,MAAM,MACjB,OAAQ,SAAS,MAAM,WAAW,KACtC,CAEA,CAAC,MACG,iBAAkB,IAAI,iBAC1B,CAEA,CAAC,KACG,iBAAkB,IAAI,qBAC1B",
+  "mappings": "AAAA,CAAC,OAAQ,EACL,UAAW,MACX,UAAW,MACf,CAEA,CALC,OAMG,MAAO,IAAI,cANf,OAQY,MAAO,EARnB,QASa,QAAS,QAElB,OAAQ,KAXZ,cAYmB,OAEf,OAAQ,QACR,WAAY,OAEZ,MAAO,KAAK,KAAK,EAAE,QACnB,UAAW,OACf,CAEA,CArBC,MAqBM,OACH,UAAW,MAAM,MACjB,OAAQ,SAAS,MAAM,WAAW,KACtC,CAEA,CAAC,MACG,iBAAkB,IAAI,iBAC1B,CAEA,CAAC,KACG,iBAAkB,IAAI,qBAC1B",
   "names": []
 }

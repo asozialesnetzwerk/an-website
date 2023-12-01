@@ -41,9 +41,7 @@ from .utils import (
     replace_umlauts,
 )
 
-if TYPE_CHECKING:
-    from typing_extensions import override
-elif sys.hexversion >= 0x30C00A6:
+if TYPE_CHECKING or sys.hexversion >= 0x30C00A6:
     # pylint: disable=no-name-in-module, ungrouped-imports
     from typing import override
 else:

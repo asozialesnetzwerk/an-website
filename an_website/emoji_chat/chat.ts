@@ -106,7 +106,7 @@ const handleWebSocketData = (event: { data: string }) => {
         message: Message;
         messages: Message[];
         current_user: string[];
-        "Retry-After": number;
+        retry_after: number;
         users: string[];
         error: string;
     };
@@ -139,7 +139,7 @@ const handleWebSocketData = (event: { data: string }) => {
         case "ratelimit": {
             resetLastMessage();
             // TODO: Don't use alert
-            alert(`Retry after ${data["Retry-After"]} seconds.`);
+            alert(`Retry after ${data.retry_after} seconds.`);
             break;
         }
         case "error": {

@@ -87,9 +87,7 @@ from .utils import (
     str_to_bool,
 )
 
-if TYPE_CHECKING:
-    from typing_extensions import override
-elif sys.hexversion >= 0x30C00A6:
+if TYPE_CHECKING or sys.hexversion >= 0x30C00A6:
     # pylint: disable=no-name-in-module, ungrouped-imports
     from typing import override
 else:
@@ -131,7 +129,7 @@ class BaseRequestHandler(RequestHandler):
 
     used_render: bool = False
 
-    active_origin_trials: set[bytes]
+    active_origin_trials: set[str]
     content_type: None | str = None
     apm_script: None | str
     crawler: bool = False
@@ -660,6 +658,7 @@ class BaseRequestHandler(RequestHandler):
     @cached_property
     def now(self) -> datetime:
         """Get the current time."""
+        # pylint: disable=method-hidden
         if pytest_is_running():
             raise AssertionError("Now accessed before it was set")
         LOGGER.error("Now accessed before it was set")
@@ -679,12 +678,11 @@ class BaseRequestHandler(RequestHandler):
     def origin_trial(self, token: bytes | str) -> bool:
         """Enable an experimental feature."""
         # pylint: disable=protected-access
-        data = b64decode(token)
-        payload = json.loads(data[69:])
+        payload = json.loads(b64decode(token)[69:])
+        if payload["feature"] in self.active_origin_trials:
+            return True
         origin = urlsplit(payload["origin"])
         url = urlsplit(self.request.full_url())
-        if data in self.active_origin_trials:
-            return True
         if url.port is None and url.scheme in {"http", "https"}:
             url = url._replace(
                 netloc=f"{url.hostname}:{443 if url.scheme == 'https' else 80}"
@@ -699,7 +697,7 @@ class BaseRequestHandler(RequestHandler):
         ):
             return False
         self.add_header("Origin-Trial", token)
-        self.active_origin_trials.add(data)
+        self.active_origin_trials.add(payload["feature"])
         return True
 
     @override

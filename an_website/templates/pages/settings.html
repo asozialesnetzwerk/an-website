@@ -62,6 +62,16 @@
         </label>
 
         <label class="form-element">
+            Aktiviere Spezialeffekte
+            <input type="checkbox"
+               name="effects"
+                {% if effects %}
+                   checked
+                {% end %}
+               value="sure">
+        </label>
+
+        <label class="form-element">
             Aktiviere Einstellungen für Experten
             <input type="checkbox"
                name="advanced_settings"

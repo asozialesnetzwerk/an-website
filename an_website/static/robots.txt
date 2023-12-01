@@ -1,4 +1,4 @@
-User-agent: *
+User-Agent: *
 Disallow: /redirect
 Disallow: /zitate/share
 Disallow: /kontakt

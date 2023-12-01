@@ -1,15 +1,15 @@
 {
   "type": "module",
   "devDependencies": {
-    "@tsconfig/strictest": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
-    "@typescript-eslint/parser": "^6.2.1",
-    "eslint": "^8.46.0",
-    "type-fest": "^4.1.0",
-    "typescript": "~5.1.6",
+    "@tsconfig/strictest": "^2.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "@typescript-eslint/parser": "^6.5.0",
+    "eslint": "^8.48.0",
+    "type-fest": "^4.3.1",
+    "typescript": "~5.2.2",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.6.11",
+  "packageManager": "pnpm@8.6.12",
   "engines": {
     "pnpm": "8",
     "yarn": "0",

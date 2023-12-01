@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
+#!/usr/bin/env -S deno run --no-prompt --allow-net=deno.land --allow-env=TMPDIR,TMP,TEMP --allow-read=.,/tmp --allow-write=.,/tmp
 import builder from "npm:core-js-builder@3";
 import modules from "./core-js-modules.ts";
 import * as esbuild from "esbuild/wasm.js";

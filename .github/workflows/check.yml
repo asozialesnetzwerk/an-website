@@ -62,8 +62,8 @@ jobs:
           rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
-          VERSION: 1.64.2
-          VERSION_BUF: 1.25.0
+          VERSION: 1.66.1
+          VERSION_BUF: 1.26.1
       - name: Generate snow
         run: dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS

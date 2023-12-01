@@ -60,8 +60,8 @@ class Option(ABC, Generic[T]):
 
     def __get__(
         self,  # comment to make Flake8 happy
-        obj: "Options | None",
-        _: "type[Options] | None" = None,
+        obj: Options | None,
+        _: type[Options] | None = None,
         /,
     ) -> T | Option[T]:
         """Get the value for this option."""

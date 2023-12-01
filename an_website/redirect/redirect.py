@@ -58,24 +58,17 @@ class RedirectPage(HTMLRequestHandler):
             # use fix_url to maybe add no_3rd_party
             return self.redirect(self.fix_url(redirect_url))
 
-        send_referrer = False
-
-        if domain := urlsplit(redirect_url).hostname:
-            if (
-                domain.rsplit(".", 2)[-2:] == ["asozial", "org"]
-                and not pytest_is_running()
-            ):
-                return self.redirect(redirect_url)
-
-            send_referrer = domain.removeprefix("www.") in {
-                "netcup.de",
-                "netcup.eu",
-            }
+        if (
+            (domain := urlsplit(redirect_url).hostname)
+            and domain.endswith(".asozial.org")
+            and not pytest_is_running()
+        ):
+            return self.redirect(redirect_url)
 
         await self.render(
             "pages/redirect.html",
-            send_referrer=send_referrer,
             redirect_url=redirect_url,
+            send_referrer=False,
             from_url=from_url,
             discord=False,
         )

@@ -20,7 +20,7 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps git+https://github.com/MagicStack/uvloop.git@v0.17.0 \
  && /venv/bin/pip install --no-deps https://codeload.github.com/roy-ht/editdistance/tar.gz/v0.6.2 \
  && /venv/bin/pip install --no-deps setuptools wheel Cython \
- && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/57d328d611ea5b3f49a6c132617e37f29a36525e \
+ && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/762f62c5a1ab62ce37397aeeab2c27fdcc14ca66 \
  && /venv/bin/pip uninstall -y setuptools wheel Cython \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
  && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-deps https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
