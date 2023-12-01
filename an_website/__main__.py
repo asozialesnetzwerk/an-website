@@ -45,11 +45,11 @@ patches.apply()
 
 from .main import main
 
-if __name__ == "__main__":
-    if sys.flags.dev_mode:
-        tracemalloc.start()
-        if sys.version_info >= (3, 12):
-            with contextlib.suppress(ValueError):
-                sys.activate_stack_trampoline("perf")
+if sys.flags.dev_mode:
+    tracemalloc.start()
+    if sys.version_info >= (3, 12):
+        with contextlib.suppress(ValueError):
+            sys.activate_stack_trampoline("perf")  # pylint: disable=no-member
 
+if __name__ == "__main__":
     sys.exit(main())

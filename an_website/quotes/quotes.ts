@@ -170,7 +170,6 @@ function startQuotes() {
         return false;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["quotes"] = (event: PopStateEvent) => {
         event.state && handleData(event.state as API_DATA);
     };

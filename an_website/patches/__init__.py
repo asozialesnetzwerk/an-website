@@ -282,7 +282,7 @@ def patch_tornado_httpclient() -> None:
             kwargs.setdefault("prepare_curl_callback", prepare_curl_method)
         original_request_init(self, *args, **kwargs)
 
-    HTTPRequest.__init__ = request_init  # type: ignore[assignment]
+    HTTPRequest.__init__ = request_init  # type: ignore[method-assign]
 
 
 def patch_tornado_logs() -> None:
@@ -290,7 +290,7 @@ def patch_tornado_logs() -> None:
     # pylint: disable=import-outside-toplevel
     from ..utils.utils import SUS_PATHS, anonymize_ip
 
-    RequestHandler._request_summary = (  # type: ignore[assignment]
+    RequestHandler._request_summary = (  # type: ignore[method-assign]
         lambda self: "%s %s (%s)"  # pylint: disable=consider-using-f-string
         % (
             self.request.method,
@@ -302,7 +302,7 @@ def patch_tornado_logs() -> None:
         )
     )
 
-    HTTPServerRequest.__repr__ = (  # type: ignore[assignment]
+    HTTPServerRequest.__repr__ = (  # type: ignore[method-assign]
         lambda self: "%s(%s)"  # pylint: disable=consider-using-f-string
         % (
             self.__class__.__name__,
@@ -341,12 +341,12 @@ def patch_tornado_redirect() -> None:
         if status is None:
             status = 308 if permanent else 307
         else:
-            assert isinstance(status, int) and 300 <= status <= 399
+            assert isinstance(status, int) and 300 <= status <= 399  # type: ignore[redundant-expr]  # noqa: B950
         self.set_status(status)
         self.set_header("Location", url)
-        self.finish()
+        self.finish()  # type: ignore[unused-awaitable]
 
-    RequestHandler.redirect = redirect  # type: ignore[assignment]
+    RequestHandler.redirect = redirect  # type: ignore[method-assign]
     RedirectHandler.head = RedirectHandler.get
 
 

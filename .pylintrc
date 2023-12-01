@@ -50,6 +50,7 @@ disable=
     duplicate-code,
 
 [FORMAT]
+max-line-length=120
 expected-line-ending-format=LF
 
 [BASIC]

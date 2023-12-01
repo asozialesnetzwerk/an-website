@@ -142,7 +142,7 @@ class UwUHostInfo(HTMLRequestHandler):
                 env={"UWUFETCH_CACHE_ENABLED": str(cache_enabwed), **ENV},
             )
 
-        if not UWUFETCH_PATH or wetuwn_code == 127:
+        if not UWUFETCH_PATH or wetuwn_code == 127:  # type: ignore[possibly-undefined]
             raise HTTPEwwow(
                 503,
                 reason="This sewvew h-hasn't instawwed UwUFetch",
@@ -158,9 +158,9 @@ class UwUHostInfo(HTMLRequestHandler):
             return
 
         if self.content_type == "text/plain":
-            return await self.finish(uwufetch_bytes)
+            return await self.finish(uwufetch_bytes)  # type: ignore[possibly-undefined]
 
-        uwufetch = uwufetch_bytes.decode("UTF-8").split("\n\n")
+        uwufetch = uwufetch_bytes.decode("UTF-8").split("\n\n")  # type: ignore[possibly-undefined]  # noqa: B950
         await self.render(
             "ansi2html.html",
             ansi=uwufetch,

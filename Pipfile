@@ -6,6 +6,7 @@ accept-types = "<2"
 aiohttp = {version = "==3.*", extras = ["speedups"]}
 ansi2html = "==1.*"
 beautifulsoup4 = "==4.*"
+big = {version = "<2", extras = ["time"]}
 blake3 = "<2"
 certifi = "==2022.12.7.*"
 defity = "<2"

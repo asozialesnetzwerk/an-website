@@ -244,7 +244,7 @@ class CreatePage1(QuoteReadyCheckHandler):
         real_authors: list[Author | str] = (
             [quote.author]
             if quote
-            else await get_authors(cast(str, real_author_str))
+            else await get_authors(cast(str, real_author_str))  # type: ignore[possibly-undefined]  # noqa: B950
         )
         fake_authors: list[Author | str] = (
             [fake_author] if fake_author else await get_authors(fake_author_str)

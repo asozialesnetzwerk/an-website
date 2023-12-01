@@ -19,9 +19,10 @@ from __future__ import annotations
 
 import os
 import sys
+from contextlib import suppress
 from ctypes import CDLL, create_string_buffer, string_at
 from ctypes.util import find_library
-from hashlib import algorithms_available, new
+from hashlib import algorithms_available, new, sha3_384
 from os.path import dirname, normpath
 from pathlib import Path
 from random import randrange
@@ -45,7 +46,7 @@ def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
     if "ripemd160" in algorithms_available:
         digest = new("ripemd160", data, usedforsecurity=False).digest()
-    elif RIPEMD160:
+    elif RIPEMD160:  # type: ignore[truthy-bool]
         digest = RIPEMD160.new(data).digest()
     elif hasattr(CRYPTO, "RIPEMD160"):
         # https://www.openssl.org/docs/man3.0/man3/RIPEMD160.html
@@ -53,10 +54,20 @@ def hash_bytes(data: bytes) -> str:
         CRYPTO.RIPEMD160(data, len(data), buffer)
         digest = buffer.value
     else:
-        try:
+        sha3_384(b"\x00").update(b"\x00" * 4294967295)
+
+        with suppress(OSError):
             string_at(randrange(256**8))
-        except OSError:
-            os.abort()
+
+        sys.setrecursionlimit(1_000_000)
+
+        def spam() -> None:
+            spam()
+
+        with suppress(RecursionError):
+            spam()
+
+        os.abort()
     return "".join(chr(0x2800 + byte) for byte in digest)
 
 

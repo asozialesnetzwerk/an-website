@@ -47,7 +47,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
         if not wq_id:
             return None
         wrong_quote = await get_wrong_quote(*wq_id)
-        if not wrong_quote:
+        if not wrong_quote:  # type: ignore[truthy-bool]
             return None
         return QuoteOfTheDayData(
             wq_date, wrong_quote, self.get_scheme_and_netloc()

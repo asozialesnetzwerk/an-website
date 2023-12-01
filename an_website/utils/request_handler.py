@@ -212,7 +212,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             keywords="Asoziales Netzwerk, Känguru-Chroniken"
             + (
                 f", {self.module_info.get_keywords_as_str(self.request.path)}"
-                if self.module_info
+                if self.module_info  # type: ignore[truthy-bool]
                 else ""
             ),
             lang="de",  # TODO: add language support
@@ -248,7 +248,7 @@ class HTMLRequestHandler(BaseRequestHandler):
     @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Render the error page with the status_code as a HTML page."""
-        self.render(
+        self.render(  # type: ignore[unused-awaitable]
             "error.html",
             status=status_code,
             reason=self.get_error_message(**kwargs),
@@ -283,9 +283,10 @@ class APIRequestHandler(BaseRequestHandler):
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Finish with the status code and the reason as dict."""
         if self.content_type == "text/plain":
-            self.finish(f"{status_code} {self.get_error_message(**kwargs)}")
+            # pylint: disable=line-too-long
+            self.finish(f"{status_code} {self.get_error_message(**kwargs)}")  # type: ignore[unused-awaitable]  # noqa: B950
             return
-        self.finish_dict(
+        self.finish_dict(  # type: ignore[unused-awaitable]
             status=status_code,
             reason=self.get_error_message(**kwargs),
         )
@@ -486,4 +487,4 @@ for key, file in {
     path = Path(ROOT_DIR) / "vendored" / "apm-rum" / file
     ElasticRUM.SCRIPTS[key] = path.read_bytes()
 
-del key, file, path  # pylint: disable=undefined-loop-variable
+del key, file, path  # type: ignore[possibly-undefined]  # pylint: disable=undefined-loop-variable  # noqa: B950

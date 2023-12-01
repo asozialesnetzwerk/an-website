@@ -191,7 +191,7 @@ async def request(  # noqa: C901
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:
         host: None | str = None
-        if idna:
+        if idna:  # type: ignore[truthy-bool]
             with contextlib.suppress(idna.core.InvalidCodepoint):
                 host = idna.encode(url.hostname).decode("ASCII")
                 host = f"{host}:{url.port}" if url.port else host
@@ -242,7 +242,7 @@ async def request(  # noqa: C901
     await writer.wait_closed()
     if "status" not in locals():
         raise AssertionError("No HTTP response received")
-    return int(status), headers, data
+    return int(status), headers, data  # type: ignore[possibly-undefined]
 
 
 def detect_mode(code: str) -> str:
@@ -252,11 +252,12 @@ def detect_mode(code: str) -> str:
     flags: int = ast.PyCF_ONLY_AST
     if FLUFL:
         flags |= __future__.barry_as_FLUFL.compiler_flag
+
     try:
-        compile(code, "", "eval", flags, 0x5F3759DF)
+        compile(code, "", "eval", flags, cast(bool, 0x5F3759DF), 0)
         return "eval"
     except SyntaxError:
-        compile(code, "", "exec", flags, 0x5F3759DF)
+        compile(code, "", "exec", flags, cast(bool, 0x5F3759DF), 0)
         return "exec"
 
 
@@ -289,7 +290,7 @@ def send(
         "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
     }
     if FLUFL:
-        headers["X-Future-Feature"] = "barry_as_FLUFL"
+        headers["X-Future-Feature"] = "annotations barry_as_FLUFL"
     if session:
         headers["X-Backdoor-Session"] = session
     response = asyncio.run(
@@ -397,10 +398,10 @@ def run_and_print(  # noqa: C901
             else http.client.responses[status]
         )
         print("\033[91m" + f"{status} {reason}" + "\033[0m")
-    elif body is None:
+        if isinstance(body, str):
+            print("\033[91m" + body + "\033[0m")
+    elif body is None:  # pylint: disable=confusing-consecutive-elif
         pass
-    elif isinstance(body, str):
-        print("\033[91m" + body + "\033[0m")
     elif isinstance(body, dict):
         if isinstance(body["success"], bool):
             print(f"Success: {body['success']}")

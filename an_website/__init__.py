@@ -55,7 +55,7 @@ DIR: Final[str] = os.path.dirname(__file__)
 START_TIME_NS: Final[int] = time.monotonic_ns()
 
 MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
-    Path(os.path.join(DIR, "media_types.json")).read_bytes()
+    Path(os.path.join(DIR, "vendored", "mime-db.json")).read_bytes()
 )
 
 assert "Í" not in str(MEDIA_TYPES)  # orjson is corrupting memory

@@ -20,7 +20,7 @@ from multiprocessing import Array
 from pathlib import Path
 from typing import cast
 
-from Crypto.Hash import RIPEMD160  # nosec: B413
+from Crypto.Hash import RIPEMD160
 
 from .. import DIR as ROOT_DIR
 from .. import VERSION

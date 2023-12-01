@@ -103,7 +103,6 @@
         return BigInt(int + dec);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["currencyConverter"] = (e: PopStateEvent) =>
         setAllFields(
             strToBigInt((e.state as { euro: string })["euro"].toString()),

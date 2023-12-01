@@ -78,8 +78,6 @@ jobs:
         run: ./scripts/sort_python_code.py
       - name: Fix word-files for hangman solver
         run: ./scripts/fix_hangman_solver_word_files.py
-      - name: Generate content_types.json and media_types.json
-        run: PYTHONPATH="." ./scripts/mime_types.py
       - name: Generate config.ini.default
         run: python3 -m an_website --save-config-to config.ini.default -c
       - name: Push changes
@@ -231,7 +229,7 @@ jobs:
       - name: Install tsc
         run: pnpm install
       - name: Run tsc
-        run: pnpm tsc
+        run: pnpm tsc -p an_website
 
   shellcheck:
     name: ShellCheck

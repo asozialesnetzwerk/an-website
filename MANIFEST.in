@@ -2,5 +2,7 @@ graft an_website
 global-exclude *.ts
 global-exclude *.py[cod]
 include requirements.txt
+include config.ini.default
 include config.ini.example
 graft example-configurations
+global-exclude tsconfig.json

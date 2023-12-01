@@ -6,18 +6,19 @@ ansi2html==1.8.0
 async-timeout==4.0.2 ; python_version >= '3.6'
 attrs==22.2.0 ; python_version >= '3.6'
 beautifulsoup4==4.11.2
+big[time]==0.6.18
 blake3==0.3.3
 brotli==1.0.9
 certifi==2022.12.7
 cffi==1.15.1
-charset-normalizer==3.0.1 ; python_full_version >= '3.6.0'
+charset-normalizer==3.1.0 ; python_full_version >= '3.7.0'
 defity==0.3.1
 defusedxml==0.7.1
 dill==0.3.6
 dunamai==1.16.0 ; python_version >= '3.5' and python_version < '4.0'
 ecs-logging==2.0.0
 editdistance==0.6.2
-elastic-apm==6.15.0
+elastic-apm==6.15.1
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 elasticsearch[async]==7.17.9
@@ -33,7 +34,7 @@ hyrule==0.3.0
 idna==3.4 ; python_version >= '3.5'
 jsonpickle==3.0.1
 lxml==4.9.2
-mpmath==1.2.1
+mpmath==1.3.0
 multidict==6.0.4 ; python_version >= '3.7'
 numpy==1.24.2
 orjson==3.8.7

@@ -46,7 +46,7 @@ def parse(
 
     if (
         simple_type is type_
-        and not isinstance(type_, str)
+        and not isinstance(type_, str)  # type: ignore[redundant-expr]
         and isinstance(data, type_)
     ):
         return data

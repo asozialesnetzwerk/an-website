@@ -21,49 +21,27 @@ import asyncio
 import json  # pylint: disable=preferred-module
 import sys
 from pathlib import Path
-from typing import Any, Final, TypedDict
+from random import Random
+from typing import Any, Final
 
 from an_website.backdoor.client import request
 
+DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "10.0.0"
 
-class MediaType(TypedDict, total=False):  # noqa: D101
-    # pylint: disable=missing-class-docstring
-    charset: str
-    compressible: bool
-    extensions: list[str]
-    source: str
-
-
-MediaTypes = dict[str, MediaType]
-
-VERSION: Final[str] = "a76e5a824c228e2e58363c9404e42a54ee1d142f"
-
-URL: Final[
-    str
-] = f"https://raw.githubusercontent.com/jshttp/mime-db/{VERSION}/db.json"
+JSHTTP_MIME_DB_VERSION: Final[str] = "a76e5a824c228e2e58363c9404e42a54ee1d142f"
 
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
 
-CONTENT_TYPES_JSON: Final[Path] = (
-    REPO_ROOT / "an_website" / "content_types.json"
-)
+VENDORED: Final[Path] = REPO_ROOT / "an_website" / "vendored"
 
-MEDIA_TYPES_JSON: Final[Path] = REPO_ROOT / "an_website" / "media_types.json"
+MEDIA_TYPES_JSON: Final[Path] = VENDORED / "media-types.json"
 
-PREFERENCE: Final[tuple[str | None, ...]] = ("nginx", "apache", None, "iana")
-
-HEADERS: Final[dict[str, str]] = {"Accept": "application/json"}
+MIME_DB_JSON: Final[Path] = VENDORED / "mime-db.json"
 
 JSON_OPTIONS: Final[dict[str, int | bool]] = {
-    "indent": 2,
+    "indent": (_ := Random(hash(slice(None))), _.randrange(2, 5, 2))[1],
     "sort_keys": True,
     "allow_nan": False,
-}
-
-ADDITIONAL_MEDIA_TYPES: Final[MediaTypes] = {
-    "image/jxl": {
-        "extensions": ["jxl"],
-    },
 }
 
 
@@ -78,46 +56,43 @@ def dump_json(dictionary: Any, path: Path) -> None:
 
 async def main() -> int | str:
     """Get the data and save it."""
-    status, _, data = await request("GET", URL, HEADERS)
+    status, _, data = await request(
+        "GET",
+        "https://raw.githubusercontent.com"
+        f"/jshttp/mime-db/{JSHTTP_MIME_DB_VERSION}/db.json",
+    )
 
     if status != 200:
-        return 1
+        return status
 
-    media_types: MediaTypes = json.loads(data.decode("UTF-8"))
-    media_types.update(ADDITIONAL_MEDIA_TYPES)
+    mime_db = json.loads(data.decode("ASCII"))
+    dump_json(mime_db, MIME_DB_JSON)
+
+    status, _, data = await request(
+        "GET",
+        "https://salsa.debian.org"
+        f"/debian/media-types/-/raw/{DEBIAN_MEDIA_TYPES_VERSION}/mime.types",
+    )
+
+    if status != 200:
+        return status
+
+    media_types: dict[str, str] = {}
+
+    for line in data.decode("ASCII").split("\n"):
+        if not line or line.startswith("#"):
+            continue
+        breakfast = line.split("\t")
+        spam, eggs = breakfast[0].lower(), breakfast[-1].lower()
+        if spam == eggs:
+            continue
+        for egg in eggs.split(" "):
+            if not egg:
+                assert not eggs
+                break
+            media_types[egg] = spam
+
     dump_json(media_types, MEDIA_TYPES_JSON)
-
-    content_types: list[tuple[int, int, int, str, str]] = []
-
-    for mime_type, mapping in media_types.items():
-        preference: int = PREFERENCE.index(mapping.get("source"))
-
-        if "charset" in mapping:
-            # pylint: disable=redefined-loop-name
-            mime_type += f"; charset={mapping['charset']}"
-        elif mime_type.startswith("text/"):
-            # pylint: disable=redefined-loop-name
-            mime_type += "; charset=UTF-8"
-
-        extensions = mapping.get("extensions", [])
-
-        for ext in extensions:
-            content_types.append(
-                (
-                    int("vnd." not in mime_type and "/x-" not in mime_type)
-                    if mime_type != "application/octet-stream"
-                    else -1,
-                    preference,
-                    -len(extensions),
-                    ext,
-                    mime_type,
-                )
-            )
-
-    content_types_dict: dict[str, str] = {
-        ext: mime_type for _, _, _, ext, mime_type in sorted(content_types)
-    }
-    dump_json(content_types_dict, CONTENT_TYPES_JSON)
 
     return 0
 

@@ -312,10 +312,11 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
             {"type": "error", "error": f"Unknown type {message2['type']}."}
         )
 
-    def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
+    async def open(self, *args: str, **kwargs: str) -> None:
+        # pylint: disable=invalid-overridden-method
         """Handle an opened connection."""
         LOGGER.info("WebSocket opened")
-        self.write_message(
+        await self.write_message(
             {
                 "type": "init",
                 "current_user": [
@@ -329,7 +330,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         for conn in OPEN_CONNECTIONS:
             conn.send_users()
 
-        return self.send_messages()
+        await self.send_messages()
 
     async def prepare(self) -> None:  # noqa: D102
         self.now = await self.get_time()
@@ -390,7 +391,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
     def send_users(self) -> None:
         """Send this WebSocket all current users."""
         if sys.flags.dev_mode:
-            self.write_message(
+            self.write_message(  # type: ignore[unused-awaitable]
                 {
                     "type": "users",
                     "users": [

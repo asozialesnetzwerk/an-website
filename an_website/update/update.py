@@ -112,7 +112,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         self.set_header("X-Accel-Buffering", "no")
         while not process.stdout.at_eof():  # type: ignore[union-attr]
             self.write(await process.stdout.read(1))  # type: ignore[union-attr]
-            self.flush()
+            self.flush()  # type: ignore[unused-awaitable]
         await self.finish()
         await process.wait()
         if process.returncode:

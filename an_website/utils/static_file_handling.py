@@ -59,7 +59,7 @@ def create_file_hashes_dict() -> dict[str, str]:
 FILE_HASHES_DICT: Final[Mapping[str, str]] = create_file_hashes_dict()
 
 CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
-    Path(os.path.join(ROOT_DIR, "content_types.json")).read_bytes()
+    Path(os.path.join(ROOT_DIR, "vendored", "media-types.json")).read_bytes()
 )
 
 
@@ -161,6 +161,8 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
             self.content_type = CONTENT_TYPES.get(Path(path).suffix[1:])
             if not self.content_type:
                 self.content_type = defity.from_file(path)
+            if self.content_type and self.content_type.startswith("text/"):
+                self.content_type += "; charset=UTF-8"
         return path
 
 

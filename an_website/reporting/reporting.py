@@ -215,7 +215,7 @@ class ReportingAPI(APIRequestHandler):
             )
             raise HTTPError(400)
         self.set_status(202)
-        self.finish()
+        self.finish()  # type: ignore[unused-awaitable]
         for report in reports.copy():
             if not isinstance(report, dict):
                 reports.remove(report)  # type: ignore[unreachable]

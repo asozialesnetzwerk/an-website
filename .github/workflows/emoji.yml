@@ -6,7 +6,7 @@ env:
 jobs:
 
   check_emoji:
-    name: Look for Emoji in commit message
+    name: Check for emoji in commit message
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -83,7 +83,6 @@
             onerror,
         );
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["swappedWords"] = (event: PopStateEvent) => {
         event.state && ondata(event.state as SwappedWordsData, true);
     };

@@ -190,7 +190,6 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     contentContainer.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
@@ -227,7 +226,6 @@ function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();

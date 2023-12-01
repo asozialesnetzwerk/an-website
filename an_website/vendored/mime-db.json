@@ -9090,11 +9090,6 @@
     ],
     "source": "iana"
   },
-  "image/jxl": {
-    "extensions": [
-      "jxl"
-    ]
-  },
   "image/jxr": {
     "extensions": [
       "jxr"

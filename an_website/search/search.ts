@@ -22,7 +22,6 @@
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["search"] = (event: PopStateEvent) => {
         const state = event.state as { query: string; results: Result[] };
         searchInput.value = state.query;

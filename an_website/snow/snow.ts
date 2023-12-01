@@ -71,10 +71,10 @@ function spawnSnowCSS(snowDensity = 200): void {
         const randomOffset = Math.random() * 10; // vw
         const randomXEnd = randomX + randomOffset;
         const randomXEndYoyo = randomX + (randomOffset / 2);
-        const randomYoyoTime = getRandomArbitrary(0.3, 0.8);
+        const randomYoyoTime = getRandomArbitrary(0.3, 0.8) as number;
         const randomYoyoY = randomYoyoTime * 100; // vh
         const randomScale = Math.random();
-        const fallDuration = randomIntRange(10, 30); // s
+        const fallDuration = randomIntRange(10, 30) as number; // s
         const fallDelay = randomInt(30) * -1; // s
         const opacity = Math.random();
 

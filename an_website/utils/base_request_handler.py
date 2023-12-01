@@ -609,12 +609,12 @@ class BaseRequestHandler(RequestHandler):
         return is_authorized(self, permission, allow_cookie_auth)
 
     @override
-    def options(self, *args: Any, **kwargs: Any) -> None:
+    async def options(self, *args: Any, **kwargs: Any) -> None:
         """Handle OPTIONS requests."""
         # pylint: disable=unused-argument
         self.set_header("Allow", ", ".join(self.get_allowed_methods()))
         self.set_status(204)
-        self.finish()
+        await self.finish()
 
     def origin_trial(self, token: bytes | str) -> bool:
         """Enable an experimental feature."""

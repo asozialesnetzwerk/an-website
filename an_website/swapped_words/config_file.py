@@ -342,7 +342,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
                 if isinstance(word_pair, WordPair)
             )
         max_len = max(
-            (
+            (  # type: ignore[truthy-bool]
                 word_pair.len_of_left()
                 for word_pair in self.lines
                 if isinstance(word_pair, WordPair)

@@ -26,6 +26,7 @@ from asyncio import Future
 from base64 import b85decode, b85encode
 from collections.abc import MutableMapping
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
+from random import Random
 from types import TracebackType
 from typing import Any, ClassVar, Final, cast
 
@@ -80,7 +81,7 @@ class Backdoor(APIRequestHandler):
                 session[key] = pickletools.optimize(
                     dill.dumps(value, max(dill.DEFAULT_PROTOCOL, 5))
                 )
-            except Exception:  # pylint: disable=broad-except
+            except BaseException:  # pylint: disable=broad-except
                 del session[key]
         return bool(
             await self.redis.setex(
@@ -90,6 +91,12 @@ class Backdoor(APIRequestHandler):
             )
         )
 
+    def ensure_serializable(self, obj: Any) -> Any:
+        """Ensure that obj can be serialized."""
+        if self.serialize(obj) is None:
+            return self.safe_repr(obj)
+        return obj
+
     def finish_serialized_dict(self, **kwargs: Any) -> Future[None]:
         """Finish with a serialized dictionary."""
         return self.finish(self.serialize(kwargs))
@@ -98,15 +105,15 @@ class Backdoor(APIRequestHandler):
         """Get compiler flags."""
         import __future__  # pylint: disable=import-outside-toplevel
 
-        for ftr in self.request.headers.get("X-Future-Feature", "").split(","):
-            if (feature := ftr.strip()) in __future__.all_feature_names:
-                flags |= getattr(__future__, feature).compiler_flag
+        for spam in self.request.headers.get("X-Future-Feature", "").split(" "):
+            if spam in __future__.all_feature_names:
+                flags |= getattr(__future__, spam).compiler_flag
 
         return flags
 
     def get_protocol_version(self) -> int:
         """Get the protocol version for the response."""
-        try:  # pylint: disable=line-too-long
+        try:
             return min(
                 int(
                     self.request.headers.get("X-Pickle-Protocol"), base=0  # type: ignore[arg-type]  # noqa: B950
@@ -138,8 +145,13 @@ class Backdoor(APIRequestHandler):
                 for key, value in session.items():
                     try:
                         session[key] = dill.loads(value)  # nosec: B301
-                    except Exception:  # pylint: disable=broad-except
-                        LOGGER.exception("Loading the session failed")
+                    except BaseException:  # pylint: disable=broad-except
+                        LOGGER.exception(
+                            "Error while loading %r in session %r. Data: %r",
+                            key,
+                            session,
+                            value.decode("BRAILLE"),
+                        )
                         if self.apm_client:
                             self.apm_client.capture_exception()
             else:
@@ -156,19 +168,21 @@ class Backdoor(APIRequestHandler):
     @requires(Permission.BACKDOOR, allow_cookie_auth=False)
     async def post(self, mode: str) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
-        # pylint: disable=too-many-locals, too-many-statements
+        # pylint: disable=too-many-statements
         """Handle POST requests to the backdoor API."""
         source, output = self.request.body, io.StringIO()
-        exception: None | Exception = None
+        exception: None | BaseException = None
         output_str: None | str
         result: Any
         try:
+            random = Random(335573788461)
             parsed = compile(
                 source,
                 "",
                 mode,
                 self.get_flags(PyCF_ONLY_AST | PyCF_TYPE_COMMENTS),
-                0x5F3759DF,
+                cast(bool, 0x5F3759DF),
+                random.randrange(3),
                 _feature_version=10,
             )
             code = compile(
@@ -176,7 +190,8 @@ class Backdoor(APIRequestHandler):
                 "",
                 mode,
                 self.get_flags(PyCF_ALLOW_TOP_LEVEL_AWAIT),
-                0x5F3759DF,
+                cast(bool, 0x5F3759DF),
+                random.randrange(3),
                 _feature_version=10,
             )
         except SyntaxError as exc:
@@ -202,36 +217,34 @@ class Backdoor(APIRequestHandler):
                 except KeyboardInterrupt:
                     EVENT_SHUTDOWN.set()
                     raise SystemExit("Shutdown initiated.") from None
-            except SystemExit as exc:  # TODO: FIX BUG
-                new_args = []
-                for arg in exc.args:
-                    try:
-                        self.serialize(arg)
-                    except Exception:  # pylint: disable=broad-except
-                        new_args.append(repr(arg))
-                    else:
-                        new_args.append(arg)
-                exc.args = tuple(new_args)
+            except SystemExit as exc:
+                if self.content_type == "text/plain":
+                    return await self.finish(
+                        traceback.format_exception_only(exc)[0]  # type: ignore[arg-type]  # noqa: B950
+                    )
+                session.pop("self", None)
+                session.pop("app", None)
+                session.pop("settings", None)
+                await self.backup_session()
+                exc.args = [self.ensure_serializable(arg) for arg in exc.args]  # type: ignore[assignment]  # noqa: B950
                 output_str = output.getvalue() if not output.closed else None
                 output.close()
                 return await self.finish_serialized_dict(
                     success=..., output=output_str, result=exc
                 )
-            except Exception as exc:  # pylint: disable=broad-except
+            except BaseException as exc:  # pylint: disable=broad-except
                 exception = exc  # pylint: disable=redefined-variable-type
                 result = exc
             else:
-                if result is not None:  # noqa: F821
-                    if result is session.get(  # noqa: F821
-                        "print"
-                    ) and isinstance(
-                        result, PrintWrapper  # noqa: F821
-                    ):
-                        result = print
-                    elif result is session.get("help") and isinstance(
-                        session["help"], pydoc.Helper
-                    ):
-                        result = help
+                if result is session.get("print") and isinstance(
+                    result, PrintWrapper
+                ):
+                    result = print
+                elif result is session.get("help") and isinstance(
+                    result, pydoc.Helper
+                ):
+                    result = help
+                if result is not None:
                     session["_"] = result
             finally:
                 session.pop("self", None)
@@ -248,15 +261,10 @@ class Backdoor(APIRequestHandler):
         if self.content_type == "text/plain":
             if mode == "exec":
                 return await self.finish(exception_text or output_str)
-            return await self.finish(  # TODO: FIX BUG
-                exception_text or repr(result)
-            )
-        try:
-            serialized_result: None | bytes = self.serialize(result)
-        except Exception:  # pylint: disable=broad-except
-            serialized_result = None
+            return await self.finish(exception_text or self.safe_repr(result))
+        serialized_result = self.serialize(result)
         result_tuple: tuple[None | str, None | bytes] = (
-            exception_text or repr(result),  # TODO: FIX BUG
+            exception_text or self.safe_repr(result),
             serialized_result,
         )
         return await self.finish_serialized_dict(
@@ -267,14 +275,24 @@ class Backdoor(APIRequestHandler):
             else result_tuple,
         )
 
-    def serialize(self, data: Any, protocol: None | int = None) -> bytes:
+    def safe_repr(self, obj: Any) -> str:  # pylint: disable=no-self-use
+        """Safe version of repr()."""
+        try:
+            return repr(obj)
+        except BaseException:  # pylint: disable=broad-except
+            return object.__repr__(obj)
+
+    def serialize(self, data: Any, protocol: None | int = None) -> None | bytes:
         """Serialize the data and return it."""
-        if self.content_type == "application/json":
-            return cast(bytes, jsonpickle.encode(data))
-        protocol = protocol or self.get_protocol_version()
-        if self.content_type == "application/vnd.uqfoundation.dill":
-            return cast(bytes, dill.dumps(data, protocol))
-        return pickle.dumps(data, protocol)
+        try:
+            if self.content_type == "application/json":
+                return cast(bytes, jsonpickle.encode(data))
+            protocol = protocol or self.get_protocol_version()
+            if self.content_type == "application/vnd.uqfoundation.dill":
+                return cast(bytes, dill.dumps(data, protocol))
+            return pickle.dumps(data, protocol)
+        except BaseException:  # pylint: disable=broad-except
+            return None
 
     def update_session(self, session: MutableMapping[str, Any]) -> None:
         """Add request-specific stuff to the session."""
@@ -293,6 +311,7 @@ class Backdoor(APIRequestHandler):
                 type[BaseException], BaseException, TracebackType
             ] = kwargs["exc_info"]
             if not issubclass(exc_info[0], HTTPError):
-                self.finish(self.serialize(self.get_error_message(**kwargs)))
+                # pylint: disable=line-too-long
+                self.finish(self.serialize(self.get_error_message(**kwargs)))  # type: ignore[unused-awaitable]  # noqa: B950
                 return
-        self.finish(self.serialize((status_code, self._reason)))
+        self.finish(self.serialize((status_code, self._reason)))  # type: ignore[unused-awaitable]  # noqa: B950

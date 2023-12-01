@@ -175,7 +175,9 @@ def sort_class(
     code: str, filename: str | bytes | PathLike[Any] = "<unknown>"
 ) -> list[str]:
     """Sort the methods of a class and return the code as lines."""
-    class_ = compile(code, filename, "exec", ast.PyCF_ONLY_AST).body[0]
+    module = compile(code, filename, "exec", ast.PyCF_ONLY_AST)
+    assert isinstance(module, ast.Module)
+    class_ = module.body[0]
     assert isinstance(class_, ast.ClassDef)
 
     lines = code.split("\n")
@@ -213,7 +215,9 @@ def sort_classes(
     code: str, filename: str | bytes | PathLike[Any] = "<unknown>"
 ) -> str:
     """Sort the classes and functions in a module."""
-    nodes = compile(code, filename, "exec", ast.PyCF_ONLY_AST).body
+    module = compile(code, filename, "exec", ast.PyCF_ONLY_AST)
+    assert isinstance(module, ast.Module)
+    nodes = module.body
 
     lines = code.split("\n")
 
