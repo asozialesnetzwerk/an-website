@@ -15,15 +15,15 @@
 
 from __future__ import annotations
 
-import os
 from functools import lru_cache
+from os.path import abspath, dirname
 from pathlib import Path
 from typing import Final, cast
 
 import orjson as json
 from typed_stream import FileStream, Stream
 
-DIR: Final = os.path.dirname(__file__)
+DIR: Final = abspath(dirname(__file__))
 
 
 BASE_WORD_DIR: Final = Path(DIR) / "words"

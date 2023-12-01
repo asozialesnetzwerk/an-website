@@ -21,6 +21,7 @@ import sys
 import time
 from asyncio import Event
 from collections.abc import Mapping
+from os.path import abspath, dirname
 from pathlib import Path
 from typing import Final, TypedDict
 
@@ -58,7 +59,7 @@ class MediaType(TypedDict, total=False):
     source: str
 
 
-DIR: Final[str] = os.path.dirname(__file__)
+DIR: Final[str] = abspath(dirname(__file__))
 
 START_TIME_NS: Final[int] = time.monotonic_ns()
 

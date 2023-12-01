@@ -5,6 +5,10 @@ pnpm install -q
 
 FAILED=0
 
+if [ "${USE_BUN:-}" = "1" ]; then
+  alias pnpm="bunx --bun"
+fi
+
 echo tsc:
 pnpm tsc -p an_website || FAILED=$(( 2 | FAILED ))
 

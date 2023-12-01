@@ -865,14 +865,14 @@ def setup_redis(app: Application) -> None | Redis[str]:
     """Setup Redis."""  # noqa: D401
     config = app.settings["CONFIG"]
     kwargs = {
+        "client_name": NAME,
+        "decode_responses": True,
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
         "password": config.get("REDIS", "PASSWORD", fallback=None),
         "retry_on_timeout": config.getboolean(
             "REDIS", "RETRY_ON_TIMEOUT", fallback=False
         ),
-        "decode_responses": True,
-        "client_name": NAME,
     }
     if config.has_option("REDIS", "UNIX_SOCKET_PATH"):
         kwargs.update(

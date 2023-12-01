@@ -12,5 +12,6 @@ parserOptions:
 overrides:
   - files: "*.js"
     extends: "plugin:@typescript-eslint/disable-type-checked"
-    parserOptions:
-      lib: ["es2022.full"]
+    env:
+      es2022: true
+      browser: true

@@ -24,10 +24,11 @@ from collections.abc import Callable
 from configparser import RawConfigParser
 from contextlib import suppress
 from importlib import import_module
+from os.path import abspath, dirname
 from pathlib import Path
 from threading import Thread
 from types import MethodType
-from typing import Any, Final
+from typing import Any, Final, cast
 from urllib.parse import urlsplit
 
 import certifi
@@ -49,7 +50,7 @@ from .. import DIR as ROOT_DIR
 from .. import MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
-DIR: Final = os.path.dirname(__file__)
+DIR: Final = abspath(dirname(__file__))
 
 with suppress(ModuleNotFoundError):
     # pylint: disable=import-error, useless-suppression
@@ -252,6 +253,8 @@ def patch_tornado_arguments() -> None:  # noqa: C901
         else:
             _(content_type, body, arguments, files, headers)
 
+    parse_body_arguments.__doc__ = tornado.httputil.parse_body_arguments.__doc__
+
     tornado.httputil.parse_body_arguments = parse_body_arguments
 
 
@@ -282,6 +285,8 @@ def patch_tornado_httpclient() -> None:
             prepare_curl_method = MethodType(prepare_curl_callback, self)
             kwargs.setdefault("prepare_curl_callback", prepare_curl_method)
         original_request_init(self, *args, **kwargs)
+
+    request_init.__doc__ = HTTPRequest.__init__.__doc__
 
     HTTPRequest.__init__ = request_init  # type: ignore[method-assign]
 
@@ -340,8 +345,14 @@ def patch_tornado_redirect() -> None:
         self.set_header("Location", url)
         self.finish()  # type: ignore[unused-awaitable]
 
-    redirect.__doc__ = RequestHandler.redirect.__doc__
+    redirect.__doc__ = (
+        cast(str, RequestHandler.redirect.__doc__)
+        .replace("301", "308")
+        .replace("302", "307")
+    )
+
     RequestHandler.redirect = redirect  # type: ignore[method-assign]
+
     RedirectHandler.head = RedirectHandler.get
 
 

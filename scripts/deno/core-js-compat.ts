@@ -5,7 +5,9 @@ import { parse } from "std/flags/mod.ts";
 const args = parse(Deno.args, {
     boolean: "inverse",
     string: ["targets", "version"],
-    default: { targets: ">=0.1%,Firefox>=115,Chrome>=120" },
+    default: {
+        targets: ">=0.1% and supports es6-module,Firefox>=115,Chrome>=120",
+    },
 });
 
 const {

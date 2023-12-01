@@ -16,13 +16,13 @@
 
 from __future__ import annotations
 
-import os
 import sys
+from os.path import abspath, dirname, join
 
 # add parent dir to sys.path
 # this makes importing an_website possible
-DIR = os.path.dirname(__file__)
-PARENT_DIR = os.path.dirname(DIR)
+DIR = abspath(dirname(__file__))
+PARENT_DIR = abspath(dirname(DIR))
 sys.path.append(PARENT_DIR)
 
 
@@ -93,7 +93,7 @@ def app() -> Application:
     assert NAME.endswith("-test")
 
     config = parse_config(Path(DIR, "config.ini"))
-    config.set("GENERAL", "COMMITMENT_URI", os.path.join(DIR, "commitment.txt"))
+    config.set("GENERAL", "COMMITMENT_URI", join(DIR, "commitment.txt"))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name

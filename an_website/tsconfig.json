@@ -12,6 +12,9 @@
     ],
     "alwaysStrict": false,
     "noUnusedLocals": false,
-    "verbatimModuleSyntax": true
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": true,
+    "types": []
   }
 }

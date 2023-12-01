@@ -48,7 +48,8 @@ def create_file_hashes_dict() -> dict[str, str]:
         .removeprefix(ROOT_DIR)
         .replace(os.path.sep, "/"): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
-        if path.is_file() and "openmoji-svg-" not in str(path)
+        if path.is_file()
+        and not any(_.startswith("openmoji-svg-") for _ in path.parts)
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
     file_hashes_dict["/favicon.jxl"] = file_hashes_dict["/static/favicon.jxl"]

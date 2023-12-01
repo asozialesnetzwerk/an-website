@@ -21,7 +21,7 @@ You need:
 
 - Git (obviously)
 - CPython 3.10+
-- Packages from requirements-dev.txt
+- Packages from pip-dev-requirements.txt
 - C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
 - For formatting TypeScript and Markdown: dprint

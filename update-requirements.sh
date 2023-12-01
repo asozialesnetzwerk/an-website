@@ -5,10 +5,12 @@ export PIPENV_VERBOSITY=-1
 
 pipenv verify
 
-pipenv requirements > requirements.txt
-pipenv requirements --dev > requirements-dev.txt
-pipenv requirements --exclude-markers --dev > requirements-ci.txt
+pipenv requirements > pip-requirements.txt
+pipenv requirements --dev > pip-dev-requirements.txt
+pipenv requirements --dev --exclude-markers > pip-constraints.txt
 
-sed -i "/^-/d" requirements.txt
-sed -i "/^-/d" requirements-dev.txt
-sed -i "/^-/d" requirements-ci.txt
+sed -i "/^-/d" pip-requirements.txt
+sed -i "/^-/d" pip-dev-requirements.txt
+sed -i "/^-/d" pip-constraints.txt
+
+sed -i "s/\[.*\]//" pip-constraints.txt

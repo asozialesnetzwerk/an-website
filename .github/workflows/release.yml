@@ -155,9 +155,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: pip install -r requirements.txt
+        run: pip install -r pip-requirements.txt
       - name: Install stuff needed for the tests
-        run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
+        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest
       - name: Run pytest
         timeout-minutes: 5
         run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
@@ -259,7 +259,7 @@ jobs:
         with:
           name: artifact
       - name: Install required library
-        run: pip install packaging
+        run: pip install "packaging==23.*"
       - name: Version
         id: version
         shell: python
@@ -346,7 +346,7 @@ jobs:
       - name: Hash files
         run: ./scripts/hash_files.py > github-pages/hashes.txt
       - name: Install Coverage.py
-        run: grep "^coverage" requirements-ci.txt | xargs pip install
+        run: pip install -c pip-constraints.txt coverage
       - name: Create coverage files
         run: |
           coverage html -d github-pages/coverage
@@ -450,7 +450,7 @@ jobs:
           name: artifact
       - name: Run tests
         timeout-minutes: 5
-        run: podman run -t -v ./requirements-ci.txt:/requirements-ci.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^(html5lib|pytest)(?!-cov)' /requirements-ci.txt | xargs /venv/bin/pip install --disable-pip-version-check && /venv/bin/pytest --verbose /tests"
+        run: podman run -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c pip-constraints.txt html5lib pytest && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
     name: Push OCI image

@@ -1,0 +1,28 @@
+diff --git a/config.js b/config.js
+index 1b7704c32fe475ea44b8d029e6252ffafcc1d99c..a98cba7765a082f8b2256773a24db4fb4ce1424e 100644
+--- a/config.js
++++ b/config.js
+@@ -3,7 +3,9 @@ const { version } = require('./package');
+ 
+ module.exports = {
+   /* eslint-disable prefer-template -- for better formatting */
+-  banner: '/**\n' +
++  banner: '// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT\n' +
++          '// @ts-nocheck\n' +
++          '/*\n' +
+           ' * core-js ' + version + '\n' +
+           ' * © 2014-2023 Denis Pushkarev (zloirock.ru)\n' +
+           ' * license: https://github.com/zloirock/core-js/blob/v' + version + '/LICENSE\n' +
+diff --git a/index.js b/index.js
+index 77e89edf4a76c47b0c054523d861f95cc943e53d..0a671adf3a53c43f331dcfe2d40ade0e87726b35 100644
+--- a/index.js
++++ b/index.js
+@@ -51,8 +51,6 @@ module.exports = async function ({
+         mode: 'none',
+         node: {
+           global: false,
+-          process: false,
+-          setImmediate: false,
+         },
+         entry: list.map(it => require.resolve(`core-js/modules/${ it }`)),
+         output: {

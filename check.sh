@@ -17,9 +17,9 @@ if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
   echo "Installing pip>=23.2 failed"
   exit 1
 fi
-${pip_install} -r requirements-dev.txt; exit_code="$?"
+${pip_install} -r pip-dev-requirements.txt; exit_code="$?"
 if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
-  echo "Installing requirements in requirements-dev.txt failed"
+  echo "Installing requirements in pip-dev-requirements.txt failed"
   exit 1
 fi
 

@@ -31,13 +31,13 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 1.36.4
+          deno-version: 1.37.0
       - name: Install required stuff
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev
-          pip install -r requirements.txt
-          grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
+          pip install -r pip-requirements.txt
+          pip install -c pip-constraints.txt autoflake black isort
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort
@@ -77,7 +77,7 @@ jobs:
       - name: Fix word-files for hangman solver
         run: ./scripts/fix_hangman_solver_word_files.py
       - name: Generate config.ini.default
-        run: python3 -m an_website --save-config-to config.ini.default -c
+        run: python3 -m an_website --save-config-to example-configurations/config.ini.default -c
       - name: Update env
         run: |
           D=$(python -c "print((_:=__import__('datetime')).datetime.now(tz=_.timezone.utc).replace(minute=0, second=0, microsecond=0).isoformat())")
@@ -116,9 +116,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: pip install -r requirements.txt
+        run: pip install -r pip-requirements.txt
       - name: Install mypy + stuff required for checking the tests and setup.py
-        run: grep -E "^(dulwich|html5lib|mypy|numpy|pytest|trove-classifiers|types-)" requirements-ci.txt | xargs pip install
+        run: |
+          pip install -c pip-constraints.txt dulwich html5lib mypy numpy pytest trove-classifiers
+          grep "^types-" pip-constraints.txt | xargs pip install
       - name: Run mypy
         run: mypy
 
@@ -138,7 +140,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Install Flake8
-        run: grep -E "^(flake8|pep8-naming)" requirements-ci.txt | xargs pip install
+        run: grep "^flake8-" pip-constraints.txt | xargs pip install -c pip-constraints.txt flake8 pep8-naming
       - name: Run Flake8
         run: flake8 --extend-ignore=SIM9
 
@@ -167,9 +169,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install requirements
-        run: pip install -r requirements.txt
-      - name: Install Pylint + stuff required for checking the tests
-        run: grep -E "^(html5lib|pylint|pytest|trove-classifiers)" requirements-ci.txt | xargs pip install
+        run: pip install -r pip-requirements.txt
+      - name: Install Pylint + stuff required for checking the tests and setup.py
+        run: pip install -c pip-constraints.txt html5lib pylint pytest trove-classifiers
       - name: Run Pylint
         run: pylint -r y -d fixme .
         env:
@@ -191,7 +193,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Install Bandit
-        run: grep "^bandit" requirements-ci.txt | xargs pip install
+        run: pip install -c pip-constraints.txt bandit[toml]
       - name: Run Bandit
         run: bandit -c pyproject.toml -r an_website
 
@@ -210,7 +212,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.17.1
+          node-version: 18.18.0
           cache: pnpm
       - name: Cache
         uses: pat-s/always-upload-cache@v2
@@ -238,7 +240,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.17.1
+          node-version: 18.18.0
           cache: pnpm
       - name: Install tsc
         run: pnpm install

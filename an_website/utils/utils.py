@@ -277,7 +277,7 @@ def anonymize_ip(
     if version == 4:
         return str(ip_network(address + "/24", strict=False).network_address)
     if version == 6:
-        return str(ip_network(address + "/32", strict=False).network_address)
+        return str(ip_network(address + "/48", strict=False).network_address)
 
     raise HTTPError(reason="ERROR: -41")
 
@@ -626,24 +626,21 @@ async def ratelimit(
         tokens,
     )
 
+    now = time.time()
+
     headers: dict[str, str] = {}
 
-    # fmt: off
-    # pylint: disable=line-too-long
     if result[0]:
-        retry_after = result[3] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
-        headers["Retry-After"] = str(retry_after)
+        headers["Retry-After"] = str(result[3])
         if not bucket:
             headers["X-RateLimit-Global"] = "true"
 
     if bucket:
-        reset_after = result[4] + 1  # TODO: remove after brandur/redis-cell#58 is merged and a new release was made  # noqa: B950
         headers["X-RateLimit-Limit"] = str(result[1])
         headers["X-RateLimit-Remaining"] = str(result[2])
-        headers["X-RateLimit-Reset"] = str(time.time() + reset_after)
-        headers["X-RateLimit-Reset-After"] = str(reset_after)
+        headers["X-RateLimit-Reset"] = str(now + result[4])
+        headers["X-RateLimit-Reset-After"] = str(result[4])
         headers["X-RateLimit-Bucket"] = hash_bytes(bucket.encode("ASCII"))
-    # fmt: on
 
     return bool(result[0]), headers
 

@@ -100,7 +100,9 @@ setup(
     classifiers=classifiers,
     packages=["an_website"],
     python_requires=">=3.10",
-    install_requires=path("requirements.txt").read_text("UTF-8").split("\n"),
+    install_requires=path("pip-requirements.txt")
+    .read_text("UTF-8")
+    .split("\n"),
     extras_require={"jxl": ["jxlpy~=0.9"]},
     include_package_data=True,
     zip_safe=False,

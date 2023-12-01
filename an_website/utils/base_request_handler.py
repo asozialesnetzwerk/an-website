@@ -135,19 +135,9 @@ class BaseRequestHandler(RequestHandler):
     crawler: bool = False
     nonce: str
 
-    def _super_finish(
+    def _finish(
         self, chunk: None | str | bytes | dict[str, Any] = None
     ) -> Future[None]:
-        """Finish this response, ending the HTTP request.
-
-        Passing a ``chunk`` to ``finish()`` is equivalent to passing that
-        chunk to ``write()`` and then calling ``finish()`` with no arguments.
-
-        Returns a ``Future`` which may optionally be awaited to track the sending
-        of the response to the client. This ``Future`` resolves when all the response
-        data has been sent, and raises an error if the connection is closed before all
-        data can be sent.
-        """
         if self._finished:
             raise RuntimeError("finish() called twice")
 
@@ -186,8 +176,10 @@ class BaseRequestHandler(RequestHandler):
         return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B907
 
     @override
-    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
-        """Do nothing."""
+    def data_received(  # noqa: D102
+        self, chunk: bytes
+    ) -> None | Awaitable[None]:
+        pass
 
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
@@ -229,10 +221,9 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("ELASTICSEARCH_PREFIX", NAME)
 
     @override
-    def finish(
+    def finish(  # noqa: D102
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
-        """Finish the request."""
         as_json = self.content_type == "application/vnd.asozial.dynload+json"
         as_plain_text = self.content_type == "text/plain"
         as_markdown = self.content_type == "text/markdown"
@@ -243,21 +234,20 @@ class BaseRequestHandler(RequestHandler):
             or not self.used_render
             or not (as_json or as_plain_text or as_markdown)
         ):
-            return self._super_finish(chunk)
+            return self._finish(chunk)
 
         chunk = chunk.decode("UTF-8") if isinstance(chunk, bytes) else chunk
 
         if as_markdown:
-            return super().finish(
+            return self._finish(
                 f"# {self.title}\n\n"
                 + html2text.html2text(chunk, self.request.full_url()).strip()
-                + "\n"
             )
 
         soup = BeautifulSoup(chunk, features="lxml")
 
         if as_plain_text:
-            return self._super_finish(soup.get_text("\n", True))
+            return self._finish(soup.get_text("\n", True))
 
         dictionary: dict[str, Any] = {
             "url": self.fix_url(),
@@ -286,7 +276,7 @@ class BaseRequestHandler(RequestHandler):
             else "",
         }
 
-        return self._super_finish(dictionary)
+        return self._finish(dictionary)
 
     def finish_dict(self, **kwargs: Any) -> Future[None]:
         """Finish the request with a dictionary."""
@@ -847,8 +837,9 @@ class BaseRequestHandler(RequestHandler):
         return self.settings.get("REDIS_PREFIX", NAME)
 
     @override
-    def render(self, template_name: str, **kwargs: Any) -> Future[None]:
-        """Render a template."""
+    def render(  # noqa: D102
+        self, template_name: str, **kwargs: Any
+    ) -> Future[None]:
         self.used_render = True
         return super().render(template_name, **kwargs)
 
@@ -862,17 +853,16 @@ class BaseRequestHandler(RequestHandler):
             self.set_header("Content-Type", self.content_type)
 
     @override
-    def set_cookie(  # pylint: disable=too-many-arguments
+    def set_cookie(  # noqa: D102  # pylint: disable=too-many-arguments
         self,
         name: str,
         value: str | bytes,
         domain: None | str = None,
         expires: None | float | tuple[int, ...] | datetime = None,
         path: str = "/",
-        expires_days: None | float = 365,  # changed
+        expires_days: None | float = 400,  # changed
         **kwargs: Any,
     ) -> None:
-        """Override the set_cookie method to set expires days."""
         if "samesite" not in kwargs:
             # default for same site should be strict
             kwargs["samesite"] = "Strict"
@@ -1005,9 +995,6 @@ class BaseRequestHandler(RequestHandler):
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
         self.set_header("Vary", "Accept,Accept-Encoding,Authorization,Cookie")
-        self.origin_trial(
-            "Ah8B+s/HdPnBtM2sfqywfu0dX7+sTwXvGlTF7nVL9SxI1jeVpwPcE0IqnrgjYDiIDHB/opX46gBCdHE5+TQETwkAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjk1NTEzNTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
-        )
 
     @classmethod
     def supports_head(cls) -> bool:
@@ -1025,12 +1012,7 @@ class BaseRequestHandler(RequestHandler):
         return Options(self)
 
     @override
-    def write(self, chunk: str | bytes | dict[str, Any]) -> None:
-        """
-        Write the given chunk to the output buffer.
-
-        To write the output to the network, use the ``flush()`` method.
-        """
+    def write(self, chunk: str | bytes | dict[str, Any]) -> None:  # noqa: D102
         if self._finished:
             raise RuntimeError("Cannot write() after finish()")
 
@@ -1056,7 +1038,7 @@ class BaseRequestHandler(RequestHandler):
 
     @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
-        """Render the error page with the status_code as an HTML page."""
+        """Render the error page."""
         dict_content_types: tuple[str, str] = (
             "application/json",
             "application/yaml",
@@ -1101,3 +1083,10 @@ class BaseRequestHandler(RequestHandler):
         self.finish(  # type: ignore[unused-awaitable]
             f"{status_code} {self.get_error_message(**kwargs)}\n"
         )
+
+
+BaseRequestHandler.data_received.__doc__ = RequestHandler.data_received.__doc__
+BaseRequestHandler.finish.__doc__ = RequestHandler.finish.__doc__
+BaseRequestHandler.render.__doc__ = RequestHandler.render.__doc__
+BaseRequestHandler.set_cookie.__doc__ = RequestHandler.set_cookie.__doc__
+BaseRequestHandler.write.__doc__ = RequestHandler.write.__doc__

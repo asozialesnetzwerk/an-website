@@ -1,4 +1,4 @@
 build
 perf8-report
-scripts
+scripts/deno
 venv

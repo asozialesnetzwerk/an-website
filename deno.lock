@@ -1,18 +1,12 @@
 {
-  "version": "2",
-  "remote": {
-    "https://deno.land/std@0.201.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
-    "https://deno.land/std@0.201.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
-    "https://deno.land/std@0.201.0/flags/mod.ts": "0948466fc437f017f00c0b972a422b3dc3317a790bcf326429d23182977eaf9f",
-    "https://deno.land/x/esbuild@v0.18.20/wasm.js": "bf7e2542712c6c6bb779b1ce015f17155dba55dda5a4093462c492872c490a2a"
-  },
-  "npm": {
+  "version": "3",
+  "packages": {
     "specifiers": {
-      "core-js-builder@3": "core-js-builder@3.32.2",
-      "core-js-compat@3": "core-js-compat@3.32.2",
-      "gzip-size": "gzip-size@7.0.0"
+      "npm:core-js-builder@3": "npm:core-js-builder@3.32.2",
+      "npm:core-js-compat@3": "npm:core-js-compat@3.32.2",
+      "npm:gzip-size": "npm:gzip-size@7.0.0"
     },
-    "packages": {
+    "npm": {
       "@webassemblyjs/ast@1.9.0": {
         "integrity": "sha512-C6wW5L+b7ogSDVqymbkkvuW9kruN//YisMED04xzeBBqjHa2FYnmvOlS6Xj68xWQRgWvI9cIglsjFowH/RJyEA==",
         "dependencies": {
@@ -2141,5 +2135,11 @@
         "dependencies": {}
       }
     }
+  },
+  "remote": {
+    "https://deno.land/std@0.202.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
+    "https://deno.land/std@0.202.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
+    "https://deno.land/std@0.202.0/flags/mod.ts": "0948466fc437f017f00c0b972a422b3dc3317a790bcf326429d23182977eaf9f",
+    "https://deno.land/x/esbuild@v0.19.3/wasm.js": "630244b90126b9d6486917af05123d44a0f1c3bfb1ee2c61ba06432b81664506"
   }
 }

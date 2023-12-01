@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-import os
+from os.path import abspath, dirname
 from typing import Final
 
 from tornado.web import RedirectHandler
@@ -33,7 +33,7 @@ from .quote_of_the_day import (
 from .quotes import QuoteAPIHandler, QuoteById, QuoteMainPage, QuoteRedirectAPI
 from .share import ShareQuote
 
-DIR: Final = os.path.dirname(__file__)
+DIR: Final = abspath(dirname(__file__))
 
 
 def get_module_info() -> ModuleInfo:

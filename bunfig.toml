@@ -1,2 +1,3 @@
+telemetry = false
 [install]
 frozenLockfile = true
