@@ -16,13 +16,13 @@
 
 from __future__ import annotations
 
-import contextlib
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
 import sys
 from collections.abc import Callable
 from configparser import RawConfigParser
+from contextlib import suppress
 from importlib import import_module
 from pathlib import Path
 from threading import Thread
@@ -51,7 +51,7 @@ from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR: Final = os.path.dirname(__file__)
 
-with contextlib.suppress(ModuleNotFoundError):
+with suppress(ModuleNotFoundError):
     # pylint: disable=import-error, useless-suppression
     from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 
@@ -79,7 +79,8 @@ def apply() -> None:
 def patch_asyncio() -> None:
     """Make stuff faster."""
     if "DISABLE_UVLOOP" not in os.environ:
-        import_module("uvloop").install()
+        with suppress(ModuleNotFoundError):
+            import_module("uvloop").install()
 
 
 def patch_certifi() -> None:
@@ -169,7 +170,7 @@ def patch_threading() -> None:
     _bootstrap = Thread._bootstrap  # type: ignore[attr-defined]
 
     def set_name(self: Thread) -> None:
-        with contextlib.suppress(Exception):
+        with suppress(Exception):
             setthreadtitle(self.name)
         _bootstrap(self)
 
