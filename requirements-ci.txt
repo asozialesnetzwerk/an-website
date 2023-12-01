@@ -33,13 +33,13 @@ lazy-object-proxy==1.9.0
 lxml==4.9.2
 mccabe==0.7.0
 mypy==0.991
-mypy-extensions==0.4.3
+mypy-extensions==1.0.0
 nodeenv==1.7.0
 packaging==23.0
 pathspec==0.11.0
 pbr==5.11.1
 pep8-naming==0.13.3
-pipenv==2022.12.19
+pipenv==2023.2.4
 platformdirs==2.6.2
 pluggy==1.0.0
 pre-commit==2.21.0
@@ -76,7 +76,7 @@ types-pillow==9.4.0.6
 types-pyopenssl==23.0.0.2
 types-python-dateutil==2.8.19.6
 types-pyyaml==6.0.12.4
-types-redis==4.4.0.5
+types-redis==4.4.0.6
 types-regex==2022.10.31.3
 types-setuptools==63.4.1
 typing-extensions==4.4.0
@@ -105,7 +105,7 @@ editdistance==0.6.2
 elastic-apm==6.14.0
 elastic-enterprise-search==7.17.0
 elastic-transport==7.16.0
-elasticsearch[async]==7.17.8
+elasticsearch[async]==7.17.9
 emoji==2.2.0
 et-xmlfile==1.1.0
 fonttools==4.38.0
@@ -148,7 +148,7 @@ sympy==1.11.1
 typed-stream==0.0.1.post1
 tzdata==2022.7
 ultradict==0.0.6
-unexpected-isaves==1.5.0
+unexpected-isaves==2.0.2
 urllib3==1.26.14
 uvloop==0.17.0
 yarl==1.8.2

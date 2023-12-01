@@ -42,10 +42,10 @@ regex = "*"
 setproctitle = "==1.*"
 sympy = "==1.*"
 tornado = "==6.*"
-typed-stream = "<69"
+typed-stream = "<2"
 tzdata = "==2022.7.*"
 UltraDict = "<2"
-unexpected-isaves = "<2"
+unexpected-isaves = "==2.*"
 uvloop = "<2"
 
 [dev-packages]

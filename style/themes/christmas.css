@@ -25,12 +25,16 @@
     background: linear-gradient(white, white); /* Workaround for Chromium's selective color inversion */
 }
 
-main, #snow p {
+#snow p {
     filter: drop-shadow(0 0 10px white);
 }
 
+main {
+    text-shadow: 0 0 10px white;
+}
+
 header, #site-pane {
-    box-shadow: 0 0 10px white
+    box-shadow: 0 0 10px white;
 }
 
 textarea,
