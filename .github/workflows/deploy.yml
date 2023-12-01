@@ -43,8 +43,8 @@ jobs:
     steps:
       - name: Upgrade Buildah
         run: |
-          wget http://mirrors.kernel.org/ubuntu/pool/universe/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1_amd64.deb
-          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1_amd64.deb
+          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
+          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b2_amd64.deb
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -74,6 +74,10 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Upgrade Skopeo
+        run: |
+          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/s/skopeo/skopeo_1.9.3+ds1-1+b2_amd64.deb
+          sudo dpkg --force-depends -i skopeo_1.9.3+ds1-1+b2_amd64.deb
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
