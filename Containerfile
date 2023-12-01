@@ -60,6 +60,7 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/0268b8eb3287655303869e7b4e617ff0734fdfc4 \
  && /venv/bin/pip uninstall -y setuptools wheel Cython \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
+ && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-deps https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
  && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
  && sed -Ei "/(blake3|lxml)/d" requirements.txt \
