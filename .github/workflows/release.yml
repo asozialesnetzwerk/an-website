@@ -29,7 +29,7 @@ jobs:
         run: test -z $(git tag --list "v*" --points-at)
       - name: Create tag
         if: github.event_name == 'schedule'
-        run: git tag $(python -c "from time import strftime, gmtime; print(strftime('v%y.%m.%d', gmtime()))")
+        run: git tag $(python -c "from time import strftime, gmtime; print(strftime('v%y.%m', gmtime()))")
       - name: Push tag
         if: github.event_name == 'schedule'
         run: git push --tags
@@ -188,6 +188,8 @@ jobs:
             path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             path.write_text("version=${{ github.ref_name }}\n")
+          else:
+            assert 6 * 9 == 42
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -387,12 +389,12 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          sudo buildah build -t an-website:git --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" $(./build-args.sh) .
+          sudo buildah build -t an-website --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" $(./build-args.sh) .
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki
       - name: Save image
-        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website:git oci-archive:oci-archive.tar
+        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -445,12 +447,29 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact
+      - name: Version
+        id: version
+        shell: python
+        run: |
+          import os
+          from pathlib import Path
+          from time import strftime, gmtime
+
+          path = Path(os.getenv("GITHUB_OUTPUT"))
+          if "${{ github.event_name }}" == "schedule":
+            path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
+          elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
+            path.write_text("version=${{ github.ref_name }}\n")
+          else:
+            assert 6 * 9 == 42
       - name: Log in to ghcr.io
         uses: redhat-actions/podman-login@v1
         with:
           username: ${{ github.actor }}
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
-      - name: Push image
+      - name: Push image to ghcr.io
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+      - name: Tag image as latest
         if: github.event_name == 'schedule'
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest
+        run: skopeo copy --all --preserve-digests docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} docker://ghcr.io/${{ github.repository }}:latest

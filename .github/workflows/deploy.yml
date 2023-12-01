@@ -310,12 +310,12 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          sudo buildah build -t an-website:git --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" $(./build-args.sh) .
+          sudo buildah build -t an-website --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" $(./build-args.sh) .
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki
       - name: Save image
-        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website:git oci-archive:oci-archive.tar
+        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -374,5 +374,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
-      - name: Push image
+      - name: Push image to ghcr.io
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:git
