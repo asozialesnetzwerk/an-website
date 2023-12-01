@@ -52,6 +52,7 @@ jobs:
             wget https://github.com/sass/dart-sass/archive/refs/tags/1.58.0.tar.gz
             tar xf 1.58.0.tar.gz
             cd dart-sass-1.58.0
+            dart pub get
             sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
             dart compile exe bin/sass.dart --output /opt/dart-sass
             cd ..
@@ -59,14 +60,14 @@ jobs:
             popd
       - name: Generate snow
         run: /opt/dart-sass -s compressed style/snow.scss style/snow.css
-      - name: Build TS & CSS
+      - name: Build JS & CSS
         run: deno task clean && deno task build
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Sort methods
         run: ./scripts/sort_python_code.py
       - name: Generate content_types.json and media_types.json
-        run: env PYTHONPATH="$PWD" ./scripts/mime_types.py
+        run: PYTHONPATH="." ./scripts/mime_types.py
       - name: generate config.ini.default
         run: python3 -m an_website --save-config-to config.ini.default -c
       - name: Push changes
