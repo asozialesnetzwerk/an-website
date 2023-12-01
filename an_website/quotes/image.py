@@ -342,8 +342,8 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         """Handle GET requests to this page and render the quote as image."""
         file_type: None | str
         if file_extension == "image":
-            assert self.content_type
             self.handle_accept_header(IMAGE_CONTENT_TYPES_WITHOUT_TXT)
+            assert self.content_type
             file_type = CONTENT_TYPE_FILE_TYPE_MAPPING[self.content_type]
             file_extension = file_type
         elif not (file_type := FILE_EXTENSIONS.get(file_extension.lower())):
