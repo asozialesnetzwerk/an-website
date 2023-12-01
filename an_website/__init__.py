@@ -31,9 +31,7 @@ with suppress(ModuleNotFoundError):
     import orjson as json
 
 if "orjson" not in sys.modules:
-    from . import (  # type: ignore[no-redef]  # noqa: F811
-        fake_orjson as json,
-    )
+    from . import fake_orjson as json  # type: ignore[no-redef]  # noqa: F811
 
     sys.modules["orjson"] = json
 
