@@ -1,5 +1,15 @@
 **/*.py[cod]
+an_website.egg-info
 build
 dist
+
 venv
 logs
+config.ini
+.well-known
+
+.coverage
+.mypy_cache
+perf8-report
+
+**/node_modules

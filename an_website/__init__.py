@@ -24,8 +24,14 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Final, TypedDict
 
-import orjson as json
 from get_version import get_version
+
+if sys.version_info >= (3, 12):
+    from . import orjson_temp_fix as json
+
+    sys.modules["orjson"] = json
+else:
+    import orjson as json
 
 try:
     from pytest_is_running import is_running as pytest_is_running
@@ -51,6 +57,8 @@ START_TIME_NS: Final[int] = time.monotonic_ns()
 MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
     Path(os.path.join(DIR, "media_types.json")).read_bytes()
 )
+
+assert "Í" not in str(MEDIA_TYPES)  # orjson is corrupting memory
 
 EPOCH: Final[int] = 1651075200
 EPOCH_MS: Final[int] = EPOCH * 1000

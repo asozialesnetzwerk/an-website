@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import asyncio
+import atexit
 import importlib
 import logging
 import os
@@ -926,11 +927,7 @@ def supervise() -> None:
             LOGGER.fatal(
                 "Heartbeat timed out for worker %d (pid %d)", task_id, pid
             )
-            # pylint: disable=protected-access
-            guga: ReferenceType[logging.Handler]
-            for guga in tuple(logging._handlerList):  # type: ignore[attr-defined]
-                if stronk := guga():
-                    stronk.flush()
+            atexit._run_exitfuncs()  # pylint: disable=protected-access
             os.abort()
         time.sleep(1)
 
