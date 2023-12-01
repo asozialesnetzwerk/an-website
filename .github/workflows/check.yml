@@ -104,7 +104,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install mypy + stuff required for checking the tests
-        run: grep -E "^(html5lib|mypy|pytest|types-)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(html5lib|mypy|pytest|trove-classifiers|types-)" requirements-ci.txt | xargs pip install
       - name: Run mypy
         run: mypy
 
@@ -160,7 +160,7 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
       - name: Install Pylint + stuff required for checking the tests
-        run: grep -E "^(html5lib|pylint|pytest)" requirements-ci.txt | xargs pip install
+        run: grep -E "^(html5lib|pylint|pytest|trove-classifiers)" requirements-ci.txt | xargs pip install
       - name: Run Pylint
         run: pylint -d fixme .
         env:
