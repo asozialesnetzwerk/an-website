@@ -1962,11 +1962,11 @@
         },
         "typed-stream": {
             "hashes": [
-                "sha256:71e026d39c7c64686f43aa308601556fb2a7269b97d4f607571f3de2d59a529f",
-                "sha256:c82638a40a0cbbf5d0e6068590023fe215146510ad1ce7f00603ce0dc6354bbf"
+                "sha256:8f378a5cb0a9fbbc4f4268706c75626115f3fde86b59c87f4a94c8459b21f340",
+                "sha256:ef71b33fcdc3bb50d781bb1cfa8d4026426c794c405d548211ffa3abfeb0dc41"
             ],
             "index": "pypi",
-            "version": "==0.0.4"
+            "version": "==0.4.1"
         },
         "typing-extensions": {
             "hashes": [

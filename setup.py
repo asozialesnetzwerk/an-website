@@ -44,6 +44,8 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+assert classifiers == sorted(classifiers)
+
 for classifier in classifiers:
     assert classifier in trove_classifiers.classifiers
 
