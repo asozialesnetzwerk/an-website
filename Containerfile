@@ -84,7 +84,7 @@ RUN set -eux \
         l/lcms2/liblcms2-2_2.14-2 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
+        curl --retry 5 -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \
