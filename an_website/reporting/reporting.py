@@ -120,9 +120,9 @@ class ReportingAPI(APIRequestHandler):
     RATELIMIT_POST_LIMIT: ClassVar[int] = 20
     RATELIMIT_POST_COUNT_PER_PERIOD: ClassVar[int] = 2
 
-    MAX_BODY_SIZE: ClassVar[int] = 1_000_000
+    MAX_BODY_SIZE: ClassVar[int] = 100_000_000
 
-    MAX_REPORTS_PER_REQUEST: ClassVar[int] = 100
+    MAX_REPORTS_PER_REQUEST: ClassVar[int] = 1000
 
     async def get(self, *, head: bool = False) -> None:  # noqa: C901
         """Handle GET requests to the Reporting API™️."""
@@ -139,7 +139,7 @@ class ReportingAPI(APIRequestHandler):
 
         if not self.is_authorized(Permission.REPORTING):
             from_ = 0
-            size = min(10, size)
+            size = min(1000, size)
 
         try:
             reports = await get_reports(

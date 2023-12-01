@@ -43,14 +43,14 @@ jobs:
       matrix:
         python-version:
           - "3.10"
-          #- 3.11
+          - 3.11
           #- 3.12
         stack-version:
-          - 7.17.6
-          #- 8.3.3
-        #license:
-        #  - basic
-        #  - trial
+          - 7.17.9
+          - 8.6.2
+        license:
+          - basic
+          - trial
     services:
       redis:
         image: redis/redis-stack-server:6.2.6-v6
@@ -64,16 +64,31 @@ jobs:
           sudo sysctl -w fs.file-max=262144
           sudo sysctl -w vm.max_map_count=262144
       - name: Start Elasticsearch
-        uses: elastic/elastic-github-actions/elasticsearch@master
+        if: ${{ startsWith(matrix.stack-version, '7') }}
+        uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
         with:
           stack-version: ${{ matrix.stack-version }}
           security-enabled: false
           nodes: 3
-          #license: ${{ matrix.license }}
+          license: ${{ matrix.license }}
           plugins: |
             analysis-icu
             analysis-phonetic
             ingest-attachment
+            mapper-size
+            mapper-murmur3
+            mapper-annotated-text
+      - name: Start Elasticsearch
+        if: ${{ startsWith(matrix.stack-version, '8') }}
+        uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
+        with:
+          stack-version: ${{ matrix.stack-version }}
+          security-enabled: false
+          nodes: 3
+          license: ${{ matrix.license }}
+          plugins: |
+            analysis-icu
+            analysis-phonetic
             mapper-size
             mapper-murmur3
             mapper-annotated-text

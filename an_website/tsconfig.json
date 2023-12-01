@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    // "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "5.0",
     "target": "ES2022",
     "module": "ES2022",
     "checkJs": false,
@@ -10,8 +10,8 @@
       {
         "name": "typescript-eslint-language-service"
       }
-    ]
+    ],
     // "isolatedModules": true,
-    // "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true
   }
 }

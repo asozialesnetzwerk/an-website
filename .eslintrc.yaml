@@ -8,11 +8,12 @@ extends:
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
 ignorePatterns:
   - "*.js"
+reportUnusedDisableDirectives: true
 parserOptions:
   ecmaVersion: latest
   project: true
 env:
-  es2020: true
+  es2022: true
   browser: true
 globals:
   d: readonly

@@ -1704,11 +1704,11 @@
         },
         "typed-stream": {
             "hashes": [
-                "sha256:41f7216b8c2ac452e7cd7324d9412fafb641ec62fd2cb62eacf339415fd727fd",
-                "sha256:4a198ecd987db287c5a241b5b070aeebfa3e2dd57a0a1b56bf8cb49fd8a1efcb"
+                "sha256:62b80b06613e54d25289faa2ac42311a3ade3b2bf78897048236cf620ef19336",
+                "sha256:eea5d45ff4b154cebac8256804667f87098d119d3604f2a9a0d2d145fc9c9411"
             ],
             "index": "pypi",
-            "version": "==0.16.2"
+            "version": "==0.32.1"
         },
         "typing-extensions": {
             "hashes": [
@@ -2251,11 +2251,11 @@
         },
         "flake8-comprehensions": {
             "hashes": [
-                "sha256:412052ac4a947f36b891143430fef4859705af11b2572fbb689f90d372cf26ab",
-                "sha256:d763de3c74bc18a79c039a7ec732e0a1985b0c79309ceb51e56401ad0a2cd44e"
+                "sha256:820b6463d4964249b7380432f3aac2f26d4a86c7d52cbe9d53dfd9e1caf01b33",
+                "sha256:d06a95fdf2dabf6a7632550fed4a10d0449d00473875b1e4b167ca84d4daee59"
             ],
             "index": "pypi",
-            "version": "==3.10.1"
+            "version": "==3.11.0"
         },
         "flake8-docstrings": {
             "hashes": [
@@ -2576,11 +2576,11 @@
         },
         "pipenv": {
             "hashes": [
-                "sha256:4e45226d197ad84fa11a9d944cb0e1bfcc197919944d0af96e55adf7e1fdc76c",
-                "sha256:ecbe4e301616c5fa3128d557507d79a35d895cd922139969929d7357b66b1509"
+                "sha256:65573d608430e291058d4067b8a53d27840c315da7f58ff5b23aa3d31a3de724",
+                "sha256:77bbb61bd3d119963fa4b850c62b6f03f82a91664643150a0559f6770539f0b8"
             ],
             "index": "pypi",
-            "version": "==2023.2.18"
+            "version": "==2023.3.20"
         },
         "platformdirs": {
             "hashes": [
@@ -2600,11 +2600,11 @@
         },
         "pre-commit": {
             "hashes": [
-                "sha256:b80254e60668e1dd1f5c03a1c9e0413941d61f568a57d745add265945f65bfe8",
-                "sha256:d63e6537f9252d99f65755ae5b79c989b462d511ebbc481b561db6a297e1e865"
+                "sha256:818f0d998059934d0f81bb3667e3ccdc32da6ed7ccaac33e43dc231561ddaaa9",
+                "sha256:f712d3688102e13c8e66b7d7dbd8934a6dda157e58635d89f7d6fecdca39ce8a"
             ],
             "index": "pypi",
-            "version": "==3.1.1"
+            "version": "==3.2.0"
         },
         "pycodestyle": {
             "hashes": [

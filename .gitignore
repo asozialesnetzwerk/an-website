@@ -11,14 +11,14 @@
 # cringe
 **/node_modules
 
+# ESLint cache
+/.eslintcache
+
 # coverage reports
 /.coverage
 
 # Perf8 reports
 /perf8-report
-
-# nano backup files
-*~
 
 # JetBrains
 /.idea

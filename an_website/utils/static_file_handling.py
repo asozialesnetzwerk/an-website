@@ -59,7 +59,7 @@ def create_file_hashes_dict() -> dict[str, str]:
 FILE_HASHES_DICT: Final[Mapping[str, str]] = create_file_hashes_dict()
 
 CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
-    Path(os.path.join(ROOT_DIR, "vendored", "media-types.json")).read_bytes()
+    Path(ROOT_DIR, "vendored", "media-types.json").read_bytes()
 )
 
 
