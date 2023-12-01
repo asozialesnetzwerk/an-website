@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-TAG=3.12-rc-slim-bookworm
+TAG=3.12-slim-bookworm
 REPOSITORY=library/python
 NAME=docker.io/${REPOSITORY}:${TAG}
 REGISTRY=https://index.docker.io/v2

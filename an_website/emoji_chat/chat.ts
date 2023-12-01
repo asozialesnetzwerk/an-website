@@ -55,7 +55,7 @@ const displayCurrentUser = (name: string[]) => {
 const emojiToIMG = (emoji: string) => {
     const emojiCode = [...emoji]
         .map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
-        .join(`-`)
+        .join("-")
         .toUpperCase();
 
     const imgEl = document.createElement("img");

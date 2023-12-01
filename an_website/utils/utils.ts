@@ -20,7 +20,6 @@ export function post(
         method: "POST",
         body: JSON.stringify(params),
         headers: {
-            // deno-fmt-ignore
             "Accept": accept,
             "Content-Type": "application/json",
         },

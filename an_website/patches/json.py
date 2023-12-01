@@ -104,15 +104,15 @@ def dumps(  # noqa: D103
 
 
 def dump(obj: Any, fp: IO[str], **kwargs: Any) -> None:  # noqa: D103
-    # pylint: disable=invalid-name, missing-function-docstring
+    # pylint: disable=missing-function-docstring
     fp.write(dumps(obj, **kwargs))
 
 
 def loads(s: str | bytes, **kwargs: Any) -> Any:  # noqa: D103
-    # pylint: disable=invalid-name, missing-function-docstring, unused-argument
+    # pylint: disable=missing-function-docstring, unused-argument
     return orjson.loads(s)
 
 
 def load(fp: SupportsRead[str | bytes], **kwargs: Any) -> Any:  # noqa: D103
-    # pylint: disable=invalid-name, missing-function-docstring, unused-argument
+    # pylint: disable=missing-function-docstring, unused-argument
     return loads(fp.read())

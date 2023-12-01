@@ -44,7 +44,7 @@ function dynLoadOnData(
             return;
         }
         history.pushState(
-            { data: data, url: url, stateType: "dynLoad" },
+            { data, url, stateType: "dynLoad" },
             data.title,
             url,
         );

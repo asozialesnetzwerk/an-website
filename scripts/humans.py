@@ -57,7 +57,6 @@ WHITESPACE: Final[str] = "".join(
 
 def is_prime(n: int) -> bool:
     """Return whether the specified number is prime."""
-    # pylint: disable=invalid-name
     if not n & 1:
         return n == 2
     d = 3

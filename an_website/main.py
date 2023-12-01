@@ -776,7 +776,7 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
 async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
     """Check Elasticsearch."""
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        es: AsyncElasticsearch = cast(  # pylint: disable=invalid-name
+        es: AsyncElasticsearch = cast(
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
         try:
@@ -837,7 +837,7 @@ async def setup_elasticsearch_configs(
 
 
 async def setup_elasticsearch_config(
-    es: AsyncElasticsearch,  # pylint: disable=invalid-name
+    es: AsyncElasticsearch,
     what: ES_WHAT_LITERAL,
     body: dict[str, Any],
     name: str,
@@ -1159,6 +1159,9 @@ def main(  # noqa: C901  # pragma: no cover
     if loop is None:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+
+    if sys.version_info >= (3, 12) and not loop.get_task_factory():
+        loop.set_task_factory(asyncio.eager_task_factory)
 
     if perf8 and "PERF8" in os.environ:
         loop.run_until_complete(perf8.enable())

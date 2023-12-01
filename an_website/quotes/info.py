@@ -67,13 +67,13 @@ async def search_wikipedia(
     query: str, api: str = WIKI_API_DE
 ) -> None | tuple[str, None | str, datetime]:
     """
-    Search wikipedia to get information about the query.
+    Search Wikipedia to get information about the query.
 
     Return a tuple with the URL and the content.
     """
     if not query:
         return None
-    # try to get the info from wikipedia
+    # try to get the info from Wikipedia
     response = await AsyncHTTPClient().fetch(
         (
             f"{api}?action=opensearch&namespace=0&profile=normal&"
@@ -120,12 +120,11 @@ async def get_wikipedia_page_content(
 
 def fix_author_for_wikipedia_search(author: str) -> str:
     """
-    Fix author for wikipedia search.
+    Fix author for Wikipedia search.
 
     This tries to reduce common problems with authors.
     So that we can show more information.
     """
-    # pylint: disable=no-member
     author = regex.sub(r"\s+", " ", author)
     author = regex.sub(r"\s*\(.*\)", "", author)
     author = regex.sub(r"\s*Werbespruch$", "", author, regex.IGNORECASE)

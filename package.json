@@ -4,11 +4,11 @@
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.2",
     "@types/node": "npm:bun-types@^1.0.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.3",
-    "@typescript-eslint/parser": "^6.7.3",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "browserslist": "^4.22.1",
-    "core-js-builder": "3.32.2",
-    "core-js-compat": "3.32.2",
+    "core-js-builder": "3.33.0",
+    "core-js-compat": "3.33.0",
     "doiuse": "^6.0.2",
     "esbuild": "^0.19.4",
     "eslint": "^8.50.0",
@@ -38,7 +38,7 @@
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.32.2": "patches/core-js-builder@3.32.2.patch",
+      "core-js-builder@3.33.0": "patches/core-js-builder@3.33.0.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }

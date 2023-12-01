@@ -361,7 +361,7 @@ def emojify(string: str) -> str:
 
 
 async def geoip(
-    ip: None | str,  # pylint: disable=invalid-name
+    ip: None | str,
     database: str = "GeoLite2-City.mmdb",
     elasticsearch: None | AsyncElasticsearch = None,
     *,
@@ -449,7 +449,6 @@ async def geoip(
 
 def geoip_fallback(ip: str, country: bool = False) -> None | dict[str, Any]:
     """Get GeoIP information without using Elasticsearch."""
-    # pylint: disable=invalid-name
     if not (info := geolite2.lookup(ip)):
         return None
 
@@ -534,7 +533,6 @@ def hash_ip(
 
 def is_in_european_union(ip: None | str) -> None | bool:
     """Return whether the specified address is in the EU."""
-    # pylint: disable=invalid-name
     if not (ip and (info := geolite2.lookup(ip))):
         return None
 
@@ -555,7 +553,6 @@ def length_of_match(match: regex.Match[Any]) -> int:
 
 def n_from_set(set_: Set[T], n: int) -> set[T]:
     """Get and return n elements of the set as a new set."""
-    # pylint: disable=invalid-name
     new_set = set()
     for i, element in enumerate(set_):
         if i >= n:

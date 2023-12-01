@@ -112,7 +112,6 @@ async def get_availability_data(
 
 def get_availability_dict(up: int, down: int) -> AvailabilityDict:
     """Get the availability data as a dict."""
-    # pylint: disable=invalid-name
     return {
         "up": up,
         "down": down,

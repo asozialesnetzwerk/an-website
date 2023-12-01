@@ -70,7 +70,7 @@ def mark_query(text: str, query: None | str) -> str:
             word,
             lambda match: f'<div class="marked">{match[0]}</div>',
             text,
-            regex.IGNORECASE,  # pylint: disable=no-member
+            regex.IGNORECASE,
         )
 
     return text

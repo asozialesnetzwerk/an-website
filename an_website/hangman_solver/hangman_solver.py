@@ -189,7 +189,7 @@ def get_words_and_letters(
 
     return filter_words(
         filename,
-        regex.compile(pattern, regex.ASCII),  # pylint: disable=no-member
+        regex.compile(pattern, regex.ASCII),
         input_letters,
         crossword_mode,
         matches_always,

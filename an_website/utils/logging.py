@@ -73,7 +73,7 @@ class AsyncHandler(logging.Handler):
         self, record: LogRecord
     ) -> bool | LogRecord:
         """Handle incoming log records."""
-        rv = cast(  # pylint: disable=invalid-name
+        rv = cast(
             bool | LogRecord, self.filter(record)
         )
         if isinstance(rv, LogRecord):

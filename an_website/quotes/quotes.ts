@@ -205,7 +205,7 @@ function startQuotes() {
     const vote = (vote: string): Promise<void> =>
         post(
             `/api/zitate/${thisQuoteId[0]}`,
-            { vote: vote },
+            { vote },
             (data: API_DATA) => void handleData(data),
         );
 

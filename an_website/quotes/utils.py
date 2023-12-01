@@ -68,7 +68,7 @@ MAX_AUTHORS_ID = Value("Q", 0)
 class QuotesObjBase(abc.ABC):
     """An object with an id."""
 
-    id: int  # pylint: disable=invalid-name
+    id: int
 
     @abc.abstractmethod
     async def fetch_new_data(self) -> QuotesObjBase:

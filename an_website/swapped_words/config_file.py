@@ -136,7 +136,6 @@ class OneWayPair(WordPair):
 
     def get_replacement(self, word: str) -> str:
         """Get the replacement for a given word with the same case."""
-        # pylint: disable=no-member
         if regex.fullmatch(self.word1, word) is not None:
             return self.word2
         if regex.fullmatch(self.word1, word, regex.IGNORECASE) is not None:
@@ -306,7 +305,7 @@ class SwappedWordsConfig:  # pylint: disable=eq-without-hash
                     if isinstance(word_pair, WordPair)
                 )
             ),
-            regex.IGNORECASE,  # pylint: disable=no-member
+            regex.IGNORECASE,
         )
 
     def get_replaced_word(self, match: Match[str]) -> str:

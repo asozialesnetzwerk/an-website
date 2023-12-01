@@ -172,7 +172,7 @@ async def request(  # noqa: C901
     proxy_password: None | str = None,
 ) -> tuple[int, dict[str, str], bytes]:
     """Insanely awesome HTTP client."""
-    # pylint: disable=invalid-name, line-too-long, too-complex
+    # pylint: disable=line-too-long, too-complex
     # pylint: disable=too-many-branches, too-many-locals, while-used
     if isinstance(url, str):
         url = urlsplit(url)

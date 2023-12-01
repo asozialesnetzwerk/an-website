@@ -133,8 +133,8 @@ def get_lines_and_max_height(
 def draw_text(  # pylint: disable=too-many-arguments
     image: ImageDraw.ImageDraw,
     text: str,
-    x: int,  # pylint: disable=invalid-name
-    y: int,  # pylint: disable=invalid-name
+    x: int,
+    y: int,
     font: ImageFont.FreeTypeFont,
     stroke_width: int = 0,
     *,

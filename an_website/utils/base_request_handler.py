@@ -338,7 +338,7 @@ class BaseRequestHandler(RequestHandler):
 
     def geoip(
         self,
-        ip: None | str = None,  # pylint: disable=invalid-name
+        ip: None | str = None,
         database: str = geoip.__defaults__[0],  # type: ignore[index]
         *,
         allow_fallback: bool = True,
@@ -547,7 +547,7 @@ class BaseRequestHandler(RequestHandler):
 
     async def get_time(self) -> datetime:
         """Get the start time of the request in the users' timezone."""
-        tz: tzinfo = timezone.utc  # pylint: disable=invalid-name
+        tz: tzinfo = timezone.utc
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
         except ElasticsearchException:
@@ -556,7 +556,7 @@ class BaseRequestHandler(RequestHandler):
                 self.apm_client.capture_exception()
         else:
             if geoip and "timezone" in geoip:
-                tz = ZoneInfo(geoip["timezone"])  # pylint: disable=invalid-name
+                tz = ZoneInfo(geoip["timezone"])
         return datetime.fromtimestamp(
             self.request._start_time, tz=tz  # pylint: disable=protected-access
         )
