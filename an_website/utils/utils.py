@@ -477,9 +477,9 @@ def geoip_fallback(ip: str, country: bool = False) -> None | dict[str, Any]:
     latitude = info_dict.get("location", {}).get("latitude")
     longitude = info_dict.get("location", {}).get("longitude")
     location = (latitude, longitude) if latitude and longitude else None
-    timezone = info_dict.get("location", {}).get("time_zone")
+    time_zone = info_dict.get("location", {}).get("time_zone")
 
-    data.update({"location": location, "timezone": timezone})
+    data.update({"location": location, "timezone": time_zone})
 
     for key, value in tuple(data.items()):
         if not value:

@@ -26,10 +26,10 @@ from warnings import filterwarnings
 from setuptools import setup
 from setuptools.build_meta import SetupRequirementsError
 
-EXTRA_BUILD_DEPS = set()
+BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.21.5"
 GET_VERSION = "get_version==3.5.4"
-TROVE_CLASSIFIERS = "trove-classifiers==2022.12.22"
+TROVE_CLASSIFIERS = "trove-classifiers==2023.5.2"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -60,7 +60,7 @@ def get_version() -> str:
 
             return get_version(__file__, vcs="git")
         except ModuleNotFoundError:
-            EXTRA_BUILD_DEPS.add(GET_VERSION)
+            BACKEND_REQUIRES.add(GET_VERSION)
     return Distribution.at(path(".")).version
 
 
@@ -74,14 +74,14 @@ if path(".git").exists():
     try:
         from dulwich.repo import Repo
     except ModuleNotFoundError:
-        EXTRA_BUILD_DEPS.add(DULWICH)
+        BACKEND_REQUIRES.add(DULWICH)
     else:
         path("REVISION.txt").write_bytes(Repo(path(".")).head())  # type: ignore[arg-type]
 
     try:
         import trove_classifiers as trove
     except ModuleNotFoundError:
-        EXTRA_BUILD_DEPS.add(TROVE_CLASSIFIERS)
+        BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
     else:
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
@@ -112,5 +112,5 @@ setup(
     },
 )
 
-if EXTRA_BUILD_DEPS:
-    raise SetupRequirementsError(EXTRA_BUILD_DEPS)
+if BACKEND_REQUIRES:
+    raise SetupRequirementsError(BACKEND_REQUIRES)
