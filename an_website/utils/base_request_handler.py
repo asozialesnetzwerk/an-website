@@ -709,7 +709,7 @@ class BaseRequestHandler(RequestHandler):
         return True
 
     @override
-    async def prepare(self) -> None:  # noqa: C901
+    async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=invalid-overridden-method, too-complex
         self.now = await self.get_time()
@@ -1106,6 +1106,6 @@ class BaseRequestHandler(RequestHandler):
             )
             return
 
-        self.finish(  # type: ignore[unused-awaitable]  # noqa: B950
+        self.finish(  # type: ignore[unused-awaitable]
             f"{status_code} {self.get_error_message(**kwargs)}\n"
         )

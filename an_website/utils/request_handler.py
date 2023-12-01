@@ -83,7 +83,7 @@ class NotFoundHandler(BaseRequestHandler):
         super().initialize(*args, **kwargs)
 
     @override
-    async def prepare(self) -> None:  # pylint: disable=too-complex # noqa: C901
+    async def prepare(self) -> None:  # pylint: disable=too-complex
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
 

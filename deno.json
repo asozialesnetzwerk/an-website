@@ -36,6 +36,26 @@
     "rules": {
       "tags": [
         "recommended"
+      ],
+      "include": [
+        "camelcase",
+        "default-param-last",
+        "eqeqeq",
+        "explicit-function-return-type",
+        "explicit-module-boundary-types",
+        "guard-for-in",
+        "no-await-in-loop",
+        "no-const-assign",
+        "no-eval",
+        "no-implicit-declare-namespace-export",
+        "no-sparse-arrays",
+        "prefer-ascii"
+      ],
+      "exclude": [
+        "ban-untagged-todo",
+        "no-external-import",
+        "no-top-level-await",
+        "prefer-primordials"
       ]
     }
   },

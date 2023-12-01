@@ -22,7 +22,7 @@ emoji = "==2.*"
 # frozendict = "==2.*"
 get_version = "==3.*"
 html2text = "*"
-hyrule = "<2"
+hyrule = {version = "<2", markers = "python_version < '3.12'"}
 jsonpickle = "==3.*"
 lxml = "<6"
 orjson = "==3.*"
@@ -30,7 +30,6 @@ Pillow = "<11"
 pycryptodome = "==3.*"
 pycurl = "==7.*"
 pysocks = "==1.*"
-pyston-lite = {version = "==2.*", markers = "python_version < '3.11'"}
 pyston-lite-autoload = {version = "==2.*", markers = "python_version < '3.11'"}
 python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "*"

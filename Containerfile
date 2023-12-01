@@ -1,4 +1,4 @@
-ARG BASE=docker.io/library/python:3.12.0a7-slim
+ARG BASE=docker.io/library/python:3.12.0b1-slim
 
 FROM $BASE AS builder
 RUN set -eux \
@@ -42,7 +42,7 @@ RUN set -eux \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-21 --profile minimal
+ && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-27 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=gnutls \
@@ -54,20 +54,14 @@ COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps setuptools==67.7.2 wheel==0.40.0 \
- && /venv/bin/pip install --no-deps https://github.com/cython/cython/archive/a5bb829bbc538467d1fe557b6001a4c1c5a88bd9.tar.gz \
- && /venv/bin/pip install --no-deps funcparserlib==1.0.1 \
- && /venv/bin/pip install --no-deps --ignore-requires-python hy==0.26.0 \
- && /venv/bin/pip install --no-deps --no-build-isolation hyrule==0.3.0 \
- && /venv/bin/pip install --no-deps --no-build-isolation UltraDict==0.0.6 \
+ && /venv/bin/pip install --no-deps https://codeload.github.com/MagicStack/uvloop/tar.gz/v0.17.0 \
+ && /venv/bin/pip install --no-deps https://codeload.github.com/roy-ht/editdistance/tar.gz/v0.6.2 \
+ && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/0268b8eb3287655303869e7b4e617ff0734fdfc4 \
+ && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
- && /venv/bin/pip install --no-deps --no-build-isolation https://github.com/roy-ht/editdistance/archive/v0.6.2.tar.gz \
- && /venv/bin/pip install --no-deps https://github.com/lxml/lxml/archive/11b33a83ad689bd16bd0a98c14cda51a90572b73.tar.gz \
- && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps --no-build-isolation https://github.com/olokelo/jxlpy/archive/eebe73706b2c10153aa40d039e5e02c45a8168a4.tar.gz \
- && /venv/bin/pip install git+https://github.com/pypy/pyrepl@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
- && sed -Ei "/(blake3|lxml|uvloop)/d" requirements.txt \
+ && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
+ && sed -Ei "/(blake3|lxml)/d" requirements.txt \
  && /venv/bin/pip install -r requirements.txt \
- && /venv/bin/pip uninstall -y setuptools wheel Cython
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
