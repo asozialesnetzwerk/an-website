@@ -21,13 +21,13 @@ from __future__ import annotations
 from importlib.metadata import Distribution
 from os import PathLike
 from pathlib import Path
-from subprocess import run
 from warnings import filterwarnings
 
 from setuptools import setup
 from setuptools.build_meta import SetupRequirementsError
 
 EXTRA_BUILD_DEPS = set()
+DULWICH = "dulwich==0.21.5"
 GET_VERSION = "get_version==3.5.4"
 TROVE_CLASSIFIERS = "trove-classifiers==2022.12.22"
 
@@ -71,15 +71,12 @@ def path(path: str | PathLike[str]) -> Path:
 
 
 if path(".git").exists():
-    path("REVISION.txt").write_bytes(
-        run(
-            ("git", "rev-parse", "HEAD"),
-            capture_output=True,
-            cwd=path("."),
-            timeout=True,
-            check=True,
-        ).stdout
-    )
+    try:
+        from dulwich.repo import Repo
+    except ModuleNotFoundError:
+        EXTRA_BUILD_DEPS.add(DULWICH)
+    else:
+        path("REVISION.txt").write_bytes(Repo(path(".")).head())
 
     try:
         import trove_classifiers as trove
