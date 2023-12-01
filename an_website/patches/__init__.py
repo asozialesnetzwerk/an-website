@@ -154,7 +154,7 @@ def patch_emoji() -> None:
 def patch_json() -> None:
     """Replace json with orjson."""
     stdlib_json.dumps = json.dumps
-    stdlib_json.dump = json.dump
+    stdlib_json.dump = json.dump  # type: ignore[assignment]
     stdlib_json.loads = json.loads
     stdlib_json.load = json.load
 

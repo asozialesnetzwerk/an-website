@@ -83,7 +83,7 @@ def dumps(  # noqa: C901, D103
             ensure_ascii=ensure_ascii,
             check_circular=check_circular,
             allow_nan=allow_nan,
-            indent=indent,  # type: ignore[arg-type]
+            indent=indent,
             separators=separators,
             default=default,
             sort_keys=sort_keys,

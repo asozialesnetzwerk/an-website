@@ -36,7 +36,7 @@ from configparser import ConfigParser
 from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
-from typing import Any, Final, cast
+from typing import Any, Final, Literal, cast
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -96,6 +96,10 @@ try:
     import perf8  # type: ignore[import]
 except ImportError:
     perf8 = None
+
+ES_WHAT_LITERAL = Literal[  # pylint: disable=invalid-name
+    "component_templates", "index_templates", "ingest_pipelines"
+]
 
 IGNORED_MODULES: Final[set[str]] = {
     "patches.*",
@@ -698,9 +702,8 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
 
 async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
     """Check Elasticsearch."""
-    # pylint: disable=invalid-name
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        es: AsyncElasticsearch = cast(
+        es: AsyncElasticsearch = cast(  # pylint: disable=invalid-name
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
         try:
@@ -723,29 +726,21 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
         await asyncio.sleep(20)
 
 
-async def setup_elasticsearch_configs(  # noqa: C901
+async def setup_elasticsearch_configs(
     elasticsearch: AsyncElasticsearch,
     prefix: str,
 ) -> None:
     """Setup Elasticsearch configs."""  # noqa: D401
-    # pylint: disable=too-complex, too-many-branches
-    get: Callable[..., Coroutine[None, None, dict[str, Any]]]
-    put: Callable[..., Coroutine[None, None, dict[str, Any]]]
+    spam: list[Coroutine[None, None, None | dict[str, Any]]] = []
+
     for i in range(3):
-        if i == 0:  # pylint: disable=compare-to-zero
-            what = "ingest_pipelines"
-            get = elasticsearch.ingest.get_pipeline
-            put = elasticsearch.ingest.put_pipeline
-        elif i == 1:
-            what = "component_templates"
-            get = elasticsearch.cluster.get_component_template
-            put = elasticsearch.cluster.put_component_template
-        elif i == 2:
-            what = "index_templates"
-            get = elasticsearch.indices.get_index_template
-            put = elasticsearch.indices.put_index_template
+        what = cast(
+            ES_WHAT_LITERAL,
+            ["ingest_pipelines", "component_templates", "index_templates"][i],
+        )
 
         base_path = Path(os.path.join(DIR, "elasticsearch", what))
+
         for path in base_path.rglob("*.json"):
             if not path.is_file():
                 LOGGER.warning("%s is not a file", path)
@@ -757,31 +752,65 @@ async def setup_elasticsearch_configs(  # noqa: C901
 
             name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
 
-            try:
-                if what == "ingest_pipelines":
-                    current = await get(id=name)
-                    current_version = current[name].get("version", 1)
-                else:
-                    current = await get(
-                        name=name,
-                        params={"filter_path": f"{what}.name,{what}.version"},
-                    )
-                    current_version = current[what][0].get("version", 1)
-            except NotFoundError:
-                current_version = 0
-
-            if current_version < body.get("version", 1):
-                if what == "ingest_pipelines":
-                    await put(id=name, body=body)
-                else:
-                    await put(name=name, body=body)
-            elif current_version > body.get("version", 1):
-                LOGGER.warning(
-                    "%s has version %s. The version in Elasticsearch is %s!",
-                    path,
-                    body.get("version", 1),
-                    current_version,
+            spam.append(
+                setup_elasticsearch_config(
+                    elasticsearch, what, body, name, path
                 )
+            )
+
+    await asyncio.gather(*spam)
+
+
+async def setup_elasticsearch_config(
+    es: AsyncElasticsearch,  # pylint: disable=invalid-name
+    what: ES_WHAT_LITERAL,
+    body: dict[str, Any],
+    name: str,
+    path: str | Path = "<unknown>",
+) -> None | dict[str, Any]:
+    """Setup Elasticsearch config."""  # noqa: D401
+    get: Callable[..., Coroutine[None, None, dict[str, Any]]]
+    put: Callable[..., Coroutine[None, None, dict[str, Any]]]
+
+    if what == "component_templates":
+        get = es.cluster.get_component_template
+        put = es.cluster.put_component_template
+    elif what == "index_templates":
+        get = es.indices.get_index_template
+        put = es.indices.put_index_template
+    elif what == "ingest_pipelines":
+        get = es.ingest.get_pipeline
+        put = es.ingest.put_pipeline
+    else:
+        raise AssertionError()
+
+    try:
+        if what == "ingest_pipelines":
+            current = await get(id=name)
+            current_version = current[name].get("version", 1)
+        else:
+            current = await get(
+                name=name,
+                params={"filter_path": f"{what}.name,{what}.version"},
+            )
+            current_version = current[what][0].get("version", 1)
+    except NotFoundError:
+        current_version = 0
+
+    if current_version < body.get("version", 1):
+        if what == "ingest_pipelines":
+            return await put(id=name, body=body)
+        return await put(name=name, body=body)  # type: ignore[call-arg]
+
+    if current_version > body.get("version", 1):
+        LOGGER.warning(
+            "%s has version %s. The version in Elasticsearch is %s!",
+            path,
+            body.get("version", 1),
+            current_version,
+        )
+
+    return None
 
 
 def setup_redis(app: Application) -> None | Redis[str]:

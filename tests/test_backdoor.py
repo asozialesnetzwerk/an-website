@@ -85,7 +85,7 @@ async def request_and_parse(
 
     assert len(response) == 3
     assert isinstance(response["success"], bool | EllipsisType)
-    assert isinstance(response["output"], None | str)  # type: ignore[operator]
+    assert isinstance(response["output"], None | str)
     assert isinstance(response["result"], None | tuple | SystemExit)
     if isinstance(response["result"], tuple):
         assert len(response["result"]) == 2

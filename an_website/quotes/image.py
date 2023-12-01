@@ -57,22 +57,23 @@ HOST_NAME_FONT: Final = ImageFont.truetype(
 )
 
 FILE_EXTENSIONS = {
-    "png": "png",
+    "bmp": "bmp",
     "gif": "gif",
-    "jpeg": "jpeg",
-    "jpg": "jpeg",
     "jfif": "jpeg",
     "jpe": "jpeg",
-    "webp": "webp",
-    "bmp": "bmp",
+    "jpeg": "jpeg",
+    "jpg": "jpeg",
+    "jxl": "jxl",
     "pdf": "pdf",
+    "png": "png",
     "spi": "spider",
     "tiff": "tiff",
+    "webp": "webp",
     "xlsx": "xlsx",
 }
 
-if hasattr(patches, "JXLImagePlugin"):
-    FILE_EXTENSIONS["jxl"] = "jxl"
+if not hasattr(patches, "JXLImagePlugin"):
+    del FILE_EXTENSIONS["jxl"]
 
 
 def load_png(filename: str) -> Image.Image:
@@ -312,6 +313,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        "text/html",
         *{
             f"image/{type}"
             for type in FILE_EXTENSIONS.values()
