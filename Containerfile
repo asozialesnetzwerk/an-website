@@ -36,20 +36,20 @@ RUN set -eux \
         libz/libzstd/libzstd1_1.5.4+dfsg2-5 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
+        curl --retry 5 -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-08 --profile minimal
+ && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-21 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=gnutls \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    RUSTC_BOOTSTRAP=1
 ARG AIOHTTP_NO_EXTENSIONS=1 \
-    FROZENLIST_NO_EXTENSIONS=1 \
-    YARL_NO_EXTENSIONS=1
+    FROZENLIST_NO_EXTENSIONS=1
 COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \

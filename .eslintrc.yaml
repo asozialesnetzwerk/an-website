@@ -1,29 +1,16 @@
 root: true
-parser: "@typescript-eslint/parser"
 plugins:
   - "@typescript-eslint"
 extends:
   - "eslint:recommended"
-  - "plugin:@typescript-eslint/recommended-type-checked"
+  - "plugin:@typescript-eslint/strict-type-checked"
   - "plugin:@typescript-eslint/stylistic-type-checked"
-ignorePatterns:
-  - "*.js"
 reportUnusedDisableDirectives: true
+parser: "@typescript-eslint/parser"
 parserOptions:
-  ecmaVersion: latest
   project: true
-env:
-  es2022: true
-  browser: true
-globals:
-  d: readonly
-  elById: readonly
-  error: readonly
-  get: readonly
-  hideSitePane: readonly
-  log: readonly
-  post: readonly
-  showSitePane: readonly
-  scrollToId: readonly
-  setURLParam: readonly
-  w: readonly
+overrides:
+  - files: "*.js"
+    extends: "plugin:@typescript-eslint/disable-type-checked"
+    parserOptions:
+      lib: ["es2022.full"]

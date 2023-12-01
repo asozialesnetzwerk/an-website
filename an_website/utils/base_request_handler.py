@@ -203,12 +203,9 @@ class BaseRequestHandler(RequestHandler):
             if self.now.timetuple()[2:0:-1] == (1, 4):
                 yaml_subset = True
             else:
-                return lambda spam: cast(
-                    str,
-                    yaml.dump(
-                        spam,
-                        width=self.get_int_argument("yaml_width", 80, min_=80),
-                    ),
+                return lambda spam: yaml.dump(
+                    spam,
+                    width=self.get_int_argument("yaml_width", 80, min_=80),
                 )
 
         if yaml_subset:
@@ -275,6 +272,7 @@ class BaseRequestHandler(RequestHandler):
             ).strip(),
             "scripts": [
                 {
+                    "type": script.get("type", ""),
                     "src": script.get("src"),
                     # "script": script.string,  # not in use because of CSP
                     # "onload": script.get("onload"),  # not in use because of CSP

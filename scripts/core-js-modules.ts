@@ -1,4 +1,4 @@
-export const modules = [
+export default [
     "core-js/stable",
     "esnext.suppressed-error.constructor",
     "esnext.array.from-async",

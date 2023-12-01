@@ -1,0 +1,3 @@
+ignorePatterns:
+  - "static/js"
+  - "vendored"

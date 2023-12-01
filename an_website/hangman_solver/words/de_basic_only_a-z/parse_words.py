@@ -20,7 +20,7 @@ from __future__ import annotations
 import regex
 from defusedxml.etree.ElementTree import parse  # type: ignore[import]
 
-if __name__ == "__main__":  # noqa: C901
+if __name__ == "__main__":
     # how to get the file:
     # download: https://dumps.wikimedia.org
     # /dewiktionary/latest/dewiktionary-latest-pages-meta-current.xml.bz2
@@ -31,7 +31,7 @@ if __name__ == "__main__":  # noqa: C901
 
     titles = set()
 
-    for element in xml.iter():  # noqa: C901  # pylint: disable=too-complex
+    for element in xml.iter():  # pylint: disable=too-complex
         if element.tag != f"{pre}text":
             continue
         # == ōrdo ({{Sprache|Latein}}) ==

@@ -149,22 +149,14 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
 
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
-        if self.content_type:
-            self.set_header("Content-Type", self.content_type)
-
-    def validate_absolute_path(
-        self, root: str, absolute_path: str
-    ) -> None | str:
-        """Validate the path and detect the content type."""
-        if (
-            path := super().validate_absolute_path(root, absolute_path)
-        ) and not self.content_type:
-            self.content_type = CONTENT_TYPES.get(Path(path).suffix[1:])
+        if self.path and not self.content_type:
+            self.content_type = CONTENT_TYPES.get(Path(self.path).suffix[1:])
             if not self.content_type:
-                self.content_type = defity.from_file(path)
+                self.content_type = defity.from_file(self.path)
             if self.content_type and self.content_type.startswith("text/"):
                 self.content_type += "; charset=UTF-8"
-        return path
+        if self.content_type:
+            self.set_header("Content-Type", self.content_type)
 
 
 class CachedStaticFileHandler(StaticFileHandler):

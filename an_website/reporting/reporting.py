@@ -124,7 +124,7 @@ class ReportingAPI(APIRequestHandler):
 
     MAX_REPORTS_PER_REQUEST: ClassVar[int] = 1000
 
-    async def get(self, *, head: bool = False) -> None:  # noqa: C901
+    async def get(self, *, head: bool = False) -> None:
         """Handle GET requests to the Reporting API™️."""
         if not EVENT_ELASTICSEARCH.is_set():
             raise HTTPError(503)
@@ -163,7 +163,7 @@ class ReportingAPI(APIRequestHandler):
         else:
             await self.finish(self.dump(reports))
 
-    async def post(self) -> None:  # noqa: C901
+    async def post(self) -> None:
         """Handle POST requests to the Reporting API™️."""
         # pylint: disable=too-complex, too-many-branches
         if not (

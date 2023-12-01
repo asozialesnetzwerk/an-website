@@ -80,7 +80,7 @@ class Response(TypedDict):  # noqa: D101
 ErrorTuple: TypeAlias = tuple[int, str]
 
 
-async def create_socket(  # noqa: C901
+async def create_socket(
     addr: str,
     port: int | str,
     proxy_type: None | int = None,

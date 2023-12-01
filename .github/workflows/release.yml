@@ -96,9 +96,12 @@ jobs:
         license:
           - basic
           - trial
+        redis-image:
+          - redis/redis-stack-server:6.2.6-v7
+          - docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:
-        image: redis/redis-stack-server:6.2.6-v7
+        image: ${{ matrix.redis-image }}
         ports:
           - 6379:6379
     steps:
@@ -365,10 +368,19 @@ jobs:
     env:
       CACHE_REPOSITORY: ghcr.io/${{ github.repository }}---cache
     steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ~1.20
       - name: Upgrade Buildah
         run: |
-          wget https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b3_amd64.deb
-          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b3_amd64.deb
+          sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
+          git clone -b v1.30.0 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
+          pushd ~/go/src/github.com/containers/buildah
+          make buildah docs
+          sudo make install
+          buildah version
+          popd
       - name: Download youki
         run: |
           wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
@@ -447,10 +459,19 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ~1.20
       - name: Upgrade Skopeo
         run: |
-          wget https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/s/skopeo/skopeo_1.9.3+ds1-1+b3_amd64.deb
-          sudo dpkg --force-depends -i skopeo_1.9.3+ds1-1+b3_amd64.deb
+          sudo apt-get install -y libdevmapper-dev libgpgme-dev
+          git clone -b v1.12.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
+          pushd ~/go/src/github.com/containers/skopeo
+          make bin/skopeo
+          sudo make install DISABLE_DOCS=1
+          skopeo --version
+          popd
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:

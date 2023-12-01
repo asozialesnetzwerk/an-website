@@ -27,16 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.0
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.16.0
-          cache: pnpm
+          sdk: 3.0.2
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -45,8 +36,6 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev
           pip install -r requirements.txt
           grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
-      - name: Install @tsconfig/strictest
-        run: pnpm install -P
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort

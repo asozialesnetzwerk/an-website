@@ -6,6 +6,7 @@ include config.ini.default
 include config.ini.example
 graft example-configurations
 global-exclude tsconfig.json
+global-exclude .eslintrc.*
 include Containerfile
 include build-args.sh
 include REVISION.txt

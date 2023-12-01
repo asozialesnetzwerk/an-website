@@ -211,7 +211,7 @@ LINE_REGEX: Pattern[str] = regex.compile(
 
 
 @lru_cache(20)
-def parse_config_line(  # noqa: C901  # pylint: disable=too-complex
+def parse_config_line(  # pylint: disable=too-complex
     line: str, line_num: int = -1
 ) -> ConfigLine:
     """Parse one config line to one ConfigLine instance."""

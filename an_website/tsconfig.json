@@ -10,6 +10,7 @@
         "name": "typescript-eslint-language-service"
       }
     ],
+    "alwaysStrict": true,
     "verbatimModuleSyntax": true
   }
 }

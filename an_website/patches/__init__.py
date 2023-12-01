@@ -205,7 +205,7 @@ def patch_tornado_arguments() -> None:  # noqa: C901
             return value
         return str(value).encode("UTF-8")
 
-    def parse_body_arguments(  # noqa: D103
+    def parse_body_arguments(
         content_type: str,
         body: bytes,
         arguments: dict[str, list[bytes]],

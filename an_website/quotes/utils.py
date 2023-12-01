@@ -491,7 +491,7 @@ async def parse_list_of_quote_data(
     return tuple(return_list)
 
 
-async def update_cache_periodically(app: Application) -> None:  # noqa: C901
+async def update_cache_periodically(app: Application) -> None:
     """Start updating the cache every hour."""
     # pylint: disable=too-complex
     with contextlib.suppress(asyncio.TimeoutError):

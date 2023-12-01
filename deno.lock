@@ -1,12 +1,12 @@
 {
   "version": "2",
   "remote": {
-    "https://deno.land/std@0.186.0/_util/asserts.ts": "178dfc49a464aee693a7e285567b3d0b555dc805ff490505a8aae34f9cfb1462",
-    "https://deno.land/std@0.186.0/flags/mod.ts": "4d829c5bd1d657799cdeb487c6e418960efc6f4d8ce6cadc38a54b9ce266160a"
+    "https://deno.land/std@0.187.0/_util/asserts.ts": "178dfc49a464aee693a7e285567b3d0b555dc805ff490505a8aae34f9cfb1462",
+    "https://deno.land/std@0.187.0/flags/mod.ts": "d3b2fcf926e22661f35d72873a647785cc76f4a1a8aec8b335f35c959c504892"
   },
   "npm": {
     "specifiers": {
-      "core-js-builder@3.30.2": "core-js-builder@3.30.2",
+      "core-js-builder@3": "core-js-builder@3.30.2",
       "core-js-compat@3": "core-js-compat@3.30.2",
       "gzip-size": "gzip-size@7.0.0"
     },
@@ -373,8 +373,8 @@
       "browserslist@4.21.5": {
         "integrity": "sha512-tUkiguQGW7S3IhB7N+c2MV/HZPSCPAAiYBZXLsBhFB/PCy6ZKKsZrmBayHV9fdGV/ARIfJ14NkxKzRDjvp7L6w==",
         "dependencies": {
-          "caniuse-lite": "caniuse-lite@1.0.30001487",
-          "electron-to-chromium": "electron-to-chromium@1.4.394",
+          "caniuse-lite": "caniuse-lite@1.0.30001488",
+          "electron-to-chromium": "electron-to-chromium@1.4.400",
           "node-releases": "node-releases@2.0.10",
           "update-browserslist-db": "update-browserslist-db@1.0.11_browserslist@4.21.5"
         }
@@ -433,8 +433,8 @@
           "unset-value": "unset-value@1.0.0"
         }
       },
-      "caniuse-lite@1.0.30001487": {
-        "integrity": "sha512-83564Z3yWGqXsh2vaH/mhXfEM0wX+NlBCm1jYHOb97TrTWJEmPTccZgeLTPBUUb0PNVo+oomb7wkimZBIERClA==",
+      "caniuse-lite@1.0.30001488": {
+        "integrity": "sha512-NORIQuuL4xGpIy6iCCQGN4iFjlBXtfKWIenlUuyZJumLRIindLb7wXM+GO8erEhb7vXfcnf4BAg2PrSDN5TNLQ==",
         "dependencies": {}
       },
       "chokidar@2.1.8": {
@@ -678,8 +678,8 @@
           "stream-shift": "stream-shift@1.0.1"
         }
       },
-      "electron-to-chromium@1.4.394": {
-        "integrity": "sha512-0IbC2cfr8w5LxTz+nmn2cJTGafsK9iauV2r5A5scfzyovqLrxuLoxOHE5OBobP3oVIggJT+0JfKnw9sm87c8Hw==",
+      "electron-to-chromium@1.4.400": {
+        "integrity": "sha512-Lsvf7cvwbIxCfB8VqbnVtEsjGi3+48ejDiQZfWo5gkT+1vQ2DHQI5pl0nUvPD6z1IQk6JgFeMC5ZQJqVhalEHg==",
         "dependencies": {}
       },
       "elliptic@6.5.4": {
