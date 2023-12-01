@@ -132,9 +132,9 @@ __all__ = (
     "MEDIA_TYPES",
     "NAME",
     "ORJSON_OPTIONS",
-    "START_TIME",
     "STATIC_DIR",
     "TEMPLATES_DIR",
+    "UPTIME",
     "VERSION",
     "pytest_is_running",
 )
