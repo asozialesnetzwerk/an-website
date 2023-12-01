@@ -40,7 +40,7 @@ from .utils import (
 try:
     from unexpected_isaves.save_image import to_excel  # type: ignore[import]
 except ModuleNotFoundError:
-    to_excel = None
+    to_excel = None  # pylint: disable=invalid-name
 
 LOGGER: Final = logging.getLogger(__name__)
 

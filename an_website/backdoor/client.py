@@ -43,17 +43,17 @@ with contextlib.suppress(ModuleNotFoundError):
 try:
     import hy  # type: ignore[import]
 except ModuleNotFoundError:
-    hy = None
+    hy = None  # pylint: disable=invalid-name
 
 try:
     import idna
 except ModuleNotFoundError:
-    idna = None  # type: ignore[assignment]
+    idna = None  # type: ignore[assignment]  # pylint: disable=invalid-name
 
 try:
     import socks  # type: ignore[import]
 except ModuleNotFoundError:
-    socks = None
+    socks = None  # pylint: disable=invalid-name
 
 try:
     import uvloop

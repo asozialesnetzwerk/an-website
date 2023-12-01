@@ -98,7 +98,7 @@ from .utils.utils import (
 try:
     import perf8  # type: ignore[import]
 except ModuleNotFoundError:
-    perf8 = None
+    perf8 = None  # pylint: disable=invalid-name
 
 ES_WHAT_LITERAL: TypeAlias = Literal[
     "component_templates", "index_templates", "ingest_pipelines"

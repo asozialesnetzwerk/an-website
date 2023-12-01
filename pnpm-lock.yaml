@@ -14,14 +14,14 @@ devDependencies:
     specifier: ^8.36.0
     version: 8.36.0
   type-fest:
-    specifier: ^3.7.0
-    version: 3.7.0
+    specifier: ^3.7.1
+    version: 3.7.1
   typescript:
     specifier: ~5.0.2
     version: 5.0.2
   typescript-eslint-language-service:
-    specifier: ^5.0.0
-    version: 5.0.0(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@5.0.2)
+    specifier: ^5.0.2
+    version: 5.0.2(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@5.0.2)
 
 packages:
 
@@ -920,13 +920,13 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /type-fest@3.7.0:
-    resolution: {integrity: sha512-A2qUJ/j8vkKIT+UorxayZjFJoEdNkIPZkjOJSWezoAbRQd7QEhnz2iJlfVy4Or0GuEnCXts5cNorQNUvdLkaSQ==}
+  /type-fest@3.7.1:
+    resolution: {integrity: sha512-8LZNdvuztgxCF4eYpEmPYUPS0lbbByM2qHcp2oMxHZhWLIQB9QE36EeQ1PKwsUIDZXEP8HCBEmkBbT1//kLU4Q==}
     engines: {node: '>=14.16'}
     dev: true
 
-  /typescript-eslint-language-service@5.0.0(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@5.0.2):
-    resolution: {integrity: sha512-QB3YsL+lDOpKwblXuqD9GkzpHhJC2D02e/3OIj38kIe6LSL97cEsUtnsVPqIaofnOsV2glj2T5VLxp5gmLTERQ==}
+  /typescript-eslint-language-service@5.0.2(@typescript-eslint/parser@5.56.0)(eslint@8.36.0)(typescript@5.0.2):
+    resolution: {integrity: sha512-1cCq5GoFVLIKqnZO+CjCXzNMgksEDJJnxJfQcWUxoaQTxlGUrJphrDz+TEJqXNqXMJgAAH1Q7lXJV0ahlBZNxQ==}
     peerDependencies:
       '@typescript-eslint/parser': '>= 5.0.0'
       eslint: '>= 8.0.0'

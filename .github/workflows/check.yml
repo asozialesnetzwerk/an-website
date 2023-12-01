@@ -26,7 +26,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.0-290.2.beta
+          sdk: 3.0.0-290.3.beta
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -58,16 +58,18 @@ jobs:
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
         run: |
-            pushd /tmp
-            wget https://github.com/sass/dart-sass/archive/refs/tags/1.58.0.tar.gz
-            tar xf 1.58.0.tar.gz
-            cd dart-sass-1.58.0
-            dart pub get
-            sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
-            dart compile exe bin/sass.dart --output /opt/dart-sass
-            cd ..
-            rm -rf 1.58.0.tar.gz dart-sass-1.58.0
-            popd
+          pushd /tmp
+          wget https://github.com/sass/dart-sass/archive/refs/tags/${VERSION}.tar.gz
+          tar xf ${VERSION}.tar.gz
+          cd dart-sass-${VERSION}
+          dart pub get
+          sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
+          dart compile exe bin/sass.dart --output /opt/dart-sass
+          cd ..
+          rm -rf ${VERSION}.tar.gz dart-sass-${VERSION}
+          popd
+        env:
+          VERSION: 1.60.0
       - name: Generate snow
         run: /opt/dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS

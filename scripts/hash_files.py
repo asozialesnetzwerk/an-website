@@ -33,7 +33,7 @@ PATH: Final[Path] = Path(REPO_ROOT, "an_website").absolute()
 
 try:
     from Crypto.Hash import RIPEMD160
-except ImportError:
+except ModuleNotFoundError:
     RIPEMD160 = None  # type: ignore[assignment]
 
 try:

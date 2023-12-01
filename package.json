@@ -5,9 +5,9 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
-    "type-fest": "^3.7.0",
+    "type-fest": "^3.7.1",
     "typescript": "~5.0.2",
-    "typescript-eslint-language-service": "^5.0.0"
+    "typescript-eslint-language-service": "^5.0.2"
   },
   "engines": {
     "pnpm": "^7.30"

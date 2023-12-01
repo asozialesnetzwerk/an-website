@@ -4,17 +4,20 @@ attrs==22.2.0 ; python_version >= '3.6'
 autoflake==2.0.2
 bandit[toml]==1.7.5
 black==23.1.0
+bleach==6.0.0 ; python_version >= '3.7'
+build==0.10.0
 certifi==2022.12.7
 cffi==1.15.1
 cfgv==3.3.1 ; python_full_version >= '3.6.1'
+charset-normalizer==3.1.0 ; python_full_version >= '3.7.0'
 click==8.1.3 ; python_version >= '3.7'
 coverage==7.2.2
-cryptography==40.0.0
+cryptography==40.0.1
 dill==0.3.6
 distlib==0.3.6
 docutils==0.19 ; python_version >= '3.7'
 exceptiongroup==1.1.1 ; python_version < '3.11'
-filelock==3.10.4 ; python_version >= '3.7'
+filelock==3.10.7 ; python_version >= '3.7'
 flake8==6.0.0
 flake8-bugbear==23.3.23
 flake8-comprehensions==3.11.1
@@ -26,14 +29,20 @@ flake8-simplify==0.19.3
 gitdb==4.0.10 ; python_version >= '3.7'
 gitpython==3.1.31 ; python_version >= '3.7'
 html5lib==1.1
-identify==2.5.21 ; python_version >= '3.7'
+identify==2.5.22 ; python_version >= '3.7'
+idna==3.4 ; python_version >= '3.5'
+importlib-metadata==6.1.0 ; python_version >= '3.7'
 iniconfig==2.0.0 ; python_version >= '3.7'
 isort==5.12.0
+jaraco.classes==3.2.3 ; python_version >= '3.7'
+jeepney==0.8.0 ; sys_platform == 'linux'
+keyring==23.13.1 ; python_version >= '3.7'
 lazy-object-proxy==1.9.0 ; python_version >= '3.7'
 lxml==4.9.2
 markdown-it-py==2.2.0 ; python_version >= '3.7'
 mccabe==0.7.0 ; python_version >= '3.6'
 mdurl==0.1.2 ; python_version >= '3.7'
+more-itertools==9.1.0 ; python_version >= '3.7'
 mypy==1.1.1
 mypy-extensions==1.0.0 ; python_version >= '3.5'
 nodeenv==1.7.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
@@ -41,10 +50,11 @@ packaging==23.0 ; python_version >= '3.7'
 pathspec==0.11.1 ; python_version >= '3.7'
 pbr==5.11.1 ; python_version >= '2.6'
 pep8-naming==0.13.3
-pipenv==2023.3.20
-platformdirs==3.1.1 ; python_version >= '3.7'
+pipenv==2023.2.4
+pkginfo==1.9.6 ; python_version >= '3.6'
+platformdirs==3.2.0 ; python_version >= '3.7'
 pluggy==1.0.0 ; python_version >= '3.6'
-pre-commit==3.2.0
+pre-commit==3.2.1
 pycodestyle==2.10.0 ; python_version >= '3.6'
 pycparser==2.21
 pydocstyle==6.3.0 ; python_version >= '3.6'
@@ -52,23 +62,30 @@ pyflakes==3.0.1 ; python_version >= '3.6'
 pygments==2.14.0 ; python_version >= '3.6'
 pylint==3.0.0a5
 pylint-pytest==1.1.2
+pyproject-hooks==1.0.0 ; python_version >= '3.7'
 git+https://github.com/blueyed/pyrepl.git@dfb7b7dae91957d83f360114ca468f52309ecb7e#egg=pyrepl
 pytest==7.2.2
 pytest-cov==4.0.0
 pytest-is-running==1.3.0
 pytest-tornasync==0.6.0.post2
 pyyaml==6.0
+readme-renderer==37.3 ; python_version >= '3.7'
+requests==2.28.2 ; python_version >= '3.7' and python_version < '4'
+requests-toolbelt==0.10.1 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 restructuredtext-lint==1.4.0
-rich==13.3.2 ; python_full_version >= '3.7.0'
-setuptools==67.6.0 ; python_version >= '3.7'
+rfc3986==2.0.0 ; python_version >= '3.7'
+rich==13.3.3 ; python_full_version >= '3.7.0'
+secretstorage==3.3.3 ; sys_platform == 'linux'
+setuptools==65.7.0
 six==1.16.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 smmap==5.0.0 ; python_version >= '3.6'
 snowballstemmer==2.2.0
 stevedore==5.0.0 ; python_version >= '3.8'
 tomli==2.0.1 ; python_version < '3.11'
-tomlkit==0.11.6 ; python_version >= '3.6'
+tomlkit==0.11.7 ; python_version >= '3.7'
 tornado==6.2
 trove-classifiers==2022.12.22
+twine==4.0.2
 types-beautifulsoup4==4.12.0.0
 types-docutils==0.19.1.6
 types-editdistance==0.6.3.4
@@ -78,17 +95,19 @@ types-lxml==2023.2.11
 types-orjson==3.6.2
 types-pillow==9.4.0.17
 types-pycurl==7.45.2.3
-types-pyopenssl==23.0.0.4
+types-pyopenssl==23.1.0.0
 types-python-dateutil==2.8.19.10
 types-pyyaml==6.0.12.8
 types-redis==4.5.3.0
 types-regex==2023.3.23.0
 types-setuptools==65.7.0.4
 typing-extensions==4.5.0 ; python_version < '3.12'
+urllib3==1.26.15 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 virtualenv==20.21.0 ; python_version >= '3.7'
 virtualenv-clone==0.5.7 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 webencodings==0.5.1
 wrapt==1.15.0 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
+zipp==3.15.0 ; python_version >= '3.7'
 accept-types==0.4.1
 aiodns==3.0.0
 aiohttp[speedups]==3.8.4
@@ -99,7 +118,6 @@ beautifulsoup4==4.12.0
 big[time]==0.7.1
 blake3==0.3.3
 brotli==1.0.9
-charset-normalizer==3.1.0 ; python_full_version >= '3.7.0'
 defity==0.3.1
 defusedxml==0.7.1
 dunamai==1.16.0 ; python_version >= '3.5' and python_version < '4.0'
@@ -118,7 +136,6 @@ hiredis==2.2.2
 html2text==2020.1.16
 hy==0.26.0 ; python_version < '3.12' and python_version >= '3.7'
 hyrule==0.3.0
-idna==3.4 ; python_version >= '3.5'
 jsonpickle==3.0.1
 mpmath==1.3.0
 multidict==6.0.4 ; python_version >= '3.7'
@@ -144,6 +161,5 @@ sympy==1.11.1
 typed-stream==0.32.1
 tzdata==2022.7
 ultradict==0.0.6
-urllib3==1.26.15 ; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'
 uvloop==0.17.0
 yarl==1.8.2 ; python_version >= '3.7'
