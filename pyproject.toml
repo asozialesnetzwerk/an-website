@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 skips = ["B101", "B311", "B413"]
 
 [tool.black]
-target-version = ["py310", "py311", "py312"]
+target-version = ["py312"]
 line-length = 80
 
 [tool.isort]
