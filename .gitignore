@@ -9,20 +9,22 @@
 /config.ini
 /.well-known
 
-# cringe
+# CringeJS
 **/node_modules
 
-# ESLint cache
+# ESLint
 /.eslintcache
 
-# coverage reports
+# Coverage.py
 /.coverage
+/coverage.*
+/htmlcov
 
-# Perf8 reports
+# Perf8
 /perf8-report
 
 # JetBrains
 /.idea
 
-# hangman-solver word lists
+# hangman-solver
 full_wordlist.txt

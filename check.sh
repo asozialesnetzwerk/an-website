@@ -58,7 +58,7 @@ if [ -n "${1:-}" ]; then
     echo Tests:
     ${pytest} --cov=an_website --cov-report= tests || FAILED=$(( 128 | FAILED ))
     echo Coverage:
-    python3 -m coverage report --precision=3 --sort=-miss --skip-covered
+    python3 -m coverage report --skip-covered
   fi
 fi
 

@@ -9,6 +9,8 @@ config.ini
 .well-known
 
 .coverage
+coverage.*
+htmlcov
 .mypy_cache
 perf8-report
 

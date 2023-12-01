@@ -1,4 +1,6 @@
 [run]
+relative_files = true
+source = an_website
 omit =
     an_website/__main__.py
     an_website/backdoor/client.py
@@ -13,6 +15,5 @@ exclude_lines =
     if sys\.flags\.dev_mode
     if not self\.settings\.get\("TESTING"\)
 ignore_errors = true
-
-[html]
-directory = coverage_html_report
+precision = 3
+sort = -miss
