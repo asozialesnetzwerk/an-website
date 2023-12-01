@@ -139,8 +139,6 @@ export default [
     "esnext.string.cooked",
     "esnext.string.code-points",
     "esnext.string.dedent",
-    "esnext.string.is-well-formed",
-    "esnext.string.to-well-formed",
     "esnext.symbol.async-dispose",
     "esnext.symbol.dispose",
     "esnext.symbol.is-registered",

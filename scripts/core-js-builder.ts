@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
 import builder from "npm:core-js-builder@3";
 import modules from "./core-js-modules.ts";
+import * as esbuild from "esbuild/wasm.js";
 import { gzipSize } from "npm:gzip-size";
 import { parse } from "std/flags/mod.ts";
 
@@ -21,5 +22,14 @@ const bundle = await builder({
 });
 
 if (args.format === "bundle") {
-    console.log("Gzip size:", await gzipSize(bundle), "bytes");
+    const minified = (await esbuild.transform(bundle, { minify: true })).code;
+    console.log(
+        "Minified size:",
+        minified.length,
+        "bytes uncompressed,",
+        await gzipSize(minified),
+        "bytes gzipped.",
+    );
 }
+
+esbuild.stop();

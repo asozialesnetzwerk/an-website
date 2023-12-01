@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.3
+          sdk: 3.0.4
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
