@@ -33,7 +33,7 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 
 async def test_parsing() -> None:
     """Test parsing the commitment data."""
-    file = join(DIR, "commits.txt")
+    file = join(DIR, "commitment.txt")
     for uri in (file, f"file://{file}"):
         data = await get_commit_data(uri)
 

@@ -330,13 +330,13 @@ jobs:
         run: grep "^coverage" requirements-ci.txt | xargs pip install
       - name: Create coverage files
         run: |
-          coverage report --precision=3 --sort=-miss --skip-covered
+          coverage report --skip-covered
           coverage html -d github-pages/coverage
           coverage json -o github-pages/coverage.json
           ./generate-badge.sh > github-pages/coverage/badge.svg
-          rm github-pages/coverage/.gitignore
-      - name: Generate committers.txt
-        run: git log "--pretty=%H %cd %s" --date=unix HEAD > github-pages/committers.txt
+          rm -f github-pages/coverage/.gitignore
+      - name: Generate commitment.txt
+        run: git log "--pretty=%H %ct %s" > github-pages/commitment.txt
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:

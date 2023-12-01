@@ -480,7 +480,7 @@ Accepted arguments:
     --lisp             enable Lots of Irritating Superfluous Parentheses
     --new-proxy        don't use the saved proxy
     --new-session      start a new session with saved URL and key
-    --no-config        start without loading/saveing the config
+    --no-config        start without loading/saving the config
     --no-patch-help    don't patch help()
     --reset-config     reset the whole config
     --timing           print the time it took to execute each command

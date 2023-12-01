@@ -390,10 +390,10 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         "GENERAL", "NETCUP", fallback=False
     )
 
-    app.settings["COMMITTERS_URI"] = config.get(
+    app.settings["COMMITMENT_URI"] = config.get(
         "GENERAL",
-        "COMMITTERS_URI",
-        fallback="https://github.asozial.org/an-website/committers.txt",
+        "COMMITMENT_URI",
+        fallback="https://github.asozial.org/an-website/commitment.txt",
     )
 
     onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)

@@ -37,34 +37,29 @@ patches.apply()
 
 
 import asyncio
-import pathlib
 import socket
-import urllib.parse
 from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime
+from pathlib import Path
 from typing import Any, cast
+from urllib.parse import parse_qsl, urlsplit
 
 import orjson as json
 import pytest
 import regex
-import tornado.httpclient
-import tornado.web
 import yaml
 from blake3 import blake3  # type: ignore[import]
 from lxml import etree  # nosec: B410
 from lxml.html import document_fromstring  # nosec: B410
 from lxml.html.html5parser import HTMLParser  # nosec: B410
+from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPResponse
+from tornado.web import Application
 
 # pylint: disable=ungrouped-imports
-from an_website import (
-    EVENT_ELASTICSEARCH,
-    EVENT_REDIS,
-    NAME,
-    main,
-    quotes,
-    utils,
-)
+from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main
+from an_website.quotes.utils import parse_wrong_quote
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
+from an_website.utils.utils import parse_config
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -89,21 +84,21 @@ WRONG_QUOTE_DATA = {
     "voted": 129,
 }
 
-FetchCallable = Callable[..., Awaitable[tornado.httpclient.HTTPResponse]]
+FetchCallable = Callable[..., Awaitable[HTTPResponse]]
 
 
 @pytest.fixture
-def app() -> tornado.web.Application:
+def app() -> Application:
     """Create the application."""
     assert NAME.endswith("-test")
 
-    config = utils.utils.parse_config(pathlib.Path(DIR, "config.ini"))
-    config.set("GENERAL", "COMMITTERS_URI", os.path.join(DIR, "commits.txt"))
+    config = parse_config(Path(DIR, "config.ini"))
+    config.set("GENERAL", "COMMITMENT_URI", os.path.join(DIR, "commitment.txt"))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
 
-    assert isinstance(app, tornado.web.Application)
+    assert isinstance(app, Application)
 
     app.settings["debug"] = True
 
@@ -152,13 +147,13 @@ def app() -> tornado.web.Application:
 
 def assert_url_query(url: str, /, **args: None | str) -> None:
     """Assert properties of a URL."""
-    split_url = urllib.parse.urlsplit(url or "/")
+    split_url = urlsplit(url or "/")
     query_str = split_url.query
     is_static = split_url.path.startswith(
         ("/static/", "/soundboard/files/")
     ) or split_url.path in {"/favicon.png", "/favicon.jxl", "/humans.txt"}
     query: dict[str, str] = (
-        dict(urllib.parse.parse_qsl(query_str, True, True)) if query_str else {}
+        dict(parse_qsl(query_str, True, True)) if query_str else {}
     )
     for key, value in args.items():
         if value is None or (is_static and key != "v"):
@@ -170,16 +165,14 @@ def assert_url_query(url: str, /, **args: None | str) -> None:
 
 @pytest.fixture
 def fetch(
-    http_client: tornado.httpclient.AsyncHTTPClient,
+    http_client: AsyncHTTPClient,
     http_server_port: tuple[socket.socket, int],
 ) -> FetchCallable:
     """Fetch a URL."""
-    quotes.utils.parse_wrong_quote(WRONG_QUOTE_DATA)
+    parse_wrong_quote(WRONG_QUOTE_DATA)
     host = f"http://127.0.0.1:{http_server_port[1]}"
 
-    async def _fetch(
-        url: str, **kwargs: Any
-    ) -> tornado.httpclient.HTTPResponse:
+    async def _fetch(url: str, **kwargs: Any) -> HTTPResponse:
         """Fetch a URL."""
         if not url.startswith(("http://", "https://")):
             url = f"{host}/{url.removeprefix('/')}"
@@ -190,7 +183,7 @@ def fetch(
         kwargs["headers"].setdefault("Accept", "text/html, */*")
         try:
             return await http_client.fetch(url, **kwargs)
-        except tornado.httpclient.HTTPClientError:
+        except HTTPClientError:
             print(url, kwargs)
             raise
 
@@ -203,7 +196,7 @@ async def assert_valid_redirect(
     new_path: str,
     codes: Set[int] = frozenset({307, 308}),
     **kwargs: Any,
-) -> tornado.httpclient.HTTPResponse:
+) -> HTTPResponse:
     """Assert a valid redirect to a new URL."""
     response = await fetch(path, **kwargs)
     assert response.code in codes or print(path, codes, response.code)
@@ -216,11 +209,11 @@ async def assert_valid_redirect(
 
 
 def assert_valid_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     content_type: None | str,
     codes: Set[int] = frozenset({200, 503}),
     headers: None | MutableMapping[str, Any] = None,
-) -> tornado.httpclient.HTTPResponse:
+) -> HTTPResponse:
     """Assert a valid response with the given status code and Content-Type."""
     url = response.effective_url
     assert response.code in codes or print(
@@ -250,12 +243,12 @@ def assert_valid_response(
 
 async def check_html_page(
     fetch: FetchCallable,  # pylint: disable=redefined-outer-name  # noqa: F811
-    url: str | tornado.httpclient.HTTPResponse,
+    url: str | HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
     *,
     recursive: int = 0,
     checked_urls: set[str] = set(),  # noqa: B006
-) -> tornado.httpclient.HTTPResponse:
+) -> HTTPResponse:
     """Check a HTML page."""
     if isinstance(url, str):
         response = await fetch(url)
@@ -269,11 +262,11 @@ async def check_html_page(
     assert html.find("head") is not None or print("no head found", url)
     assert html.find("body") is not None or print("no body found", url)
     html.make_links_absolute(response.effective_url)
-    eff_url = urllib.parse.urlsplit(response.effective_url)
+    eff_url = urlsplit(response.effective_url)
     scheme_and_netloc = f"{eff_url.scheme}://{eff_url.netloc}"
     checked_urls.add(url.removeprefix(scheme_and_netloc) or "/")
     found_ref_to_body = False
-    responses_to_check: list[tornado.httpclient.HTTPResponse] = []
+    responses_to_check: list[HTTPResponse] = []
     for link_tuple in html.iterlinks():
         assert (  # do not allow links to insecure pages
             link_tuple[2].startswith(scheme_and_netloc)
@@ -285,7 +278,7 @@ async def check_html_page(
                     "http://📙.la/",
                 )
             )
-            or urllib.parse.urlsplit(link_tuple[2]).netloc.endswith(".onion")
+            or urlsplit(link_tuple[2]).netloc.endswith(".onion")
             or print(link_tuple[2], "is not https")
         )
         if (
@@ -339,10 +332,10 @@ async def check_html_page(
 
 
 def assert_valid_html_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
     effective_url: None | str = None,
-) -> tornado.httpclient.HTTPResponse:
+) -> HTTPResponse:
     """Assert a valid HTML response with the given status code."""
     assert_valid_response(response, "text/html;charset=utf-8", codes)
     effective_url = effective_url or response.effective_url.split("#")[0]
@@ -365,7 +358,7 @@ def assert_valid_html_response(
 
 
 def assert_valid_rss_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
 ) -> etree._Element:
     """Assert a valid RSS response with the given status code."""
@@ -380,7 +373,7 @@ def assert_valid_rss_response(
 
 
 def assert_valid_yaml_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
 ) -> Any:
     """Assert a valid YAML response with the given status code."""
@@ -391,7 +384,7 @@ def assert_valid_yaml_response(
 
 
 def assert_valid_json_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
 ) -> Any:
     """Assert a valid JSON response with the given status code."""
@@ -402,7 +395,7 @@ def assert_valid_json_response(
 
 
 def assert_valid_dynload_response(
-    response: tornado.httpclient.HTTPResponse,
+    response: HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
 ) -> Any:
     """Assert a valid dynload response with the given status code."""

@@ -140,7 +140,7 @@ class CommitmentAPI(APIRequestHandler):
 
     async def write_commit(self, hash_: str, commit: Commit) -> None:
         """Write the commit data."""
-        self.set_header("X-Message-Hash", hash_)
+        self.set_header("X-Commit-Hash", hash_)
 
         if self.content_type == "text/plain":
             return await self.finish(commit[1])
