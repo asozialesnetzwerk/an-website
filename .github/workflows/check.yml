@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.15.0
           cache: pnpm
       - name: Setup Deno
         uses: denoland/setup-deno@v1
@@ -204,7 +204,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.15.0
           cache: pnpm
       - name: Cache
         uses: pat-s/always-upload-cache@v2
@@ -232,7 +232,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.15.0
           cache: pnpm
       - name: Install tsc
         run: pnpm install

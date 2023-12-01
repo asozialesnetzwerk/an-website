@@ -84,8 +84,7 @@ jobs:
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository_owner }}
       - name: Push image
-        run: |
-          skopeo copy --dest-compress-format=zstd --dest-compress-level=20 oci-archive:oci-archive.tar ghcr.io/asozialesnetzwerk/an-website:git
+        run: skopeo copy --dest-compress-format=zstd --dest-compress-level=20 oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository_owner }}:git
 
   test-wheel:
     name: Test wheel
