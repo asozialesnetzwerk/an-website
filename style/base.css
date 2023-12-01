@@ -100,12 +100,12 @@ a:not(.no-style-a, .no-style-a-block, .no-style-a-emoji) {
     text-decoration: none;
 }
 
-.no-style-a:hover, .no-style-a-block:hover {
-    text-decoration: underline;
-}
-
 .no-style-a-block {
     display: block;
+}
+
+.no-style-a:hover, .no-style-a-block:hover {
+    text-decoration: underline;
 }
 
 .hidden {
@@ -300,6 +300,33 @@ header {
     visibility: hidden;
 }
 
+/* the tooltip */
+[tooltip]::after {
+    width: max-content;
+    max-width: max(100%, 8.8rem);
+    padding: 0.4rem;
+    border-width: thin;
+    border-style: solid;
+    border-color: var(--tp-border-color);
+    border-radius: 0.4rem;
+    background-color: var(--tp-bg-color);
+    color: var(--tp-text-color);
+    content: attr(tooltip);
+    hyphens: initial;
+    letter-spacing: normal;
+    opacity: 1;
+    text-align: center;
+    white-space: pre-line;
+}
+
+/* the triangle that points from tooltip to parent */
+[tooltip]::before {
+    border-width: 0.3125rem;
+    border-style: solid;
+    border-color: transparent;
+    content: " ";
+}
+
 [tooltip]:hover::after,
 [tooltip]:hover::before,
 [tooltip]:focus::after,
@@ -338,25 +365,6 @@ header {
     transform: translateY(-50%);
 }
 
-/* the tooltip */
-[tooltip]::after {
-    width: max-content;
-    max-width: max(100%, 8.8rem);
-    padding: 0.4rem;
-    border-width: thin;
-    border-style: solid;
-    border-color: var(--tp-border-color);
-    border-radius: 0.4rem;
-    background-color: var(--tp-bg-color);
-    color: var(--tp-text-color);
-    content: attr(tooltip);
-    hyphens: initial;
-    letter-spacing: normal;
-    opacity: 1;
-    text-align: center;
-    white-space: pre-line;
-}
-
 [tooltip][tooltip-position="top"]::after,
 /* no tooltip-position defaults to top */
 [tooltip]:not([tooltip-position])::after {
@@ -377,14 +385,6 @@ header {
 [tooltip][tooltip-position="right"]::after {
     /* if position right move the tooltip right of the parent */
     left: calc(100% - var(--tp-offset));
-}
-
-/* the triangle that points from tooltip to parent */
-[tooltip]::before {
-    border-width: 0.3125rem;
-    border-style: solid;
-    border-color: transparent;
-    content: " ";
 }
 
 [tooltip][tooltip-position="top"]::before,

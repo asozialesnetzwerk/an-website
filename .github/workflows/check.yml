@@ -45,7 +45,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.40.2
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.41.0
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
@@ -64,7 +64,7 @@ jobs:
           rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
-          VERSION: 1.67.0
+          VERSION: 1.68.0
           VERSION_BUF: 1.26.1
       - name: Generate snow
         run: dart-sass -s compressed style/snow.scss style/snow.css

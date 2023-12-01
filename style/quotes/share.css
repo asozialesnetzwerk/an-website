@@ -1,7 +1,18 @@
+/* Initially generated using https://sharingbuttons.io since then improved. */
 #main div {
   min-width: 42%;
   max-width: 100%;
   margin-top: 2rem;
+}
+
+#main div a {
+  display: block;
+  padding: .75rem 1rem;
+  border-radius: 0.3125rem;
+  margin: .8rem;
+  color: #fff;
+  text-decoration: none;
+  transition: 25ms ease-out;
 }
 
 #main div a:focus,
@@ -12,17 +23,6 @@
 
 #mastodon {
   background-color: #2B90D9;
-}
-
-/* Initially generated using https://sharingbuttons.io since then improved. */
-#main div a {
-  display: block;
-  padding: .75rem 1rem;
-  border-radius: 0.3125rem;
-  margin: .8rem;
-  color: #fff;
-  text-decoration: none;
-  transition: 25ms ease-out;
 }
 
 #main div a svg {

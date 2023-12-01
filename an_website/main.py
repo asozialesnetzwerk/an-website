@@ -911,7 +911,7 @@ def setup_redis(app: Application) -> None | Redis[str]:
         app.settings["REDIS"] = None
         return None
     redis = cast(
-        Redis[str], Redis(connection_pool=BlockingConnectionPool(**kwargs))
+        "Redis[str]", Redis(connection_pool=BlockingConnectionPool(**kwargs))
     )
     app.settings["REDIS"] = redis
     return redis

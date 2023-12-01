@@ -1,3 +1,9 @@
+.button-img {
+    width: 4.3rem;
+    height: 4.3rem;
+    border-radius: 50%;
+}
+
 .button-img:hover {
     filter: drop-shadow(3px 3px 2px rgb(139 0 0 / 50%));
     transform: scale(1.08);
@@ -5,12 +11,6 @@
 
 .report-img:hover {
     filter: drop-shadow(3px 3px 2px rgb(217 229 78 / 50%));
-}
-
-.button-img {
-    width: 4.3rem;
-    height: 4.3rem;
-    border-radius: 50%;
 }
 
 #quote-container {

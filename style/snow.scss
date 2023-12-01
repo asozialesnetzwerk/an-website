@@ -21,7 +21,7 @@
   #snow p:nth-child(#{$i}) {
     opacity: math.random(10000) * 0.0001;
     transform: translate($random-x, -10px) scale($random-scale);
-    animation: fall-#{$i} $fall-duration $fall-delay linear infinite;  /* stylelint-disable-line */
+    animation: fall-#{$i} $fall-duration $fall-delay linear infinite;  /* stylelint-disable-line order/properties-order */
   }
 
   @keyframes fall-#{$i} {

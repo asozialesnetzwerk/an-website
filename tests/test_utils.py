@@ -89,8 +89,8 @@ def test_adding_stuff_to_url() -> None:
 
 def test_anonomyze_ip() -> None:
     """Test the anonomyze_ip function."""
-    assert utils.anonymize_ip("192.0.2.1") == "192.0.2.0"
-    assert utils.anonymize_ip("2001:db8:a0b:12f0::1") == "2001:db8::"
+    assert utils.anonymize_ip("10.88.135.144") == "10.88.135.0"
+    assert utils.anonymize_ip("2001:db8:85a3::8a2e:370:7334") == "2001:db8:85a3::"
     with pytest.raises(ValueError):
         utils.anonymize_ip("invalid")
     assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"
