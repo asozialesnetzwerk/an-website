@@ -53,6 +53,7 @@ bandit = {version = "==1.*", extras = ["toml"]}
 black = "==23.*"
 build = "<2"
 coverage = "==7.*"
+cryptography = "==40.*"
 flake8 = "==6.*"
 flake8-bugbear = "*"
 flake8-comprehensions = "==3.*"
