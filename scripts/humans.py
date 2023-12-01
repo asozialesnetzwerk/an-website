@@ -20,23 +20,25 @@ from __future__ import annotations
 
 import re  # pylint: disable=preferred-module
 import sys
+from collections.abc import MutableSequence, Reversible
 from hashlib import sha3_512
 from os.path import dirname, normpath
 from pathlib import Path
 from random import Random
 from subprocess import run  # nosec: B404
+from typing import Final
 
-REPO_ROOT = dirname(dirname(normpath(__file__)))
-HUMANS_TXT = Path(REPO_ROOT, "an_website/static/humans.txt")
+REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
+HUMANS_TXT: Final[Path] = Path(REPO_ROOT, "an_website/static/humans.txt")
 
 # edit these 4 to change humans.txt
-BOTS: set[str] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
-ALIASES: dict[str, str] = {
+BOTS: Final[set[str]] = {"ImgBotApp", "snyk-bot", "pyup-bot"}
+ALIASES: Final[dict[str, str]] = {
     "Joshix-1": "Joshix",
     "Guerteltier": "Das Gürteltier",
     "Not Committed Yet": "Das Gürteltier",
 }
-MAINTAINERS: dict[str, dict[str, str]] = {
+MAINTAINERS: Final[dict[str, dict[str, str]]] = {
     "Joshix": {
         "Location": "NRW, Germany",
         "Email": "joshix@asozial.org",
@@ -48,7 +50,7 @@ MAINTAINERS: dict[str, dict[str, str]] = {
         "__role": "Backend developer",
     },
 }
-CONTRIBUTORS: dict[str, dict[str, str]] = {
+CONTRIBUTORS: Final[dict[str, dict[str, str]]] = {
     "Jimi": {"__role": "README destroyer"},
     "h4ckerle": {"__role": "CSS wizard"},
 }
@@ -150,7 +152,8 @@ def get_whitespaces(
 
 
 def add_data_to_output(
-    data: list[tuple[int, list[tuple[str, str]]]], output: list[str]
+    data: Reversible[tuple[int, list[tuple[str, str]]]],
+    output: MutableSequence[str],
 ) -> None:
     """Add the data of contributors/maintainers to the output."""
     for i, (_, person) in enumerate(sorted(data, reverse=True)):

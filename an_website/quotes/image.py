@@ -21,6 +21,7 @@ import math
 import os
 import sys
 import textwrap
+from collections.abc import Iterable
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
@@ -140,7 +141,7 @@ def draw_text(  # pylint: disable=too-many-arguments
 
 def draw_lines(  # pylint: disable=too-many-arguments
     image: ImageDraw.ImageDraw,
-    lines: list[str],
+    lines: Iterable[str],
     y_start: int,
     max_w: int,
     max_h: int,

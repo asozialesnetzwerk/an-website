@@ -21,18 +21,31 @@ import asyncio
 import json  # pylint: disable=preferred-module
 import sys
 from pathlib import Path
-from typing import Any, Final, cast
+from typing import Any, Final, TypedDict
 
 from an_website.backdoor.client import request
 
-VERSION: Final = "c9242a9b7d4bb25d7a0c9244adec74aeef08d8a1"
 
-URL: Final = (
-    f"https://raw.githubusercontent.com/jshttp/mime-db/{VERSION}/db.json"
-)
+class MediaType(TypedDict, total=False):  # noqa: D101
+    # pylint: disable=missing-class-docstring
+    charset: str
+    compressible: bool
+    extensions: list[str]
+    source: str
+
+
+MediaTypes = dict[str, MediaType]
+
+VERSION: Final[str] = "c9242a9b7d4bb25d7a0c9244adec74aeef08d8a1"
+
+URL: Final[
+    str
+] = f"https://raw.githubusercontent.com/jshttp/mime-db/{VERSION}/db.json"
 
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
-CONTENT_TYPES_JSON: Final = REPO_ROOT / "an_website" / "content_types.json"
+CONTENT_TYPES_JSON: Final[Path] = (
+    REPO_ROOT / "an_website" / "content_types.json"
+)
 MEDIA_TYPES_JSON: Final[Path] = REPO_ROOT / "an_website" / "media_types.json"
 
 PREFERENCE: Final[tuple[str | None, ...]] = ("nginx", "apache", None, "iana")
@@ -43,7 +56,6 @@ JSON_OPTIONS: Final[dict[str, int | bool]] = {
     "allow_nan": False,
 }
 
-MediaTypes = dict[str, dict[str, list[str] | str | bool]]
 ADDITIONAL_MEDIA_TYPES: Final[MediaTypes] = {
     "image/jxl": {
         "extensions": ["jxl"],
@@ -83,7 +95,7 @@ async def main() -> int | str:
             # pylint: disable=redefined-loop-name
             mime_type += "; charset=UTF-8"
 
-        extensions: list[str] = cast(list[str], mapping.get("extensions", []))
+        extensions = mapping.get("extensions", [])
 
         for ext in extensions:
             content_types.append(

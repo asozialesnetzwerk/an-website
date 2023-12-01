@@ -20,7 +20,7 @@ import logging
 import random
 import sys
 import time
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Iterable, Mapping
 from typing import Any, Final, Literal
 
 import orjson as json
@@ -127,7 +127,7 @@ def check_message_invalid(message: str) -> Literal[False] | str:
 
 def check_only_emojis(string: str) -> bool:
     """Check whether a string only includes emojis."""
-    is_emoji: list[bool] = [False] * len(string)
+    is_emoji = [False] * len(string)
 
     def set_emojis(emoji: str, emoji_data: dict[str, Any]) -> str:
         # pylint: disable=unused-argument
@@ -248,7 +248,7 @@ class ChatHandler(BaseRequestHandler):
             await get_messages(self.redis, self.redis_prefix)
         )
 
-    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+    async def render_chat(self, messages: Iterable[Mapping[str, Any]]) -> None:
         """Render the chat."""
         raise NotImplementedError
 
@@ -256,7 +256,7 @@ class ChatHandler(BaseRequestHandler):
 class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
     """The HTML request handler for the emoji chat."""
 
-    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+    async def render_chat(self, messages: Iterable[Mapping[str, Any]]) -> None:
         """Render the chat."""
         await self.render(
             "pages/emoji_chat.html",
@@ -268,7 +268,7 @@ class HTMLChatHandler(ChatHandler, HTMLRequestHandler):
 class APIChatHandler(ChatHandler, APIRequestHandler):
     """The API request handler for the emoji chat."""
 
-    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+    async def render_chat(self, messages: Iterable[Mapping[str, Any]]) -> None:
         """Render the chat."""
         await self.finish(
             {
@@ -293,23 +293,23 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         for conn in OPEN_CONNECTIONS:
             conn.send_users()
 
-    def on_message(self, _msg: str | bytes) -> Awaitable[None] | None:
+    def on_message(self, message: str | bytes) -> Awaitable[None] | None:
         """Respond to an incoming message."""
-        if not _msg:
+        if not message:
             return None
-        message: dict[str, Any] = json.loads(_msg)
-        if message["type"] == "message":
-            if "message" not in message:
+        message2: dict[str, Any] = json.loads(message)
+        if message2["type"] == "message":
+            if "message" not in message2:
                 return self.write_message(
                     {
                         "type": "error",
                         "error": "Message needs message key with the message.",
                     }
                 )
-            return self.save_new_message(message["message"])
+            return self.save_new_message(message2["message"])
 
         return self.write_message(
-            {"type": "error", "error": f"Unknown type {message['type']}."}
+            {"type": "error", "error": f"Unknown type {message2['type']}."}
         )
 
     def open(self, *args: str, **kwargs: str) -> Awaitable[None] | None:
@@ -342,7 +342,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
         if not await self.ratelimit(True):
             await self.ratelimit()
 
-    async def render_chat(self, messages: list[dict[str, Any]]) -> None:
+    async def render_chat(self, messages: Iterable[Mapping[str, Any]]) -> None:
         """Render the chat."""
         raise NotImplementedError
 

@@ -23,6 +23,9 @@ import regex
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
+ValueDict = dict[str, str | int | bool]
+ValuesTuple = tuple[int, int, int, int]
+
 KEYS = ("euro", "mark", "ost", "schwarz")
 MULTIPLIERS = (1, 2, 4, 20)
 
@@ -116,7 +119,7 @@ async def continuation_string(
         if ins_kino_gehen == "ins Kino gehen"
         else int(max(round(price // 8) // 2, 50))
     )
-    _rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
+    rand = random.Random(f"{price}|{values}|{ins_kino_gehen}")
     kino_count: int = values[-1] // price_ostmark
     output = [
         "Und ich weiß nicht, ob ihr das noch wisst, aber man konnte locker für",
@@ -143,7 +146,7 @@ async def continuation_string(
             output.append("...äh...")
         output.append(f"{num_to_string(euro)} Euro bezahlen.")
         output.append(
-            _rand.choice(
+            rand.choice(
                 (
                     "Ja! Ja! Ich weiß, was ihr denkt!",
                     "Ja, ja, ich weiß, was ihr denkt!",
@@ -171,10 +174,6 @@ async def continuation_string(
         kino_count = new_kino_count
 
     return " ".join(output)
-
-
-ValueDict = dict[str, str | int | bool]
-ValuesTuple = tuple[int, int, int, int]
 
 
 def convert(euro: int) -> ValuesTuple:
@@ -221,7 +220,7 @@ class CurrencyConverter(HTMLRequestHandler):
         for i, key, num_str in arg_list:
             euro = string_to_num(num_str, MULTIPLIERS[i])
             if euro is not None:
-                value_dict: ValueDict = await get_value_dict(
+                value_dict = await get_value_dict(
                     euro, ins_kino_gehen=self.get_argument("text", None)
                 )
                 if too_many_params:

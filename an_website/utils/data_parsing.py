@@ -19,7 +19,7 @@ import contextlib
 import functools
 import inspect
 import typing
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Mapping
 from inspect import Parameter
 from types import UnionType
 from typing import Any, TypeVar, get_origin
@@ -33,7 +33,7 @@ T = TypeVar("T")
 
 def parse(
     type_: type[T],
-    data: list[dict[str, Any]] | dict[str, Any] | Any,
+    data: Iterable[Mapping[str, Any]] | Mapping[str, Any] | Any,
     *,
     strict: bool = False,
 ) -> T:
@@ -127,7 +127,7 @@ def _parse_float(data: Any, *, strict: bool) -> float:
 
 
 def _parse_list(
-    type_: type[T], data: list[dict[str, Any]], *, strict: bool
+    type_: type[T], data: Iterable[Mapping[str, Any]], *, strict: bool
 ) -> T:
     """Parse a list of data."""
     args = typing.get_args(type_)
@@ -138,7 +138,7 @@ def _parse_list(
     )
 
 
-def _parse_class(type_: type[T], data: dict[str, Any], *, strict: bool) -> T:
+def _parse_class(type_: type[T], data: Mapping[str, Any], *, strict: bool) -> T:
     """Parse data into a class."""
     signature = inspect.signature(type_.__init__, eval_str=True)
     args: list[Any] = []

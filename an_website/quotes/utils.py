@@ -22,7 +22,7 @@ import os
 import random
 import sys
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from multiprocessing import Value
@@ -307,11 +307,11 @@ def get_authors(
 
 async def make_api_request(
     endpoint: str,
-    args: dict[str, str] | None = None,
+    args: Mapping[str, str] | None = None,
     *,
     method: Literal["GET", "POST"] = "GET",
-    body: None | dict[str, str] = None,
-) -> Any:  # list[dict[str, Any]] | dict[str, Any]:
+    body: None | Mapping[str, str] = None,
+) -> Any:  # TODO: list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
     if pytest_is_running():
         return None
@@ -375,7 +375,7 @@ def get_author_updated_with(author_id: int, name: str) -> Author:
     return author
 
 
-def parse_author(json_data: dict[str, Any]) -> Author:
+def parse_author(json_data: Mapping[str, Any]) -> Author:
     """Parse an author from JSON data."""
     return get_author_updated_with(int(json_data["id"]), json_data["author"])
 
@@ -393,7 +393,9 @@ def fix_quote_str(quote_str: str) -> str:
     return quote_str.strip()
 
 
-def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
+def parse_quote(
+    json_data: Mapping[str, Any], quote: None | Quote = None
+) -> Quote:
     """Parse a quote from JSON data."""
     quote_id = int(json_data["id"])
     author = parse_author(json_data["author"])  # update author
@@ -415,7 +417,7 @@ def parse_quote(json_data: dict[str, Any], quote: None | Quote = None) -> Quote:
 
 
 def parse_wrong_quote(
-    json_data: dict[str, Any], wrong_quote: None | WrongQuote = None
+    json_data: Mapping[str, Any], wrong_quote: None | WrongQuote = None
 ) -> WrongQuote:
     """Parse a wrong quote and update the cache."""
     quote = parse_quote(json_data["quote"])
@@ -454,17 +456,15 @@ def parse_wrong_quote(
 
 
 def parse_list_of_quote_data(
-    json_list: str | list[dict[str, Any]],
-    parse_fun: Callable[[dict[str, Any]], QuotesObjBase],
+    json_list: str | Iterable[Mapping[str, Any]],
+    parse_fun: Callable[[Mapping[str, Any]], QuotesObjBase],
 ) -> tuple[QuotesObjBase, ...]:
     """Parse a list of quote data."""
     if not json_list:
         return ()
     if isinstance(json_list, str):
-        _json_list: list[dict[str, Any]] = json.loads(json_list)
-    else:
-        _json_list = json_list
-    return tuple(parse_fun(json_data) for json_data in _json_list)
+        json_list = cast(list[dict[str, Any]], json.loads(json_list))
+    return tuple(parse_fun(json_data) for json_data in json_list)
 
 
 async def update_cache_periodically(app: Application) -> None:  # noqa: C901

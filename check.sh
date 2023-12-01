@@ -37,7 +37,7 @@ if ! python3 -m black --check --diff --color .; then
 fi
 
 echo mypy:
-python3 -m mypy --pretty -m setup -p an_website -p tests -p scripts || FAILED=$(( 8 | FAILED ))
+python3 -m mypy --pretty || FAILED=$(( 8 | FAILED ))
 
 echo Flake8:
 python3 -m flake8 --show-source || FAILED=$(( 16 | FAILED ))

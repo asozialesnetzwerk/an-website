@@ -32,7 +32,7 @@ import time
 import traceback
 import uuid
 from base64 import b64encode
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, MutableMapping
 from types import EllipsisType
 from typing import Any, TypedDict
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
@@ -159,7 +159,7 @@ async def create_socket(  # noqa: C901
 async def request(  # noqa: C901
     method: str,
     url: str | SplitResult,
-    headers: None | dict[str, str] = None,
+    headers: None | MutableMapping[str, str] = None,
     body: None | bytes | Iterable[bytes] | str = None,
     *,
     proxy_type: None | int = None,
@@ -231,6 +231,7 @@ async def request(  # noqa: C901
     if body:
         writer.write(body)
     await writer.drain()
+    del headers
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)

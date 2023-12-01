@@ -21,7 +21,7 @@ import smtplib
 import ssl
 import sys
 import time
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from configparser import ConfigParser
 from datetime import datetime, timezone
 from email import utils as email_utils
@@ -155,7 +155,7 @@ def send_message(  # pylint: disable=too-many-arguments
 
 def add_geoip_info_to_message(
     message: Message,
-    geoip_info: dict[str, Any],
+    geoip_info: Mapping[str, Any],
     header_prefix: str = "X-GeoIP",
 ) -> None:
     """Add GeoIP information to the message."""

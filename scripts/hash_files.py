@@ -25,9 +25,10 @@ from hashlib import algorithms_available, new
 from os.path import dirname, normpath
 from pathlib import Path
 from random import randrange
+from typing import Final
 
-REPO_ROOT = dirname(dirname(normpath(__file__)))
-PATH = Path(REPO_ROOT, "an_website").absolute()
+REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
+PATH: Final[Path] = Path(REPO_ROOT, "an_website").absolute()
 
 try:
     from Crypto.Hash import RIPEMD160
@@ -68,17 +69,16 @@ def hash_all_files() -> str:
     )
 
 
-FILE_HASHES = hash_all_files()
-HASH_OF_FILE_HASHES = hash_bytes(FILE_HASHES.encode("UTF-8"))
-
-
 def main() -> int | str:
     """Hash all files and write to stdout."""
+    file_hashes = hash_all_files()
+    hash_of_file_hashes = hash_bytes(file_hashes.encode("UTF-8"))
+
     print("Hash der Datei-Hashes:")
-    print(HASH_OF_FILE_HASHES)
+    print(hash_of_file_hashes)
     print()
     print("Datei-Hashes:")
-    print(FILE_HASHES)
+    print(file_hashes)
 
     return 0
 

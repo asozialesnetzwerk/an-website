@@ -64,7 +64,7 @@ def get_ranked_solutions(
     """Find solutions for the word and rank them."""
     if not word:
         return []
-    before_with_word: set[str] = {*before, word}
+    before_with_word = {*before, word}
     return sorted(
         (
             (find_solutions(sol, before_with_word).count(), sol)

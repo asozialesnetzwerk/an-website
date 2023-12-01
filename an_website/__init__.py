@@ -43,11 +43,11 @@ class MediaType(TypedDict, total=False):
     source: str
 
 
-DIR: Final = os.path.dirname(__file__)
+DIR: Final[str] = os.path.dirname(__file__)
 
 START_TIME_NS: Final[int] = time.monotonic_ns()
 
-MEDIA_TYPES: dict[str, MediaType] = json.loads(
+MEDIA_TYPES: Final[dict[str, MediaType]] = json.loads(
     Path(os.path.join(DIR, "media_types.json")).read_bytes()
 )
 
@@ -60,10 +60,12 @@ GH_ORG_URL: Final[str] = "https://github.com/asozialesnetzwerk"
 GH_REPO_URL: Final[str] = f"{GH_ORG_URL}/{NAME}"
 GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 
-STATIC_DIR: Final = os.path.join(DIR, "static")
-TEMPLATES_DIR: Final = os.path.join(DIR, "templates")
+STATIC_DIR: Final[str] = os.path.join(DIR, "static")
+TEMPLATES_DIR: Final[str] = os.path.join(DIR, "templates")
 
-ORJSON_OPTIONS = json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
+ORJSON_OPTIONS: Final[int] = (
+    json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
+)
 
 CONTAINERIZED: Final[bool] = "container" in os.environ or os.path.exists(
     "/.dockerenv"

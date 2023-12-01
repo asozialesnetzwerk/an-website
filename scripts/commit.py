@@ -21,10 +21,11 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from os.path import dirname, join, normpath
+from typing import Final
 
 import emoji
 
-REPO_ROOT = dirname(dirname(normpath(__file__)))
+REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
 
 
 def main(*args: str) -> int | str:

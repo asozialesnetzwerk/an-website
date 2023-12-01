@@ -23,24 +23,21 @@ import pathlib
 import random
 import time
 from base64 import b85encode
-from collections.abc import Awaitable, Callable, Generator, Iterable, Sequence
+from collections.abc import (
+    Awaitable,
+    Callable,
+    Generator,
+    Iterable,
+    Sequence,
+    Set,
+)
 from configparser import ConfigParser
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
-from typing import (
-    IO,
-    Any,
-    Final,
-    Literal,
-    TypeAlias,
-    TypeVar,
-    Union,
-    cast,
-    get_args,
-)
+from typing import IO, Any, Final, Literal, TypeVar, Union, cast, get_args
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import]
@@ -57,20 +54,22 @@ from .. import STATIC_DIR
 
 T = TypeVar("T")
 
+T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
+
 TOptionalStr = TypeVar("TOptionalStr", None, str)
 
 # pylint: disable=consider-alternative-union-syntax
-Handler: TypeAlias = Union[
+Handler = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
+OpenMojiValue = Literal[False, "img"]  # , "font"]
+BumpscosityValue = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
 )
-OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "font"]
 
 IP_HASH_SALT = {
     "date": datetime.utcnow().date(),
@@ -104,9 +103,6 @@ SUS_PATHS: Final[set[str]] = {
     "/wp-login",
     "/wp-upload",
 }
-
-
-T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
 
 
 class AwaitableValue(Awaitable[T_Val]):
@@ -276,7 +272,7 @@ class Timer:
 
 
 @cache
-def add_args_to_url(url: str | SplitResult, **kwargs: dict[str, Any]) -> str:
+def add_args_to_url(url: str | SplitResult, **kwargs: Any) -> str:
     # pylint: disable=confusing-consecutive-elif
     """Add query arguments to a URL."""
     if isinstance(url, str):
@@ -595,7 +591,7 @@ def length_of_match(match: regex.Match[Any]) -> int:
     return match.end() - match.start()
 
 
-def n_from_set(set_: set[T] | frozenset[T], n: int) -> set[T]:
+def n_from_set(set_: Set[T], n: int) -> set[T]:
     """Get and return n elements of the set as a new set."""
     # pylint: disable=invalid-name
     new_set = set()

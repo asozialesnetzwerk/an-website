@@ -21,12 +21,15 @@ import ast
 import os
 import re  # pylint: disable=preferred-module
 import sys
+from collections.abc import Sequence
 from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
 from typing import Any, Final, NamedTuple, TypeAlias, cast
 
-REPO_ROOT: Final = os.path.dirname(os.path.dirname(os.path.normpath(__file__)))
+REPO_ROOT: Final[str] = os.path.dirname(
+    os.path.dirname(os.path.normpath(__file__))
+)
 
 FunctionOrClassDef: TypeAlias = (
     # ast.AnnAssign
@@ -108,7 +111,7 @@ class BlockOfCode:
 
     def __init__(
         self,
-        lines: list[str],
+        lines: Sequence[str],
         node: None | FunctionOrClassDef,
         pos: Position,
         end_pos: Position,

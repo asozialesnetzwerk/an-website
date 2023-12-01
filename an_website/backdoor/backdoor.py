@@ -24,6 +24,7 @@ import traceback
 from ast import PyCF_ALLOW_TOP_LEVEL_AWAIT, PyCF_ONLY_AST, PyCF_TYPE_COMMENTS
 from asyncio import Future
 from base64 import b85decode, b85encode
+from collections.abc import MutableMapping
 from inspect import CO_COROUTINE  # pylint: disable=no-name-in-module
 from types import TracebackType
 from typing import Any, ClassVar, Final, cast
@@ -117,11 +118,7 @@ class Backdoor(APIRequestHandler):
 
     async def load_session(self) -> dict[str, Any]:
         """Load the backup of a session or create a new one."""
-        if not (
-            session_id := cast(
-                None | str, self.request.headers.get("X-Backdoor-Session")
-            )
-        ):
+        if not (session_id := self.request.headers.get("X-Backdoor-Session")):
             session: dict[str, Any] = {
                 "__builtins__": __builtins__,
                 "__name__": "this",
@@ -153,7 +150,8 @@ class Backdoor(APIRequestHandler):
                 if pytest_is_running():
                     session["session_id"] = session_id
             self.sessions[session_id] = session
-        return self.update_session(session)
+        self.update_session(session)
+        return session
 
     @requires(Permission.BACKDOOR, allow_cookie_auth=False)
     async def post(self, mode: str) -> None:  # noqa: C901
@@ -276,10 +274,9 @@ class Backdoor(APIRequestHandler):
             return cast(bytes, dill.dumps(data, protocol))
         return pickle.dumps(data, protocol)
 
-    def update_session(self, session: dict[str, Any]) -> dict[str, Any]:
+    def update_session(self, session: MutableMapping[str, Any]) -> None:
         """Add request-specific stuff to the session."""
         session.update(self=self, app=self.application, settings=self.settings)
-        return session
 
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Respond with error message."""

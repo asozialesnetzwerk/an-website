@@ -106,7 +106,7 @@ jobs:
       - name: Install mypy + stuff required for checking the tests
         run: grep -E "^(html5lib|mypy|pytest|types-)" requirements-ci.txt | xargs pip install
       - name: Run mypy
-        run: mypy -m setup -p an_website -p tests -p scripts
+        run: mypy
 
   flake8:
     name: Flake8

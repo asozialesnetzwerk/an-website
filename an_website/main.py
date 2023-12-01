@@ -31,7 +31,7 @@ import types
 from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
-from collections.abc import Callable, Coroutine, Iterable
+from collections.abc import Callable, Coroutine, Iterable, MutableSequence
 from configparser import ConfigParser
 from hashlib import sha3_512, sha256
 from multiprocessing import process
@@ -184,7 +184,7 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
 
 def get_module_infos_from_module(
     module_name: str,
-    errors: list[str],  # gets modified
+    errors: MutableSequence[str],  # gets modified
     ignore_not_found: bool = False,
 ) -> None | list[ModuleInfo]:
     """Get the module infos based on a module."""
@@ -264,7 +264,7 @@ def sort_module_infos(module_infos: list[ModuleInfo]) -> None:
             break
 
 
-def get_all_handlers(module_infos: tuple[ModuleInfo, ...]) -> list[Handler]:
+def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
     """
     Parse the module information and return the handlers in a tuple.
 

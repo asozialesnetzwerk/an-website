@@ -18,7 +18,7 @@ from __future__ import annotations
 import contextlib
 import logging
 from base64 import b64decode
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from functools import wraps
 from typing import Any, ParamSpec, TypeVar, cast, overload
 
@@ -34,7 +34,7 @@ Ret = TypeVar("Ret")
 
 def keydecode(
     token: str,
-    api_secrets: dict[str | None, Permission],
+    api_secrets: Mapping[str | None, Permission],
     token_secret: str | bytes | None,
 ) -> None | Permission:
     """Decode a key."""

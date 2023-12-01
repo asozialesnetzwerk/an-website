@@ -21,11 +21,12 @@ import sys
 from pathlib import Path
 
 
-def fix_word_files() -> None:
+def fix_word_files() -> int | str:
     """Fix the word-files."""
     folder = (
         Path(__file__).parent.parent / "an_website" / "hangman_solver" / "words"
     )
+
     for file in folder.rglob("*.txt"):
         text = file.read_text(encoding="UTF-8")
         lines = text.strip().split("\n")
@@ -34,6 +35,8 @@ def fix_word_files() -> None:
             continue
         print(f"Fixing {file}", file=sys.stderr)
         file.write_text(new_text, encoding="UTF-8")
+
+    return 0
 
 
 if __name__ == "__main__":

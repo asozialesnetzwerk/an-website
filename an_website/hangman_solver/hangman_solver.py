@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Set
 from dataclasses import asdict, dataclass, field
 from functools import cache
 
@@ -120,7 +121,7 @@ def fix_letter_counter_crossword_mode(
 
 @cache
 def filter_words(
-    words: frozenset[str] | str,
+    words: Set[str] | str,
     pattern: regex.Pattern[str],
     input_letters: str,
     crossword_mode: bool = False,

@@ -40,7 +40,7 @@ import asyncio
 import pathlib
 import socket
 import urllib.parse
-from collections.abc import Awaitable, Callable, Set
+from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime
 from typing import Any, cast
 
@@ -216,7 +216,7 @@ def assert_valid_response(
     response: tornado.httpclient.HTTPResponse,
     content_type: None | str,
     codes: Set[int] = frozenset({200, 503}),
-    headers: None | dict[str, Any] = None,
+    headers: None | MutableMapping[str, Any] = None,
 ) -> tornado.httpclient.HTTPResponse:
     """Assert a valid response with the given status code and Content-Type."""
     url = response.effective_url

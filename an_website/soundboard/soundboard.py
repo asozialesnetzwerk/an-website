@@ -124,8 +124,8 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
 
         if path in {"persons", "personen"}:
             persons_list: list[Info] = []
-            for _k, person_sounds in PERSON_SOUNDS.items():
-                persons_list.append(HeaderInfo(Person[_k].value, type=Person))
+            for key, person_sounds in PERSON_SOUNDS.items():
+                persons_list.append(HeaderInfo(Person[key].value, type=Person))
                 persons_list += person_sounds
             return persons_list, None
 
