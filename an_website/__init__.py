@@ -33,7 +33,7 @@ try:
         from marshal import dumps, loads
 
         _loads = json.loads
-        json.loads = lambda *args, **kwargs: loads(
+        json.loads = lambda *args, **kwargs: loads(  # nosec: B302
             dumps(_loads(*args, **kwargs))
         )
 except ModuleNotFoundError:

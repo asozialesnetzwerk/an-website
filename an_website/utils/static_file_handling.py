@@ -152,7 +152,7 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         if not self.content_type:
             self.content_type = CONTENT_TYPES.get(Path(self.path).suffix[1:])
             if not self.content_type:
-                self.content_type = defity.from_file(self.absolute_path)
+                self.content_type = defity.from_file(self.absolute_path)  # type: ignore[arg-type]
             if self.content_type and self.content_type.startswith("text/"):
                 self.content_type += "; charset=UTF-8"
         if self.content_type:
