@@ -103,7 +103,8 @@ COPY --from=builder /venv /venv
 WORKDIR /data
 VOLUME /data
 EXPOSE 8888
-CMD ["/venv/bin/an-website", "--port", "8888", "--unix-socket-path", "/data"]
+ENTRYPOINT ["/venv/bin/an-website"]
+CMD ["--port=8888", "--unix-socket-path=/data"]
 ARG BASE
 ARG VERSION \
     REVISION \
