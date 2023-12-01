@@ -35,7 +35,7 @@ pyston-lite-autoload = {version = "==2.*", markers = "python_version < '3.11'"}
 python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "*"
 python-geoip-yplan = "==1.*"
-pytz = "==2022.7.*"
+pytz = "==2023.*"
 PyYAML = "==6.*"
 redis = {version = "==5.*", extras = ["hiredis"]}
 regex = "*"
@@ -43,7 +43,7 @@ setproctitle = "==1.*"
 tornado = "==6.*"
 typed-stream = "<2"
 typing-extensions = {version = "==4.*", markers = "python_version < '3.12'"}
-tzdata = "==2022.7.*"
+tzdata = "==2023.*"
 UltraDict = "<2"
 uvloop = "<2"
 

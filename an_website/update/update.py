@@ -21,7 +21,6 @@ import logging
 import os
 import sys
 from asyncio import Future
-from collections.abc import Sequence
 from queue import SimpleQueue
 from tempfile import (  # pylint: disable=import-private-name
     NamedTemporaryFile,
@@ -80,7 +79,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         if hasattr(self, "queue"):
             self.queue.put(None)
 
-    async def pip_install(self, args: Sequence[str]) -> int:
+    async def pip_install(self, *args: str) -> int:
         """Install something and write the output."""
         process = await asyncio.create_subprocess_exec(
             sys.executable,
@@ -93,6 +92,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
         )
+        # pylint: disable=while-used
         while not process.stdout.at_eof():  # type: ignore[union-attr]
             self.write(await process.stdout.read(1))  # type: ignore[union-attr]
             self.flush()  # type: ignore[unused-awaitable]
@@ -112,7 +112,6 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
     @requires(Permission.UPDATE)
     async def put(self, filename: str) -> None:
         """Handle PUT requests to the update API."""
-        # pylint: disable=while-used
         self.queue.put(None)
         await self.future
 
@@ -122,12 +121,13 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         self.set_status(202)
         self.set_header("X-Accel-Buffering", "no")
 
-        for args in (("-U", "pip"), (filepath,)):
-            returncode = await self.pip_install(args)
+        await self.pip_install("--upgrade", "pip")
+
+        returncode = await self.pip_install(filepath)
 
         await self.finish()
 
-        if returncode:  # type: ignore[possibly-undefined]
+        if returncode:
             LOGGER.error("Failed to install %s", filename)
         elif self.get_bool_argument("shutdown", True):
             EVENT_SHUTDOWN.set()

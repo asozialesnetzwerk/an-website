@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "827606903fe9eff441f7060cc5d2286e67e4f7db15bebdca2be5a9c16aa811c0"
+            "sha256": "a4344d67f9deee73c78e34b78ff3727472186ef2c90c52a6853bdeaabf3ec8d5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -1353,11 +1353,11 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:01a0681c4b9684a28304615eba55d1ab31ae00bf68ec157ec3708a8182dbbcd0",
-                "sha256:78f4f37d8198e0627c5f1143240bb0206b8691d8d7ac6d78fee88b78733f8c4a"
+                "sha256:7b4fddbeb94a1eba4b557da24f19fdf9db575192544270a9101d8509f9f43d7b",
+                "sha256:ce42d816b81b68506614c11e8937d3aa9e41007ceb50bfdcb0749b921bf646c7"
             ],
             "index": "pypi",
-            "version": "==2022.7.1"
+            "version": "==2023.3.post1"
         },
         "pyyaml": {
             "hashes": [
@@ -1666,11 +1666,11 @@
         },
         "tzdata": {
             "hashes": [
-                "sha256:2b88858b0e3120792a3c0635c23daf36a7d7eeeca657c323da299d2094402a0d",
-                "sha256:fe5f866eddd8b96e9fcba978f8e503c909b19ea7efda11e52e39494bad3a7bfa"
+                "sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a",
+                "sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda"
             ],
             "index": "pypi",
-            "version": "==2022.7"
+            "version": "==2023.3"
         },
         "ultradict": {
             "hashes": [
