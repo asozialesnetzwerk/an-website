@@ -8,7 +8,7 @@ build==1.0.3
 certifi==2022.12.7
 cffi==1.16.0
 cfgv==3.4.0
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
 click==8.1.7
 coverage==7.3.1
 cryptography==40.0.2
@@ -29,7 +29,7 @@ flake8-simplify==0.21.0
 gitdb==4.0.10
 gitpython==3.1.37
 html5lib==1.1
-identify==2.5.29
+identify==2.5.30
 idna==3.4
 importlib-metadata==6.8.0
 iniconfig==2.0.0
@@ -75,7 +75,7 @@ requests==2.31.0
 requests-toolbelt==1.0.0
 restructuredtext-lint==1.4.0
 rfc3986==2.0.0
-rich==13.5.3
+rich==13.6.0
 secretstorage==3.3.3
 setuptools==68.2.2
 six==1.16.0

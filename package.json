@@ -19,7 +19,7 @@
     "stylelint-config-standard-scss": "^11.0.0",
     "stylelint-no-unsupported-browser-features": "^7.0.0",
     "ts-node": "^10.9.1",
-    "type-fest": "^4.3.2",
+    "type-fest": "^4.3.3",
     "typescript": "~5.2.2",
     "typescript-eslint-language-service": "^5.0.5"
   },
