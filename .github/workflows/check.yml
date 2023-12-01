@@ -23,6 +23,11 @@ jobs:
           python-version: "3.10"
           cache: pip
           cache-dependency-path: Pipfile.lock
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.0.0-200.0.dev
+          flavor: raw
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -41,6 +46,19 @@ jobs:
         run: curl -sSf https://dprint.dev/install.sh | sh -s 0.34.4
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
+      - name: Install dart-sass
+        run: |
+            pushd /tmp
+            wget https://github.com/sass/dart-sass/archive/refs/tags/1.58.0.tar.gz
+            tar xf 1.58.0.tar.gz
+            cd dart-sass-1.58.0
+            sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
+            dart compile exe bin/sass.dart --output /opt/dart-sass
+            cd ..
+            rm -rf 1.58.0.tar.gz dart-sass-1.58.0
+            popd
+      - name: Generate snow
+        run: /opt/dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build TS & CSS
         run: deno task clean && deno task build
       - name: Generate humans.txt
