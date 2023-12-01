@@ -97,7 +97,7 @@ from .utils.utils import (
 
 try:
     import perf8  # type: ignore[import]
-except ImportError:
+except ModuleNotFoundError:
     perf8 = None
 
 ES_WHAT_LITERAL: TypeAlias = Literal[

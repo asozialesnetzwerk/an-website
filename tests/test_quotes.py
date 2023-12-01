@@ -23,7 +23,7 @@ import pytest
 import an_website.quotes.quotes as main_page
 from an_website.quotes import create
 from an_website.quotes import utils as quotes
-from an_website.quotes.image import FILE_EXTENSIONS
+from an_website.quotes.image import CONTENT_TYPES, FILE_EXTENSIONS
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     WRONG_QUOTE_DATA,
@@ -270,16 +270,10 @@ async def test_quote_request_handlers(
         ).body
     )
 
-    for extension, name in FILE_EXTENSIONS.items():
-        content_type = (
-            f"image/{name}"
-            if name not in {"pdf", "xlsx"}
-            else {"pdf": "application/pdf", "xlsx": "application/vnd.ms-excel"}[
-                name
-            ]
-        )
+    for ext, name in FILE_EXTENSIONS.items():
+        content_type = CONTENT_TYPES[name]
         image1 = assert_valid_response(
-            await fetch(f"/zitate/1-1.{extension}"), content_type
+            await fetch(f"/zitate/1-1.{ext}"), content_type
         ).body
         image2 = assert_valid_response(
             await fetch("/zitate/1-1", headers={"Accept": content_type}),

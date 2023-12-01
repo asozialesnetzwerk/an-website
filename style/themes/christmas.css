@@ -43,7 +43,6 @@ input[type=email],
 input[type=range],
 input[type=search],
 input[type=text],
-input[type=text],
 input[type=number] {
     background: hsl(0, 0%, 0%) !important;
 }

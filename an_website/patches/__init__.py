@@ -51,7 +51,7 @@ from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR: Final = os.path.dirname(__file__)
 
-with contextlib.suppress(ImportError):
+with contextlib.suppress(ModuleNotFoundError):
     # pylint: disable=import-error, useless-suppression
     from jxlpy import JXLImagePlugin  # type: ignore[import]  # noqa: F401
 

@@ -2,11 +2,11 @@
   "type": "module",
   "devDependencies": {
     "@tsconfig/strictest": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.55.0",
-    "@typescript-eslint/parser": "^5.55.0",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
-    "type-fest": "^3.6.1",
-    "typescript": "5.0.1-rc",
+    "type-fest": "^3.7.0",
+    "typescript": "~5.0.2",
     "typescript-eslint-language-service": "^5.0.0"
   },
   "engines": {

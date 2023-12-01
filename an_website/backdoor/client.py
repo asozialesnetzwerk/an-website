@@ -37,27 +37,27 @@ from types import EllipsisType
 from typing import Any, TypeAlias, TypedDict, cast
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
-with contextlib.suppress(ImportError):
+with contextlib.suppress(ModuleNotFoundError):
     import dill as pickle  # type: ignore[import, no-redef]  # noqa: F811  # nosec: B403
 
 try:
     import hy  # type: ignore[import]
-except ImportError:
+except ModuleNotFoundError:
     hy = None
 
 try:
     import idna
-except ImportError:
+except ModuleNotFoundError:
     idna = None  # type: ignore[assignment]
 
 try:
     import socks  # type: ignore[import]
-except ImportError:
+except ModuleNotFoundError:
     socks = None
 
 try:
     import uvloop
-except ImportError:
+except ModuleNotFoundError:
     pass
 else:
     uvloop.install()

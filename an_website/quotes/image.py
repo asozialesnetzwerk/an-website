@@ -29,6 +29,7 @@ from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
 from .. import patches
+from ..utils import static_file_handling
 from .utils import (
     DIR,
     QuoteReadyCheckHandler,
@@ -38,7 +39,7 @@ from .utils import (
 
 try:
     from unexpected_isaves.save_image import to_excel  # type: ignore[import]
-except ImportError:
+except ModuleNotFoundError:
     to_excel = None
 
 LOGGER: Final = logging.getLogger(__name__)
@@ -61,6 +62,10 @@ HOST_NAME_FONT: Final = ImageFont.truetype(
     size=23,
 )
 
+CONTENT_TYPES: Final[Mapping[str, str]] = static_file_handling.CONTENT_TYPES | {
+    "spider": "image/x-spider"
+}
+
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
     "gif": "gif",
@@ -76,10 +81,6 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "tiff": "tiff",
     "webp": "webp",
     **({"xlsx": "xlsx"} if to_excel else {}),
-}
-FILE_EXTENSION_CONTENT_TYPE_MAPPING: Final[Mapping[str, str]] = {
-    "pdf": "application/pdf",
-    "xlsx": "application/vnd.ms-excel",
 }
 
 
@@ -177,7 +178,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     author: str,
     rating: int,
     source: None | str,
-    file_type: str = "png",
+    filetype: str = "png",
     font: ImageFont.FreeTypeFont = FONT,
     *,
     wq_id: None | str = None,
@@ -211,7 +212,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         max_line_height,
         font,
         0,
-        1 if file_type == "4-color-gif" else 0,
+        1 if filetype == "4-color-gif" else 0,
     )
 
     # draw author
@@ -233,7 +234,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         max_line_height,
         font,
         10,
-        1 if file_type == "4-color-gif" else 0,
+        1 if filetype == "4-color-gif" else 0,
     )
 
     if y_text > IMAGE_HEIGHT and font is FONT:
@@ -243,7 +244,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             author,
             rating,
             source,
-            file_type,
+            filetype,
             FONT_SMALLER,
             wq_id=wq_id,
         )
@@ -283,7 +284,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             0,
         )
 
-    if to_excel and file_type == "xlsx":
+    if to_excel and filetype == "xlsx":
         with TemporaryDirectory() as tempdir_name:
             filepath = os.path.join(tempdir_name, f"{wq_id or '0-0'}.xlsx")
             to_excel(image, filepath, lower_image_size_by=10)
@@ -292,12 +293,12 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     buffer = io.BytesIO()
     kwargs: dict[str, Any] = {
-        "format": file_type,
+        "format": filetype,
         "optimize": True,
         "save_all": False,
     }
 
-    if file_type == "4-color-gif":
+    if filetype == "4-color-gif":
         colors: list[tuple[int, tuple[int, int, int]]]
         colors = image.getcolors(2**16)  # type: ignore[assignment]
         colors.sort(reverse=True)
@@ -305,11 +306,11 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         for _, color in colors[:4]:
             palette.extend(color)
         kwargs.update(format="gif", palette=palette)
-    elif file_type == "jxl":
+    elif filetype == "jxl":
         kwargs.update(lossless=True)
-    elif file_type == "tiff":
+    elif filetype == "tiff":
         kwargs.update(compression="zlib")
-    elif file_type == "webp":
+    elif filetype == "webp":
         kwargs.update(lossless=True)
 
     image.save(buffer, **kwargs)
@@ -321,10 +322,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
 
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
         "text/html",
-        *{
-            FILE_EXTENSION_CONTENT_TYPE_MAPPING.get(type_, f"image/{type_}")
-            for type_ in FILE_EXTENSIONS.values()
-        },
+        *{CONTENT_TYPES[ext] for ext in FILE_EXTENSIONS.values()},
     )
     RATELIMIT_GET_LIMIT: ClassVar[int] = 15
     IS_NOT_HTML: ClassVar[bool] = True
@@ -333,12 +331,12 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         self,
         quote_id: str,
         author_id: str,
-        file_extension: str = "png",
+        file_extension: str = "txt",
         *,
         head: bool = False,
     ) -> None:
         """Handle GET requests to this page and render the quote as image."""
-        if not (file_type := FILE_EXTENSIONS.get(file_extension.lower())):
+        if not (filetype := FILE_EXTENSIONS.get(file_extension.lower())):
             reason = (
                 f"Unsupported file extension: {file_extension.lower()} (supported:"
                 f" {', '.join(sorted(set(FILE_EXTENSIONS.values())))})"
@@ -347,9 +345,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             self.set_status(404, reason=reason)
             return await self.finish(reason)
 
-        content_type = FILE_EXTENSION_CONTENT_TYPE_MAPPING.get(
-            file_type, f"image/{file_type}"
-        )
+        content_type = CONTENT_TYPES[filetype]
 
         self.handle_accept_header((content_type,))
         self.set_header("Content-Type", content_type)
@@ -382,8 +378,8 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
         )
 
-        if file_type == "gif" and self.get_bool_argument("small", False):
-            file_type = "4-color-gif"
+        if filetype == "gif" and self.get_bool_argument("small", False):
+            filetype = "4-color-gif"
 
         return await self.finish(
             create_image(
@@ -391,7 +387,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 wrong_quote.author.name,
                 wrong_quote.rating,
                 source,
-                file_type,
+                filetype,
                 wq_id=wrong_quote.get_id_as_str(),
             )
         )

@@ -35,7 +35,7 @@ else:
 
 try:
     from pytest_is_running import is_running as pytest_is_running
-except ImportError:
+except ModuleNotFoundError:
 
     def pytest_is_running() -> bool:  # noqa: D103
         # pylint: disable=missing-function-docstring
