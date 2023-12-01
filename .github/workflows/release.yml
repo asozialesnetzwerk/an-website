@@ -179,12 +179,15 @@ jobs:
         id: version
         shell: python
         run: |
-          from os import getenv
+          import os
+          from pathlib import Path
           from time import strftime, gmtime
+
+          path = Path(os.getenv("GITHUB_OUTPUT"))
           if "${{ github.event_name }}" == "schedule":
-            open(getenv("GITHUB_OUTPUT"), "a").write(f"version={strftime('v%y.%m', gmtime())}\n")
+            path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
-            open(getenv("GITHUB_OUTPUT"), "a").write("version=${{ github.ref_name }}\n")
+            path.write_text("version=${{ github.ref_name }}\n")
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
@@ -243,15 +246,18 @@ jobs:
         id: version
         shell: python
         run: |
-          from os import getenv
+          import os
+          from pathlib import Path
           from subprocess import run
 
           from packaging.utils import parse_sdist_filename
 
-          result = run(("ls", "an-website-*.tar.gz"), capture_output=True)
+          command = "ls an-website-*.tar.gz"
+          result = run(command, shell=True, capture_output=True)
           filename = result.stdout.decode("UTF-8").strip()
           name, version = parse_sdist_filename(filename)
-          open(getenv("GITHUB_OUTPUT"), "a").write(f"version={version}\n")
+          path = Path(os.getenv("GITHUB_OUTPUT"))
+          path.write_text(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
       - name: Upload sourcemaps

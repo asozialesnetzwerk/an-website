@@ -251,15 +251,18 @@ jobs:
         id: version
         shell: python
         run: |
-          from os import getenv
+          import os
+          from pathlib import Path
           from subprocess import run
 
           from packaging.utils import parse_sdist_filename
 
-          result = run(("ls", "an-website-*.tar.gz"), capture_output=True)
+          command = "ls an-website-*.tar.gz"
+          result = run(command, shell=True, capture_output=True)
           filename = result.stdout.decode("UTF-8").strip()
           name, version = parse_sdist_filename(filename)
-          open(getenv("GITHUB_OUTPUT"), "a").write(f"version={version}\n")
+          path = Path(os.getenv("GITHUB_OUTPUT"))
+          path.write_text(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
       - name: Upload sourcemaps
