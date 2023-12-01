@@ -3,7 +3,7 @@ const contentContainer = elById("main") as HTMLDivElement;
 
 let urlData = {};
 
-const lastLoaded: [string] | [] = [];
+const lastLoaded: [] | [string] = [];
 
 interface DynloadData {
     body: string;
@@ -25,11 +25,11 @@ function dynLoadOnData(
         console.error("No data received");
         return;
     }
-    if (data["redirect"]) {
-        window.location.href = data["redirect"];
+    if (data.redirect) {
+        window.location.href = data.redirect;
         return;
     }
-    const url = data["url"];
+    const url = data.url;
     if (!url) {
         console.error("No URL in data ", data);
         return;
@@ -42,28 +42,28 @@ function dynLoadOnData(
         }
         history.pushState(
             { data: data, url: url, stateType: "dynLoad" },
-            data["title"],
+            data.title,
             url,
         );
         lastLocation = url;
     }
-    if (!data["body"]) {
+    if (!data.body) {
         window.location.reload();
         return;
     }
 
     // d.onkeyup = () => {}; // not used in any JS file
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     document.onkeydown = () => {}; // remove keydown listeners
-    /* eslint-enable @typescript-eslint/no-empty-function */
 
-    contentContainer.innerHTML = data["body"];
-    if (data["css"]) {
+    contentContainer.innerHTML = data.body;
+    if (data.css) {
         const style = document.createElement("style");
-        style.innerHTML = data["css"];
+        style.innerHTML = data.css;
         contentContainer.appendChild(style);
     }
-    if (data["stylesheets"]) {
-        for (const scriptURL of data["stylesheets"]) {
+    if (data.stylesheets) {
+        for (const scriptURL of data.stylesheets) {
             const link = document.createElement("link");
             link.rel = "stylesheet";
             link.type = "text/css";
@@ -71,11 +71,11 @@ function dynLoadOnData(
             contentContainer.appendChild(link);
         }
     }
-    if (data["scripts"]) {
-        for (const script of data["scripts"]) {
-            if (script["src"]) {
+    if (data.scripts) {
+        for (const script of data.scripts) {
+            if (script.src) {
                 const scriptElement = document.createElement("script");
-                scriptElement.src = script["src"];
+                scriptElement.src = script.src;
                 contentContainer.appendChild(scriptElement);
             } else {
                 console.error("Script without src", script);
@@ -83,18 +83,18 @@ function dynLoadOnData(
         }
     }
 
-    if (window["hideSitePane"]) {
+    if (window.hideSitePane) {
         hideSitePane();
     }
 
-    document.title = data["title"];
+    document.title = data.title;
     const titleElement = elById("title");
     if (titleElement) {
         titleElement.setAttribute(
             "short_title",
-            data["short_title"] || data["title"],
+            data.short_title || data.title,
         );
-        titleElement.innerText = data["title"];
+        titleElement.innerText = data.title;
     }
     dynLoadReplaceAnchors();
     urlData = data;
@@ -181,7 +181,7 @@ function dynLoad(url: string) {
 function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     if (!allowSameUrl && url === window.location.href) {
         console.log("URL is the same as current, just hide site pane");
-        if (window["hideSitePane"]) {
+        if (window.hideSitePane) {
             hideSitePane();
         }
         return;
@@ -204,19 +204,19 @@ function dynLoadOnPopState(event: PopStateEvent) {
         const state = event.state as DynloadData;
         console.log("Popstate", state);
         if (
-            !((event.state as { data: string })["data"] &&
+            !((event.state as { data: string }).data &&
                 dynLoadOnData(state, true))
         ) {
             // when the data did not get handled properly
             dynLoadSwitchToURL(
-                state["url"] || window.location.href,
+                state.url || window.location.href,
                 true,
             );
         }
-        if (state["scrollPos"]) {
+        if (state.scrollPos) {
             window.scrollTo(
-                state["scrollPos"][0],
-                state["scrollPos"][1],
+                state.scrollPos[0],
+                state.scrollPos[1],
             );
             return;
         }
@@ -225,7 +225,7 @@ function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
-PopStateHandlers["dynLoad"] = dynLoadOnPopState;
+PopStateHandlers.dynLoad = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();
 // @license-end

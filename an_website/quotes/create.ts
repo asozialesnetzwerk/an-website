@@ -10,7 +10,7 @@
             (child as unknown as { value: string }).value.toLowerCase()
         ] = ((child as { attributes: NamedNodeMap })
             .attributes
-            .getNamedItem("data-author") as Attr)
+            .getNamedItem("data-author")!)
             .value;
     }
 

@@ -62,7 +62,7 @@ function get(
 const PopStateHandlers: any = {
     replaceURL: (state: { origin: string }) => {
         // reload if the last location was not the one that got replaced
-        lastLocation === state["origin"] || window.location.reload();
+        lastLocation === state.origin || window.location.reload();
     },
     // always reload the location if URLParamChange
     URLParamChange: () => window.location.reload(),
@@ -82,7 +82,7 @@ function setURLParam(
     const newUrl =
         `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);
-    (state as { stateType: string })["stateType"] = stateType;
+    (state as { stateType: string }).stateType = stateType;
     if (push && newUrl !== window.location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
@@ -126,11 +126,11 @@ window.onpopstate = (event: PopStateEvent) => {
     if (event.state) {
         const state = event.state as { stateType: string };
         if (
-            state["stateType"] &&
-            PopStateHandlers[state["stateType"]]
+            state.stateType &&
+            PopStateHandlers[state.stateType]
         ) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-            PopStateHandlers[state["stateType"]](event);
+            PopStateHandlers[state.stateType](event);
             lastLocation = window.location.href;
             event.preventDefault();
             scrollToId();

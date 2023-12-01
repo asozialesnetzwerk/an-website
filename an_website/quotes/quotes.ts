@@ -6,14 +6,15 @@ function startQuotes() {
     const reportButton = elById("report") as HTMLAnchorElement | null;
 
     const thisQuoteId = [
-        (elById("top") as HTMLElement).getAttribute("quote-id") as string,
+        (elById("top")!).getAttribute("quote-id")!,
     ];
-    const nextQuoteId = [nextButton.getAttribute("quote-id") as string];
+    const nextQuoteId = [nextButton.getAttribute("quote-id")!];
     const params = window.location.search;
 
     const keys = (() => {
         const k = new URLSearchParams(params).get("keys");
-        if (!(k && k.length)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (!(k?.k.length)) {
             return "WASD";
         }
         // for vim-like set keys to khjl
@@ -25,7 +26,7 @@ function startQuotes() {
         }
     })(); // currently only letter keys are supported
 
-    (elById("wasd") as HTMLElement).innerText =
+    (elById("wasd")!).innerText =
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -76,7 +77,7 @@ function startQuotes() {
         thisQuoteId[0] = quoteId;
     }
 
-    function updateRating(rating: string | number) {
+    function updateRating(rating: number | string) {
         rating = rating.toString();
         ratingText.innerText = rating;
         if (["---", "???", "0"].includes(rating)) {
@@ -135,27 +136,28 @@ function startQuotes() {
     function handleData(
         data: API_DATA,
     ): boolean {
-        if (data["status"]) {
+        if (data.status) {
             console.error(data);
-            if (data["status"] in [429, 420]) {
+            if (data.status in [429, 420]) {
                 // ratelimited
-                alert(data["reason"]);
+                alert(data.reason);
             }
             return false;
-        } else if (data && data["id"]) {
-            updateQuoteId(data["id"]);
-            nextQuoteId[0] = data["next"];
-            quote.innerText = `»${data["quote"]}«`;
-            author.innerText = `- ${data["author"]}`;
-            realAuthor.innerText = data["real_author"];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        } else if (data?.data.id) {
+            updateQuoteId(data.id);
+            nextQuoteId[0] = data.next;
+            quote.innerText = `»${data.quote}«`;
+            author.innerText = `- ${data.author}`;
+            realAuthor.innerText = data.real_author;
             realAuthor.href = `/zitate/info/a/${
-                data["real_author_id"]
+                data.real_author_id
             }${params}`;
             if (reportButton) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
                     "subject",
-                    `Das falsche Zitat ${data["id"]} hat ein Problem`,
+                    `Das falsche Zitat ${data.id} hat ein Problem`,
                 );
                 reportHrefParams.set(
                     "message",
@@ -163,14 +165,14 @@ function startQuotes() {
                 );
                 reportButton.href = `/kontakt?${reportHrefParams.toString()}`;
             }
-            updateRating(data["rating"]);
-            updateVote(data["vote"]);
+            updateRating(data.rating);
+            updateVote(data.vote);
             return true;
         }
         return false;
     }
 
-    PopStateHandlers["quotes"] = (event: PopStateEvent) => {
+    PopStateHandlers.quotes = (event: PopStateEvent) => {
         event.state && handleData(event.state as API_DATA);
     };
 
@@ -189,10 +191,10 @@ function startQuotes() {
                     return;
                 }
 
-                data["stateType"] = "quotes";
-                data["url"] = `/zitate/${data["id"]}${params}`;
-                window.history.pushState(data, "Falsche Zitate", data["url"]);
-                setLastLocation(data["url"]);
+                data.stateType = "quotes";
+                data.url = `/zitate/${data.id}${params}`;
+                window.history.pushState(data, "Falsche Zitate", data.url);
+                setLastLocation(data.url);
             },
         );
 
@@ -228,7 +230,7 @@ for (
     ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
     autoSubmitEl.onchange = () =>
-        (autoSubmitEl.form as HTMLFormElement).submit();
+        (autoSubmitEl.form!).submit();
 }
 
 startQuotes();

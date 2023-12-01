@@ -312,8 +312,8 @@ administratives/kaenguru-comics/kaenguru-045/original
     }
 
     const comicCountToLoadOnCLick = 7;
-    const loadButton = elById("load-button") as HTMLElement;
-    const list = elById("old-comics-list") as HTMLElement;
+    const loadButton = elById("load-button")!;
+    const list = elById("old-comics-list")!;
     let loaded = 0;
 
     const loadMoreComics = () => {
@@ -371,7 +371,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             loadButton.style.visibility = "invisible";
         }
     };
-    (elById("load-button") as HTMLElement).onclick = loadMoreComics;
+    (elById("load-button")!).onclick = loadMoreComics;
 
     const createImgPopup = (image: HTMLImageElement) => {
         removeAllPopups();
@@ -415,7 +415,7 @@ administratives/kaenguru-comics/kaenguru-045/original
     if (startButton !== null) {
         const contentContainer = elById(
             "comic-content-container",
-        ) as HTMLElement;
+        )!;
         // no_3rd_party is activated
         startButton.onclick = () => {
             startButton.remove();

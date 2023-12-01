@@ -2,7 +2,7 @@
 (() => {
     const textInput = elById("text") as HTMLInputElement;
     const configInput = elById("config-textarea") as HTMLTextAreaElement;
-    const outputText = elById("output") as HTMLElement;
+    const outputText = elById("output")!;
     const errorText = elById("error-msg") as HTMLDivElement;
 
     if (errorText.innerHTML.trim()) {
@@ -43,23 +43,23 @@
             return onerror(data);
         }
         if (!onpopstate) {
-            data["stateType"] = "swappedWords";
+            data.stateType = "swappedWords";
             window.history.pushState(
                 data,
                 "Vertauschte Wörter",
                 window.location.href,
             );
         }
-        textInput.value = data["text"] || "";
-        configInput.value = data["config"] || "";
-        outputText.innerText = data["replaced_text"] || "";
+        textInput.value = data.text || "";
+        configInput.value = data.config || "";
+        outputText.innerText = data.replaced_text || "";
         errorText.innerText = "";
     }
 
     (elById("form") as HTMLFormElement).onsubmit = (e) => {
         e.preventDefault();
     };
-    (elById("reset") as HTMLElement).onclick = () =>
+    (elById("reset")!).onclick = () =>
         post(
             "/api/vertauschte-woerter",
             {
@@ -70,7 +70,7 @@
             ondata,
             onerror,
         );
-    (elById("submit") as HTMLElement).onclick = () =>
+    (elById("submit")!).onclick = () =>
         post(
             "/api/vertauschte-woerter",
             {
@@ -83,7 +83,7 @@
             onerror,
         );
 
-    PopStateHandlers["swappedWords"] = (event: PopStateEvent) => {
+    PopStateHandlers.swappedWords = (event: PopStateEvent) => {
         event.state && ondata(event.state as SwappedWordsData, true);
     };
 })();

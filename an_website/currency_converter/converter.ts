@@ -37,7 +37,7 @@
 
     const isZero = (str: string) => /^0*$/.test(str);
 
-    function getDisplayValue(wert: string | bigint | number): null | string {
+    function getDisplayValue(wert: bigint | number | string): string | null {
         if (typeof wert === "string") {
             wert = strToBigInt(wert);
         }
@@ -63,7 +63,7 @@
             // @ts-expect-error TS2532
             // eslint-disable-next-line prefer-const
             let [int, dec] = num.split(".");
-            dec = dec || "";
+            dec = dec ?? "";
             // @ts-expect-error TS2345
             // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             str = int + dec + "0".repeat(parseInt(pow) - dec.length);
@@ -83,7 +83,7 @@
         );
     }
 
-    function strToBigInt(str: string): number | bigint {
+    function strToBigInt(str: string): bigint | number {
         if (isZero(str)) {
             return BigInt(0);
         }
@@ -103,9 +103,9 @@
         return BigInt(int + dec);
     }
 
-    PopStateHandlers["currencyConverter"] = (e: PopStateEvent) =>
+    PopStateHandlers.currencyConverter = (e: PopStateEvent) =>
         setAllFields(
-            strToBigInt((e.state as { euro: string })["euro"].toString()),
+            strToBigInt((e.state as { euro: string }).euro.toString()),
         );
 
     const setEuroParam = (euroVal: string, push: boolean) =>
@@ -121,16 +121,16 @@
         euroValue: bigint | number,
         ignored: number | null = null,
     ) {
-        setEuroParam(getDisplayValue(euroValue) || "null", false);
+        setEuroParam(getDisplayValue(euroValue) ?? "null", false);
         for (let i = 0; i < 4; i++) {
             const value = getDisplayValue(
                 (euroValue as bigint) * (factors[i] as bigint),
             );
             // @ts-expect-error TS2532
-            fields[i].placeholder = value || "null";
+            fields[i].placeholder = value ?? "null";
             if (i !== ignored) {
                 // @ts-expect-error TS2532
-                fields[i].value = value || "null";
+                fields[i].value = value ?? "null";
             }
         }
     }
@@ -146,7 +146,7 @@
     function onSubmit(event: Event) {
         event.preventDefault();
         for (const field of fields) {
-            field.value = getDisplayValue(field.value) || "null";
+            field.value = getDisplayValue(field.value) ?? "null";
         }
         setEuroParam(fields[0].value, true);
         updateOutput();

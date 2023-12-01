@@ -1,11 +1,11 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
 (() => {
     const messageInput = elById("message-input") as HTMLInputElement;
-    const messageInputForm = messageInput.form as HTMLFormElement;
-    const messageSection = elById("message-section") as HTMLElement;
+    const messageInputForm = messageInput.form!;
+    const messageSection = elById("message-section")!;
     const usingOpenMoji = elById("open-moji-attribution");
-    const connectionIndicator = elById("connection-state") as HTMLElement;
-    const currentUser = elById("current-user") as HTMLElement;
+    const connectionIndicator = elById("connection-state")!;
+    const currentUser = elById("current-user")!;
     let reconnectTimeout = 100;
     let reconnectTries = 0;
     let lastMessage = "";
@@ -73,6 +73,7 @@
 
     const setConnectionState = (state: string) => {
         let tooltip;
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         connectionIndicator.onclick = () => {};
         if (state === "connecting") {
             tooltip = "Versuche mit WebSocket zu verbinden";
@@ -84,6 +85,7 @@
             connectionIndicator.onclick = () => {
                 reconnectTries = 0;
                 reconnectTimeout = 500;
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 connectionIndicator.onclick = () => {};
                 openWS();
             };
@@ -106,22 +108,22 @@
             users: string[];
             error: string;
         };
-        switch (data["type"]) {
+        switch (data.type) {
             case "messages": {
                 messageSection.innerText = "";
-                for (const msg of data["messages"]) {
+                for (const msg of data.messages) {
                     appendMessage(msg);
                 }
                 break;
             }
             case "message": {
                 // console.debug("New message", data["message"]);
-                appendMessage(data["message"]);
+                appendMessage(data.message);
                 break;
             }
             case "init": {
-                displayCurrentUser(data["current_user"]);
-                console.log("Connected as", data["current_user"].join(""));
+                displayCurrentUser(data.current_user);
+                console.log("Connected as", data.current_user.join(""));
                 setConnectionState("connected");
                 reconnectTimeout = 100;
                 reconnectTries = 0;
@@ -129,7 +131,7 @@
             }
             case "users": {
                 // only gets send in dev mode of website
-                console.debug("Recieved users data", data["users"]);
+                console.debug("Recieved users data", data.users);
                 break;
             }
             case "ratelimit": {
@@ -140,11 +142,11 @@
             }
             case "error": {
                 resetLastMessage();
-                alert(data["error"]); // TODO: Don't use alert
+                alert(data.error); // TODO: Don't use alert
                 break;
             }
             default: {
-                console.error(`Invalid type ${data["type"]}`);
+                console.error(`Invalid type ${data.type}`);
             }
         }
     };
@@ -157,6 +159,7 @@
         );
         const pingInterval = setInterval(() => ws.send(""), 10000);
         ws.onclose = (event) => {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             messageInputForm.onsubmit = () => {};
             if (event.wasClean) {
                 console.debug(

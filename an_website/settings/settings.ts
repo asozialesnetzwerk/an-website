@@ -79,7 +79,7 @@ function createBumpscositySlider() {
         }
     };
 
-    const parent = select.parentElement as HTMLElement;
+    const parent = select.parentElement!;
     parent.style.position = "relative";
     parent.append(currentValueDiv);
     parent.append(rangeSlider);
