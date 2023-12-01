@@ -41,6 +41,10 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Upgrade Buildah
+        run: |
+          wget http://mirrors.kernel.org/ubuntu/pool/universe/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1_amd64.deb
+          dpkg --force-depends -i buildah_1.28.2+ds1-1_amd64.deb
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -55,7 +59,7 @@ jobs:
           buildah build -t an-website:git .
           cd ..
       - name: Save image
-        run: buildah push --dest-compress-format=zstd --dest-compress-level=20 an-website:git oci-archive:oci-archive.tar
+        run: buildah push --compress-format=zstd --compress-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:

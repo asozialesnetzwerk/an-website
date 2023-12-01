@@ -665,8 +665,7 @@ class BaseRequestHandler(RequestHandler):
                 or timedelta()
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2),
-                "🦘": pytest_is_running()
-                or is_prime(self.now.microsecond),
+                "🦘": pytest_is_running() or is_prime(self.now.microsecond),
             }
         )
         return namespace
