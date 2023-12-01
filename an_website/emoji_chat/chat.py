@@ -24,7 +24,7 @@ from collections.abc import Awaitable, Iterable, Mapping
 from typing import Any, Final, Literal
 
 import orjson as json
-from emoji import EMOJI_DATA, demojize, emoji_list, emojize
+from emoji import EMOJI_DATA, demojize, emoji_list, emojize, purely_emoji
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 from tornado.websocket import WebSocketHandler
@@ -116,7 +116,7 @@ def check_message_invalid(message: str) -> Literal[False] | str:
     if not message:
         return "Empty message not allowed."
 
-    if not emoji.purely_emoji(message):
+    if not purely_emoji(message):
         return "Message can only contain emojis."
 
     if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
