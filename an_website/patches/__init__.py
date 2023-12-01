@@ -103,7 +103,10 @@ def apply() -> None:
         type for type, data in MEDIA_TYPES.items() if data.get("compressible")
     }
     http.client.responses[420] = "Enhance Your Calm"
-    if not getattr(stdlib_json, "_omegajson", False) and sys.version_info < (3, 12):
+    if not getattr(stdlib_json, "_omegajson", False) and sys.version_info < (
+        3,
+        12,
+    ):
         patch_json()
     anonymize_logs()
     patch_emoji()

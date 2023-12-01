@@ -121,7 +121,7 @@ class BaseRequestHandler(RequestHandler):
     now: datetime
 
     @property
-    def apm_client(self) -> None | elasticapm.Client:
+    def apm_client(self) -> None | elasticapm.Client:  # type: ignore[no-any-unimported]
         """Get the APM client from the settings."""
         return self.settings.get("ELASTIC_APM", {}).get("CLIENT")
 
@@ -276,7 +276,7 @@ class BaseRequestHandler(RequestHandler):
     def geoip(
         self,
         ip: None | str = None,  # pylint: disable=invalid-name
-        database: str = geoip.__defaults__[0],  # type: ignore
+        database: str = geoip.__defaults__[0],  # type: ignore[index]
         *,
         allow_fallback: bool = True,
     ) -> Coroutine[None, None, None | dict[str, Any]]:

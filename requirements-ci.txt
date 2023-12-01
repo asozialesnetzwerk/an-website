@@ -82,7 +82,7 @@ types-redis==4.5.1.4
 types-regex==2022.10.31.6
 types-setuptools==65.7.0.4
 typing-extensions==4.5.0
-virtualenv==20.19.0
+virtualenv==20.20.0
 virtualenv-clone==0.5.7
 webencodings==0.5.1
 wrapt==1.15.0

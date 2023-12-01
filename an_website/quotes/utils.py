@@ -474,7 +474,7 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
-    apm: None | elasticapm.Client
+    apm: None | elasticapm.Client  # type: ignore[no-any-unimported]
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression

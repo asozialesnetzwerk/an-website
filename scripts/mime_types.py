@@ -36,20 +36,24 @@ class MediaType(TypedDict, total=False):  # noqa: D101
 
 MediaTypes = dict[str, MediaType]
 
-VERSION: Final[str] = "c9242a9b7d4bb25d7a0c9244adec74aeef08d8a1"
+VERSION: Final[str] = "a76e5a824c228e2e58363c9404e42a54ee1d142f"
 
 URL: Final[
     str
 ] = f"https://raw.githubusercontent.com/jshttp/mime-db/{VERSION}/db.json"
 
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
+
 CONTENT_TYPES_JSON: Final[Path] = (
     REPO_ROOT / "an_website" / "content_types.json"
 )
+
 MEDIA_TYPES_JSON: Final[Path] = REPO_ROOT / "an_website" / "media_types.json"
 
 PREFERENCE: Final[tuple[str | None, ...]] = ("nginx", "apache", None, "iana")
+
 HEADERS: Final[dict[str, str]] = {"Accept": "application/json"}
+
 JSON_OPTIONS: Final[dict[str, int | bool]] = {
     "indent": 2,
     "sort_keys": True,

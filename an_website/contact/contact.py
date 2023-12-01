@@ -269,13 +269,13 @@ class ContactPage(HTMLRequestHandler):
             send_message,
             message=message,
             from_address=address,
-            server=self.settings.get("CONTACT_SMTP_SERVER"),  # type: ignore[arg-type]
+            server=self.settings.get("CONTACT_SMTP_SERVER", "localhost"),
             sender=self.settings.get("CONTACT_SENDER_ADDRESS"),
-            recipients=self.settings.get("CONTACT_RECIPIENTS"),  # type: ignore
+            recipients=self.settings.get("CONTACT_RECIPIENTS", ""),
             username=self.settings.get("CONTACT_SENDER_USERNAME"),
             password=self.settings.get("CONTACT_SENDER_PASSWORD"),
             starttls=self.settings.get("CONTACT_SMTP_STARTTLS"),
-            port=self.settings.get("CONTACT_SMTP_PORT"),  # type: ignore[arg-type]
+            port=self.settings.get("CONTACT_SMTP_PORT", 587),
             date=await self.get_time(),
         )
 

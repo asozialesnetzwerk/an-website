@@ -671,7 +671,10 @@ Accepted arguments:
     from pyrepl.python_reader import ReaderConsole  # type: ignore[import]
     from pyrepl.python_reader import main as _main
 
-    def _run_and_print(self: ReaderConsole, code: str) -> None:
+    def _run_and_print(  # type: ignore[no-any-unimported]
+        self: ReaderConsole,
+        code: str,
+    ) -> None:
         # pylint: disable=unused-argument
         try:
             run_and_print(

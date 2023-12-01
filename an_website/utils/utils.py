@@ -339,8 +339,9 @@ def anonymize_ip(
     raise HTTPError(reason="ERROR: -41")
 
 
-def apm_anonymization_processor(  # pylint: disable=unused-argument
-    client: elasticapm.Client, event: dict[str, Any]
+def apm_anonymization_processor(  # type: ignore[no-any-unimported]
+    client: elasticapm.Client,  # pylint: disable=unused-argument
+    event: dict[str, Any],
 ) -> dict[str, Any]:
     """Anonymize an APM event."""
     if "context" in event and "request" in event["context"]:

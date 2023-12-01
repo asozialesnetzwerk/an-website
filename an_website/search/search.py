@@ -77,7 +77,7 @@ class Search(HTMLRequestHandler):
 
     @requires_settings("APP_SEARCH", return_=AwaitableValue(None))
     @get_setting_or_default("APP_SEARCH_ENGINE", NAME.removesuffix("-dev"))
-    async def search_new(
+    async def search_new(  # type: ignore[no-any-unimported]
         self,
         query: str,
         *,

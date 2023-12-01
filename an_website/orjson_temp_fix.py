@@ -42,7 +42,7 @@ __all__ = (
     "OPT_SERIALIZE_UUID",
     "OPT_SORT_KEYS",
     "OPT_STRICT_INTEGER",
-    "OPT_UTC_Z"
+    "OPT_UTC_Z",
 )
 
 OPT_APPEND_NEWLINE = 1024

@@ -22,6 +22,7 @@ strict = true
 sqlite_cache = true
 python_version = "3.10"
 warn_unreachable = true
+disallow_any_unimported = true
 plugins = "numpy.typing.mypy_plugin"
 enable_incomplete_feature = ["TypeVarTuple", "Unpack"]
 packages = ["an_website", "tests", "scripts"]
