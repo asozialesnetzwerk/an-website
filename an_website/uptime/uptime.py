@@ -23,10 +23,10 @@ import regex
 from elasticsearch import AsyncElasticsearch
 from tornado.web import HTTPError, RedirectHandler
 
-from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, START_TIME_NS
+from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, UPTIME
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, time_to_str
 
 
 class AvailabilityDict(TypedDict):  # noqa: D101
@@ -51,30 +51,6 @@ def get_module_info() -> ModuleInfo:
         path="/betriebszeit",
         aliases=("/uptime",),
         keywords=("Uptime", "Betriebszeit", "Zeit"),
-    )
-
-
-def calculate_uptime() -> float:
-    """Calculate the uptime in seconds and return it."""
-    return (time.monotonic_ns() - START_TIME_NS) / 1_000_000_000
-
-
-def uptime_to_str(uptime: None | float = None) -> str:
-    """Convert the uptime into a string with second precision."""
-    if uptime is None:
-        uptime = calculate_uptime()
-
-    # to second precision
-    uptime = int(uptime)
-    # divide by 60
-    div_60 = int(uptime / 60)
-    div_60_60 = int(div_60 / 60)
-
-    return (
-        f"{int(div_60_60 / 24)}d "
-        f"{div_60_60 % 24}h "
-        f"{div_60 % 60}min "
-        f"{uptime % 60}s"
     )
 
 
@@ -167,8 +143,8 @@ class UptimeHandler(HTMLRequestHandler):
             else (0, 0)
         )
         return {
-            "uptime": (uptime := calculate_uptime()),
-            "uptime_str": uptime_to_str(uptime),
+            "uptime": (uptime := UPTIME.get()),
+            "uptime_str": time_to_str(uptime),
             "start_time": time.time() - uptime - EPOCH,
             "availability": get_availability_dict(*availability_data),
         }

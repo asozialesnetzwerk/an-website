@@ -59,16 +59,37 @@ class MediaType(TypedDict, total=False):
     source: str
 
 
-DIR: Final[str] = abspath(dirname(__file__))
+class UptimeTimer:
+    """UptimeTimer class used for timing the uptime."""
 
-START_TIME_NS: Final[int] = time.monotonic_ns()
+    __slots__ = ("_start_time",)
+
+    def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
+        """Reset the timer."""
+        self._start_time = time.monotonic_ns()
+
+    def get_ns(self) -> int:
+        """Get the time since start in nanoseconds."""
+        return time.monotonic_ns() - self._start_time
+
+    def get(self) -> float:
+        """Get the time since start in seconds."""
+        return self.get_ns() / 1_000_000_000
+
+
+UPTIME: Final = UptimeTimer()
+
+EPOCH: Final[int] = 1651075200
+EPOCH_MS: Final[int] = EPOCH * 1000
+
+DIR: Final[str] = abspath(dirname(__file__))
 
 MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
     Path(DIR, "vendored", "mime-db.json").read_bytes()
 )
-
-EPOCH: Final[int] = 1651075200
-EPOCH_MS: Final[int] = EPOCH * 1000
 
 NAME = "an-website"
 VERSION: Final[str] = get_version(__file__, vcs="git")
@@ -111,7 +132,7 @@ __all__ = (
     "MEDIA_TYPES",
     "NAME",
     "ORJSON_OPTIONS",
-    "START_TIME_NS",
+    "START_TIME",
     "STATIC_DIR",
     "TEMPLATES_DIR",
     "VERSION",

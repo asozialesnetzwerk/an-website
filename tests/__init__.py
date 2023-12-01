@@ -40,13 +40,16 @@ import asyncio
 import socket
 from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime, timezone
+from os import environ
 from pathlib import Path
 from typing import Any, cast
 from urllib.parse import parse_qsl, urlsplit
+from zoneinfo import ZoneInfo
 
 import orjson as json
 import pytest
 import regex
+import time_machine as tm
 import yaml
 from blake3 import blake3  # type: ignore[import-untyped]
 from lxml import etree  # nosec: B410
@@ -56,7 +59,7 @@ from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPResponse
 from tornado.web import Application
 
 # pylint: disable=ungrouped-imports
-from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, main
+from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, UPTIME, main
 from an_website.quotes.utils import parse_wrong_quote
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.utils import parse_config
@@ -85,6 +88,13 @@ WRONG_QUOTE_DATA = {
 }
 
 FetchCallable = Callable[..., Awaitable[HTTPResponse]]
+
+# fmt: off
+hill_valley = ZoneInfo("America/Los_Angeles")
+destination = environ.get("DELOREAN_DESTINATION", "1985-10-26 01:24:00")
+tm.travel(datetime.fromisoformat(destination).replace(tzinfo=hill_valley)).start()
+UPTIME.reset()
+# fmt: on
 
 
 @pytest.fixture

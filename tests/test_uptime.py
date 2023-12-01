@@ -15,7 +15,17 @@
 
 from __future__ import annotations
 
+from an_website import UPTIME
 from an_website.uptime import uptime
+from an_website.utils import utils
+
+
+def test_calculate_uptime() -> None:
+    """Test the calculation of the uptime."""
+    assert UPTIME.get() < UPTIME.get()
+    assert UPTIME.get() + 1 > UPTIME.get()
+
+    assert utils.time_to_str(UPTIME.get())
 
 
 def test_get_availability_dict() -> None:
@@ -52,21 +62,6 @@ def test_get_availability_dict() -> None:
     }
 
 
-def test_uptime_to_str() -> None:
-    """Test the uptime_to_str function."""
-    assert uptime.uptime_to_str(0) == "0d 0h 0min 0s"
-    assert uptime.uptime_to_str(133769420) == "1548d 6h 10min 20s"
-
-
-def test_calculate_uptime() -> None:
-    """Test the calculation of the uptime."""
-    assert uptime.calculate_uptime() < uptime.calculate_uptime()
-    assert uptime.calculate_uptime() + 1 > uptime.calculate_uptime()
-
-    assert uptime.uptime_to_str()
-
-
 if __name__ == "__main__":
-    test_get_availability_dict()
-    test_uptime_to_str()
     test_calculate_uptime()
+    test_get_availability_dict()

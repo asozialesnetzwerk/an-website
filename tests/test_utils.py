@@ -22,43 +22,6 @@ import pytest
 from an_website.utils import utils
 
 
-def test_n_from_set() -> None:
-    """Test the n_from_set function."""
-    set_ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-    assert len(utils.n_from_set(set_, 3)) == 3
-    assert -1 < len(utils.n_from_set(set_, 0)) < 1
-    assert -1 < len(utils.n_from_set(set_, -1)) < 1
-    for element in utils.n_from_set(set_, 8):
-        assert element in set_
-    for i in range(len(set_) + 3):
-        assert len(utils.n_from_set(set_, i)) == min(len(set_), i)
-
-
-def test_bool_str_conversion() -> None:
-    """Test the conversion from bool to str and from str to bool."""
-    for boolean in (False, True):
-        assert boolean is utils.str_to_bool(utils.bool_to_str(boolean))
-        assert boolean is utils.str_to_bool(str(boolean))
-
-    for boolean_str in ("sure", "nope"):
-        boolean_bool = utils.str_to_bool(boolean_str)
-        assert isinstance(boolean_bool, bool)
-        assert boolean_str == utils.bool_to_str(boolean_bool)
-
-    with pytest.raises(ValueError):
-        utils.str_to_bool("Invalid bool value")
-
-    assert utils.str_to_bool("Invalid bool value", True) is True
-
-
-def test_country_code_to_flag() -> None:
-    """Test the utils.country_code_to_flag function."""
-    assert utils.country_code_to_flag("aq") == "🇦🇶"
-    assert utils.country_code_to_flag("aQ") == "🇦🇶"
-    assert utils.country_code_to_flag("Aq") == "🇦🇶"
-    assert utils.country_code_to_flag("AQ") == "🇦🇶"
-
-
 def test_adding_stuff_to_url() -> None:
     """Test the utils.add_args_to_url function."""
     for url in (
@@ -98,17 +61,49 @@ def test_anonomyze_ip() -> None:
     assert utils.anonymize_ip("invalid", ignore_invalid=True) == "invalid"
 
 
-def test_replace_umlauts() -> None:
-    """Test the replace_umlauts function."""
-    assert utils.replace_umlauts("äöüß") == "aeoeuess"
-    assert utils.replace_umlauts("ÄÖÜẞ") == "AEOEUESS"
-    assert utils.replace_umlauts("Äöüß") == "Aeoeuess"
-    assert utils.replace_umlauts("Öäüß") == "Oeaeuess"
-    assert utils.replace_umlauts("Üöäß") == "Ueoeaess"
-    assert utils.replace_umlauts("ẞäöü") == "SSaeoeue"
-    assert utils.replace_umlauts("ẞäöü ÄÖÜẞ") == "SSaeoeue AEOEUESS"
-    assert utils.replace_umlauts("ẞäöü ÄÖÜß") == "SSaeoeue AeOeUess"
-    assert utils.replace_umlauts("ẞÄÖÜ ÄöÜß") == "SSAEOEUE AeoeUess"
+def test_bool_str_conversion() -> None:
+    """Test the conversion from bool to str and from str to bool."""
+    for boolean in (False, True):
+        assert boolean is utils.str_to_bool(utils.bool_to_str(boolean))
+        assert boolean is utils.str_to_bool(str(boolean))
+
+    for boolean_str in ("sure", "nope"):
+        boolean_bool = utils.str_to_bool(boolean_str)
+        assert isinstance(boolean_bool, bool)
+        assert boolean_str == utils.bool_to_str(boolean_bool)
+
+    with pytest.raises(ValueError):
+        utils.str_to_bool("Invalid bool value")
+
+    assert utils.str_to_bool("Invalid bool value", True) is True
+
+
+def test_country_code_to_flag() -> None:
+    """Test the utils.country_code_to_flag function."""
+    assert utils.country_code_to_flag("aq") == "🇦🇶"
+    assert utils.country_code_to_flag("aQ") == "🇦🇶"
+    assert utils.country_code_to_flag("Aq") == "🇦🇶"
+    assert utils.country_code_to_flag("AQ") == "🇦🇶"
+
+
+def test_emojify() -> None:
+    """Test the emojify function."""
+    assert utils.emojify("aBc 123 #!*") == "🇦\u200c🇧\u200c🇨 1⃣2⃣3⃣ #⃣❗*⃣"
+    assert utils.emojify("!?!?!!") == "⁉⁉‼"
+    assert utils.emojify("Üẞ?!") == "🇺\u200c🇪\u200c🇸\u200c🇸❓❗"
+    assert utils.emojify("2 + 2 - 3 = 0!") == "2⃣ ➕ 2⃣ ➖ 3⃣ = 0⃣❗"
+
+
+def test_n_from_set() -> None:
+    """Test the n_from_set function."""
+    set_ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+    assert len(utils.n_from_set(set_, 3)) == 3
+    assert -1 < len(utils.n_from_set(set_, 0)) < 1
+    assert -1 < len(utils.n_from_set(set_, -1)) < 1
+    for element in utils.n_from_set(set_, 8):
+        assert element in set_
+    for i in range(len(set_) + 3):
+        assert len(utils.n_from_set(set_, i)) == min(len(set_), i)
 
 
 def test_name_to_id() -> None:
@@ -123,20 +118,32 @@ def test_name_to_id() -> None:
     assert utils.name_to_id("ẞ Ä Ö Ü-ẞÄÖÜ        ") == "ss-ae-oe-ue-ssaeoeue"
 
 
-def test_emojify() -> None:
-    """Test the emojify function."""
-    assert utils.emojify("aBc 123 #!*") == "🇦\u200c🇧\u200c🇨 1⃣2⃣3⃣ #⃣❗*⃣"
-    assert utils.emojify("!?!?!!") == "⁉⁉‼"
-    assert utils.emojify("Üẞ?!") == "🇺\u200c🇪\u200c🇸\u200c🇸❓❗"
-    assert utils.emojify("2 + 2 - 3 = 0!") == "2⃣ ➕ 2⃣ ➖ 3⃣ = 0⃣❗"
+def test_replace_umlauts() -> None:
+    """Test the replace_umlauts function."""
+    assert utils.replace_umlauts("äöüß") == "aeoeuess"
+    assert utils.replace_umlauts("ÄÖÜẞ") == "AEOEUESS"
+    assert utils.replace_umlauts("Äöüß") == "Aeoeuess"
+    assert utils.replace_umlauts("Öäüß") == "Oeaeuess"
+    assert utils.replace_umlauts("Üöäß") == "Ueoeaess"
+    assert utils.replace_umlauts("ẞäöü") == "SSaeoeue"
+    assert utils.replace_umlauts("ẞäöü ÄÖÜẞ") == "SSaeoeue AEOEUESS"
+    assert utils.replace_umlauts("ẞäöü ÄÖÜß") == "SSaeoeue AeOeUess"
+    assert utils.replace_umlauts("ẞÄÖÜ ÄöÜß") == "SSAEOEUE AeoeUess"
+
+
+def test_time_to_str() -> None:
+    """Test the time_to_str function."""
+    assert utils.time_to_str(0) == "0d 0h 0min 0s"
+    assert utils.time_to_str(133769420) == "1548d 6h 10min 20s"
 
 
 if __name__ == "__main__":
-    test_n_from_set()
-    test_bool_str_conversion()
-    test_country_code_to_flag()
     test_adding_stuff_to_url()
     test_anonomyze_ip()
-    test_replace_umlauts()
-    test_name_to_id()
+    test_bool_str_conversion()
+    test_country_code_to_flag()
     test_emojify()
+    test_n_from_set()
+    test_name_to_id()
+    test_replace_umlauts()
+    test_time_to_str()
