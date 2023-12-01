@@ -54,12 +54,12 @@ COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps https://codeload.github.com/MagicStack/uvloop/tar.gz/v0.17.0 \
+ && /venv/bin/pip install --no-deps git+https://github.com/MagicStack/uvloop.git@v0.17.0 \
  && /venv/bin/pip install --no-deps https://codeload.github.com/roy-ht/editdistance/tar.gz/v0.6.2 \
  && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/0268b8eb3287655303869e7b4e617ff0734fdfc4 \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
- && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
+ && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
  && sed -Ei "/(blake3|lxml)/d" requirements.txt \
  && /venv/bin/pip install -r requirements.txt \
 COPY . /usr/src/an-website

@@ -149,10 +149,10 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
 
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
-        if self.path and not self.content_type:
+        if not self.content_type:
             self.content_type = CONTENT_TYPES.get(Path(self.path).suffix[1:])
             if not self.content_type:
-                self.content_type = defity.from_file(self.path)
+                self.content_type = defity.from_file(self.absolute_path)
             if self.content_type and self.content_type.startswith("text/"):
                 self.content_type += "; charset=UTF-8"
         if self.content_type:

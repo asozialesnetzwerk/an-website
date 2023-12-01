@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import importlib
 import multiprocessing
 import os
 import sys
@@ -52,6 +53,10 @@ class MediaType(TypedDict, total=False):
     source: str
 
 
+# pylint: disable=protected-access
+if ".\U0001F40D" not in importlib._bootstrap_external.SOURCE_SUFFIXES:
+    importlib._bootstrap_external.SOURCE_SUFFIXES.append(".\U0001F40D")
+
 DIR: Final[str] = os.path.dirname(__file__)
 
 START_TIME_NS: Final[int] = time.monotonic_ns()
@@ -59,8 +64,6 @@ START_TIME_NS: Final[int] = time.monotonic_ns()
 MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
     Path(DIR, "vendored", "mime-db.json").read_bytes()
 )
-
-assert "Í" not in str(MEDIA_TYPES)  # orjson is corrupting memory
 
 EPOCH: Final[int] = 1651075200
 EPOCH_MS: Final[int] = EPOCH * 1000
