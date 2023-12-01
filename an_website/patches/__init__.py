@@ -26,9 +26,9 @@ from collections.abc import Callable
 from configparser import RawConfigParser
 from pathlib import Path
 from threading import Thread
-from urllib.parse import urlsplit
 from types import MethodType
 from typing import Any, Final
+from urllib.parse import urlsplit
 
 import certifi
 import defusedxml  # type: ignore[import]
