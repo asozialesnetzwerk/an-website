@@ -731,9 +731,11 @@ async def setup_elasticsearch_configs(
     prefix: str,
 ) -> None:
     """Setup Elasticsearch configs."""  # noqa: D401
-    spam: list[Coroutine[None, None, None | dict[str, Any]]] = []
+    spam: list[Coroutine[None, None, None | dict[str, Any]]]
 
     for i in range(3):
+        spam = []
+
         what = cast(
             ES_WHAT_LITERAL,
             ["ingest_pipelines", "component_templates", "index_templates"][i],
@@ -758,7 +760,7 @@ async def setup_elasticsearch_configs(
                 )
             )
 
-    await asyncio.gather(*spam)
+        await asyncio.gather(*spam)
 
 
 async def setup_elasticsearch_config(
