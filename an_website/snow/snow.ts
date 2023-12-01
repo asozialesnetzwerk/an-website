@@ -14,6 +14,7 @@ function setHeightVariables(): void {
 function getSnowAttributes(): void {
     if (snow) {
         snowflakesCount = Number(
+            // @ts-expect-error TS2339
             snow.attributes?.count?.value || snowflakesCount,
         );
     }

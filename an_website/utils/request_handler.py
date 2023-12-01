@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
@@ -52,6 +53,11 @@ from .utils import (
     str_to_bool,
 )
 
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
+
 LOGGER: Final = logging.getLogger(__name__)
 
 
@@ -68,6 +74,7 @@ class HTMLRequestHandler(BaseRequestHandler):
 
     used_render = False
 
+    @override
     def finish(
         self, chunk: None | str | bytes | dict[Any, Any] = None
     ) -> Future[None]:
@@ -157,6 +164,7 @@ class HTMLRequestHandler(BaseRequestHandler):
             )
         return form_appendix
 
+    @override
     def get_template_namespace(self) -> dict[str, Any]:
         """
         Add useful things to the template namespace and return it.
@@ -220,11 +228,13 @@ class HTMLRequestHandler(BaseRequestHandler):
         )
         return namespace
 
+    @override
     def render(self, template_name: str, **kwargs: Any) -> Future[None]:
         """Render a template."""
         self.used_render = True
         return super().render(template_name, **kwargs)
 
+    @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Render the error page with the status_code as a HTML page."""
         self.render(
@@ -258,6 +268,7 @@ class APIRequestHandler(BaseRequestHandler):
         """Finish the request with a JSON response."""
         return self.finish(kwargs)
 
+    @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
         """Finish with the status code and the reason as dict."""
         if self.content_type == "text/plain":
@@ -272,6 +283,7 @@ class APIRequestHandler(BaseRequestHandler):
 class NotFoundHandler(HTMLRequestHandler):
     """Show a 404 page if no other RequestHandler is used."""
 
+    @override
     def handle_not_acceptable(
         self, possible_content_types: tuple[str, ...]
     ) -> None:
@@ -279,12 +291,14 @@ class NotFoundHandler(HTMLRequestHandler):
         self.content_type = "text/plain"
         self.set_content_type_header()
 
+    @override
     def initialize(self, *args: Any, **kwargs: Any) -> None:
         """Do nothing to have default title and description."""
         if "module_info" not in kwargs:
             kwargs["module_info"] = None
         super().initialize(*args, **kwargs)
 
+    @override
     async def prepare(self) -> None:  # pylint: disable=too-complex # noqa: C901
         """Throw a 404 HTTP error or redirect to another page."""
         self.now = await self.get_time()
@@ -359,6 +373,7 @@ class NotFoundHandler(HTMLRequestHandler):
 class ErrorPage(HTMLRequestHandler):
     """A request handler that shows the error page."""
 
+    @override
     async def get(self, code: str) -> None:
         """Show the error page."""
         status_code = int(code)
@@ -380,6 +395,7 @@ class ErrorPage(HTMLRequestHandler):
 class ZeroDivision(HTMLRequestHandler):
     """A request handler that raises an error."""
 
+    @override
     async def prepare(self) -> None:
         """Divide by zero and raise an error."""
         self.now = await self.get_time()
@@ -404,6 +420,7 @@ class ElasticRUM(BaseRequestHandler):
 
     SCRIPTS: ClassVar[dict[str, bytes]] = {}
 
+    @override
     async def get(
         self,
         version: str,

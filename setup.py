@@ -21,10 +21,31 @@ import os
 import warnings
 from pathlib import Path
 
+import trove_classifiers
 from get_version import get_version
 from setuptools import setup
 
 warnings.filterwarnings("ignore", "", UserWarning, "setuptools.dist")
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    (
+        "License :: OSI Approved :: "
+        "GNU Affero General Public License v3 or later (AGPLv3+)"
+    ),
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Typing :: Typed",
+]
+
+for classifier in classifiers:
+    assert classifier in trove_classifiers.classifiers
 
 
 def read(filename: str) -> str:
@@ -45,22 +66,7 @@ setup(
     long_description=read("README.md"),
     version=get_version(__file__, vcs="git", dist_name="an-website"),
     url="https://github.com/asozialesnetzwerk/an-website",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        (
-            "License :: OSI Approved :: "
-            "GNU Affero General Public License v3 or later (AGPLv3+)"
-        ),
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-        "Programming Language :: Python :: Implementation :: CPython",
-        "Typing :: Typed",
-    ],
+    classifiers=classifiers,
     packages=["an_website"],
     python_requires=">=3.10",
     install_requires=read("requirements.txt").split("\n"),
