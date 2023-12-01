@@ -59,7 +59,7 @@ class Option(ABC, Generic[T]):
         """Get the value for this option."""
 
     def __get__(
-        self,  # comment to make flake8 happy
+        self,  # comment to make Flake8 happy
         obj: "Options | None",
         _: "type[Options] | None" = None,
         /,
