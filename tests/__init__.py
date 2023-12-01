@@ -31,11 +31,6 @@ import warnings
 warnings.filterwarnings("ignore", module="defusedxml")
 
 
-import importlib
-
-importlib._bootstrap_external.SOURCE_SUFFIXES.append(".\U0001F40D")
-
-
 from an_website import patches
 
 patches.apply()

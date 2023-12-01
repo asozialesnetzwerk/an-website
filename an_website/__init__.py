@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import importlib
 import multiprocessing
 import os
 import sys
@@ -52,10 +51,6 @@ class MediaType(TypedDict, total=False):
     extensions: list[str]
     source: str
 
-
-# pylint: disable=protected-access
-if ".\U0001F40D" not in importlib._bootstrap_external.SOURCE_SUFFIXES:
-    importlib._bootstrap_external.SOURCE_SUFFIXES.append(".\U0001F40D")
 
 DIR: Final[str] = os.path.dirname(__file__)
 

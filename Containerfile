@@ -63,7 +63,7 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
  && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
  && sed -Ei "/(blake3|lxml)/d" requirements.txt \
- && /venv/bin/pip install -r requirements.txt \
+ && /venv/bin/pip install -r requirements.txt
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
