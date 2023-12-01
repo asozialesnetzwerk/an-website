@@ -1,4 +1,5 @@
-FROM docker.io/library/python@sha256:347c255a73b2993ea75259a5ae69c71714d2ef94e4079b6e5876bcee7a265e9d AS builder
+ARG BASE=docker.io/library/python:3.12.0a7-slim
+FROM $BASE AS builder
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libgnutls28-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
@@ -70,7 +71,7 @@ COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
 
-FROM docker.io/library/python@sha256:347c255a73b2993ea75259a5ae69c71714d2ef94e4079b6e5876bcee7a265e9d
+FROM $BASE
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 \
@@ -103,11 +104,17 @@ WORKDIR /data
 VOLUME /data
 EXPOSE 8888
 CMD ["/venv/bin/an-website", "--port", "8888"]
+ARG VERSION=<unknown> \
+    REVISION=<unknown> \
+    BASE_DIGEST=<unknown> \
+    BASE_NAME=docker.io/library/python:3.12.0a7-slim
 LABEL org.opencontainers.image.authors="contact@asozial.org" \
       org.opencontainers.image.source="https://github.com/asozialesnetzwerk/an-website" \
+      org.opencontainers.image.version="$VERSION" \
+      org.opencontainers.image.revision="$REVISION" \
       org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
       org.opencontainers.image.licenses="AGPL-3.0-or-later" \
       org.opencontainers.image.title="an-website" \
       org.opencontainers.image.description="podman run -d -v .:/data:z -p 8888:8888 --name an-website --network slirp4netns:port_handler=slirp4netns --pull newer IMAGE" \
-      org.opencontainers.image.base.digest="sha256:347c255a73b2993ea75259a5ae69c71714d2ef94e4079b6e5876bcee7a265e9d" \
-      org.opencontainers.image.base.name="docker.io/library/python:3.12.0a7-slim"
+      org.opencontainers.image.base.digest="$BASE_DIGEST" \
+      org.opencontainers.image.base.name="$BASE_NAME"
