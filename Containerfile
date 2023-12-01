@@ -4,7 +4,7 @@ ARG BASE=docker.io/library/python:3.12-slim-bookworm
 FROM $BASE AS builder
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends automake curl git g++ libcurl4-gnutls-dev libffi-dev libgnutls28-dev libjxl-dev libtool libxml2-dev libxslt1-dev make zlib1g-dev \
+ && apt-get install -y --no-install-recommends automake curl git g++ libcurl4-gnutls-dev libffi-dev libgnutls28-dev libtool libxml2-dev libxslt1-dev make zlib1g-dev \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.70 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
@@ -12,7 +12,6 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYCURL_SSL_LIBRARY=gnutls \
     PIP_NO_CACHE_DIR=1 \
     RUSTC_BOOTSTRAP=1
-ARG AIOHTTP_NO_EXTENSIONS=1
 COPY pip-requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
@@ -20,7 +19,6 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps setuptools wheel Cython \
  && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/762f62c5a1ab62ce37397aeeab2c27fdcc14ca66 \
  && /venv/bin/pip uninstall -y setuptools wheel Cython \
- && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps https://codeload.github.com/olokelo/jxlpy/tar.gz/eebe73706b2c10153aa40d039e5e02c45a8168a4 \
  && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-deps https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
  && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
  && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \

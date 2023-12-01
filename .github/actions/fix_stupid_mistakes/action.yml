@@ -16,7 +16,7 @@ runs:
     - name: Setup Deno
       uses: denoland/setup-deno@v1
       with:
-        deno-version: 1.37.1
+        deno-version: 1.38.3
     - name: Install required stuff
       run: |
         sudo apt-get update
@@ -57,7 +57,7 @@ runs:
       shell: bash
       env:
         VERSION: 1.69.5
-        VERSION_BUF: 1.27.1
+        VERSION_BUF: 1.28.1
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash

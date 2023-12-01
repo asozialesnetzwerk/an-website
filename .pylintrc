@@ -1,5 +1,5 @@
 [MAIN]
-ignore=.git,build,node_modules,venv,tests
+ignore=.git,build,node_modules,venv
 load-plugins=
     pylint.extensions.bad_builtin,
     pylint.extensions.broad_try_clause,
@@ -26,7 +26,7 @@ load-plugins=
     pylint.extensions.set_membership,
     pylint.extensions.typing,
     pylint.extensions.while_used,
-    #pylint_pytest,
+    pylint_pytest,
 extension-pkg-allow-list=
     blake3,
     lxml,
@@ -54,7 +54,7 @@ disable=
     docstring-first-line-empty,
     # TODO: enable after fixing all complaints
     consider-using-assignment-expr,
-    #cannot-enumerate-pytest-fixtures,
+    cannot-enumerate-pytest-fixtures,
     # https://github.com/PyCQA/pylint/issues/2368
     duplicate-code,
     # broken

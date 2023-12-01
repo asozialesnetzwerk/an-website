@@ -1,29 +1,32 @@
 {
+  "private": true,
   "type": "module",
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.2",
-    "@types/node": "npm:bun-types@^1.0.7",
-    "@typescript-eslint/eslint-plugin": "^6.9.1",
-    "@typescript-eslint/parser": "^6.9.1",
+    "@types/node": "npm:bun-types@^1.0.14",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
     "browserslist": "^4.22.1",
-    "core-js-builder": "3.33.2",
-    "core-js-compat": "3.33.2",
+    "core-js-builder": "3.33.3",
+    "core-js-compat": "3.33.3",
     "doiuse": "^6.0.2",
-    "esbuild": "^0.19.5",
-    "eslint": "^8.52.0",
+    "esbuild": "^0.19.8",
+    "eslint": "^8.54.0",
+    "eslint-formatter-codeframe": "^7.32.1",
+    "eslint-formatter-table": "^7.32.1",
     "eslint-plugin-compat": "^4.2.0",
     "gzip-size": "^7.0.0",
     "stylelint": "^15.11.0",
     "stylelint-config-idiomatic-order": "^9.0.0",
-    "stylelint-config-standard-scss": "^11.0.0",
+    "stylelint-config-standard-scss": "^11.1.0",
     "stylelint-no-unsupported-browser-features": "^7.0.0",
-    "ts-node": "^10.9.1",
-    "type-fest": "^4.6.0",
-    "typescript": "5.3.0-beta",
+    "ts-node": "11.0.0-beta.1",
+    "type-fest": "^4.8.2",
+    "typescript": "^5.3.2",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.10.0",
+  "packageManager": "pnpm@8.9.2+sha256.8d62573d93061f2722b7b48c9739e96cd4603c3ab153bc81c619dcb9861a214e",
   "engines": {
     "pnpm": "8",
     "yarn": "0",
@@ -31,15 +34,15 @@
   },
   "pnpm": {
     "overrides": {
-      "caniuse-lite": "1.0.30001546",
-      "electron-to-chromium": "1.4.508",
+      "caniuse-lite": "1.0.30001559",
+      "electron-to-chromium": "1.4.572",
       "jest-worker>@types/node": "$@types/node",
       "stylelint-order@5": "6",
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.33.2": "patches/core-js-builder@3.33.2.patch",
-      "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
+      "core-js-builder@3.33.3": "patches/core-js-builder@3.33.3.patch",
+      "ts-node@11.0.0-beta.1": "patches/ts-node@11.0.0-beta.1.patch"
     }
   }
 }

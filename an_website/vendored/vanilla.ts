@@ -1,9 +1,9 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 // @ts-nocheck
 /*
- * core-js 3.33.2
+ * core-js 3.33.3
  * © 2014-2023 Denis Pushkarev (zloirock.ru)
- * license: https://github.com/zloirock/core-js/blob/v3.33.2/LICENSE
+ * license: https://github.com/zloirock/core-js/blob/v3.33.3/LICENSE
  * source: https://github.com/zloirock/core-js
  *//*
  * modules:
@@ -118,8 +118,9 @@ module.exports =
   // eslint-disable-next-line no-restricted-globals -- safe
   check(typeof self == 'object' && self) ||
   check(typeof global == 'object' && global) ||
+  check(typeof this == 'object' && this) ||
   // eslint-disable-next-line no-new-func -- fallback
-  (function () { return this; })() || this || Function('return this')();
+  (function () { return this; })() || Function('return this')();
 
 
 /***/ }),
@@ -278,10 +279,10 @@ var store = __webpack_require__(15);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.33.2',
+  version: '3.33.3',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2014-2023 Denis Pushkarev (zloirock.ru)',
-  license: 'https://github.com/zloirock/core-js/blob/v3.33.2/LICENSE',
+  license: 'https://github.com/zloirock/core-js/blob/v3.33.3/LICENSE',
   source: 'https://github.com/zloirock/core-js'
 });
 
@@ -5476,7 +5477,7 @@ module.exports = function (scheduler, hasTimeArg) {
 /***/ ((module) => {
 
 
-/* global Bun -- Deno case */
+/* global Bun -- Bun case */
 module.exports = typeof Bun == 'function' && Bun && typeof Bun.version == 'string';
 
 
@@ -9538,6 +9539,7 @@ var cloneBuffer = function (value, map, $type) {
       } else {
         length = value.byteLength;
         options = 'maxByteLength' in value ? { maxByteLength: value.maxByteLength } : undefined;
+        // eslint-disable-next-line es/no-resizable-and-growable-arraybuffers -- safe
         clone = new ArrayBuffer(length, options);
         source = new DataView(value);
         target = new DataView(clone);

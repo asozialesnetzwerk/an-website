@@ -88,7 +88,7 @@ jobs:
           - basic
           - trial
         redis-image:
-          - redis/redis-stack-server:6.2.6-v9
+          - redis/redis-stack-server:6.2.6-v10
           #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:
@@ -292,6 +292,7 @@ jobs:
           go-version: ~1.20
       - name: Upgrade Buildah
         run: |
+          sudo apt-get update
           sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
           git clone -b v1.30.0 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
           pushd ~/go/src/github.com/containers/buildah
@@ -382,6 +383,7 @@ jobs:
           go-version: ~1.20
       - name: Upgrade Skopeo
         run: |
+          sudo apt-get update
           sudo apt-get install -y libdevmapper-dev libgpgme-dev
           git clone -b v1.12.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
           pushd ~/go/src/github.com/containers/skopeo

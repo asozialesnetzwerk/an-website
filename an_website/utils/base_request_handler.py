@@ -378,6 +378,9 @@ class BaseRequestHandler(RequestHandler):
 
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
+        if self.now.month == 12:
+            return "christmas"
+
         if (theme := self.user_settings.theme).split("_")[0] != "random":
             return theme
 

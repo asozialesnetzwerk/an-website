@@ -29,7 +29,7 @@ from setuptools.build_meta import SetupRequirementsError
 BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.21.6"
 GET_VERSION = "get_version==3.5.5"
-TROVE_CLASSIFIERS = "trove-classifiers==2023.9.19"
+TROVE_CLASSIFIERS = "trove-classifiers==2023.11.22"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -103,7 +103,6 @@ setup(
     install_requires=path("pip-requirements.txt")
     .read_text("UTF-8")
     .split("\n"),
-    extras_require={"jxl": ["jxlpy~=0.9"]},
     include_package_data=True,
     zip_safe=False,
     entry_points={

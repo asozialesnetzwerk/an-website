@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run --no-prompt --allow-read=.
 import compat from "npm:core-js-compat@3";
-import { parse } from "std/flags/mod.ts";
+import { parseArgs } from "std/cli/mod.ts";
 
-const args = parse(Deno.args, {
+const args = parseArgs(Deno.args, {
     boolean: "inverse",
     string: ["targets", "version"],
     default: {

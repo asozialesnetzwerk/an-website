@@ -85,9 +85,9 @@ async def test_setting_stuff_without_cookies(
         )
 
 
-def parse_cookie(cookie: str) -> SimpleCookie[str]:
+def parse_cookie(cookie: str) -> SimpleCookie:
     """Parse a cookie string to a SimpleCookie."""
-    simple_cookie: SimpleCookie[str] = SimpleCookie()
+    simple_cookie = SimpleCookie()
     simple_cookie.load(cookie)
     return simple_cookie
 

@@ -40,6 +40,7 @@ import tornado.httputil
 import yaml
 from emoji import EMOJI_DATA
 from emoji import unicode_codes as euc
+from pillow_jxl import JpegXLImagePlugin  # noqa: F401
 from setproctitle import setthreadtitle
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
@@ -51,12 +52,6 @@ from .. import MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR: Final = abspath(dirname(__file__))
-
-with suppress(ModuleNotFoundError):
-    # pylint: disable=import-error, useless-suppression
-    from jxlpy import (  # type: ignore[import, unused-ignore]  # noqa: F401
-        JXLImagePlugin,
-    )
 
 
 def apply() -> None:

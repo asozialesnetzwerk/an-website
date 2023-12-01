@@ -305,7 +305,7 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
                     )
                 else:
                     handler[2]["module_info"] = module_info
-            handlers.append(tuple(handler))  # type: ignore[arg-type]
+            handlers.append(tuple(handler))
         if module_info.path is not None:
             for alias in module_info.aliases:
                 handlers.append(

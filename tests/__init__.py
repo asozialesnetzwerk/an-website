@@ -104,7 +104,7 @@ def app() -> Application:
 
     main.apply_config_to_app(app, config)
 
-    es = main.setup_elasticsearch(app)  # pylint: disable=invalid-name
+    es = main.setup_elasticsearch(app)
     redis = main.setup_redis(app)
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
@@ -247,6 +247,7 @@ async def check_html_page(
     codes: Set[int] = frozenset({200, 503}),
     *,
     recursive: int = 0,
+    # pylint: disable=dangerous-default-value
     checked_urls: set[str] = set(),  # noqa: B006
 ) -> HTTPResponse:
     """Check a HTML page."""

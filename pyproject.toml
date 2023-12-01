@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools==68.2.2", "wheel==0.41.2"]
+requires = ["setuptools==69.0.2", "wheel==0.42.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.bandit]
@@ -34,7 +34,5 @@ enable_error_code = [
   "truthy-iterable",
   "unused-awaitable",
 ]
-new_type_inference = true
-enable_incomplete_feature = ["TypeVarTuple", "Unpack"]
 packages = ["an_website", "tests", "scripts"]
 modules = "setup"

@@ -1,10 +1,10 @@
 #!/usr/bin/env -S deno run --node-modules-dir --no-prompt --allow-net=deno.land --allow-env=TMPDIR,TMP,TEMP --allow-read=.,/tmp --allow-write=.,/tmp
 import builder from "npm:core-js-builder@3";
 import * as esbuild from "esbuild/wasm.js";
+import { parseArgs } from "std/cli/mod.ts";
 import { gzipSize } from "npm:gzip-size";
-import { parse } from "std/flags/mod.ts";
 
-const args = parse(Deno.args, {
+const args = parseArgs(Deno.args, {
     string: ["targets", "format"],
     default: {
         targets:

@@ -30,7 +30,7 @@ from typing import Any, ClassVar, Final
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
-from .. import EPOCH, patches
+from .. import EPOCH
 from ..utils import static_file_handling
 from .utils import (
     DIR,
@@ -66,10 +66,10 @@ HOST_NAME_FONT: Final = ImageFont.truetype(
     size=23,
 )
 
-CONTENT_TYPES: Final[Mapping[str, str]] = static_file_handling.CONTENT_TYPES | {
+CONTENT_TYPES: Final[Mapping[str, str]] = {
     "spider": "image/x-spider",
     "tga": "image/x-tga",
-}
+} | dict(static_file_handling.CONTENT_TYPES)
 
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
@@ -78,7 +78,7 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "jpe": "jpeg",
     "jpeg": "jpeg",
     "jpg": "jpeg",
-    **({"jxl": "jxl"} if hasattr(patches, "JXLImagePlugin") else {}),
+    "jxl": "jxl",
     "pdf": "pdf",
     "png": "png",
     # "ppm": "ppm",

@@ -53,6 +53,7 @@ def test_add_geoip_info_to_message() -> None:
 
 def test_add_geoip_info_to_message_recursive() -> None:
     """Test infinite recursion."""
+    # pylint: disable=dict-init-mutate
     geoip = {"spam": "eggs"}
     geoip["sausage"] = geoip  # type: ignore[assignment]
     message = Message()
