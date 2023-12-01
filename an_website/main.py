@@ -37,7 +37,6 @@ from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, Final, Literal, TypeAlias, cast
-from weakref import ReferenceType
 from zoneinfo import ZoneInfo
 
 import orjson

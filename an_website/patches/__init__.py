@@ -20,6 +20,7 @@ import contextlib
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
+import sys
 from asyncio import set_event_loop_policy
 from collections.abc import Callable
 from configparser import RawConfigParser
