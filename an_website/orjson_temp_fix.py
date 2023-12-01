@@ -72,14 +72,19 @@ def dumps(
 ) -> bytes:
     """Nobody inspects the spammish repetition."""
     option = option or 0
-    return _dumps(
-        __obj,
-        allow_nan=False,
-        ensure_ascii=False,
-        seperators=None if option & OPT_INDENT_2 else (",", ":"),
-        indent=(option & OPT_INDENT_2) * 2,
-        sort_keys=bool(option & OPT_SORT_KEYS),
-        default=default,
+    return (
+        _dumps(
+            __obj,
+            allow_nan=False,
+            ensure_ascii=False,
+            seperators=None if option & OPT_INDENT_2 else (",", ":"),
+            indent=(option & OPT_INDENT_2) * 2,
+            sort_keys=bool(option & OPT_SORT_KEYS),
+            default=default,
+        )
+        + "\n"
+        if option & OPT_APPEND_NEWLINE
+        else ""
     ).encode("UTF-8")
 
 
