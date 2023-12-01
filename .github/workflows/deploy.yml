@@ -72,6 +72,8 @@ jobs:
           cd an-website*
           buildah build --runtime=/opt/youki --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
           cd ..
+        env:
+          BUILDAH_ISOLATION: chroot
       - name: Save image
         run: buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
