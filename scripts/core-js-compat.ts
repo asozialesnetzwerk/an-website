@@ -1,6 +1,6 @@
 #!/usr/bin/env -S pnpm ts-node -T
 import compat from "core-js-compat";
-import parse from "minimist";
+import { parse } from "./vendored/flags.ts";
 
 const args = parse(process.argv.slice(2), {
     boolean: "inverse",
@@ -16,9 +16,9 @@ const {
     // @ts-expect-error TS2379
 } = compat({
     modules: "core-js/stable",
-    targets: args["targets"] as string,
-    version: args["version"] as string | undefined,
-    inverse: args["inverse"] as boolean,
+    targets: args.targets,
+    version: args.version,
+    inverse: args.inverse,
 });
 
 console.log(targets);

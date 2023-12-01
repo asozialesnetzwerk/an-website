@@ -3,7 +3,6 @@
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@tsconfig/strictest": "^2.0.2",
-    "@types/minimist": "^1.2.2",
     "@types/node": "npm:bun-types@^1.0.3",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
@@ -12,10 +11,9 @@
     "core-js-compat": "3.32.2",
     "doiuse": "^6.0.2",
     "esbuild": "^0.19.3",
-    "eslint": "^8.49.0",
+    "eslint": "^8.50.0",
     "eslint-plugin-compat": "^4.2.0",
     "gzip-size": "^7.0.0",
-    "minimist": "^1.2.8",
     "stylelint": "^15.10.3",
     "stylelint-config-idiomatic-order": "^9.0.0",
     "stylelint-config-standard-scss": "^11.0.0",
@@ -25,7 +23,7 @@
     "typescript": "~5.2.2",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.7.5",
+  "packageManager": "pnpm@8.8.0",
   "engines": {
     "pnpm": "8",
     "yarn": "0",

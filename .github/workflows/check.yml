@@ -31,7 +31,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 1.37.0
+          deno-version: 1.37.1
       - name: Install required stuff
         run: |
           sudo apt-get update
