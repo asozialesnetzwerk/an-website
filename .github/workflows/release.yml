@@ -179,15 +179,16 @@ jobs:
         id: version
         shell: python
         run: |
+          from os import getenv
           from time import strftime, gmtime
           if "${{ github.event_name }}" == "schedule":
-            print(f"::set-output name=VERSION::{strftime('v%y.%m', gmtime())}")
+            open(getenv("GITHUB_OUTPUT"), "a").write(f"version={strftime('v%y.%m', gmtime())}\n")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
-            print("::set-output name=VERSION::${{ github.ref_name }}")
+            open(getenv("GITHUB_OUTPUT"), "a").write("version=${{ github.ref_name }}\n")
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.VERSION }}
+          tag_name: ${{ steps.version.outputs.version }}
           generate_release_notes: true
           files: |
             *.tar.gz
@@ -242,11 +243,14 @@ jobs:
         id: version
         shell: python
         run: |
-          from os import popen as run
+          from os import getenv
+          from subprocess import run
+
           from packaging.utils import parse_sdist_filename
-          filename = run("ls an-website-*.tar.gz").read().strip()
-          name, version = parse_sdist_filename(filename)
-          print(f"::set-output name=VERSION::{version}")
+
+          result = run(("ls", "an-website-*.tar.gz"), capture_output=True)
+          name, version = parse_sdist_filename(result.stdout.strip())
+          open(getenv("GITHUB_OUTPUT"), "a").write(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
       - name: Upload sourcemaps
@@ -257,7 +261,7 @@ jobs:
               -H "Authorization: ApiKey ${{ secrets.SOURCEMAP_API_KEY }}" \
               -H "kbn-xsrf: true" \
               -F service_name="an-website" \
-              -F service_version="${{ steps.version.outputs.VERSION }}" \
+              -F service_version="${{ steps.version.outputs.version }}" \
               -F bundle_filepath="/{}" \
               -F sourcemap=@{}.map \;
 

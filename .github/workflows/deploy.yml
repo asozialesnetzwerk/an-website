@@ -251,11 +251,14 @@ jobs:
         id: version
         shell: python
         run: |
-          from os import popen as run
+          from os import getenv
+          from subprocess import run
+
           from packaging.utils import parse_sdist_filename
-          filename = run("ls an-website-*.tar.gz").read().strip()
-          name, version = parse_sdist_filename(filename)
-          print(f"::set-output name=VERSION::{version}")
+
+          result = run(("ls", "an-website-*.tar.gz"), capture_output=True)
+          name, version = parse_sdist_filename(result.stdout.strip())
+          open(getenv("GITHUB_OUTPUT"), "a").write(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
       - name: Upload sourcemaps
@@ -266,7 +269,7 @@ jobs:
               -H "Authorization: ApiKey ${{ secrets.SOURCEMAP_API_KEY }}" \
               -H "kbn-xsrf: true" \
               -F service_name="an-website" \
-              -F service_version="${{ steps.version.outputs.VERSION }}" \
+              -F service_version="${{ steps.version.outputs.version }}" \
               -F bundle_filepath="/{}" \
               -F sourcemap=@{}.map \;
 

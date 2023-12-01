@@ -45,14 +45,14 @@ more-itertools==9.1.0
 mypy==1.2.0
 mypy-extensions==1.0.0
 nodeenv==1.7.0
-numpy==1.24.2
+numpy==1.24.3
 packaging==23.1
 pathspec==0.11.1
 pbr==5.11.1
 pep8-naming==0.13.3
 pipenv==2023.3.20
 pkginfo==1.9.6
-platformdirs==3.2.0
+platformdirs==3.3.0
 pluggy==1.0.0
 pre-commit==3.2.2
 pycodestyle==2.10.0
@@ -76,7 +76,7 @@ restructuredtext-lint==1.4.0
 rfc3986==2.0.0
 rich==13.3.4
 secretstorage==3.3.3
-setuptools==67.7.1
+setuptools==67.7.2
 six==1.16.0
 smmap==5.0.0
 snowballstemmer==2.2.0

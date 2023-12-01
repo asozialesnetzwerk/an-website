@@ -117,17 +117,19 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
 
     async def get(
         self,
-        date: None | str = None,
+        date_str: None | str = None,
         *,
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
         quote_data = await (
-            self.get_quote_by_date(date) if date else self.get_quote_of_today()
+            self.get_quote_by_date(date_str)
+            if date_str
+            else self.get_quote_of_today()
         )
 
         if not quote_data:
-            raise HTTPError(404 if date else 503)
+            raise HTTPError(404 if date_str else 503)
 
         if self.request.path.endswith("/full"):
             return await self.finish(quote_data.to_json())
@@ -148,17 +150,19 @@ class QuoteOfTheDayRedirect(QuoteOfTheDayBaseHandler):
 
     async def get(
         self,
-        date: None | str = None,
+        date_str: None | str = None,
         *,
         head: bool = False,  # pylint: disable=unused-argument
     ) -> None:
         """Handle GET requests."""
         wrong_quote_data = await (
-            self.get_quote_by_date(date) if date else self.get_quote_of_today()
+            self.get_quote_by_date(date_str)
+            if date_str
+            else self.get_quote_of_today()
         )
 
         if not wrong_quote_data:
-            raise HTTPError(404 if date else 503)
+            raise HTTPError(404 if date_str else 503)
 
         self.redirect(
             self.fix_url(

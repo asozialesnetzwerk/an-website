@@ -41,7 +41,7 @@ RUN set -eux \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2023-04-01 --profile minimal
+ && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-04-20 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=gnutls \
@@ -53,7 +53,7 @@ COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps setuptools==67.6.1 wheel==0.40.0 \
+ && /venv/bin/pip install --no-deps setuptools==67.7.2 wheel==0.40.0 \
  && /venv/bin/pip install --no-deps https://github.com/cython/cython/archive/a5bb829bbc538467d1fe557b6001a4c1c5a88bd9.tar.gz \
  && /venv/bin/pip install --no-deps funcparserlib==1.0.1 \
  && /venv/bin/pip install --no-deps --ignore-requires-python hy==0.26.0 \

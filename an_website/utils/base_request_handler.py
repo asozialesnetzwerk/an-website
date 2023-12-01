@@ -221,7 +221,8 @@ class BaseRequestHandler(RequestHandler):
     def elasticsearch(self) -> AsyncElasticsearch:
         """Get the Elasticsearch client from the settings.
 
-        This is None if Elasticsearch is not enabled."""
+        This is None if Elasticsearch is not enabled.
+        """
         return cast(AsyncElasticsearch, self.settings.get("ELASTICSEARCH"))
 
     @property
