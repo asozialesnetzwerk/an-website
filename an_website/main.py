@@ -440,8 +440,8 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         if key_perms[0]
     }
 
-    app.settings["AUTH_TOKEN_SECRET"] = (
-        config.get("GENERAL", "AUTH_TOKEN_SECRET", fallback=None)
+    app.settings["AUTH_TOKEN_SECRET"] = config.get(
+        "GENERAL", "AUTH_TOKEN_SECRET", fallback=None
     )
     if not app.settings["AUTH_TOKEN_SECRET"]:
         node = uuid.getnode().to_bytes(6, "big")
@@ -955,9 +955,11 @@ def main(  # noqa: C901  # pragma: no cover
     global HEARTBEAT  # pylint: disable=global-statement
 
     setproctitle(NAME)
+
     install_signal_handler()
 
     args = parse_command_line_arguments()
+
     config = config or parse_config(*args.config)
 
     setup_logging(config)
@@ -1074,6 +1076,9 @@ def main(  # noqa: C901  # pragma: no cover
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
+    if perf8 and "PERF8" in os.environ:
+        loop.run_until_complete(perf8.enable())
+
     setup_webhook_logging(config, loop)
 
     with catch_warnings():  # TODO: remove after dropping support for 3.11
@@ -1112,9 +1117,6 @@ def main(  # noqa: C901  # pragma: no cover
 
     if not sockets:
         return 0
-
-    if perf8 and "PERF8" in os.environ:
-        loop.run_until_complete(perf8.enable())
 
     try:
         loop.run_forever()

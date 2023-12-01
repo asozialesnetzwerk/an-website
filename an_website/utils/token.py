@@ -75,9 +75,7 @@ def parse_token(  # pylint: disable=inconsistent-return-statements
     version, token_body = _split_token(token)
     try:
         if version == "0":
-            return _parse_token_v0(
-                token_body, secret, verify_time=verify_time
-            )
+            return _parse_token_v0(token_body, secret, verify_time=verify_time)
     except InvalidTokenError:
         raise
     except Exception as exc:
