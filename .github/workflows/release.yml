@@ -1,7 +1,7 @@
 name: Release
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 1 * *"
   push:
     tags: [ v* ]
 env:
@@ -152,7 +152,7 @@ jobs:
         run: |
           from time import strftime, gmtime
           if "${{ github.event_name }}" == "schedule":
-            print(f"::set-output name=VERSION::{strftime('v%y.%m.%d', gmtime())}")
+            print(f"::set-output name=VERSION::{strftime('v%y.%m', gmtime())}")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             print("::set-output name=VERSION::${{ github.ref_name }}")
       - name: Create release
@@ -185,7 +185,7 @@ jobs:
       - name: Run Twine
         run: |
           twine check --strict *.tar.gz *.whl
-          twine upload --verbose --disable-progress-bar *.tar.gz *.whl
+          twine upload --verbose --disable-progress-bar *.tar.gz
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}

@@ -6,3 +6,4 @@ include config.ini.default
 include config.ini.example
 graft example-configurations
 global-exclude tsconfig.json
+include Dockerfile

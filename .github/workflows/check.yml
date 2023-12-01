@@ -30,7 +30,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -135,7 +135,7 @@ jobs:
       - name: Install Flake8
         run: grep -E "^(flake8|pep8-naming)" requirements-ci.txt | xargs pip install
       - name: Run Flake8
-        run: flake8
+        run: flake8 --extend-ignore=SIM9
 
   pylint:
     name: Pylint
@@ -200,7 +200,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -228,7 +228,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: 8
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:

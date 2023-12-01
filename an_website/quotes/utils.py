@@ -618,7 +618,7 @@ async def update_cache(
 
 async def get_author_by_id(author_id: int) -> Author:
     """Get an author by its id."""
-    author = AUTHORS_CACHE.get(author_id, None)
+    author = AUTHORS_CACHE.get(author_id)
     if author is not None:
         return author
     return parse_author(await make_api_request(f"authors/{author_id}"))
@@ -626,7 +626,7 @@ async def get_author_by_id(author_id: int) -> Author:
 
 async def get_quote_by_id(quote_id: int) -> Quote:
     """Get a quote by its id."""
-    quote = QUOTES_CACHE.get(quote_id, None)
+    quote = QUOTES_CACHE.get(quote_id)
     if quote is not None:
         return quote
     return parse_quote(await make_api_request(f"quotes/{quote_id}"))
@@ -636,7 +636,7 @@ async def get_wrong_quote(
     quote_id: int, author_id: int, use_cache: bool = True
 ) -> WrongQuote:
     """Get a wrong quote with a quote id and an author id."""
-    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
+    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id))
     if wrong_quote:
         if use_cache:
             return wrong_quote
@@ -706,7 +706,7 @@ async def create_wq_and_vote(
 
     If the wrong_quote doesn't exist yet, create it.
     """
-    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id), None)
+    wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id))
     if wrong_quote and wrong_quote.id != -1:
         return await wrong_quote.vote(vote, fast)
     # we don't know the wrong_quote_id, so we have to create the wrong_quote

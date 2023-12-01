@@ -28,7 +28,9 @@ You need:
 - For building JavaScript and CSS: Deno
   (`./deno upgrade --output ~/.local/bin/deno`)
 - For linting TypeScript: Node.js and pnpm
-  (`npm i -g pnpm && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm && npm r -g pnpm`)
+  (`npm i -g pnpm@8 && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8 && npm r -g pnpm`)
+  (`corepack enable && SHELL=bash pnpm setup && source ~/.bashrc && pnpm i -g pnpm@8` can also be used)
+  (`pnpm up -g` to update)
 
 ### How to check
 

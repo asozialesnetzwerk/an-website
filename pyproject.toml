@@ -1,5 +1,5 @@
 [build-system]
-requires = ["get_version==3.5.4", "setuptools==65.7.0", "trove-classifiers==2022.12.22", "wheel==0.38.4"]
+requires = ["get_version==3.5.4", "setuptools==65.7.0", "trove-classifiers==2022.12.22", "wheel==0.40.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.bandit]
