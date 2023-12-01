@@ -27,7 +27,6 @@ from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
-from unexpected_isaves.save_image import to_excel  # type: ignore[import]
 
 from .. import patches
 from .utils import (
@@ -36,6 +35,11 @@ from .utils import (
     get_wrong_quote,
     get_wrong_quotes,
 )
+
+try:
+    from unexpected_isaves.save_image import to_excel  # type: ignore[import]
+except ImportError:
+    to_excel = None
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -72,6 +76,9 @@ FILE_EXTENSIONS = {
     "webp": "webp",
     "xlsx": "xlsx",
 }
+
+if not to_excel:
+    del FILE_EXTENSIONS["xlsx"]
 
 if not hasattr(patches, "JXLImagePlugin"):
     del FILE_EXTENSIONS["jxl"]
@@ -277,7 +284,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             0,
         )
 
-    if file_type == "xlsx":
+    if to_excel and file_type == "xlsx":
         with TemporaryDirectory() as tempdir_name:
             filepath = os.path.join(tempdir_name, f"{wq_id or '0-0'}.xlsx")
             to_excel(image, filepath, lower_image_size_by=10)
@@ -313,7 +320,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 class QuoteAsImage(QuoteReadyCheckHandler):
     """Quote as image request handler."""
 
-    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+    POSSIBLE_CONTENT_TYPES: ClassVar[list[str]] = [  # type: ignore[assignment]
         "text/html",
         *{
             f"image/{type}"
@@ -321,8 +328,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
             if type not in {"pdf", "xlsx"}
         },
         "application/pdf",
-        "application/vnd.ms-excel",
-    )
+    ]
     RATELIMIT_GET_LIMIT: ClassVar[int] = 15
     IS_NOT_HTML: ClassVar[bool] = True
 
@@ -398,3 +404,7 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 wq_id=wrong_quote.get_id_as_str(),
             )
         )
+
+
+if to_excel:
+    QuoteAsImage.POSSIBLE_CONTENT_TYPES.append("application/vnd.ms-excel")
