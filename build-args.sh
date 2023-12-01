@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-TAG=3.12.0a7-slim
+TAG=3.12.0b1-slim
 REPOSITORY=library/python
 NAME=docker.io/${REPOSITORY}:${TAG}
 REGISTRY=https://index.docker.io/v2
