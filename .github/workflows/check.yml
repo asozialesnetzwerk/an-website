@@ -119,7 +119,7 @@ jobs:
         run: pip install -r pip-requirements.txt
       - name: Install mypy + stuff required for checking the tests and setup.py
         run: |
-          pip install -c pip-constraints.txt dulwich html5lib mypy numpy pytest trove-classifiers
+          pip install -c pip-constraints.txt dulwich html5lib mypy numpy pytest pytest-is-running trove-classifiers
           grep "^types-" pip-constraints.txt | xargs pip install
       - name: Run mypy
         run: mypy
@@ -171,7 +171,7 @@ jobs:
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install Pylint + stuff required for checking the tests and setup.py
-        run: pip install -c pip-constraints.txt html5lib pylint pytest trove-classifiers
+        run: pip install -c pip-constraints.txt html5lib pylint pylint-pytest pytest trove-classifiers
       - name: Run Pylint
         run: pylint -r y -d fixme .
         env:

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S pnpm ts-node -T
 import builder from "core-js-builder";
 import { transform } from "esbuild";
 import { gzipSize } from "gzip-size";
@@ -12,15 +12,15 @@ const args = parse(process.argv.slice(2), {
     },
 });
 
-// @ts-expect-error TS2379
 const bundle = await builder({
     modules: "core-js/stable",
-    targets: args["targets"],
+    targets: args["targets"] as string,
     summary: {
         console: { size: args["format"] === "bundle", modules: false },
         comment: { size: false, modules: args["format"] === "bundle" },
     },
-    format: args["format"],
+    // @ts-expect-error TS2322
+    format: args["format"] as string,
     filename: args._[0],
 });
 

@@ -10,7 +10,7 @@ if [ "${USE_BUN:-}" = "1" ]; then
 fi
 
 echo tsc:
-pnpm tsc -p an_website || FAILED=$(( 2 | FAILED ))
+pnpm tsc -p an_website -p scripts || FAILED=$(( 2 | FAILED ))
 
 echo ESLint:
 if [ "${1:-}" = "--fix" ]; then

@@ -2,7 +2,7 @@
 extend-exclude = build,node_modules,venv
 max-line-length = 80
 max-complexity = 15
-ignore = E501,W503
+ignore = E203,E501,W503
 select = B,B9,C,D,E,F,N8,RST,SCR,SIM,W,INP
 require-plugins =
     flake8-bugbear

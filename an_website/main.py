@@ -910,7 +910,9 @@ def setup_redis(app: Application) -> None | Redis[str]:
     if not config.getboolean("REDIS", "ENABLED", fallback=False):
         app.settings["REDIS"] = None
         return None
-    redis: Redis[str] = Redis(connection_pool=BlockingConnectionPool(**kwargs))
+    redis = cast(
+        Redis[str], Redis(connection_pool=BlockingConnectionPool(**kwargs))
+    )
     app.settings["REDIS"] = redis
     return redis
 

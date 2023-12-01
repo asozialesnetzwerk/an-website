@@ -995,6 +995,9 @@ class BaseRequestHandler(RequestHandler):
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
         self.set_header("Vary", "Accept,Accept-Encoding,Authorization,Cookie")
+        self.origin_trial(
+            "Ajkk8O9wTRnbG/A5GvQUW2G8n/y6carJa8GuV9PFXfsqBZq08anjBkvSJLxzrV8dRobSyXCV/wkpyl2Zco2SLgQAAABmeyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJBcHBUYWJTdHJpcCIsImV4cGlyeSI6MTcxNjk0MDc5OSwiaXNTdWJkb21haW4iOnRydWV9"  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        )
 
     @classmethod
     def supports_head(cls) -> bool:

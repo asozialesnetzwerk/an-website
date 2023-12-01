@@ -44,9 +44,7 @@ def hash_file(path: str | Path) -> str:
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
     file_hashes_dict = {
-        str(path)
-        .removeprefix(ROOT_DIR)
-        .replace(os.path.sep, "/"): hash_file(path)
+        str(path)[len(ROOT_DIR) :].replace(os.path.sep, "/"): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
         if path.is_file()
         and not any(_.startswith("openmoji-svg-") for _ in path.parts)

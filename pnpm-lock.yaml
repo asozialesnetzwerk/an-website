@@ -7,7 +7,7 @@ settings:
 overrides:
   caniuse-lite: 1.0.30001525
   electron-to-chromium: 1.4.508
-  jest-worker>@types/node: npm:bun-types@^1.0.2
+  jest-worker>@types/node: npm:bun-types@^1.0.3
   stylelint-order@5: '6'
   webpack@4: '5'
 
@@ -15,14 +15,23 @@ patchedDependencies:
   core-js-builder@3.32.2:
     hash: dt64b65em55fomadgvidkvj4au
     path: patches/core-js-builder@3.32.2.patch
+  ts-node@10.9.1:
+    hash: fb32izc6zrr2hqjbsx2ar4dyru
+    path: patches/ts-node@10.9.1.patch
 
 devDependencies:
+  '@tsconfig/node18':
+    specifier: ^18.2.2
+    version: 18.2.2
   '@tsconfig/strictest':
     specifier: ^2.0.2
     version: 2.0.2
+  '@types/minimist':
+    specifier: ^1.2.2
+    version: 1.2.2
   '@types/node':
-    specifier: npm:bun-types@^1.0.2
-    version: /bun-types@1.0.2
+    specifier: npm:bun-types@^1.0.3
+    version: /bun-types@1.0.3
   '@typescript-eslint/eslint-plugin':
     specifier: ^6.7.2
     version: 6.7.2(@typescript-eslint/parser@6.7.2)(eslint@8.49.0)(typescript@5.2.2)
@@ -30,8 +39,8 @@ devDependencies:
     specifier: ^6.7.2
     version: 6.7.2(eslint@8.49.0)(typescript@5.2.2)
   browserslist:
-    specifier: ^4.21.10
-    version: 4.21.10
+    specifier: ^4.21.11
+    version: 4.21.11
   core-js-builder:
     specifier: 3.32.2
     version: 3.32.2(patch_hash=dt64b65em55fomadgvidkvj4au)(esbuild@0.19.3)
@@ -70,7 +79,7 @@ devDependencies:
     version: 7.0.0(stylelint@15.10.3)
   ts-node:
     specifier: ^10.9.1
-    version: 10.9.1(bun-types@1.0.2)(typescript@5.2.2)
+    version: 10.9.1(patch_hash=fb32izc6zrr2hqjbsx2ar4dyru)(bun-types@1.0.3)(typescript@5.2.2)
   type-fest:
     specifier: ^4.3.1
     version: 4.3.1
@@ -450,8 +459,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /@mdn/browser-compat-data@5.3.17:
-    resolution: {integrity: sha512-XoQWMIFRcg1U6ac7GDmqpWvJ1wkAKp5UwHh2rHzQgwaACVMcC4yWa4lW0HekGcNsvpD5e8OX+trAcEt8N+0Dsg==}
+  /@mdn/browser-compat-data@5.3.18:
+    resolution: {integrity: sha512-QkLweIx1dEF7nBWZhRKDsYd26k/RW2G87x7Dy8YDSeYq4sPMpqVMRZnLEcKwwoIgQJOcgGaGcVMRWaQHhrhB/g==}
     dev: true
 
   /@nodelib/fs.scandir@2.1.5:
@@ -489,6 +498,10 @@ packages:
 
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+    dev: true
+
+  /@tsconfig/node18@18.2.2:
+    resolution: {integrity: sha512-d6McJeGsuoRlwWZmVIeE8CUA27lu6jLjvv1JzqmpsytOYYbVi1tHZEnwCNVOXnj4pyLvneZlFlpXUK+X9wBWyw==}
     dev: true
 
   /@tsconfig/strictest@2.0.2:
@@ -881,7 +894,7 @@ packages:
   /ast-metadata-inferer@0.8.0:
     resolution: {integrity: sha512-jOMKcHht9LxYIEQu+RVd22vtgrPaVCtDRQ/16IGmurdzxvYbDd5ynxjnyrzLnieG96eTcAyaoj/wN/4/1FyyeA==}
     dependencies:
-      '@mdn/browser-compat-data': 5.3.17
+      '@mdn/browser-compat-data': 5.3.18
     dev: true
 
   /astral-regex@2.0.0:
@@ -911,23 +924,23 @@ packages:
       fill-range: 7.0.1
     dev: true
 
-  /browserslist@4.21.10:
-    resolution: {integrity: sha512-bipEBdZfVH5/pwrvqc+Ub0kUPVfGUhlKxbvfD+z1BDnPEO/X98ruXGA1WP5ASpAFKan7Qr6j736IacbZQuAlKQ==}
+  /browserslist@4.21.11:
+    resolution: {integrity: sha512-xn1UXOKUz7DjdGlg9RrUr0GGiWzI97UQJnugHtH0OLDfJB7jMgoIkYvRIEO1l9EeEERVqeqLYOcFBW9ldjypbQ==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001525
       electron-to-chromium: 1.4.508
       node-releases: 2.0.13
-      update-browserslist-db: 1.0.12(browserslist@4.21.10)
+      update-browserslist-db: 1.0.13(browserslist@4.21.11)
     dev: true
 
   /buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
 
-  /bun-types@1.0.2:
-    resolution: {integrity: sha512-yqBp2SX9cqr5/GReb56uCfM+YP+Hntx3XPjbqX1VJXqOBu+Yqw8iWRFLKFIsz9uEfykLgflhramQ8a5Jgo+Tlg==}
+  /bun-types@1.0.3:
+    resolution: {integrity: sha512-XlyKVdYCHa7K5PHYGcwOVOrGE/bMnLS51y7zFA3ZAAXyiQ6dTaNXNCWTTufgII/6ruN770uhAXphQmzvU/r2fQ==}
     dev: true
 
   /callsites@3.1.0:
@@ -1037,7 +1050,7 @@ packages:
   /core-js-compat@3.32.2:
     resolution: {integrity: sha512-+GjlguTDINOijtVRUxrQOv3kfu9rl+qPNdX2LTbJ/ZyVTuxK+ksVSAGX1nHstu4hrv1En/uPTtWgq2gI5wt4AQ==}
     dependencies:
-      browserslist: 4.21.10
+      browserslist: 4.21.11
     dev: true
 
   /core-js@3.32.2:
@@ -1162,7 +1175,7 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
-      browserslist: 4.21.10
+      browserslist: 4.21.11
       caniuse-lite: 1.0.30001525
       css-tokenize: 1.0.1
       duplexify: 4.1.2
@@ -1269,9 +1282,9 @@ packages:
     peerDependencies:
       eslint: ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      '@mdn/browser-compat-data': 5.3.17
+      '@mdn/browser-compat-data': 5.3.18
       ast-metadata-inferer: 0.8.0
-      browserslist: 4.21.10
+      browserslist: 4.21.11
       caniuse-lite: 1.0.30001525
       eslint: 8.49.0
       find-up: 5.0.0
@@ -1690,7 +1703,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': /bun-types@1.0.2
+      '@types/node': /bun-types@1.0.3
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
@@ -2609,7 +2622,7 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /ts-node@10.9.1(bun-types@1.0.2)(typescript@5.2.2):
+  /ts-node@10.9.1(patch_hash=fb32izc6zrr2hqjbsx2ar4dyru)(bun-types@1.0.3)(typescript@5.2.2):
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -2628,7 +2641,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': /bun-types@1.0.2
+      '@types/node': /bun-types@1.0.3
       acorn: 8.10.0
       acorn-walk: 8.2.0
       arg: 4.1.3
@@ -2639,6 +2652,7 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
+    patched: true
 
   /type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -2680,13 +2694,13 @@ packages:
     hasBin: true
     dev: true
 
-  /update-browserslist-db@1.0.12(browserslist@4.21.10):
-    resolution: {integrity: sha512-tE1smlR58jxbFMtrMpFNRmsrOXlpNXss965T1CrpwuZUzUAg/TBQc94SpyhDLSzrqrJS9xTRBthnZAGcE1oaxg==}
+  /update-browserslist-db@1.0.13(browserslist@4.21.11):
+    resolution: {integrity: sha512-xebP81SNcPuNpPP3uzeW1NYXxI3rxyJzF3pD6sH4jE7o/IX+WtSpwnVU+qIsDPyk0d3hmFQ7mjqc6AtV604hbg==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
     dependencies:
-      browserslist: 4.21.10
+      browserslist: 4.21.11
       escalade: 3.1.1
       picocolors: 1.0.0
     dev: true
@@ -2742,7 +2756,7 @@ packages:
       '@webassemblyjs/wasm-parser': 1.11.6
       acorn: 8.10.0
       acorn-import-assertions: 1.9.0(acorn@8.10.0)
-      browserslist: 4.21.10
+      browserslist: 4.21.11
       chrome-trace-event: 1.0.3
       enhanced-resolve: 5.15.0
       es-module-lexer: 1.3.1
