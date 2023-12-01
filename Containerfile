@@ -42,7 +42,7 @@ RUN set -eux \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-06 --profile minimal
+ && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-08 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=gnutls \

@@ -374,7 +374,7 @@
         "integrity": "sha512-tUkiguQGW7S3IhB7N+c2MV/HZPSCPAAiYBZXLsBhFB/PCy6ZKKsZrmBayHV9fdGV/ARIfJ14NkxKzRDjvp7L6w==",
         "dependencies": {
           "caniuse-lite": "caniuse-lite@1.0.30001486",
-          "electron-to-chromium": "electron-to-chromium@1.4.391",
+          "electron-to-chromium": "electron-to-chromium@1.4.392",
           "node-releases": "node-releases@2.0.10",
           "update-browserslist-db": "update-browserslist-db@1.0.11_browserslist@4.21.5"
         }
@@ -678,8 +678,8 @@
           "stream-shift": "stream-shift@1.0.1"
         }
       },
-      "electron-to-chromium@1.4.391": {
-        "integrity": "sha512-GqydVV1+kUWY5qlEzaw34/hyWTApuQrHiGrcGA2Kk/56nEK44i+YUW45VH43JuZT0Oo7uY8aVtpPhBBZXEWtSA==",
+      "electron-to-chromium@1.4.392": {
+        "integrity": "sha512-TXQOMW9tnhIms3jGy/lJctLjICOgyueZFJ1KUtm6DTQ+QpxX3p7ZBwB6syuZ9KBuT5S4XX7bgY1ECPgfxKUdOg==",
         "dependencies": {}
       },
       "elliptic@6.5.4": {
