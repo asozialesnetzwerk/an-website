@@ -38,7 +38,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.30.3
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.34.4
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Build TS & CSS
