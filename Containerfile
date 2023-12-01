@@ -74,7 +74,7 @@ RUN /venv/bin/pip install --no-deps .
 FROM $BASE
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 libxslt1.1 \
+ && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libraqm0 libtiff5 libwebp6 libwebpdemux2 libwebpmux3 libxml2 libxslt1.1 \
  && rm -fr /var/lib/apt/lists/* \
  && for pkg in \
         g/gcc-12/gcc-12-base_12.2.0-14 \

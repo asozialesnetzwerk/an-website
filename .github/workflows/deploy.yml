@@ -114,7 +114,8 @@ jobs:
         with:
           name: artifact
       - name: Run tests
-        run: podman run -t --entrypoint=/bin/sh -v ./requirements-ci.txt:/data/requirements-ci.txt:z,ro -v ./tests:/data/tests:z oci-archive:oci-archive.tar -c "grep -E '^(coverage|html5lib|pytest)' requirements-ci.txt | xargs /venv/bin/pip install && /venv/bin/pytest"
+        timeout-minutes: 5
+        run: podman run -t --entrypoint=/bin/sh -v ./requirements-ci.txt:/data/requirements-ci.txt:z,ro -v ./tests:/data/tests:z oci-archive:oci-archive.tar -c "grep -E '^(coverage|html5lib|pytest)' requirements-ci.txt | xargs /venv/bin/pip install && /venv/bin/pytest --verbose"
 
   push-oci-image:
     name: Push OCI image
@@ -252,7 +253,7 @@ jobs:
         run: grep -E "^(coverage|html5lib|pytest)" requirements-ci.txt | xargs pip install
       - name: Run pytest
         timeout-minutes: 5
-        run: pytest --durations=0 --verbose --cov=an_website tests
+        run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v3
         with:
@@ -363,7 +364,6 @@ jobs:
         run: grep "^coverage" requirements-ci.txt | xargs pip install
       - name: Create coverage files
         run: |
-          coverage report --skip-covered
           coverage html -d github-pages/coverage
           coverage json -o github-pages/coverage.json
           ./generate-badge.sh > github-pages/coverage/badge.svg

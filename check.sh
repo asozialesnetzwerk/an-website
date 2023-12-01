@@ -53,12 +53,10 @@ if [ -n "${1:-}" ]; then
   pytest="python3 -m pytest --durations=0 --durations-min=0.5"
   if [ "${1:-}" = "test" ]; then
     echo Tests:
-    ${pytest} tests || FAILED=$(( 128 | FAILED ))
+    ${pytest} || FAILED=$(( 128 | FAILED ))
   elif [ "${1:-}" = "test-cov" ]; then
     echo Tests:
-    ${pytest} --cov=an_website --cov-report= tests || FAILED=$(( 128 | FAILED ))
-    echo Coverage:
-    python3 -m coverage report --skip-covered
+    ${pytest} --cov --cov-report=term:skip-covered || FAILED=$(( 128 | FAILED ))
   fi
 fi
 

@@ -774,8 +774,8 @@ class BaseRequestHandler(RequestHandler):
         """
         Get title and description from the kwargs.
 
-        If title and description are present in the kwargs they
-        override self.title and self.description.
+        If title and description are present in the kwargs,
+        then they override self.title and self.description.
         """
         self.module_info = module_info
         if not default_title:
