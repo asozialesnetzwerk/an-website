@@ -1,4 +1,4 @@
-ARG BASE=docker.io/library/python:3.12.0b1-slim
+ARG BASE=docker.io/library/python:3.12.0a7-slim
 
 FROM $BASE AS builder
 RUN set -eux \
