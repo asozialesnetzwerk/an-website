@@ -45,7 +45,9 @@ function hideSitePane() {
     };
     document.ontouchstart = (e) => {
         // save start pos of touch
+        // @ts-expect-error TS2532
         startPos.x = e.touches[0].clientX;
+        // @ts-expect-error TS2532
         startPos.y = e.touches[0].clientY;
     };
     document.ontouchmove = (e) => {
@@ -53,7 +55,9 @@ function hideSitePane() {
             return;
         }
         // calculate difference
+        // @ts-expect-error TS2532
         const diffX = startPos.x - e.touches[0].clientX;
+        // @ts-expect-error TS2532
         const diffY = startPos.y - e.touches[0].clientY;
 
         // early return if just clicked, not swiped

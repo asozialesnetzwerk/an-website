@@ -15,6 +15,7 @@ function getSnowAttributes(): void {
     if (snow) {
         snowflakesCount = Number(
             // @ts-expect-error TS2339
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             snow.attributes?.count?.value ?? snowflakesCount,
         );
     }
@@ -42,6 +43,7 @@ function spawnSnow(snowDensity = 200): void {
 function addCss(rule: string): void {
     const css = document.createElement("style");
     css.appendChild(document.createTextNode(rule)); // Support for the rest
+    // @ts-expect-error TS2532
     document.getElementsByTagName("head")[0].appendChild(css);
 }
 

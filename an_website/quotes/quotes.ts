@@ -26,20 +26,26 @@ function startQuotes() {
     })(); // currently only letter keys are supported
 
     (elById("wasd") as HTMLElement).innerText =
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
     document.onkeydown = (event) => {
         switch (event.code) {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[0]}`:
                 upvoteButton.click();
                 break;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[1]}`:
                 window.history.back();
                 break;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[2]}`:
                 downvoteButton.click();
                 break;
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             case `Key${keys[3]}`:
                 nextButton.click();
         }
@@ -63,7 +69,9 @@ function startQuotes() {
         shareButton.href = `/zitate/share/${quoteId}${params}`;
         downloadButton.href = `/zitate/${quoteId}.gif${params}`;
         const [q_id, a_id] = quoteId.split("-", 2);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         quote.href = `/zitate/info/z/${q_id}${params}`;
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         author.href = `/zitate/info/a/${a_id}${params}`;
         thisQuoteId[0] = quoteId;
     }
@@ -162,6 +170,7 @@ function startQuotes() {
         return false;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["quotes"] = (event: PopStateEvent) => {
         event.state && handleData(event.state as API_DATA);
     };
@@ -173,6 +182,7 @@ function startQuotes() {
 
     nextButton.onclick = () =>
         get(
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             `/api/zitate/${nextQuoteId[0]}`,
             params,
             (data: POP_STATE_API_DATA) => {
@@ -189,6 +199,7 @@ function startQuotes() {
 
     const vote = (vote: string): Promise<void> =>
         post(
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             `/api/zitate/${thisQuoteId[0]}`,
             { vote: vote },
             (data: API_DATA) => void handleData(data),

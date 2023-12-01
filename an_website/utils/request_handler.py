@@ -162,6 +162,13 @@ class HTMLRequestHandler(BaseRequestHandler):
                 "<input name='effects' class='hidden' "
                 f"value={bool_to_str(effects)!r}>"
             )
+        if (
+            compatibility := self.get_compatibility()
+        ) != self.get_saved_compatibility():
+            form_appendix += (
+                "<input name='compatibility' class='hidden' "
+                f"value={bool_to_str(compatibility)!r}>"
+            )
         return form_appendix
 
     @override
@@ -184,6 +191,7 @@ class HTMLRequestHandler(BaseRequestHandler):
                 if self.request.path.upper().startswith("/LOLWUT")
                 else self.request.full_url().lower()
             ).split("?")[0],
+            compatibility=self.get_compatibility(),
             description=self.description,
             dynload=self.get_dynload(),
             effects=self.get_effects(),

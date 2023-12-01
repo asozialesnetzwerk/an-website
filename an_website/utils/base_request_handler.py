@@ -229,32 +229,36 @@ class BaseRequestHandler(RequestHandler):
         path = url.path if new_path is None else new_path  # the path of the url
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
-                no_3rd_party=None,
                 theme=None,
                 effects=None,
                 dynload=None,
                 openmoji=None,
                 bumpscosity=None,
+                no_3rd_party=None,
+                compatibility=None,
             )
         else:
-            query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
             query_args.setdefault("theme", self.get_theme())
             query_args.setdefault("effects", self.get_effects())
             query_args.setdefault("dynload", self.get_dynload())
             query_args.setdefault("openmoji", self.get_openmoji())
             query_args.setdefault("bumpscosity", self.get_bumpscosity())
+            query_args.setdefault("no_3rd_party", self.get_no_3rd_party())
+            query_args.setdefault("compatibility", self.get_compatibility())
+            if query_args["compatibility"] == self.get_saved_compatibility():
+                query_args["compatibility"] = None
             if query_args["no_3rd_party"] == self.get_saved_no_3rd_party():
                 query_args["no_3rd_party"] = None
-            if query_args["theme"] == self.get_saved_theme():
-                query_args["theme"] = None
-            if query_args["effects"] == self.get_saved_effects():
-                query_args["effects"] = None
-            if query_args["dynload"] == self.get_saved_dynload():
-                query_args["dynload"] = None
-            if query_args["openmoji"] == self.get_saved_openmoji():
-                query_args["openmoji"] = None
             if query_args["bumpscosity"] == self.get_saved_bumpscosity():
                 query_args["bumpscosity"] = None
+            if query_args["openmoji"] == self.get_saved_openmoji():
+                query_args["openmoji"] = None
+            if query_args["dynload"] == self.get_saved_dynload():
+                query_args["dynload"] = None
+            if query_args["effects"] == self.get_saved_effects():
+                query_args["effects"] = None
+            if query_args["theme"] == self.get_saved_theme():
+                query_args["theme"] = None
 
         return add_args_to_url(
             urlunsplit(
@@ -312,6 +316,12 @@ class BaseRequestHandler(RequestHandler):
         if spam := self.get_argument("bumpscosity", ""):
             return parse_bumpscosity(spam)
         return self.get_saved_bumpscosity()
+
+    def get_compatibility(self) -> bool:
+        """Return the compatibility query argument as boolean."""
+        return self.get_bool_argument(
+            "compatibility", self.get_saved_compatibility()
+        )
 
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
@@ -446,6 +456,10 @@ class BaseRequestHandler(RequestHandler):
     def get_saved_bumpscosity(self) -> BumpscosityValue:
         """Get the saved value for the bumpscosity."""
         return parse_bumpscosity(self.get_cookie("bumpscosity", ""))
+
+    def get_saved_compatibility(self) -> bool:
+        """Get the saved value for compatibility."""
+        return str_to_bool(self.get_cookie("compatibility"), False)
 
     def get_saved_dynload(self) -> bool:
         """Get the saved value for dynload."""

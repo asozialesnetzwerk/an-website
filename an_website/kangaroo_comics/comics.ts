@@ -166,6 +166,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         "Freitag",
         "Samstag",
     ];
+    // @ts-expect-error TS2322
     const getDayName = (date: Date): string => days[date.getDay()];
     const months: [
         string,
@@ -194,6 +195,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         "November",
         "Dezember",
     ];
+    // @ts-expect-error TS2322
     const getMonthName = (date: Date): string => months[date.getMonth()];
 
     const getDateString = (date: Date): string => (
@@ -239,8 +241,11 @@ administratives/kaenguru-comics/kaenguru-045/original
             const match = link.toLowerCase().match(reg);
             if (match && match.length > 3) {
                 return getDateBy(
+                    // @ts-expect-error TS2345
                     parseInt(match[1]),
+                    // @ts-expect-error TS2345
                     parseInt(match[2]),
+                    // @ts-expect-error TS2345
                     parseInt(match[3]),
                 );
             }
@@ -248,6 +253,7 @@ administratives/kaenguru-comics/kaenguru-045/original
         // URLs with incrementing number in them
         const arr = link.toLowerCase().match(oldLinkRegex);
         if (arr && arr.length > 1) {
+            // @ts-expect-error TS2345
             const num = parseInt(arr[1]) - 5;
             const date = new Date(firstDateWithOldLink.getTime());
             for (let i = 0; i < num; i++) {
@@ -319,17 +325,22 @@ administratives/kaenguru-comics/kaenguru-045/original
             }
 
             let link = comics[c];
+            // @ts-expect-error TS2345
             const date = getDateFromLink(link);
             if (date === null) {
+                // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 console.error("No date found for " + link);
                 continue;
             }
+            // @ts-expect-error TS2532
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
 
             const listItem = document.createElement("li");
             const header = document.createElement("a");
             header.classList.add("comic-header");
             header.innerText = getDateString(date) + ":";
+            // @ts-expect-error TS2322
             header.href = link;
             header.style.fontSize = "25px";
             listItem.appendChild(header);
@@ -337,6 +348,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             const image = document.createElement("img");
             image.classList.add("normal-img");
             // image.crossOrigin = "";
+            // @ts-expect-error TS2322
             image.src = link;
             image.alt = getDateString(date);
             image.onclick = () => createImgPopup(image);

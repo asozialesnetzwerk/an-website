@@ -55,13 +55,17 @@
         if (bigIntType === "number" && str.includes("e")) {
             const [num, pow] = str.split("e");
 
+            // @ts-expect-error TS2532
             if (pow.startsWith("-")) {
                 return "0"; // too small to be displayed
             }
 
+            // @ts-expect-error TS2532
             // eslint-disable-next-line prefer-const
             let [int, dec] = num.split(".");
             dec = dec || "";
+            // @ts-expect-error TS2345
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
             str = int + dec + "0".repeat(parseInt(pow) - dec.length);
         }
         if (isZero(str)) {
@@ -86,8 +90,10 @@
 
         let [int, dec] = [str, "00"];
         if (str.includes(",")) {
+            // @ts-expect-error TS2322
             [int, dec] = str.split(",");
         } else if (str.includes(".")) {
+            // @ts-expect-error TS2322
             [int, dec] = str.split(".");
         }
         if (dec.length !== 2) {
@@ -97,6 +103,7 @@
         return BigInt(int + dec);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     PopStateHandlers["currencyConverter"] = (e: PopStateEvent) =>
         setAllFields(
             strToBigInt((e.state as { euro: string })["euro"].toString()),
@@ -120,8 +127,10 @@
             const value = getDisplayValue(
                 (euroValue as bigint) * (factors[i] as bigint),
             );
+            // @ts-expect-error TS2532
             fields[i].placeholder = value || "null";
             if (i !== ignored) {
+                // @ts-expect-error TS2532
                 fields[i].value = value || "null";
             }
         }
@@ -145,18 +154,22 @@
     }
 
     for (let i = 0; i < 4; i++) {
+        // @ts-expect-error TS2532
         fields[i].oninput = () => {
             // remove "invalid" class
             for (const field of fields) {
                 field.className = "";
             }
             // add "invalid" class if input is not a number
+            // @ts-expect-error TS2532
             if (!numberRegex.test(fields[i].value)) {
+                // @ts-expect-error TS2532
                 fields[i].className = "invalid";
                 return;
             }
             // parse input as it is a number
             setAllFields(
+                // @ts-expect-error TS2532
                 (strToBigInt(fields[i].value) as bigint) /
                     (factors[i] as bigint),
                 i,

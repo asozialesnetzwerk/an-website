@@ -29,6 +29,7 @@ function createBumpscositySlider() {
     rangeSlider.setAttribute("max", (select.options.length - 1).toString());
 
     rangeSlider.onpointermove = () => {
+        // @ts-expect-error TS2532
         const value = possibleLevels[parseInt(rangeSlider.value)].toString();
         select.value = value;
         currentValueDiv.setAttribute("tooltip", value);
@@ -46,7 +47,7 @@ function createBumpscositySlider() {
     rangeSlider.onchange = () => {
         let sliderVal = parseInt(rangeSlider.value);
         const promptStart = `Willst du die Bumpscosity wirklich auf ${
-            possibleLevels[sliderVal]
+            possibleLevels[sliderVal] // eslint-disable-line @typescript-eslint/restrict-template-expressions
         } setzen? `;
         if (sliderVal === select.options.length - 1) {
             if (
@@ -72,6 +73,7 @@ function createBumpscositySlider() {
 
         if (sliderVal !== parseInt(rangeSlider.value)) {
             rangeSlider.value = sliderVal.toString();
+            // @ts-expect-error TS2532
             select.value = possibleLevels[parseInt(rangeSlider.value)]
                 .toString();
         }

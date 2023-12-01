@@ -134,6 +134,7 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
         !href.startsWith(window.location.origin) ||
         // link is to file, not HTML page
         (
+            // @ts-expect-error TS2532
             (hrefWithoutQuery.split("/").pop() || "").includes(".") &&
             // URLs to redirect page are HTML pages
             hrefWithoutQuery !== (window.location.origin + "/redirect")
@@ -147,6 +148,7 @@ function dynLoadFixHref(anchor: HTMLAnchorElement) {
     if (
         // URL to the same page, but with hash
         href.startsWith("#") ||
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         href.startsWith(window.location.href.split("#")[0] + "#")
     ) {
         return;
@@ -188,6 +190,7 @@ function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     contentContainer.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     void get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
         if (url === window.location.href) {
@@ -224,6 +227,7 @@ function dynLoadOnPopState(event: PopStateEvent) {
     window.location.reload();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
 dynLoadReplaceAnchors();

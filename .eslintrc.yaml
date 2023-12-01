@@ -10,7 +10,7 @@ ignorePatterns:
   - "*.js"
 parserOptions:
   ecmaVersion: latest
-  project: tsconfig.json
+  project: true
 env:
   es2020: true
   browser: true

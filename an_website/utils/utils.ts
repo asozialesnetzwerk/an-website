@@ -129,9 +129,10 @@ window.onpopstate = (event: PopStateEvent) => {
         const state = event.state as { stateType: string };
         if (
             state["stateType"] &&
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             PopStateHandlers[state["stateType"]]
         ) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
             PopStateHandlers[state["stateType"]](event);
             lastLocation = window.location.href;
             event.preventDefault();
