@@ -77,11 +77,11 @@ from .utils import (
 
 if TYPE_CHECKING:
     from typing_extensions import override
+elif sys.hexversion >= 0x30C00A6:
+    # pylint: disable=no-name-in-module, ungrouped-imports
+    from typing import override
 else:
-    if sys.hexversion >= 0x30C00A6:
-        from typing import override
-    else:
-        from typing_extensions import override
+    from typing_extensions import override
 
 LOGGER: Final = logging.getLogger(__name__)
 

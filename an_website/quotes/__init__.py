@@ -60,16 +60,16 @@ def get_module_info() -> ModuleInfo:
                 {"url": "/zitate/{0}-{1}"},
             ),
             (  # redirect to the new URL
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image\.([a-zA-Z]{3,4})",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})/image\.([a-zA-Z]+)",
                 RedirectHandler,
                 {"url": "/zitate/{0}-{1}.{2}"},
             ),
             (
-                r"/zitate/([0-9]{1,10})-([0-9]{1,10})\.([a-zA-Z]{3,4})",
+                r"/zitate/([0-9]{1,10})-([0-9]{1,10})\.([a-zA-Z]+)",
                 QuoteAsImage,
             ),
             (
-                r"/zitate/([0-9]{1,10})()\.([a-zA-Z]{3,4})",
+                r"/zitate/([0-9]{1,10})()\.([a-zA-Z]+)",
                 QuoteAsImage,
             ),
             (  # redirect to the new URL (changed because of robots.txt)
