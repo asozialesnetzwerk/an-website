@@ -5,7 +5,7 @@ import compat from "npm:core-js-compat@3";
 const args = parse(Deno.args, {
     boolean: "inverse",
     string: ["targets", "version"],
-    default: {targets: "defaults"},
+    default: { targets: "defaults" },
 });
 
 const {
