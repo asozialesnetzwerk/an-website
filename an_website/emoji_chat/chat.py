@@ -116,28 +116,13 @@ def check_message_invalid(message: str) -> Literal[False] | str:
     if not message:
         return "Empty message not allowed."
 
-    if not check_only_emojis(message):
+    if not emoji.purely_emoji(message):
         return "Message can only contain emojis."
 
     if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
         return f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
 
     return False
-
-
-def check_only_emojis(string: str) -> bool:
-    """Check whether a string only includes emojis."""
-    is_emoji = [False] * len(string)
-
-    def set_emojis(emoji: str, emoji_data: dict[str, Any]) -> str:
-        # pylint: disable=unused-argument
-        for i in range(emoji_data["match_start"], emoji_data["match_end"]):
-            is_emoji[i] = True
-        return ""
-
-    demojize(string, language="en", version=-1, handle_version=set_emojis)
-
-    return False not in is_emoji
 
 
 def emojize_user_input(string: str) -> str:

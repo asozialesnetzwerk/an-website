@@ -295,10 +295,7 @@ async def test_quote_request_handlers(
                 ),
                 content_type,
             ).body
-            assert image1 == image2 == image3 == image4 or name in {
-                "pdf",
-                "xlsx",
-            }
+            assert image1 == image2 == image3 == image4 or name == "xlsx"
 
 
 def test_parsing_vote_str() -> None:

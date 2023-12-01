@@ -22,6 +22,7 @@ import math
 import os
 import sys
 import textwrap
+import time
 from collections.abc import Iterable, Mapping, Set
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
@@ -29,7 +30,7 @@ from typing import Any, ClassVar, Final
 from PIL import Image, ImageDraw, ImageFont
 from tornado.web import HTTPError
 
-from .. import patches
+from .. import EPOCH, patches
 from ..utils import static_file_handling
 from .utils import (
     DIR,
@@ -321,6 +322,15 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         kwargs.update(format="gif", palette=palette)
     elif file_type == "jxl":
         kwargs.update(lossless=True)
+    elif file_type == "pdf":
+        timestamp = time.gmtime(EPOCH)
+        kwargs.update(
+            title=wq_id or "0-0",
+            author=author,
+            subject=quote,
+            creationDate=timestamp,
+            modDate=timestamp,
+        )
     elif file_type == "tga":
         kwargs.update(compression="tga_rle")
     elif file_type == "tiff":

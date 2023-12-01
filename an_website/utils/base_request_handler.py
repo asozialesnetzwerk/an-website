@@ -488,6 +488,9 @@ class BaseRequestHandler(RequestHandler):
             ansi2html=partial(
                 reduce, apply, (ansi2html, ansi_replace, backspace_replace)
             ),
+            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
+            if self.apm_enabled
+            else None,
             as_html=self.content_type == "text/html",
             c=self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
@@ -497,6 +500,7 @@ class BaseRequestHandler(RequestHandler):
                 else self.request.full_url().lower()
             ).split("?")[0],
             description=self.description,
+            display_theme=self.get_theme(),
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,
@@ -519,11 +523,7 @@ class BaseRequestHandler(RequestHandler):
             settings=self.settings,
             short_title=self.short_title,
             testing=pytest_is_running(),
-            theme=self.get_theme(),
             title=self.title,
-            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
-            if self.apm_enabled
-            else None,
         )
         namespace.update(
             {
