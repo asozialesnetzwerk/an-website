@@ -44,7 +44,7 @@ except TypeError:
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
     if "ripemd160" in algorithms_available:
-        digest = new("ripemd160", data).digest()
+        digest = new("ripemd160", data, usedforsecurity=False).digest()
     elif RIPEMD160:
         digest = RIPEMD160.new(data).digest()
     elif hasattr(CRYPTO, "RIPEMD160"):

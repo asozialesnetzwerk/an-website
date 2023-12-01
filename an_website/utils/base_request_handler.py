@@ -30,7 +30,7 @@ from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timezone, tzinfo
-from typing import Any, ClassVar, Final, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, quote, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
@@ -75,10 +75,13 @@ from .utils import (
     str_to_bool,
 )
 
-if sys.version_info >= (3, 12):
-    from typing import override
-else:
+if TYPE_CHECKING:
     from typing_extensions import override
+else:
+    if sys.hexversion >= 0x30C00A6:
+        from typing import override
+    else:
+        from typing_extensions import override
 
 LOGGER: Final = logging.getLogger(__name__)
 

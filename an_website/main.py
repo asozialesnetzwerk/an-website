@@ -28,12 +28,13 @@ import sys
 import threading
 import time
 import types
+import uuid
 from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Coroutine, Iterable, MutableSequence
 from configparser import ConfigParser
-from hashlib import sha3_512, sha256
+from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, Final, Literal, TypeAlias, cast
@@ -44,6 +45,7 @@ import orjson
 import regex
 import tornado.netutil
 import tornado.process
+from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import]
 from elasticapm.contrib.tornado import ElasticAPM  # type: ignore[import]
@@ -437,10 +439,18 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         if (key_perms := [part.strip() for part in secret.split("=")])
         if key_perms[0]
     }
+
     app.settings["AUTH_TOKEN_SECRET"] = (
         config.get("GENERAL", "AUTH_TOKEN_SECRET", fallback=None)
-        or sha3_512(__file__.encode("UTF-8")).digest()
     )
+    if not app.settings["AUTH_TOKEN_SECRET"]:
+        node = uuid.getnode().to_bytes(6, "big")
+        secret = RIPEMD160.new(node).digest().decode("BRAILLE")
+        LOGGER.warning(
+            "AUTH_TOKEN_SECRET is unset, implicitly setting it to %r",
+            secret,
+        )
+        app.settings["AUTH_TOKEN_SECRET"] = secret
 
     app.settings["UNDER_ATTACK"] = config.getboolean(
         "GENERAL", "UNDER_ATTACK", fallback=False
@@ -1066,7 +1076,9 @@ def main(  # noqa: C901  # pragma: no cover
 
     setup_webhook_logging(config, loop)
 
-    server.add_sockets(sockets)
+    with catch_warnings():  # TODO: remove after dropping support for 3.11
+        simplefilter("ignore", DeprecationWarning)
+        server.add_sockets(sockets)
 
     if sockets:
         # pylint: disable=unused-variable

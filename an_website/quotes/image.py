@@ -72,6 +72,7 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "pdf": "pdf",
     "png": "png",
     "spi": "spider",
+    "spider": "spider",
     "tiff": "tiff",
     "webp": "webp",
     **({"xlsx": "xlsx"} if to_excel else {}),

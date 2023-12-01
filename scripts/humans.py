@@ -21,7 +21,6 @@ from __future__ import annotations
 import re  # pylint: disable=preferred-module
 import sys
 from collections.abc import Mapping, MutableSequence, Reversible, Set
-from hashlib import sha3_512
 from os.path import dirname, normpath
 from pathlib import Path
 from random import Random
@@ -157,7 +156,7 @@ def add_data_to_output(
 ) -> None:
     """Add the data of contributors/maintainers to the output."""
     for i, (_, person) in enumerate(sorted(data, reverse=True)):
-        random = Random(sha3_512(repr(person).encode("UTF-8")).digest())
+        random = Random(person[0][1])
         if i:
             output.append(get_whitespaces(random, 0, 5))
         for key, value in person:

@@ -26,7 +26,7 @@ from asyncio import Future
 from datetime import date, datetime, timedelta
 from http.client import responses
 from pathlib import Path
-from typing import Any, ClassVar, Final
+from typing import TYPE_CHECKING, Any, ClassVar, Final
 from urllib.parse import unquote, urlsplit
 
 import html2text
@@ -53,10 +53,13 @@ from .utils import (
     str_to_bool,
 )
 
-if sys.version_info >= (3, 12):
-    from typing import override
-else:
+if TYPE_CHECKING:
     from typing_extensions import override
+else:
+    if sys.hexversion >= 0x30C00A6:
+        from typing import override
+    else:
+        from typing_extensions import override
 
 LOGGER: Final = logging.getLogger(__name__)
 

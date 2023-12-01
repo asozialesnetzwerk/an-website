@@ -15,11 +15,11 @@
 
 from __future__ import annotations
 
-import hashlib
 import hmac
 import math
 from base64 import b64decode, b64encode
 from datetime import datetime
+from hashlib import blake2b
 from typing import ClassVar, Literal, NamedTuple, TypeAlias, TypeGuard, get_args
 
 from .utils import Permission
@@ -70,13 +70,13 @@ def parse_token(  # pylint: disable=inconsistent-return-statements
     secret: bytes | str,
     verify_time: bool = True,
 ) -> ParseResult:
-    """Parse an auth-token."""
-    secret_bytes = secret.encode("UTF-8") if isinstance(secret, str) else secret
+    """Parse an auth token."""
+    secret = secret.encode("UTF-8") if isinstance(secret, str) else secret
     version, token_body = _split_token(token)
     try:
         if version == "0":
             return _parse_token_v0(
-                token_body, secret_bytes, verify_time=verify_time
+                token_body, secret, verify_time=verify_time
             )
     except InvalidTokenError:
         raise
@@ -89,18 +89,18 @@ def create_token(
     *,
     secret: bytes | str,
     duration: int,
-    start_time: datetime | None = None,
-    salt: str | None | bytes = None,
+    start: None | datetime = None,
+    salt: None | bytes | str = None,
     version: TokenVersion = SUPPORTED_TOKEN_VERSIONS[-1],
 ) -> ParseResult:
     """Create an auth token."""
-    secret_bytes = secret.encode("UTF-8") if isinstance(secret, str) else secret
-    start_date = datetime.now() if start_time is None else start_time
-    salt_bytes = salt.encode("UTF-8") if isinstance(salt, str) else salt or b""
+    secret = secret.encode("UTF-8") if isinstance(secret, str) else secret
+    start = datetime.now() if start is None else start
+    salt = salt.encode("UTF-8") if isinstance(salt, str) else salt or b""
     token: str
     if version == "0":
         token = _create_token_body_v0(
-            permissions, secret_bytes, duration, start_date, salt_bytes
+            permissions, secret, duration, start, salt
         )
 
     return parse_token(version + token, secret=secret, verify_time=False)
@@ -119,23 +119,23 @@ def bytes_to_int(bytes_: bytes, signed: bool = False) -> int:
 def _parse_token_v0(
     token_body: str, secret: bytes, *, verify_time: bool = True
 ) -> ParseResult:
-    """Parse an auth-token of version 0."""
+    """Parse an auth token of version 0."""
     data: bytes = b64decode(token_body)
     data, hash_ = data[:-48], data[-48:]
     if not hmac.compare_digest(hmac.digest(secret, data, "SHA3-384"), hash_):
         raise InvalidTokenError()
-    data, start_date = data[:-5], bytes_to_int(data[-5:])
+    data, start = data[:-5], bytes_to_int(data[-5:])
     data, duration = data[:-5], bytes_to_int(data[-5:])
     permissions, salt = bytes_to_int(data[:-6]), data[-6:]
 
     now = int(datetime.now().timestamp())
-    if verify_time and (now < start_date or start_date + duration < now):
+    if verify_time and (now < start or start + duration < now):
         raise InvalidTokenError()
 
     return ParseResult(
         "0" + token_body,
         Permission(permissions),
-        datetime.fromtimestamp(start_date + duration),
+        datetime.fromtimestamp(start + duration),
         salt,
     )
 
@@ -144,16 +144,16 @@ def _create_token_body_v0(
     permissions: Permission,
     secret: bytes,
     duration: int,
-    start_date: datetime,
+    start: datetime,
     salt: bytes,
 ) -> str:
-    """Create an auth-token of version 0."""
+    """Create an auth token of version 0."""
     if not salt:
-        salt = hashlib.blake2s(
-            int_to_bytes(int(start_date.timestamp() - duration), 5)
-        ).digest()[:6]
+        salt = blake2b(
+            int_to_bytes(int(start.timestamp() - duration), 5), digest_size=6
+        ).digest()
     elif len(salt) < 6:
-        salt = b" " * (6 - len(salt)) + salt
+        salt = b"U" * (6 - len(salt)) + salt
     elif len(salt) > 6:
         salt = salt[:6]
 
@@ -161,7 +161,7 @@ def _create_token_body_v0(
         int_to_bytes(permissions, math.ceil(len(Permission) / 8)),
         salt,
         int_to_bytes(duration, 5),
-        int_to_bytes(int(start_date.timestamp()), 5),
+        int_to_bytes(int(start.timestamp()), 5),
     )
     data: bytes = b"".join(parts)
 
