@@ -15,14 +15,14 @@ RUN set -eux \
         g/gcc-12/gcc-12-base_12.2.0-14 \
         g/gcc-12/libgcc-s1_12.2.0-14 \
         g/gcc-12/libstdc++6_12.2.0-14 \
-        g/glib2.0/libglib2.0-0_2.74.6-1 \
-        g/glib2.0/libglib2.0-bin_2.74.6-1 \
-        g/glib2.0/libglib2.0-dev_2.74.6-1 \
-        g/glib2.0/libglib2.0-dev-bin_2.74.6-1 \
-        g/glibc/libc6_2.36-8 \
-        g/glibc/libc-bin_2.36-8 \
-        g/glibc/libc6-dev_2.36-8 \
-        g/glibc/libc-dev-bin_2.36-8 \
+        g/glib2.0/libglib2.0-0_2.74.6-2 \
+        g/glib2.0/libglib2.0-bin_2.74.6-2 \
+        g/glib2.0/libglib2.0-dev_2.74.6-2 \
+        g/glib2.0/libglib2.0-dev-bin_2.74.6-2 \
+        g/glibc/libc6_2.36-9 \
+        g/glibc/libc-bin_2.36-9 \
+        g/glibc/libc6-dev_2.36-9 \
+        g/glibc/libc-dev-bin_2.36-9 \
         h/highway/libhwy1_1.0.3-3 \
         h/highway/libhwy-dev_1.0.3-3 \
         j/jansson/libjansson4_2.14-2 \
@@ -32,16 +32,16 @@ RUN set -eux \
         l/lcms2/liblcms2-dev_2.14-2 \
         r/rpcsvc-proto/rpcsvc-proto_1.4.3-1 \
         libf/libffi/libffi8_3.4.4-1 \
-        libz/libzstd/libzstd1_1.5.4+dfsg2-3 \
+        libz/libzstd/libzstd1_1.5.4+dfsg2-5 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/${pkg}_amd64.deb \
+        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \
  && apt-get check \
  && rm -f *.deb \
- && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-04-20 --profile minimal
+ && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain beta-2023-05-01 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
     PYCURL_SSL_LIBRARY=gnutls \
@@ -79,14 +79,14 @@ RUN set -eux \
  && for pkg in \
         g/gcc-12/gcc-12-base_12.2.0-14 \
         g/gcc-12/libstdc++6_12.2.0-14 \
-        g/glibc/libc-bin_2.36-8 \
-        g/glibc/libc6_2.36-8 \
+        g/glibc/libc-bin_2.36-9 \
+        g/glibc/libc6_2.36-9 \
         h/highway/libhwy1_1.0.3-3 \
-        l/lcms2/liblcms2-2_2.14-2 \
         j/jpeg-xl/libjxl0.7_0.7.0-10 \
+        l/lcms2/liblcms2-2_2.14-2 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/${pkg}_amd64.deb \
+        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \

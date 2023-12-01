@@ -6,8 +6,8 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "rc-v6",
     "@typescript-eslint/parser": "rc-v6",
-    "eslint": "^8.39.0",
-    "type-fest": "^3.9.0",
+    "eslint": "^8.40.0",
+    "type-fest": "^3.10.0",
     "typescript": "~5.0.4",
     "typescript-eslint-language-service": "^5.0.5"
   },

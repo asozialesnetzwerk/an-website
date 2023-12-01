@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.0-417.3.beta
+          sdk: 3.0.0-417.4.beta
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -70,7 +70,7 @@ jobs:
           rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
-          VERSION: 1.62.0
+          VERSION: 1.62.1
       - name: Generate snow
         run: /opt/dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS

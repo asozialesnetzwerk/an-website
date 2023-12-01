@@ -358,8 +358,8 @@ jobs:
     steps:
       - name: Upgrade Buildah
         run: |
-          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
-          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b2_amd64.deb
+          wget https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b3_amd64.deb
+          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b3_amd64.deb
       - name: Download youki
         run: |
           wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
@@ -441,8 +441,8 @@ jobs:
     steps:
       - name: Upgrade Skopeo
         run: |
-          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/s/skopeo/skopeo_1.9.3+ds1-1+b2_amd64.deb
-          sudo dpkg --force-depends -i skopeo_1.9.3+ds1-1+b2_amd64.deb
+          wget https://snapshot.debian.org/archive/debian/20230501T024743Z/pool/main/s/skopeo/skopeo_1.9.3+ds1-1+b3_amd64.deb
+          sudo dpkg --force-depends -i skopeo_1.9.3+ds1-1+b3_amd64.deb
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
