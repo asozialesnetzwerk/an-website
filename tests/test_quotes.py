@@ -15,7 +15,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone as tz
+from datetime import datetime
+from datetime import timezone as tz
 from functools import cache
 
 import orjson as json
