@@ -138,7 +138,7 @@ jsonpickle==3.0.2
 lxml==4.9.3
 multidict==6.0.4; python_version >= '3.7'
 orjson==3.9.7
-pillow==10.0.0
+pillow==10.0.1
 pycares==4.3.0
 pycryptodome==3.18.0
 pycurl==7.45.2
