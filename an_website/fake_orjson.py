@@ -19,13 +19,15 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import fields, is_dataclass
 from datetime import date, datetime, time, timezone
+from enum import Enum
 from functools import partial
 from json import JSONDecodeError
 from json import dumps as _dumps
 from json import loads as _loads
 from typing import Any
+from uuid import UUID
 
-__version__ = "3.8.14"
+__version__ = "3.8.14"  # TODO: orjson.Fragment
 
 __all__ = (
     "dumps",
@@ -71,17 +73,20 @@ class JSONEncodeError(TypeError):
 def _default(
     default: None | Callable[[Any], Any], option: int, spam: object
 ) -> Any:
-    if not option & OPT_PASSTHROUGH_DATACLASS and is_dataclass(spam):
+    serialize_dataclass = not option & OPT_PASSTHROUGH_DATACLASS
+    serialize_datetime = not option & OPT_PASSTHROUGH_DATETIME
+
+    if serialize_dataclass and is_dataclass(spam):
         return {
             field.name: getattr(spam, field.name)
             for field in fields(spam)
             if not field.name.startswith("_")
         }
-    if not option & OPT_PASSTHROUGH_DATETIME and isinstance(spam, (date, time)):
-        if isinstance(spam, (datetime, time)):
+    if serialize_datetime and type(spam) in (date, datetime, time):
+        if type(spam) in (datetime, time):
             if option & OPT_OMIT_MICROSECONDS:
-                spam = spam.replace(microsecond=0)
-            if isinstance(spam, datetime):
+                spam = spam.replace(microsecond=0)  # type: ignore[attr-defined]
+            if type(spam) is datetime:
                 if option & OPT_NAIVE_UTC and not spam.tzinfo:
                     spam = spam.replace(tzinfo=timezone.utc)
                 if (
@@ -89,10 +94,15 @@ def _default(
                     and spam.tzinfo
                     and not spam.tzinfo.utcoffset(spam)
                 ):
-                    return spam.isoformat()[:-6] + "Z"
+                    return f"{spam.isoformat()[:-6]}Z"
         return spam.isoformat()  # type: ignore[attr-defined]
+    if isinstance(spam, Enum):
+        return spam.value
+    if type(spam) is UUID:
+        return str(spam)
     if default:
         return default(spam)
+
     raise TypeError
 
 
@@ -103,6 +113,7 @@ def dumps(
     option: None | int = None,
 ) -> bytes:
     """Nobody inspects the spammish repetition."""
+    # TODO: only serialize subclasses of str, int, dict, list and Enum
     option = option or 0
     return (
         _dumps(

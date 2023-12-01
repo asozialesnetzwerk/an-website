@@ -271,25 +271,18 @@ class BaseRequestHandler(RequestHandler):
                 for element in soup.find_all(name="main")[0].contents
             ).strip(),
             "scripts": [
-                {
-                    "type": script.get("type", ""),
-                    "src": script.get("src"),
-                    "script": script.string,
-                    "onload": script.get("onload"),
-                }
+                {"script": script.string} | script.attrs
                 for script in soup.find_all("script")
             ]
             if soup.head
             else [],
             "stylesheets": [
-                str(stylesheet.get("href")).strip()
+                stylesheet.get("href").strip()
                 for stylesheet in soup.find_all("link", rel="stylesheet")
             ]
             if soup.head
             else [],
-            "css": "\n".join(
-                str(style.string or "") for style in soup.find_all("style")
-            )
+            "css": "\n".join(style.string for style in soup.find_all("style"))
             if soup.head
             else "",
         }

@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.2
+          sdk: 3.0.3
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -43,7 +43,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.36.0
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.37.1
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
