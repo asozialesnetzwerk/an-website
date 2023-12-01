@@ -1,12 +1,3 @@
 "use strict";// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
-window.showSnow=(()=>{const t=Math.random,d=document.getElementById("snow"),i=200;function m(n){const o=document.createElement("style");o.appendChild(document.createTextNode(n)),document.getElementsByTagName("head")[0].appendChild(o)}function u(n=100){return Math.floor(t()*n)+1}function f(n,o){return n=Math.ceil(n),o=Math.floor(o),Math.floor(t()*(o-n+1))+n}function $(n,o){return t()*(o-n)+n}function w(n=200){const o=(e,r,a)=>`transform: translate(${e},${r}) scale(${a});`;let l="";for(let e=1;e<=n;e++){const r=t()*100,a=t()*10,b=r+a,h=r+a/2,c=$(.3,.8),g=c*100,s=t(),p=f(10,30),v=u(30)*-1;l+=`
-#snow p:nth-child(${e}) {
-  opacity: ${t()};
-  ${o(`${r}vw`,"-10px",s)}
-  animation: fall-${e} ${p}s ${v}s linear infinite;
-}
-@keyframes fall-${e} {
-  ${c*100}% {${o(`${b}vw`,`${g}vh`,s)}}
-  to {${o(`${h}vw`,"100vh",s)}}
-}`}m(l)}function y(){w(i)}return window.onload=y,n=>{n?d.style.display="block":d.style.display="none"}})();// @license-end
+const l=document.getElementById("snow"),h=200;export function showSnow(n){n?l.style.display="block":l.style.display="none"}function y(n){const o=document.createElement("style");o.appendChild(document.createTextNode(n)),document.getElementsByTagName("head")[0].appendChild(o)}function $(n=100){return Math.floor(Math.random()*n)+1}function p(n,o){return n=Math.ceil(n),o=Math.floor(o),Math.floor(Math.random()*(o-n+1))+n}function w(n,o){return Math.random()*(o-n)+n}function M(n=200){let o="";for(let t=1;t<=n;t++){const a=Math.random()*100,r=Math.random()*10,d=a+r,c=a+r/2,s=w(.3,.8),m=s*100,e=Math.random(),i=p(10,30),f=$(30)*-1,u=Math.random();o+=`#snow p:nth-child(${t}){opacity:${u};transform:translate(${a}vw,-10px) scale(${e});animation:fall-${t} ${i}s ${f}s linear infinite}@keyframes fall-${t}{${s*100}%{transform:translate(${d}vw,${m}vh) scale(${e})}to{transform:translate(${c}vw,100vh) scale(${e})}}`}y(o)}export function createSnow(){M(h)}// @license-end
 //# sourceMappingURL=snow.js.map

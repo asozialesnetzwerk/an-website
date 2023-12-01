@@ -26,7 +26,11 @@
             {% end %}
             {% if effects and display_theme == "christmas" %}
                 <noscript><link rel="stylesheet" type="text/css" href="{{fix_static('css/snow.css')}}"></noscript>
-                <script defer src="{{fix_static('js/snow/snow.js')}}"></script>
+                <script type="module" nonce="{{nonce}}">
+                    import {createSnow, showSnow} from "{{fix_static('js/snow/snow.js')}}";
+                    window.showSnow = showSnow;
+                    createSnow();
+                </script>
             {% end %}
             <script defer src="{{fix_static('js/utils/utils.js')}}"></script>
             <script defer src="{{fix_static('js/utils/better_ui.js')}}"></script>

@@ -83,7 +83,8 @@ function dynLoadOnData(
         }
     }
 
-    if (window["hideSitePane"]) {
+    // @ts-expect-error TS2774
+    if (window.hideSitePane) {
         hideSitePane();
     }
 
@@ -181,7 +182,8 @@ function dynLoad(url: string) {
 function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     if (!allowSameUrl && url === window.location.href) {
         console.log("URL is the same as current, just hide site pane");
-        if (window["hideSitePane"]) {
+        // @ts-expect-error TS2774
+        if (window.hideSitePane) {
             hideSitePane();
         }
         return;

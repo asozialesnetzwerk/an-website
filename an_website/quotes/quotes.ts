@@ -13,7 +13,6 @@ function startQuotes() {
 
     const keys = (() => {
         const k = new URLSearchParams(params).get("keys");
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!(k?.length)) {
             return "WASD";
         }
@@ -143,7 +142,6 @@ function startQuotes() {
                 alert(data.reason);
             }
             return false;
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         } else if (data?.id) {
             updateQuoteId(data.id);
             nextQuoteId[0] = data.next;

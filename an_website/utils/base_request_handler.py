@@ -25,6 +25,7 @@ import inspect
 import logging
 import random
 import sys
+import secrets
 import traceback
 import uuid
 from asyncio import Future
@@ -135,6 +136,7 @@ class BaseRequestHandler(RequestHandler):
     apm_script: None | str
     crawler: bool = False
     now: datetime
+    nonce: str
 
     def _super_finish(
         self, chunk: None | str | bytes | dict[str, Any] = None
@@ -536,6 +538,7 @@ class BaseRequestHandler(RequestHandler):
                 else ""
             ),
             lang="de",  # TODO: add language support
+            nonce=self.nonce,
             now=self.now,
             settings=self.settings,
             short_title=self.short_title,
@@ -701,6 +704,8 @@ class BaseRequestHandler(RequestHandler):
     async def prepare(self) -> None:  # noqa: C901
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=invalid-overridden-method, too-complex
+        self.now = await self.get_time()
+
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
                 if isinstance(transform, GZipContentEncoding):
@@ -712,7 +717,6 @@ class BaseRequestHandler(RequestHandler):
                 "User-Agent", ""
             )
 
-        self.now = await self.get_time()
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
         if self.request.method == "GET":
@@ -885,7 +889,9 @@ class BaseRequestHandler(RequestHandler):
 
     def set_csp_header(self) -> None:
         """Set the Content-Security-Policy header."""
-        script_src = ["'self'"]
+        self.nonce = secrets.token_urlsafe(16)
+
+        script_src = ["'self'", f"'nonce-{self.nonce}'"]
 
         if (
             self.apm_enabled
