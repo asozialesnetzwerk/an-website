@@ -80,7 +80,7 @@ def get_random_number() -> int:
 def generate_humans_txt() -> str:
     """Generate the contents of the humans.txt file."""
     result = run(  # nosec: B603, B607
-        ["git", "shortlog", "-s"],
+        ["git", "shortlog", "-s", "HEAD"],
         capture_output=True,
         encoding="UTF-8",
         cwd=REPO_ROOT,

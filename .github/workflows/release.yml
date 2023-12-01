@@ -428,7 +428,7 @@ jobs:
           name: artifact
       - name: Run tests
         timeout-minutes: 5
-        run: podman run -t -v ./requirements-ci.txt:/requirements-ci.txt:z,ro -v ./tests:/tests:z --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^(html5lib|pytest)(?!-cov)' /requirements-ci.txt | xargs /venv/bin/pip install --disable-pip-version-check && /venv/bin/pytest --verbose /tests"
+        run: podman run -t -v ./requirements-ci.txt:/requirements-ci.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^(html5lib|pytest)(?!-cov)' /requirements-ci.txt | xargs /venv/bin/pip install --disable-pip-version-check && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
     name: Push OCI image
