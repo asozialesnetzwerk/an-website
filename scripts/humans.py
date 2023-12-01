@@ -31,13 +31,8 @@ from unicodedata import category
 REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
 HUMANS_TXT: Final[Path] = Path(REPO_ROOT, "an_website/static/humans.txt")
 
-# edit these 4 to change humans.txt
-BOTS: Final[Set[str]] = {"Bot", "ImgBotApp", "snyk-bot", "pyup-bot"}
-ALIASES: Final[Mapping[str, str]] = {
-    "Joshix-1": "Joshix",
-    "Guerteltier": "Das Gürteltier",
-    "Not Committed Yet": "Das Gürteltier",
-}
+# edit these 3 and .mailmap to change humans.txt
+BOTS: Final[Set[str]] = {"Bot", "ImgBotApp", "snyk-bot"}
 MAINTAINERS: Final[Mapping[str, Mapping[str, str]]] = {
     "Joshix": {
         "Location": "NRW, Germany",
@@ -85,7 +80,7 @@ def get_random_number() -> int:
 def generate_humans_txt() -> str:
     """Generate the contents of the humans.txt file."""
     result = run(  # nosec: B603, B607
-        ["git", "shortlog", "-s", "HEAD"],
+        ["git", "shortlog", "-s"],
         capture_output=True,
         encoding="UTF-8",
         cwd=REPO_ROOT,
@@ -100,7 +95,6 @@ def generate_humans_txt() -> str:
         count, name = re.split(r"\s+", line, 1)
         if name in BOTS:
             continue
-        name = ALIASES.get(name, name)
         people.setdefault(name, 0)
         people[name] += int(count)
 

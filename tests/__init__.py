@@ -344,10 +344,9 @@ def assert_valid_html_response(
     spam = HTMLParser(namespaceHTMLElements=False)
     try:
         root = spam.parse(body)
-    except ValueError as exc:
-        raise AssertionError(
-            f"Invalid HTML5: {exc} in {effective_url}"
-        ) from exc
+    except Exception:
+        print(repr(body))
+        raise
     assert not spam.errors or print(effective_url, spam.errors, body)
     # check if the canonical link is present in the document
     assert (

@@ -428,7 +428,7 @@ jobs:
           name: artifact
       - name: Run tests
         timeout-minutes: 5
-        run: podman run -t --entrypoint=/bin/sh -v ./requirements-ci.txt:/data/requirements-ci.txt:z,ro -v ./tests:/data/tests:z oci-archive:oci-archive.tar -c "grep -E '^(coverage|html5lib|pytest)' requirements-ci.txt | xargs /venv/bin/pip install && /venv/bin/pytest --verbose"
+        run: podman run -t -v ./requirements-ci.txt:/requirements-ci.txt:z,ro -v ./tests:/tests:z --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^(html5lib|pytest)(?!-cov)' /requirements-ci.txt | xargs /venv/bin/pip install --disable-pip-version-check && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
     name: Push OCI image
@@ -472,4 +472,4 @@ jobs:
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
       - name: Tag image as latest
         if: github.event_name == 'schedule'
-        run: skopeo copy --all --preserve-digests docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} docker://ghcr.io/${{ github.repository }}:latest
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest
