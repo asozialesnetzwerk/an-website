@@ -373,8 +373,8 @@
       "browserslist@4.21.5": {
         "integrity": "sha512-tUkiguQGW7S3IhB7N+c2MV/HZPSCPAAiYBZXLsBhFB/PCy6ZKKsZrmBayHV9fdGV/ARIfJ14NkxKzRDjvp7L6w==",
         "dependencies": {
-          "caniuse-lite": "caniuse-lite@1.0.30001486",
-          "electron-to-chromium": "electron-to-chromium@1.4.392",
+          "caniuse-lite": "caniuse-lite@1.0.30001487",
+          "electron-to-chromium": "electron-to-chromium@1.4.394",
           "node-releases": "node-releases@2.0.10",
           "update-browserslist-db": "update-browserslist-db@1.0.11_browserslist@4.21.5"
         }
@@ -433,8 +433,8 @@
           "unset-value": "unset-value@1.0.0"
         }
       },
-      "caniuse-lite@1.0.30001486": {
-        "integrity": "sha512-uv7/gXuHi10Whlj0pp5q/tsK/32J2QSqVRKQhs2j8VsDCjgyruAh/eEXHF822VqO9yT6iZKw3nRwZRSPBE9OQg==",
+      "caniuse-lite@1.0.30001487": {
+        "integrity": "sha512-83564Z3yWGqXsh2vaH/mhXfEM0wX+NlBCm1jYHOb97TrTWJEmPTccZgeLTPBUUb0PNVo+oomb7wkimZBIERClA==",
         "dependencies": {}
       },
       "chokidar@2.1.8": {
@@ -678,8 +678,8 @@
           "stream-shift": "stream-shift@1.0.1"
         }
       },
-      "electron-to-chromium@1.4.392": {
-        "integrity": "sha512-TXQOMW9tnhIms3jGy/lJctLjICOgyueZFJ1KUtm6DTQ+QpxX3p7ZBwB6syuZ9KBuT5S4XX7bgY1ECPgfxKUdOg==",
+      "electron-to-chromium@1.4.394": {
+        "integrity": "sha512-0IbC2cfr8w5LxTz+nmn2cJTGafsK9iauV2r5A5scfzyovqLrxuLoxOHE5OBobP3oVIggJT+0JfKnw9sm87c8Hw==",
         "dependencies": {}
       },
       "elliptic@6.5.4": {

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write
-import builder from "npm:core-js-builder@3.30.1";
+import builder from "npm:core-js-builder@3.30.2";
 import { modules } from "./core-js-modules.ts";
 import { gzipSizeSync } from "npm:gzip-size";
 
