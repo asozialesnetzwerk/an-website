@@ -32,7 +32,7 @@ if sys.version_info < (3, 12):
         import orjson as json
 
 if "orjson" not in sys.modules:
-    from . import orjson_temp_fix as json  # noqa: F811
+    from . import orjson_temp_fix as json  # type: ignore[no-redef]  # noqa: F811
 
     sys.modules["orjson"] = json
 
