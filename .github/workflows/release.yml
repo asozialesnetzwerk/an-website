@@ -91,8 +91,8 @@ jobs:
           - 3.11
           - 3.12
         stack-version:
-          - 7.17.9
-          #- 8.6.2
+          - 7.17.10
+          #- 8.7.1
         license:
           - basic
           - trial

@@ -40,7 +40,7 @@ pycares==4.3.0
 pycparser==2.21
 pycryptodome==3.17
 pycurl==7.45.2
-pyjwt==2.6.0 ; python_version >= '3.7'
+pyjwt==2.7.0 ; python_version >= '3.7'
 pysocks==1.7.1
 pyston-lite==2.3.5 ; python_version < '3.11'
 pyston-lite-autoload==2.3.5 ; python_version < '3.11'
