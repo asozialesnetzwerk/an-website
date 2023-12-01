@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import ClassVar, Final
 
 from tornado.web import HTTPError
@@ -55,7 +55,7 @@ class QuoteOfTheDayBaseHandler(QuoteReadyCheckHandler):
 
     async def get_quote_of_today(self) -> None | QuoteOfTheDayData:
         """Get the quote for today."""
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         quote_data = await self.get_quote_by_date(today)
         if quote_data:  # if was saved already
             return quote_data
@@ -95,7 +95,7 @@ class QuoteOfTheDayRSS(QuoteOfTheDayBaseHandler):
         """Handle GET requests."""
         if head:
             return
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         quotes = (
             await self.get_quote_of_today(),
             *[

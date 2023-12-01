@@ -28,7 +28,7 @@ from base64 import b85encode
 from collections.abc import Awaitable, Callable, Generator, Iterable, Set
 from configparser import ConfigParser
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import IntFlag
 from functools import cache, partial
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
@@ -83,9 +83,11 @@ BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
 PRINT = int.from_bytes(Path(ROOT_DIR, "primes.bin").read_bytes(), "big")
 
 IP_HASH_SALT: Final = {
-    "date": datetime.utcnow().date(),
+    "date": datetime.now(timezone.utc).date(),
     "hasher": blake3(
-        blake3(datetime.utcnow().date().isoformat().encode("ASCII")).digest()
+        blake3(
+            datetime.now(timezone.utc).date().isoformat().encode("ASCII")
+        ).digest()
     ),
 }
 
@@ -517,7 +519,7 @@ def hash_ip(
     """Hash an IP address."""
     if isinstance(address, str):
         address = ip_address(address)
-    if IP_HASH_SALT["date"] != (date := datetime.utcnow().date()):
+    if IP_HASH_SALT["date"] != (date := datetime.now(timezone.utc).date()):
         IP_HASH_SALT["hasher"] = blake3(
             blake3(date.isoformat().encode("ASCII")).digest()
         )

@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from http.client import responses
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Final
@@ -240,7 +240,9 @@ class ElasticRUM(BaseRequestHandler):
                 "SourceMap", self.request.full_url().split("?")[0] + ".map"
             )
 
-        self.set_header("Expires", datetime.utcnow() + timedelta(days=365))
+        self.set_header(
+            "Expires", datetime.now(timezone.utc) + timedelta(days=365)
+        )
         self.set_header(
             "Cache-Control",
             f"public, immutable, max-age={60 * 60 * 24 * 365}",

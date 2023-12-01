@@ -25,7 +25,7 @@ import sys
 import time
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
@@ -98,7 +98,7 @@ class Author(QuotesObjBase):
         """Return the name of the author."""
         return (
             emojify(self.name.strip())
-            if (now := datetime.utcnow()).day == 1 and now.month == 4
+            if (now := datetime.now(timezone.utc)).day == 1 and now.month == 4
             else self.name.strip()
         )
 
@@ -145,7 +145,7 @@ class Quote(QuotesObjBase):
         """Return the content of the quote."""
         return (
             emojify(self.quote.strip())
-            if (now := datetime.utcnow()).day == 1 and now.month == 4
+            if (now := datetime.now(timezone.utc)).day == 1 and now.month == 4
             else self.quote.strip()
         )
 

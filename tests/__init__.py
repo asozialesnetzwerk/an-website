@@ -39,7 +39,7 @@ patches.apply()
 import asyncio
 import socket
 from collections.abc import Awaitable, Callable, MutableMapping, Set
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 from urllib.parse import parse_qsl, urlsplit
@@ -134,7 +134,7 @@ def app() -> Application:
                     redis.setex(
                         (
                             f"{app.settings.get('REDIS_PREFIX')}:quote-of-the-day:"
-                            f"by-date:{datetime.utcnow().date().isoformat()}"
+                            f"by-date:{datetime.now(timezone.utc).date().isoformat()}"
                         ),
                         300,
                         "1-2",

@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 import abc
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import ClassVar, Final
 
 from redis.asyncio import Redis
@@ -68,7 +68,7 @@ class QuoteOfTheDayStoreWithCache(QuoteOfTheDayStore, abc.ABC):
     @classmethod
     def _populate_cache(cls, date_: date, quote_id: tuple[int, int]) -> None:
         """Populate the cache for the quote of today."""
-        today = datetime.utcnow().date()
+        today = datetime.now(timezone.utc).date()
         # old entries are rarely used, they don't need to be cached
         if (today - date_).days > QUOTE_COUNT_TO_SHOW_IN_FEED:
             cls.CACHE[date_] = quote_id
