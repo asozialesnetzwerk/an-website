@@ -76,7 +76,7 @@ if path(".git").exists():
     except ModuleNotFoundError:
         EXTRA_BUILD_DEPS.add(DULWICH)
     else:
-        path("REVISION.txt").write_bytes(Repo(path(".")).head())
+        path("REVISION.txt").write_bytes(Repo(path(".")).head())  # type: ignore[arg-type]
 
     try:
         import trove_classifiers as trove
