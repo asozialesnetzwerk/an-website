@@ -77,10 +77,15 @@ jobs:
       - name: Load image
         run: |
           buildah pull oci-archive:oci-archive.tar
+      - name: Log in to ghcr.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          registry: ghcr.io/${{ github.repository_owner }}
       - name: Push image
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | buildah login ghcr.io -u $ --password-stdin
-          buildah push an-website:git ghcr.io/asozialesnetzwerk/an-website:git
+          skopeo copy --dest-compress-format=zstd --dest-compress-level=20 oci-archive:oci-archive.tar ghcr.io/asozialesnetzwerk/an-website:git
 
   test-wheel:
     name: Test wheel

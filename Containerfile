@@ -34,7 +34,7 @@ RUN set -eux \
         libz/libzstd/libzstd1_1.5.4+dfsg2-3 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230312T152223Z/pool/main/${pkg}_amd64.deb \
+        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \
@@ -64,6 +64,7 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps --no-build-isolation https://github.com/roy-ht/editdistance/archive/v0.6.2.tar.gz \
  && /venv/bin/pip install --no-deps https://github.com/lxml/lxml/archive/11b33a83ad689bd16bd0a98c14cda51a90572b73.tar.gz \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps --no-build-isolation https://github.com/olokelo/jxlpy/archive/eebe73706b2c10153aa40d039e5e02c45a8168a4.tar.gz \
+ && /venv/bin/pip install git+https://github.com/pypy/pyrepl@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
  && sed -E "/(blake3|lxml|uvloop)/d" requirements.txt > requirements2.txt \
  && /venv/bin/pip install -r requirements2.txt \
  && /venv/bin/pip uninstall -y wheel Cython
@@ -86,7 +87,7 @@ RUN set -eux \
         j/jpeg-xl/libjxl0.7_0.7.0-10 \
     ; \
     do \
-        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230312T152223Z/pool/main/${pkg}_amd64.deb \
+        curl -sSfo $(echo $pkg | cut -d / -f 3)_amd64.deb https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/${pkg}_amd64.deb \
     ; \
     done \
  && dpkg --auto-deconfigure -i *.deb \
