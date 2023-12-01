@@ -257,7 +257,8 @@ jobs:
           from packaging.utils import parse_sdist_filename
 
           result = run(("ls", "an-website-*.tar.gz"), capture_output=True)
-          name, version = parse_sdist_filename(result.stdout.strip())
+          filename = result.stdout.decode("UTF-8").strip()
+          name, version = parse_sdist_filename(filename)
           open(getenv("GITHUB_OUTPUT"), "a").write(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an-website-*.tar.gz
