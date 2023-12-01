@@ -40,7 +40,7 @@ from .utils import (
 )
 
 try:
-    from unexpected_isaves.save_image import (  # type: ignore[import-not-found]
+    from unexpected_isaves.save_image import (  # type: ignore[import, unused-ignore]
         to_excel,
     )
 except ModuleNotFoundError:

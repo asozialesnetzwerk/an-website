@@ -12,9 +12,9 @@ overrides:
   webpack@4: '5'
 
 patchedDependencies:
-  core-js-builder@3.33.0:
+  core-js-builder@3.33.2:
     hash: p7mrrfwyylwt4ljhzeumew3ddm
-    path: patches/core-js-builder@3.33.0.patch
+    path: patches/core-js-builder@3.33.2.patch
   ts-node@10.9.1:
     hash: fb32izc6zrr2hqjbsx2ar4dyru
     path: patches/ts-node@10.9.1.patch
@@ -39,11 +39,11 @@ devDependencies:
     specifier: ^4.22.1
     version: 4.22.1
   core-js-builder:
-    specifier: 3.33.0
-    version: 3.33.0(patch_hash=p7mrrfwyylwt4ljhzeumew3ddm)(esbuild@0.19.5)
+    specifier: 3.33.2
+    version: 3.33.2(patch_hash=p7mrrfwyylwt4ljhzeumew3ddm)(esbuild@0.19.5)
   core-js-compat:
-    specifier: 3.33.0
-    version: 3.33.0
+    specifier: 3.33.2
+    version: 3.33.2
   doiuse:
     specifier: ^6.0.2
     version: 6.0.2
@@ -1029,12 +1029,12 @@ packages:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
 
-  /core-js-builder@3.33.0(patch_hash=p7mrrfwyylwt4ljhzeumew3ddm)(esbuild@0.19.5):
-    resolution: {integrity: sha512-R9wCis/WewnIcn9G7HigwyJ/MHAgTVQArq+pa9Sh00H8R5n/nizds7KlpY7nUHBQ8h7biM4TsEJkEjQxhKyyWA==}
+  /core-js-builder@3.33.2(patch_hash=p7mrrfwyylwt4ljhzeumew3ddm)(esbuild@0.19.5):
+    resolution: {integrity: sha512-kfzHUfa+OfJJyVW8ASGEK78gvcMVzTzN3wD4EjZ4ujg1gKAdnT5+HgavZRigY8SYZZign8GW3CMSQ8UwQotw1g==}
     engines: {node: '>=8.9.0'}
     dependencies:
-      core-js: 3.33.0
-      core-js-compat: 3.33.0
+      core-js: 3.33.2
+      core-js-compat: 3.33.2
       mkdirp: 0.5.6
       webpack: 5.89.0(esbuild@0.19.5)
     transitivePeerDependencies:
@@ -1045,14 +1045,14 @@ packages:
     dev: true
     patched: true
 
-  /core-js-compat@3.33.0:
-    resolution: {integrity: sha512-0w4LcLXsVEuNkIqwjjf9rjCoPhK8uqA4tMRh4Ge26vfLtUutshn+aRJU21I9LCJlh2QQHfisNToLjw1XEJLTWw==}
+  /core-js-compat@3.33.2:
+    resolution: {integrity: sha512-axfo+wxFVxnqf8RvxTzoAlzW4gRoacrHeoFlc9n0x50+7BEyZL/Rt3hicaED1/CEd7I6tPCPVUYcJwCMO5XUYw==}
     dependencies:
       browserslist: 4.22.1
     dev: true
 
-  /core-js@3.33.0:
-    resolution: {integrity: sha512-HoZr92+ZjFEKar5HS6MC776gYslNOKHt75mEBKWKnPeFDpZ6nH5OeF3S6HFT1mUAUZKrzkez05VboaX8myjSuw==}
+  /core-js@3.33.2:
+    resolution: {integrity: sha512-XeBzWI6QL3nJQiHmdzbAOiMYqjrb7hwU7A39Qhvd/POSa/t9E1AeZyEZx3fNvp/vtM8zXwhoL0FsiS0hD0pruQ==}
     requiresBuild: true
     dev: true
 

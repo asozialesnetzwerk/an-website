@@ -7,8 +7,8 @@
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
     "browserslist": "^4.22.1",
-    "core-js-builder": "3.33.0",
-    "core-js-compat": "3.33.0",
+    "core-js-builder": "3.33.2",
+    "core-js-compat": "3.33.2",
     "doiuse": "^6.0.2",
     "esbuild": "^0.19.5",
     "eslint": "^8.52.0",
@@ -38,7 +38,7 @@
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.33.0": "patches/core-js-builder@3.33.0.patch",
+      "core-js-builder@3.33.2": "patches/core-js-builder@3.33.2.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }

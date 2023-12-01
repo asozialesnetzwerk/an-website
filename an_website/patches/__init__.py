@@ -54,7 +54,7 @@ DIR: Final = abspath(dirname(__file__))
 
 with suppress(ModuleNotFoundError):
     # pylint: disable=import-error, useless-suppression
-    from jxlpy import (  # type: ignore[import-not-found]  # noqa: F401
+    from jxlpy import (  # type: ignore[import, unused-ignore]  # noqa: F401
         JXLImagePlugin,
     )
 

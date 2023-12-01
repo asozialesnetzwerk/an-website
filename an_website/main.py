@@ -104,7 +104,7 @@ from .utils.utils import (
 )
 
 try:
-    import perf8  # type: ignore[import-not-found]
+    import perf8  # type: ignore[import, unused-ignore]
 except ModuleNotFoundError:
     perf8 = None  # pylint: disable=invalid-name
 

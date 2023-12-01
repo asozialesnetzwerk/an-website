@@ -11,6 +11,7 @@
   ],
   "name": "Das Asoziale Netzwerk",
   "scope": "../",
+  "short_name": "Asozial.org",
   "start_url": "/",
   "theme_color": "#A00000"
 }
