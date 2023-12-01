@@ -21,9 +21,9 @@ import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import os
 import sys
-from asyncio import set_event_loop_policy
 from collections.abc import Callable
 from configparser import RawConfigParser
+from importlib import import_module
 from pathlib import Path
 from threading import Thread
 from types import MethodType
@@ -78,11 +78,8 @@ def apply() -> None:
 
 def patch_asyncio() -> None:
     """Make stuff faster."""
-    # pylint: disable=import-outside-toplevel
     if "DISABLE_UVLOOP" not in os.environ:
-        from uvloop import EventLoopPolicy
-
-        set_event_loop_policy(EventLoopPolicy())
+        import_module("uvloop").install()
 
 
 def patch_certifi() -> None:

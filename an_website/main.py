@@ -37,6 +37,7 @@ from hashlib import sha3_512, sha256
 from multiprocessing import process
 from pathlib import Path
 from typing import Any, Final, Literal, TypeAlias, cast
+from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
 import orjson
@@ -1048,13 +1049,24 @@ def main(  # noqa: C901  # pragma: no cover
             )
 
     # get loop after forking
-    loop = asyncio.get_event_loop_policy().get_event_loop()
+    # if not forking allow loop to be set in advance by external code
+    loop: None | AbstractEventLoop
+    try:
+        with catch_warnings():  # TODO: remove after dropping support for 3.13
+            simplefilter("ignore", DeprecationWarning)
+            loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            loop = None
+    except RuntimeError:
+        loop = None
+
+    if loop is None:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
     setup_webhook_logging(config, loop)
 
-    _ = asyncio.get_event_loop
-    asyncio.get_event_loop = lambda: loop
     server.add_sockets(sockets)
-    asyncio.get_event_loop = _
 
     if sockets:
         # pylint: disable=unused-variable
