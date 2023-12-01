@@ -73,9 +73,7 @@ class AsyncHandler(logging.Handler):
         self, record: LogRecord
     ) -> bool | LogRecord:
         """Handle incoming log records."""
-        rv = cast(
-            bool | LogRecord, self.filter(record)
-        )
+        rv = cast(bool | LogRecord, self.filter(record))
         if isinstance(rv, LogRecord):
             record = rv
         if rv and not self.loop.is_closed():
