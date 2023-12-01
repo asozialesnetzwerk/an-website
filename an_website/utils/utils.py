@@ -30,6 +30,7 @@ from datetime import datetime
 from enum import IntFlag
 from functools import cache
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
+from pathlib import Path
 from typing import (
     IO,
     Any,
@@ -53,6 +54,7 @@ from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 from UltraDict import UltraDict  # type: ignore[import]
 
+from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
 
 T = TypeVar("T")
@@ -73,6 +75,8 @@ BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
 )
+
+PRINT = int.from_bytes(Path(ROOT_DIR, "primes.bin").read_bytes(), "big")
 
 IP_HASH_SALT: Final = {
     "date": datetime.utcnow().date(),
@@ -528,6 +532,16 @@ def is_in_european_union(ip: None | str) -> None | bool:
         return None
 
     return cast(bool, info.get_info_dict().get("is_in_european_union", False))
+
+
+def is_prime(number: int) -> bool:
+    """Return whether or not the specified number is a prime."""
+    # pylint: disable=multiple-statements
+    # fmt: off
+    if number == 2: return True  # noqa: E701
+    if not number % 2: return False  # noqa: E701
+    return bool(PRINT & 1 << number // 2)
+    # fmt: on
 
 
 def length_of_match(match: regex.Match[Any]) -> int:

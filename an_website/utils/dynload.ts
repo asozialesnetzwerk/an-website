@@ -52,7 +52,6 @@ function dynLoadOnData(
         return;
     }
 
-    /* eslint-disable @typescript-eslint/no-empty-function */
     // d.onkeyup = () => {}; // not used in any JS file
     document.onkeydown = () => {}; // remove keydown listeners
     /* eslint-enable @typescript-eslint/no-empty-function */

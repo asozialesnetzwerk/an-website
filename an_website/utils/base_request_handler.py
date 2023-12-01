@@ -47,7 +47,6 @@ from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
 from redis.asyncio import Redis
-from sympy.ntheory import isprime
 from tornado.web import (
     Finish,
     GZipContentEncoding,
@@ -79,6 +78,7 @@ from .utils import (
     emoji2html,
     geoip,
     hash_bytes,
+    is_prime,
     parse_bumpscosity,
     parse_openmoji_arg,
     ratelimit,
@@ -666,7 +666,7 @@ class BaseRequestHandler(RequestHandler):
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2),
                 "🦘": pytest_is_running()
-                or isprime(self.now.microsecond),  # type: ignore[no-untyped-call]
+                or is_prime(self.now.microsecond),
             }
         )
         return namespace

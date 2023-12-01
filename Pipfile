@@ -41,7 +41,7 @@ PyYAML = "==6.*"
 redis = {version = "==4.*", extras = ["hiredis"]}
 regex = "*"
 setproctitle = "==1.*"
-sympy = "==1.*"
+# sympy = "==1.*"
 tornado = "==6.*"
 typed-stream = "<2"
 typing-extensions = {version = "==4.*", markers = "python_version < '3.12'"}

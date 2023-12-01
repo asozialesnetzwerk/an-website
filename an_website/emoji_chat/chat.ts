@@ -51,10 +51,7 @@
 
     const emojiToIMG = (emoji: string) => {
         const emojiCode = [...emoji]
-            .map((e: string) =>
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                e.codePointAt(0)!.toString(16).padStart(4, "0")
-            )
+            .map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
             .join(`-`)
             .toUpperCase();
 
@@ -76,7 +73,6 @@
 
     const setConnectionState = (state: string) => {
         let tooltip;
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         connectionIndicator.onclick = () => {};
         if (state === "connecting") {
             tooltip = "Versuche mit WebSocket zu verbinden";
@@ -88,7 +84,6 @@
             connectionIndicator.onclick = () => {
                 reconnectTries = 0;
                 reconnectTimeout = 500;
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 connectionIndicator.onclick = () => {};
                 openWS();
             };
@@ -162,7 +157,6 @@
         );
         const pingInterval = setInterval(() => ws.send(""), 10000);
         ws.onclose = (event) => {
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
             messageInputForm.onsubmit = () => {};
             if (event.wasClean) {
                 console.debug(

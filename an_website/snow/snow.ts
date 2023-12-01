@@ -1,25 +1,25 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 const snow = document.getElementById("snow") as HTMLDivElement;
 
-let snowflakesCount = 200;
+const snowflakesCount = 200;
 
-let bodyHeightPx: number;
-let pageHeightVh: number;
+// let bodyHeightPx: number;
+// let pageHeightVh: number;
 
-function setHeightVariables(): void {
-    bodyHeightPx = document.documentElement.getBoundingClientRect().height;
-    pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
-}
+// function setHeightVariables(): void {
+//     bodyHeightPx = document.documentElement.getBoundingClientRect().height;
+//     pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
+// }
 
-function getSnowAttributes(): void {
-    if (snow) {
-        snowflakesCount = Number(
-            // @ts-expect-error TS2339
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            snow.attributes?.count?.value ?? snowflakesCount,
-        );
-    }
-}
+// function getSnowAttributes(): void {
+//     if (snow) {
+//         snowflakesCount = Number(
+//             // @ts-expect-error TS2339
+//             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+//             snow.attributes?.count?.value ?? snowflakesCount,
+//         );
+//     }
+// }
 
 // This function allows you to turn the snow on and off
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -99,8 +99,8 @@ function spawnSnowCSS(snowDensity = 200): void {
 
 // Load the rules and execute after the DOM loads
 function createSnow(): void {
-    setHeightVariables();
-    getSnowAttributes();
+    // setHeightVariables();
+    // getSnowAttributes();
     spawnSnowCSS(snowflakesCount);
     if (!snow.firstElementChild) {
         spawnSnow(snowflakesCount);

@@ -391,7 +391,6 @@ administratives/kaenguru-comics/kaenguru-045/original
 
         popupContainer.appendChild(clone);
         popupContainer.appendChild(closeButton);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         image.parentNode!.appendChild(popupContainer);
     };
 

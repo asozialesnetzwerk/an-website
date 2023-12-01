@@ -73,6 +73,7 @@ WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
 
 FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42
+LABEL org.opencontainers.image.authors="contact@asozial.org"
 RUN set -eux \
  && apt-get update \
  && apt-get install -y --no-install-recommends curl libcurl3-nss libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 nss-plugin-pem \
