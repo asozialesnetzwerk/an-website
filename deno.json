@@ -25,8 +25,8 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
-    "std/": "https://deno.land/std@0.187.0/",
-    "dax": "https://deno.land/x/dax@0.31.1/mod.ts"
+    "std/": "https://deno.land/std@0.190.0/",
+    "dax": "https://deno.land/x/dax@0.32.0/mod.ts"
   },
   "nodeModulesDir": false,
   "lint": {
