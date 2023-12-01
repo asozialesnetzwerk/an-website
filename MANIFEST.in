@@ -7,3 +7,5 @@ include config.ini.example
 graft example-configurations
 global-exclude tsconfig.json
 include Containerfile
+include build-args.sh
+include REVISION.txt

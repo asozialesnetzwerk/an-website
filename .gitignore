@@ -1,4 +1,5 @@
 *.py[cod]
+/REVISION.txt
 /an_website.egg-info
 /build
 /dist

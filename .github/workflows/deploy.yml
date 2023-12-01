@@ -43,22 +43,22 @@ jobs:
     env:
       CACHE_REPOSITORY: ghcr.io/${{ github.repository }}---cache
     steps:
+      - name: Upgrade Buildah
+        run: |
+          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
+          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b2_amd64.deb
       - name: Download youki
         run: |
           wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
           tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /opt/youki
           rm -f youki_0_0_5_linux.tar.gz
           chmod +x /opt/youki
-      - name: Upgrade Buildah
-        run: |
-          wget https://snapshot.debian.org/archive/debian/20230401T085842Z/pool/main/g/golang-github-containers-buildah/buildah_1.28.2+ds1-1+b2_amd64.deb
-          sudo dpkg --force-depends -i buildah_1.28.2+ds1-1+b2_amd64.deb
-      - name: Log in to ghcr.io
-        uses: redhat-actions/podman-login@v1
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-          registry: ${{ env.CACHE_REPOSITORY }}
+          python-version: "3.10"
+      - name: Install trove-classifiers
+        run: pip install trove-classifiers==2022.12.22
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -67,11 +67,19 @@ jobs:
         run: |
           tar xvf *.tar.gz
           rm -f *.tar.gz
+      - name: Log in to ghcr.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          registry: ${{ env.CACHE_REPOSITORY }}
       - name: Build image
         run: |
           cd an-website*
-          sudo buildah build --runtime=/opt/youki --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" -t an-website:git .
+          sudo buildah build -t an-website:git --layers --cache-from="${{ env.CACHE_REPOSITORY }}" --cache-to="${{ env.CACHE_REPOSITORY }}" $(./build-args.sh) .
           cd ..
+        env:
+          BUILDAH_RUNTIME: /opt/youki
       - name: Save image
         run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
@@ -110,6 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+    permissions: {}
     strategy:
       fail-fast: false
       matrix:

@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.0-290.3.beta
+          sdk: 3.0.0-417.1.beta
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -54,7 +54,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.35.4
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.36.0
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass

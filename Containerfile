@@ -53,7 +53,7 @@ COPY requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps wheel==0.40.0 \
+ && /venv/bin/pip install --no-deps setuptools==67.6.1 wheel==0.40.0 \
  && /venv/bin/pip install --no-deps https://github.com/cython/cython/archive/a5bb829bbc538467d1fe557b6001a4c1c5a88bd9.tar.gz \
  && /venv/bin/pip install --no-deps funcparserlib==1.0.1 \
  && /venv/bin/pip install --no-deps --ignore-requires-python hy==0.26.0 \
@@ -64,9 +64,9 @@ RUN set -eux \
  && /venv/bin/pip install --no-deps https://github.com/lxml/lxml/archive/11b33a83ad689bd16bd0a98c14cda51a90572b73.tar.gz \
  && CFLAGS="-fpermissive" /venv/bin/pip install --no-deps --no-build-isolation https://github.com/olokelo/jxlpy/archive/eebe73706b2c10153aa40d039e5e02c45a8168a4.tar.gz \
  && /venv/bin/pip install git+https://github.com/pypy/pyrepl@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
- && sed -E "/(blake3|lxml|uvloop)/d" requirements.txt > requirements2.txt \
- && /venv/bin/pip install -r requirements2.txt \
- && /venv/bin/pip uninstall -y wheel Cython
+ && sed -Ei "/(blake3|lxml|uvloop)/d" requirements.txt \
+ && /venv/bin/pip install -r requirements.txt \
+ && /venv/bin/pip uninstall -y setuptools wheel Cython
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .
@@ -97,17 +97,18 @@ RUN set -eux \
  && cd uwufetch_2.1-linux \
  && bash install.sh \
  && cd .. \
- && rm -fr uwufetch*
+ && rm -fr uwufetch* \
+ && mkdir /data
 COPY --from=builder /venv /venv
-RUN mkdir /data
 WORKDIR /data
 VOLUME /data
 EXPOSE 8888
 CMD ["/venv/bin/an-website", "--port", "8888"]
-ARG VERSION=<unknown> \
-    REVISION=<unknown> \
-    BASE_DIGEST=<unknown> \
-    BASE_NAME=docker.io/library/python:3.12.0a7-slim
+ARG BASE
+ARG VERSION \
+    REVISION \
+    BASE_DIGEST \
+    BASE_NAME=$BASE
 LABEL org.opencontainers.image.authors="contact@asozial.org" \
       org.opencontainers.image.source="https://github.com/asozialesnetzwerk/an-website" \
       org.opencontainers.image.version="$VERSION" \

@@ -12,23 +12,22 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# pylint: disable=import-outside-toplevel
 
 """Nobody inspects the spammish repetition."""
 
 from __future__ import annotations
 
-import os
-import warnings
-from contextlib import suppress
 from importlib.metadata import Distribution
+from os import PathLike
 from pathlib import Path
+from subprocess import run
+from warnings import filterwarnings
 
-import trove_classifiers
-from get_version import NoVersionFound
-from get_version import get_version as _get_version
+import trove_classifiers as trove
 from setuptools import setup
 
-warnings.filterwarnings("ignore", "", UserWarning, "setuptools.dist")
+filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -50,22 +49,39 @@ classifiers = [
 assert classifiers == sorted(classifiers)
 
 for classifier in classifiers:
-    assert classifier in trove_classifiers.classifiers
+    assert classifier in trove.classifiers
 
 
 def get_version() -> str:
     """Get the version."""
-    with suppress(NoVersionFound):
-        return _get_version(__file__, vcs="git", dist_name="an-website")
-    directory = Path(__file__).resolve().parent / "an_website.egg-info"
-    return Distribution.at(directory).version
+    if path(".git").exists():
+        try:
+            # pylint: disable=redefined-outer-name
+            from get_version import get_version
+
+            return get_version(__file__, vcs="git")
+        except ModuleNotFoundError as exc:
+            from setuptools.build_meta import SetupRequirementsError
+
+            raise SetupRequirementsError(["get_version==3.5.4"]) from exc
+    return Distribution.at(path("an_website.egg-info")).version
 
 
-def read(filename: str) -> str:
-    """Load the contents of a file."""
-    root_dir = os.path.dirname(__file__)
-    filepath = os.path.join(root_dir, filename)
-    return Path(filepath).read_text("UTF-8")
+def path(path: str | PathLike[str]) -> Path:
+    """Return the absolute path to the file."""
+    # pylint: disable=redefined-outer-name
+    return Path(__file__).resolve().parent / path
+
+
+if path(".git").exists():
+    path("REVISION.txt").write_bytes(
+        run(
+            ("git", "rev-parse", "HEAD"),
+            capture_output=True,
+            timeout=True,
+            check=True,
+        ).stdout
+    )
 
 
 setup(
@@ -76,13 +92,13 @@ setup(
     author_email="contact@asozial.org",
     description="#1 Website in the Worlds",
     long_description_content_type="text/markdown",
-    long_description=read("README.md"),
+    long_description=path("README.md").read_text("UTF-8"),
     version=get_version(),
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=classifiers,
     packages=["an_website"],
     python_requires=">=3.10",
-    install_requires=read("requirements.txt").split("\n"),
+    install_requires=path("requirements.txt").read_text("UTF-8").split("\n"),
     extras_require={"jxl": ["jxlpy~=0.9"]},
     include_package_data=True,
     zip_safe=False,
