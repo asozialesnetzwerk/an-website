@@ -21,16 +21,22 @@ import sys
 import time
 from asyncio import Event
 from collections.abc import Mapping
-from contextlib import suppress
 from pathlib import Path
 from typing import Final, TypedDict
 
 from get_version import get_version
 
-with suppress(ModuleNotFoundError):
+try:
     import orjson as json
 
-if "orjson" not in sys.modules:
+    if "spam" not in json.loads('{"spam":"eggs"}'):
+        from marshal import dumps, loads
+
+        _loads = json.loads
+        json.loads = lambda *args, **kwargs: loads(
+            dumps(_loads(*args, **kwargs))
+        )
+except ModuleNotFoundError:
     from . import fake_orjson as json  # type: ignore[no-redef]  # noqa: F811
 
     sys.modules["orjson"] = json

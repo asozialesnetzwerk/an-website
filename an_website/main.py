@@ -1088,7 +1088,11 @@ def main(  # noqa: C901  # pragma: no cover
     # show help message if --help is given (after reading config, before forking)
     parser.parse_args()
 
-    if processes and sockets:
+    if not sockets:
+        LOGGER.warning("No sockets configured")
+        return 0
+
+    if processes:
         setproctitle(f"{NAME} - Master")
 
         task_id = tornado.process.fork_processes(processes)
@@ -1136,34 +1140,30 @@ def main(  # noqa: C901  # pragma: no cover
         simplefilter("ignore", DeprecationWarning)
         server.add_sockets(sockets)
 
-    if sockets:
-        # pylint: disable=unused-variable
+    # pylint: disable=unused-variable
 
-        task_heartbeat = loop.create_task(heartbeat())  # noqa: F841
+    task_heartbeat = loop.create_task(heartbeat())  # noqa: F841
 
-        task_shutdown = loop.create_task(wait_for_shutdown())  # noqa: F841
+    task_shutdown = loop.create_task(wait_for_shutdown())  # noqa: F841
 
-        if elasticsearch_is_enabled:
-            task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
+    if elasticsearch_is_enabled:
+        task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
 
-        if redis_is_enabled:
-            task_redis = loop.create_task(check_redis(app))  # noqa: F841
+    if redis_is_enabled:
+        task_redis = loop.create_task(check_redis(app))  # noqa: F841
 
-        if not task_id:  # update from one process only
-            task_quotes = loop.create_task(  # noqa: F841
-                update_cache_periodically(app)
-            )
+    if not task_id:  # update from one process only
+        task_quotes = loop.create_task(  # noqa: F841
+            update_cache_periodically(app)
+        )
 
-        # pylint: enable=unused-variable
+    # pylint: enable=unused-variable
 
-    if run_supervisor_thread and sockets:
+    if run_supervisor_thread:
         HEARTBEAT = time.monotonic()
         threading.Thread(
             target=supervise, name="supervisor", daemon=True
         ).start()
-
-    if not sockets:
-        return 0
 
     try:
         loop.run_forever()
