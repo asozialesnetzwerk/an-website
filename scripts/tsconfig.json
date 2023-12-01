@@ -1,13 +1,12 @@
+// dprint-ignore-file
 {
-  "ts-node": { "esm": true },
+  "ts-node": {"esm": true},
   "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
   "exclude": ["deno"],
   "compilerOptions": {
     "noEmit": true,
     "plugins": [
-      {
-        "name": "typescript-eslint-language-service"
-      }
+      {"name": "typescript-eslint-language-service"}
     ],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

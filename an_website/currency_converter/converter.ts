@@ -137,7 +137,7 @@ function setAllFields(
 }
 
 const updateOutput = () => {
-    // deno-fmt-ignore
+    // dprint-ignore
     output.value = fields[0].value + " Euro, das sind ja " +
         fields[1].value + " Mark; " +
         fields[2].value + " Ostmark und " +

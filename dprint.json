@@ -6,11 +6,13 @@
     "singleBodyPosition": "nextLine",
     "binaryExpression.linePerExpression": true,
     "memberExpression.linePerExpression": true,
-    "commentLine.forceSpaceAfterSlashes": true
+    "commentLine.forceSpaceAfterSlashes": true,
+    "ignoreNodeCommentText": "dprint-ignore"
   },
   "json": {
     "deno": true,
-    "commentLine.forceSpaceAfterSlashes": true
+    "commentLine.forceSpaceAfterSlashes": true,
+    "ignoreNodeCommentText": "dprint-ignore"
   },
   "markdown": {
     "deno": true

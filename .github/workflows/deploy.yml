@@ -24,7 +24,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-          allow-prereleases: true
       - name: Install build frontend
         run: pip install "build==1.*"
       - name: Build
@@ -40,7 +39,7 @@ jobs:
     needs:
       - build
     permissions: {}
-    continue-on-error: ${{ matrix.python-version == 3.12 }}
+    continue-on-error: ${{ matrix.python-version == 3.13 }}
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +47,7 @@ jobs:
           - "3.10"
           - 3.11
           - 3.12
+          - 3.13
     steps:
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    continue-on-error: ${{ matrix.python-version == 3.12 }}
+    continue-on-error: ${{ matrix.python-version == 3.13 }}
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +81,7 @@ jobs:
           - "3.10"
           - 3.11
           - 3.12
+          - 3.13
         stack-version:
           - 7.17.14
           - 8.10.4
@@ -170,7 +171,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-          allow-prereleases: true
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -249,7 +249,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-          allow-prereleases: true
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Download coverage
@@ -313,7 +312,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-          allow-prereleases: true
       - name: Install Setuptools
         run: pip install "setuptools==68.*"
       - name: Download artifact

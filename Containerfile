@@ -16,14 +16,14 @@ COPY pip-requirements.txt .
 RUN set -eux \
  && . $HOME/.cargo/env \
  && python -m venv venv \
- && /venv/bin/pip install --no-deps setuptools wheel Cython \
- && /venv/bin/pip install --no-deps https://codeload.github.com/lxml/lxml/tar.gz/762f62c5a1ab62ce37397aeeab2c27fdcc14ca66 \
- && /venv/bin/pip uninstall -y setuptools wheel Cython \
- && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-deps https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
- && /venv/bin/pip install --no-deps git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
- && /venv/bin/pip install --no-deps git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
+ && /venv/bin/pip install setuptools==68.* wheel==0.42.* Cython==3.* \
+ && /venv/bin/pip install https://codeload.github.com/lxml/lxml/tar.gz/762f62c5a1ab62ce37397aeeab2c27fdcc14ca66 \
+ && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-build-isolation https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
+ && /venv/bin/pip install git+https://github.com/oconnor663/blake3-py.git@0.3.3#subdirectory=c_impl \
+ && /venv/bin/pip install git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31 \
  && sed -Ei "/(blake3|lxml|orjson)/d" pip-requirements.txt \
- && /venv/bin/pip install -r pip-requirements.txt
+ && /venv/bin/pip install -r pip-requirements.txt \
+ && /venv/bin/pip uninstall -y setuptools wheel Cython
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
 RUN /venv/bin/pip install --no-deps .

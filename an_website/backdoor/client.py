@@ -35,7 +35,7 @@ from base64 import b64encode
 from collections.abc import Callable, Iterable, MutableMapping
 from textwrap import dedent
 from types import EllipsisType
-from typing import Any, TypeAlias, TypedDict, cast
+from typing import Any, Required, TypeAlias, TypedDict, cast
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
 with contextlib.suppress(ModuleNotFoundError):
@@ -71,6 +71,8 @@ E = eval(  # pylint: disable=eval-used  # nosec: B307
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
 
+ErrorTuple: TypeAlias = tuple[int, str]
+
 
 class Response(TypedDict):  # noqa: D101
     # pylint: disable=missing-class-docstring
@@ -79,37 +81,31 @@ class Response(TypedDict):  # noqa: D101
     result: None | tuple[str, None | bytes] | SystemExit
 
 
-ErrorTuple: TypeAlias = tuple[int, str]
+class Proxy(TypedDict, total=False):  # noqa: D101
+    # pylint: disable=missing-class-docstring
+    type: Required[int]
+    addr: Required[str]
+    port: int
+    rdns: bool
+    username: str
+    password: str
 
 
 async def create_socket(
     addr: str,
     port: int | str,
-    proxy_type: None | int = None,
-    proxy_addr: None | str = None,
-    proxy_port: None | int = None,
-    proxy_rdns: None | bool = True,
-    proxy_username: None | str = None,
-    proxy_password: None | str = None,
+    proxy: None | Proxy,
 ) -> socket.socket:
     """Create a socket (optionally with a proxy)."""
-    # pylint: disable=too-complex, too-many-arguments
-    if proxy_type is not None and proxy_addr is None:
-        raise TypeError(
-            "proxy_addr should not be None if proxy_type is not None"
-        )
-    if proxy_type is not None and proxy_rdns is None:
-        raise TypeError(
-            "proxy_rdns should not be None if proxy_type is not None"
-        )
-    if proxy_type is not None and not socks:
+    # pylint: disable=too-complex
+    if proxy is not None and not socks:
         raise NotImplementedError("PySocks is required for proxy support")
     loop = asyncio.get_running_loop()
     address_infos = await loop.getaddrinfo(
         addr,
         port,
         # PySocks doesn't support AF_INET6
-        family=0 if proxy_type is None else socket.AF_INET,
+        family=0 if proxy is None else socket.AF_INET,
         type=socket.SOCK_STREAM,
     )
     if not address_infos:
@@ -123,20 +119,20 @@ async def create_socket(
                 socks.socksocket(
                     address_info[0], address_info[1], address_info[2]
                 )
-                if proxy_type is not None
+                if proxy is not None
                 else socket.socket(
                     address_info[0], address_info[1], address_info[2]
                 ),
             )
             sock.setblocking(False)
-            if proxy_type is not None:
+            if proxy is not None:
                 sock.set_proxy(  # type: ignore[attr-defined]
-                    proxy_type,
-                    proxy_addr,
-                    proxy_port,
-                    proxy_rdns,
-                    proxy_username,
-                    proxy_password,
+                    proxy["type"],
+                    proxy["addr"],
+                    proxy.get("port"),
+                    proxy.get("rdns", True),
+                    proxy.get("username"),
+                    proxy.get("password"),
                 )
             await loop.sock_connect(sock, address_info[4])
             return sock
@@ -159,18 +155,12 @@ async def create_socket(
     )
 
 
-async def request(  # noqa: C901  # pylint: disable=too-many-arguments
+async def request(  # noqa: C901
     method: str,
     url: str | SplitResult,
     headers: None | MutableMapping[str, str] = None,
     body: None | bytes | bytearray | Iterable[bytes | bytearray] | str = None,
-    *,
-    proxy_type: None | int = None,
-    proxy_addr: None | str = None,
-    proxy_port: None | int = None,
-    proxy_rdns: None | bool = True,
-    proxy_username: None | str = None,
-    proxy_password: None | str = None,
+    proxy: None | Proxy = None,
 ) -> tuple[int, dict[str, str], bytes]:
     """Insanely awesome HTTP client."""
     # pylint: disable=line-too-long, too-complex
@@ -205,12 +195,7 @@ async def request(  # noqa: C901  # pylint: disable=too-many-arguments
     sock = await create_socket(
         url.hostname,
         url.port or ("https" if https else "http"),
-        proxy_type,
-        proxy_addr,
-        proxy_port,
-        proxy_rdns,
-        proxy_username,
-        proxy_password,
+        proxy,
     )
     reader, writer = await asyncio.open_connection(
         sock=sock,
@@ -263,21 +248,16 @@ def detect_mode(code: str) -> str:
         return "exec"
 
 
-def send(  # pylint: disable=too-many-arguments
+def send(
     url: str | SplitResult,
     key: str,
     code: str,
     mode: str = "exec",
     session: None | str = None,
-    *,
-    proxy_type: None | int = None,
-    proxy_addr: None | str = None,
-    proxy_port: None | int = None,
-    proxy_rdns: None | bool = True,
-    proxy_username: None | str = None,
-    proxy_password: None | str = None,
+    proxy: None | Proxy = None,
 ) -> tuple[int, dict[str, str], Response | ErrorTuple | str | None | bytes]:
     """Send code to the backdoor API."""
+    # pylint: disable=too-many-arguments
     body = code.encode("UTF-8")
     if isinstance(url, str):
         url = urlsplit(url)
@@ -302,12 +282,7 @@ def send(  # pylint: disable=too-many-arguments
             url._replace(path=f"{url.path.removesuffix('/')}/{mode}"),
             headers,
             body,
-            proxy_type=proxy_type,
-            proxy_addr=proxy_addr,
-            proxy_port=proxy_port,
-            proxy_rdns=proxy_rdns,
-            proxy_username=proxy_username,
-            proxy_password=proxy_password,
+            proxy,
         )
     )
     try:
@@ -346,14 +321,9 @@ def run_and_print(  # noqa: C901
     code: str,
     lisp: bool = False,
     session: None | str = None,
+    proxy: None | Proxy = None,
     time_requests: bool = False,
     *,
-    proxy_type: None | int = None,
-    proxy_addr: None | str = None,
-    proxy_port: None | int = None,
-    proxy_rdns: None | bool = True,
-    proxy_username: None | str = None,
-    proxy_password: None | str = None,
     # pylint: disable=redefined-builtin
     print: Callable[..., None] = print,
 ) -> None:
@@ -370,12 +340,7 @@ def run_and_print(  # noqa: C901
             code,
             detect_mode(code),
             session,
-            proxy_type=proxy_type,
-            proxy_addr=proxy_addr,
-            proxy_port=proxy_port,
-            proxy_rdns=proxy_rdns,
-            proxy_username=proxy_username,
-            proxy_password=proxy_password,
+            proxy,
         )
     except SyntaxError as exc:
         print("".join(traceback.format_exception_only(exc)).strip())
@@ -610,7 +575,22 @@ def main() -> int | str:  # noqa: C901
                     "proxy_password": proxy_password,
                 },
                 file,
+                5,
             )
+
+    proxy: None | Proxy
+
+    if proxy_type and proxy_addr:
+        proxy = {"type": proxy_type, "addr": proxy_addr}
+        if proxy_port:
+            proxy["port"] = proxy_port
+        if proxy_rdns:
+            proxy["rdns"] = proxy_rdns
+        if proxy_username and proxy_password:
+            proxy["username"] = proxy_username
+            proxy["password"] = proxy_password
+    else:
+        proxy = None
 
     def send_to_remote(code: str, *, mode: str) -> Any:
         """Send code to the remote backdoor and return the unpickled body."""
@@ -620,12 +600,7 @@ def main() -> int | str:  # noqa: C901
             code,
             mode,
             session,
-            proxy_type=proxy_type,
-            proxy_addr=proxy_addr,
-            proxy_port=proxy_port,
-            proxy_rdns=proxy_rdns,
-            proxy_username=proxy_username,
-            proxy_password=proxy_password,
+            proxy,
         )[2]
 
     if "--no-patch-help" not in sys.argv:
@@ -686,13 +661,8 @@ def main() -> int | str:  # noqa: C901
                 shellify(code),
                 "--lisp" in sys.argv,
                 session,
+                proxy,
                 "--timing" in sys.argv,
-                proxy_type=proxy_type,
-                proxy_addr=proxy_addr,
-                proxy_port=proxy_port,
-                proxy_rdns=proxy_rdns,
-                proxy_username=proxy_username,
-                proxy_password=proxy_password,
             )
         except Exception:  # pylint: disable=broad-except
             print(

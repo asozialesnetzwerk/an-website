@@ -34,5 +34,6 @@ enable_error_code = [
   "truthy-iterable",
   "unused-awaitable",
 ]
+enable_incomplete_feature = ["PreciseTupleTypes"]
 packages = ["an_website", "tests", "scripts"]
 modules = "setup"

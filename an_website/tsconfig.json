@@ -1,3 +1,4 @@
+// dprint-ignore-file
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
@@ -6,9 +7,7 @@
     "checkJs": false,
     "noEmit": true,
     "plugins": [
-      {
-        "name": "typescript-eslint-language-service"
-      }
+      {"name": "typescript-eslint-language-service"}
     ],
     "alwaysStrict": false,
     "noUnusedLocals": false,
