@@ -14,8 +14,8 @@
     "wat": "deno eval 'console.log(Array(16).join(\"wat\" - 1) + \" Batman!\")'"
   },
   "imports": {
-    "std/": "https://deno.land/std@0.182.0/",
-    "dax": "https://deno.land/x/dax@0.31.0/mod.ts"
+    "std/": "https://deno.land/std@0.185.0/",
+    "dax": "https://deno.land/x/dax@0.31.1/mod.ts"
   },
   "nodeModulesDir": false,
   "lint": {
