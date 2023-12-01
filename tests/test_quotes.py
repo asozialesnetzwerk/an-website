@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone as tz
 from functools import cache
 
 import orjson as json
@@ -321,29 +322,32 @@ def test_parsing_vote_str() -> None:
 async def test_quote_apis(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the quote APIs."""
     wrong_quote = get_wrong_quote()
+    today = datetime.now(tz=tz.utc).date()
 
     response = assert_valid_json_response(
         await fetch(f"/api/zitate/{wrong_quote.get_id_as_str()}?show-rating=s")
     )
-    assert response["id"] == wrong_quote.get_id_as_str()
-    assert response["quote"] == wrong_quote.quote.quote
-    assert response["author"] == wrong_quote.author.name
-    assert response["real_author"] == wrong_quote.quote.author.name
-    assert response["real_author_id"] == wrong_quote.quote.author.id
-    assert int(response["rating"]) == wrong_quote.rating
+    if (today.month, today.day) != (4, 1):
+        assert response["id"] == wrong_quote.get_id_as_str()
+        assert response["quote"] == wrong_quote.quote.quote
+        assert response["author"] == wrong_quote.author.name
+        assert response["real_author"] == wrong_quote.quote.author.name
+        assert response["real_author_id"] == wrong_quote.quote.author.id
+        assert int(response["rating"]) == wrong_quote.rating
 
     response = assert_valid_json_response(
         await fetch(
             f"/api/zitate/{wrong_quote.get_id_as_str()}/full?show-rating=sure"
         )
     )
-    assert response["wrong_quote"] == wrong_quote.to_json()
-    response = response["wrong_quote"]
-    assert response["id"] == wrong_quote.get_id_as_str()
-    assert response["quote"] == wrong_quote.quote.to_json()
-    assert response["author"] == wrong_quote.author.to_json()
-    assert response["path"] == f"/zitate/{wrong_quote.get_id_as_str()}"
-    assert int(response["rating"]) == wrong_quote.rating
+    if (today.month, today.day) != (4, 1):
+        assert response["wrong_quote"] == wrong_quote.to_json()
+        response = response["wrong_quote"]
+        assert response["id"] == wrong_quote.get_id_as_str()
+        assert response["quote"] == wrong_quote.quote.to_json()
+        assert response["author"] == wrong_quote.author.to_json()
+        assert response["path"] == f"/zitate/{wrong_quote.get_id_as_str()}"
+        assert int(response["rating"]) == wrong_quote.rating
 
     for count in (6, 2, 1):
         response = assert_valid_json_response(
