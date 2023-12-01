@@ -105,7 +105,7 @@
 
 .download-img:hover {
     transform: scale(1.08) rotate(90deg);
-    -webkit-filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
+    filter: drop-shadow(3px -3px 2px rgba(139, 0, 0, 0.5));
 }
 
 #vote-container {

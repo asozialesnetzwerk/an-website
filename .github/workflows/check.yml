@@ -30,6 +30,8 @@ jobs:
           sdk: 3.0.7
       - name: Setup Deno
         uses: denoland/setup-deno@v1
+        with:
+          deno-version: 1.36.4
       - name: Install required stuff
         run: |
           sudo apt-get update

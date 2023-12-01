@@ -35,7 +35,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: git push --tags
       - name: Install build frontend
-        run: pip install "build<2"
+        run: pip install "build==1.*"
       - name: Build
         run: python -m build
       - name: Upload as build artifact
@@ -396,7 +396,7 @@ jobs:
           python-version: 3.12
           allow-prereleases: true
       - name: Install Setuptools
-        run: pip install setuptools
+        run: pip install "setuptools==68.*"
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:

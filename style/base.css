@@ -5,7 +5,6 @@ img.emoji {
     vertical-align: bottom;
     width: 1.375em;
     height: 1.375em;
-    -o-object-fit: contain;
     object-fit: contain;
 }
 #open-moji-attribution {
@@ -131,7 +130,6 @@ footer {
 
 /* header */
 header {
-    position: -webkit-sticky; /* Safari */
     position: sticky;
     top: 0;
 
