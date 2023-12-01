@@ -274,8 +274,8 @@ class BaseRequestHandler(RequestHandler):
                 {
                     "type": script.get("type", ""),
                     "src": script.get("src"),
-                    # "script": script.string,  # not in use because of CSP
-                    # "onload": script.get("onload"),  # not in use because of CSP
+                    "script": script.string,
+                    "onload": script.get("onload"),
                 }
                 for script in soup.find_all("script")
             ]
@@ -1014,7 +1014,7 @@ class BaseRequestHandler(RequestHandler):
                     )
         self.set_header("Vary", "Accept,Accept-Encoding,Authorization,Cookie")
         self.origin_trial(
-            "AjM7i7vhQFI2RUcab3ZCsJ9RESLDD9asdj0MxpwxHXXtETlsm8dEn+HSd646oPr1dKjn+EcNEj8uV3qFGJzObgsAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjg0ODg2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            "Ah8B+s/HdPnBtM2sfqywfu0dX7+sTwXvGlTF7nVL9SxI1jeVpwPcE0IqnrgjYDiIDHB/opX46gBCdHE5+TQETwkAAAB3eyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwiZXhwaXJ5IjoxNjk1NTEzNTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZX0="  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
         )
 
     @classmethod

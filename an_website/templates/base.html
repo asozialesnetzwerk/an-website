@@ -27,7 +27,7 @@
             {% if effects and display_theme == "christmas" %}
                 <noscript><link rel="stylesheet" type="text/css" href="{{fix_static('css/snow.css')}}"></noscript>
                 <script type="module" nonce="{{nonce}}">
-                    import {createSnow, showSnow} from "{{fix_static('js/snow/snow.js')}}";
+                    import { createSnow, showSnow } from "{{fix_static('js/snow/snow.js')}}";
                     window.showSnow = showSnow;
                     createSnow();
                 </script>
