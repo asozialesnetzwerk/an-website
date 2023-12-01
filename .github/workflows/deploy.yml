@@ -307,7 +307,7 @@ jobs:
           rm -f youki_${MAJOR_MINOR_PATCH}_linux.tar.gz
           chmod +x /opt/youki
         env:
-          "MAJOR.MINOR.PATCH"=0.2.0
+          "MAJOR.MINOR.PATCH": 0.2.0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:

@@ -7,7 +7,7 @@ import { parse } from "std/flags/mod.ts";
 const args = parse(Deno.args, {
     string: ["targets", "format"],
     default: {
-        targets: ">=0.1% and supports es6-module,Firefox>=115,Chrome>=120",
+        targets: ">=0.1% and supports es6-module,Chrome>=120,Firefox>=115,Safari>=15.6",
         format: "bundle",
     },
 });

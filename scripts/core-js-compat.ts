@@ -6,7 +6,7 @@ const args = parse(process.argv.slice(2), {
     boolean: "inverse",
     string: ["targets", "version"],
     default: {
-        targets: ">=0.1% and supports es6-module,Firefox>=115,Chrome>=120",
+        targets: ">=0.1% and supports es6-module,Chrome>=120,Firefox>=115,Safari>=15.6",
     },
 });
 
