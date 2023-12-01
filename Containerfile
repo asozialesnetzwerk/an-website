@@ -1,7 +1,7 @@
 FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a32d9b0b6fa3340f249df42 AS builder
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl git g++ libcurl4-nss-dev libffi-dev libfreetype-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
+ && apt-get install -y --no-install-recommends curl git g++ libcurl4-gnutls-dev libffi-dev libfreetype-dev libimagequant-dev libjpeg62-turbo-dev libopenjp2-7-dev libraqm-dev libtiff-dev libwebp-dev libxml2-dev libxslt1-dev zlib1g-dev \
  && rm -rf /var/lib/apt/lists/* \
  && for pkg in \
         b/binutils/binutils_2.40-2 \
@@ -43,7 +43,7 @@ RUN set -eux \
  && curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2023-04-01 --profile minimal
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
-    PYCURL_SSL_LIBRARY=nss \
+    PYCURL_SSL_LIBRARY=gnutls \
     PIP_NO_CACHE_DIR=1
 # TODO: merge this into one (https://github.com/openshift/imagebuilder/pull/210 fixes the bug)
 ARG AIOHTTP_NO_EXTENSIONS=1
@@ -76,7 +76,7 @@ FROM docker.io/library/python@sha256:023f26fe8438a9622a4cc67665b54999850e00868a3
 LABEL org.opencontainers.image.authors="contact@asozial.org"
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl libcurl3-nss libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 nss-plugin-pem \
+ && apt-get install -y --no-install-recommends curl libcurl3-gnutls libfreetype6 libimagequant0 libjpeg62-turbo libopenjp2-7 libwebp6 libwebpdemux2 libwebpmux3 libraqm0 libtiff5 nss-plugin-pem \
  && rm -rf /var/lib/apt/lists/* \
  && for pkg in \
         g/gcc-12/gcc-12-base_12.2.0-14 \

@@ -536,12 +536,9 @@ def is_in_european_union(ip: None | str) -> None | bool:
 
 def is_prime(number: int) -> bool:
     """Return whether or not the specified number is a prime."""
-    # pylint: disable=multiple-statements
-    # fmt: off
-    if number == 2: return True  # noqa: E701
-    if not number % 2: return False  # noqa: E701
+    if not number % 2:
+        return number == 2
     return bool(PRINT & 1 << number // 2)
-    # fmt: on
 
 
 def length_of_match(match: regex.Match[Any]) -> int:

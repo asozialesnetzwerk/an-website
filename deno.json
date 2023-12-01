@@ -10,10 +10,11 @@
     "find:css": "find style -type f -name '*.css'",
     "find:ts": "find an_website -type f -name '*.ts'",
     "target": "echo es$(python3 -c 'from datetime import datetime; print(min((now := datetime.utcnow()).year - (5 + (now.month < 7)), 2022))')",
-    "watch": "deno task find:ts -exec deno task esbuild --outbase=an_website --outdir=an_website/static/js --minify --sourcemap --watch '{}' +"
+    "watch": "deno task find:ts -exec deno task esbuild --outbase=an_website --outdir=an_website/static/js --minify --sourcemap --watch '{}' +",
+    "wat": "deno eval 'console.log(Array(16).join(\"wat\" - 1) + \" Batman!\")'"
   },
   "imports": {
-    "std/": "https://deno.land/std@0.181.0/",
+    "std/": "https://deno.land/std@0.182.0/",
     "dax": "https://deno.land/x/dax@0.30.1/mod.ts"
   },
   "nodeModulesDir": false,

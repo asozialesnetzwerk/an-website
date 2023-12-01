@@ -1,7 +1,9 @@
 {
   "type": "module",
+  "dependencies": {
+    "@tsconfig/strictest": "^2.0.0"
+  },
   "devDependencies": {
-    "@tsconfig/strictest": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "6.0.0-alpha.100",
     "@typescript-eslint/parser": "6.0.0-alpha.100",
     "eslint": "^8.37.0",

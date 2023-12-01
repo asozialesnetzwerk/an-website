@@ -32,12 +32,12 @@ function showSnow(value: boolean): void {
 }
 
 // Creating snowflakes
-function spawnSnow(snowDensity = 200): void {
-    for (let i = 1; i <= snowDensity; i++) {
-        const flake = document.createElement("p");
-        snow.appendChild(flake);
-    }
-}
+// function spawnSnow(snowDensity = 200): void {
+//     for (let i = 1; i <= snowDensity; i++) {
+//         const flake = document.createElement("p");
+//         snow.appendChild(flake);
+//     }
+// }
 
 // Append style for each snowflake to the head
 function addCss(rule: string): void {
@@ -102,9 +102,9 @@ function createSnow(): void {
     // setHeightVariables();
     // getSnowAttributes();
     spawnSnowCSS(snowflakesCount);
-    if (!snow.firstElementChild) {
-        spawnSnow(snowflakesCount);
-    }
+    // if (!snow.firstElementChild) {
+    //     spawnSnow(snowflakesCount);
+    // }
 }
 
 window.onload = createSnow;

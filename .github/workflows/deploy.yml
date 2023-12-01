@@ -59,7 +59,7 @@ jobs:
           buildah build -t an-website:git .
           cd ..
       - name: Save image
-        run: buildah push --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
+        run: buildah push --all --format=oci --compression-format=zstd --compression-level=20 an-website:git oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -85,7 +85,7 @@ jobs:
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
       - name: Push image
-        run: skopeo copy oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:git
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:git
 
   test-wheel:
     name: Test wheel

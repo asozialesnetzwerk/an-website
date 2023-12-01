@@ -1,9 +1,11 @@
 lockfileVersion: '6.0'
 
-devDependencies:
+dependencies:
   '@tsconfig/strictest':
     specifier: ^2.0.0
     version: 2.0.0
+
+devDependencies:
   '@typescript-eslint/eslint-plugin':
     specifier: 6.0.0-alpha.100
     version: 6.0.0-alpha.100(@typescript-eslint/parser@6.0.0-alpha.100)(eslint@8.37.0)(typescript@5.0.3)
@@ -105,7 +107,7 @@ packages:
 
   /@tsconfig/strictest@2.0.0:
     resolution: {integrity: sha512-E0dpiZNdwO20c8d3seh7OmjAvDpwoRkTcU6M8cvggzB45Bd45tyTU2XJeA5Wfq+8NzVGhunvqOJ30AjSkywMXA==}
-    dev: true
+    dev: false
 
   /@types/json-schema@7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}

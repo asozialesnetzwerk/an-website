@@ -45,7 +45,7 @@ jobs:
           pip install -r requirements.txt
           grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
       - name: Install @tsconfig/strictest
-        run: pnpm install
+        run: pnpm install -P
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort
