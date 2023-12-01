@@ -60,7 +60,7 @@ async def generate_art(
         command = "LOLWUT"
     if head:
         return None
-    return await redis.execute_command(command)  # type: ignore[no-any-return, no-untyped-call]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+    return await redis.execute_command(command)  # type: ignore[no-any-return, no-untyped-call]  # noqa: B950
 
 
 class LOLWUT(HTMLRequestHandler):

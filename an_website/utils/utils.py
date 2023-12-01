@@ -818,7 +818,7 @@ class BetterConfigParser(ConfigParser):
             )
         return value
 
-    def get(self, section: str, option: str, **kwargs: Any) -> None | str:  # type: ignore[override]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+    def get(self, section: str, option: str, **kwargs: Any) -> None | str:  # type: ignore[override]  # noqa: B950
         """Get an option in a section."""
         value: None | str = super().get(section, option, **kwargs)
         if "fallback" in kwargs:

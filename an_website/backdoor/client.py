@@ -200,7 +200,6 @@ async def request(  # noqa: C901
         headers["Host"] = host
     if body and "Content-Length" not in header_names:
         headers["Content-Length"] = str(len(body))
-    e, data = E, b""
     sock = await create_socket(
         url.hostname,
         url.port or ("https" if https else "http"),
@@ -233,6 +232,7 @@ async def request(  # noqa: C901
         writer.write(body)
     await writer.drain()
     del headers
+    e, data = E, b""
     while chunk := await reader.read():
         if b"\r\n\r\n" in (data := data + chunk) and e is E:
             e, data = data.split(b"\r\n\r\n", 1)
@@ -288,8 +288,8 @@ def send(
         if pickle.__name__ == "dill"
         else "application/vnd.python.pickle",
         "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
+        "X-Future-Feature": "annotations",
     }
-    headers["X-Future-Feature"] = "annotations"
     if FLUFL:
         headers["X-Future-Feature"] += ", barry_as_FLUFL"
     if session:

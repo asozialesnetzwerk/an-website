@@ -40,7 +40,7 @@ SCREENFETCH_PATH: Final = os.path.join(ROOT_DIR, "vendored", "screenfetch")
 UWUFETCH_PATH: Final = shutil.which("uwufetch")
 ENV: Final[Mapping[str, str]] = {
     "USER": NAME,
-    "SHELL": (  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+    "SHELL": (
         f"{sys.implementation.name}{'.'.join(str(_) for _ in sys.version_info[:3])}"
     ),
 }

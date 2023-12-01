@@ -64,10 +64,10 @@ async def test_sending_email() -> None:
     """Test sending emails."""
     user = f"{random.randbytes(10).hex()}"
     subject = random.randbytes(10).hex()
-    content = random.randbytes(80).hex()
+    content = random.randbytes(20).hex() + "\n"
     message = Message()
     message["Subject"] = subject
-    message.set_payload(content, "UTF-8")
+    message.set_payload(content)
     await asyncio.to_thread(
         contact.send_message,
         message=message,
@@ -89,14 +89,12 @@ async def test_sending_email() -> None:
             and email["from"][0]["address"] == "davis@1und1.de"
             and email["to"][0]["name"] == "an-website"
             and email["to"][0]["address"] == f"{user}@restmail.net"
-            and email["headers"]["content-type"]
-            == 'text/plain; charset="UTF-8"'
         ):
             break
     else:
         import __future__  # pylint: disable=import-outside-toplevel
 
-        assert __future__.barry_as_FLUFL.mandatory > sys.version_info  # type: ignore[attr-defined]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+        assert __future__.barry_as_FLUFL.mandatory < sys.version_info  # type: ignore[attr-defined]  # noqa: B950
 
 
 if __name__ == "__main__":

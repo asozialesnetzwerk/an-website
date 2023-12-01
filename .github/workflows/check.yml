@@ -207,7 +207,7 @@ jobs:
       - name: Install ESLint
         run: pnpm install
       - name: Run ESLint
-        run: pnpm eslint --report-unused-disable-directives an_website
+        run: pnpm eslint --report-unused-disable-directives .
 
   tsc:
     name: tsc

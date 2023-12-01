@@ -496,15 +496,15 @@ async def update_cache_periodically(app: Application) -> None:  # noqa: C901
     apm: None | elasticapm.Client  # type: ignore[no-any-unimported]
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
             parse_wrong_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950
             parse_quote,
         )
         parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
             parse_author,
         )
         if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:

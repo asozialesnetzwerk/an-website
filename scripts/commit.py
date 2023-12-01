@@ -14,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """This script is useful for creating commits."""
+
 from __future__ import annotations
 
 import os

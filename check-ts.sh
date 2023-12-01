@@ -9,6 +9,6 @@ echo tsc:
 pnpm tsc -p an_website || FAILED=$(( 2 | FAILED ))
 
 echo ESLint:
-pnpm eslint --report-unused-disable-directives an_website || FAILED=$(( 4 | FAILED ))
+pnpm eslint --report-unused-disable-directives . || FAILED=$(( 4 | FAILED ))
 
 exit "${FAILED}"
