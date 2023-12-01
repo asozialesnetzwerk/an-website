@@ -27,7 +27,7 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: 3.0.4
+          sdk: 3.0.5
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -48,20 +48,24 @@ jobs:
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
         run: |
+          wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v${VERSION_BUF}/buf-$(uname -s)-$(uname -m)
+          chmod +x /usr/local/bin/buf
           pushd /tmp
           wget https://github.com/sass/dart-sass/archive/refs/tags/${VERSION}.tar.gz
           tar xf ${VERSION}.tar.gz
           cd dart-sass-${VERSION}
           dart pub get
+          dart run grinder protobuf
           sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
-          dart compile exe bin/sass.dart --output /opt/dart-sass
+          dart compile exe bin/sass.dart --output /usr/local/bin/dart-sass
           cd ..
           rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
           popd
         env:
-          VERSION: 1.62.1
+          VERSION: 1.63.6
+          VERSION_BUF: 1.23.0
       - name: Generate snow
-        run: /opt/dart-sass -s compressed style/snow.scss style/snow.css
+        run: dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS
         run: deno task clean && deno task build
       - name: Generate humans.txt

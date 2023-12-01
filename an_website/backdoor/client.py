@@ -619,12 +619,12 @@ Accepted arguments:
     def send_to_remote(code: str, *, mode: str) -> Any:
         """Send code to the remote backdoor and return the unpickled body."""
         return send(
-            url,  # type: ignore[arg-type]
-            key,  # type: ignore[arg-type]
+            url,
+            key,
             code,
             mode,
             session,
-            proxy_type=proxy_type,  # type: ignore[arg-type]
+            proxy_type=proxy_type,
             proxy_addr=proxy_addr,
             proxy_port=proxy_port,
             proxy_rdns=proxy_rdns,
@@ -683,13 +683,13 @@ Accepted arguments:
         # pylint: disable=unused-argument
         try:
             run_and_print(
-                url,  # type: ignore[arg-type]
-                key,  # type: ignore[arg-type]
+                url,
+                key,
                 shellify(code),
                 "--lisp" in sys.argv,
                 session,
                 "--timing" in sys.argv,
-                proxy_type=proxy_type,  # type: ignore[arg-type]
+                proxy_type=proxy_type,
                 proxy_addr=proxy_addr,
                 proxy_port=proxy_port,
                 proxy_rdns=proxy_rdns,

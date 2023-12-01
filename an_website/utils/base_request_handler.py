@@ -214,7 +214,7 @@ class BaseRequestHandler(RequestHandler):
                 option |= json.OPT_INDENT_2
             return lambda spam: json.dumps(spam, option=option)
 
-        return lambda spam: spam  # type: ignore[no-any-return]
+        return lambda spam: spam
 
     @property
     def elasticsearch(self) -> AsyncElasticsearch:

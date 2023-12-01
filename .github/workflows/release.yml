@@ -91,8 +91,8 @@ jobs:
           - 3.11
           - 3.12
         stack-version:
-          - 7.17.10
-          - 8.8.0
+          - 7.17.11
+          - 8.8.2
         license:
           - basic
           - trial
@@ -383,9 +383,9 @@ jobs:
       - name: Download youki
         run: |
           wget https://github.com/containers/youki/releases/download/v0.0.5/youki_0_0_5_linux.tar.gz
-          tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /opt/youki
+          tar xOf youki_0_0_5_linux.tar.gz youki_0_0_5_linux/youki-0.0.5/youki > /usr/local/bin/youki
           rm -f youki_0_0_5_linux.tar.gz
-          chmod +x /opt/youki
+          chmod +x /usr/local/bin/youki
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -407,7 +407,7 @@ jobs:
           sudo buildah build -t an-website $(./build-args.sh) .
           cd ..
         env:
-          BUILDAH_RUNTIME: /opt/youki
+          BUILDAH_RUNTIME: /usr/local/bin/youki
       - name: Save image
         run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
