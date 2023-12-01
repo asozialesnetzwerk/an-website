@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * core-js 3.28.0
  * © 2014-2023 Denis Pushkarev (zloirock.ru)

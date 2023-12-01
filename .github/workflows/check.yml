@@ -28,6 +28,15 @@ jobs:
         with:
           sdk: 3.0.0-200.0.dev
           flavor: raw
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: pnpm
       - name: Setup Deno
         uses: denoland/setup-deno@v1
       - name: Install required stuff
@@ -36,6 +45,8 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev
           pip install -r requirements.txt
           grep -E "^(autoflake|black|isort)" requirements-ci.txt | xargs pip install
+      - name: Install @tsconfig/strictest
+        run: pnpm install
       - name: Run autoflake
         run: autoflake --recursive --in-place --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys .
       - name: Run isort
@@ -70,7 +81,7 @@ jobs:
         run: ./scripts/fix_hangman_solver_word_files.py
       - name: Generate content_types.json and media_types.json
         run: PYTHONPATH="." ./scripts/mime_types.py
-      - name: generate config.ini.default
+      - name: Generate config.ini.default
         run: python3 -m an_website --save-config-to config.ini.default -c
       - name: Push changes
         uses: stefanzweifel/git-auto-commit-action@v4
