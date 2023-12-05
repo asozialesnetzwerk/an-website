@@ -1,0 +1,131 @@
+proxy_set_header Host              $host;
+proxy_set_header X-Real-IP         $remote_addr;
+proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+
+proxy_http_version 1.1;
+proxy_send_timeout 20s;
+proxy_read_timeout 20s;
+
+gzip off;
+
+charset UTF-8;
+types {
+    application/json json;
+
+    image/jpeg jpg jpeg;
+    image/jxl jxl;
+    image/png png;
+    image/svg+xml svg;
+
+    font/woff2 woff2;
+
+    text/css css;
+    text/plain txt env map;
+    text/javascript js;
+}
+charset_types text/css text/plain text/javascript text/xml application/rss+xml;
+
+location / {
+    proxy_pass http://an-website;
+}
+
+location @proxy {
+    proxy_pass http://an-website;
+}
+
+location /static/ {
+    gzip on;
+    alias /home/an-website/static/;
+    try_files $uri @proxy;
+    add_header Cache-Control $cache_control;
+}
+
+location ~ ^/static/img/(openmoji-svg-.+)$ {
+    gzip on;
+    alias /home/an-website/static/img/;
+    try_files $1 @proxy;
+    add_header Cache-Control "public, immutable, max-age=315360000";
+}
+
+location ~ ^/static/(.env)$ {
+    gzip on;
+    default_type text/plain;
+    alias /home/an-website/static/;
+    try_files $1 @proxy;
+    add_header Cache-Control $cache_control;
+}
+
+location /.env {
+    gzip on;
+    default_type text/plain;
+    root /home/an-website/static/;
+    try_files $uri @proxy;
+}
+
+location /humans.txt {
+    gzip on;
+    root /home/an-website/static/;
+    try_files $uri @proxy;
+}
+
+location /robots.txt {
+    gzip on;
+    root /home/an-website/static/;
+    try_files $uri @proxy;
+}
+
+location /favicon.ico {
+    return 307 /favicon.png;
+}
+
+location /favicon.png {
+    root /home/an-website/static/;
+    try_files $uri @proxy;
+    add_header Cache-Control $cache_control;
+}
+
+location /api/backdoor {
+    proxy_pass http://unix:/var/run/an-website/an-website.$worker.sock;
+}
+
+location /api/update {
+    proxy_pass http://an-website;
+
+    proxy_request_buffering off;
+    client_max_body_size    50M;
+}
+
+location /websocket/ {
+    proxy_pass http://unix:/var/run/an-website/an-website.1.sock;
+
+    proxy_set_header Host              $http_host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Connection        upgrade;
+    proxy_set_header Upgrade           $http_upgrade;
+}
+
+
+location = /google0385555210160bd2.html {
+    proxy_pass http://an-website/.well-known/google0385555210160bd2.html;
+}
+
+location = /apm/intake/v2/rum-events {
+    resolver   1.1.1.1;
+    set $apm_domain apm.asozial.org;
+    proxy_pass https://$apm_domain:8200/intake/v2/rum/events;
+    add_header Access-Control-Allow-Origin: "*";
+#    proxy_ssl_trusted_certificate
+#    proxy_ssl_verify on;
+
+    proxy_set_header Host       $apm_domain;
+    proxy_set_header X-Real-IP  $remote_addr;
+
+    proxy_ssl_protocols TLSv1.3;
+    proxy_ssl_name apm.asozial.org;
+    proxy_http_version 1.1;
+    proxy_pass_request_headers on;
+    proxy_pass_request_body on;
+}
