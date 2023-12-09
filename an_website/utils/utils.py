@@ -896,16 +896,15 @@ def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
 
 def time_to_str(spam: float) -> str:
     """Convert the time into a string with second precision."""
-
-    time = int(spam)
-    div_60 = int(time / 60)
+    int_time = int(spam)
+    div_60 = int(int_time / 60)
     div_60_60 = int(div_60 / 60)
 
     return (
         f"{int(div_60_60 / 24)}d "
         f"{div_60_60 % 24}h "
         f"{div_60 % 60}min "
-        f"{time % 60}s"
+        f"{int_time % 60}s"
     )
 
 

@@ -122,9 +122,19 @@ class NotFoundHandler(BaseRequestHandler):
 class ErrorPage(HTMLRequestHandler):
     """A request handler that shows the error page."""
 
+    _success_status: int = 200
+    """The status code that is expected to be returned."""
+
     @override
-    async def get(self, code: str) -> None:
+    def clear(self) -> None:
+        """Reset all headers and content for this response."""
+        super().clear()
+        self._success_status = 200
+
+    @override
+    async def get(self, code: str, *, head: bool = False) -> None:
         """Show the error page."""
+        # pylint: disable=unused-argument
         status_code = int(code)
         reason = (
             "Nice Try" if status_code == 469 else responses.get(status_code, "")
@@ -132,6 +142,7 @@ class ErrorPage(HTMLRequestHandler):
         # set the status code if it is allowed
         if status_code not in (204, 304) and not 100 <= status_code < 200:
             self.set_status(status_code, reason)
+            self._success_status = status_code
         return await self.render(
             "error.html",
             status=status_code,
@@ -139,6 +150,22 @@ class ErrorPage(HTMLRequestHandler):
             description=self.get_error_page_description(status_code),
             is_traceback=False,
         )
+
+    @override
+    def get_status(self) -> int:
+        """Hack the status code.
+
+        This hacks the status code to be 200 if the status code is expected.
+        This avoids sending error logs to APM or Webhooks in case of success.
+
+        This depends on the fact that tornado internally uses self._status_code
+        to set the status code in the response and self.get_status() when
+        deciding how to log the request.
+        """
+        status = super().get_status()
+        if status == self._success_status:
+            return 200
+        return status
 
 
 class ZeroDivision(BaseRequestHandler):
