@@ -16,6 +16,9 @@
 from __future__ import annotations
 
 import socket
+from datetime import datetime
+
+from time_machine import travel
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
@@ -30,7 +33,9 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
     assert_valid_yaml_response,
     check_html_page,
     fetch,
+    hill_valley,
 )
+from .test_settings import parse_cookie
 
 
 async def test_json_apis(fetch: FetchCallable) -> None:  # noqa: F811
@@ -148,7 +153,7 @@ async def test_page_crawling(
         assert_url_query(url, theme=None, no_3rd_party=None, dynload="sure")
 
 
-async def test_request_handlers2(
+async def test_request_handlers0(
     fetch: FetchCallable,  # noqa: F811
     http_server_port: tuple[socket.socket, int],
 ) -> None:
@@ -208,23 +213,54 @@ async def test_request_handlers2(
     )
 
 
-async def test_request_handlers(fetch: FetchCallable) -> None:  # noqa: F811
+@travel(datetime(2000 + 1, 2, 3, 4, 5, 6, 7, hill_valley), tick=False)
+async def test_request_handlers1(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
-    # pylint: disable=too-many-statements
-    response = await fetch("/")
-    assert response.code == 200
-    for theme in ("default", "random-dark", "fun", "christmas"):
-        assert_valid_html_response(await fetch(f"/?theme={theme}"))
+    for theme in ("default", "random_dark", "fun", "christmas"):
+        response = assert_valid_html_response(await fetch(f"/?theme={theme}"))
+        assert response.code == 200
+        body = response.body.decode("UTF-8")
+        if theme != "default":
+            assert f"theme={theme}" in body
+        if not theme.startswith("random"):
+            assert f"/{theme}.css" in body
+        assert "🦘" in body[body.find("Mit Liebe gebacken") :]
+        assert "🦘" in body
+
     for bool1, bool2 in (("sure", "true"), ("nope", "false")):
         response = await check_html_page(fetch, f"/?no_3rd_party={bool1}")
+        assert response.code == 200
         body = response.body.decode("UTF-8")
+        assert "🦘" in body
         response = await check_html_page(fetch, f"/?no_3rd_party={bool2}")
+        assert response.code == 200
         assert (
             response.body.decode("UTF-8").replace(
                 f"no_3rd_party={bool2}", f"no_3rd_party={bool1}"
             )
             == body
         )
+
+
+@travel(datetime.fromtimestamp(1990), tick=False)
+async def test_request_handlers2(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
+    response = assert_valid_html_response(await fetch("/"))
+    assert response.code == 200
+    for cookie_header in response.headers.get_list("Set-Cookie"):
+        cookie = parse_cookie(cookie_header)
+        assert len(cookie) == 1
+        morsel = cookie[tuple(cookie)[0]]
+        assert morsel.key == "c"
+        assert morsel.value == "s"
+
+
+# pylint: disable=too-many-statements
+async def test_request_handlers3(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
+    response = await fetch("/")
+    assert response.code == 200
+
     assert_valid_html_response(await fetch("/?c=s"))
     response = await check_html_page(
         fetch, "/redirect?from=/&to=https://example.org"

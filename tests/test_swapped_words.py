@@ -16,12 +16,14 @@
 from __future__ import annotations
 
 from base64 import b64encode
+from datetime import datetime
 
 import orjson as json
 import pytest
 import regex
 import tornado.web
 import yaml
+from time_machine import travel
 
 from an_website.swapped_words import config_file as sw_config
 from an_website.swapped_words import swap
@@ -187,6 +189,7 @@ def test_check_text_too_long() -> None:
         swap.check_text_too_long("x" * (swap.MAX_CHAR_COUNT + 1))
 
 
+@travel(datetime(1, 2, 3, 4, 5, 6, 7), tick=False)
 async def test_sw_html_request_handlers(
     fetch: FetchCallable,  # noqa: F811
 ) -> None:

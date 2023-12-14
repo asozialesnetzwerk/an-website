@@ -23,7 +23,6 @@ from __future__ import annotations
 import contextlib
 import inspect
 import logging
-import random
 import secrets
 import sys
 import traceback
@@ -33,6 +32,8 @@ from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from functools import cached_property, partial, reduce
+from random import Random
+from random import choice as random_choice
 from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -394,7 +395,7 @@ class BaseRequestHandler(RequestHandler):
         if theme == "random_dark":
             ignore_themes.extend(("light", "light_blue", "fun"))
 
-        return random.choice(  # nosec: B311
+        return random_choice(  # nosec: B311
             tuple(theme for theme in THEMES if theme not in ignore_themes)
         )
 
@@ -546,11 +547,10 @@ class BaseRequestHandler(RequestHandler):
         )
         namespace.update(
             {
-                "🥚": pytest_is_running()
-                or timedelta()
+                "🥚": timedelta()
                 <= self.now.date() - easter(self.now.year)
                 < timedelta(days=2),
-                "🦘": pytest_is_running() or is_prime(self.now.microsecond),
+                "🦘": is_prime(self.now.microsecond),
             }
         )
         return namespace
@@ -729,9 +729,12 @@ class BaseRequestHandler(RequestHandler):
             if self.redirect_to_canonical_domain():
                 return
 
-            if not pytest_is_running() and (
-                days := random.randint(0, 31337)  # nosec: B311
-            ) in {69, 420, 1337, 31337}:
+            if (days := Random(self.now.timestamp()).randint(0, 31337)) in {
+                69,
+                420,
+                1337,
+                31337,
+            }:
                 self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
@@ -1051,7 +1054,7 @@ class BaseRequestHandler(RequestHandler):
                 chunk = regex.sub(
                     r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",
                     lambda match: "Stanley"
-                    if random.Random(match[0]).randrange(5) == self.now.year % 5
+                    if Random(match[0]).randrange(5) == self.now.year % 5
                     else match[0],
                     chunk,
                 )
