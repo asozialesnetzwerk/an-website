@@ -38,9 +38,11 @@ from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Coroutine, Iterable, MutableSequence
 from configparser import ConfigParser
+from functools import partial
 from hashlib import sha256
 from multiprocessing import process
 from pathlib import Path
+from socket import socket
 from typing import Any, Final, Literal, TypeAlias, cast
 from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
@@ -1065,14 +1067,16 @@ def main(  # noqa: C901  # pragma: no cover
         xheaders=behind_proxy,
     )
 
-    sockets = []
+    socket_factories: list[Callable[[], Iterable[socket]]] = []
 
     port = config.getint("GENERAL", "PORT", fallback=None)
 
     if port:
-        sockets.extend(
-            tornado.netutil.bind_sockets(
-                port, "localhost" if behind_proxy else ""
+        socket_factories.append(
+            partial(
+                tornado.netutil.bind_sockets,
+                port,
+                "localhost" if behind_proxy else "",
             )
         )
 
@@ -1084,10 +1088,12 @@ def main(  # noqa: C901  # pragma: no cover
 
     if unix_socket_path:
         os.makedirs(unix_socket_path, 0o755, True)
-        sockets.append(
-            tornado.netutil.bind_unix_socket(
-                os.path.join(unix_socket_path, f"{NAME}.sock"),
-                mode=0o666,
+        socket_factories.append(
+            lambda: (
+                tornado.netutil.bind_unix_socket(
+                    os.path.join(unix_socket_path, f"{NAME}.sock"),
+                    mode=0o666,
+                ),
             )
         )
 
@@ -1123,9 +1129,14 @@ def main(  # noqa: C901  # pragma: no cover
     # show help message if --help is given (after reading config, before forking)
     parser.parse_args()
 
-    if not sockets:
+    if not socket_factories:
         LOGGER.warning("No sockets configured")
         return 0
+
+    # create sockets after checking for --help
+    sockets: list[socket] = (
+        Stream(socket_factories).flat_map(lambda fun: fun()).collect(list)
+    )
 
     if processes:
         setproctitle(f"{NAME} - Master")
