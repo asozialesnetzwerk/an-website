@@ -49,6 +49,7 @@ from bs4 import BeautifulSoup
 from dateutil.easter import easter
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import ElasticsearchException
+from openmoji_dist import VERSION as OPENMOJI_VERSION
 from redis.asyncio import Redis
 from tornado.web import (
     Finish,
@@ -540,6 +541,7 @@ class BaseRequestHandler(RequestHandler):
             lang="de",  # TODO: add language support
             nonce=self.nonce,
             now=self.now,
+            openmoji_version=OPENMOJI_VERSION,
             settings=self.settings,
             short_title=self.short_title,
             testing=pytest_is_running(),

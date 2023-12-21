@@ -9,6 +9,7 @@ const messageSection = document.getElementById("message-section")!;
 const usingOpenMoji = document.getElementById("open-moji-attribution");
 const connectionIndicator = document.getElementById("connection-state")!;
 const currentUser = document.getElementById("current-user")!;
+const openmojiVersion = usingOpenMoji?.getAttribute("openmoji-version");
 let reconnectTimeout = 100;
 let reconnectTries = 0;
 let lastMessage = "";
@@ -60,7 +61,9 @@ const emojiToIMG = (emoji: string) => {
 
     const imgEl = document.createElement("img");
 
-    imgEl.src = `/static/img/openmoji-svg-14.0/${emojiCode}.svg`;
+    const path = `/static/openmoji/svg/${emojiCode}.svg`;
+    imgEl.src = openmojiVersion ? `${path}?v=${openmojiVersion}` : path;
+
     imgEl.classList.add("emoji");
     imgEl.alt = emoji;
 

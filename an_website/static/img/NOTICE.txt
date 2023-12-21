@@ -1,13 +1,5 @@
 The files in this directory and subdirectories aren't licensed under AGPLv3.
 
-openmoji-svg-14.0/*:
-- Source: https://openmoji.org, https://github.com/hfg-gmuend/openmoji/releases/tag/14.0.0
-- Changes:
-  - visually unmodified, just minified with scour (size reduced by ~1M)
-  - renamed many files XXXX-FE0F.svg (if the FE0F part was missing see: https://github.com/hfg-gmuend/openmoji/issues/404#issuecomment-1186274460 )
-- Creator:  HfG Schwäbisch Gmünd
-- License:  CC-BY-SA-4.0
-
 2020-11-03.jpg:
 - Creator: Marc-Uwe Kling and Bernd Kissel created for Zeit ONLINE
 

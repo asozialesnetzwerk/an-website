@@ -52,6 +52,7 @@ import regex
 from blake3 import blake3  # type: ignore[import-untyped]
 from elasticsearch import AsyncElasticsearch, ElasticsearchException
 from geoip import geolite2  # type: ignore[import-untyped]
+from openmoji_dist import VERSION as OPENMOJI_VERSION
 from rapidfuzz.distance.Levenshtein import normalized_distance
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
@@ -77,7 +78,7 @@ Handler: TypeAlias = Union[
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "font"]
+OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "colr1-font", "colr0-font"
 BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
@@ -441,7 +442,8 @@ def emoji2code(emoji: str) -> str:
 def emoji2html(emoji: str) -> str:
     """Convert an emoji to HTML."""
     return create_emoji_html(
-        emoji, f"/static/img/openmoji-svg-14.0/{emoji2code(emoji)}.svg"
+        emoji,
+        f"/static/openmoji/svg/{emoji2code(emoji)}.svg?v={OPENMOJI_VERSION}",
     )
 
 
@@ -735,8 +737,10 @@ def parse_config(*path: pathlib.Path) -> BetterConfigParser:
 def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
     """Parse the openmoji arg into a Literal."""
     value = value.lower()
-    # if value in {"f", "font"}:
-    #     return "font"
+    # if value == "colr1-font":
+    #     return "colr1-font"
+    # if value == "colr0-font":
+    #     return "colr0-font"
     if value in {"i", "img"}:
         return "img"
     if value in {"n", "nope"}:

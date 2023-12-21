@@ -1,3 +1,4 @@
+git+https://codeberg.org/Joshix/py-openmoji.git
 astor==0.8.1; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'
 astroid==3.0.1; python_full_version >= '3.8.0'
 attrs==23.1.0; python_version >= '3.7'

@@ -27,6 +27,8 @@ import defity
 import orjson as json
 import tornado.web
 from blake3 import blake3  # type: ignore[import-untyped]
+from openmoji_dist import VERSION as OPENMOJI_VERSION
+from openmoji_dist import get_openmoji_data
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
@@ -47,7 +49,6 @@ def create_file_hashes_dict() -> dict[str, str]:
         str(path)[len(ROOT_DIR) :].replace(os.path.sep, "/"): hash_file(path)
         for path in Path(STATIC_DIR).rglob("*")
         if path.is_file()
-        and not any(_.startswith("openmoji-svg-") for _ in path.parts)
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
     file_hashes_dict["/favicon.jxl"] = file_hashes_dict["/static/favicon.jxl"]
@@ -64,7 +65,15 @@ CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
 
 def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
+    # pylint: disable=import-outside-toplevel
+    from .static_file_from_traversable import TraversableStaticFileHandler
+
     handlers: list[Handler] = [
+        (
+            "(?i)/static/openmoji/(.*)",
+            TraversableStaticFileHandler,
+            {"root": get_openmoji_data()},
+        ),
         (
             r"(?i)(?:/static)?/(\.env|favicon\.(?:png|jxl)|humans\.txt|robots\.txt)",
             StaticFileHandler,
@@ -94,8 +103,8 @@ def fix_static_path(path: str) -> str:
         path = f"/static/{path}"
     if "?" in path:
         path = path.split("?")[0]
-    if path.startswith("/static/img/openmoji-svg-"):
-        return path
+    if path.startswith("/static/openmoji/"):
+        return f"{path}?v={OPENMOJI_VERSION}"
     path = path.lower()
     if path.startswith("/static/js/utils/"):  # TODO: improve this
         return path
@@ -120,14 +129,7 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
         if self.keep_case:
             return await super().get(path, include_body=include_body)
         return await super().get(
-            "/".join(
-                spam.upper()[:-4] + ".svg"
-                if spam.lower().endswith(".svg")
-                else spam.lower()
-                for spam in path.split("/")
-            )
-            if path.lower().startswith("img/openmoji-svg-")
-            else path.lower(),
+            path.lower(),
             include_body=include_body,
         )
 
@@ -178,11 +180,7 @@ class CachedStaticFileHandler(StaticFileHandler):
     def set_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_headers()
-        if not sys.flags.dev_mode and (
-            "v" in self.request.arguments
-            # guaranteed uniqueness is done via the 14.0 in the folder name
-            or self.path.lower().startswith("/static/img/openmoji-svg-")
-        ):
+        if not sys.flags.dev_mode and "v" in self.request.arguments:
             self.set_header(  # never changes
                 "Cache-Control",
                 f"public, immutable, max-age={self.CACHE_MAX_AGE}",
