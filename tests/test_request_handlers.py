@@ -255,8 +255,11 @@ async def test_request_handlers2(fetch: FetchCallable) -> None:  # noqa: F811
         assert morsel.value == "s"
 
 
-# pylint: disable=too-many-statements
-async def test_request_handlers3(fetch: FetchCallable) -> None:  # noqa: F811
+# pylint: disable-next=invalid-name
+test_request_handlers3 = travel("16-4-1")(test_request_handlers2)
+
+
+async def test_request_handlers4(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
     response = await fetch("/")
     assert response.code == 200
@@ -284,151 +287,180 @@ async def test_request_handlers3(fetch: FetchCallable) -> None:  # noqa: F811
     assert_valid_response(await fetch("/favicon.png"), "image/png")
     assert_valid_response(await fetch("/static/favicon.png"), "image/png")
 
-    await check_html_page(fetch, "/betriebszeit")
-    await check_html_page(fetch, "/discord")
-    await check_html_page(fetch, "/einstellungen")
-    await check_html_page(fetch, "/endpunkte")
-    await check_html_page(fetch, "/hangman-loeser")
-    await check_html_page(fetch, "/host-info")
-    await check_html_page(fetch, "/ip")
-    await check_html_page(fetch, "/js-lizenzen")
-    await check_html_page(fetch, "/kaenguru-comics")
-    await check_html_page(fetch, "/kontakt")
-    await check_html_page(fetch, "/services")
-    await check_html_page(fetch, "/soundboard")
-    await check_html_page(fetch, "/soundboard/personen")
-    await check_html_page(fetch, "/soundboard/suche")
-    await check_html_page(fetch, "/suche")
-    await check_html_page(fetch, "/version")
-    await check_html_page(fetch, "/vertauschte-woerter")
-    await check_html_page(fetch, "/waehrungs-rechner")
-    await check_html_page(fetch, "/wiki")
-    await check_html_page(fetch, "/wortspiel-helfer")
 
+async def test_request_handlers5(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
+    await check_html_page(fetch, "/betriebszeit", codes={200})
+    await check_html_page(fetch, "/discord", codes={200})
+    await check_html_page(fetch, "/einstellungen", codes={200})
+    await check_html_page(fetch, "/endpunkte", codes={200})
+    await check_html_page(fetch, "/hangman-loeser", codes={200})
+    await check_html_page(fetch, "/host-info", codes={200})
+    await check_html_page(fetch, "/ip", codes={200})
+    await check_html_page(fetch, "/js-lizenzen", codes={200})
+    await check_html_page(fetch, "/kaenguru-comics", codes={200})
+    await check_html_page(fetch, "/kontakt", codes={200})
+    await check_html_page(fetch, "/services", codes={200})
+    await check_html_page(fetch, "/soundboard", codes={200})
+    await check_html_page(fetch, "/soundboard/personen", codes={200})
+    await check_html_page(fetch, "/soundboard/suche", codes={200})
+    await check_html_page(fetch, "/suche", codes={200})
+    await check_html_page(fetch, "/version", codes={200})
+    await check_html_page(fetch, "/vertauschte-woerter", codes={200})
+    await check_html_page(fetch, "/waehrungs-rechner", codes={200})
+    await check_html_page(fetch, "/wiki", codes={200})
+    await check_html_page(fetch, "/wortspiel-helfer", codes={200})
+
+
+async def test_request_handlers6(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
     assert_valid_dynload_response(
         await fetch(
             "/betriebszeit",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/discord",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/einstellungen",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/endpunkte",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/hangman-loeser",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/host-info",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/ip", headers={"Accept": "application/vnd.asozial.dynload+json"}
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/js-lizenzen",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/kaenguru-comics",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/kontakt",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/services",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/soundboard",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/soundboard/personen",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/soundboard/suche",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/suche", headers={"Accept": "application/vnd.asozial.dynload+json"}
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/version",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/vertauschte-woerter",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/waehrungs-rechner",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/wiki", headers={"Accept": "application/vnd.asozial.dynload+json"}
-        )
+        ),
+        {200},
     )
     assert_valid_dynload_response(
         await fetch(
             "/wortspiel-helfer",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
-        )
+        ),
+        {200},
     )
 
+
+async def test_request_handlers7(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
     response = await fetch("/host-info/uwu")
     assert response.code in {200, 503}
     assert_valid_html_response(response, {response.code})
 
-    assert_valid_rss_response(await fetch("/soundboard/feed"))
-    assert_valid_rss_response(await fetch("/soundboard/muk/feed"))
+    assert_valid_rss_response(await fetch("/soundboard/feed"), {200})
+    assert_valid_rss_response(await fetch("/soundboard/muk/feed"), {200})
     assert_valid_rss_response(await fetch("/soundboard/qwertzuiop/feed"), {404})
 
     await check_html_page(fetch, "/soundboard/muk")
@@ -459,6 +491,9 @@ async def test_request_handlers3(fetch: FetchCallable) -> None:  # noqa: F811
         "application/json",
     )
 
+
+async def test_error_code_pages(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return codes."""
     for code in range(200, 599):
         if code not in (204, 304):
             assert_valid_html_response(await fetch(f"/{code}.html"), {code})
