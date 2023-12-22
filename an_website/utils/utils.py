@@ -429,22 +429,17 @@ def create_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def create_emoji_html(emoji: str, emoji_url: str) -> str:
-    """Create an HTML element that can be used to display an emoji."""
-    return f"<img src={emoji_url!r} alt={emoji!r} class='emoji'>"
-
-
-def emoji2code(emoji: str) -> str:
-    """Convert an emoji to the hexcodes of it."""
-    return "-".join(f"{ord(c):04x}" for c in emoji).upper()
-
-
 def emoji2html(emoji: str) -> str:
     """Convert an emoji to HTML."""
-    return create_emoji_html(
-        emoji,
-        f"/static/openmoji/svg/{emoji2code(emoji)}.svg?v={OPENMOJI_VERSION}",
-    )
+    return f"<img src={emoji2url(emoji)!r} alt={emoji!r} class='emoji'>"
+
+
+def emoji2url(emoji: str) -> str:
+    """Convert an emoji to an URL."""
+    if len(emoji) == 2:
+        emoji = emoji.removesuffix("\uFE0F")
+    code = "-".join(f"{ord(c):04x}" for c in emoji)
+    return f"/static/openmoji/svg/{code.upper()}.svg?v={OPENMOJI_VERSION}"
 
 
 def emojify(string: str) -> str:
