@@ -36,14 +36,6 @@ class TraversableStaticFileHandler(RequestHandler):
     ) -> None | Awaitable[None]:
         pass
 
-    def initialize(self, root: Traversable) -> None:
-        """Initialize this handler with a root directory."""
-        self.root = root
-
-    def head(self, path: str) -> Awaitable[None]:
-        """Handle HEAD requests for files in the static file directory."""
-        return self.get(path, head=True)
-
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
         """Handle GET requests for files in the static file directory."""
@@ -158,6 +150,14 @@ class TraversableStaticFileHandler(RequestHandler):
                 else:
                     assert not remaining
                     return
+
+    def head(self, path: str) -> Awaitable[None]:
+        """Handle HEAD requests for files in the static file directory."""
+        return self.get(path, head=True)
+
+    def initialize(self, root: Traversable) -> None:
+        """Initialize this handler with a root directory."""
+        self.root = root
 
     def set_default_headers(self) -> None:
         """Set the default headers for this handler."""
