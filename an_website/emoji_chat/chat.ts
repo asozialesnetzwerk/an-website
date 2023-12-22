@@ -54,10 +54,10 @@ const displayCurrentUser = (name: string[]) => {
 };
 
 const emojiToIMG = (emoji: string) => {
-    const emojiCode = [
-        ...(emoji.length == 2 && emoji[1] === "\uFE0F" ? emoji[0]! : emoji),
-    ]
-        .map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
+    const chars = [...emoji];
+    const emojiCode = (
+        chars.length == 2 && chars[1] === "\uFE0F" ? [chars[0]!] : chars
+    ).map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
         .join("-")
         .toUpperCase();
 
