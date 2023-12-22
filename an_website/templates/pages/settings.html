@@ -35,7 +35,8 @@
             <select name="openmoji">
                 <option {% if not openmoji %}selected{% end %}
                         value="nope">Deaktiviert</option>
-{# <option {% if openmoji == "font" %}selected{% end %} value="font">Als Font (Firefox)</option> #}
+                <option {% if openmoji == "glyf_colr0" %}selected{% end %} value="glyf_colr0">Font (Colr v0)</option>
+                <option {% if openmoji == "glyf_colr1" %}selected{% end %} value="glyf_colr1">Font (Colr v1)</option>
                 <option {% if openmoji == "img" %}selected{% end %}
                         value="img">Als SVGs</option>
             </select>

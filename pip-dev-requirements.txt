@@ -47,7 +47,7 @@ mypy-extensions==1.0.0; python_version >= '3.5'
 nh3==0.2.14
 nodeenv==1.8.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6'
 numpy==1.26.2; python_version >= '3.9'
-openmoji-dist==15.0.0
+openmoji-dist==15.0.0.1
 packaging==23.2; python_version >= '3.7'
 pathspec==0.11.2; python_version >= '3.7'
 pbr==6.0.0; python_version >= '2.6'

@@ -6,7 +6,7 @@ const messageInput = document.getElementById(
 ) as HTMLInputElement;
 const messageInputForm = messageInput.form!;
 const messageSection = document.getElementById("message-section")!;
-const usingOpenMoji = document.getElementById("open-moji-attribution");
+const usingOpenMoji = document.getElementById("openmoji-attribution");
 const connectionIndicator = document.getElementById("connection-state")!;
 const currentUser = document.getElementById("current-user")!;
 const openmojiVersion = usingOpenMoji?.getAttribute("openmoji-version");
@@ -18,6 +18,8 @@ const timeStampToText = (timestamp: number) => {
     return new Date(timestamp + 1651075200000).toLocaleString();
 };
 
+const getOpenMojiType = () => usingOpenMoji?.getAttribute("type")!;
+
 interface Message {
     author: string[];
     content: string[];
@@ -26,7 +28,8 @@ interface Message {
 
 const appendMessage = (msg: Message) => {
     const el = document.createElement("div");
-    if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
+    const emojiType = getOpenMojiType();
+    if (emojiType === "img") {
         for (const emoji of msg.author) {
             el.append(emojiToIMG(emoji));
         }
@@ -36,19 +39,25 @@ const appendMessage = (msg: Message) => {
         }
     } else {
         el.innerText = `${msg.author.join("")}: ${msg.content.join("")}`;
+        if (emojiType !== "nope") {
+            el.classList.add("openmoji");
+        }
     }
-
     el.setAttribute("tooltip", timeStampToText(msg.timestamp));
     messageSection.append(el);
 };
 
 const displayCurrentUser = (name: string[]) => {
     currentUser.innerHTML = "";
-    if (usingOpenMoji && usingOpenMoji.getAttribute("type") !== "font") {
+    const emojiType = getOpenMojiType();
+    if (emojiType === "img") {
         for (const emoji of name) {
             currentUser.append(emojiToIMG(emoji));
         }
         return;
+    }
+    if (emojiType !== "nope") {
+        currentUser.classList.add("openmoji");
     }
     currentUser.innerText = name.join("");
 };

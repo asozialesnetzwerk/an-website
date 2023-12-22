@@ -78,7 +78,7 @@ Handler: TypeAlias = Union[
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-OpenMojiValue: TypeAlias = Literal[False, "img"]  # , "colr1-font", "colr0-font"
+OpenMojiValue: TypeAlias = Literal[False, "img", "glyf_colr1", "glyf_colr0"]
 BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
@@ -732,10 +732,10 @@ def parse_config(*path: pathlib.Path) -> BetterConfigParser:
 def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
     """Parse the openmoji arg into a Literal."""
     value = value.lower()
-    # if value == "colr1-font":
-    #     return "colr1-font"
-    # if value == "colr0-font":
-    #     return "colr0-font"
+    if value == "glyf_colr0":
+        return "glyf_colr0"
+    if value == "glyf_colr1":
+        return "glyf_colr1"
     if value in {"i", "img"}:
         return "img"
     if value in {"n", "nope"}:

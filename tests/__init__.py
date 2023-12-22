@@ -55,6 +55,7 @@ from blake3 import blake3  # type: ignore[import-untyped]
 from lxml import etree  # nosec: B410
 from lxml.html import document_fromstring  # nosec: B410
 from lxml.html.html5parser import HTMLParser  # nosec: B410
+from openmoji_dist import VERSION as OPENMOJI_VERSION
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPResponse
 from tornado.web import Application
 
@@ -328,7 +329,11 @@ async def check_html_page(
                 and resp.headers["Content-Type"] != "text/html;charset=utf-8"
             ):
                 # check if static file is linked with correct hash
-                file_hash = cast(str, blake3(resp.body).hexdigest(8))
+                file_hash = (
+                    OPENMOJI_VERSION
+                    if link.startswith(f"{scheme_and_netloc}/static/openmoji")
+                    else cast(str, blake3(resp.body).hexdigest(8))
+                )
                 assert_url_query(link, v=file_hash)
     assert found_ref_to_body or print(url)
     for resp in responses_to_check:

@@ -32,7 +32,7 @@ idna==3.6; python_version >= '3.5'
 jsonpickle==3.0.2; python_version >= '3.7'
 lxml==4.9.3; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 multidict==6.0.4; python_version >= '3.7'
-openmoji-dist==15.0.0
+openmoji-dist==15.0.0.1
 orjson==3.9.10; python_version >= '3.8'
 packaging==23.2; python_version >= '3.7'
 pillow==10.1.0; python_version >= '3.8'

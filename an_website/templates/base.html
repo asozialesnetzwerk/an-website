@@ -38,8 +38,8 @@
             {% if dynload %}
                 <script type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
-            {% if openmoji and "font" in openmoji %}
-                <style>:root {font-family:OpenMojiColor,sans-serif}</style>
+            {% if openmoji and "glyf_colr" in openmoji %}
+                <link rel="stylesheet" type="text/css" href="{{fix_static(f'openmoji/font/{openmoji}.css')}}">
             {% end %}
             {% if apm_script %}
                 <script src="{{fix_url(elastic_rum_url)}}"></script>

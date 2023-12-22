@@ -227,6 +227,15 @@ async def test_request_handlers1(fetch: FetchCallable) -> None:  # noqa: F811
         assert "🦘" in body[body.find("Mit Liebe gebacken") :]
         assert "🦘" in body
 
+    for val in ("img", "glyf_colr0", "glyf_colr1"):
+        response = await check_html_page(fetch, f"/?openmoji={val}")
+        assert response.code == 200
+        body = response.body.decode("UTF-8")
+        assert f'"{val}"' in body  # noqa: B907
+        assert "🦘" in body
+        if val == "img":
+            assert f"/{hex(ord('🦘'))[2:].upper()}.svg" in body
+
     for bool1, bool2 in (("sure", "true"), ("nope", "false")):
         response = await check_html_page(fetch, f"/?no_3rd_party={bool1}")
         assert response.code == 200

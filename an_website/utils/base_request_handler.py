@@ -527,7 +527,11 @@ class BaseRequestHandler(RequestHandler):
             fix_url=self.fix_url,
             emoji2html=emoji2html
             if self.user_settings.openmoji == "img"
-            else lambda emoji: emoji,
+            else (
+                (lambda emoji: f'<span class="openmoji">{emoji}</span>')
+                if self.user_settings.openmoji
+                else (lambda emoji: emoji)
+            ),
             form_appendix=self.user_settings.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
             GH_PAGES_URL=GH_PAGES_URL,

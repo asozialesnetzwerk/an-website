@@ -47,7 +47,7 @@ mypy-extensions==1.0.0
 nh3==0.2.14
 nodeenv==1.8.0
 numpy==1.26.2
-openmoji-dist==15.0.0
+openmoji-dist==15.0.0.1
 packaging==23.2
 pathspec==0.11.2
 pbr==6.0.0
