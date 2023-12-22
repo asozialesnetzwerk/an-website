@@ -82,7 +82,7 @@
         <br>
         <div id="openmoji-attribution"
              openmoji-version="{{ openmoji_version }}"
-             type="{{openmoji if openmoji else 'nope'}}">
+             type="{{openmoji}}">  {# openmoji is truthy!! #}
             All emojis {% raw emoji2html("🥳") %} designed by
             <a href="{{fix_url('https://openmoji.org')}}">OpenMoji</a>
             – the open-source emoji and icon project.

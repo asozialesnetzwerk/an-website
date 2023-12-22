@@ -18,7 +18,7 @@ const timeStampToText = (timestamp: number) => {
     return new Date(timestamp + 1651075200000).toLocaleString();
 };
 
-const getOpenMojiType = () => usingOpenMoji?.getAttribute("type")!;
+const getOpenMojiType = () => usingOpenMoji?.getAttribute("type");
 
 interface Message {
     author: string[];
@@ -39,7 +39,7 @@ const appendMessage = (msg: Message) => {
         }
     } else {
         el.innerText = `${msg.author.join("")}: ${msg.content.join("")}`;
-        if (emojiType !== "nope") {
+        if (emojiType) {
             el.classList.add("openmoji");
         }
     }
@@ -56,7 +56,7 @@ const displayCurrentUser = (name: string[]) => {
         }
         return;
     }
-    if (emojiType !== "nope") {
+    if (emojiType) {
         currentUser.classList.add("openmoji");
     }
     currentUser.innerText = name.join("");
