@@ -23,7 +23,7 @@ from pathlib import Path
 from tornado import httputil, iostream
 from tornado.web import HTTPError, RequestHandler
 
-from .static_file_handling import CONTENT_TYPES
+from .static_file_handling import content_type_from_path
 
 
 class TraversableStaticFileHandler(RequestHandler):
@@ -39,15 +39,16 @@ class TraversableStaticFileHandler(RequestHandler):
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
         """Handle GET requests for files in the static file directory."""
-        if path.startswith("/") or ".." in path:
+        if path.startswith("/") or ".." in path.split("/") or "//" in path:
             raise HTTPError(404)
 
-        absolute_path = self.root / path
+        absolute_path = self.get_absolute_path(path)
 
         if not absolute_path.is_file():
             raise HTTPError(404)
 
-        self.set_header("Content-Type", CONTENT_TYPES[path.split(".")[-1]])
+        if content_type := self.get_content_type(path, absolute_path):
+            self.set_header("Content-Type", content_type)
         del path
 
         request_range = None
@@ -123,6 +124,10 @@ class TraversableStaticFileHandler(RequestHandler):
             except iostream.StreamClosedError:
                 return
 
+    def get_absolute_path(self, path: str) -> Traversable:
+        """Get the absolute path of a file."""
+        return self.root / path
+
     @classmethod
     def get_content(
         cls,
@@ -150,6 +155,13 @@ class TraversableStaticFileHandler(RequestHandler):
                 else:
                     assert not remaining
                     return
+
+    @classmethod
+    def get_content_type(
+        cls, path: str, absolute_path: Traversable
+    ) -> str | None:
+        """Get the content-type of a file."""
+        return content_type_from_path(path, absolute_path)
 
     def head(self, path: str) -> Awaitable[None]:
         """Handle HEAD requests for files in the static file directory."""

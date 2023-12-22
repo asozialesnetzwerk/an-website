@@ -25,6 +25,7 @@ html2text = "==2020.1.16"
 hyrule = {version = "<2", markers = "python_version < '3.13'"}
 jsonpickle = "==3.*"
 lxml = "<6"
+openmoji-dist = "*"
 orjson = "==3.*"
 Pillow = "==10.*"
 pillow-jxl-plugin = "==1.*"

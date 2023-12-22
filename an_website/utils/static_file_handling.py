@@ -20,6 +20,7 @@ import os
 import sys
 from collections.abc import Awaitable, Mapping
 from functools import cache
+from importlib.abc import Traversable
 from pathlib import Path
 from typing import Any, Final, cast
 
@@ -115,6 +116,17 @@ def fix_static_path(path: str) -> str:
     return path
 
 
+def content_type_from_path(url_path: str, file: Traversable) -> str | None:
+    """Extract the Content-Type from a path."""
+    content_type: str | None = CONTENT_TYPES.get(Path(url_path).suffix[1:])
+    if not content_type:
+        with file.open("rb") as io:
+            content_type = defity.from_file(io)
+    if content_type and content_type.startswith("text/"):
+        content_type += "; charset=UTF-8"
+    return content_type
+
+
 class StaticFileHandler(tornado.web.StaticFileHandler):
     """A StaticFileHandler with smart Content-Type."""
 
@@ -153,11 +165,9 @@ class StaticFileHandler(tornado.web.StaticFileHandler):
     def set_extra_headers(self, _: str) -> None:
         """Reset the Content-Type header if we know it better."""
         if not self.content_type:
-            self.content_type = CONTENT_TYPES.get(Path(self.path).suffix[1:])
-            if not self.content_type:
-                self.content_type = defity.from_file(self.absolute_path)  # type: ignore[arg-type]
-            if self.content_type and self.content_type.startswith("text/"):
-                self.content_type += "; charset=UTF-8"
+            self.content_type = content_type_from_path(
+                self.path, Path(cast(str, self.absolute_path))
+            )
         if self.content_type:
             self.set_header("Content-Type", self.content_type)
 
