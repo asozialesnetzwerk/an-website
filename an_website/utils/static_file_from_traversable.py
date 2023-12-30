@@ -47,6 +47,8 @@ class TraversableStaticFileHandler(RequestHandler):
         if not absolute_path.is_file():
             raise HTTPError(404)
 
+        self.set_header("Accept-Ranges",  "bytes")
+
         if content_type := self.get_content_type(path, absolute_path):
             self.set_header("Content-Type", content_type)
         del path
@@ -103,14 +105,7 @@ class TraversableStaticFileHandler(RequestHandler):
         else:
             start = end = None
 
-        if start is not None and end is not None:
-            content_length = end - start
-        elif end is not None:
-            content_length = end
-        elif start is not None:
-            content_length = size - start
-        else:
-            content_length = size
+        content_length = len(range(size)[start:end])
         self.set_header("Content-Length", content_length)
 
         if head:
