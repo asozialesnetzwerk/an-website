@@ -47,7 +47,7 @@ class TraversableStaticFileHandler(RequestHandler):
         if not absolute_path.is_file():
             raise HTTPError(404)
 
-        self.set_header("Accept-Ranges",  "bytes")
+        self.set_header("Accept-Ranges", "bytes")
 
         if content_type := self.get_content_type(path, absolute_path):
             self.set_header("Content-Type", content_type)
