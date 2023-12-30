@@ -224,17 +224,29 @@ def assert_valid_response(
     content_type: None | str,
     codes: Set[int] = frozenset({200, 503}),
     headers: None | MutableMapping[str, Any] = None,
+    needs_to_end_with_line_feed: bool = True,
 ) -> HTTPResponse:
     """Assert a valid response with the given status code and Content-Type."""
     url = response.effective_url
     assert response.code in codes or print(
         url, codes, response.code, response.body
     )
+
+    if response.request.method == "HEAD":
+        assert not response.body
+    else:
+        assert int(response.headers["Content-Length"]) == len(response.body)
+
     if (
-        response.body
-        and (content_type := response.headers.get("Content-Type"))
+        needs_to_end_with_line_feed
+        and response.request.method != "HEAD"
         and (
-            content_type in TEXT_CONTENT_TYPES
+            (
+                content_type := cast(
+                    str, response.headers.get("Content-Type", "")
+                )
+            )
+            in TEXT_CONTENT_TYPES
             or content_type.startswith("text/")
             or content_type.endswith(("+xml", "+json"))
         )
@@ -243,7 +255,7 @@ def assert_valid_response(
             f"Body from {url} doesn't end with newline"
         )
     headers = headers or {}
-    if content_type is not None:
+    if content_type:
         headers["Content-Type"] = content_type
     for header, value in headers.items():
         assert response.headers[header] == value or print(
