@@ -17,9 +17,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from hangman_solver import HangmanResult, Language, solve, solve_crossword
+from hangman_solver import (
+    HangmanResult,
+    Language,
+    UnknownLanguageError,
+    read_words_with_length,
+    solve,
+    solve_crossword,
+)
 from tornado.web import HTTPError
 
+from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -27,10 +35,15 @@ from ..utils.utils import ModuleInfo
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
+    languages = "|".join([lang.value.lower() for lang in Language.values()])
     return ModuleInfo(
         handlers=(
             (r"/hangman-loeser", HangmanSolver),
             (r"/api/hangman-loeser", HangmanSolverAPI),
+            (
+                rf"/hangman-loeser/worte/({languages})/([1-9]\d*).txt",
+                HangmanSolverWords,
+            ),
         ),
         name="Hangman-Löser",
         description="Eine Webseite, die Lösungen für Galgenmännchen findet",
@@ -63,7 +76,7 @@ def solve_hangman(data: HangmanArguments) -> HangmanResult:
     """Generate a hangman object based on the input and return it."""
     try:
         lang = Language.parse_string(data.lang)
-    except ValueError as err:
+    except UnknownLanguageError as err:
         raise HTTPError(
             400, reason=f"{data.lang!r} is an invalid language"
         ) from err
@@ -114,3 +127,31 @@ class HangmanSolverAPI(APIRequestHandler, HangmanSolver):
                 "lang": hangman_result.language.value,
             }
         )
+
+
+class HangmanSolverWords(BaseRequestHandler):
+    """Request handler for the hangman word lists."""
+
+    RATELIMIT_GET_LIMIT = 15
+    POSSIBLE_CONTENT_TYPES = ("text/plain",)
+
+    async def get(
+        self, language: str, length: str, *, head: bool = False
+    ) -> None:
+        """Handle GET requests to the hangman solver page."""
+        # pylint: disable=unused-argument
+        try:
+            lang = Language.parse_string(language)
+        except UnknownLanguageError as err:
+            raise HTTPError(404) from err
+
+        try:
+            word_length = int(length)
+        except ValueError as err:
+            raise HTTPError(404) from err
+
+        for word in read_words_with_length(lang, word_length):
+            self.write(word)
+            self.write(b"\n")
+
+        await self.finish()

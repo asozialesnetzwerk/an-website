@@ -760,6 +760,7 @@ async def ratelimit(  # pylint: disable=too-many-arguments
     if bucket:
         key = f"{key}:{bucket}"
 
+    # see: https://github.com/brandur/redis-cell#usage
     result = await redis.execute_command(
         # type: ignore[no-untyped-call]
         "CL.THROTTLE",

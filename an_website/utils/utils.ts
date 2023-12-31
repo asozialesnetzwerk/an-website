@@ -67,9 +67,20 @@ export function setURLParam(
     stateType = "URLParamChange",
     push = true,
 ) {
+    return setMultipleURLParams([[param, value]], state, stateType, push);
+}
+
+export function setMultipleURLParams(
+    params: [string, string][],
+    state: unknown,
+    stateType = "URLParamChange",
+    push = true,
+) {
     // log("setURLParam", param, value, state, onpopstate);
     const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set(param, value);
+    for (const [param, value] of params) {
+        urlParams.set(param, value);
+    }
     const newUrl =
         `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);

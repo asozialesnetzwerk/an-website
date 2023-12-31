@@ -3,10 +3,11 @@
 {% block head %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/form.css')}}">
+    <script type="module" src="{{ fix_static('js/hangman_solver/hangman_solver.js') }}"></script>
 {% end %}
 
 {% block body %}
-    <form>
+    <form id="hangman-solver-form">
         <label class="form-element">
             Eingabe (Nutze "_" für nicht bekannte Buchstaben)
             <input type="text"
@@ -67,16 +68,18 @@
                value="Eingabe">
     </form>
 
-    <div>
+    <div id="letter-frequency-information">
         {% if hangman_result.letter_frequency %}
             Mögliche Buchstaben:
-            {{ ", ".join([f"{char}: {count}" for char, count in hangman_result.letter_frequency]) }}
+            {{ ", ".join([f"{char}: {count}" for char, count in hangman_result.letter_frequency if count ]) }}
         {% else %}Nichts gefunden.{% end %}
     </div>
 
-    {% if hangman_result.matching_words_count > 0 %}
-        {{min(hangman_result.matching_words_count, data.get_max_words())}}/{{hangman_result.matching_words_count}} passenden Wörter:
-        <ul>{% for word in hangman_result.words %}<li>{{word}}</li>{% end %}</ul>
-    {% end %}
+    <div id="matching-words">
+        {% if hangman_result.matching_words_count > 0 %}
+            {{min(hangman_result.matching_words_count, data.get_max_words())}}/{{hangman_result.matching_words_count}} passenden Wörter:
+            <ul>{% for word in hangman_result.words %}<li>{{word}}</li>{% end %}</ul>
+        {% end %}
+    </div>
 
 {% end %}
