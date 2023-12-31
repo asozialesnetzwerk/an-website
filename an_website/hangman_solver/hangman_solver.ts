@@ -21,16 +21,17 @@ interface StringValueObject {
     value: string;
 }
 
-const _getLowerCaseValue: (input: StringValueObject) => string = (input) =>
-    input.value.toLowerCase();
+const _getLowerCaseValueWithoutWhitespace: (
+    input: StringValueObject,
+) => string = (input) => input.value.toLowerCase().replace(whiteSpaceRegex, "");
 
 function getHtmlInputElements() {
     return {
         input: [
             // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
             document.querySelector("input[name='input']") as HTMLInputElement,
-            (input: StringValueObject) =>
-                _getLowerCaseValue(input).replace(
+            (input: HTMLInputElement) =>
+                _getLowerCaseValueWithoutWhitespace(input).replace(
                     notRealWildCardRegex,
                     wildCardChar,
                 ),
@@ -38,7 +39,22 @@ function getHtmlInputElements() {
         invalid: [
             // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
             document.querySelector("input[name='invalid']") as HTMLInputElement,
-            _getLowerCaseValue,
+            (input: HTMLInputElement) => {
+                // remove invalid chars and normalize
+                const value: string = _getLowerCaseValueWithoutWhitespace(input)
+                    .replace(
+                        notRealWildCardRegex,
+                        "",
+                    )
+                    .replace(wildCardRegex, "");
+                // remove duplicates
+                const arr: string[] = [
+                    ...new Set(value),
+                ];
+                // sort
+                arr.sort();
+                return arr.join("");
+            },
         ],
         max_words: [
             // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
@@ -58,7 +74,7 @@ function getHtmlInputElements() {
         lang: [
             // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
             document.querySelector("select[name='lang']") as HTMLSelectElement,
-            _getLowerCaseValue,
+            _getLowerCaseValueWithoutWhitespace,
         ],
     } as const;
 }
