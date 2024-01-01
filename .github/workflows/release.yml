@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Fetch tags
@@ -59,7 +59,7 @@ jobs:
           - 3.13
     steps:
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -125,7 +125,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -160,7 +160,7 @@ jobs:
       - tests
     steps:
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Download artifact
@@ -202,7 +202,7 @@ jobs:
     permissions: {}
     steps:
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Download artifact
@@ -229,7 +229,7 @@ jobs:
     permissions: {}
     steps:
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Download artifact
@@ -309,7 +309,7 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
           cache: pip
@@ -372,7 +372,7 @@ jobs:
         env:
           VERSION_U_002E_FS: 0.3.0
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Install Setuptools
@@ -388,12 +388,12 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          ./build-oci-image.sh -t an-website --timestamp 1651075200
+          sudo ./build-oci-image.sh -t an-website --timestamp 1651075200
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki
       - name: Save image
-        run: buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
+        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:

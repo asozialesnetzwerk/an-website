@@ -5,6 +5,6 @@ include pip-requirements.txt
 graft example-configurations
 global-exclude tsconfig.json
 global-exclude .eslintrc.*
+include build-oci-image.sh
 include Containerfile
-include build-args.sh
 include REVISION.txt
