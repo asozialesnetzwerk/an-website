@@ -7,5 +7,6 @@ rules:
   "plugin/no-unsupported-browser-features":
     - true
     - severity: "warning"
+      browsers: "Chrome 120, Firefox ESR, Safari 15.6"
 ignoreFiles:
   - "snow.css*"
