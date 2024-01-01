@@ -158,7 +158,7 @@ class ErrorPage(HTMLRequestHandler):
         This hacks the status code to be 200 if the status code is expected.
         This avoids sending error logs to APM or Webhooks in case of success.
 
-        This depends on the fact that tornado internally uses self._status_code
+        This depends on the fact that Tornado internally uses self._status_code
         to set the status code in the response and self.get_status() when
         deciding how to log the request.
         """

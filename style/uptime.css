@@ -3,7 +3,8 @@ main {
     text-align: center;
 }
 
-@font-face { /* used in js */
+@font-face {
+    /* used in JS */
     font-family: clock-face;
     font-style: normal;
 

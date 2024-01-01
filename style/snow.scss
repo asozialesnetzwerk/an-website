@@ -1,37 +1,38 @@
 @use "sass:math";
 
 @function random-range($min, $max) {
-  $rand: math.random();
-  $random-range: $min + math.floor($rand * (($max - $min) + 1));
+    $rand: math.random();
+    $random-range: $min + math.floor($rand * (($max - $min) + 1));
 
-  @return $random-range;
+    @return $random-range;
 }
 
 @for $i from 1 through 200 {
-  $random-x: math.random(1000000) * 0.0001vw;
-  $random-offset: random-range(-100000, 100000) * 0.0001vw;
-  $random-x-end: $random-x + $random-offset;
-  $random-x-end-yoyo: $random-x + ($random-offset / 2);
-  $random-yoyo-time: random-range(30000, 80000) / 100000;
-  $random-yoyo-y: $random-yoyo-time * 100vh;
-  $random-scale: math.random(10000) * 0.0001;
-  $fall-duration: random-range(10, 30) * 1s;
-  $fall-delay: math.random(30) * -1s;
+    $random-x: math.random(1000000) * 0.0001vw;
+    $random-offset: random-range(-100000, 100000) * 0.0001vw;
+    $random-x-end: $random-x + $random-offset;
+    $random-x-end-yoyo: $random-x + ($random-offset / 2);
+    $random-yoyo-time: random-range(30000, 80000) / 100000;
+    $random-yoyo-y: $random-yoyo-time * 100vh;
+    $random-scale: math.random(10000) * 0.0001;
+    $fall-duration: random-range(10, 30) * 1s;
+    $fall-delay: math.random(30) * -1s;
 
-  #snow p:nth-child(#{$i}) {
-    opacity: math.random(10000) * 0.0001;
-    transform: translate($random-x, -10px) scale($random-scale);
-    animation: fall-#{$i} $fall-duration $fall-delay linear infinite;  /* stylelint-disable-line order/properties-order */
-  }
-
-  @keyframes fall-#{$i} {
-    #{percentage($random-yoyo-time)} {
-      transform: translate($random-x-end, $random-yoyo-y) scale($random-scale);
+    #snow p:nth-child(#{$i}) {
+        opacity: math.random(10000) * 0.0001;
+        transform: translate($random-x, -10px) scale($random-scale);
+        /* stylelint-disable-next-line order/properties-order */
+        animation: fall-#{$i} $fall-duration $fall-delay linear infinite;
     }
 
-    100% {
-      transform: translate($random-x-end-yoyo, 100vh) scale($random-scale);
-    }
-  }
+    @keyframes fall-#{$i} {
+        #{percentage($random-yoyo-time)} {
+            transform: translate($random-x-end, $random-yoyo-y)
+                scale($random-scale);
+        }
 
+        100% {
+            transform: translate($random-x-end-yoyo, 100vh) scale($random-scale);
+        }
+    }
 }

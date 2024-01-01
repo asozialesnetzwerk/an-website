@@ -47,8 +47,8 @@ from accept_types import get_best_match  # type: ignore[import-untyped]
 from ansi2html import Ansi2HTMLConverter
 from bs4 import BeautifulSoup
 from dateutil.easter import easter
+from elastic_transport import ApiError, TransportError
 from elasticsearch import AsyncElasticsearch
-from elasticsearch.exceptions import ElasticsearchException
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from redis.asyncio import Redis
 from tornado.web import (
@@ -566,7 +566,7 @@ class BaseRequestHandler(RequestHandler):
         tz: tzinfo = timezone.utc
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-        except ElasticsearchException:
+        except (ApiError, TransportError):
             LOGGER.exception("Elasticsearch request failed")
             if self.apm_client:
                 self.apm_client.capture_exception()

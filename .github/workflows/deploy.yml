@@ -82,12 +82,9 @@ jobs:
           - 3.11
           - 3.12
           - 3.13
-        stack-version:
-          - 7.17.14
-          - 8.10.4
         license:
           - basic
-          - trial
+          #- trial
         redis-image:
           - redis/redis-stack-server:6.2.6-v10
           #- docker.dragonflydb.io/dragonflydb/dragonfly
@@ -97,42 +94,25 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - name: Configure sysctl limits
-        run: |
-          sudo swapoff -a
-          sudo sysctl -w vm.swappiness=1
-          sudo sysctl -w fs.file-max=262144
-          sudo sysctl -w vm.max_map_count=262144
-      - name: Start Elasticsearch
-        if: ${{ startsWith(matrix.stack-version, '7') }}
-        uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
-        with:
-          stack-version: ${{ matrix.stack-version }}
-          security-enabled: false
-          nodes: 3
-          license: ${{ matrix.license }}
-          plugins: |
-            analysis-icu
-            analysis-phonetic
-            ingest-attachment
-            mapper-size
-            mapper-murmur3
-            mapper-annotated-text
-      - name: Start Elasticsearch
-        continue-on-error: true
-        if: ${{ startsWith(matrix.stack-version, '8') }}
-        uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
-        with:
-          stack-version: ${{ matrix.stack-version }}
-          security-enabled: false
-          nodes: 3
-          license: ${{ matrix.license }}
-          plugins: |
-            analysis-icu
-            analysis-phonetic
-            mapper-size
-            mapper-murmur3
-            mapper-annotated-text
+      # - name: Configure sysctl limits
+      #   run: |
+      #     sudo swapoff -a
+      #     sudo sysctl -w vm.swappiness=1
+      #     sudo sysctl -w fs.file-max=262144
+      #     sudo sysctl -w vm.max_map_count=262144
+      # - name: Start Elasticsearch
+      #   uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
+      #   with:
+      #     stack-version: 8.11.3
+      #     security-enabled: false
+      #     nodes: 3
+      #     license: ${{ matrix.license }}
+      #     plugins: |
+      #       analysis-icu
+      #       analysis-phonetic
+      #       mapper-size
+      #       mapper-murmur3
+      #       mapper-annotated-text
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup Python
@@ -293,7 +273,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
-          git clone -b v1.30.0 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
+          git clone -b v1.34.0 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
           pushd ~/go/src/github.com/containers/buildah
           make buildah docs
           sudo make install
@@ -307,13 +287,13 @@ jobs:
           rm -f youki_${VERSION_U_005F_LL}_linux.tar.gz
           chmod +x /opt/youki
         env:
-          VERSION_U_002E_FS: 0.2.0
+          VERSION_U_002E_FS: 0.3.0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
       - name: Install Setuptools
-        run: pip install "setuptools==68.*"
+        run: pip install "setuptools==69.*"
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -325,12 +305,12 @@ jobs:
       - name: Build image
         run: |
           cd an-website*
-          sudo buildah build -t an-website $(./build-args.sh) .
+          ./build-oci-image.sh -t an-website
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki
       - name: Save image
-        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
+        run: buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -383,7 +363,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libdevmapper-dev libgpgme-dev
-          git clone -b v1.12.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
+          git clone -b v1.14.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
           pushd ~/go/src/github.com/containers/skopeo
           make bin/skopeo
           sudo make install DISABLE_DOCS=1

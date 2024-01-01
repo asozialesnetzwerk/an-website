@@ -27,7 +27,7 @@ from typing import Any, Final, cast
 import defity
 import orjson as json
 import tornado.web
-from blake3 import blake3  # type: ignore[import-untyped]
+from blake3 import blake3
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from openmoji_dist import get_openmoji_data
 
@@ -41,7 +41,7 @@ LOGGER: Final = logging.getLogger(__name__)
 def hash_file(path: str | Path) -> str:
     """Hash a file with BLAKE3."""
     with open(path, "rb") as file:
-        return cast(str, blake3(file.read()).hexdigest(8))
+        return blake3(file.read()).hexdigest(8)
 
 
 def create_file_hashes_dict() -> dict[str, str]:

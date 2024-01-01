@@ -47,7 +47,7 @@ DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --pers
 DISABLE_PYSTON=1 python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
 
 echo Bandit:
-python3 -m bandit -q -c pyproject.toml -r an_website || FAILED=$(( 64 | FAILED ))
+python3 -m bandit -qrc pyproject.toml . || FAILED=$(( 64 | FAILED ))
 
 if [ -n "${1:-}" ]; then
   pytest="python3 -m pytest --durations=0 --durations-min=0.5"

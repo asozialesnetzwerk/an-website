@@ -1,4 +1,5 @@
-.button, p {
+.button,
+p {
     max-width: 50rem;
     font-size: 1.1rem;
 }
@@ -22,9 +23,9 @@
 }
 
 .leave {
-    background-color: var(--main)!important;
+    background-color: var(--main) !important;
 }
 
 .stay {
-    background-color: var(--contrast)!important;
+    background-color: var(--contrast) !important;
 }

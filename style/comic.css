@@ -3,17 +3,11 @@
     font-style: normal;
 
     /*! See: /static/fonts/NOTICE.txt */
-    src:
-        local("Comic Sans MS"),
-        url("/static/fonts/comic.woff2?v=0") format("woff2");
+    src: url("/static/fonts/comic.woff2?v=0") format("woff2");
 }
 
-:root, [tooltip]::after {
-    font-family: comic, serif;
-}
-
-.openmoji {
-    font-family: OpenMojiColor, comic, serif;
+* {
+    font-family: comic, "Comic Sans MS", serif;
 }
 
 @font-face {
@@ -24,6 +18,8 @@
     src: url("/static/fonts/comicmono.woff2?v=0") format("woff2");
 }
 
-pre *, .pre, .mono-font {
-    font-family: comic-mono, ui-monospace, monospace;
+pre *,
+.pre *,
+.mono-font {
+    font-family: comic-mono, ui-monospace, monospace !important;
 }

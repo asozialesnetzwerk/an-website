@@ -2148,6 +2148,6 @@
     "https://deno.land/std@0.208.0/assert/assertion_error.ts": "4d0bde9b374dfbcbe8ac23f54f567b77024fb67dbb1906a852d67fe050d42f56",
     "https://deno.land/std@0.208.0/cli/mod.ts": "8fff07892674965455cbb885a3ea072af4207876179d12acc0d36da763280fe0",
     "https://deno.land/std@0.208.0/cli/parse_args.ts": "9bea02050b3f302e706871ff87ecfa3ad82cc34249adbe0dcddfaac75bdb48ff",
-    "https://deno.land/x/esbuild@v0.19.8/wasm.js": "e3c44da62b1f59a70305e7a1af946609287de0ea29963057cca3ce0e41378821"
+    "https://deno.land/x/esbuild@v0.19.9/wasm.js": "683ccf70a8affb663e886f7c47542fc9fbbcbca4e970f8bea9103cf82239fb61"
   }
 }

@@ -1,4 +1,5 @@
-.form, form {
+.form,
+form {
     width: min(50rem, calc(100% - 2rem));
 }
 

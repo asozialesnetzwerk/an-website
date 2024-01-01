@@ -51,7 +51,7 @@ import pytest
 import regex
 import time_machine as tm
 import yaml
-from blake3 import blake3  # type: ignore[import-untyped]
+from blake3 import blake3
 from lxml import etree  # nosec: B410
 from lxml.html import document_fromstring  # nosec: B410
 from lxml.html.html5parser import HTMLParser  # nosec: B410
@@ -344,7 +344,7 @@ async def check_html_page(
                 file_hash = (
                     OPENMOJI_VERSION
                     if link.startswith(f"{scheme_and_netloc}/static/openmoji")
-                    else cast(str, blake3(resp.body).hexdigest(8))
+                    else blake3(resp.body).hexdigest(8)
                 )
                 assert_url_query(link, v=file_hash)
     assert found_ref_to_body or print(url)

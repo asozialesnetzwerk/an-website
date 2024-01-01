@@ -19,7 +19,9 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: linear-gradient(white, white); /* Workaround for Chromium's selective color inversion */
+    /* stylelint-disable-next-line comment-empty-line-before */
+    /* Workaround for Chromium's selective color inversion */
+    background: linear-gradient(white, white);
     filter: drop-shadow(0 0 10px white);
     font-size: 0;
 }
@@ -28,7 +30,8 @@ main {
     text-shadow: 0 0 10px white;
 }
 
-header, #site-pane {
+header,
+#site-pane {
     box-shadow: 0 0 10px white;
 }
 

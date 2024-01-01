@@ -1,78 +1,78 @@
 /* Initially generated using https://sharingbuttons.io since then improved. */
 #main div {
-  min-width: 42%;
-  max-width: 100%;
-  margin-top: 2rem;
+    min-width: 42%;
+    max-width: 100%;
+    margin-top: 2rem;
 }
 
 #main div a {
-  display: block;
-  padding: .75rem 1rem;
-  border-radius: 0.3125rem;
-  margin: .8rem;
-  color: #fff;
-  text-decoration: none;
-  transition: 25ms ease-out;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 0.3125rem;
+    margin: 0.8rem;
+    color: #fff;
+    text-decoration: none;
+    transition: 25ms ease-out;
 }
 
 #main div a:focus,
 #main div a:hover {
-  filter: contrast(120%) brightness(120%);
-  transform: scale(1.01);
+    filter: contrast(120%) brightness(120%);
+    transform: scale(1.01);
 }
 
 #mastodon {
-  background-color: #2B90D9;
+    background-color: #2b90d9;
 }
 
 #main div a svg {
-  display: block;
-  width: 1.1rem;
-  height: 1.1rem;
-  margin-right: 0.4rem;
-  margin-bottom: .1rem;
-  background-color: transparent;
-  vertical-align: top;
+    display: block;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-right: 0.4rem;
+    margin-bottom: 0.1rem;
+    background-color: transparent;
+    vertical-align: top;
 }
 
 #main div a svg:not(.fill) {
-  fill: none;
-  stroke: #fff;
+    fill: none;
+    stroke: #fff;
 }
 
 .fill {
-  fill: #fff;
-  stroke: none;
+    fill: #fff;
+    stroke: none;
 }
 
 .stroke-2x {
-  stroke-width: 2px;
+    stroke-width: 2px;
 }
 
 #twitter {
-  background: #55acee;
+    background: #55acee;
 }
 
 #pinterest {
-  background: #bd081c;
+    background: #bd081c;
 }
 
 #facebook {
-  background: #3b5998;
+    background: #3b5998;
 }
 
 #reddit {
-  background: #f40;
+    background: #f40;
 }
 
 #email {
-  background: #777;
+    background: #777;
 }
 
 #whatsapp {
-  background: #25D366;
+    background: #25d366;
 }
 
 #telegram {
-  background: #54A9EB;
+    background: #54a9eb;
 }

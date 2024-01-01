@@ -12,7 +12,7 @@ line-length = 80
 [tool.isort]
 atomic = true
 profile = "black"
-py_version = "311"
+py_version = "312"
 line_length = 80
 skip_gitignore = true
 add_imports = ["from __future__ import annotations"]
@@ -34,6 +34,8 @@ enable_error_code = [
   "truthy-iterable",
   "unused-awaitable",
 ]
+disable_bytearray_promotion = true
+disable_memoryview_promotion = true
 enable_incomplete_feature = ["PreciseTupleTypes"]
 packages = ["an_website", "tests", "scripts"]
 modules = "setup"

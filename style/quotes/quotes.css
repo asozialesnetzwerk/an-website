@@ -89,7 +89,8 @@
     width: auto !important;
 }
 
-#add-quote, #report {
+#add-quote,
+#report {
     margin-right: 0.69rem;
 }
 
@@ -111,9 +112,8 @@
 #vote-container {
     display: flex;
     min-width: 69%;
-    align-content: stretch;
     align-items: stretch;
-    justify-content: center;
+    place-content: stretch center;
 }
 
 .vote {
@@ -140,7 +140,7 @@
     background-color: transparent !important;
 }
 
-@media (orientation:landscape) {
+@media (orientation: landscape) {
     #quote-container {
         position: relative;
         z-index: 1;
@@ -150,7 +150,8 @@
         min-height: 23.75rem;
         padding: 0 2rem 2rem;
         margin: 1rem auto;
-        background: transparent url("/static/img/kangarooface.svg?v=0") no-repeat right top 0.3125rem;
+        background: transparent url("/static/img/kangarooface.svg?v=0")
+            no-repeat right top 0.3125rem;
 
         /* background-position: right 10px top 0.3125rem; */
         text-align: center;

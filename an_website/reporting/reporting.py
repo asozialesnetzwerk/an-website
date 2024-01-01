@@ -99,7 +99,7 @@ async def get_reports(  # pylint: disable=too-many-arguments
         )
     reports = await elasticsearch.search(
         index=f"{prefix}-reports",
-        sort=[{"@timestamp": {"order": "desc"}}],  # type: ignore[list-item]
+        sort=[{"@timestamp": {"order": "desc"}}],
         query=query,
         from_=from_,
         size=size,

@@ -39,8 +39,7 @@ You need:
 - For building JavaScript and CSS: Deno\
   (`./deno upgrade --output ~/.local/bin/deno`)
 - For linting TypeScript: Node.js and pnpm\
-  (`SHELL=bash corepack pnpm setup && source ~/.bashrc && corepack pnpm i -g pnpm@8`)\
-  (`pnpm up -g` to update)
+  (`corepack enable` or `alias pnpm="corepack pnpm"`)
 
 ### How to check
 
@@ -64,7 +63,7 @@ You need:
 - Supervisord
 - Redis 6.2
 - redis-cell (for ratelimits)
-- Elasticsearch 7.17 or 8.x
+- Elasticsearch 8.11+
 - UwUFetch
 
 How:

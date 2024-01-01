@@ -16,7 +16,7 @@ runs:
     - name: Setup Deno
       uses: denoland/setup-deno@v1
       with:
-        deno-version: 1.38.3
+        deno-version: 1.38.5
     - name: Install required stuff
       run: |
         sudo apt-get update

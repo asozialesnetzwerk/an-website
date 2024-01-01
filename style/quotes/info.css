@@ -21,7 +21,7 @@ th {
 }
 
 .wrong-quote-a {
-    color: var(--text-color)!important;
+    color: var(--text-color) !important;
 }
 
 #disclaimer {
@@ -36,13 +36,13 @@ th {
     height: 1rem;
 }
 
-#report{
+#report {
     display: block;
     width: 3.2rem;
     height: 3.2rem;
 }
 
-.button-container-a  img {
+.button-container-a img {
     width: 100%;
     height: 100%;
 }

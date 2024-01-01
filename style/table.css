@@ -10,7 +10,8 @@
     text-align: left;
 }
 
-.table th, .table td {
+.table th,
+.table td {
     padding: 0.75rem 0.94rem;
     hyphens: manual;
     word-break: break-all;

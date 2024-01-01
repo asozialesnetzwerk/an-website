@@ -40,7 +40,7 @@ from collections.abc import Callable, Coroutine, Iterable, MutableSequence
 from configparser import ConfigParser
 from functools import partial
 from hashlib import sha256
-from multiprocessing import process
+from multiprocessing.process import _children  # type: ignore[attr-defined]
 from pathlib import Path
 from socket import socket
 from typing import Any, Final, Literal, TypeAlias, cast
@@ -49,11 +49,10 @@ from zoneinfo import ZoneInfo
 
 import orjson
 import regex
-import tornado.netutil
-import tornado.process
 from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
+from elastic_transport import ObjectApiResponse
 from elasticapm.contrib.tornado import (  # type: ignore[import-untyped]
     ElasticAPM,
 )
@@ -67,6 +66,8 @@ from redis.asyncio import (
 from setproctitle import setproctitle
 from tornado.httpserver import HTTPServer
 from tornado.log import LogFormatter
+from tornado.netutil import bind_sockets, bind_unix_socket
+from tornado.process import fork_processes, task_id
 from tornado.web import Application, RedirectHandler
 from typed_stream import Stream
 
@@ -77,6 +78,7 @@ from . import (
     EVENT_SHUTDOWN,
     NAME,
     TEMPLATES_DIR,
+    UPTIME,
     VERSION,
 )
 from .contact.contact import apply_contact_stuff_to_app
@@ -210,7 +212,7 @@ def get_module_infos_from_module(
         LOGGER.warning(
             "Import of %s took %ss. That's affecting the startup time.",
             module_name,
-            import_timer.execution_time,
+            import_timer.get(),
         )
 
     module_infos: list[ModuleInfo] = []
@@ -719,13 +721,14 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
     config = app.settings["CONFIG"]
     host = config.get("APP_SEARCH", "HOST", fallback=None)
     key = config.get("APP_SEARCH", "SEARCH_KEY", fallback=None)
+    verify_certs = config.getboolean(
+        "APP_SEARCH", "VERIFY_CERTS", fallback=True
+    )
     app.settings["APP_SEARCH"] = (
         AppSearch(
             host,
-            http_auth=key,
-            verify_cert=config.getboolean(
-                "APP_SEARCH", "VERIFY_CERT", fallback=True
-            ),
+            bearer_auth=key,
+            verify_certs=verify_certs,
             ca_certs=os.path.join(DIR, "ca-bundle.crt"),
         )
         if host
@@ -746,13 +749,11 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         hosts=tuple(config.getset("ELASTICSEARCH", "HOSTS"))
         if config.has_option("ELASTICSEARCH", "HOSTS")
         else None,
-        url_prefix=config.get("ELASTICSEARCH", "URL_PREFIX", fallback=""),
-        use_ssl=config.get("ELASTICSEARCH", "USE_SSL", fallback=False),
         verify_certs=config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
         ),
         ca_certs=os.path.join(DIR, "ca-bundle.crt"),
-        http_auth=(
+        basic_auth=(
             config.get("ELASTICSEARCH", "USERNAME"),
             config.get("ELASTICSEARCH", "PASSWORD"),
         )
@@ -760,14 +761,12 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         and config.has_option("ELASTICSEARCH", "PASSWORD")
         else None,
         api_key=config.get("ELASTICSEARCH", "API_KEY", fallback=None),
+        bearer_auth=config.get("ELASTICSEARCH", "BEARER_AUTH", fallback=None),
         client_cert=config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None),
         client_key=config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None),
         retry_on_timeout=config.get(
             "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
         ),
-        headers={
-            "accept": "application/vnd.elasticsearch+json; compatible-with=7"
-        },
     )
     if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         app.settings["ELASTICSEARCH"] = None
@@ -808,7 +807,7 @@ async def setup_elasticsearch_configs(
     prefix: str,
 ) -> None:
     """Setup Elasticsearch configs."""  # noqa: D401
-    spam: list[Coroutine[None, None, None | dict[str, Any]]]
+    spam: list[Coroutine[None, None, None | ObjectApiResponse[Any]]]
 
     for i in range(3):
         spam = []
@@ -846,10 +845,10 @@ async def setup_elasticsearch_config(
     body: dict[str, Any],
     name: str,
     path: str | Path = "<unknown>",
-) -> None | dict[str, Any]:
+) -> None | ObjectApiResponse[Any]:
     """Setup Elasticsearch config."""  # noqa: D401
-    get: Callable[..., Coroutine[None, None, dict[str, Any]]]
-    put: Callable[..., Coroutine[None, None, dict[str, Any]]]
+    get: Callable[..., Coroutine[None, None, ObjectApiResponse[Any]]]
+    put: Callable[..., Coroutine[None, None, ObjectApiResponse[Any]]]
 
     if what == "component_templates":
         get = es.cluster.get_component_template
@@ -869,8 +868,7 @@ async def setup_elasticsearch_config(
             current_version = current[name].get("version", 1)
         else:
             current = await get(
-                name=name,
-                params={"filter_path": f"{what}.name,{what}.version"},
+                name=name, filter_path=f"{what}.name,{what}.version"
             )
             current_version = current[what][0].get("version", 1)
     except NotFoundError:
@@ -879,7 +877,7 @@ async def setup_elasticsearch_config(
     if current_version < body.get("version", 1):
         if what == "ingest_pipelines":
             return await put(id=name, body=body)
-        return await put(name=name, body=body)  # type: ignore[call-arg]
+        return await put(name=name, body=body)
 
     if current_version > body.get("version", 1):
         LOGGER.warning(
@@ -1000,10 +998,10 @@ def supervise() -> None:
     """Supervise."""
     while foobarbaz := HEARTBEAT:  # pylint: disable=while-used
         if time.monotonic() - foobarbaz >= 10:
-            task_id = tornado.process.task_id()
+            worker = task_id()
             pid = os.getpid()
             LOGGER.fatal(
-                "Heartbeat timed out for worker %d (pid %d)", task_id, pid
+                "Heartbeat timed out for worker %d (pid %d)", worker, pid
             )
             atexit._run_exitfuncs()  # pylint: disable=protected-access
             os.abort()
@@ -1074,7 +1072,7 @@ def main(  # noqa: C901  # pragma: no cover
     if port:
         socket_factories.append(
             partial(
-                tornado.netutil.bind_sockets,
+                bind_sockets,
                 port,
                 "localhost" if behind_proxy else "",
             )
@@ -1090,7 +1088,7 @@ def main(  # noqa: C901  # pragma: no cover
         os.makedirs(unix_socket_path, 0o755, True)
         socket_factories.append(
             lambda: (
-                tornado.netutil.bind_unix_socket(
+                bind_unix_socket(
                     os.path.join(unix_socket_path, f"{NAME}.sock"),
                     mode=0o666,
                 ),
@@ -1110,7 +1108,7 @@ def main(  # noqa: C901  # pragma: no cover
             else os.cpu_count()
         )
 
-    task_id: int | None = None
+    worker: None | int = None
 
     run_supervisor_thread = config.getboolean(
         "GENERAL", "SUPERVISE", fallback=False
@@ -1138,15 +1136,17 @@ def main(  # noqa: C901  # pragma: no cover
         Stream(socket_factories).flat_map(lambda fun: fun()).collect(list)
     )
 
+    UPTIME.reset()
+
     if processes:
         setproctitle(f"{NAME} - Master")
 
-        task_id = tornado.process.fork_processes(processes)
+        worker = fork_processes(processes)
 
-        setproctitle(f"{NAME} - Worker {task_id}")
+        setproctitle(f"{NAME} - Worker {worker}")
 
         # yeet all children (there should be none, but do it regardless, just in case)
-        process._children.clear()  # type: ignore[attr-defined]  # pylint: disable=protected-access  # noqa: B950
+        _children.clear()
 
         del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
@@ -1155,8 +1155,8 @@ def main(  # noqa: C901  # pragma: no cover
 
         if unix_socket_path:
             sockets.append(
-                tornado.netutil.bind_unix_socket(
-                    os.path.join(unix_socket_path, f"{NAME}.{task_id}.sock"),
+                bind_unix_socket(
+                    os.path.join(unix_socket_path, f"{NAME}.{worker}.sock"),
                     mode=0o666,
                 )
             )
@@ -1202,7 +1202,7 @@ def main(  # noqa: C901  # pragma: no cover
     if redis_is_enabled:
         task_redis = loop.create_task(check_redis(app))  # noqa: F841
 
-    if not task_id:  # update from one process only
+    if not worker:  # update from one process only
         task_quotes = loop.create_task(  # noqa: F841
             update_cache_periodically(app)
         )

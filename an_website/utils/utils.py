@@ -49,8 +49,9 @@ from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
 import elasticapm  # type: ignore[import-untyped]
 import regex
-from blake3 import blake3  # type: ignore[import-untyped]
-from elasticsearch import AsyncElasticsearch, ElasticsearchException
+from blake3 import blake3
+from elastic_transport import ApiError, TransportError
+from elasticsearch import AsyncElasticsearch
 from geoip import geolite2  # type: ignore[import-untyped]
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from rapidfuzz.distance.Levenshtein import normalized_distance
@@ -267,31 +268,29 @@ class Timer:
 
     __slots__ = ("_execution_time", "_start_time")
 
+    _execution_time: int
+
     def __init__(self) -> None:
         """Start the timer."""
-        self._execution_time: None | float = None
-        self._start_time: float = time.perf_counter()
+        self._start_time = time.perf_counter_ns()
 
-    @property
-    def execution_time(self) -> float:
-        """
-        Get the execution time in seconds and return it.
+    def get(self) -> float:
+        """Get the execution time in seconds."""
+        return self.get_ns() / 1_000_000_000
 
-        If the timer wasn't stopped yet a ValueError gets raised.
-        """
-        if self._execution_time is None:
-            raise ValueError("Timer wasn't stopped yet.")
+    def get_ns(self) -> int:
+        """Get the execution time in nanoseconds."""
+        assert hasattr(self, "_execution_time"), "Timer not stopped yet"
         return self._execution_time
 
     def stop(self) -> float:
-        """
-        Stop the timer and return the execution time in seconds.
+        """Stop the timer and get the execution time in seconds."""
+        return self.stop_ns() / 1_000_000_000
 
-        If the timer was stopped already a ValueError gets raised.
-        """
-        if self._execution_time is not None:
-            raise ValueError("Timer has been stopped before.")
-        self._execution_time = time.perf_counter() - self._start_time
+    def stop_ns(self) -> int:
+        """Stop the timer and get the execution time in nanoseconds."""
+        assert not hasattr(self, "_execution_time"), "Timer already stopped"
+        self._execution_time = time.perf_counter_ns() - self._start_time
         return self._execution_time
 
 
@@ -513,24 +512,22 @@ async def geoip(
         try:
             cache[database] = (
                 await elasticsearch.ingest.simulate(
-                    body={
-                        "pipeline": {
-                            "processors": [
-                                {
-                                    "geoip": {
-                                        "field": "ip",
-                                        "database_file": database,
-                                        "properties": properties,
-                                    }
+                    pipeline={
+                        "processors": [
+                            {
+                                "geoip": {
+                                    "field": "ip",
+                                    "database_file": database,
+                                    "properties": properties,
                                 }
-                            ]
-                        },
-                        "docs": [{"_source": {"ip": ip}}],
+                            }
+                        ]
                     },
-                    params={"filter_path": "docs.doc._source"},
+                    docs=[{"_source": {"ip": ip}}],
+                    filter_path="docs.doc._source",
                 )
             )["docs"][0]["doc"]["_source"].get("geoip", {})
-        except ElasticsearchException:
+        except (ApiError, TransportError):
             if allow_fallback and database in {
                 "GeoLite2-City.mmdb",
                 "GeoLite2-Country.mmdb",
@@ -668,7 +665,7 @@ def hash_ip(
         IP_HASH_SALT["date"] = date
     return hash_bytes(
         address.packed if address else b"",
-        hasher=IP_HASH_SALT["hasher"].copy(),
+        hasher=IP_HASH_SALT["hasher"].copy(),  # type: ignore[attr-defined]
         size=size,
     )
 

@@ -152,7 +152,7 @@ def patch_json() -> None:
         return
     stdlib_json.dumps = json.dumps
     stdlib_json.dump = json.dump  # type: ignore[assignment]
-    stdlib_json.loads = json.loads
+    stdlib_json.loads = json.loads  # type: ignore[assignment]
     stdlib_json.load = json.load
 
 
