@@ -64,7 +64,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Install libcurl4-openssl-dev for compiling PycURL
@@ -164,7 +164,7 @@ jobs:
         with:
           python-version: 3.12
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Version
@@ -206,7 +206,7 @@ jobs:
         with:
           python-version: 3.12
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Install Twine
@@ -233,7 +233,7 @@ jobs:
         with:
           python-version: 3.12
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Install required library
@@ -281,7 +281,7 @@ jobs:
       url: https://asozial.org
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Deploy website
@@ -315,7 +315,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Download coverage
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage
       - name: Make directory
@@ -378,7 +378,7 @@ jobs:
       - name: Install Setuptools
         run: pip install "setuptools==69.*"
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Extract source distribution
@@ -406,7 +406,7 @@ jobs:
       - build-oci-image
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Run image
@@ -422,7 +422,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Run tests
@@ -453,7 +453,7 @@ jobs:
           skopeo --version
           popd
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Version
