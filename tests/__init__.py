@@ -93,9 +93,21 @@ FetchCallable = Callable[..., Awaitable[HTTPResponse]]
 # fmt: off
 hill_valley = ZoneInfo("America/Los_Angeles")
 destination = environ.get("DELOREAN_DESTINATION", "1985-10-26 01:24:00")
-tm.travel(datetime.fromisoformat(destination).replace(tzinfo=hill_valley)).start()
-UPTIME.reset()
+delorean = tm.travel(datetime.fromisoformat(destination).replace(tzinfo=hill_valley))
 # fmt: on
+
+
+def pytest_sessionstart(*_: object) -> None:
+    """Travel to the past."""
+    assert not tm.escape_hatch.is_travelling()
+    delorean.start()
+    UPTIME.reset()
+
+
+def pytest_sessionfinish(*_: object) -> None:
+    """Travel back to the future."""
+    assert tm.escape_hatch.is_travelling()
+    delorean.stop()
 
 
 @pytest.fixture

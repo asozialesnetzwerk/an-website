@@ -4,6 +4,7 @@
 /build
 /dist
 
+/deno
 /venv
 /logs
 /config.ini
