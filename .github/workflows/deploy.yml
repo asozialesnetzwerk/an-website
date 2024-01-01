@@ -250,7 +250,7 @@ jobs:
       - name: Generate commitment.txt
         run: git log "--pretty=%H %ct %s" > github-pages/commitment.txt
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: github-pages
       - name: Deploy GitHub Pages site
