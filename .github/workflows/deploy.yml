@@ -255,7 +255,7 @@ jobs:
           path: github-pages
       - name: Deploy GitHub Pages site
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
 
   build-oci-image:
     name: Build OCI image
