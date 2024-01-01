@@ -36,7 +36,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Cache
-        uses: pat-s/always-upload-cache@v2
+        uses: pat-s/always-upload-cache@v3
         with:
           path: .mypy_cache
           key: mypy-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
@@ -88,7 +88,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Cache
-        uses: pat-s/always-upload-cache@v2
+        uses: pat-s/always-upload-cache@v3
         with:
           path: ~/.cache/pylint
           key: pylint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
@@ -143,7 +143,7 @@ jobs:
           node-version: 18.19.0
           cache: pnpm
       - name: Cache
-        uses: pat-s/always-upload-cache@v2
+        uses: pat-s/always-upload-cache@v3
         with:
           path: .eslintcache
           key: eslint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
