@@ -266,7 +266,7 @@ jobs:
       packages: write
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ~1.20
       - name: Upgrade Buildah
@@ -356,7 +356,7 @@ jobs:
       packages: write
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ~1.20
       - name: Upgrade Skopeo
