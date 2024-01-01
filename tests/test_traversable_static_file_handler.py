@@ -73,7 +73,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
     assert part_response.headers["Cache-Control"] == CACHE_CONTROL
     assert (
         part_response.headers["Content-Range"]
-        == f"bytes {size - 7}-{size -1}/{size}"
+        == f"bytes {size - 7}-{size - 1}/{size}"
     )
     assert int(part_response.headers["Content-Length"]) == 7
     assert part_response.body == b"</svg>\n"

@@ -6,5 +6,5 @@ graft example-configurations
 global-exclude tsconfig.json
 global-exclude .eslintrc.*
 include Containerfile
-include build-args.sh
+include build-oci-image.sh
 include REVISION.txt
