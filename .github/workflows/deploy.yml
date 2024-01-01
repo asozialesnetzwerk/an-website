@@ -343,7 +343,7 @@ jobs:
         with:
           name: artifact
       - name: Run tests
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: podman run -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
