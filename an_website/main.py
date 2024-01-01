@@ -43,7 +43,7 @@ from hashlib import sha256
 from multiprocessing.process import _children  # type: ignore[attr-defined]
 from pathlib import Path
 from socket import socket
-from typing import Any, Final, Literal, TypeAlias, cast
+from typing import Any, Final, Literal, TypeAlias, TypedDict, cast
 from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
@@ -90,12 +90,12 @@ from .quotes.utils import (
 )
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
+from .utils.better_config_parser import BetterConfigParser
 from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
     ArgparseNamespace,
-    BetterConfigParser,
     Handler,
     ModuleInfo,
     Permission,
@@ -103,7 +103,7 @@ from .utils.utils import (
     create_argument_parser,
     geoip,
     get_arguments_without_help,
-    parse_config,
+    none_to_default,
     time_function,
 )
 
@@ -345,7 +345,7 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
 def ignore_modules(config: BetterConfigParser) -> None:
     """Read ignored modules from the config."""
     IGNORED_MODULES.update(
-        config.getset("GENERAL", "IGNORED_MODULES", fallback={})
+        config.getset("GENERAL", "IGNORED_MODULES", fallback=set())
     )
 
 
@@ -637,7 +637,7 @@ def setup_webhook_logging(  # pragma: no cover
 
 def setup_apm(app: Application) -> None:  # pragma: no cover
     """Setup APM."""  # noqa: D401
-    config = app.settings["CONFIG"]
+    config: BetterConfigParser = app.settings["CONFIG"]
     app.settings["ELASTIC_APM"] = {
         "ENABLED": config.getboolean("ELASTIC_APM", "ENABLED", fallback=False),
         "SERVER_URL": config.get(
@@ -718,7 +718,7 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
 
 def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
-    config = app.settings["CONFIG"]
+    config: BetterConfigParser = app.settings["CONFIG"]
     host = config.get("APP_SEARCH", "HOST", fallback=None)
     key = config.get("APP_SEARCH", "SEARCH_KEY", fallback=None)
     verify_certs = config.getboolean(
@@ -743,35 +743,62 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
 
 def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     """Setup Elasticsearch."""  # noqa: D401
-    config = app.settings["CONFIG"]
-    kwargs = dict(  # noqa: C408  # pylint: disable=use-dict-literal
-        cloud_id=config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
-        hosts=tuple(config.getset("ELASTICSEARCH", "HOSTS"))
+    # pylint: disable-next=import-outside-toplevel
+    from elastic_transport.client_utils import DEFAULT, DefaultType
+
+    config: BetterConfigParser = app.settings["CONFIG"]
+    basic_auth: tuple[str | None, str | None] = (
+        config.get("ELASTICSEARCH", "USERNAME", fallback=None),
+        config.get("ELASTICSEARCH", "PASSWORD", fallback=None),
+    )
+
+    class Kwargs(TypedDict):
+        """Kwargs of AsyncElasticsearch constructor."""
+
+        hosts: tuple[str, ...] | None
+        cloud_id: None | str
+        verify_certs: bool
+        api_key: None | str
+        bearer_auth: None | str
+        client_cert: str | DefaultType
+        client_key: str | DefaultType
+        retry_on_timeout: bool | DefaultType
+
+    kwargs: Kwargs = {
+        "hosts": tuple(config.getset("ELASTICSEARCH", "HOSTS"))
         if config.has_option("ELASTICSEARCH", "HOSTS")
         else None,
-        verify_certs=config.getboolean(
+        "cloud_id": config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
+        "verify_certs": config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
         ),
-        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
-        basic_auth=(
-            config.get("ELASTICSEARCH", "USERNAME"),
-            config.get("ELASTICSEARCH", "PASSWORD"),
-        )
-        if config.has_option("ELASTICSEARCH", "USERNAME")
-        and config.has_option("ELASTICSEARCH", "PASSWORD")
-        else None,
-        api_key=config.get("ELASTICSEARCH", "API_KEY", fallback=None),
-        bearer_auth=config.get("ELASTICSEARCH", "BEARER_AUTH", fallback=None),
-        client_cert=config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None),
-        client_key=config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None),
-        retry_on_timeout=config.get(
-            "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=False
+        "api_key": config.get("ELASTICSEARCH", "API_KEY", fallback=None),
+        "bearer_auth": config.get(
+            "ELASTICSEARCH", "BEARER_AUTH", fallback=None
         ),
-    )
+        "client_cert": none_to_default(
+            config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None), DEFAULT
+        ),
+        "client_key": none_to_default(
+            config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None), DEFAULT
+        ),
+        "retry_on_timeout": none_to_default(
+            config.getboolean(
+                "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=None
+            ),
+            DEFAULT,
+        ),
+    }
     if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
         app.settings["ELASTICSEARCH"] = None
         return None
-    elasticsearch = AsyncElasticsearch(**kwargs)
+    elasticsearch = AsyncElasticsearch(
+        basic_auth=None
+        if None in basic_auth
+        else cast(tuple[str, str], basic_auth),
+        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+        **kwargs,
+    )
     app.settings["ELASTICSEARCH"] = elasticsearch
     return elasticsearch
 
@@ -892,10 +919,26 @@ async def setup_elasticsearch_config(
 
 def setup_redis(app: Application) -> None | Redis[str]:
     """Setup Redis."""  # noqa: D401
-    config = app.settings["CONFIG"]
-    kwargs = {
-        "client_name": NAME,
-        "decode_responses": True,
+    config: BetterConfigParser = app.settings["CONFIG"]
+
+    class Kwargs(TypedDict, total=False):
+        """Kwargs of BlockingConnectionPool constructor."""
+
+        db: int
+        username: None | str
+        password: None | str
+        retry_on_timeout: bool
+        connection_class: type[UnixDomainSocketConnection] | type[SSLConnection]
+        path: str
+        host: str
+        port: int
+        ssl_ca_certs: str
+        ssl_keyfile: None | str
+        ssl_certfile: None | str
+        ssl_check_hostname: bool
+        ssl_cert_reqs: str
+
+    kwargs: Kwargs = {
         "db": config.getint("REDIS", "DB", fallback=0),
         "username": config.get("REDIS", "USERNAME", fallback=None),
         "password": config.get("REDIS", "PASSWORD", fallback=None),
@@ -903,45 +946,60 @@ def setup_redis(app: Application) -> None | Redis[str]:
             "REDIS", "RETRY_ON_TIMEOUT", fallback=False
         ),
     }
-    if config.has_option("REDIS", "UNIX_SOCKET_PATH"):
+    redis_ssl_kwargs: Kwargs = {
+        "connection_class": SSLConnection,
+        "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
+        "ssl_keyfile": config.get("REDIS", "SSL_KEYFILE", fallback=None),
+        "ssl_certfile": config.get("REDIS", "SSL_CERTFILE", fallback=None),
+        "ssl_cert_reqs": config.get(
+            "REDIS", "SSL_CERT_REQS", fallback="required"
+        ),
+        "ssl_check_hostname": config.getboolean(
+            "REDIS", "SSL_CHECK_HOSTNAME", fallback=False
+        ),
+    }
+    redis_host_port_kwargs: Kwargs = {
+        "host": config.get("REDIS", "HOST", fallback="localhost"),
+        "port": config.getint("REDIS", "PORT", fallback=6379),
+    }
+    redis_use_ssl = config.getboolean("REDIS", "SSL", fallback=False)
+    redis_unix_socket_path = config.get(
+        "REDIS", "UNIX_SOCKET_PATH", fallback=None
+    )
+
+    if redis_unix_socket_path is not None:
+        if redis_use_ssl:
+            LOGGER.warning(
+                "SSL is enabled for Redis, but a UNIX socket is used"
+            )
+        if config.has_option("REDIS", "HOST"):
+            LOGGER.warning(
+                "A host is configured for Redis, but a UNIX socket is used"
+            )
+        if config.has_option("REDIS", "PORT"):
+            LOGGER.warning(
+                "A port is configured for Redis, but a UNIX socket is used"
+            )
         kwargs.update(
             {
                 "connection_class": UnixDomainSocketConnection,
-                "path": config.get("REDIS", "UNIX_SOCKET_PATH"),
+                "path": redis_unix_socket_path,
             }
         )
     else:
-        kwargs.update(
-            {
-                "host": config.get("REDIS", "HOST", fallback="localhost"),
-                "port": config.getint("REDIS", "PORT", fallback=6379),
-            }
-        )
-        if config.getboolean("REDIS", "SSL", fallback=False):
-            kwargs.update(
-                {
-                    "connection_class": SSLConnection,
-                    "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
-                    "ssl_keyfile": config.get(
-                        "REDIS", "SSL_KEYFILE", fallback=None
-                    ),
-                    "ssl_certfile": config.get(
-                        "REDIS", "SSL_CERTFILE", fallback=None
-                    ),
-                    "ssl_cert_reqs": config.get(
-                        "REDIS", "SSL_CERT_REQS", fallback="required"
-                    ),
-                    "ssl_check_hostname": config.getboolean(
-                        "REDIS", "SSL_CHECK_HOSTNAME", fallback=False
-                    ),
-                }
-            )
+        kwargs.update(redis_host_port_kwargs)
+        if redis_use_ssl:
+            kwargs.update(redis_ssl_kwargs)
+
     if not config.getboolean("REDIS", "ENABLED", fallback=False):
         app.settings["REDIS"] = None
         return None
-    redis = cast(
-        "Redis[str]", Redis(connection_pool=BlockingConnectionPool(**kwargs))
+    connection_pool = BlockingConnectionPool(
+        client_name=NAME,
+        decode_responses=True,
+        **kwargs,
     )
+    redis = cast("Redis[str]", Redis(connection_pool=connection_pool))
     app.settings["REDIS"] = redis
     return redis
 
@@ -1029,7 +1087,7 @@ def main(  # noqa: C901  # pragma: no cover
         get_arguments_without_help(), ArgparseNamespace()
     )
 
-    config = config or parse_config(*args.config)
+    config = config or BetterConfigParser.from_path(*args.config)
     assert config is not None
     config.add_override_argument_parser(parser)
 

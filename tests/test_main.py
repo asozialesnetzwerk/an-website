@@ -21,8 +21,9 @@ import pathlib
 import regex
 from tornado.web import Application
 
-from an_website import main, patches, utils
+from an_website import main, patches
 from an_website.utils.base_request_handler import BaseRequestHandler
+from an_website.utils.better_config_parser import BetterConfigParser
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     PARENT_DIR,
@@ -173,7 +174,7 @@ def test_making_app() -> None:
     patches.apply()
 
     # read the example config, because it is always the same and should always work
-    config = utils.utils.parse_config(
+    config = BetterConfigParser.from_path(
         pathlib.Path(PARENT_DIR, "config.ini.example")
     )
 
