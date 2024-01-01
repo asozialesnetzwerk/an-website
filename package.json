@@ -37,8 +37,8 @@
   },
   "pnpm": {
     "overrides": {
-      "caniuse-lite": "1.0.30001568",
-      "electron-to-chromium": "1.4.609",
+      "caniuse-lite": "1.0.30001572",
+      "electron-to-chromium": "1.4.616",
       "jest-worker>@types/node": "$@types/node",
       "webpack@4": "5"
     },
