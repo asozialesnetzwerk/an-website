@@ -28,6 +28,7 @@ from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
 from PIL import Image, ImageDraw, ImageFont
+from PIL.Image import new as create_empty_image
 from tornado.web import HTTPError
 
 from .. import EPOCH
@@ -192,15 +193,20 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     # pylint: disable=too-many-locals, too-many-statements
     quote: str,
     author: str,
-    rating: int,
+    rating: None | int,
     source: None | str,
     file_type: str = "png",
     font: ImageFont.FreeTypeFont = FONT,
     *,
+    include_kangaroo: bool = True,
     wq_id: None | str = None,
 ) -> bytes:
     """Create an image with the given quote and author."""
-    image = BACKGROUND_IMAGE.copy()
+    image = (
+        BACKGROUND_IMAGE.copy()
+        if include_kangaroo
+        else create_empty_image("RGB", BACKGROUND_IMAGE.size, 0)
+    )
     draw = ImageDraw.Draw(image, mode="RGB")
 
     # draw quote
@@ -307,7 +313,6 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             with open(filepath, "rb") as file:
                 return file.read()
 
-    buffer = io.BytesIO()
     kwargs: dict[str, Any] = {
         "format": file_type,
         "optimize": True,
@@ -340,7 +345,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     elif file_type == "webp":
         kwargs.update(lossless=True)
 
-    image.save(buffer, **kwargs)
+    image.save(buffer := io.BytesIO(), **kwargs)
     return buffer.getvalue()
 
 
@@ -404,12 +409,6 @@ class QuoteAsImage(QuoteReadyCheckHandler):
         if head:
             return
 
-        source: None | str = (
-            None
-            if self.get_bool_argument("no_source", False)
-            else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
-        )
-
         if file_type == "gif" and self.get_bool_argument("small", False):
             file_type = "4-color-gif"
 
@@ -418,9 +417,16 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 create_image,
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
-                wrong_quote.rating,
-                source,
-                file_type,
+                rating=None
+                if self.get_bool_argument("no_rating", False)
+                else wrong_quote.rating,
+                source=None
+                if self.get_bool_argument("no_source", False)
+                else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}",
+                file_type=file_type,
+                include_kangaroo=not self.get_bool_argument(
+                    "no_kangaroo", False
+                ),
                 wq_id=wrong_quote.get_id_as_str(),
             )
         )
