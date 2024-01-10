@@ -35,13 +35,15 @@ engine_name = an-website
 
 [ELASTICSEARCH]
 prefix = an-website
+#username = 
+#password = 
 #cloud_id = 
 verify_certs = sure
 #api_key = 
 #bearer_auth = 
 #client_cert = 
 #client_key = 
-retry_on_timeout = nope
+#retry_on_timeout = 
 enabled = nope
 
 [TLS]
@@ -55,9 +57,14 @@ db = 0
 #username = 
 #password = 
 retry_on_timeout = nope
+#ssl_keyfile = 
+#ssl_certfile = 
+ssl_cert_reqs = required
+ssl_check_hostname = nope
 host = localhost
 port = 6379
 ssl = nope
+#unix_socket_path = 
 
 [REPORTING]
 enabled = sure
