@@ -108,7 +108,7 @@ class Search(HTMLRequestHandler):
             except Exception:  # pylint: disable=broad-except
                 LOGGER.exception("App Search request failed")
                 if self.apm_client:
-                    self.apm_client.capture_exception()
+                    self.apm_client.capture_exception()  # type: ignore[no-untyped-call]
         if result is not None:
             return result
         return self.search_old(query)

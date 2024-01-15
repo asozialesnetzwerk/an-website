@@ -40,7 +40,7 @@ import asyncio
 import socket
 from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime, timezone
-from os import environ
+from os import environ  # pylint: disable=ungrouped-imports
 from pathlib import Path
 from typing import Any, cast
 from urllib.parse import parse_qsl, urlsplit

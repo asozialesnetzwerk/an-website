@@ -30,7 +30,7 @@ from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
 
-import elasticapm  # type: ignore[import-untyped]
+import elasticapm
 import orjson as json
 from redis.asyncio import Redis
 from tornado.httpclient import AsyncHTTPClient
@@ -500,7 +500,7 @@ async def update_cache_periodically(app: Application) -> None:
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
-    apm: None | elasticapm.Client  # type: ignore[no-any-unimported]
+    apm: None | elasticapm.Client
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         await parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
@@ -536,7 +536,7 @@ async def update_cache_periodically(app: Application) -> None:
                                 "CLIENT"
                             )
                             if apm:
-                                apm.capture_exception()
+                                apm.capture_exception()  # type: ignore[no-untyped-call]
                         else:
                             LOGGER.info("Updated quotes cache successfully")
                     LOGGER.info(

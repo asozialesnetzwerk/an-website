@@ -157,7 +157,7 @@ class Backdoor(APIRequestHandler):
                             value.decode("BRAILLE"),
                         )
                         if self.apm_client:
-                            self.apm_client.capture_exception()
+                            self.apm_client.capture_exception()  # type: ignore[no-untyped-call]
             else:
                 session = {
                     "__builtins__": __builtins__,

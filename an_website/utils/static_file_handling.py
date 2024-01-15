@@ -20,7 +20,7 @@ import os
 import sys
 from collections.abc import Awaitable, Mapping
 from functools import cache
-from importlib.abc import Traversable
+from importlib.abc import Traversable  # pylint: disable=no-name-in-module
 from pathlib import Path
 from typing import Any, Final, cast
 

@@ -100,7 +100,7 @@ jobs:
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install Pylint + stuff required for checking the tests and setup.py
-        run: pip install -c pip-constraints.txt html5lib pylint pylint-pytest pytest time-machine trove-classifiers
+        run: pip install -c pip-constraints.txt html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers
       - name: Run Pylint
         run: pylint -r y -d fixme .
         env:

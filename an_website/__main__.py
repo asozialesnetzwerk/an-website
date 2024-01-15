@@ -59,7 +59,7 @@ from .main import main
 if sys.flags.dev_mode:
     tracemalloc.start()
     with contextlib.suppress(ValueError):
-        sys.activate_stack_trampoline("perf")  # pylint: disable=no-member
+        sys.activate_stack_trampoline("perf")
 
 if __name__ == "__main__":
     sys.exit(main())

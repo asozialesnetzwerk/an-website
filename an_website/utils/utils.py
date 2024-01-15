@@ -46,7 +46,7 @@ from typing import (
 )
 from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 
-import elasticapm  # type: ignore[import-untyped]
+import elasticapm
 import regex
 from blake3 import blake3
 from elastic_transport import ApiError, TransportError
@@ -251,7 +251,7 @@ ansi_replace = partial(regex.sub, "\033" + r"\[-?\d+[a-zA-Z]", "")
 ansi_replace.__doc__ = "Remove ANSI escape sequences from a string."
 
 
-def apm_anonymization_processor(  # type: ignore[no-any-unimported]
+def apm_anonymization_processor(
     client: elasticapm.Client,  # pylint: disable=unused-argument
     event: dict[str, Any],
 ) -> dict[str, Any]:

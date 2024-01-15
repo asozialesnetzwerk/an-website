@@ -18,7 +18,7 @@
 from __future__ import annotations
 
 import os
-import subprocess
+import subprocess  # nosec: B404
 import sys
 from datetime import datetime, timezone
 from os.path import dirname, join, normpath
@@ -44,7 +44,7 @@ def main(*args: str) -> int | str:
         "GIT_COMMITTER_DATE": date_str,
     }
     env.update(os.environ)
-    result = subprocess.run(
+    result = subprocess.run(  # nosec: B603, B607
         ["git", "commit", "-m", message], env=env, check=False
     )
 

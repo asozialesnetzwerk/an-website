@@ -38,7 +38,7 @@ from typing import Any, ClassVar, Final, cast, override
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
-import elasticapm  # type: ignore[import-untyped]
+import elasticapm
 import html2text
 import orjson as json
 import regex
@@ -155,9 +155,9 @@ class BaseRequestHandler(RequestHandler):
         return super().finish()
 
     @property
-    def apm_client(self) -> None | elasticapm.Client:  # type: ignore[no-any-unimported]
+    def apm_client(self) -> None | elasticapm.Client:
         """Get the APM client from the settings."""
-        return self.settings.get("ELASTIC_APM", {}).get("CLIENT")
+        return self.settings.get("ELASTIC_APM", {}).get("CLIENT")  # type: ignore[no-any-return]
 
     @property
     def apm_enabled(self) -> bool:
@@ -563,7 +563,7 @@ class BaseRequestHandler(RequestHandler):
         except (ApiError, TransportError):
             LOGGER.exception("Elasticsearch request failed")
             if self.apm_client:
-                self.apm_client.capture_exception()
+                self.apm_client.capture_exception()  # type: ignore[no-untyped-call]
         else:
             if geoip and "timezone" in geoip:
                 tz = ZoneInfo(geoip["timezone"])

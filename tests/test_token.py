@@ -43,7 +43,7 @@ def test_token_v0() -> None:
         b"\x00\x00\x00\x00\x00*",  # 42
     )
     assert (
-        token == "ABQAAAAAACoAAAAAZAAAAAAAVuGjEJjux2P8zah"
+        token == "ABQAAAAAACoAAAAAZAAAAAAAVuGjEJjux2P8zah"  # nosec: B105
         "9SjQGkxCWn9Iaszr/qJJHJSMWoRPoVjQKa6/jKFWPdBehSL0K"
     )
 

@@ -53,9 +53,7 @@ from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
 from elastic_transport import ObjectApiResponse
-from elasticapm.contrib.tornado import (  # type: ignore[import-untyped]
-    ElasticAPM,
-)
+from elasticapm.contrib.tornado import ElasticAPM
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from redis.asyncio import (
     BlockingConnectionPool,
@@ -1236,7 +1234,6 @@ def main(  # noqa: C901  # pragma: no cover
         asyncio.set_event_loop(loop)
 
     if sys.version_info >= (3, 13) and not loop.get_task_factory():
-        # pylint: disable=no-member
         loop.set_task_factory(asyncio.eager_task_factory)
 
     if perf8 and "PERF8" in os.environ:
