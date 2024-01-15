@@ -345,7 +345,7 @@ jobs:
       packages: write
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ~1.20
       - name: Upgrade Buildah
@@ -393,6 +393,7 @@ jobs:
       - name: Upload as build artifact
         uses: actions/upload-artifact@v4
         with:
+          name: oci-image
           path: oci-archive.tar
 
   test-running-oci-image:
@@ -404,7 +405,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: oci-image
       - name: Run image
         timeout-minutes: 1
         run: sudo podman run --network=host -t oci-archive:oci-archive.tar -c
@@ -420,7 +421,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: oci-image
       - name: Run tests
         timeout-minutes: 20
         run: sudo podman run --network=host -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
@@ -435,7 +436,7 @@ jobs:
       packages: write
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ~1.20
       - name: Upgrade Skopeo
@@ -451,7 +452,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: oci-image
       - name: Version
         id: version
         shell: python
