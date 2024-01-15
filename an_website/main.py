@@ -1244,9 +1244,7 @@ def main(  # noqa: C901  # pragma: no cover
 
     setup_webhook_logging(webhook_logging_options, loop)
 
-    with catch_warnings():  # TODO: remove after dropping support for 3.11
-        simplefilter("ignore", DeprecationWarning)
-        server.add_sockets(sockets)
+    server.add_sockets(sockets)
 
     # pylint: disable=unused-variable
 

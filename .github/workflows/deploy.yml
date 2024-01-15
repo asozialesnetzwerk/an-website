@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: python -m build
       - name: Upload as build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: dist
 
@@ -55,7 +55,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Install libcurl4-openssl-dev for compiling PycURL
@@ -134,7 +134,7 @@ jobs:
         timeout-minutes: 5
         run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
       - name: Upload coverage as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: .coverage
           name: coverage
@@ -152,7 +152,7 @@ jobs:
         with:
           python-version: 3.12
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Install required library
@@ -199,7 +199,7 @@ jobs:
       url: https://asozial.org
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Deploy website
@@ -232,7 +232,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Download coverage
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage
       - name: Make directory
@@ -295,7 +295,7 @@ jobs:
       - name: Install Setuptools
         run: pip install "setuptools==69.*"
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Extract source distribution
@@ -312,7 +312,7 @@ jobs:
       - name: Save image
         run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
       - name: Upload as build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: oci-archive.tar
 
@@ -323,12 +323,12 @@ jobs:
       - build-oci-image
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Run image
         timeout-minutes: 1
-        run: podman run --network=host -t oci-archive:oci-archive.tar -c
+        run: sudo podman run --network=host -t oci-archive:oci-archive.tar -c
 
   run-tests-in-oci-image:
     name: Run tests in OCI image
@@ -339,7 +339,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Run tests
@@ -370,7 +370,7 @@ jobs:
           skopeo --version
           popd
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: artifact
       - name: Log in to ghcr.io

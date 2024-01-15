@@ -31,7 +31,7 @@ generate.
 You need:
 
 - Git (obviously)
-- CPython 3.10+
+- CPython 3.12+
 - Packages from pip-dev-requirements.txt
 - C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
@@ -57,7 +57,7 @@ You need:
 
 You need:
 
-- CPython 3.10+
+- CPython 3.12+
 - C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
 - Supervisord

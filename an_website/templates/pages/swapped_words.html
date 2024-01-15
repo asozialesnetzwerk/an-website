@@ -11,11 +11,12 @@
         <label class="form-element">
             Der Text, dessen Wörter vertauscht werden sollen
             <textarea id="text"
-                    name="text"
-                    placeholder="Gebe witzigen Text ein."
-                    rows="10"
-                    maxlength="{{MAX_CHAR_COUNT}}"
-                    spellcheck="true">{{text}}</textarea>
+                      name="text"
+                      placeholder="Gebe witzigen Text ein."
+                      rows="10"
+                      maxlength="{{MAX_CHAR_COUNT}}"
+                      spellcheck="true">{{text}}
+            </textarea>
         </label>
 
         <label class="form-element">
@@ -24,14 +25,16 @@
                     value="sure"
                     id="reset">Reset</button>
             <textarea name="config"
-                    id="config-textarea"
-                    placeholder="# Vertauschungen eingeben, zum Beispiel:
+                      class="mono-font"
+                      id="config-textarea"
+                      placeholder="# Vertauschungen eingeben, zum Beispiel:
 amüsant <=> relevant
 Björn Höcke => Bernd Höcke"
-                    rows="10"
-                    maxlength="{{MAX_CHAR_COUNT}}"
-                    class="mono-font"
-                    spellcheck="true">{{config}}</textarea>
+                      rows="10"
+                      maxlength="{{MAX_CHAR_COUNT}}"
+                      class="mono-font"
+                      spellcheck="true">{{config}}
+            </textarea>
         </label>
 
         <div id="error-msg" style="color: var(--contrast)">

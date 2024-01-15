@@ -34,7 +34,7 @@ from datetime import date, datetime, timedelta, timezone, tzinfo
 from functools import cached_property, partial, reduce
 from random import Random
 from random import choice as random_choice
-from typing import TYPE_CHECKING, Any, ClassVar, Final, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Final, cast, override
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
 
@@ -88,12 +88,6 @@ from .utils import (
     ratelimit,
     str_to_bool,
 )
-
-if TYPE_CHECKING or sys.hexversion >= 0x30C00A6:
-    # pylint: disable=no-name-in-module, ungrouped-imports
-    from typing import override
-else:
-    from typing_extensions import override
 
 LOGGER: Final = logging.getLogger(__name__)
 

@@ -19,8 +19,6 @@ from __future__ import annotations
 import sys
 from os.path import abspath, dirname, join
 
-from an_website.utils.better_config_parser import BetterConfigParser
-
 # add parent dir to sys.path
 # this makes importing an_website possible
 DIR = abspath(dirname(__file__))
@@ -65,6 +63,7 @@ from tornado.web import Application
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, UPTIME, main
 from an_website.quotes.utils import parse_wrong_quote
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
+from an_website.utils.better_config_parser import BetterConfigParser
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1

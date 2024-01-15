@@ -32,6 +32,17 @@ if sys.flags.dev_mode and not (
 warnings.filterwarnings("ignore", module="defusedxml")
 warnings.filterwarnings("ignore", module="dill._dill", category=EncodingWarning)
 
+try:
+    # fmt: off
+    assert eval(  # pylint: disable=eval-used  # nosec: B307
+        """f'''{
+        ... # 42
+        }'''"""
+    ) == str(...)
+except Exception:  # pylint: disable=broad-except
+    os.abort()
+    # fmt: on
+
 
 from setproctitle import getproctitle
 
@@ -47,9 +58,8 @@ from .main import main
 
 if sys.flags.dev_mode:
     tracemalloc.start()
-    if sys.version_info >= (3, 12):
-        with contextlib.suppress(ValueError):
-            sys.activate_stack_trampoline("perf")  # pylint: disable=no-member
+    with contextlib.suppress(ValueError):
+        sys.activate_stack_trampoline("perf")  # pylint: disable=no-member
 
 if __name__ == "__main__":
     sys.exit(main())

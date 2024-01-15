@@ -25,7 +25,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from http.client import responses
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Final
+from typing import TYPE_CHECKING, Any, ClassVar, Final, override
 from urllib.parse import unquote, urlsplit
 
 import regex
@@ -40,12 +40,6 @@ from .utils import (
     remove_suffix_ignore_case,
     replace_umlauts,
 )
-
-if TYPE_CHECKING or sys.hexversion >= 0x30C00A6:
-    # pylint: disable=no-name-in-module, ungrouped-imports
-    from typing import override
-else:
-    from typing_extensions import override
 
 LOGGER: Final = logging.getLogger(__name__)
 

@@ -29,7 +29,7 @@ from setuptools.build_meta import SetupRequirementsError
 BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.21.7"
 GET_VERSION = "get_version==3.5.5"
-TROVE_CLASSIFIERS = "trove-classifiers==2023.11.29"
+TROVE_CLASSIFIERS = "trove-classifiers==2024.1.8"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -40,11 +40,7 @@ classifiers = [
         "GNU Affero General Public License v3 or later (AGPLv3+)"
     ),
     "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
     "Typing :: Typed",
@@ -99,7 +95,7 @@ setup(
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=classifiers,
     packages=["an_website"],
-    python_requires=">=3.10",
+    python_requires=">=3.12",
     install_requires=path("pip-requirements.txt")
     .read_text("UTF-8")
     .split("\n"),
