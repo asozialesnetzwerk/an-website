@@ -21,11 +21,10 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 from datetime import datetime, timedelta, timezone
 from http.client import responses
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Final, override
+from typing import Any, ClassVar, Final, override
 from urllib.parse import unquote, urlsplit
 
 import regex
