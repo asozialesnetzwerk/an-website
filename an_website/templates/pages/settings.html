@@ -12,32 +12,30 @@
             <label class="form-element">
                 Erlaube Inhalte von Drittanbietern
                 <input type="checkbox"
-                    name="no_3rd_party"
-                    {% if not no_3rd_party %}
-                       checked
-                    {% end %}
-                    value="nope">
+                       name="no_3rd_party"
+                       {% if not no_3rd_party %} checked {% end %}
+                       value="nope">
             </label>
         {% else %}
             <label class="form-element">
                 Deaktiviere Inhalte von Drittanbietern
                 <input type="checkbox"
-                   name="no_3rd_party"
-                    {% if no_3rd_party %}
-                       checked
-                    {% end %}
-                   value="sure">
+                       name="no_3rd_party"
+                       {% if no_3rd_party %} checked {% end %}
+                       value="sure">
             </label>
         {% end %}
 
         <label class="form-element">
             Nutze coole Emojis von OpenMoji
             <select name="openmoji">
-                <option {% if not openmoji %}selected{% end %}
+                <option {% if not openmoji %} selected {% end %}
                         value="nope">Deaktiviert</option>
-                <option {% if openmoji == "glyf_colr0" %}selected{% end %} value="glyf_colr0">Font (COLRv0)</option>
-                <option {% if openmoji == "glyf_colr1" %}selected{% end %} value="glyf_colr1">Font (COLRv1)</option>
-                <option {% if openmoji == "img" %}selected{% end %}
+                <option {% if openmoji == "glyf_colr0" %} selected {% end %}
+                        value="glyf_colr0">Font (COLRv0)</option>
+                <option {% if openmoji == "glyf_colr1" %} selected {% end %}
+                        value="glyf_colr1">Font (COLRv1)</option>
+                <option {% if openmoji == "img" %} selected {% end %}
                         value="img">Als SVGs</option>
             </select>
         </label>
@@ -45,18 +43,16 @@
         <label class="form-element">
             Nutze mehr JS, um die Seite dynamischer zu machen (experimentell)
             <input type="checkbox"
-               name="dynload"
-                {% if dynload %}
-                   checked
-                {% end %}
-               value="sure">
+                   name="dynload"
+                   {% if dynload %} checked {% end %}
+                   value="sure">
         </label>
 
         <label class="form-element">
             Theme
             <select name="theme">
                 {% for _ in themes %}
-                    <option {% if _ == theme %}selected{% end %}
+                    <option {% if _ == theme %} selected {% end %}
                             value="{{_}}">{{_}}</option>
                 {% end %}
             </select>
@@ -65,21 +61,17 @@
         <label class="form-element">
             Aktiviere Spezialeffekte
             <input type="checkbox"
-               name="effects"
-                {% if effects %}
-                   checked
-                {% end %}
-               value="sure">
+                   name="effects"
+                   {% if effects %} checked {% end %}
+                   value="sure">
         </label>
 
         <label class="form-element">
             Aktiviere Einstellungen für Experten
             <input type="checkbox"
-               name="advanced_settings"
-                {% if advanced_settings %}
-                   checked
-                {% end %}
-               value="sure">
+                   name="advanced_settings"
+                   {% if advanced_settings %} checked {% end %}
+                   value="sure">
         </label>
 
         {% if advanced_settings %}
@@ -87,8 +79,8 @@
                 Bumpscosity
                 <select name="bumpscosity" id="bumpscosity-select">
                     {% for _ in bumpscosity_values %}
-                        <option {% if _ == bumpscosity %}selected{% end %}
-                                    value="{{_}}">{{_}}</option>
+                        <option {% if _ == bumpscosity %} selected {% end %}
+                                value="{{_}}">{{_}}</option>
                     {% end %}
                 </select>
             </label>
@@ -102,13 +94,11 @@
         {% end %}
 
         <label class="form-element">
-           Speicher in Cookies {% raw emoji2html("🍪") %} (empfohlen)
+            Speicher in Cookies {% raw emoji2html("🍪") %} (empfohlen)
             <input type="checkbox"
-                name="save_in_cookie"
-                {% if save_in_cookie %}
-                   checked
-                {% end %}
-                value="sure">
+                   name="save_in_cookie"
+                   {% if save_in_cookie %} checked {% end %}
+                   value="sure">
         </label>
         <input type="submit" value="Speichern">
     </form>

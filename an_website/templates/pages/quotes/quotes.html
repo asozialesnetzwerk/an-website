@@ -113,23 +113,23 @@
                 <select name="r"
                         id="rating-filter-select"
                         class="rating-form-el auto-submit-element">
-                    <option {% if rating_filter=="smart"%}selected{%end%}
+                    <option {% if rating_filter=="smart"%} selected {% end %}
                             value="smart">Smart</option>
-                    <option {% if rating_filter=="w"%}selected{%end%}
+                    <option {% if rating_filter=="w"%} selected {% end %}
                             value="w">Witzig</option>
-                    <option {% if rating_filter=="n"%}selected{%end%}
+                    <option {% if rating_filter=="n"%} selected {% end %}
                             value="n">Nicht witzig</option>
-                    <option {% if rating_filter=="rated"%}selected{%end%}
+                    <option {% if rating_filter=="rated"%} selected {% end %}
                             value="rated">Bewertet</option>
-                    <option {% if rating_filter=="unrated"%}selected{%end%}
+                    <option {% if rating_filter=="unrated"%} selected {% end %}
                             value="unrated">Unbewertet</option>
-                    <option {% if rating_filter=="all"%}selected{%end%}
+                    <option {% if rating_filter=="all"%} selected {% end %}
                             value="all">Alle</option>
                 </select>
             </label>
             <label class="rating-form-el">
                 Zeige Bewertung
-                <input {% if show_rating %}checked{% end %}
+                <input {% if show_rating %} checked {% end %}
                    type="checkbox"
                    id="show-rating"
                    name="show-rating"

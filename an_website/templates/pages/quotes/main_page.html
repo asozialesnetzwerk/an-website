@@ -44,14 +44,13 @@
     </p>
     {% if quote_of_the_day %}
         <h2>Das Zitat des Tages
-            <a href="{{fix_url('/zitat-des-tages/feed')}}" no-dynload
-               class="no-style-a"
+            <a href="{{fix_url('/zitat-des-tages/feed')}}"
+               class="no-style-a" no-dynload
             ><img src="{{fix_static('img/rss.svg')}}"
                   alt="RSS-Feed" style="width:1rem"></a></h2>
         <a class="no-style-a center-text"
            href="{{fix_url(quote_of_the_day.get_quote_url())}}">
-            {{quote_of_the_day.wrong_quote.quote}}
-            <br>
+            {{quote_of_the_day.wrong_quote.quote}}<br>
             - {{quote_of_the_day.wrong_quote.author}}
         </a>
 

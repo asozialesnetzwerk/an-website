@@ -26,9 +26,9 @@
             <label tooltip="Die Buchstaben im Eingabefeld können auch an anderen Stellen erneut auftauchen."
                    tooltip-position="right">Kreuzworträtselmodus
                 <input type="checkbox"
-                   id="crossword-mode"
-                   {% if data.crossword_mode %} checked {% end %}
-                   name="crossword_mode">
+                       id="crossword-mode"
+                       {% if data.crossword_mode %} checked {% end %}
+                       name="crossword_mode">
             </label>
         </div>
 
@@ -36,28 +36,28 @@
             <label tooltip="Wie viele Wörter maximal angezeigt werden dürfen."
                    tooltip-position="right">Maximale Wortanzahl
                 <input type="number"
-                   id="max_words"
-                   name="max_words"
-                   min="0"
-                   max="100"
-                   step="1"
-                   value="{{data.get_max_words()}}">
+                       id="max_words"
+                       name="max_words"
+                       min="0"
+                       max="100"
+                       step="1"
+                       value="{{data.get_max_words()}}">
             </label>
         </div>
 
         <label class="form-element">
             Sprache der Wörter
             <select name="lang">
-                <option {% if hangman_result.language.value == "de" %}selected{% end %}
-                    value="de">Deutsch ohne Umlaute</option>
-                <option {% if hangman_result.language.value == "de_umlauts" %}selected{% end %}
-                    value="de_umlauts">Deutsch</option>
-                <option {% if hangman_result.language.value == "de_basic" %}selected{% end %}
-                    value="de_basic">Deutsch (Grundformen) ohne Umlaute</option>
-                <option {% if hangman_result.language.value == "de_basic" %}selected{% end %}
-                    value="de_basic_umlauts">Deutsch (Grundformen)</option>
-                <option {% if hangman_result.language.value == "en" %}selected{% end %}
-                    value="en">Englisch</option>
+                <option {% if hangman_result.language.value == "de" %} selected {% end %}
+                        value="de">Deutsch ohne Umlaute</option>
+                <option {% if hangman_result.language.value == "de_umlauts" %} selected {% end %}
+                        value="de_umlauts">Deutsch</option>
+                <option {% if hangman_result.language.value == "de_basic" %} selected {% end %}
+                        value="de_basic">Deutsch (Grundformen) ohne Umlaute</option>
+                <option {% if hangman_result.language.value == "de_basic" %} selected {% end %}
+                        value="de_basic_umlauts">Deutsch (Grundformen)</option>
+                <option {% if hangman_result.language.value == "en" %} selected {% end %}
+                        value="en">Englisch</option>
             </select>
         </label>
 

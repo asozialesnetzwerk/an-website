@@ -6,25 +6,25 @@
 {% end %}
 
 {% block body %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>Skript</th>
-            <th>Lizenz</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for path, license, license_url in js_files %}
-        <tr>
-            <td>
-                <a href="{{fix_static(f'js/{path}')}}"
-                   no-dynload >{{ path }}</a>
-            </td>
-            <td>
-                <a href="{{license_url}}" no-dynload>{{license}}</a>
-            </td>
-        </tr>
-        {% end %}
-    </tbody>
-</table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Skript</th>
+                <th>Lizenz</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for path, license, license_url in js_files %}
+                <tr>
+                    <td>
+                        <a href="{{fix_static(f'js/{path}')}}"
+                           no-dynload >{{ path }}</a>
+                    </td>
+                    <td>
+                        <a href="{{license_url}}" no-dynload>{{license}}</a>
+                    </td>
+                </tr>
+            {% end %}
+        </tbody>
+    </table>
 {% end %}

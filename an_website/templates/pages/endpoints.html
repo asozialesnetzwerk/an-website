@@ -7,27 +7,27 @@
 
 {% block body %}
     {% for ep in endpoints %}
-<h2 id="{{name_to_id(ep['name'])}}">
-{{ep["name"]}}<a no-dynload href="#{{name_to_id(ep['name'])}}" class="header-id-link"></a>
-</h2>
-<p>{{ep["description"]}}</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Pfad</th>
-            <th>Methoden</th>
-            <th>Mögliche Inhalts-Typen</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for path in ep["endpoints"] %}
-            <tr>
-                <td>{{path["path"]}}</td>
-                <td>{{", ".join(path["methods"])}}</td>
-                <td>{{", ".join(path["content_types"])}}</td>
-            </tr>
-        {% end %}
-    </tbody>
-</table>
+        <h2 id="{{name_to_id(ep['name'])}}">
+            {{ep["name"]}}<a no-dynload href="#{{name_to_id(ep['name'])}}" class="header-id-link"></a>
+        </h2>
+        <p>{{ep["description"]}}</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Pfad</th>
+                    <th>Methoden</th>
+                    <th>Mögliche Inhalts-Typen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for path in ep["endpoints"] %}
+                    <tr>
+                        <td>{{path["path"]}}</td>
+                        <td>{{", ".join(path["methods"])}}</td>
+                        <td>{{", ".join(path["content_types"])}}</td>
+                    </tr>
+                {% end %}
+            </tbody>
+        </table>
     {% end %}
 {% end %}
