@@ -29,9 +29,9 @@
     </form>
 
     <ul>
-        {% for count, word in words %}
+        {% for count, w in words %}
             <li>
-                <a href="{{fix_url('/wordspiel-helfer', word=word, before=new_before)}}">{{ word }}</a>
+                <a href="{{fix_url('/wordspiel-helfer', word=w, before=new_before)}}">{{w}}</a>
                 ({{count}})
             </li>
         {% end %}
