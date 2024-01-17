@@ -19,6 +19,7 @@ import socket
 from datetime import datetime
 
 from time_machine import travel
+from tornado.simple_httpclient import SimpleAsyncHTTPClient
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
@@ -100,13 +101,26 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
     await assert_valid_redirect(fetch, "/servces?x=y", "/services?x=y", {307})
 
     await assert_valid_redirect(
-        fetch, "/vertauschtewörter", "/vertauschte-woerter", {307}
+        fetch,
+        "/vertauschtewörter",
+        "/vertauschte-woerter",
+        {307},
+        httpclient=SimpleAsyncHTTPClient(),
+    )
+
+    await assert_valid_redirect(
+        fetch,
+        "/vertauschtew%C3%B6rter",
+        "/vertauschte-woerter",
+        {307},
+        httpclient=SimpleAsyncHTTPClient(),
     )
     await assert_valid_redirect(
-        fetch, "/vertauschtew%C3%B6rter", "/vertauschte-woerter", {307}
-    )
-    await assert_valid_redirect(
-        fetch, "/vertauschte-w%F6rter", "/vertauschte-woerter", {307}
+        fetch,
+        "/vertauschte-w%F6rter",
+        "/vertauschte-woerter",
+        {307},
+        httpclient=SimpleAsyncHTTPClient(),
     )
 
     await assert_valid_redirect(fetch, "/a?x=y", "/?x=y", {307})

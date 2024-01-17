@@ -33,8 +33,6 @@ warnings.filterwarnings("ignore", module="defusedxml")
 
 from an_website import patches
 
-patches.patch_tornado_httpclient = lambda: None
-
 patches.apply()
 
 
@@ -197,7 +195,9 @@ def fetch(
     parse_wrong_quote(WRONG_QUOTE_DATA)
     host = f"http://127.0.0.1:{http_server_port[1]}"
 
-    async def _fetch(url: str, **kwargs: Any) -> HTTPResponse:
+    async def _fetch(
+        url: str, *, httpclient: None | AsyncHTTPClient = None, **kwargs: Any
+    ) -> HTTPResponse:
         """Fetch a URL."""
         if not url.startswith(("http://", "https://")):
             url = f"{host}/{url.removeprefix('/')}"
@@ -207,7 +207,7 @@ def fetch(
             kwargs["headers"] = {}
         kwargs["headers"].setdefault("Accept", "text/html, */*")
         try:
-            return await http_client.fetch(url, **kwargs)
+            return await (httpclient or http_client).fetch(url, **kwargs)
         except HTTPClientError:
             print(url, kwargs)
             raise
