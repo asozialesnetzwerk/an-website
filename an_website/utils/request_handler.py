@@ -103,10 +103,12 @@ class NotFoundHandler(BaseRequestHandler):
         if len(this_path_normalized) == 1:
             return self.redirect(self.fix_url(new_path="/"))
 
-        paths: tuple[str, ...] = self.settings.get("NORMED_PATHS") or ()
+        paths: dict[str, str] = self.settings.get("NORMED_PATHS") or {}
         matches = get_close_matches(this_path_normalized, paths, count=1)
         if matches:
-            return self.redirect(self.fix_url(new_path=matches[0]), False)
+            return self.redirect(
+                self.fix_url(new_path=paths[matches[0]]), False
+            )
 
         self.set_status(404)
         self.write_error(404)

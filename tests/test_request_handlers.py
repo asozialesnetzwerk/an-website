@@ -99,6 +99,16 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
     await assert_valid_redirect(fetch, "/service?x=y", "/services?x=y", {307})
     await assert_valid_redirect(fetch, "/servces?x=y", "/services?x=y", {307})
 
+    await assert_valid_redirect(
+        fetch, "/vertauschtewörter", "/vertauschte-woerter", {307}
+    )
+    await assert_valid_redirect(
+        fetch, "/vertauschtew%C3%B6rter", "/vertauschte-woerter", {307}
+    )
+    await assert_valid_redirect(
+        fetch, "/vertauschte-w%F6rter", "/vertauschte-woerter", {307}
+    )
+
     await assert_valid_redirect(fetch, "/a?x=y", "/?x=y", {307})
 
     await assert_valid_redirect(fetch, "/index.php", "/", {308})

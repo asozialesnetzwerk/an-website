@@ -33,6 +33,8 @@ warnings.filterwarnings("ignore", module="defusedxml")
 
 from an_website import patches
 
+patches.patch_tornado_httpclient = lambda: None
+
 patches.apply()
 
 

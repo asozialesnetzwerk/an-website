@@ -349,27 +349,32 @@ def ignore_modules(config: BetterConfigParser) -> None:
 
 def get_normed_paths_from_module_infos(
     module_infos: Iterable[ModuleInfo],
-) -> tuple[str, ...]:
+) -> dict[str, str]:
     """Get all paths from the module infos."""
 
-    def info_to_paths(info: ModuleInfo) -> Iterable[str | None]:
+    def norm_paths(paths: Stream[str | None] | Stream[str]) -> Stream[str]:
         return (
-            info.path,
-            *info.aliases,
-            *Stream(info.sub_pages).map(lambda page: page.path),
+            paths.filter()
+            .filter(lambda path: path.startswith("/"))
+            .map(str.strip, "/")
+            .filter(lambda p: len(p) > 1)
+            .map(str.lower)
         )
 
-    return (
-        Stream(module_infos)
-        .flat_map(info_to_paths)
-        .filter()
-        .filter(lambda path: path.startswith("/"))
-        .map(str.strip, "/")
-        .filter(lambda p: len(p) > 1)
-        .map(str.lower)
-        .distinct()
-        .collect(tuple)
-    )
+    def info_to_paths(info: ModuleInfo) -> Iterable[tuple[str, str]]:
+        return (
+            norm_paths(Stream(info.aliases).chain([info.path])).map(
+                lambda path: (path, cast(str, info.path))  # type: ignore[redundant-cast]
+            )
+            if info.path
+            else Stream(())
+        ).chain(
+            norm_paths(
+                Stream(info.sub_pages).map(lambda sub_info: sub_info.path)
+            ).map(lambda path: (path, path))
+        )
+
+    return Stream(module_infos).flat_map(info_to_paths).collect(dict)
 
 
 def make_app(config: ConfigParser) -> str | Application:
