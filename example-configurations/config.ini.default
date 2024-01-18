@@ -9,7 +9,7 @@ webhook_body_format = {"text":"[%(levelname)1.1s %(asctime)s %(module)s:%(lineno
 webhook_escape_message = sure
 
 [GENERAL]
-ignored_modules = 
+ignored_modules = element_web_link.*
 compress_response = nope
 cookie_secret = xyzzy
 #domain = 
