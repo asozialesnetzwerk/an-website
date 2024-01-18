@@ -26,7 +26,14 @@ import random
 import sys
 import time
 from base64 import b85encode
-from collections.abc import Awaitable, Callable, Generator, Iterable, Set
+from collections.abc import (
+    Awaitable,
+    Callable,
+    Generator,
+    Iterable,
+    Mapping,
+    Set,
+)
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import IntFlag
@@ -821,7 +828,7 @@ class ModuleInfo(PageInfo):
 
     handlers: tuple[Handler, ...] = field(default_factory=tuple[Handler, ...])
     sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
-    aliases: tuple[str, ...] = field(default_factory=tuple)
+    aliases: tuple[str, ...] | Mapping[str, str] = field(default_factory=tuple)
 
     def get_keywords_as_str(self, path: str) -> str:
         """Get the keywords as comma-seperated string."""

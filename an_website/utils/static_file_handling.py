@@ -66,7 +66,7 @@ CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
 
 def get_handlers() -> list[Handler]:
     """Return a list of handlers for static files."""
-    # pylint: disable=import-outside-toplevel
+    # pylint: disable=import-outside-toplevel, cyclic-import
     from .static_file_from_traversable import TraversableStaticFileHandler
 
     handlers: list[Handler] = [

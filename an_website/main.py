@@ -36,14 +36,20 @@ import uuid
 from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
-from collections.abc import Callable, Coroutine, Iterable, MutableSequence
+from collections.abc import (
+    Callable,
+    Coroutine,
+    Iterable,
+    Mapping,
+    MutableSequence,
+)
 from configparser import ConfigParser
 from functools import partial
 from hashlib import sha256
 from multiprocessing.process import _children  # type: ignore[attr-defined]
 from pathlib import Path
 from socket import socket
-from typing import Any, Final, Literal, TypeAlias, TypedDict, cast
+from typing import Any, Final, Literal, TypeAlias, TypedDict, TypeGuard, cast
 from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
@@ -291,7 +297,6 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
     for module_info in module_infos:
         for handler in module_info.handlers:
             handler = list(handler)  # pylint: disable=redefined-loop-name
-            handler[0] = "(?i)" + handler[0]
             # if the handler is a request handler from us
             # and not a built-in like StaticFileHandler & RedirectHandler
             if issubclass(handler[1], BaseRequestHandler):
@@ -308,24 +313,9 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
                 else:
                     handler[2]["module_info"] = module_info
             handlers.append(tuple(handler))
-        if module_info.path is not None:
-            for alias in module_info.aliases:
-                handlers.append(
-                    (
-                        # (?i) -> ignore case
-                        # (.*) -> add group that matches anything
-                        "(?i)" + alias + "(/.*|)",
-                        RedirectHandler,
-                        # {0} -> the part after the alias (/.*) or ""
-                        {"url": module_info.path + "{0}"},
-                    )
-                )
 
     # redirect handler, to make finding APIs easier
-    handlers.append((r"(?i)/(.+)/api/*", RedirectHandler, {"url": "/api/{0}"}))
-
-    # redirect from /api to /api/endpunkte (not with alias, because it fails)
-    handlers.append((r"(?i)/api/*", RedirectHandler, {"url": "/api/endpunkte"}))
+    handlers.append((r"/(.+)/api/*", RedirectHandler, {"url": "/api/{0}"}))
 
     handlers.append(
         (
@@ -354,29 +344,36 @@ def get_normed_paths_from_module_infos(
 ) -> dict[str, str]:
     """Get all paths from the module infos."""
 
-    def norm_paths(paths: Stream[str | None] | Stream[str]) -> Stream[str]:
-        return (
-            paths.filter()
-            .filter(lambda path: path.startswith("/"))
-            .map(str.strip, "/")
-            .filter(lambda p: len(p) > 1)
-            .map(str.lower)
-        )
+    def tuple_has_no_none(
+        value: tuple[str | None, str | None]
+    ) -> TypeGuard[tuple[str, str]]:
+        return None not in value
 
-    def info_to_paths(info: ModuleInfo) -> Iterable[tuple[str, str]]:
+    def info_to_paths(info: ModuleInfo) -> Stream[tuple[str, str]]:
         return (
-            norm_paths(Stream(info.aliases).chain([info.path])).map(
-                lambda path: (path, cast(str, info.path))  # type: ignore[redundant-cast]
+            Stream(((info.path, info.path),))
+            .chain(
+                info.aliases.items()
+                if isinstance(info.aliases, Mapping)
+                else ((alias, info.path) for alias in info.aliases)
             )
-            if info.path
-            else Stream(())
-        ).chain(
-            norm_paths(
-                Stream(info.sub_pages).map(lambda sub_info: sub_info.path)
-            ).map(lambda path: (path, path))
+            .chain(
+                Stream(info.sub_pages)
+                .map(lambda sub_info: sub_info.path)
+                .filter()
+                .map(lambda path: (path, path))
+            )
+            .filter(tuple_has_no_none)
         )
 
-    return Stream(module_infos).flat_map(info_to_paths).collect(dict)
+    return (
+        Stream(module_infos)
+        .flat_map(info_to_paths)
+        .filter(lambda p: p[0].startswith("/"))
+        .map(lambda p: (p[0].strip("/").lower(), p[1]))
+        .filter(lambda p: p[0])
+        .collect(dict)
+    )
 
 
 def make_app(config: ConfigParser) -> str | Application:

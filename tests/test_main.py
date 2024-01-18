@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import asyncio
 import pathlib
+import typing
+from collections.abc import Mapping
 
 import regex
+from tornado.simple_httpclient import SimpleAsyncHTTPClient
 from tornado.web import Application
 
 from an_website import main, patches
@@ -63,8 +66,18 @@ async def test_parsing_module_infos(
         for alias in module_info.aliases:
             assert alias.startswith("/")
             assert not alias.endswith("/")
-            if module_info.path != "/chat" and alias.isascii():
-                await assert_valid_redirect(fetch, alias, module_info.path)
+            if module_info.path != "/chat":
+                should_path: str = (
+                    module_info.aliases[alias]
+                    if isinstance(module_info.aliases, Mapping)
+                    else module_info.path
+                )
+                kwargs: dict[str, typing.Any] = (
+                    {}
+                    if alias.isascii()
+                    else {"httpclient": SimpleAsyncHTTPClient()}
+                )
+                await assert_valid_redirect(fetch, alias, should_path, **kwargs)
 
         if module_info.path != "/api/update":
             # check if at least one handler matches the path

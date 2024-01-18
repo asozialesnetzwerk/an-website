@@ -439,7 +439,7 @@ def main() -> int | str:  # noqa: C901
                 """\
                 Accepted arguments:
 
-                    --dev              use a separate config for a local developing instance
+                    --dev              use a separate config for a local dev instance
                     --lisp             enable Lots of Irritating Superfluous Parentheses
                     --new-proxy        don't use the saved proxy
                     --new-session      start a new session with saved URL and key
@@ -619,8 +619,7 @@ def main() -> int | str:  # noqa: C901
             "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
             "    return 'PagerTuple', helper_output.getvalue()\n"
            f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
-            "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n"
-            "del _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab",
+            "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n",
             # fmt: on
             mode="exec",
         )

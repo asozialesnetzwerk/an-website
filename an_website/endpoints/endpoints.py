@@ -18,7 +18,6 @@ from __future__ import annotations
 from typing import ClassVar, cast
 
 import orjson as json
-from tornado.web import RedirectHandler
 
 from .. import ORJSON_OPTIONS
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
@@ -31,12 +30,15 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             ("/endpunkte", Endpoints),
             ("/api/endpunkte", EndpointsAPI),
-            ("/api/endpoints/*", RedirectHandler, {"url": "/api/endpunkte"}),
         ),
         name="API-Endpunkte",
         description="Alle API-Endpunkte unserer Webseite",
         path="/endpunkte",
-        aliases=("/endpoints",),
+        aliases={
+            "/endpoints": "/endpunkte",
+            "/api": "/api/endpunkte",
+            "/api/endpoints": "/api/endpunkte",
+        },
         keywords=("API", "Endpoints", "Endpunkte"),
     )
 

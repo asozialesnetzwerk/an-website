@@ -100,10 +100,33 @@ class NotFoundHandler(BaseRequestHandler):
 
         this_path_normalized = unquote(new_path).strip("/").lower()
 
-        if len(this_path_normalized) == 1:
+        paths: dict[str, str] = self.settings.get("NORMED_PATHS") or {}
+
+        if p := paths.get(this_path_normalized):
+            return self.redirect(self.fix_url(new_path=p), False)
+
+        if len(this_path_normalized) <= 1:
             return self.redirect(self.fix_url(new_path="/"))
 
-        paths: dict[str, str] = self.settings.get("NORMED_PATHS") or {}
+        prefixes = tuple(
+            (p, repl)
+            for p, repl in paths.items()
+            if this_path_normalized.startswith(f"{p}/")
+        )
+        if len(prefixes) == 1:
+            ((prefix, replacement),) = prefixes
+            return self.redirect(
+                self.fix_url(
+                    new_path=f"{replacement.strip("/")}"
+                    f"{this_path_normalized.removeprefix(prefix)}"
+                ),
+                False,
+            )
+        if prefixes:
+            LOGGER.error(
+                "Too many prefixes %r for path %s", prefixes, self.request.path
+            )
+
         matches = get_close_matches(this_path_normalized, paths, count=1)
         if matches:
             return self.redirect(

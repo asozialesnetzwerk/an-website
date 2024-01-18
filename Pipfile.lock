@@ -1701,12 +1701,12 @@
         },
         "typed-stream": {
             "hashes": [
-                "sha256:c3630b3b687bb655ec7982f469b94635a498bc005df39aa6c1bbd9356827668c",
-                "sha256:c7a21c811f6feea373b3bfa5b1180888569fc994a9162f909c6f5c7ae8032854"
+                "sha256:71217c8623eb7850cea81092f21fbee80ded1eaa1ab0bc24ee001e3a336baa4e",
+                "sha256:cbb01bfd70d1b9264b1af82f9d5631132227bd3ccea3f53eb239a8cf21669993"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==0.42.0"
+            "version": "==0.69.0"
         },
         "tzdata": {
             "hashes": [
