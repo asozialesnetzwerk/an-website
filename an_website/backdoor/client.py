@@ -434,22 +434,27 @@ def main() -> int | str:  # noqa: C901
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     if "--help" in sys.argv or "-h" in sys.argv:
-        return dedent(
-            """\
-            Accepted arguments:
+        print(
+            dedent(
+                """\
+                Accepted arguments:
 
-                --dev              use a separate config for a local developing instance
-                --lisp             enable Lots of Irritating Superfluous Parentheses
-                --new-proxy        don't use the saved proxy
-                --new-session      start a new session with saved URL and key
-                --no-config        start without loading/saving the config
-                --no-patch-help    don't patch help()
-                --reset-config     reset the whole config
-                --timing           print the time it took to execute each command
+                    --dev              use a separate config for a local developing instance
+                    --lisp             enable Lots of Irritating Superfluous Parentheses
+                    --new-proxy        don't use the saved proxy
+                    --new-session      start a new session with saved URL and key
+                    --no-config        start without loading/saving the config
+                    --no-patch-help    don't patch help()
+                    --reset-config     reset the whole config
+                    --timing           print the time it took to execute each command
 
-                --help or -h       show this help message
-            """
+                    --help or -h       show this help message
+                """
+            ),
+            end="",
+            file=sys.stderr,
         )
+        return 0
     for arg in sys.argv[1:]:
         if arg not in {
             "--dev",

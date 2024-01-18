@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f702073b667c45cada43c2445fe1e25940d09252543f967756428fb79b9d0a4a"
+            "sha256": "e072daf5d2500b6457e283c7c818578b2f1ffb04d78a32cbbb356db6fd3aaa9f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -2871,7 +2871,7 @@
         },
         "pyrepl": {
             "git": "git+https://github.com/pypy/pyrepl.git",
-            "ref": "ca192a80b76700118b9bfd261a3d098b92ccfc31"
+            "ref": "502bcf766e22b7d3898ed318f4a02d575804eb6f"
         },
         "pytest": {
             "hashes": [

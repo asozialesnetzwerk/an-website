@@ -64,7 +64,7 @@ pygments==2.17.2
 pylint==3.0.3
 pylint-pytest==1.1.7
 pyproject-hooks==1.0.0
-pyrepl@ git+https://github.com/pypy/pyrepl.git@ca192a80b76700118b9bfd261a3d098b92ccfc31
+pyrepl@ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
 pytest==7.4.4
 pytest-cov==4.1.0
 pytest-is-running==1.5.1

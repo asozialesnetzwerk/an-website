@@ -77,7 +77,7 @@ pipenv = "==2023.*"
 pre-commit = "==3.*"
 pylint = "==3.*"
 pylint-pytest = "==1.*"
-pyrepl = {git = "git+https://github.com/pypy/pyrepl.git", ref = "ca192a80b76700118b9bfd261a3d098b92ccfc31"}
+pyrepl = {git = "git+https://github.com/pypy/pyrepl.git", ref = "502bcf766e22b7d3898ed318f4a02d575804eb6f"}
 pytest = "==7.*"
 pytest-cov = "==4.*"
 pytest-is-running = "==1.*"
