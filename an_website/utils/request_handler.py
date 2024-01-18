@@ -117,7 +117,7 @@ class NotFoundHandler(BaseRequestHandler):
             ((prefix, replacement),) = prefixes
             return self.redirect(
                 self.fix_url(
-                    new_path=f"{replacement.strip("/")}"
+                    new_path=f"{replacement.strip(" / ")}"
                     f"{this_path_normalized.removeprefix(prefix)}"
                 ),
                 False,
