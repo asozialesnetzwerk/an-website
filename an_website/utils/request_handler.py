@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 from http.client import responses
 from pathlib import Path
@@ -100,7 +101,7 @@ class NotFoundHandler(BaseRequestHandler):
 
         this_path_normalized = unquote(new_path).strip("/").lower()
 
-        paths: dict[str, str] = self.settings.get("NORMED_PATHS") or {}
+        paths: Mapping[str, str] = self.settings.get("NORMED_PATHS") or {}
 
         if p := paths.get(this_path_normalized):
             return self.redirect(self.fix_url(new_path=p), False)
@@ -112,12 +113,15 @@ class NotFoundHandler(BaseRequestHandler):
             (p, repl)
             for p, repl in paths.items()
             if this_path_normalized.startswith(f"{p}/")
+            if f"/{p}" != repl.lower()
+            if p != "api"  # api should not be a prefix
         )
+
         if len(prefixes) == 1:
             ((prefix, replacement),) = prefixes
             return self.redirect(
                 self.fix_url(
-                    new_path=f"{replacement.strip(" / ")}"
+                    new_path=f"{replacement.strip('/')}"
                     f"{this_path_normalized.removeprefix(prefix)}"
                 ),
                 False,
