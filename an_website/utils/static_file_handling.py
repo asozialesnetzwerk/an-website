@@ -71,14 +71,19 @@ def get_handlers() -> list[Handler]:
 
     handlers: list[Handler] = [
         (
-            "(?i)/static/openmoji/(.*)",
+            "/static/openmoji/(.*)",
             TraversableStaticFileHandler,
             {"root": get_openmoji_data()},
         ),
         (
-            r"(?i)(?:/static)?/(\.env|favicon\.(?:png|jxl)|humans\.txt|robots\.txt)",
+            r"(?:/static)?/(\.env|favicon\.(?:png|jxl)|humans\.txt|robots\.txt)",
             StaticFileHandler,
             {"path": STATIC_DIR},
+        ),
+        (
+            "/favicon.ico",
+            tornado.web.RedirectHandler,
+            {"url": fix_static_path("favicon.png")},
         ),
     ]
     debug_style_dir = Path(ROOT_DIR).absolute().parent / "style"
@@ -86,13 +91,13 @@ def get_handlers() -> list[Handler]:
         # add handlers for the unminified CSS files
         handlers.append(
             (
-                r"(?i)/static/css/(.+\.css)",
+                r"/static/css/(.+\.css)",
                 StaticFileHandler,
                 {"path": str(debug_style_dir)},
             )
         )
     handlers.append(
-        (r"(?i)/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
+        (r"/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
     )
     return handlers
 
