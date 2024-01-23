@@ -1284,7 +1284,7 @@ def main(  # noqa: C901  # pragma: no cover
         ).start()
 
     if processes:
-        check_parent_task = loop.create_task(  # noqa: F841
+        task_check_parent = loop.create_task(  # noqa: F841
             check_if_ppid_changed(main_pid)
         )
 
