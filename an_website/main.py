@@ -1275,6 +1275,11 @@ def main(  # noqa: C901  # pragma: no cover
             update_cache_periodically(app)
         )
 
+    if processes:
+        task_check_parent = loop.create_task(  # noqa: F841
+            check_if_ppid_changed(main_pid)
+        )
+
     # pylint: enable=unused-variable
 
     if run_supervisor_thread:
@@ -1282,11 +1287,6 @@ def main(  # noqa: C901  # pragma: no cover
         threading.Thread(
             target=supervise, name="supervisor", daemon=True
         ).start()
-
-    if processes:
-        task_check_parent = loop.create_task(  # noqa: F841
-            check_if_ppid_changed(main_pid)
-        )
 
     try:
         loop.run_forever()
