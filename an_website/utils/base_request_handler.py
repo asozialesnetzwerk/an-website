@@ -667,7 +667,8 @@ class BaseRequestHandler(RequestHandler):
         # pylint: disable=method-hidden
         if pytest_is_running():
             raise AssertionError("Now accessed before it was set")
-        LOGGER.error("Now accessed before it was set")
+        if self.request.method in self.SUPPORTED_METHODS:
+            LOGGER.error("Now accessed before it was set", stacklevel=2)
         return datetime.fromtimestamp(
             self.request._start_time,  # pylint: disable=protected-access
             tz=timezone.utc,
