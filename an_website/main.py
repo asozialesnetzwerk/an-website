@@ -1020,6 +1020,16 @@ async def check_redis(app: Application) -> None:  # pragma: no cover
         await asyncio.sleep(20)
 
 
+async def check_if_ppid_changed(ppid: int) -> bool:
+    """Check whether Technoblade hates us."""
+    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
+        if os.getppid() != ppid:
+            EVENT_SHUTDOWN.set()
+            return True
+        await asyncio.sleep(1)
+    return False
+
+
 async def wait_for_shutdown() -> None:  # pragma: no cover
     """Wait for the shutdown event."""
     loop = asyncio.get_running_loop()
@@ -1197,6 +1207,7 @@ def main(  # noqa: C901  # pragma: no cover
     )
 
     UPTIME.reset()
+    main_pid = os.getpid()
 
     if processes:
         setproctitle(f"{NAME} - Master")
@@ -1271,6 +1282,11 @@ def main(  # noqa: C901  # pragma: no cover
         threading.Thread(
             target=supervise, name="supervisor", daemon=True
         ).start()
+
+    if processes:
+        check_parent_task = loop.create_task(  # noqa: F841
+            check_if_ppid_changed(main_pid)
+        )
 
     try:
         loop.run_forever()
