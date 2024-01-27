@@ -1,5 +1,6 @@
-main {
+.text-2xl {
     font-size: 2rem;
+    line-height: normal;
     text-align: center;
 }
 

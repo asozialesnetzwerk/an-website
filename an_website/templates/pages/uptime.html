@@ -9,11 +9,11 @@
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}
 
 {% block body %}
-    <div>
+    <div class="text-2xl">
         Diese Webseite läuft bereits <div id="uptime" uptime="{{uptime}}">{{uptime_str}}</div>
     </div>
     {% if availability and availability.get('percentage') %}
-        <div>
+        <div class="text-2xl">
             <br>Verfügbarkeit: {{f"{availability['percentage']:.2f}".replace(".", ",")}} %<br>
             <img src="{{fix_url('/betriebszeit/verfuegbarkeit.svg', a=int(availability['percentage'] * 100) / (100.0 * 100))}}"
                  alt="Verfügbarkeits-Tortendiagramm"
