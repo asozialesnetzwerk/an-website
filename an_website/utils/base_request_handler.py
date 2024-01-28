@@ -726,10 +726,13 @@ class BaseRequestHandler(RequestHandler):
 
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
 
-        if self.request.method == "GET":
-            if self.redirect_to_canonical_domain():
-                return
+        if (
+            self.request.method in {"GET", "HEAD"}
+            and self.redirect_to_canonical_domain()
+        ):
+            return
 
+        if self.request.method == "GET":
             if (days := Random(self.now.timestamp()).randint(0, 31337)) in {
                 69,
                 420,
