@@ -732,14 +732,15 @@ class BaseRequestHandler(RequestHandler):
         ):
             return
 
-        if self.request.method == "GET":
-            if (days := Random(self.now.timestamp()).randint(0, 31337)) in {
-                69,
-                420,
-                1337,
-                31337,
-            }:
-                self.set_cookie("c", "s", expires_days=days / 24, path="/")
+        if self.request.method == "GET" and (
+            days := Random(self.now.timestamp()).randint(0, 31337)
+        ) in {
+            69,
+            420,
+            1337,
+            31337,
+        }:
+            self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
         if self.request.method != "OPTIONS":
             if (
