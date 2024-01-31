@@ -22,7 +22,9 @@ import sys
 import tracemalloc
 import warnings
 
-from dill._dill import PickleWarning  # type: ignore[import-untyped]  # nosec: B403
+from dill._dill import (
+    PickleWarning,  # type: ignore[import-untyped]  # nosec: B403
+)
 
 if sys.flags.dev_mode and not (
     "PYTHONWARNINGS" in os.environ or " -W" in " ".join(sys.orig_argv)
