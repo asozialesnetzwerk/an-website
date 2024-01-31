@@ -136,7 +136,7 @@ multidict==6.0.4; python_version >= '3.7'
 openmoji-dist==15.0.0.1
 orjson==3.9.10; python_version >= '3.8'
 pillow==10.2.0; python_version >= '3.8'
-pillow-jxl-plugin==1.0.3; python_version >= '3.8'
+pillow-jxl-plugin==1.0.2; python_version >= '3.8'
 pycares==4.4.0; python_version >= '3.8'
 pycryptodome==3.20.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'
 pycurl==7.45.2; python_version >= '3.5'
