@@ -79,22 +79,22 @@ SERVICES: tuple[Service, ...] = (
             "Installations-Guide": "https://syncplay.pl/guide/install",
         },
     ),
-    Service(
-        "Matrix-Heimserver",
-        (
-            "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und"
-            " nutzt im Gegensatz zu den meisten anderen Servern Dendrite"
-            " anstatt Synapse. Die Erstellung eines Accounts ist 100% kostenlos"
-            " und ohne E-Mail-Adresse oder Telefonnummer möglich."
-        ),
-        {
-            "Domain": "asozial.org",
-            "Matrix-Client": "https://chat.asozial.org",
-        },
-    ),
+    # Service(
+    #     "Matrix-Heimserver",
+    #     (
+    #         "Der Matrix-Heimserver des Asozialen Netzwerks ist zuverlässig und"
+    #         " nutzt im Gegensatz zu den meisten anderen Servern Dendrite"
+    #         " anstatt Synapse. Die Erstellung eines Accounts ist 100% kostenlos"
+    #         " und ohne E-Mail-Adresse oder Telefonnummer möglich."
+    #     ),
+    #     {
+    #         "Domain": "asozial.org",
+    #         "Matrix-Client": "https://chat.asozial.org",
+    #     },
+    # ),
     Service(
         "XMPP-Server",
-        "Das Asoziale Netzwerk hat auch einen XMPP-Server.",
+        "Das Asoziale Netzwerk hat einen XMPP-Server.",
         {
             "Domain": "asozial.org",
             "Software": "ejabberd",

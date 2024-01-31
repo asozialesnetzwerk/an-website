@@ -63,7 +63,7 @@ You need:
 - Supervisord
 - Redis 6.2
 - redis-cell (for ratelimits)
-- Elasticsearch 8.11+
+- Elasticsearch 8.12+
 - UwUFetch
 
 How:
