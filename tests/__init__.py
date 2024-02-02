@@ -29,7 +29,7 @@ sys.path.append(PARENT_DIR)
 import warnings
 
 warnings.filterwarnings("ignore", module="defusedxml")
-sys.exit("fml")
+
 
 from an_website import patches
 
