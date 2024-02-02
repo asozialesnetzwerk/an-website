@@ -710,7 +710,7 @@ class BaseRequestHandler(RequestHandler):
     @override
     async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method, too-complex
+        # pylint: disable=invalid-overridden-method
         self.now = await self.get_time()
 
         if not self.ALLOW_COMPRESSION:

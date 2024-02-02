@@ -22,8 +22,8 @@ import sys
 import tracemalloc
 import warnings
 
-from dill._dill import (
-    PickleWarning,  # type: ignore[import-untyped]  # nosec: B403
+from dill._dill import (  # type: ignore[import-untyped]  # isort: skip
+    PickleWarning,  # nosec: B403
 )
 
 if sys.flags.dev_mode and not (
