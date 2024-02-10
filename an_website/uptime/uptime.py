@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import logging
 import math
 import time
 from typing import Final, TypedDict
@@ -27,6 +28,8 @@ from .. import EPOCH, EVENT_ELASTICSEARCH, NAME, UPTIME
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo, time_to_str
+
+LOGGER: Final = logging.getLogger(__name__)
 
 
 class AvailabilityDict(TypedDict):  # noqa: D101
@@ -54,31 +57,47 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+class EsAvailabilityKwargs(TypedDict):
+    """Subset of kwargs to Elasticsearch search."""
+
+    index: str
+    query: dict[str, dict[str, list[dict[str, dict[str, dict[str, str]]]]]]
+    size: int
+    aggs: dict[str, dict[str, dict[str, str]]]
+
+
+ES_AVAILABILITY_KWARGS: Final[EsAvailabilityKwargs] = {
+    "index": "heartbeat-*,synthetics-*",
+    "query": {
+        "bool": {
+            "filter": [
+                {"range": {"@timestamp": {"gte": "now-1M"}}},
+                {"term": {"monitor.type": {"value": "http"}}},
+                {
+                    "term": {
+                        "service.name": {"value": NAME.removesuffix("-dev")}
+                    }
+                },
+            ]
+        }
+    },
+    "size": 0,
+    "aggs": {
+        "up": {"sum": {"field": "summary.up"}},
+        "down": {"sum": {"field": "summary.down"}},
+    },
+}
+
+
 async def get_availability_data(
     elasticsearch: AsyncElasticsearch,
-) -> tuple[int, int]:  # (up, down)
+) -> None | tuple[int, int]:  # (up, down)
     """Get the availability data."""
-    data = await elasticsearch.search(
-        index="heartbeat-*,synthetics-*",
-        query={
-            "bool": {
-                "filter": [
-                    {"range": {"@timestamp": {"gte": "now-1M"}}},
-                    {"term": {"monitor.type": {"value": "http"}}},
-                    {
-                        "term": {
-                            "service.name": {"value": NAME.removesuffix("-dev")}
-                        }
-                    },
-                ]
-            }
-        },
-        size=0,
-        aggs={
-            "up": {"sum": {"field": "summary.up"}},
-            "down": {"sum": {"field": "summary.down"}},
-        },
-    )
+    try:
+        data = await elasticsearch.search(**ES_AVAILABILITY_KWARGS)
+    except Exception:  # pylint: disable=broad-exception-caught
+        LOGGER.exception("Getting availability data from Elasticsearch failed.")
+        return None
     data.setdefault("aggregations", {"up": {"value": 0}, "down": {"value": 0}})
     return (
         int(data["aggregations"]["up"]["value"]),
@@ -140,8 +159,8 @@ class UptimeHandler(HTMLRequestHandler):
         availability_data = (
             await get_availability_data(self.elasticsearch)
             if EVENT_ELASTICSEARCH.is_set()
-            else (0, 0)
-        )
+            else None
+        ) or (0, 0)
         return {
             "uptime": (uptime := UPTIME.get()),
             "uptime_str": time_to_str(uptime),
@@ -162,6 +181,8 @@ class AvailabilityChartHandler(BaseRequestHandler):
             if not EVENT_ELASTICSEARCH.is_set():
                 raise HTTPError(503)
             availability_data = await get_availability_data(self.elasticsearch)
+            if not availability_data:
+                raise HTTPError(503)
             self.redirect(
                 self.fix_url(
                     self.request.full_url(),
