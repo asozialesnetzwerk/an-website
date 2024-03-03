@@ -185,7 +185,7 @@ def parse_args(
             arguments: dict[str, str] = {}
             for key, values in self.request.arguments.items():
                 if len(values) == 1:
-                    arguments[key] = values[0].decode("UTF-8")
+                    arguments[key] = values[0].decode("UTF-8", "replace")
                 else:
                     raise HTTPError(  # we don't want to guess
                         400, reason=f"Given multiple values for {key!r}"

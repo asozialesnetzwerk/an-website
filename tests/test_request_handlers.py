@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import socket
 from datetime import datetime
+from urllib.parse import quote_from_bytes
 
 from time_machine import travel
 from tornado.simple_httpclient import SimpleAsyncHTTPClient
@@ -77,6 +78,29 @@ async def test_json_apis(fetch: FetchCallable) -> None:  # noqa: F811
             ),
             "application/yaml",
         ).body
+
+
+async def test_invalid_utf8(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check that requests with invalid utf-8 work correctly."""
+    replacement = "\uFFFD"
+    for umlaut in "äöüÄÖÜ":
+        latin1 = quote_from_bytes(umlaut.encode("latin1"))
+        await assert_valid_redirect(fetch, f"/{latin1}", "/", {307})
+
+        assert_valid_response(
+            await fetch(f"/{latin1 * 100}"), "text/html;charset=utf-8", {404}
+        )
+
+        response = assert_valid_json_response(
+            await fetch(f"/api/wortspiel-helfer?word={latin1}"), {200}
+        )
+        assert response["word"] == replacement
+
+        response = assert_valid_json_response(
+            await fetch(f"/api/hangman-loeser?input={latin1}"),
+            {200},
+        )
+        assert response["input"] == replacement
 
 
 async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811

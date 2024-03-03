@@ -177,6 +177,17 @@ class BaseRequestHandler(RequestHandler):
     ) -> None | Awaitable[None]:
         pass
 
+    @override
+    def decode_argument(  # noqa: D102
+        self, value: bytes, name: str | None = None
+    ) -> str:
+        try:
+            return value.decode("UTF-8", "replace")
+        except UnicodeDecodeError as exc:
+            err_msg = f"Invalid unicode in {name or 'url'}: {value[:40]!r}"
+            LOGGER.exception(err_msg, exc_info=exc)
+            raise HTTPError(400, err_msg) from exc
+
     @property
     def dump(self) -> Callable[[Any], str | bytes]:
         """Get the function for dumping the output."""
