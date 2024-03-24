@@ -9,10 +9,6 @@ runs:
         python-version: 3.12
         cache: pip
         cache-dependency-path: Pipfile.lock
-    - name: Setup Dart
-      uses: dart-lang/setup-dart@v1
-      with:
-        sdk: 3.0.7
     - name: Setup Deno
       uses: denoland/setup-deno@v1
       with:
@@ -40,24 +36,11 @@ runs:
       run: ~/.dprint/bin/dprint fmt --diff
       shell: bash
     - name: Install dart-sass
-      run: |
-        wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v${VERSION_BUF}/buf-$(uname -s)-$(uname -m)
-        chmod +x /usr/local/bin/buf
-        pushd /tmp
-        wget https://github.com/sass/dart-sass/archive/refs/tags/${VERSION}.tar.gz
-        tar xf ${VERSION}.tar.gz
-        cd dart-sass-${VERSION}
-        dart pub get
-        dart run grinder protobuf
-        sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
-        dart compile exe bin/sass.dart --output /usr/local/bin/dart-sass
-        cd ..
-        rm -fr ${VERSION}.tar.gz dart-sass-${VERSION}
-        popd
-      shell: bash
-      env:
-        VERSION: 1.69.5
-        VERSION_BUF: 1.28.1
+      uses: ./.github/actions/install_dart_sass
+      with:
+        buf-version: 1.28.1
+        dart-version: 3.0.7
+        version: 1.69.5
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash
