@@ -12,7 +12,7 @@ runs:
     - name: Setup Dart
       uses: dart-lang/setup-dart@v1
       with:
-        sdk: 3.0.7
+        sdk: 3.3.2
     - name: Setup Deno
       uses: denoland/setup-deno@v1
       with:
@@ -56,8 +56,8 @@ runs:
         popd
       shell: bash
       env:
-        VERSION: 1.69.5
-        VERSION_BUF: 1.28.1
+        VERSION: 1.72.0
+        VERSION_BUF: 1.30.0
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash
