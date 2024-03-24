@@ -99,7 +99,7 @@ jobs:
       # - name: Start Elasticsearch
       #   uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
       #   with:
-      #     stack-version: 8.12.0
+      #     stack-version: 8.12.2
       #     security-enabled: false
       #     nodes: 3
       #     license: ${{ matrix.license }}
@@ -209,6 +209,7 @@ jobs:
     needs:
       - deploy
     permissions:
+      actions: read
       contents: read
       id-token: write
       pages: write
@@ -246,12 +247,12 @@ jobs:
       - name: Generate commitment.txt
         run: git log "--pretty=%H %ct %s" > github-pages/commitment.txt
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
         with:
           path: github-pages
       - name: Deploy GitHub Pages site
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
 
   build-oci-image:
     name: Build OCI image
@@ -269,7 +270,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
-          git clone -b v1.34.0 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
+          git clone -b v1.35.1 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
           pushd ~/go/src/github.com/containers/buildah
           make buildah docs
           sudo make install
@@ -360,7 +361,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libdevmapper-dev libgpgme-dev
-          git clone -b v1.14.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
+          git clone -b v1.15.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
           pushd ~/go/src/github.com/containers/skopeo
           make bin/skopeo
           sudo make install DISABLE_DOCS=1

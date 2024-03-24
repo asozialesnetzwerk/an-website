@@ -16,7 +16,7 @@ runs:
     - name: Setup Deno
       uses: denoland/setup-deno@v1
       with:
-        deno-version: 1.38.5
+        deno-version: 1.40.5
     - name: Install required stuff
       run: |
         sudo apt-get update
@@ -41,13 +41,14 @@ runs:
       shell: bash
     - name: Install dart-sass
       run: |
-        wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v${VERSION_BUF}/buf-$(uname -s)-$(uname -m)
+        wget -O /usr/local/bin/buf https://github.com/bufbuild/buf/releases/download/v1.30.0/buf-$(uname -s)-$(uname -m)
         chmod +x /usr/local/bin/buf
         pushd /tmp
         wget https://github.com/sass/dart-sass/archive/refs/tags/${VERSION}.tar.gz
         tar xf ${VERSION}.tar.gz
         cd dart-sass-${VERSION}
         dart pub get
+        sed -i 's/"main"/"embedded-protocol-2.4.0"/' tool/grind.dart
         dart run grinder protobuf
         sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
         dart compile exe bin/sass.dart --output /usr/local/bin/dart-sass
@@ -56,8 +57,7 @@ runs:
         popd
       shell: bash
       env:
-        VERSION: 1.72.0
-        VERSION_BUF: 1.30.0
+        VERSION: 1.70.0
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash
