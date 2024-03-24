@@ -352,7 +352,7 @@ jobs:
       - name: Install netavark
         run: |
           wget http://mirrors.kernel.org/ubuntu/pool/universe/n/netavark/netavark_1.4.0-4_amd64.deb
-          dpkg -i netavark_1.4.0-4_amd64.deb
+          sudo dpkg -i netavark_1.4.0-4_amd64.deb
       - name: Upgrade Buildah
         run: |
           sudo apt-get update
