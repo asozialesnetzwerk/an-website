@@ -15,8 +15,12 @@
 
 from __future__ import annotations
 
+from typing import Final
+
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
+
+WIKI_URL: Final = "https://wiki.asozial.org"
 
 
 def get_module_info() -> ModuleInfo:
@@ -43,12 +47,15 @@ class WikiHandler(HTMLRequestHandler):
 
     async def get(self, *, head: bool = False) -> None:
         """Handle GET requestss to the wiki page."""
+        if not self.user_settings.ask_before_leaving:
+            self.redirect(WIKI_URL)
+            return
         if head:
             return
         await self.render(
             "pages/redirect.html",
             send_referrer=True,
-            redirect_url="https://wiki.asozial.org",
+            redirect_url=WIKI_URL,
             from_url=None,
             discord=False,
         )

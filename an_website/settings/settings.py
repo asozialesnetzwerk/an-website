@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import contextlib
 from base64 import b64encode
+from collections.abc import Awaitable
 
+from ..utils.options import Options
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import (
     BUMPSCOSITY_VALUES,
@@ -51,16 +53,9 @@ class SettingsPage(HTMLRequestHandler):
         """Handle GET requests to the settings page."""
         if head:
             return
-        await self.render(  # nosec: B106
-            "pages/settings.html",
-            advanced_settings=self.show_advanced_settings(),
-            bumpscosity_values=BUMPSCOSITY_VALUES,
-            no_3rd_party_default=self.user_settings.as_dict(
-                include_argument=False, include_cookie=False
-            )["no_3rd_party"],
+        await self.render_settings(  # nosec: B106
             save_in_cookie=self.get_bool_argument("save_in_cookie", True),
             show_token_input=self.get_bool_argument("auth", False),
-            themes=THEMES,
             token="",
         )
 
@@ -101,15 +96,28 @@ class SettingsPage(HTMLRequestHandler):
         if replace_url_with != self.request.full_url():
             return self.redirect(replace_url_with)
 
-        await self.render(
+        await self.render_settings(
+            save_in_cookie=save_in_cookie,
+            show_token_input=bool(
+                token or self.get_bool_argument("auth", False)
+            ),
+            token=token,
+        )
+
+    def render_settings(
+        self, *, save_in_cookie: bool, show_token_input: bool, token: str
+    ) -> Awaitable[None]:
+        """Render the settings page."""
+        return self.render(
             "pages/settings.html",
             advanced_settings=self.show_advanced_settings(),
+            ask_before_leaving_default=(
+                Options.ask_before_leaving.get_default_value(self)
+            ),
             bumpscosity_values=BUMPSCOSITY_VALUES,
-            no_3rd_party_default=self.user_settings.as_dict(
-                include_argument=False, include_cookie=False
-            )["no_3rd_party"],
+            no_3rd_party_default=Options.no_3rd_party.get_default_value(self),
             save_in_cookie=save_in_cookie,
-            show_token_input=token or self.get_bool_argument("auth", False),
+            show_token_input=show_token_input,
             themes=THEMES,
             token=token,
         )

@@ -146,6 +146,7 @@ async def test_setting_stuff_and_saving_to_cookies(
                 "no_3rd_party",
                 "openmoji",
                 "theme",
+                "ask_before_leaving",
             }
             if morsel.key == "theme":
                 assert morsel.value == "pink"

@@ -26,6 +26,24 @@
             </label>
         {% end %}
 
+        {% if ask_before_leaving_default %}
+            <label class="form-element">
+                Seite ohne zu fragen verlassen
+                <input type="checkbox"
+                       name="ask_before_leaving"
+                       {% if not ask_before_leaving %} checked {% end %}
+                       value="nope">
+            </label>
+        {% else %}
+            <label class="form-element">
+                Frage bevor dem Verlassen der Seite
+                <input type="checkbox"
+                       name="ask_before_leaving"
+                       {% if ask_before_leaving %} checked {% end %}
+                       value="sure">
+            </label>
+        {% end %}
+
         <label class="form-element">
             Nutze coole Emojis von OpenMoji
             <select name="openmoji">

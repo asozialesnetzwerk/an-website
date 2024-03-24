@@ -152,6 +152,8 @@ class ANDiscord(HTMLRequestHandler):
     async def get(self, *, head: bool = False) -> None:
         """Get the Discord invite."""
         invite = (await get_invite_with_cache(GUILD_ID))[0]
+        if not self.user_settings.ask_before_leaving:
+            return self.redirect(invite)
         if head:
             return
         return await self.render(

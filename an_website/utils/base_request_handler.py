@@ -308,6 +308,8 @@ class BaseRequestHandler(RequestHandler):
         if isinstance(url, str):
             url = urlsplit(url)
         if url.netloc and url.netloc.lower() != self.request.host.lower():
+            if not self.user_settings.ask_before_leaving:
+                return url.geturl()
             path = "/redirect"
             query_args["to"] = url.geturl()
             url = urlsplit(self.request.full_url())

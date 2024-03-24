@@ -150,6 +150,11 @@ def true(_: RequestHandler) -> Literal[True]:
     return True
 
 
+def is_cautious_user(handler: RequestHandler) -> bool:
+    """Return if a user is cautious."""
+    return handler.request.host_name.endswith((".onion", ".i2p"))
+
+
 class Options:
     """Options for the website."""
 
@@ -171,9 +176,11 @@ class Options:
     )
     no_3rd_party: Option[bool] = BoolOption(
         name="no_3rd_party",
-        get_default_value=lambda handler: handler.request.host_name.endswith(
-            (".onion", ".i2p")
-        ),
+        get_default_value=is_cautious_user,
+    )
+    ask_before_leaving: Option[bool] = BoolOption(
+        name="ask_before_leaving",
+        get_default_value=true,  # Maybe change this!
     )
     bumpscosity: Option[BumpscosityValue] = Option(
         name="bumpscosity",
