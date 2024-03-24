@@ -3,13 +3,16 @@ description: "Install dart-sass"
 inputs:
   buf-version:
     description: the version of buf
-    required: true
+    required: false
+    default: 1.30.0
   dart-version:
     description: the version of dart
-    required: true
+    required: false
+    default: 3.3.2
   version:
     description: the version of dart-sass
-    required: true
+    required: false
+    default: 1.72.0
 runs:
   using: "composite"
   steps:
