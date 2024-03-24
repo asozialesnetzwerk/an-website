@@ -38,9 +38,9 @@ runs:
     - name: Install dart-sass
       uses: ./.github/actions/install_dart_sass
       with:
-        buf-version: 1.28.1
-        dart-version: 3.0.7
-        version: 1.69.5
+        buf-version: 1.30.0
+        dart-version: 3.3.2
+        version: 1.72.0
     - name: Generate snow
       run: dart-sass -s compressed style/snow.scss style/snow.css
       shell: bash
