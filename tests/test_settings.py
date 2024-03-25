@@ -139,6 +139,7 @@ async def test_setting_stuff_and_saving_to_cookies(
             assert morsel["samesite"] == "Strict"
             assert morsel.key in {
                 "advanced_settings",
+                "ask_before_leaving",
                 "bumpscosity",
                 "compat",
                 "dynload",
@@ -146,7 +147,6 @@ async def test_setting_stuff_and_saving_to_cookies(
                 "no_3rd_party",
                 "openmoji",
                 "theme",
-                "ask_before_leaving",
             }
             if morsel.key == "theme":
                 assert morsel.value == "pink"

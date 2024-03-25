@@ -27,7 +27,7 @@ from tempfile import (  # pylint: disable=import-private-name
     TemporaryDirectory,
     _TemporaryFileWrapper,
 )
-from typing import Any, ClassVar, Final, cast
+from typing import Any, ClassVar, Final
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -94,10 +94,13 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         )
         # pylint: disable=while-used
         while not process.stdout.at_eof():  # type: ignore[union-attr]
-            self.write(await process.stdout.read(1))  # type: ignore[union-attr]
-            self.flush()  # type: ignore[unused-awaitable]
+            char = await process.stdout.read(1)  # type: ignore[union-attr]
+            self.write(char)
+            if char == b"\n":
+                self.flush()  # type: ignore[unused-awaitable]
         await process.wait()
-        return cast(int, process.returncode)
+        assert process.returncode
+        return process.returncode
 
     async def prepare(self) -> None:  # noqa: D102
         await super().prepare()

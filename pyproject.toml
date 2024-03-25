@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools==69.0.3", "wheel==0.42.0"]
+requires = ["setuptools==69.2.0", "wheel==0.42.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.bandit]

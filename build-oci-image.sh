@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop all --network none docker.io/mikefarah/yq:4.35.2"
+
 TAG=3.12-slim-bookworm
 REPOSITORY=library/python
 NAME=docker.io/${REPOSITORY}:${TAG}
@@ -9,7 +11,7 @@ AUTH_REALM=https://auth.docker.io/token
 AUTH_SERVICE=registry.docker.io
 AUTH_SCOPE=repository:${REPOSITORY}:pull
 AUTH_URL="${AUTH_REALM}?service=${AUTH_SERVICE}&scope=${AUTH_SCOPE}"
-TOKEN=$(curl -sSf "${AUTH_URL}" | jq -er .token)
+TOKEN=$(curl -sSf "${AUTH_URL}" | yq -e .token)
 MANIFEST_URL=${REGISTRY}/${REPOSITORY}/manifests/${TAG}
 HEADERS=$(curl -sSf --head --oauth2-bearer "${TOKEN}" -H "Accept: application/vnd.docker.distribution.manifest.list.v2+json" "${MANIFEST_URL}")
 DIGEST=$(echo "${HEADERS}" | grep "digest" | cut -d " " -f 2 | git stripspace)

@@ -116,13 +116,9 @@ async def create_socket(
         try:
             sock = cast(
                 socket.socket,
-                socks.socksocket(
-                    address_info[0], address_info[1], address_info[2]
-                )
+                socks.socksocket(address_info[0])
                 if proxy is not None
-                else socket.socket(
-                    address_info[0], address_info[1], address_info[2]
-                ),
+                else socket.socket(address_info[0]),
             )
             sock.setblocking(False)
             if proxy is not None:
@@ -212,7 +208,7 @@ async def request(  # noqa: C901
         ).encode("ASCII")
         + "\r\n".join(
             [f"{key}:{value}" for key, value in headers.items()] + [""]
-        ).encode("latin-1")
+        ).encode("LATIN-1")
         + b"\r\n"
     )
     if body:
