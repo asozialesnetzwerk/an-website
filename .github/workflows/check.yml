@@ -77,7 +77,7 @@ jobs:
           echo "GIT_COMMITTER_DATE=${D}" >> "${GITHUB_ENV}"
         shell: bash
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_author: Bot <>
           commit_message: "🤦"
