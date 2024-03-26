@@ -91,7 +91,7 @@ types-emoji==2.1.0.3
 types-html5lib==1.1.11.20240106
 types-lxml==2023.10.21
 types-orjson==3.6.2
-types-pillow==10.2.0.20240125
+types-pillow==10.2.0.20240213
 types-pycurl==7.45.2.20240106
 types-pyopenssl==24.0.0.20240130
 types-python-dateutil==2.8.19.20240106
@@ -134,7 +134,7 @@ jsonpickle==3.0.2
 lxml==5.1.0
 multidict==6.0.5
 openmoji-dist==15.0.0.1
-orjson==3.9.10
+orjson==3.9.14
 pillow==10.2.0
 pillow-jxl-plugin==1.1.0.post1
 pycares==4.4.0

@@ -99,7 +99,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
             if char == b"\n":
                 self.flush()  # type: ignore[unused-awaitable]
         await process.wait()
-        assert process.returncode
+        assert process.returncode is not None
         return process.returncode
 
     async def prepare(self) -> None:  # noqa: D102

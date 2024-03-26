@@ -212,7 +212,7 @@ jobs:
           key: eslint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: eslint-${{ github.repository }}-${{ github.ref }}-
       - name: Install ESLint
-        run: pnpm install
+        run: pnpm install --ignore-scripts
       - name: Run ESLint
         run: pnpm eslint --cache .
 
@@ -234,7 +234,7 @@ jobs:
           node-version: 18.19.0
           cache: pnpm
       - name: Install tsc
-        run: pnpm install
+        run: pnpm install --ignore-scripts
       - name: Run tsc
         run: |
           pnpm tsc -p an_website
