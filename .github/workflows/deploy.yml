@@ -46,6 +46,8 @@ jobs:
         python-version:
           - 3.12
           - 3.13
+    outputs:
+      version: ${{ steps.get-version.outputs.an-website-version }}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -65,6 +67,10 @@ jobs:
       - name: Test starting
         timeout-minutes: 1
         run: python -m an_website -c
+      - name: Get version
+        id: get-version
+        timeout-minutes: 1
+        run: echo "an-website-version=$(python -c 'print(__import__("an_website").VERSION)')" >> "$GITHUB_OUTPUT"
 
   tests:
     name: Run tests
@@ -202,6 +208,33 @@ jobs:
         run: |
           curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
+      - name: Check deployment
+        shell: python
+        run: |
+          from json import loads
+          from sys import exit, stderr
+          from time import sleep
+          from traceback import print_exc
+          from urllib.request import urlopen
+
+          REQUEST_URL="https://asozial.org/api/version"
+          VERSION="${{ needs.test-wheel.outputs.version }}"
+
+          def get_running_version():
+            try:
+              json = urlopen(REQUEST_URL).read()
+              return loads(json)["version"]
+            except Exception:
+              print_exc(1)
+
+          for i in range(10):
+            sleep(i)
+            version = get_running_version()
+            if version == VERSION:
+              print(version)
+              exit(0)
+            print(i, version, "!=", VERSION, file=stderr)
+          exit(1)
 
   github-pages:
     name: GitHub Pages
