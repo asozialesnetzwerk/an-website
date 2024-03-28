@@ -1,5 +1,5 @@
 diff --git a/config.js b/config.js
-index 1b7704c32fe475ea44b8d029e6252ffafcc1d99c..a98cba7765a082f8b2256773a24db4fb4ce1424e 100644
+index 0a6e330976c44fbe06a94a538e6e3c5661c8e2d6..c831ce489f729227eae58474227301d5370d851f 100644
 --- a/config.js
 +++ b/config.js
 @@ -3,7 +3,9 @@ const { version } = require('./package');
@@ -11,7 +11,7 @@ index 1b7704c32fe475ea44b8d029e6252ffafcc1d99c..a98cba7765a082f8b2256773a24db4fb
 +          '// @ts-nocheck\n' +
 +          '/*\n' +
            ' * core-js ' + version + '\n' +
-           ' * © 2014-2023 Denis Pushkarev (zloirock.ru)\n' +
+           ' * © 2014-2024 Denis Pushkarev (zloirock.ru)\n' +
            ' * license: https://github.com/zloirock/core-js/blob/v' + version + '/LICENSE\n' +
 diff --git a/index.js b/index.js
 index e5f8dcb053e2375aa2795e8dacaa5970babdfc92..5fabdfb98c3812613fac89bf10001e6261317335 100644

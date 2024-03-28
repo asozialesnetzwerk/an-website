@@ -3,14 +3,14 @@
   "type": "module",
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
-    "@tsconfig/strictest": "^2.0.2",
-    "@types/bun": "^1.0.4",
-    "@types/node": "^18.19.14",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
-    "browserslist": "^4.22.3",
-    "core-js-builder": "3.35.0",
-    "core-js-compat": "3.35.0",
+    "@tsconfig/strictest": "^2.0.3",
+    "@types/bun": "^1.0.6",
+    "@types/node": "^18.19.17",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "browserslist": "^4.23.0",
+    "core-js-builder": "3.35.1",
+    "core-js-compat": "3.35.1",
     "doiuse": "^6.0.2",
     "esbuild": "^0.20.0",
     "eslint": "^8.56.0",
@@ -19,7 +19,7 @@
     "eslint-plugin-compat": "^4.2.0",
     "eslint-plugin-deprecation": "^2.0.0",
     "gzip-size": "^7.0.0",
-    "postcss": "^8.4.33",
+    "postcss": "^8.4.35",
     "stylelint": "^16.2.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard-scss": "^13.0.0",
@@ -29,7 +29,7 @@
     "typescript": "^5.3.3",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.15.1+sha256.245fe901f8e7fa8782d7f17d32b6a83995e2ae03984cb5b62b8949bfdc27c7b5",
+  "packageManager": "pnpm@8.15.5+sha256.4b4efa12490e5055d59b9b9fc9438b7d581a6b7af3b5675eb5c5f447cee1a589",
   "engines": {
     "pnpm": "8",
     "yarn": "0",
@@ -43,7 +43,7 @@
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.35.0": "patches/core-js-builder@3.35.0.patch",
+      "core-js-builder@3.35.1": "patches/core-js-builder@3.35.1.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }
