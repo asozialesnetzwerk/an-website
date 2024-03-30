@@ -16,14 +16,13 @@
 from __future__ import annotations
 
 import asyncio
-import io
 import logging
 import os
 import sys
 from asyncio import Future
 from queue import SimpleQueue
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import TYPE_CHECKING, Any, ClassVar, Final
+from typing import TYPE_CHECKING, IO, Any, ClassVar, Final
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -50,11 +49,10 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
+def write_from_queue(file: IO[bytes], queue: SimpleQueue[None | bytes]) -> None:
     """Read from a queue and write to a file."""
     while True:  # pylint: disable=while-used
         if (chunk := queue.get()) is None:
-            file.close()
             break
         file.write(chunk)
 
@@ -116,6 +114,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
         """Handle PUT requests to the update API."""
         self.queue.put(None)
         await self.future
+        self.file.close()
 
         filepath = os.path.join(self.dir.name, unquote(filename))
         os.rename(self.file.name, filepath)
