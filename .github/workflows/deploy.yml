@@ -290,13 +290,12 @@ jobs:
           popd
       - name: Download youki
         run: |
-          VERSION_U_005F_LL=$(echo $VERSION_U_002E_FS|sed "s/\./_/g")
-          wget https://github.com/containers/youki/releases/download/v${VERSION_U_002E_FS}/youki_${VERSION_U_005F_LL}_linux.tar.gz
-          tar xOf youki_${VERSION_U_005F_LL}_linux.tar.gz youki_${VERSION_U_005F_LL}_linux/youki-${VERSION_U_002E_FS}/youki > /opt/youki
-          rm -f youki_${VERSION_U_005F_LL}_linux.tar.gz
+          wget https://github.com/containers/youki/releases/download/v${VERSION}/youki-${VERSION}-x86_64-musl.tar.gz
+          tar xOf youki-${VERSION}-x86_64-musl.tar.gz youki > /opt/youki
+          rm -f youki-${VERSION}-x86_64-musl.tar.gz
           chmod +x /opt/youki
         env:
-          VERSION_U_002E_FS: 0.3.2
+          VERSION: 0.3.2
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
