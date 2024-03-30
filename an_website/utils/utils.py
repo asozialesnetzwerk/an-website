@@ -38,6 +38,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import IntFlag
 from functools import cache, partial
+from hashlib import sha1
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 from pathlib import Path
 from typing import (
@@ -783,6 +784,12 @@ def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:
 def str_to_set(string: str) -> set[str]:
     """Convert a string to a set of strings."""
     return {part.strip() for part in string.split(",") if part.strip()}
+
+
+def strangle(string: str) -> float:
+    """Convert a string to an angle."""
+    hasher = sha1(string.encode("UTF-8"), usedforsecurity=False)
+    return int.from_bytes(hasher.digest()[:2], "little") / (1 << 16) * 360
 
 
 def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:

@@ -2,48 +2,46 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
-    "@tsconfig/strictest": "^2.0.3",
-    "@types/bun": "^1.0.6",
-    "@types/node": "^18.19.17",
+    "@tsconfig/node18": "^18.2.4",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/node": "^18.19.28",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "browserslist": "^4.23.0",
-    "core-js-builder": "3.35.1",
-    "core-js-compat": "3.35.1",
+    "core-js-builder": "3.36.1",
+    "core-js-compat": "3.36.1",
     "doiuse": "^6.0.2",
-    "esbuild": "^0.20.0",
-    "eslint": "^8.56.0",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.57.0",
     "eslint-formatter-codeframe": "^7.32.1",
     "eslint-formatter-table": "^7.32.1",
     "eslint-plugin-compat": "^4.2.0",
     "eslint-plugin-deprecation": "^2.0.0",
     "gzip-size": "^7.0.0",
-    "postcss": "^8.4.35",
-    "stylelint": "^16.2.1",
+    "postcss": "^8.4.38",
+    "stylelint": "^16.3.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard-scss": "^13.0.0",
     "stylelint-no-unsupported-browser-features": "^8.0.1",
     "ts-node": "github:isaacs/ts-node#isaacs/node-20-fix",
-    "type-fest": "^4.10.2",
-    "typescript": "^5.3.3",
+    "type-fest": "^4.14.0",
+    "typescript": "~5.4.3",
     "typescript-eslint-language-service": "^5.0.5"
   },
   "packageManager": "pnpm@8.15.5+sha256.4b4efa12490e5055d59b9b9fc9438b7d581a6b7af3b5675eb5c5f447cee1a589",
   "engines": {
-    "pnpm": "8",
-    "yarn": "0",
-    "npm": "0"
+    "npm": "0",
+    "yarn": "0"
   },
   "pnpm": {
     "overrides": {
-      "caniuse-lite": "1.0.30001572",
-      "electron-to-chromium": "1.4.616",
+      "caniuse-lite": "1.0.30001587",
+      "electron-to-chromium": "1.4.668",
       "jest-worker>@types/node": "$@types/node",
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.35.1": "patches/core-js-builder@3.35.1.patch",
+      "core-js-builder@3.36.1": "patches/core-js-builder@3.36.1.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }

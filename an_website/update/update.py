@@ -16,13 +16,14 @@
 from __future__ import annotations
 
 import asyncio
+import io
 import logging
 import os
 import sys
 from asyncio import Future
 from queue import SimpleQueue
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import Any, ClassVar, Final, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Final
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
@@ -31,6 +32,9 @@ from .. import EVENT_SHUTDOWN, NAME
 from ..utils.decorators import requires
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo, Permission
+
+if TYPE_CHECKING:
+    from tempfile import _TemporaryFileWrapper
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -46,25 +50,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-class WriteBytesAndClose(Protocol):
-    """Support write and close."""
-
-    def close(self) -> None:
-        """Close."""
-
-    def write(self, s: bytes, /) -> int:
-        """Write bytes."""
-
-
-class NamedWriteBytesAndClose(WriteBytesAndClose, Protocol):
-    """Has name and supports write and close."""
-
-    name: str
-
-
-def write_from_queue(
-    file: WriteBytesAndClose, queue: SimpleQueue[None | bytes]
-) -> None:
+def write_from_queue(file: io.IOBase, queue: SimpleQueue[None | bytes]) -> None:
     """Read from a queue and write to a file."""
     while True:  # pylint: disable=while-used
         if (chunk := queue.get()) is None:
@@ -81,7 +67,7 @@ class UpdateAPI(APIRequestHandler):  # pragma: no cover
     POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = ("text/plain",)
 
     dir: TemporaryDirectory[str]
-    file: NamedWriteBytesAndClose
+    file: _TemporaryFileWrapper[bytes]
     queue: SimpleQueue[None | bytes]
     future: Future[Any]
 

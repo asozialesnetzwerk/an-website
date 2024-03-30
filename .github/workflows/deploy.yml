@@ -296,7 +296,7 @@ jobs:
           rm -f youki_${VERSION_U_005F_LL}_linux.tar.gz
           chmod +x /opt/youki
         env:
-          VERSION_U_002E_FS: 0.3.0
+          VERSION_U_002E_FS: 0.3.2
       - name: Setup Python
         uses: actions/setup-python@v5
         with:

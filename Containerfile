@@ -19,7 +19,7 @@ RUN set -eux \
  && /venv/bin/pip install Cython==3.* setuptools==68.* wheel==0.42.* \
  && CFLAGS="-DCYTHON_USE_PYLONG_INTERNALS=0" /venv/bin/pip install --no-build-isolation https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
  && /venv/bin/pip install git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f \
- && /venv/bin/pip install -r pip-requirements.txt \
+ && /venv/bin/pip install --no-binary pycurl -r pip-requirements.txt \
  && /venv/bin/pip uninstall -y Cython setuptools wheel
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
