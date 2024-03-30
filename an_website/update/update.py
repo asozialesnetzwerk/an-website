@@ -22,7 +22,7 @@ import sys
 from asyncio import Future
 from queue import SimpleQueue
 from tempfile import NamedTemporaryFile, TemporaryDirectory
-from typing import TYPE_CHECKING, IO, Any, ClassVar, Final
+from typing import IO, TYPE_CHECKING, Any, ClassVar, Final
 from urllib.parse import unquote
 
 from tornado.web import stream_request_body
