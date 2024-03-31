@@ -1,0 +1,42 @@
+name: Check deployment
+description: Check deployment
+inputs:
+  version:
+    description: The version to check for
+    required: true
+  origin:
+    description: The origin of the deployment
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check deployment
+      shell: python
+      run: |
+        from json import loads
+        from sys import exit, stderr
+        from time import sleep
+        from traceback import print_exc
+        from urllib.request import urlopen
+
+        REQUEST_URL="${{ inputs.origin }}/api/version"
+        VERSION="${{ inputs.version }}"
+
+        print("REQUEST_URL =", REQUEST_URL, file=stderr)
+        print("VERSION     =", VERSION, file=stderr)
+
+        def get_running_version():
+          try:
+            json = urlopen(REQUEST_URL).read()
+            return loads(json)["version"]
+          except Exception:
+            print_exc(1)
+
+        for i in range(10):
+          sleep(i)
+          version = get_running_version()
+          if version == VERSION:
+            print(version)
+            exit(0)
+          print(i, "failed, got", version, file=stderr)
+        exit(1)

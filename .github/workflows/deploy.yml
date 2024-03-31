@@ -209,32 +209,10 @@ jobs:
           curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
       - name: Check deployment
-        shell: python
-        run: |
-          from json import loads
-          from sys import exit, stderr
-          from time import sleep
-          from traceback import print_exc
-          from urllib.request import urlopen
-
-          REQUEST_URL="https://asozial.org/api/version"
-          VERSION="${{ needs.test-wheel.outputs.version }}"
-
-          def get_running_version():
-            try:
-              json = urlopen(REQUEST_URL).read()
-              return loads(json)["version"]
-            except Exception:
-              print_exc(1)
-
-          for i in range(10):
-            sleep(i)
-            version = get_running_version()
-            if version == VERSION:
-              print(version)
-              exit(0)
-            print(i, version, "!=", VERSION, file=stderr)
-          exit(1)
+        uses: ./.github/actions/check_deployment
+        with:
+          origin: https://asozial.org
+          version: ${{ needs.test-wheel.outputs.version }}
 
   github-pages:
     name: GitHub Pages
