@@ -83,7 +83,7 @@ class Backdoor(APIRequestHandler):
                 session[key] = pickletools.optimize(
                     dill.dumps(value, max(dill.DEFAULT_PROTOCOL, 5))
                 )
-            except BaseException:  # pylint: disable=broad-except
+            except BaseException:  # noqa: B036  # pylint: disable=broad-except
                 del session[key]
         return bool(
             await self.redis.setex(
@@ -149,7 +149,9 @@ class Backdoor(APIRequestHandler):
                 for key, value in session.items():
                     try:
                         session[key] = dill.loads(value)  # nosec: B301
-                    except BaseException:  # pylint: disable=broad-except
+                    except (  # noqa: B036  # pylint: disable=broad-except
+                        BaseException
+                    ):
                         LOGGER.exception(
                             "Error while loading %r in session %r. Data: %r",
                             key,
@@ -236,7 +238,9 @@ class Backdoor(APIRequestHandler):
                 return await self.finish_serialized_dict(
                     success=..., output=output_str, result=exc
                 )
-            except BaseException as exc:  # pylint: disable=broad-except
+            except (  # noqa: B036  # pylint: disable=broad-except
+                BaseException
+            ) as exc:
                 exception = exc  # pylint: disable=redefined-variable-type
                 result = exc
             else:
@@ -283,7 +287,7 @@ class Backdoor(APIRequestHandler):
         """Safe version of repr()."""
         try:
             return repr(obj)
-        except BaseException:  # pylint: disable=broad-except
+        except BaseException:  # noqa: B036  # pylint: disable=broad-except
             return object.__repr__(obj)
 
     def serialize(self, data: Any, protocol: None | int = None) -> None | bytes:
@@ -295,7 +299,7 @@ class Backdoor(APIRequestHandler):
             if self.content_type == "application/vnd.uqfoundation.dill":
                 return cast(bytes, dill.dumps(data, protocol))
             return pickle.dumps(data, protocol)
-        except BaseException:  # pylint: disable=broad-except
+        except BaseException:  # noqa: B036  # pylint: disable=broad-except
             return None
 
     def update_session(self, session: MutableMapping[str, Any]) -> None:
