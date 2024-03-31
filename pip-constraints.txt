@@ -1,9 +1,9 @@
 astor==0.8.1
-astroid==3.0.3
+astroid==3.1.0
 attrs==23.2.0
-autoflake==2.2.1
+autoflake==2.3.1
 bandit==1.7.7
-black==23.12.1
+black==24.3.0
 build==1.0.3
 certifi==2023.11.17
 cffi==1.16.0
@@ -19,8 +19,8 @@ dulwich==0.21.7
 exceptiongroup==1.2.0
 faker==22.7.0
 filelock==3.13.1
-flake8==6.1.0
-flake8-bugbear==23.12.2
+flake8==7.0.0
+flake8-bugbear==24.2.6
 flake8-comprehensions==3.14.0
 flake8-docstrings==1.7.0
 flake8-no-pep420==2.7.0
@@ -40,7 +40,7 @@ markdown-it-py==3.0.0
 mccabe==0.7.0
 mdurl==0.1.2
 more-itertools==10.2.0
-mypy==1.8.0
+mypy==1.9.0
 mypy-extensions==1.0.0
 nh3==0.2.15
 nodeenv==1.8.0
@@ -57,9 +57,9 @@ pre-commit==3.6.1
 pycodestyle==2.11.1
 pycparser==2.21
 pydocstyle==6.3.0
-pyflakes==3.1.0
+pyflakes==3.2.0
 pygments==2.17.2
-pylint==3.0.3
+pylint==3.1.0
 pylint-pytest==1.1.7
 pyproject-hooks==1.0.0
 pyrepl@ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
