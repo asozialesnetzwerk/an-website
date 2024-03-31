@@ -208,6 +208,8 @@ jobs:
         run: |
           curl -sSf -T *.whl https://asozial.org/api/update/ \
             -H "Authorization: ${{ secrets.UPDATE_API_SECRET }}"
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Check deployment
         uses: ./.github/actions/check_deployment
         with:
