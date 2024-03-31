@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Awaitable, Iterable
-from importlib.abc import Traversable  # pylint: disable=no-name-in-module
+from importlib.resources.abc import Traversable
 from pathlib import Path
 
 from tornado import httputil, iostream
