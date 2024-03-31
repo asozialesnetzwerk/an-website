@@ -295,10 +295,12 @@ def patch_tornado_logs() -> None:
         % (
             self.request.method,
             self.request.uri,
-            self.request.remote_ip
-            if self.request.path == "/robots.txt"
-            or self.request.path.lower() in SUS_PATHS
-            else anonymize_ip(self.request.remote_ip, ignore_invalid=True),
+            (
+                self.request.remote_ip
+                if self.request.path == "/robots.txt"
+                or self.request.path.lower() in SUS_PATHS
+                else anonymize_ip(self.request.remote_ip, ignore_invalid=True)
+            ),
         )
     )
 

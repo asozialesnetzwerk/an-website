@@ -261,28 +261,34 @@ class BaseRequestHandler(RequestHandler):
         dictionary: dict[str, Any] = {
             "url": self.fix_url(),
             "title": self.title,
-            "short_title": self.short_title
-            if self.title != self.short_title
-            else None,
+            "short_title": (
+                self.short_title if self.title != self.short_title else None
+            ),
             "body": "".join(
                 str(element)
                 for element in soup.find_all(name="main")[0].contents
             ).strip(),
-            "scripts": [
-                {"script": script.string} | script.attrs
-                for script in soup.find_all("script")
-            ]
-            if soup.head
-            else [],
-            "stylesheets": [
-                stylesheet.get("href").strip()
-                for stylesheet in soup.find_all("link", rel="stylesheet")
-            ]
-            if soup.head
-            else [],
-            "css": "\n".join(style.string for style in soup.find_all("style"))
-            if soup.head
-            else "",
+            "scripts": (
+                [
+                    {"script": script.string} | script.attrs
+                    for script in soup.find_all("script")
+                ]
+                if soup.head
+                else []
+            ),
+            "stylesheets": (
+                [
+                    stylesheet.get("href").strip()
+                    for stylesheet in soup.find_all("link", rel="stylesheet")
+                ]
+                if soup.head
+                else []
+            ),
+            "css": (
+                "\n".join(style.string for style in soup.find_all("style"))
+                if soup.head
+                else ""
+            ),
         }
 
         return self._finish(dictionary)
@@ -516,9 +522,11 @@ class BaseRequestHandler(RequestHandler):
             ansi2html=partial(
                 reduce, apply, (ansi2html, ansi_replace, backspace_replace)
             ),
-            apm_script=self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
-            if self.apm_enabled
-            else None,
+            apm_script=(
+                self.settings["ELASTIC_APM"].get("INLINE_SCRIPT")
+                if self.apm_enabled
+                else None
+            ),
             as_html=self.content_type == "text/html",
             c=self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
@@ -532,12 +540,14 @@ class BaseRequestHandler(RequestHandler):
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,
-            emoji2html=emoji2html
-            if self.user_settings.openmoji == "img"
-            else (
-                (lambda emoji: f'<span class="openmoji">{emoji}</span>')
-                if self.user_settings.openmoji
-                else (lambda emoji: emoji)
+            emoji2html=(
+                emoji2html
+                if self.user_settings.openmoji == "img"
+                else (
+                    (lambda emoji: f'<span class="openmoji">{emoji}</span>')
+                    if self.user_settings.openmoji
+                    else (lambda emoji: emoji)
+                )
             ),
             form_appendix=self.user_settings.get_form_appendix(),
             GH_ORG_URL=GH_ORG_URL,
@@ -1071,9 +1081,11 @@ class BaseRequestHandler(RequestHandler):
             if isinstance(chunk, str):
                 chunk = regex.sub(
                     r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",
-                    lambda match: "Stanley"
-                    if Random(match[0]).randrange(5) == self.now.year % 5
-                    else match[0],
+                    lambda match: (
+                        "Stanley"
+                        if Random(match[0]).randrange(5) == self.now.year % 5
+                        else match[0]
+                    ),
                     chunk,
                 )
 

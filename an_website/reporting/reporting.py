@@ -110,9 +110,9 @@ async def get_reports(  # pylint: disable=too-many-arguments
 class ReportingAPI(APIRequestHandler):
     """The request handler for the Reporting API™️."""
 
-    POSSIBLE_CONTENT_TYPES: ClassVar[
-        tuple[str, ...]
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
+    )
 
     RATELIMIT_GET_LIMIT: ClassVar[int] = 20
     RATELIMIT_GET_COUNT_PER_PERIOD: ClassVar[int] = 2

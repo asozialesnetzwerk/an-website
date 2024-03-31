@@ -326,12 +326,16 @@ class QuoteById(QuoteBaseHandler):
                     wrong_quote.author.name,
                     wrong_quote.rating,
                     f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}",
-                    self.content_type.removeprefix("image/").removeprefix("x-")
-                    if self.content_type.startswith("image/")
-                    else {
-                        "application/pdf": "pdf",
-                        "application/vnd.ms-excel": "xlsx",
-                    }[self.content_type],
+                    (
+                        self.content_type.removeprefix("image/").removeprefix(
+                            "x-"
+                        )
+                        if self.content_type.startswith("image/")
+                        else {
+                            "application/pdf": "pdf",
+                            "application/vnd.ms-excel": "xlsx",
+                        }[self.content_type]
+                    ),
                     wq_id=wrong_quote.get_id_as_str(),
                 )
             )

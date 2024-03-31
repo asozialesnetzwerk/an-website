@@ -51,8 +51,7 @@ class Option(ABC, Generic[T]):
     @overload
     def __get__(  # noqa: D105
         self, obj: None, _: type[Options] | None = None, /  # noqa: W504
-    ) -> Option[T]:
-        ...
+    ) -> Option[T]: ...
 
     @overload
     def __get__(self, obj: Options, _: type[Options] | None = None, /) -> T:
@@ -91,12 +90,16 @@ class Option(ABC, Generic[T]):
     ) -> T:
         """Get the value for this option."""
         return self.parse(
-            argument=request_handler.get_argument(self.name, None)
-            if include_argument
-            else None,
-            cookie=request_handler.get_cookie(self.name, None)
-            if include_cookie
-            else None,
+            argument=(
+                request_handler.get_argument(self.name, None)
+                if include_argument
+                else None
+            ),
+            cookie=(
+                request_handler.get_cookie(self.name, None)
+                if include_cookie
+                else None
+            ),
             default=self.get_default_value(request_handler),
         )
 

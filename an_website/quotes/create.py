@@ -201,12 +201,12 @@ class CreatePage1(QuoteReadyCheckHandler):
             "pages/quotes/create1.html",
             quotes=tuple(QUOTES_CACHE.values()),
             authors=tuple(AUTHORS_CACHE.values()),
-            selected_quote=None
-            if args.quote is None
-            else QUOTES_CACHE.get(args.quote),
-            selected_author=None
-            if args.author is None
-            else AUTHORS_CACHE.get(args.author),
+            selected_quote=(
+                None if args.quote is None else QUOTES_CACHE.get(args.quote)
+            ),
+            selected_author=(
+                None if args.author is None else AUTHORS_CACHE.get(args.author)
+            ),
         )
 
     async def post(self) -> None:

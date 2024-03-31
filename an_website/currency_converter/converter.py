@@ -245,9 +245,11 @@ class CurrencyConverter(HTMLRequestHandler):
             replace_url_with = self.fix_url(
                 self.request.full_url(),
                 **{  # type: ignore[arg-type]
-                    key: value_dict.get(f"{used_key}_str")
-                    if key == used_key
-                    else None
+                    key: (
+                        value_dict.get(f"{used_key}_str")
+                        if key == used_key
+                        else None
+                    )
                     for key in KEYS
                 },
             )

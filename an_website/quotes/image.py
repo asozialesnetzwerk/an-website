@@ -417,12 +417,16 @@ class QuoteAsImage(QuoteReadyCheckHandler):
                 create_image,
                 wrong_quote.quote.quote,
                 wrong_quote.author.name,
-                rating=None
-                if self.get_bool_argument("no_rating", False)
-                else wrong_quote.rating,
-                source=None
-                if self.get_bool_argument("no_source", False)
-                else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}",
+                rating=(
+                    None
+                    if self.get_bool_argument("no_rating", False)
+                    else wrong_quote.rating
+                ),
+                source=(
+                    None
+                    if self.get_bool_argument("no_source", False)
+                    else f"{self.request.host_name}/z/{wrong_quote.get_id_as_str(True)}"
+                ),
                 file_type=file_type,
                 include_kangaroo=not self.get_bool_argument(
                     "no_kangaroo", False

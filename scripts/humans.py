@@ -117,9 +117,11 @@ def generate_humans_txt() -> str:
                 count,
                 [
                     (
-                        CONTRIBUTORS[name].get("__role", "Contributor")
-                        if name in CONTRIBUTORS
-                        else "Contributor",
+                        (
+                            CONTRIBUTORS[name].get("__role", "Contributor")
+                            if name in CONTRIBUTORS
+                            else "Contributor"
+                        ),
                         name,
                     )
                 ]

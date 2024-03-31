@@ -116,13 +116,15 @@ class Author(QuotesObjBase):
             "id": self.id,
             "name": str(self),
             "path": self.get_path(),
-            "info": {
-                "source": self.info[0],
-                "text": self.info[1],
-                "date": self.info[2].isoformat(),
-            }
-            if self.info
-            else None,
+            "info": (
+                {
+                    "source": self.info[0],
+                    "text": self.info[1],
+                    "date": self.info[2].isoformat(),
+                }
+                if self.info
+                else None
+            ),
         }
 
     def update_name(self, name: str) -> None:
@@ -355,9 +357,11 @@ async def make_api_request(
             response.reason,
         )
         raise HTTPError(
-            400
-            if response.code == 500
-            else (404 if response.code == 404 else 503),
+            (
+                400
+                if response.code == 500
+                else (404 if response.code == 404 else 503)
+            ),
             reason=(
                 f"{API_URL}/{endpoint} returned: "
                 f"{response.code} {response.reason}"

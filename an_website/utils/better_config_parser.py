@@ -132,14 +132,12 @@ class BetterConfigParser(ConfigParser):
     @overload  # type: ignore[override]
     def get(  # noqa: D102  # pylint: disable=arguments-differ
         self, section: str, option: str, *, fallback: OptionalStr
-    ) -> str | OptionalStr:
-        ...
+    ) -> str | OptionalStr: ...
 
     @overload
     def get(  # pylint: disable=arguments-differ
         self, section: str, option: str
-    ) -> str:
-        ...
+    ) -> str: ...
 
     def get(self, section: str, option: str, **kwargs: Any) -> object:
         """Get an option in a section."""
@@ -157,14 +155,12 @@ class BetterConfigParser(ConfigParser):
     @overload  # type: ignore[override]
     def getboolean(  # noqa: D102  # pylint: disable=arguments-differ
         self, section: str, option: str, *, fallback: OptionalBool
-    ) -> bool | OptionalBool:
-        ...
+    ) -> bool | OptionalBool: ...
 
     @overload
     def getboolean(  # pylint: disable=arguments-differ
         self, section: str, option: str
-    ) -> bool:
-        ...
+    ) -> bool: ...
 
     def getboolean(self, section: str, option: str, **kwargs: Any) -> object:
         """Get a boolean option."""
@@ -180,14 +176,12 @@ class BetterConfigParser(ConfigParser):
     @overload  # type: ignore[override]
     def getfloat(  # noqa: D102  # pylint: disable=arguments-differ
         self, section: str, option: str, *, fallback: OptionalFloat
-    ) -> float | OptionalFloat:
-        ...
+    ) -> float | OptionalFloat: ...
 
     @overload
     def getfloat(  # pylint: disable=arguments-differ
         self, section: str, option: str
-    ) -> float:
-        ...
+    ) -> float: ...
 
     def getfloat(self, section: str, option: str, **kwargs: Any) -> object:
         """Get an int option."""
@@ -201,14 +195,12 @@ class BetterConfigParser(ConfigParser):
     @overload  # type: ignore[override]
     def getint(  # noqa: D102  # pylint: disable=arguments-differ
         self, section: str, option: str, *, fallback: OptionalInt
-    ) -> int | OptionalInt:
-        ...
+    ) -> int | OptionalInt: ...
 
     @overload
     def getint(  # pylint: disable=arguments-differ
         self, section: str, option: str
-    ) -> int:
-        ...
+    ) -> int: ...
 
     def getint(self, section: str, option: str, **kwargs: Any) -> object:
         """Get an int option."""
@@ -222,12 +214,10 @@ class BetterConfigParser(ConfigParser):
     @overload
     def getset(  # noqa: D102
         self, section: str, option: str, *, fallback: OptionalSetStr
-    ) -> set[str] | OptionalSetStr:
-        ...
+    ) -> set[str] | OptionalSetStr: ...
 
     @overload
-    def getset(self, section: str, option: str) -> set[str]:
-        ...
+    def getset(self, section: str, option: str) -> set[str]: ...
 
     def getset(self, section: str, option: str, **kwargs: Any) -> object:
         """Get an int option."""

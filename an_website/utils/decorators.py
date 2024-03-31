@@ -80,11 +80,15 @@ def is_authorized(
             for _ in inst.get_arguments("access_token")
         ),
         *(keys.get(_) for _ in inst.get_arguments("key")),
-        keydecode(
-            cast(str, inst.get_cookie("access_token", "")), keys, token_secret
-        )
-        if allow_cookie_auth
-        else None,
+        (
+            keydecode(
+                cast(str, inst.get_cookie("access_token", "")),
+                keys,
+                token_secret,
+            )
+            if allow_cookie_auth
+            else None
+        ),
         keys.get(inst.get_cookie("key", None)) if allow_cookie_auth else None,
     )
 
@@ -107,16 +111,14 @@ def requires(
     *perms: Permission,
     return_instead_of_finishing: Default,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]:
-    ...
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]: ...
 
 
 @overload
 def requires(
     *perms: Permission,
     allow_cookie_auth: bool = True,
-) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret]]:
-    ...
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret]]: ...
 
 
 def requires(
@@ -169,16 +171,14 @@ def requires(
 def requires_settings(
     *settings: str,
     return_: Default,
-) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]:
-    ...
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | Default]]: ...
 
 
 @overload
 def requires_settings(
     *settings: str,
     status_code: int,
-) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | None]]:
-    ...
+) -> Callable[[Callable[Args, Ret]], Callable[Args, Ret | None]]: ...
 
 
 def requires_settings(

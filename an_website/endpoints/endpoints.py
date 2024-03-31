@@ -102,9 +102,9 @@ class Endpoints(HTMLRequestHandler):
 class EndpointsAPI(APIRequestHandler, Endpoints):
     """Show a list of all API endpoints."""
 
-    POSSIBLE_CONTENT_TYPES: ClassVar[
-        tuple[str, ...]
-    ] = APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        APIRequestHandler.POSSIBLE_CONTENT_TYPES + ("application/x-ndjson",)
+    )
 
     async def get(self, *, head: bool = False) -> None:
         """Handle a GET request."""

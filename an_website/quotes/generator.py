@@ -42,14 +42,14 @@ def get_authors_and_quotes(count: int) -> tuple[list[Author], list[Quote]]:
     wrong_quote = get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[0]
 
     if wrong_quote.author not in authors:
-        authors[
-            random.randrange(0, len(authors))  # nosec: B311
-        ] = wrong_quote.author
+        authors[random.randrange(0, len(authors))] = (  # nosec: B311
+            wrong_quote.author
+        )
 
     if wrong_quote.quote not in quotes:
-        quotes[
-            random.randrange(0, len(quotes))  # nosec: B311
-        ] = wrong_quote.quote
+        quotes[random.randrange(0, len(quotes))] = (  # nosec: B311
+            wrong_quote.quote
+        )
 
     return authors, quotes
 

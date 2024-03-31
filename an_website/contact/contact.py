@@ -57,16 +57,20 @@ def apply_contact_stuff_to_app(app: Application, config: ConfigParser) -> None:
     contact_address = config.get(
         "CONTACT",
         "CONTACT_ADDRESS",
-        fallback=f"{NAME.removesuffix('-dev')}@restmail.net"
-        if app.settings.get("debug")
-        else "",
+        fallback=(
+            f"{NAME.removesuffix('-dev')}@restmail.net"
+            if app.settings.get("debug")
+            else ""
+        ),
     )
     sender_address = config.get(
         "CONTACT",
         "SENDER_ADDRESS",
-        fallback="Marcell D'Avis <davis@1und1.de>"
-        if contact_address.endswith("@restmail.net")
-        else None,
+        fallback=(
+            "Marcell D'Avis <davis@1und1.de>"
+            if contact_address.endswith("@restmail.net")
+            else None
+        ),
     )
 
     if not sender_address:
@@ -89,9 +93,11 @@ def apply_contact_stuff_to_app(app: Application, config: ConfigParser) -> None:
         CONTACT_SMTP_SERVER=config.get(
             "CONTACT",
             "SMTP_SERVER",
-            fallback="restmail.net"
-            if contact_address.endswith("@restmail.net")
-            else "localhost",
+            fallback=(
+                "restmail.net"
+                if contact_address.endswith("@restmail.net")
+                else "localhost"
+            ),
         ),
         CONTACT_SMTP_PORT=config.getint(
             "CONTACT",

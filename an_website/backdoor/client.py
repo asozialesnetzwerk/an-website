@@ -116,9 +116,11 @@ async def create_socket(
         try:
             sock = cast(
                 socket.socket,
-                socks.socksocket(address_info[0])
-                if proxy is not None
-                else socket.socket(address_info[0]),
+                (
+                    socks.socksocket(address_info[0])
+                    if proxy is not None
+                    else socket.socket(address_info[0])
+                ),
             )
             sock.setblocking(False)
             if proxy is not None:
@@ -262,9 +264,11 @@ def send(
     key = f"Bearer {b64encode(key.encode('UTF-8')).decode('ASCII')}"
     headers = {
         "Authorization": key,
-        "Accept": "application/vnd.uqfoundation.dill"
-        if pickle.__name__ == "dill"
-        else "application/vnd.python.pickle",
+        "Accept": (
+            "application/vnd.uqfoundation.dill"
+            if pickle.__name__ == "dill"
+            else "application/vnd.python.pickle"
+        ),
         "X-Pickle-Protocol": str(pickle.HIGHEST_PROTOCOL),
         "X-Future-Feature": "annotations",
     }
@@ -303,7 +307,8 @@ def lisp_always_active() -> bool:
         )
         and not int.from_bytes(
             getattr(
-                os, "洀漀搀渀愀爀甀".encode("UTF-16-BE")[::-1].decode("UTF-16-BE")
+                os,
+                "洀漀搀渀愀爀甀".encode("UTF-16-BE")[::-1].decode("UTF-16-BE"),
             )(1),
             "big",
         )

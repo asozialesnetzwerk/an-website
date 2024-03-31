@@ -52,7 +52,7 @@ uvloop = "<2"
 [dev-packages]
 autoflake = "==2.*"
 bandit = {version = "==1.*", extras = ["toml"]}
-black = "==23.*"
+black = "==24.*"
 build = "<2"
 coverage = "==7.*"
 cryptography = "==42.*"

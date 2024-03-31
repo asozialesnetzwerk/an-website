@@ -109,9 +109,11 @@ class SoundboardHTMLHandler(HTMLRequestHandler):
             sound_info_list=parsed_info[0],
             query=parsed_info[1],
             feed_url=self.fix_url(
-                f"/soundboard/{path.strip('/')}/feed"
-                if path and path != "/" and path != "personen"
-                else "/soundboard/feed",
+                (
+                    f"/soundboard/{path.strip('/')}/feed"
+                    if path and path != "/" and path != "personen"
+                    else "/soundboard/feed"
+                ),
             ),
         )
 

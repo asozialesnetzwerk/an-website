@@ -462,9 +462,11 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
     app.settings["REPORTING_ENDPOINT"] = config.get(
         "REPORTING",
         "ENDPOINT",
-        fallback="/api/reports"
-        if app.settings["REPORTING_BUILTIN"]
-        else "https://asozial.org/api/reports",
+        fallback=(
+            "/api/reports"
+            if app.settings["REPORTING_BUILTIN"]
+            else "https://asozial.org/api/reports"
+        ),
     )
 
     app.settings["TRUSTED_API_SECRETS"] = {
@@ -655,9 +657,9 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
         "USE_CERTIFI": True,  # doesn't actually use certifi
         "SERVICE_NAME": NAME.removesuffix("-dev"),
         "SERVICE_VERSION": VERSION,
-        "ENVIRONMENT": "production"
-        if not sys.flags.dev_mode
-        else "development",
+        "ENVIRONMENT": (
+            "production" if not sys.flags.dev_mode else "development"
+        ),
         "DEBUG": True,
         "CAPTURE_BODY": "errors",
         "TRANSACTION_IGNORE_URLS": [
@@ -767,9 +769,11 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         retry_on_timeout: bool | DefaultType
 
     kwargs: Kwargs = {
-        "hosts": tuple(config.getset("ELASTICSEARCH", "HOSTS"))
-        if config.has_option("ELASTICSEARCH", "HOSTS")
-        else None,
+        "hosts": (
+            tuple(config.getset("ELASTICSEARCH", "HOSTS"))
+            if config.has_option("ELASTICSEARCH", "HOSTS")
+            else None
+        ),
         "cloud_id": config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
         "verify_certs": config.getboolean(
             "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
@@ -795,9 +799,9 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         app.settings["ELASTICSEARCH"] = None
         return None
     elasticsearch = AsyncElasticsearch(
-        basic_auth=None
-        if None in basic_auth
-        else cast(tuple[str, str], basic_auth),
+        basic_auth=(
+            None if None in basic_auth else cast(tuple[str, str], basic_auth)
+        ),
         ca_certs=os.path.join(DIR, "ca-bundle.crt"),
         **kwargs,
     )

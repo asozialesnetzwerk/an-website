@@ -186,65 +186,68 @@ class Search(HTMLRequestHandler):
                 .map(self.convert_page_info_to_simple_tuple)
                 .map(lambda unscored: search.ScoredValue(1, unscored))
             )
-        pages: search.DataProvider[
-            PageInfo, UnscoredPageInfo
-        ] = search.DataProvider(
-            self.get_all_page_info,
-            lambda page_info: (
-                page_info.name,
-                page_info.description,
-                *page_info.keywords,
-            ),
-            self.convert_page_info_to_simple_tuple,
-        )
-        soundboard: search.DataProvider[
-            SoundInfo, UnscoredPageInfo
-        ] = search.DataProvider(
-            ALL_SOUNDS,
-            lambda sound_info: (sound_info.get_text(), sound_info.person.value),
-            lambda sound_info: (
-                (
-                    "url",
-                    self.fix_url(
-                        f"/soundboard/{sound_info.person.name}#{sound_info.get_filename()}"
-                    ),
+        pages: search.DataProvider[PageInfo, UnscoredPageInfo] = (
+            search.DataProvider(
+                self.get_all_page_info,
+                lambda page_info: (
+                    page_info.name,
+                    page_info.description,
+                    *page_info.keywords,
                 ),
-                ("title", f"Soundboard ({sound_info.person.value})"),
-                ("description", sound_info.get_text()),
-            ),
+                self.convert_page_info_to_simple_tuple,
+            )
         )
-        authors: search.DataProvider[
-            Author, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_authors,
-            lambda author: author.name,
-            lambda author: (
-                ("url", self.fix_url(author.get_path())),
-                ("title", "Autoren-Info"),
-                ("description", author.name),
-            ),
+        soundboard: search.DataProvider[SoundInfo, UnscoredPageInfo] = (
+            search.DataProvider(
+                ALL_SOUNDS,
+                lambda sound_info: (
+                    sound_info.get_text(),
+                    sound_info.person.value,
+                ),
+                lambda sound_info: (
+                    (
+                        "url",
+                        self.fix_url(
+                            f"/soundboard/{sound_info.person.name}#{sound_info.get_filename()}"
+                        ),
+                    ),
+                    ("title", f"Soundboard ({sound_info.person.value})"),
+                    ("description", sound_info.get_text()),
+                ),
+            )
         )
-        quotes: search.DataProvider[
-            Quote, UnscoredPageInfo
-        ] = search.DataProvider(
-            get_quotes,
-            lambda quote: (quote.quote, quote.author.name),
-            lambda q: (
-                ("url", self.fix_url(q.get_path())),
-                ("title", "Zitat-Info"),
-                ("description", str(q)),
-            ),
+        authors: search.DataProvider[Author, UnscoredPageInfo] = (
+            search.DataProvider(
+                get_authors,
+                lambda author: author.name,
+                lambda author: (
+                    ("url", self.fix_url(author.get_path())),
+                    ("title", "Autoren-Info"),
+                    ("description", author.name),
+                ),
+            )
         )
-        wrong_quotes: search.DataProvider[
-            WrongQuote, UnscoredPageInfo
-        ] = search.DataProvider(
-            lambda: get_wrong_quotes(lambda wq: wq.rating > 0),
-            lambda wq: (wq.quote.quote, wq.author.name),
-            lambda wq: (
-                ("url", self.fix_url(wq.get_path())),
-                ("title", "Falsches Zitat"),
-                ("description", str(wq)),
-            ),
+        quotes: search.DataProvider[Quote, UnscoredPageInfo] = (
+            search.DataProvider(
+                get_quotes,
+                lambda quote: (quote.quote, quote.author.name),
+                lambda q: (
+                    ("url", self.fix_url(q.get_path())),
+                    ("title", "Zitat-Info"),
+                    ("description", str(q)),
+                ),
+            )
+        )
+        wrong_quotes: search.DataProvider[WrongQuote, UnscoredPageInfo] = (
+            search.DataProvider(
+                lambda: get_wrong_quotes(lambda wq: wq.rating > 0),
+                lambda wq: (wq.quote.quote, wq.author.name),
+                lambda wq: (
+                    ("url", self.fix_url(wq.get_path())),
+                    ("title", "Falsches Zitat"),
+                    ("description", str(wq)),
+                ),
+            )
         )
         return search.search(
             query_object,

@@ -274,9 +274,9 @@ class Backdoor(APIRequestHandler):
         return await self.finish_serialized_dict(
             success=exception is None,
             output=output_str,
-            result=None
-            if exception is None and result is None
-            else result_tuple,
+            result=(
+                None if exception is None and result is None else result_tuple
+            ),
         )
 
     def safe_repr(self, obj: Any) -> str:  # pylint: disable=no-self-use
