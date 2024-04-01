@@ -235,7 +235,7 @@ jobs:
         with:
           name: artifact
       - name: Install required library
-        run: pip install "packaging==23.*"
+        run: pip install packaging==23.2
       - name: Version
         id: version
         shell: python

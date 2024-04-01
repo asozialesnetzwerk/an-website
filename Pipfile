@@ -27,10 +27,11 @@ jsonpickle = "==3.*"
 lxml = "==5.*"
 openmoji-dist = "*"
 orjson = "==3.*"
+packaging = "==23.2"
 Pillow = "==10.*"
 pillow-jxl-plugin = "==1.*"
 pycryptodome = "==3.*"
-pycurl = "==7.*"
+pycurl = "==7.45.2"
 pysocks = "==1.*"
 # pyston-lite = {version = "==2.*", markers = "python_version < '3.11'"}
 # pyston-lite-autoload = {version = "==2.*", markers = "python_version < '3.11'"}

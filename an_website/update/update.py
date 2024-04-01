@@ -53,6 +53,7 @@ def write_from_queue(file: IO[bytes], queue: SimpleQueue[None | bytes]) -> None:
     """Read from a queue and write to a file."""
     while (chunk := queue.get()) is not None:  # pylint: disable=while-used
         file.write(chunk)
+    file.flush()
 
 
 @stream_request_body
