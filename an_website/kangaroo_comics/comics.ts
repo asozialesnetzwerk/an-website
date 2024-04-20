@@ -403,7 +403,7 @@ administratives/kaenguru-comics/kaenguru-045/original
     };
 
     // add links to comics list
-    comics.concat(links.split("\n")); // first 50 comics 29.11.2020 - 17.01.21
+    comics.push(...links.split("\n")); // first 50 comics 29.11.2020 - 17.01.21
     addLinksToComics();
 
     const today = dateIncreaseByDays(getToday(), 1);
