@@ -141,7 +141,7 @@ async def test_argument_checking_create_pages(
     """Test whether the create handlers complain because of missing args."""
     wrong_quote = get_wrong_quote()
 
-    await quotes.make_api_request("/test")
+    await quotes.make_api_request("/test", entity_should_exist=False)
 
     for data in (
         "quote-1=&fake-author-1=",

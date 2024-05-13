@@ -104,7 +104,11 @@ class Author(QuotesObjBase):
 
     async def fetch_new_data(self) -> Author:
         """Fetch new data from the API."""
-        return parse_author(await make_api_request(f"authors/{self.id}"))
+        return parse_author(
+            await make_api_request(
+                f"authors/{self.id}", entity_should_exist=True
+            )
+        )
 
     def get_path(self) -> str:
         """Return the path to the author info."""
@@ -153,7 +157,12 @@ class Quote(QuotesObjBase):
 
     async def fetch_new_data(self) -> Quote:
         """Fetch new data from the API."""
-        return parse_quote(await make_api_request(f"quotes/{self.id}"), self)
+        return parse_quote(
+            await make_api_request(
+                f"quotes/{self.id}", entity_should_exist=True
+            ),
+            self,
+        )
 
     def get_path(self) -> str:
         """Return the path to the quote info."""
@@ -205,11 +214,14 @@ class WrongQuote(QuotesObjBase):
                     "simulate": "true",
                     "author": str(self.author.id),
                 },
+                entity_should_exist=True,
             )
             if api_data:
                 api_data = api_data[0]
         else:
-            api_data = await make_api_request(f"wrongquotes/{self.id}")
+            api_data = await make_api_request(
+                f"wrongquotes/{self.id}", entity_should_exist=True
+            )
         if not api_data:
             return self
         return parse_wrong_quote(api_data, self)
@@ -268,6 +280,7 @@ class WrongQuote(QuotesObjBase):
                 f"wrongquotes/{self.id}",
                 method="POST",
                 body={"vote": str(vote)},
+                entity_should_exist=True,
             ),
             self,
         )
@@ -330,6 +343,7 @@ async def make_api_request(
     endpoint: str,
     args: Mapping[str, str] | None = None,
     *,
+    entity_should_exist: bool,
     method: Literal["GET", "POST"] = "GET",
     body: None | Mapping[str, str] = None,
 ) -> Any:  # TODO: list[dict[str, Any]] | dict[str, Any]:
@@ -348,7 +362,13 @@ async def make_api_request(
         ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
     )
     if response.code != 200:
-        LOGGER.warning(
+        normed_response_code = (
+            400
+            if not entity_should_exist and response.code == 500
+            else response.code
+        )
+        LOGGER.log(
+            logging.ERROR if normed_response_code >= 500 else logging.WARNING,
             "%s request to %r with body=%r failed with code=%d and reason=%r",
             method,
             url,
@@ -357,11 +377,7 @@ async def make_api_request(
             response.reason,
         )
         raise HTTPError(
-            (
-                400
-                if response.code == 500
-                else (404 if response.code == 404 else 503)
-            ),
+            normed_response_code if normed_response_code in {400, 404} else 503,
             reason=(
                 f"{API_URL}/{endpoint} returned: "
                 f"{response.code} {response.reason}"
@@ -580,7 +596,9 @@ async def update_cache(
 
     if update_wrong_quotes:
         await parse_list_of_quote_data(
-            wq_data := await make_api_request("wrongquotes"),
+            wq_data := await make_api_request(
+                "wrongquotes", entity_should_exist=True
+            ),
             parse_wrong_quote,
         )
         if wq_data and redis_available:
@@ -592,7 +610,9 @@ async def update_cache(
 
     if update_quotes:
         await parse_list_of_quote_data(
-            quotes_data := await make_api_request("quotes"),
+            quotes_data := await make_api_request(
+                "quotes", entity_should_exist=True
+            ),
             parse_quote,
         )
         if quotes_data and redis_available:
@@ -604,7 +624,9 @@ async def update_cache(
 
     if update_authors:
         await parse_list_of_quote_data(
-            authors_data := await make_api_request("authors"),
+            authors_data := await make_api_request(
+                "authors", entity_should_exist=True
+            ),
             parse_author,
         )
         if authors_data and redis_available:
@@ -632,7 +654,11 @@ async def get_author_by_id(author_id: int) -> Author:
     author = AUTHORS_CACHE.get(author_id)
     if author is not None:
         return author
-    return parse_author(await make_api_request(f"authors/{author_id}"))
+    return parse_author(
+        await make_api_request(
+            f"authors/{author_id}", entity_should_exist=False
+        )
+    )
 
 
 async def get_quote_by_id(quote_id: int) -> Quote:
@@ -640,7 +666,9 @@ async def get_quote_by_id(quote_id: int) -> Quote:
     quote = QUOTES_CACHE.get(quote_id)
     if quote is not None:
         return quote
-    return parse_quote(await make_api_request(f"quotes/{quote_id}"))
+    return parse_quote(
+        await make_api_request(f"quotes/{quote_id}", entity_should_exist=False)
+    )
 
 
 async def get_wrong_quote(
@@ -671,6 +699,7 @@ async def get_wrong_quote(
             "simulate": "true",
             "author": str(author_id),
         },
+        entity_should_exist=False,
     )
     if result:
         return parse_wrong_quote(result[0])
@@ -730,6 +759,7 @@ async def create_wq_and_vote(
                 "author": str(author_id),
                 "contributed_by": contributed_by,
             },
+            entity_should_exist=False,
         )
     )
     return await wrong_quote.vote(vote, lazy=True)

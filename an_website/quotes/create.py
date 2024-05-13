@@ -52,6 +52,7 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
                 "author": str(author.id),
                 "quote": quote_str,
             },
+            entity_should_exist=False,
         )
     )
 
@@ -66,7 +67,10 @@ async def create_author(author_str: str) -> Author:
 
     return parse_author(
         await make_api_request(
-            "authors", method="POST", body={"author": author_str}
+            "authors",
+            method="POST",
+            body={"author": author_str},
+            entity_should_exist=False,
         )
     )
 
