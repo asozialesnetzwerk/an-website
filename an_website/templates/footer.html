@@ -1,6 +1,10 @@
 <footer id="footer" data-elastic-exclude>Mit Liebe gebacken
     {% if globals()["🦘"] %}
-        {% raw emoji2html("🦘") %}
+        {% if now.isoweekday() == 3 %}
+            <span tooltip="What a week, huh?">{% raw emoji2html("🦘") %}</span>
+        {% else %}
+            {% raw emoji2html("🦘") %}
+        {% end %}
     {% elif now.microsecond % 4 == 3 and now.weekday() == 2 %}
         <span tooltip="ribbit">{% raw emoji2html("🐸") %}</span>
     {% elif globals()["🥚"] %}
