@@ -24,7 +24,7 @@ from collections.abc import Awaitable, Iterable, Mapping
 from typing import Any, Final, Literal
 
 import orjson as json
-from emoji import (  # type: ignore[attr-defined]
+from emoji import (
     EMOJI_DATA,
     demojize,
     emoji_list,

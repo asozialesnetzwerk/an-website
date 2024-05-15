@@ -6,10 +6,10 @@ form {
 textarea,
 select,
 input[type="email"],
+input[type="number"],
 input[type="range"],
 input[type="search"],
-input[type="text"],
-input[type="number"] {
+input[type="text"] {
     display: block;
     width: 100%;
     box-sizing: border-box;
@@ -18,6 +18,11 @@ input[type="number"] {
     border-radius: 0.625rem;
     margin: 0.5rem 0;
     background: var(--bg);
+}
+
+input[type="range"] {
+    padding: initial;
+    border: initial;
 }
 
 input[type="submit"],

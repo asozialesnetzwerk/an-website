@@ -2,14 +2,16 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "@std/cli": "npm:@jsr/std__cli@^0.223.0",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^18.19.28",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@types/node": "^18.19.31",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
     "browserslist": "^4.23.0",
-    "core-js-builder": "3.36.1",
-    "core-js-compat": "3.36.1",
+    "core-js-builder": "3.37.0",
+    "core-js-compat": "3.37.0",
+    "dax-sh": "^0.40.1",
     "doiuse": "^6.0.2",
     "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
@@ -18,17 +20,18 @@
     "eslint-plugin-compat": "^4.2.0",
     "eslint-plugin-deprecation": "^2.0.0",
     "gzip-size": "^7.0.0",
+    "jsr": "^0.12.2",
     "postcss": "^8.4.38",
     "stylelint": "^16.3.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
-    "stylelint-config-standard-scss": "^13.0.0",
+    "stylelint-config-standard-scss": "^13.1.0",
     "stylelint-no-unsupported-browser-features": "^8.0.1",
     "ts-node": "github:isaacs/ts-node#isaacs/node-20-fix",
-    "type-fest": "^4.14.0",
-    "typescript": "5.5.0-dev.20240401",
+    "type-fest": "^4.15.0",
+    "typescript": "^5.4.5",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.15.6+sha256.01c01eeb990e379b31ef19c03e9d06a14afa5250b82e81303f88721c99ff2e6f",
+  "packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019",
   "engines": {
     "npm": "0",
     "yarn": "0"
@@ -41,7 +44,7 @@
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.36.1": "patches/core-js-builder@3.36.1.patch",
+      "core-js-builder@3.37.0": "patches/core-js-builder@3.37.0.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }

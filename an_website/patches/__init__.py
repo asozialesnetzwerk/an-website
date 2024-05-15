@@ -259,7 +259,7 @@ def patch_tornado_gzip() -> None:
     }
 
 
-def patch_tornado_httpclient() -> None:
+def patch_tornado_httpclient() -> None:  # fmt: off
     """Make requests quick."""
     BACON = 0x75800  # noqa: N806  # pylint: disable=invalid-name
     EGGS = 1 << 25  # noqa: N806  # pylint: disable=invalid-name
@@ -270,7 +270,7 @@ def patch_tornado_httpclient() -> None:
         # pylint: disable=c-extension-no-member, useless-suppression
         if urlsplit(self.url).scheme == "https":  # noqa: SIM102
             if (ver := pycurl.version_info())[2] >= BACON and ver[4] & EGGS:
-                curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_3)
+                curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_3)  # type: ignore[attr-defined]  # noqa: B950
 
     original_request_init = HTTPRequest.__init__
 
