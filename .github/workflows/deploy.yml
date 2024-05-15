@@ -12,7 +12,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
@@ -35,7 +35,7 @@ jobs:
 
   test-wheel:
     name: Test wheel
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build
     permissions: {}
@@ -68,7 +68,7 @@ jobs:
 
   tests:
     name: Run tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     continue-on-error: ${{ matrix.python-version == 3.13 }}
@@ -78,11 +78,11 @@ jobs:
         python-version:
           - 3.12
           - 3.13
-        license:
-          - basic
+        #license:
+          #- basic
           #- trial
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v13
+          - docker.io/redis/redis-stack-server:6.2.6-v14
           #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:
@@ -137,7 +137,7 @@ jobs:
 
   sourcemaps:
     name: Upload sourcemaps
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - test-wheel
       - tests
@@ -187,7 +187,7 @@ jobs:
 
   deploy:
     name: Deploy website
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - sourcemaps
     permissions: {}
@@ -213,7 +213,7 @@ jobs:
 
   github-pages:
     name: GitHub Pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - deploy
     permissions:
@@ -264,7 +264,7 @@ jobs:
 
   build-oci-image:
     name: Build OCI image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build
     permissions:
@@ -282,7 +282,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
-          git clone -b v1.35.2 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
+          git clone -b v1.35.3 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
           pushd ~/go/src/github.com/containers/buildah
           make buildah docs
           sudo make install
@@ -327,7 +327,7 @@ jobs:
 
   test-running-oci-image:
     name: Test running OCI image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build-oci-image
     steps:
@@ -341,7 +341,7 @@ jobs:
 
   run-tests-in-oci-image:
     name: Run tests in OCI image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - build-oci-image
     steps:
@@ -357,7 +357,7 @@ jobs:
 
   push-oci-image:
     name: Push OCI image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - test-running-oci-image
       - run-tests-in-oci-image

@@ -22,9 +22,9 @@ strict = true
 sqlite_cache = true
 python_version = "3.12"
 warn_unreachable = true
-# disallow_any_decorated = true
-# disallow_any_explicit = true
 # disallow_any_expr = true
+# disallow_any_explicit = true
+# disallow_any_decorated = true
 disallow_any_unimported = true
 plugins = "numpy.typing.mypy_plugin"
 enable_error_code = [
@@ -37,6 +37,7 @@ enable_error_code = [
   "truthy-iterable",
   "unused-awaitable",
 ]
+local_partial_types = true
 disable_bytearray_promotion = true
 disable_memoryview_promotion = true
 enable_incomplete_feature = ["PreciseTupleTypes"]
