@@ -4,22 +4,22 @@ inputs:
   version:
     description: The version of dart-sass
     required: false
-    default: 1.72.0
+    default: 1.77.1
   sass-proto-version:
     description: The version of the protobuf spec
     required: false
-    default: 2.5.0
+    default: 2.7.0
 runs:
   using: composite
   steps:
     - name: Setup Dart
       uses: dart-lang/setup-dart@v1
       with:
-        sdk: 3.3.3
+        sdk: 3.3.4
     - name: Install buf
       shell: bash
       run: |
-        wget -O /usr/local/bin/buf "https://github.com/bufbuild/buf/releases/download/v1.30.1/buf-$(uname -s)-$(uname -m)"
+        wget -O /usr/local/bin/buf "https://github.com/bufbuild/buf/releases/download/v1.32.0-beta.1/buf-$(uname -s)-$(uname -m)"
         chmod +x /usr/local/bin/buf
     - name: Install dart-sass
       shell: bash
