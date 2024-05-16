@@ -455,7 +455,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libdevmapper-dev libgpgme-dev
-          git clone -b v1.15.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
+          git clone -b v1.15.1 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
           pushd ~/go/src/github.com/containers/skopeo
           make bin/skopeo
           sudo make install DISABLE_DOCS=1

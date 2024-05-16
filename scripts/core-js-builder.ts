@@ -1,10 +1,10 @@
 #!/usr/bin/env -S pnpm ts-node -T
 import builder from "core-js-builder";
-import { transform } from "esbuild";
 import { gzipSize } from "gzip-size";
-import { parse } from "./vendored/flags.ts";
+import { transform } from "esbuild";
+import { parseArgs } from "@std/cli/parse-args";
 
-const args = parse(process.argv.slice(2), {
+const args = parseArgs(process.argv.slice(2), {
     string: ["targets", "format"],
     default: {
         targets:

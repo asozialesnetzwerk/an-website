@@ -1,8 +1,8 @@
 #!/usr/bin/env -S pnpm ts-node -T
 import compat from "core-js-compat";
-import { parse } from "./vendored/flags.ts";
+import { parseArgs } from "@std/cli/parse-args";
 
-const args = parse(process.argv.slice(2), {
+const args = parseArgs(process.argv.slice(2), {
     boolean: "inverse",
     string: ["targets", "version"],
     default: {

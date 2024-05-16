@@ -1,8 +1,8 @@
 #!/usr/bin/env -S DENO_NO_PACKAGE_JSON=1 deno run --no-prompt --allow-net=deno.land --allow-env=TMPDIR,TMP,TEMP --allow-read --allow-write=.,/tmp
 import builder from "npm:core-js-builder@3";
-import * as esbuild from "esbuild/wasm.js";
 import { parseArgs } from "std/cli/mod.ts";
 import { gzipSize } from "npm:gzip-size";
+import * as esbuild from "esbuild";
 
 const args = parseArgs(Deno.args, {
     string: ["targets", "format"],
