@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
+import logging
 import os
 import sys
 from collections.abc import Callable
@@ -331,6 +332,10 @@ def patch_tornado_redirect() -> None:
         permanent: bool = False,
         status: None | int = None,
     ) -> None:
+        if url == self.request.full_url():
+            logging.getLogger(
+                f"{self.__class__.__module__}.{self.__class__.__qualname__}"
+            ).critical("Infinite redirect to %r detected", url)
         if self._headers_written:
             # pylint: disable=broad-exception-raised
             raise Exception("Cannot redirect after headers have been written")
