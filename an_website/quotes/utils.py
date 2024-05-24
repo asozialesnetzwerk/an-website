@@ -509,9 +509,13 @@ async def parse_list_of_quote_data(
     return tuple(return_list)
 
 
-async def update_cache_periodically(app: Application) -> None:
+async def update_cache_periodically(
+    app: Application, worker: int | None
+) -> None:
     """Start updating the cache every hour."""
     # pylint: disable=too-complex
+    if worker:
+        return
     with contextlib.suppress(asyncio.TimeoutError):
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))

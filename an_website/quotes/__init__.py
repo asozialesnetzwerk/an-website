@@ -32,6 +32,7 @@ from .quote_of_the_day import (
 )
 from .quotes import QuoteAPIHandler, QuoteById, QuoteMainPage, QuoteRedirectAPI
 from .share import ShareQuote
+from .utils import update_cache_periodically
 
 DIR: Final = abspath(dirname(__file__))
 
@@ -164,4 +165,5 @@ def get_module_info() -> ModuleInfo:
             "falsche Zitate",
             "falsch zugeordnete Zitate",
         ),
+        required_background_tasks=frozenset({update_cache_periodically}),
     )

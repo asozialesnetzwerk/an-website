@@ -33,7 +33,7 @@ import threading
 import time
 import types
 import uuid
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, Task
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import (
@@ -44,17 +44,27 @@ from collections.abc import (
     MutableSequence,
 )
 from configparser import ConfigParser
-from functools import partial
+from functools import partial, wraps
 from hashlib import sha256
 from multiprocessing.process import _children  # type: ignore[attr-defined]
 from pathlib import Path
 from socket import socket
-from typing import Any, Final, Literal, TypeAlias, TypedDict, TypeGuard, cast
+from typing import (
+    Any,
+    Final,
+    Literal,
+    TypeAlias,
+    TypedDict,
+    TypeGuard,
+    assert_type,
+    cast,
+)
 from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
 import orjson
 import regex
+import typed_stream
 from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
@@ -86,12 +96,6 @@ from . import (
     VERSION,
 )
 from .contact.contact import apply_contact_stuff_to_app
-from .quotes.utils import (
-    AUTHORS_CACHE,
-    QUOTES_CACHE,
-    WRONG_QUOTES_CACHE,
-    update_cache_periodically,
-)
 from .utils import static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
 from .utils.better_config_parser import BetterConfigParser
@@ -100,6 +104,7 @@ from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
     ArgparseNamespace,
+    BackgroundTask,
     Handler,
     ModuleInfo,
     Permission,
@@ -810,7 +815,9 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
     return elasticsearch
 
 
-async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
+async def check_elasticsearch(
+    app: Application, worker: int | None
+) -> None:  # pragma: no cover
     """Check Elasticsearch."""
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         es: AsyncElasticsearch = cast(
@@ -820,7 +827,9 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
             await es.transport.perform_request("HEAD", "/")
         except Exception:  # pylint: disable=broad-except
             EVENT_ELASTICSEARCH.clear()
-            LOGGER.exception("Connecting to Elasticsearch failed")
+            LOGGER.exception(
+                "Connecting to Elasticsearch failed on worker: %s", worker
+            )
         else:
             if not EVENT_ELASTICSEARCH.is_set():
                 try:
@@ -829,7 +838,8 @@ async def check_elasticsearch(app: Application) -> None:  # pragma: no cover
                     )
                 except Exception:  # pylint: disable=broad-except
                     LOGGER.exception(
-                        "An exception occured while configuring Elasticsearch"
+                        "An exception occured while configuring Elasticsearch on worker: %s",  # noqa: B950
+                        worker,
                     )
                 else:
                     EVENT_ELASTICSEARCH.set()
@@ -1011,7 +1021,9 @@ def setup_redis(app: Application) -> None | Redis[str]:
     return redis
 
 
-async def check_redis(app: Application) -> None:  # pragma: no cover
+async def check_redis(
+    app: Application, worker: int | None
+) -> None:  # pragma: no cover
     """Check Redis."""
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
@@ -1019,20 +1031,19 @@ async def check_redis(app: Application) -> None:  # pragma: no cover
             await redis.ping()
         except Exception:  # pylint: disable=broad-except
             EVENT_REDIS.clear()
-            LOGGER.exception("Connecting to Redis failed")
+            LOGGER.exception("Connecting to Redis failed on worker %s", worker)
         else:
             EVENT_REDIS.set()
         await asyncio.sleep(20)
 
 
-async def check_if_ppid_changed(ppid: int) -> bool:
+async def check_if_ppid_changed(ppid: int) -> None:
     """Check whether Technoblade hates us."""
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         if os.getppid() != ppid:
             EVENT_SHUTDOWN.set()
-            return True
+            return
         await asyncio.sleep(1)
-    return False
 
 
 async def wait_for_shutdown() -> None:  # pragma: no cover
@@ -1224,9 +1235,16 @@ def main(  # noqa: C901  # pragma: no cover
         # yeet all children (there should be none, but do it regardless, just in case)
         _children.clear()
 
-        del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
-        del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
-        del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+        if "an_website.quotes" in sys.modules:
+            from .quotes.utils import (
+                AUTHORS_CACHE,
+                QUOTES_CACHE,
+                WRONG_QUOTES_CACHE,
+            )
+
+            del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+            del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
+            del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
         del geoip.__kwdefaults__["caches"].control.created_by_ultra
 
         if unix_socket_path:
@@ -1263,29 +1281,41 @@ def main(  # noqa: C901  # pragma: no cover
 
     server.add_sockets(sockets)
 
-    # pylint: disable=unused-variable
-
-    task_heartbeat = loop.create_task(heartbeat())  # noqa: F841
-
-    task_shutdown = loop.create_task(wait_for_shutdown())  # noqa: F841
-
-    if elasticsearch_is_enabled:
-        task_es = loop.create_task(check_elasticsearch(app))  # noqa: F841
-
-    if redis_is_enabled:
-        task_redis = loop.create_task(check_redis(app))  # noqa: F841
-
-    if not worker:  # update from one process only
-        task_quotes = loop.create_task(  # noqa: F841
-            update_cache_periodically(app)
+    module_infos: Iterable[ModuleInfo] = app.settings["MODULE_INFOS"]
+    peek_fun: Callable[[BackgroundTask], object] = typed_stream.functions.noop
+    background_tasks = (
+        Stream(module_infos)
+        .flat_map(lambda info: info.required_background_tasks)
+        .chain(
+            Stream((heartbeat, wait_for_shutdown)).map(
+                lambda fun: wraps(fun)(lambda **_: fun())
+            )
         )
-
-    if processes:
-        task_check_parent = loop.create_task(  # noqa: F841
-            check_if_ppid_changed(main_pid)
+        .chain(
+            [
+                wraps(check_if_ppid_changed)(
+                    lambda **k: check_if_ppid_changed(main_pid)
+                )
+            ]
+            if processes
+            else ()
         )
-
-    # pylint: enable=unused-variable
+        .chain([check_elasticsearch] if elasticsearch_is_enabled else ())
+        .chain([check_redis] if redis_is_enabled else ())
+        .distinct()
+        .peek(
+            peek_fun
+            if worker
+            else lambda fun: LOGGER.info(
+                "starting %r background service", fun.__name__
+            )
+        )
+        .map(lambda fun: fun(app=app, worker=worker))
+        .map(loop.create_task)
+        .collect(tuple)
+    )
+    del module_infos, peek_fun
+    assert_type(background_tasks, tuple[Task[None], ...])
 
     if run_supervisor_thread:
         HEARTBEAT = time.monotonic()
