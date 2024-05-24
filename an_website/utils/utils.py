@@ -29,6 +29,7 @@ from base64 import b85encode
 from collections.abc import (
     Awaitable,
     Callable,
+    Collection,
     Generator,
     Iterable,
     Mapping,
@@ -43,11 +44,11 @@ from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 from pathlib import Path
 from typing import (
     IO,
+    TYPE_CHECKING,
     Any,
     Final,
     Literal,
     ParamSpec,
-    Protocol,
     TypeAlias,
     TypeVar,
     Union,
@@ -65,11 +66,14 @@ from geoip import geolite2  # type: ignore[import-untyped]
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from rapidfuzz.distance.Levenshtein import normalized_distance
 from redis.asyncio import Redis
-from tornado.web import Application, HTTPError, RequestHandler
+from tornado.web import HTTPError, RequestHandler
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
 from .. import STATIC_DIR
+
+if TYPE_CHECKING:
+    from .background_tasks import BackgroundTask
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -817,17 +821,6 @@ def time_to_str(spam: float) -> str:
     )
 
 
-class BackgroundTask(Protocol):
-    """A protocol representing a background task."""
-
-    @property
-    def __name__(self) -> str:
-        """The name of the task."""
-
-    async def __call__(self, *, app: Application, worker: int | None) -> None:
-        """Start the background task."""
-
-
 @dataclass(order=True, frozen=True, slots=True)
 class PageInfo:
     """The PageInfo class that is used for the subpages of a ModuleInfo."""
@@ -852,7 +845,7 @@ class ModuleInfo(PageInfo):
     handlers: tuple[Handler, ...] = field(default_factory=tuple[Handler, ...])
     sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
     aliases: tuple[str, ...] | Mapping[str, str] = field(default_factory=tuple)
-    required_background_tasks: frozenset[BackgroundTask] = field(
+    required_background_tasks: Collection[BackgroundTask] = field(
         default_factory=frozenset
     )
 

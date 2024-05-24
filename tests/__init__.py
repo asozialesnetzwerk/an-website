@@ -62,6 +62,7 @@ from tornado.web import Application
 # pylint: disable=ungrouped-imports
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, UPTIME, main
 from an_website.quotes.utils import parse_wrong_quote
+from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.better_config_parser import BetterConfigParser
 
@@ -127,7 +128,7 @@ def app() -> Application:
 
     main.apply_config_to_app(app, config)
 
-    es = main.setup_elasticsearch(app)
+    es = elasticsearch_setup.setup_elasticsearch(app)
     redis = main.setup_redis(app)
 
     loop = asyncio.get_event_loop_policy().get_event_loop()
@@ -140,7 +141,7 @@ def app() -> Application:
         else:
             if not EVENT_ELASTICSEARCH.is_set():
                 loop.run_until_complete(
-                    main.setup_elasticsearch_configs(
+                    elasticsearch_setup.setup_elasticsearch_configs(
                         es, app.settings["ELASTICSEARCH_PREFIX"]
                     )
                 )

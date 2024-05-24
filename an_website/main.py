@@ -33,44 +33,23 @@ import threading
 import time
 import types
 import uuid
-from asyncio import AbstractEventLoop, Task
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
-from collections.abc import (
-    Callable,
-    Coroutine,
-    Iterable,
-    Mapping,
-    MutableSequence,
-)
+from collections.abc import Callable, Iterable, Mapping, MutableSequence
 from configparser import ConfigParser
-from functools import partial, wraps
+from functools import partial
 from hashlib import sha256
 from multiprocessing.process import _children  # type: ignore[attr-defined]
-from pathlib import Path
 from socket import socket
-from typing import (
-    Any,
-    Final,
-    Literal,
-    TypeAlias,
-    TypedDict,
-    TypeGuard,
-    assert_type,
-    cast,
-)
+from typing import Any, Final, TypedDict, TypeGuard, cast
 from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
-import orjson
 import regex
-import typed_stream
 from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
-from elastic_transport import ObjectApiResponse
 from elasticapm.contrib.tornado import ElasticAPM
-from elasticsearch import AsyncElasticsearch, NotFoundError
 from redis.asyncio import (
     BlockingConnectionPool,
     Redis,
@@ -85,26 +64,17 @@ from tornado.process import fork_processes, task_id
 from tornado.web import Application, RedirectHandler
 from typed_stream import Stream
 
-from . import (
-    DIR,
-    EVENT_ELASTICSEARCH,
-    EVENT_REDIS,
-    EVENT_SHUTDOWN,
-    NAME,
-    TEMPLATES_DIR,
-    UPTIME,
-    VERSION,
-)
+from . import DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, UPTIME, VERSION
 from .contact.contact import apply_contact_stuff_to_app
-from .utils import static_file_handling
+from .utils import background_tasks, static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
 from .utils.better_config_parser import BetterConfigParser
+from .utils.elasticsearch_setup import setup_elasticsearch
 from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_handling import StaticFileHandler
 from .utils.utils import (
     ArgparseNamespace,
-    BackgroundTask,
     Handler,
     ModuleInfo,
     Permission,
@@ -112,7 +82,6 @@ from .utils.utils import (
     create_argument_parser,
     geoip,
     get_arguments_without_help,
-    none_to_default,
     time_function,
 )
 
@@ -121,10 +90,6 @@ try:
 except ModuleNotFoundError:
     perf8 = None  # pylint: disable=invalid-name
 
-ES_WHAT_LITERAL: TypeAlias = Literal[  # pylint: disable=invalid-name
-    "component_templates", "index_templates", "ingest_pipelines"
-]
-
 IGNORED_MODULES: Final[set[str]] = {
     "patches.*",
     "static.*",
@@ -132,8 +97,6 @@ IGNORED_MODULES: Final[set[str]] = {
 } | (set() if sys.flags.dev_mode else {"example.*"})
 
 LOGGER: Final = logging.getLogger(__name__)
-
-HEARTBEAT: float = 0
 
 
 # add all the information from the packages to a list
@@ -616,7 +579,7 @@ class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
 
 def setup_webhook_logging(  # pragma: no cover
     options: WebhookLoggingOptions,
-    loop: AbstractEventLoop,
+    loop: asyncio.AbstractEventLoop,
 ) -> None:
     """Setup Webhook logging."""  # noqa: D401
     if not options.url:
@@ -751,189 +714,6 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
     )
 
 
-def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
-    """Setup Elasticsearch."""  # noqa: D401
-    # pylint: disable-next=import-outside-toplevel
-    from elastic_transport.client_utils import DEFAULT, DefaultType
-
-    config: BetterConfigParser = app.settings["CONFIG"]
-    basic_auth: tuple[str | None, str | None] = (
-        config.get("ELASTICSEARCH", "USERNAME", fallback=None),
-        config.get("ELASTICSEARCH", "PASSWORD", fallback=None),
-    )
-
-    class Kwargs(TypedDict):
-        """Kwargs of AsyncElasticsearch constructor."""
-
-        hosts: tuple[str, ...] | None
-        cloud_id: None | str
-        verify_certs: bool
-        api_key: None | str
-        bearer_auth: None | str
-        client_cert: str | DefaultType
-        client_key: str | DefaultType
-        retry_on_timeout: bool | DefaultType
-
-    kwargs: Kwargs = {
-        "hosts": (
-            tuple(config.getset("ELASTICSEARCH", "HOSTS"))
-            if config.has_option("ELASTICSEARCH", "HOSTS")
-            else None
-        ),
-        "cloud_id": config.get("ELASTICSEARCH", "CLOUD_ID", fallback=None),
-        "verify_certs": config.getboolean(
-            "ELASTICSEARCH", "VERIFY_CERTS", fallback=True
-        ),
-        "api_key": config.get("ELASTICSEARCH", "API_KEY", fallback=None),
-        "bearer_auth": config.get(
-            "ELASTICSEARCH", "BEARER_AUTH", fallback=None
-        ),
-        "client_cert": none_to_default(
-            config.get("ELASTICSEARCH", "CLIENT_CERT", fallback=None), DEFAULT
-        ),
-        "client_key": none_to_default(
-            config.get("ELASTICSEARCH", "CLIENT_KEY", fallback=None), DEFAULT
-        ),
-        "retry_on_timeout": none_to_default(
-            config.getboolean(
-                "ELASTICSEARCH", "RETRY_ON_TIMEOUT", fallback=None
-            ),
-            DEFAULT,
-        ),
-    }
-    if not config.getboolean("ELASTICSEARCH", "ENABLED", fallback=False):
-        app.settings["ELASTICSEARCH"] = None
-        return None
-    elasticsearch = AsyncElasticsearch(
-        basic_auth=(
-            None if None in basic_auth else cast(tuple[str, str], basic_auth)
-        ),
-        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
-        **kwargs,
-    )
-    app.settings["ELASTICSEARCH"] = elasticsearch
-    return elasticsearch
-
-
-async def check_elasticsearch(
-    app: Application, worker: int | None
-) -> None:  # pragma: no cover
-    """Check Elasticsearch."""
-    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        es: AsyncElasticsearch = cast(
-            AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
-        )
-        try:
-            await es.transport.perform_request("HEAD", "/")
-        except Exception:  # pylint: disable=broad-except
-            EVENT_ELASTICSEARCH.clear()
-            LOGGER.exception(
-                "Connecting to Elasticsearch failed on worker: %s", worker
-            )
-        else:
-            if not EVENT_ELASTICSEARCH.is_set():
-                try:
-                    await setup_elasticsearch_configs(
-                        es, app.settings["ELASTICSEARCH_PREFIX"]
-                    )
-                except Exception:  # pylint: disable=broad-except
-                    LOGGER.exception(
-                        "An exception occured while configuring Elasticsearch on worker: %s",  # noqa: B950
-                        worker,
-                    )
-                else:
-                    EVENT_ELASTICSEARCH.set()
-        await asyncio.sleep(20)
-
-
-async def setup_elasticsearch_configs(
-    elasticsearch: AsyncElasticsearch,
-    prefix: str,
-) -> None:
-    """Setup Elasticsearch configs."""  # noqa: D401
-    spam: list[Coroutine[None, None, None | ObjectApiResponse[Any]]]
-
-    for i in range(3):
-        spam = []
-
-        what = cast(
-            ES_WHAT_LITERAL,
-            ["ingest_pipelines", "component_templates", "index_templates"][i],
-        )
-
-        base_path = Path(os.path.join(DIR, "elasticsearch", what))
-
-        for path in base_path.rglob("*.json"):
-            if not path.is_file():
-                LOGGER.warning("%s is not a file", path)
-                continue
-
-            body = orjson.loads(
-                path.read_bytes().replace(b"{prefix}", prefix.encode("ASCII"))
-            )
-
-            name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
-
-            spam.append(
-                setup_elasticsearch_config(
-                    elasticsearch, what, body, name, path
-                )
-            )
-
-        await asyncio.gather(*spam)
-
-
-async def setup_elasticsearch_config(
-    es: AsyncElasticsearch,
-    what: ES_WHAT_LITERAL,
-    body: dict[str, Any],
-    name: str,
-    path: str | Path = "<unknown>",
-) -> None | ObjectApiResponse[Any]:
-    """Setup Elasticsearch config."""  # noqa: D401
-    get: Callable[..., Coroutine[None, None, ObjectApiResponse[Any]]]
-    put: Callable[..., Coroutine[None, None, ObjectApiResponse[Any]]]
-
-    if what == "component_templates":
-        get = es.cluster.get_component_template
-        put = es.cluster.put_component_template
-    elif what == "index_templates":
-        get = es.indices.get_index_template
-        put = es.indices.put_index_template
-    elif what == "ingest_pipelines":
-        get = es.ingest.get_pipeline
-        put = es.ingest.put_pipeline
-    else:
-        raise AssertionError()
-
-    try:
-        if what == "ingest_pipelines":
-            current = await get(id=name)
-            current_version = current[name].get("version", 1)
-        else:
-            current = await get(
-                name=name, filter_path=f"{what}.name,{what}.version"
-            )
-            current_version = current[what][0].get("version", 1)
-    except NotFoundError:
-        current_version = 0
-
-    if current_version < body.get("version", 1):
-        if what == "ingest_pipelines":
-            return await put(id=name, body=body)
-        return await put(name=name, body=body)
-
-    if current_version > body.get("version", 1):
-        LOGGER.warning(
-            "%s has version %s. The version in Elasticsearch is %s!",
-            path,
-            body.get("version", 1),
-            current_version,
-        )
-
-    return None
-
-
 def setup_redis(app: Application) -> None | Redis[str]:
     """Setup Redis."""  # noqa: D401
     config: BetterConfigParser = app.settings["CONFIG"]
@@ -1021,39 +801,6 @@ def setup_redis(app: Application) -> None | Redis[str]:
     return redis
 
 
-async def check_redis(
-    app: Application, worker: int | None
-) -> None:  # pragma: no cover
-    """Check Redis."""
-    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
-        try:
-            await redis.ping()
-        except Exception:  # pylint: disable=broad-except
-            EVENT_REDIS.clear()
-            LOGGER.exception("Connecting to Redis failed on worker %s", worker)
-        else:
-            EVENT_REDIS.set()
-        await asyncio.sleep(20)
-
-
-async def check_if_ppid_changed(ppid: int) -> None:
-    """Check whether Technoblade hates us."""
-    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        if os.getppid() != ppid:
-            EVENT_SHUTDOWN.set()
-            return
-        await asyncio.sleep(1)
-
-
-async def wait_for_shutdown() -> None:  # pragma: no cover
-    """Wait for the shutdown event."""
-    loop = asyncio.get_running_loop()
-    while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
-        await asyncio.sleep(0.05)
-    loop.stop()
-
-
 def signal_handler(  # noqa: D103  # pragma: no cover
     signalnum: int, frame: None | types.FrameType
 ) -> None:
@@ -1072,17 +819,9 @@ def install_signal_handler() -> None:  # pragma: no cover
         signal.signal(signal.SIGHUP, signal_handler)
 
 
-async def heartbeat() -> None:
-    """Heartbeat."""
-    global HEARTBEAT  # pylint: disable=global-statement
-    while HEARTBEAT:  # pylint: disable=while-used
-        HEARTBEAT = time.monotonic()
-        await asyncio.sleep(0.05)
-
-
 def supervise() -> None:
     """Supervise."""
-    while foobarbaz := HEARTBEAT:  # pylint: disable=while-used
+    while foobarbaz := background_tasks.HEARTBEAT:  # pylint: disable=while-used
         if time.monotonic() - foobarbaz >= 10:
             worker = task_id()
             pid = os.getpid()
@@ -1104,8 +843,6 @@ def main(  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
-    global HEARTBEAT  # pylint: disable=global-statement
-
     setproctitle(NAME)
 
     install_signal_handler()
@@ -1236,7 +973,7 @@ def main(  # noqa: C901  # pragma: no cover
         _children.clear()
 
         if "an_website.quotes" in sys.modules:
-            from .quotes.utils import (
+            from .quotes.utils import (  # pylint: disable=import-outside-toplevel
                 AUTHORS_CACHE,
                 QUOTES_CACHE,
                 WRONG_QUOTES_CACHE,
@@ -1257,7 +994,7 @@ def main(  # noqa: C901  # pragma: no cover
 
     # get loop after forking
     # if not forking allow loop to be set in advance by external code
-    loop: None | AbstractEventLoop
+    loop: None | asyncio.AbstractEventLoop
     try:
         with catch_warnings():  # TODO: remove after dropping support for 3.13
             simplefilter("ignore", DeprecationWarning)
@@ -1281,44 +1018,20 @@ def main(  # noqa: C901  # pragma: no cover
 
     server.add_sockets(sockets)
 
-    module_infos: Iterable[ModuleInfo] = app.settings["MODULE_INFOS"]
-    peek_fun: Callable[[BackgroundTask], object] = typed_stream.functions.noop
-    background_tasks = (
-        Stream(module_infos)
-        .flat_map(lambda info: info.required_background_tasks)
-        .chain(
-            Stream((heartbeat, wait_for_shutdown)).map(
-                lambda fun: wraps(fun)(lambda **_: fun())
-            )
-        )
-        .chain(
-            [
-                wraps(check_if_ppid_changed)(
-                    lambda **k: check_if_ppid_changed(main_pid)
-                )
-            ]
-            if processes
-            else ()
-        )
-        .chain([check_elasticsearch] if elasticsearch_is_enabled else ())
-        .chain([check_redis] if redis_is_enabled else ())
-        .distinct()
-        .peek(
-            peek_fun
-            if worker
-            else lambda fun: LOGGER.info(
-                "starting %r background service", fun.__name__
-            )
-        )
-        .map(lambda fun: fun(app=app, worker=worker))
-        .map(loop.create_task)
-        .collect(tuple)
+    # pylint: disable-next=unused-variable
+    tasks = background_tasks.start_background_tasks(  # noqa: F841
+        module_infos=app.settings["MODULE_INFOS"],
+        loop=loop,
+        main_pid=main_pid,
+        app=app,
+        processes=processes,
+        elasticsearch_is_enabled=elasticsearch_is_enabled,
+        redis_is_enabled=redis_is_enabled,
+        worker=worker,
     )
-    del module_infos, peek_fun
-    assert_type(background_tasks, tuple[Task[None], ...])
 
     if run_supervisor_thread:
-        HEARTBEAT = time.monotonic()
+        background_tasks.HEARTBEAT = time.monotonic()
         threading.Thread(
             target=supervise, name="supervisor", daemon=True
         ).start()
@@ -1344,6 +1057,6 @@ def main(  # noqa: C901  # pragma: no cover
                 loop.run_until_complete(loop.shutdown_default_executor())
             finally:
                 loop.close()
-                HEARTBEAT = 0
+                background_tasks.HEARTBEAT = 0
 
     return 0
