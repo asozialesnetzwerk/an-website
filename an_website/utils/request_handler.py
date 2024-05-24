@@ -96,7 +96,7 @@ class NotFoundHandler(BaseRequestHandler):
             self.set_status(469, reason="Nice Try")
             return self.write_error(469)
 
-        if new_path != self.request.path:
+        if new_path and new_path != self.request.path:
             return self.redirect(self.fix_url(new_path=new_path), True)
 
         this_path_normalized = unquote(new_path).strip("/").lower()
@@ -106,7 +106,7 @@ class NotFoundHandler(BaseRequestHandler):
         if p := paths.get(this_path_normalized):
             return self.redirect(self.fix_url(new_path=p), False)
 
-        if len(this_path_normalized) <= 1:
+        if len(this_path_normalized) <= 1 and self.request.path != "/":
             return self.redirect(self.fix_url(new_path="/"))
 
         prefixes = tuple(
