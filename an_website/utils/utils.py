@@ -46,6 +46,7 @@ from typing import (
     Any,
     Final,
     Literal,
+    ParamSpec,
     TypeAlias,
     TypeVar,
     Union,
@@ -72,6 +73,7 @@ from .. import STATIC_DIR
 LOGGER: Final = logging.getLogger(__name__)
 
 T = TypeVar("T")
+P = ParamSpec("P")
 
 T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
 
@@ -792,10 +794,12 @@ def strangle(string: str) -> float:
     return int.from_bytes(hasher.digest()[:2], "little") / (1 << 16) * 360
 
 
-def time_function(function: Callable[..., T], *args: Any) -> tuple[T, float]:
+def time_function(
+    function: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> tuple[T, float]:
     """Run the function and return the result and the time it took in seconds."""
     timer = Timer()
-    return function(*args), timer.stop()
+    return function(*args, **kwargs), timer.stop()
 
 
 def time_to_str(spam: float) -> str:
