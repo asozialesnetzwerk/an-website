@@ -27,9 +27,10 @@ from datetime import datetime, timezone
 from email import utils as email_utils
 from email.message import Message
 from math import pi
-from typing import Any, Final
+from typing import Any, Final, cast
 from urllib.parse import quote, urlencode
 
+import typed_stream
 from tornado.web import Application, HTTPError, MissingArgumentError
 
 from .. import NAME
@@ -54,6 +55,11 @@ def get_module_info() -> ModuleInfo:
 
 def apply_contact_stuff_to_app(app: Application, config: ConfigParser) -> None:
     """Apply contact stuff to the app."""
+    if "/kontakt" not in typed_stream.Stream(
+        cast(Iterable[ModuleInfo], app.settings.get("MODULE_INFOS", ()))
+    ).map(lambda m: m.path):
+        return
+
     contact_address = config.get(
         "CONTACT",
         "CONTACT_ADDRESS",
