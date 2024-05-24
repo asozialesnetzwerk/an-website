@@ -91,10 +91,10 @@ except ModuleNotFoundError:
     perf8 = None  # pylint: disable=invalid-name
 
 IGNORED_MODULES: Final[set[str]] = {
-    "patches.*",
-    "static.*",
-    "templates.*",
-} | (set() if sys.flags.dev_mode else {"example.*"})
+    "patches",
+    "static",
+    "templates",
+} | (set() if sys.flags.dev_mode else {"example"})
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -111,7 +111,6 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
     for potential_module in os.listdir(DIR):
         if (
             potential_module.startswith("_")
-            or f"{potential_module}.*" in IGNORED_MODULES
             or potential_module in IGNORED_MODULES
             or not os.path.isdir(os.path.join(DIR, potential_module))
         ):
@@ -130,6 +129,9 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 ),
                 potential_module,
             )
+            continue
+
+        if f"{potential_module}.*" in IGNORED_MODULES:
             continue
 
         for potential_file in os.listdir(os.path.join(DIR, potential_module)):
@@ -303,7 +305,7 @@ def ignore_modules(config: BetterConfigParser) -> None:
     """Read ignored modules from the config."""
     IGNORED_MODULES.update(
         config.getset(
-            "GENERAL", "IGNORED_MODULES", fallback={"element_web_link.*"}
+            "GENERAL", "IGNORED_MODULES", fallback={"element_web_link"}
         )
     )
 
