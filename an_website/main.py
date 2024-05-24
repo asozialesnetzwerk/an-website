@@ -359,6 +359,10 @@ def make_app(config: ConfigParser) -> str | Application:
     return Application(
         handlers,  # type: ignore[arg-type]
         MODULE_INFOS=module_infos,
+        SHOW_HAMBURGER_MENU=not Stream(module_infos)
+        .exclude(lambda info: info.hidden)
+        .filter(lambda info: info.path)
+        .empty(),
         NORMED_PATHS=get_normed_paths_from_module_infos(module_infos),
         HANDLERS=handlers,
         # General settings

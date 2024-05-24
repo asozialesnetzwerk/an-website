@@ -9,7 +9,8 @@
         </a>
         <h1 id="title" short_title="{{short_title}}">{{title}}</h1>
     </section>
-    {% if settings %}
+    {# NETCUP won't be shown if SHOW_HAMBURGER_MENU is False (that looks ugly) #}
+    {% if settings and settings.get("SHOW_HAMBURGER_MENU") %}
         <img id="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
