@@ -22,6 +22,8 @@ from __future__ import annotations
 
 from urllib.parse import urlsplit
 
+from tornado.web import Application
+
 from .. import pytest_is_running
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -39,7 +41,13 @@ def get_module_info() -> ModuleInfo:
         path="/redirect",
         short_name="Weiterleitung",
         hidden=True,
+        required_background_tasks=(_confirm_loading,),
     )
+
+
+async def _confirm_loading(app: Application, worker: int | None) -> None:
+    """Save in settings that redirect api loaded."""
+    app.settings["REDIRECT_API_LOADED"] = worker or True  # noqa: SIM222
 
 
 class RedirectPage(HTMLRequestHandler):
