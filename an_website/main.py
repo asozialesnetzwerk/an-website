@@ -144,6 +144,7 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         if (
             potential_module.startswith("_")
             or f"{potential_module}.*" in IGNORED_MODULES
+            or potential_module in IGNORED_MODULES
             or not os.path.isdir(os.path.join(DIR, potential_module))
         ):
             continue
