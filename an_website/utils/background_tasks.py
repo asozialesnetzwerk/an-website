@@ -160,7 +160,9 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
             PEAK_FUNC
             if worker
             else lambda fun: LOGGER.info(
-                "starting %s.%s background service", fun.__module__, fun.__name__
+                "starting %s.%s background service",
+                fun.__module__,
+                fun.__name__,
             )
         )
         .map(lambda fun: fun(app=app, worker=worker))
