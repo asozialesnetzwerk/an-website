@@ -21,7 +21,7 @@ from typing import ClassVar
 
 from tornado.web import HTTPError
 
-from ..utils.request_handler import HTMLRequestHandler
+from an_website.utils.request_handler import HTMLRequestHandler
 from .data import (
     ALL_SOUNDS,
     MAIN_PAGE_INFO,

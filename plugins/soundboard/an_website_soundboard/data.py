@@ -25,8 +25,8 @@ from typing import Final
 import orjson as json
 import regex
 
-from ..utils.static_file_handling import hash_file
-from ..utils.utils import name_to_id, replace_umlauts
+from an_website.utils.static_file_handling import hash_file
+from an_website.utils.utils import name_to_id, replace_umlauts
 
 DIR: Final = os.path.dirname(__file__)
 

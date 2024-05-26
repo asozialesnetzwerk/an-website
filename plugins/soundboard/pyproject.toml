@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "an-website-soundboard"
+authors = []
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Typing :: Typed",
+]
+requires-python = ">=3.12"
+dynamic = ["version", "description"]
+dependencies = [
+    "an-website",
+    "tornado",
+]
+
+[project.entry-points.an_website-modules]
+get_module_infos = "an_website_soundboard:get_module_infos"
