@@ -17,22 +17,20 @@ from __future__ import annotations
 
 import os
 from os.path import abspath, dirname
-from typing import Final, Iterable
+from typing import Final
 
 from tornado.web import RedirectHandler
 
-from an_website.utils.static_file_handling import CachedStaticFileHandler
-from an_website.utils.utils import ModuleInfo, PageInfo
+from ..utils.static_file_handling import CachedStaticFileHandler
+from ..utils.utils import ModuleInfo, PageInfo
 from .soundboard import SoundboardHTMLHandler, SoundboardRSSHandler
-
-__version__ = "0.1.0"
 
 DIR: Final = abspath(dirname(__file__))
 
 
-def get_module_infos() -> Iterable[ModuleInfo]:
+def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
-    yield ModuleInfo(
+    return ModuleInfo(
         name="Känguru-Soundboard",
         short_name="Soundboard",
         description=(
