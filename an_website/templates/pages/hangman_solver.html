@@ -69,7 +69,7 @@
     </form>
 
     <div id="letter-frequency-information">
-        {% if hangman_result.letter_frequency %}
+        {% if hangman_result.matching_words_count > 0 %}
             Mögliche Buchstaben:
             {{ ", ".join([f"{char}: {count}" for char, count in hangman_result.letter_frequency]) }}
         {% else %}Nichts gefunden.{% end %}
