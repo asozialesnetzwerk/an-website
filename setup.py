@@ -94,7 +94,7 @@ setup(
     version=get_version(),
     url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=classifiers,
-    packages=["an_website", "plugins.soundboard"],
+    packages=["an_website"],
     python_requires=">=3.12",
     install_requires=path("pip-requirements.txt")
     .read_text("UTF-8")
@@ -105,9 +105,6 @@ setup(
         "console_scripts": (
             "an-website = an_website.__main__:main",
             "an-backdoor-client = an_website.backdoor.client:main",
-        ),
-        "an_website-modules": (
-            "get_module_infos = plugins.soundboard:get_module_infos",
         )
     },
 )
