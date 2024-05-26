@@ -32,6 +32,7 @@ from urllib.parse import urlencode
 
 import elasticapm
 import orjson as json
+import typed_stream
 from redis.asyncio import Redis
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import Application, HTTPError
@@ -46,7 +47,7 @@ from .. import (
     pytest_is_running,
 )
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import Permission, emojify, ratelimit
+from ..utils.utils import ModuleInfo, Permission, emojify, ratelimit
 
 DIR: Final = os.path.dirname(__file__)
 
@@ -514,6 +515,10 @@ async def update_cache_periodically(
 ) -> None:
     """Start updating the cache every hour."""
     # pylint: disable=too-complex
+    if "/troet" in typed_stream.Stream(
+        cast(Iterable[ModuleInfo], app.settings.get("MODULE_INFOS", ()))
+    ).map(lambda m: m.path):
+        app.settings["SHOW_SHARING_ON_MASTODON"] = True
     if worker:
         return
     with contextlib.suppress(asyncio.TimeoutError):
