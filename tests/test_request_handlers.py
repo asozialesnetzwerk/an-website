@@ -149,7 +149,7 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
 
     await assert_valid_redirect(fetch, "/a?x=y", "/?x=y", {307})
 
-    await assert_valid_redirect(fetch, "/index.php", "/", {308})
+    await assert_valid_redirect(fetch, "/index.php", "/", {307})
     assert_valid_html_response(
         await fetch(
             "/index.php", method="POST", allow_nonstandard_methods=True
