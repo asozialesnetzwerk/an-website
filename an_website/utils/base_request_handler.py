@@ -316,7 +316,7 @@ class BaseRequestHandler(RequestHandler):
         if url.netloc and url.netloc.lower() != self.request.host.lower():
             if (
                 not self.user_settings.ask_before_leaving
-                or not self.settings.get("REDIRECT_API_LOADED")
+                or not self.settings.get("REDIRECT_MODULE_LOADED")
             ):
                 return url.geturl()
             path = "/redirect"

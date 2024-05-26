@@ -46,8 +46,8 @@ def get_module_info() -> ModuleInfo:
 
 
 async def _confirm_loading(app: Application, worker: int | None) -> None:
-    """Save in settings that redirect api loaded."""
-    app.settings["REDIRECT_API_LOADED"] = worker or True  # noqa: SIM222
+    """Save in settings that the redirect module has been loaded."""
+    app.settings["REDIRECT_MODULE_LOADED"] = worker or True  # noqa: SIM222
 
 
 class RedirectPage(HTMLRequestHandler):
