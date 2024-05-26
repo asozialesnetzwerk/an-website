@@ -148,20 +148,22 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
                 module_infos.extend(_module_infos)
                 loaded_modules.append(module_name)
 
-    plugin_entry_points: EntryPoints = entry_points(group='an_website-modules', name="get_module_infos")
+    plugin_entry_points: EntryPoints = entry_points(
+        group="an_website-modules", name="get_module_infos"
+    )
     for entry_point in plugin_entry_points:
         if entry_point.module in IGNORED_MODULES:
             continue
         try:
             module_infos.extend(entry_point.load()())
         except Exception as exc:
-            raise ValueError(f"Failed to load entry point {entry_point}, add {entry_point.module!r} to IGNORED_MODULES") from exc
+            raise ValueError(
+                f"Failed to load entry point {entry_point}, add {entry_point.module!r} to IGNORED_MODULES"
+            ) from exc
         else:
             loaded_modules.append(entry_point.module)
             LOGGER.info(
-                (
-                    "Found module_infos in external module %r"
-                ),
+                ("Found module_infos in external module %r"),
                 entry_point.module,
             )
 
