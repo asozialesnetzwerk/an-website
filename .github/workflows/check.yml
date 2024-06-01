@@ -45,7 +45,7 @@ jobs:
         run: black .
         shell: bash
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.45.1
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.46.1
         shell: bash
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff

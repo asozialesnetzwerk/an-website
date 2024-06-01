@@ -21,7 +21,7 @@ import random
 import sys
 import time
 from collections.abc import Awaitable, Iterable, Mapping
-from typing import Any, Final, Literal
+from typing import Any, Final
 
 import orjson as json
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize, purely_emoji
@@ -57,8 +57,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-MAX_MESSAGE_SAVE_COUNT: Final[Literal[100]] = 100
-MAX_MESSAGE_LENGTH: Final[Literal[20]] = 20
+MAX_MESSAGE_SAVE_COUNT = 100
+MAX_MESSAGE_LENGTH = 20
 
 
 def get_ms_timestamp() -> int:
@@ -101,17 +101,18 @@ async def save_new_message(
 async def get_messages(
     redis: Redis[str],
     redis_prefix: str,
-    start: int = -MAX_MESSAGE_SAVE_COUNT,
+    start: None | int = None,
     stop: int = -1,
 ) -> list[dict[str, Any]]:
     """Get the messages."""
+    start = start if start is not None else -MAX_MESSAGE_SAVE_COUNT
     messages = await redis.lrange(
         f"{redis_prefix}:emoji-chat:message-list", start, stop
     )
     return [json.loads(message) for message in messages]
 
 
-def check_message_invalid(message: str) -> Literal[False] | str:
+def check_message_invalid(message: str) -> None | str:
     """Check if a message is an invalid message."""
     if not message:
         return "Empty message not allowed."
@@ -122,7 +123,7 @@ def check_message_invalid(message: str) -> Literal[False] | str:
     if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
         return f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
 
-    return False
+    return None
 
 
 def emojize_user_input(string: str) -> str:
