@@ -246,17 +246,17 @@ jobs:
 
           from packaging.utils import parse_sdist_filename
 
-          command = "ls an-website-*.tar.gz"
+          command = "ls an_website-*.tar.gz"
           result = run(command, shell=True, capture_output=True)
           filename = result.stdout.decode("UTF-8").strip()
           _, version = parse_sdist_filename(filename)
           path = Path(os.getenv("GITHUB_OUTPUT"))
           path.write_text(f"version={version}\n")
       - name: Unpack source distribution
-        run: tar xvf an-website-*.tar.gz
+        run: tar xvf an_website-*.tar.gz
       - name: Upload sourcemaps
         run: |
-          cd an-website-*/an_website
+          cd an_website-*/an_website
           find static/js -type f -name "*.js" -exec \
             curl -sSfk https://kibana.asozial.org:5601/api/apm/sourcemaps \
               -H "Authorization: ApiKey ${{ secrets.SOURCEMAP_API_KEY }}" \
@@ -392,10 +392,9 @@ jobs:
       - name: Extract source distribution
         run: |
           tar xvf *.tar.gz
-          rm -f *.tar.gz
       - name: Build image
         run: |
-          cd an-website*
+          cd an_website-*/
           sudo ./build-oci-image.sh -t an-website --timestamp 1651075200
           cd ..
         env:
