@@ -21,7 +21,7 @@ import random
 import sys
 import time
 from collections.abc import Awaitable, Iterable, Mapping
-from typing import Any, Final
+from typing import Any, Final, Literal
 
 import orjson as json
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize, purely_emoji
@@ -57,8 +57,8 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-MAX_MESSAGE_SAVE_COUNT = 100
-MAX_MESSAGE_LENGTH = 20
+MAX_MESSAGE_SAVE_COUNT: Final = 100
+MAX_MESSAGE_LENGTH: Final = 20
 
 
 def get_ms_timestamp() -> int:
@@ -112,7 +112,7 @@ async def get_messages(
     return [json.loads(message) for message in messages]
 
 
-def check_message_invalid(message: str) -> None | str:
+def check_message_invalid(message: str) -> Literal[False] | str:
     """Check if a message is an invalid message."""
     if not message:
         return "Empty message not allowed."
@@ -123,7 +123,7 @@ def check_message_invalid(message: str) -> None | str:
     if len(emoji_list(message)) > MAX_MESSAGE_LENGTH:
         return f"Message longer than {MAX_MESSAGE_LENGTH} emojis."
 
-    return None
+    return False
 
 
 def emojize_user_input(string: str) -> str:
