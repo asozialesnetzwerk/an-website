@@ -39,6 +39,7 @@ from collections.abc import Callable, Iterable, Mapping, MutableSequence
 from configparser import ConfigParser
 from functools import partial
 from hashlib import sha256
+from importlib.metadata import EntryPoints, entry_points
 from multiprocessing.process import _children  # type: ignore[attr-defined]
 from socket import socket
 from typing import Any, Final, TypedDict, TypeGuard, cast
@@ -146,6 +147,25 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             if _module_infos:
                 module_infos.extend(_module_infos)
                 loaded_modules.append(module_name)
+
+    plugin_entry_points: EntryPoints = entry_points(
+        group="an_website-modules", name="get_module_infos"
+    )
+    for entry_point in plugin_entry_points:
+        if entry_point.module in IGNORED_MODULES:
+            continue
+        try:
+            module_infos.extend(entry_point.load()())
+        except Exception as exc:
+            raise ValueError(
+                f"Failed to load entry point {entry_point}, add {entry_point.module!r} to IGNORED_MODULES"
+            ) from exc
+        else:
+            loaded_modules.append(entry_point.module)
+            LOGGER.info(
+                ("Found module_infos in external module %r"),
+                entry_point.module,
+            )
 
     if len(errors) > 0:
         if sys.flags.dev_mode:
