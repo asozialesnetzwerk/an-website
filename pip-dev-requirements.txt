@@ -137,7 +137,7 @@ hyrule==0.6.0; python_version < '3.13'
 jsonpickle==3.0.4; python_version >= '3.7'
 lxml==5.2.2; python_version >= '3.6'
 multidict==6.0.5; python_version >= '3.7'
-openmoji-dist==15.0.0.1
+openmoji-dist==15.0.0.2
 orjson==3.10.3; python_version >= '3.8'
 pillow==10.3.0; python_version >= '3.8'
 pillow-jxl-plugin==1.2.4; python_version >= '3.8'
