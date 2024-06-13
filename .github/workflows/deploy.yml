@@ -28,6 +28,10 @@ jobs:
         run: pip install "build==1.*"
       - name: Build
         run: python -m build
+      - name: Improve stuff
+        run: |
+          pigz -d dist/*gz
+          pigz -11 -m dist/*tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v4
         with:
