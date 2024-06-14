@@ -15,22 +15,46 @@
 """A static file handler for the Traversable abc."""
 from __future__ import annotations
 
+import logging
 import sys
-from collections.abc import Awaitable, Iterable
+from collections.abc import Awaitable, Iterable, Mapping, Sequence
 from importlib.resources.abc import Traversable
 from pathlib import Path
+from typing import Any, Final, Literal, override
+from urllib.parse import urlsplit, urlunsplit
 
 from tornado import httputil, iostream
-from tornado.web import HTTPError, RequestHandler
+from tornado.web import GZipContentEncoding, HTTPError, RequestHandler
+from typed_stream import Stream
 
 from .static_file_handling import content_type_from_path
+
+type Encoding = Literal["gz", "zst"]
+
+LOGGER: Final = logging.getLogger(__name__)
+
+ENCODINGS: Final[Sequence[tuple[str, Encoding]]] = (
+    # better first
+    ("zstd", "zst"),
+    ("gzip", "gz"),
+)
+REVERSE_ENCODINGS_MAP: Mapping[Encoding, str] = {
+    value: key for key, value in ENCODINGS
+}
 
 
 class TraversableStaticFileHandler(RequestHandler):
     """A static file handler for the Traversable abc."""
 
     root: Traversable
+    file_hashes: Mapping[str, str]
 
+    @override
+    def compute_etag(self) -> None | str:
+        """Return a pre-computed ETag."""
+        return getattr(self, "file_hashes", {}).get(self.request.path)
+
+    @override
     def data_received(  # noqa: D102
         self, chunk: bytes
     ) -> None | Awaitable[None]:
@@ -39,17 +63,34 @@ class TraversableStaticFileHandler(RequestHandler):
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
         """Handle GET requests for files in the static file directory."""
+        if self.request.path.endswith("/"):
+            self.replace_path_with_redirect(self.request.path.rstrip("/"))
+            return
+
         if path.startswith("/") or ".." in path.split("/") or "//" in path:
             raise HTTPError(404)
 
-        absolute_path = self.get_absolute_path(path)
+        absolute_path, encoding = self.get_absolute_path_encoded(path)
 
         if not absolute_path.is_file():
+            if self.get_absolute_path(path.lower()).is_file():
+                if self.request.path.endswith(path):
+                    self.replace_path_with_redirect(
+                        self.request.path.removesuffix(path) + path.lower()
+                    )
+                    return
+                LOGGER.error(
+                    "Failed to fix casing of %s", self.request.full_url()
+                )
             raise HTTPError(404)
 
         self.set_header("Accept-Ranges", "bytes")
 
-        if content_type := self.get_content_type(path, absolute_path):
+        if encoding:
+            self.set_header("Content-Encoding", REVERSE_ENCODINGS_MAP[encoding])
+        if content_type := self.get_content_type(
+            path, self.get_absolute_path(path)
+        ):
             self.set_header("Content-Type", content_type)
         del path
 
@@ -110,6 +151,7 @@ class TraversableStaticFileHandler(RequestHandler):
 
         if head:
             assert self.request.method == "HEAD"
+            await self.finish()
             return
         content = self.get_content(absolute_path, start, end)
         for chunk in content:
@@ -119,9 +161,41 @@ class TraversableStaticFileHandler(RequestHandler):
             except iostream.StreamClosedError:
                 return
 
+        await self.finish()
+
     def get_absolute_path(self, path: str) -> Traversable:
         """Get the absolute path of a file."""
         return self.root / path
+
+    def get_absolute_path_encoded(
+        self, path: str
+    ) -> tuple[Traversable, Encoding | None]:
+        """Get the absolute path and the encoding."""
+        for transform in self._transforms:
+            if isinstance(transform, GZipContentEncoding):
+                # pylint: disable=protected-access
+                transform._gzipping = False
+
+        accepted_encodings: frozenset[str] = (
+            Stream(self.request.headers.get_list("Accept-Encoding"))
+            .flat_map(str.split, ",")
+            .map(lambda string: string.split(";")[0])  # ignore quality specs
+            .map(str.strip)
+            .collect(frozenset)
+        )
+
+        absolute_path = self.get_absolute_path(path)
+        encoding: Encoding | None = None
+
+        for key, encoding in ENCODINGS:
+            if key in accepted_encodings:
+                compressed_path = self.get_absolute_path(f"{path}.{encoding}")
+                if compressed_path.is_file():
+                    absolute_path = compressed_path
+                    break
+            encoding = None  # pylint: disable=redefined-loop-name
+
+        return absolute_path, encoding
 
     @classmethod
     def get_content(
@@ -162,15 +236,48 @@ class TraversableStaticFileHandler(RequestHandler):
         """Handle HEAD requests for files in the static file directory."""
         return self.get(path, head=True)
 
-    def initialize(self, root: Traversable) -> None:
-        """Initialize this handler with a root directory."""
+    def initialize(self, root: Traversable, hashes: Mapping[str, str]) -> None:
+        """Initialize this handler with a root directory and file hashes."""
         self.root = root
+        self.file_hashes = hashes
+        if not sys.flags.dev_mode:
+            self.set_etag_header()
 
+    def replace_path_with_redirect(
+        self, new_path: str, *, status: int = 307
+    ) -> None:
+        """Redirect to the replaced path."""
+        scheme, netloc, _, query, _ = urlsplit(self.request.full_url())
+        self.redirect(
+            urlunsplit(
+                (
+                    scheme,
+                    netloc,
+                    new_path,
+                    query,
+                    "",
+                )
+            ),
+            status=status,
+        )
+
+    @override
     def set_default_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_default_headers()
-        if not sys.flags.dev_mode and "v" in self.request.arguments:
-            self.set_header(  # never changes
-                "Cache-Control",
-                f"public, immutable, max-age={86400 * 365 * 10}",
-            )
+        if not sys.flags.dev_mode:
+            if "v" in self.request.arguments:
+                self.set_header(  # never changes
+                    "Cache-Control",
+                    f"public, immutable, max-age={86400 * 365 * 10}",
+                )
+            else:
+                self.set_etag_header()
+
+    @override
+    def write_error(self, status_code: int, **kwargs: Any) -> None:
+        """Write an error response."""
+        self.set_header("Content-Type", "text/plain;charset=utf-8")
+        self.write(str(status_code))
+        self.write(" ")
+        self.write(self._reason)

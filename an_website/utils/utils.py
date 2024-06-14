@@ -538,7 +538,7 @@ def get_close_matches(  # based on difflib.get_close_matches
 
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
-    files = os.listdir(os.path.join(STATIC_DIR, "css/themes"))
+    files = os.listdir(STATIC_DIR / "css/themes")
     return (
         *(file[:-4] for file in files if file.endswith(".css")),
         "random",  # add random to the list of themes

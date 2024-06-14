@@ -15,13 +15,13 @@
 
 from __future__ import annotations
 
-import os
 from os.path import abspath, dirname
+from pathlib import Path
 from typing import Final
 
 from tornado.web import RedirectHandler
 
-from ..utils.static_file_handling import CachedStaticFileHandler
+from ..utils.static_file_from_traversable import TraversableStaticFileHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from .soundboard import SoundboardHTMLHandler, SoundboardRSSHandler
 
@@ -42,8 +42,8 @@ def get_module_info() -> ModuleInfo:
         handlers=(
             (
                 r"/soundboard/files/(.*mp3)",
-                CachedStaticFileHandler,
-                {"path": os.path.join(DIR, "files")},
+                TraversableStaticFileHandler,
+                {"root": Path(DIR) / "files", "hashes": {}},
             ),
             (
                 r"/soundboard/feed",

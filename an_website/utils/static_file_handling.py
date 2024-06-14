@@ -16,13 +16,12 @@
 from __future__ import annotations
 
 import logging
-import os
 import sys
-from collections.abc import Awaitable, Mapping
+from collections.abc import Mapping
 from functools import cache
 from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import Any, Final, cast
+from typing import Final
 
 import defity
 import orjson as json
@@ -36,17 +35,20 @@ from .utils import Handler
 LOGGER: Final = logging.getLogger(__name__)
 
 
-def hash_file(path: str | Path) -> str:
+def hash_file(path: Traversable) -> str:
     """Hash a file with BLAKE3."""
-    with open(path, "rb") as file:
-        return blake3(file.read()).hexdigest(8)
+    hasher = blake3()
+    with path.open("rb") as file:
+        for data in file:
+            hasher.update(data)
+    return hasher.hexdigest(8)
 
 
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
     file_hashes_dict = {
-        str(path)[len(ROOT_DIR) :].replace(os.path.sep, "/"): hash_file(path)
-        for path in Path(STATIC_DIR).rglob("*")
+        path.as_posix()[len(ROOT_DIR) :]: hash_file(path)
+        for path in STATIC_DIR.rglob("*")
         if path.is_file()
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
@@ -71,12 +73,12 @@ def get_handlers() -> list[Handler]:
         (
             "/static/openmoji/(.*)",
             TraversableStaticFileHandler,
-            {"root": get_openmoji_data()},
+            {"root": get_openmoji_data(), "hashes": {}},
         ),
         (
             r"(?:/static)?/(\.env|favicon\.(?:png|jxl)|humans\.txt|robots\.txt)",
-            StaticFileHandler,
-            {"path": STATIC_DIR},
+            TraversableStaticFileHandler,
+            {"root": STATIC_DIR, "hashes": FILE_HASHES_DICT},
         ),
         (
             "/favicon.ico",
@@ -90,12 +92,16 @@ def get_handlers() -> list[Handler]:
         handlers.append(
             (
                 r"/static/css/(.+\.css)",
-                StaticFileHandler,
-                {"path": str(debug_style_dir)},
+                TraversableStaticFileHandler,
+                {"root": debug_style_dir},
             )
         )
     handlers.append(
-        (r"/static/(.*)", CachedStaticFileHandler, {"path": STATIC_DIR})
+        (
+            r"/static/(.*)",
+            TraversableStaticFileHandler,
+            {"root": STATIC_DIR, "hashes": FILE_HASHES_DICT},
+        )
     )
     return handlers
 
@@ -128,73 +134,3 @@ def content_type_from_path(url_path: str, file: Traversable) -> str | None:
     if content_type and content_type.startswith("text/"):
         content_type += "; charset=UTF-8"
     return content_type
-
-
-class StaticFileHandler(tornado.web.StaticFileHandler):
-    """A StaticFileHandler with smart Content-Type."""
-
-    content_type: None | str
-    keep_case: bool
-
-    def data_received(self, chunk: bytes) -> None | Awaitable[None]:
-        """Do nothing."""
-
-    async def get(self, path: str, include_body: bool = True) -> None:
-        """Handle GET requests."""
-        if self.keep_case:
-            return await super().get(path, include_body=include_body)
-        return await super().get(
-            path.lower(),
-            include_body=include_body,
-        )
-
-    async def head(self, path: str) -> None:
-        # pylint: disable=invalid-overridden-method
-        """Handle HEAD requests."""
-        return await self.get(path)
-
-    def initialize(
-        self,
-        path: str,
-        default_filename: None | str = None,
-        content_type: None | str = None,
-        keep_case: bool = False,
-    ) -> None:
-        """Initialize the handler."""
-        super().initialize(path=path, default_filename=default_filename)
-        self.content_type = content_type
-        self.keep_case = keep_case
-
-    def set_extra_headers(self, _: str) -> None:
-        """Reset the Content-Type header if we know it better."""
-        if not self.content_type:
-            self.content_type = content_type_from_path(
-                self.path, Path(cast(str, self.absolute_path))
-            )
-        if self.content_type:
-            self.set_header("Content-Type", self.content_type)
-
-
-class CachedStaticFileHandler(StaticFileHandler):
-    """A static file handler that sets a smarter Cache-Control header."""
-
-    def compute_etag(self) -> None | str:
-        """Don't compute ETag, because it isn't necessary."""
-        return None
-
-    @classmethod
-    def make_static_path(
-        cls, settings: dict[str, Any], path: str, include_version: bool = True
-    ) -> str:
-        """Make a static path for the given path."""
-        # pylint: disable=unused-argument
-        return fix_static_path(path)
-
-    def set_headers(self) -> None:
-        """Set the default headers for this handler."""
-        super().set_headers()
-        if not sys.flags.dev_mode and "v" in self.request.arguments:
-            self.set_header(  # never changes
-                "Cache-Control",
-                f"public, immutable, max-age={self.CACHE_MAX_AGE}",
-            )

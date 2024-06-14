@@ -27,5 +27,8 @@
 # JetBrains
 /.idea
 
-# hangman-solver
-full_wordlist.txt
+# compressed files
+/an_website/static/**/*gz
+/an_website/static/**/*zst
+/an_website/soundboard/files/**/*gz
+/an_website/soundboard/files/**/*zst

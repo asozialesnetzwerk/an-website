@@ -40,6 +40,7 @@ from configparser import ConfigParser
 from functools import partial
 from hashlib import sha256
 from multiprocessing.process import _children  # type: ignore[attr-defined]
+from pathlib import Path
 from socket import socket
 from typing import Any, Final, TypedDict, TypeGuard, cast
 from warnings import catch_warnings, simplefilter
@@ -72,7 +73,7 @@ from .utils.better_config_parser import BetterConfigParser
 from .utils.elasticsearch_setup import setup_elasticsearch
 from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
-from .utils.static_file_handling import StaticFileHandler
+from .utils.static_file_from_traversable import TraversableStaticFileHandler
 from .utils.utils import (
     ArgparseNamespace,
     Handler,
@@ -291,8 +292,8 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
     handlers.append(
         (
             r"(?i)/\.well-known/(.*)",
-            StaticFileHandler,
-            {"path": ".well-known", "keep_case": True},
+            TraversableStaticFileHandler,
+            {"root": Path(".well-known"), "hashes": {}},
         )
     )
 

@@ -97,7 +97,7 @@ GH_ORG_URL: Final[str] = "https://github.com/asozialesnetzwerk"
 GH_REPO_URL: Final[str] = f"{GH_ORG_URL}/{NAME}"
 GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 
-STATIC_DIR: Final[str] = os.path.join(DIR, "static")
+STATIC_DIR: Final[Path] = Path(DIR) / "static"
 TEMPLATES_DIR: Final[str] = os.path.join(DIR, "templates")
 
 ORJSON_OPTIONS: Final[int] = (

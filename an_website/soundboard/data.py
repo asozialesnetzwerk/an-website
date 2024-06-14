@@ -20,6 +20,7 @@ import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Final
 
 import orjson as json
@@ -167,7 +168,7 @@ class SoundInfo(Info):
         file = self.get_filename()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"files/{file}.mp3"
-        file_url = f"/soundboard/{path}?v={hash_file(os.path.join(DIR, path))}"
+        file_url = f"/soundboard/{path}?v={hash_file(Path(DIR, path))}"
         return (
             f"<li id={file!r}>"
             f"<a href={href!r} class='a_hover'>"

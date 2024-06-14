@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 from importlib.metadata import Distribution
+from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
 from pathlib import Path
 from warnings import filterwarnings
@@ -30,6 +31,7 @@ BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.22.1"
 GET_VERSION = "get-version==3.5.5"
 TROVE_CLASSIFIERS = "trove-classifiers"
+ZSTD = "zstd==1.5.5.1"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -81,6 +83,27 @@ if path(".git").exists():
     else:
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
+
+compress_script_path = path("scripts/compress_static_files.py")
+# assert path(".git").exists() == compress_script_path.exists()
+if compress_script_path.exists():
+    compress_spec = spec_from_file_location(
+        "compress_static_files", compress_script_path
+    )
+    assert compress_spec and compress_spec.loader
+    compress_module = module_from_spec(compress_spec)
+    compress_spec.loader.exec_module(compress_module)
+    try:
+        for _ in compress_module.compress_static_files():
+            pass
+    except ModuleNotFoundError as err:
+        if err.name == "zstd":
+            BACKEND_REQUIRES.add(ZSTD)
+            del err
+        else:
+            raise
+    del compress_spec, compress_module
+del compress_script_path
 
 setup(
     name="an-website",
