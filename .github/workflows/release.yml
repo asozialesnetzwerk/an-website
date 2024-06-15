@@ -39,8 +39,8 @@ jobs:
         run: python -m build
       - name: Improve stuff
         run: |
-          pigz -d dist/*gz
-          pigz -11 -m dist/*tar
+          pigz -d dist/*.gz
+          pigz -11 -m dist/*.tar
       - name: Upload as build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -95,7 +95,7 @@ jobs:
           #- basic
           #- trial
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v14
+          - docker.io/redis/redis-stack-server:6.2.6-v15
           #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:

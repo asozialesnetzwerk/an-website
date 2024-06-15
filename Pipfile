@@ -70,7 +70,7 @@ flake8-scream = "<2"
 flake8-simplify = "<2"
 html5lib = "==1.*"
 isort = "==5.*"
-mypy = "==1.*"
+mypy = {git = "git+https://github.com/python/mypy.git", ref = "3518f2499f5677792888bc97484cc53404472fca"}
 numpy = "==1.*"
 pep8-naming = "<2"
 # pex = "==2.2.*"
