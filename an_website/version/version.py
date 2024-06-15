@@ -63,31 +63,21 @@ def hash_all_files() -> str:
 def get_file_hashes() -> str:
     """Return the file hashes."""
     with FILE_HASHES:
-        if FILE_HASHES.value:  # type: ignore[attr-defined]
-            return cast(
-                str,
-                FILE_HASHES.value.decode("UTF-8"),  # type: ignore[attr-defined]
-            )
+        if FILE_HASHES.value:
+            return FILE_HASHES.value.decode("UTF-8")
         file_hashes = hash_all_files()
-        FILE_HASHES.value = file_hashes.encode("UTF-8")  # type: ignore[attr-defined]
+        FILE_HASHES.value = file_hashes.encode("UTF-8")
         return file_hashes
 
 
 def get_hash_of_file_hashes() -> str:
     """Return a hash of the file hashes."""
     with HASH_OF_FILE_HASHES:
-        if HASH_OF_FILE_HASHES.value:  # type: ignore[attr-defined]
+        if HASH_OF_FILE_HASHES.value:
             # .raw to fix bug with \x00 in hash
-            return cast(
-                str,
-                HASH_OF_FILE_HASHES.raw.decode(  # type: ignore[attr-defined]
-                    "UTF-16-BE"
-                ),
-            )
+            return HASH_OF_FILE_HASHES.raw.decode("UTF-16-BE")
         hash_of_file_hashes = hash_bytes(get_file_hashes().encode("UTF-8"))
-        HASH_OF_FILE_HASHES.raw = (  # type: ignore[attr-defined]
-            hash_of_file_hashes.encode("UTF-16-BE")
-        )
+        HASH_OF_FILE_HASHES.raw = hash_of_file_hashes.encode("UTF-16-BE")
         return hash_of_file_hashes
 
 
