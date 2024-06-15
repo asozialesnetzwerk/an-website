@@ -37,7 +37,7 @@
     "typescript-eslint": "8.0.0-alpha.12",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@8.15.8+sha256.691fe176eea9a8a80df20e4976f3dfb44a04841ceb885638fe2a26174f81e65e",
+  "packageManager": "pnpm@9.3.0+sha256.e1f9e8d1a16607a46dd3c158b5f7a7dc7945501d1c6222d454d63d033d1d918f",
   "engines": {
     "npm": "0",
     "yarn": "0"
