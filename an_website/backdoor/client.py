@@ -227,6 +227,7 @@ async def request(  # noqa: C901
     await writer.wait_closed()
     if "status" not in locals():
         raise AssertionError("No HTTP response received")
+    # pylint: disable-next=possibly-used-before-assignment
     return int(status), headers, data  # type: ignore[possibly-undefined]
 
 

@@ -18,7 +18,6 @@ from __future__ import annotations
 from ctypes import c_char
 from multiprocessing import Array
 from pathlib import Path
-from typing import cast
 
 from Crypto.Hash import RIPEMD160
 

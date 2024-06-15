@@ -514,7 +514,7 @@ async def update_cache_periodically(
     app: Application, worker: int | None
 ) -> None:
     """Start updating the cache every hour."""
-    # pylint: disable=too-complex
+    # pylint: disable=too-complex, too-many-branches
     if "/troet" in typed_stream.Stream(
         cast(Iterable[ModuleInfo], app.settings.get("MODULE_INFOS", ()))
     ).map(lambda m: m.path):

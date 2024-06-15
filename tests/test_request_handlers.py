@@ -312,7 +312,6 @@ async def test_request_handlers2(fetch: FetchCallable) -> None:  # noqa: F811
         assert morsel.value == "s"
 
 
-# pylint: disable-next=invalid-name
 test_request_handlers3 = travel("16-4-1")(test_request_handlers2)
 
 
