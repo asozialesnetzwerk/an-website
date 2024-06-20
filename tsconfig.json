@@ -2,7 +2,8 @@
 {
   "ts-node": {"esm": true},
   "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
-  "exclude": ["deno"],
+  "include": ["scripts", "eslint.config.js"],
+  "exclude": ["scripts/deno"],
   "compilerOptions": {
     "noEmit": true,
     "plugins": [
@@ -10,6 +11,7 @@
     ],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noUnusedLocals": false
   }
 }

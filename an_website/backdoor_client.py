@@ -435,6 +435,12 @@ def main() -> int | str:  # noqa: C901
     """Parse arguments, load the config and start the backdoor client."""
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
+    # pylint: disable=import-outside-toplevel, import-error, useless-suppression
+    from pyrepl.python_reader import (  # type: ignore[import, unused-ignore]
+        ReaderConsole,
+        main as _main,
+    )
+
     if "--help" in sys.argv or "-h" in sys.argv:
         print(
             dedent(
@@ -649,12 +655,6 @@ def main() -> int | str:  # noqa: C901
         'Type "copyright", "credits" or '
         'use the "help" function for more information.'
     )
-
-    # pylint: disable=import-outside-toplevel, import-error, useless-suppression
-    from pyrepl.python_reader import (  # type: ignore[import, unused-ignore]
-        ReaderConsole,
-    )
-    from pyrepl.python_reader import main as _main
 
     def _run_and_print(  # type: ignore[no-any-unimported]
         self: ReaderConsole,

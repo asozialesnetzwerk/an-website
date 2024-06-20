@@ -104,7 +104,7 @@ setup(
     entry_points={
         "console_scripts": (
             "an-website = an_website.__main__:main",
-            "an-backdoor-client = an_website.backdoor.client:main",
+            "an-backdoor-client = an_website.backdoor_client:main",
         )
     },
 )

@@ -8,7 +8,7 @@ inputs:
   sass-proto-version:
     description: The version of the protobuf spec
     required: false
-    default: 2.7.0
+    default: 2.7.1
 runs:
   using: composite
   steps:

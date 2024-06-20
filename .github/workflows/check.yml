@@ -186,7 +186,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -214,7 +214,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 8
+          version: 9
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -224,8 +224,8 @@ jobs:
         run: pnpm install
       - name: Run tsc
         run: |
+          pnpm tsc
           pnpm tsc -p an_website
-          pnpm tsc -p scripts
 
   shellcheck:
     name: ShellCheck

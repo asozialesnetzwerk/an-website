@@ -1,6 +1,7 @@
 extends:
   - "stylelint-config-standard-scss"
   - "stylelint-config-idiomatic-order"
+  - "stylelint-prettier/recommended"
 plugins:
   - "stylelint-no-unsupported-browser-features"
 rules:
