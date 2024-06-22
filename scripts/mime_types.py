@@ -24,7 +24,7 @@ from pathlib import Path
 from random import Random
 from typing import Any, Final
 
-from an_website.backdoor.client import request
+from an_website.backdoor_client import request
 
 DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "10.0.0"
 

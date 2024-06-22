@@ -8,11 +8,4 @@ extends:
   - "plugin:deprecation/recommended"
 reportUnusedDisableDirectives: true
 parser: "@typescript-eslint/parser"
-parserOptions:
-  EXPERIMENTAL_useProjectService: true
-overrides:
-  - files: "*.js"
-    extends: "plugin:@typescript-eslint/disable-type-checked"
-    env:
-      es2022: true
-      node: true
+parserOptions: {projectService: true}
