@@ -25,8 +25,7 @@ import orjson as json
 import regex
 from tornado.httpclient import AsyncHTTPClient
 
-from .. import DIR as ROOT_DIR
-from .. import EVENT_REDIS
+from .. import DIR as ROOT_DIR, EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
 from .utils import get_author_by_id, get_quote_by_id, get_wrong_quotes
 

@@ -39,8 +39,7 @@ import orjson
 import pycurl
 import tornado.httputil
 import yaml
-from emoji import EMOJI_DATA
-from emoji import unicode_codes as euc
+from emoji import EMOJI_DATA, unicode_codes as euc
 from pillow_jxl import JpegXLImagePlugin  # noqa: F401
 from setproctitle import setthreadtitle
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
@@ -48,8 +47,7 @@ from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
 from tornado.log import gen_log
 from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
 
-from .. import DIR as ROOT_DIR
-from .. import MEDIA_TYPES
+from .. import DIR as ROOT_DIR, MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 DIR: Final = abspath(dirname(__file__))

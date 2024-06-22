@@ -16,16 +16,14 @@
 from __future__ import annotations
 
 import urllib.parse
-from datetime import datetime
-from datetime import timezone as tz
+from datetime import datetime, timezone as tz
 from functools import cache
 
 import orjson as json
 import pytest
 
 import an_website.quotes.quotes as main_page
-from an_website.quotes import create
-from an_website.quotes import utils as quotes
+from an_website.quotes import create, utils as quotes
 from an_website.quotes.image import CONTENT_TYPES, FILE_EXTENSIONS
 
 from . import (  # noqa: F401  # pylint: disable=unused-import

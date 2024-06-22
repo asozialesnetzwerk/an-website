@@ -38,8 +38,8 @@ from tornado.httpclient import AsyncHTTPClient
 from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
-from .. import DIR as ROOT_DIR
 from .. import (
+    DIR as ROOT_DIR,
     EVENT_REDIS,
     EVENT_SHUTDOWN,
     NAME,

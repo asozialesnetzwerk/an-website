@@ -21,9 +21,7 @@ from dataclasses import fields, is_dataclass
 from datetime import date, datetime, time, timezone
 from enum import Enum
 from functools import partial
-from json import JSONDecodeError
-from json import dumps as _dumps
-from json import loads as _loads
+from json import JSONDecodeError, dumps as _dumps, loads as _loads
 from typing import Any
 from uuid import UUID
 

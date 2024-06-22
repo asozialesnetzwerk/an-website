@@ -21,8 +21,7 @@ from pathlib import Path
 
 from Crypto.Hash import RIPEMD160
 
-from .. import DIR as ROOT_DIR
-from .. import VERSION
+from .. import DIR as ROOT_DIR, VERSION
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 

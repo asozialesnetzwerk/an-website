@@ -433,9 +433,9 @@ del run_shell_50821273052022fbc283
 
 def main() -> int | str:  # noqa: C901
     """Parse arguments, load the config and start the backdoor client."""
-    # pylint: disable=import-outside-toplevel, too-complex
-    # pylint: disable=too-many-branches, too-many-locals, too-many-statements
-    from pyrepl.python_reader import (  # type: ignore[import-untyped]  # isort: skip
+    # pylint: disable=import-outside-toplevel, too-many-branches, useless-suppression
+    # pylint: disable=import-error, too-complex, too-many-locals, too-many-statements
+    from pyrepl.python_reader import (  # type: ignore[import, unused-ignore]
         ReaderConsole,
         main as _main,
     )

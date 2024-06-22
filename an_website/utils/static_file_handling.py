@@ -28,11 +28,9 @@ import defity
 import orjson as json
 import tornado.web
 from blake3 import blake3
-from openmoji_dist import VERSION as OPENMOJI_VERSION
-from openmoji_dist import get_openmoji_data
+from openmoji_dist import VERSION as OPENMOJI_VERSION, get_openmoji_data
 
-from .. import DIR as ROOT_DIR
-from .. import STATIC_DIR
+from .. import DIR as ROOT_DIR, STATIC_DIR
 from .utils import Handler
 
 LOGGER: Final = logging.getLogger(__name__)

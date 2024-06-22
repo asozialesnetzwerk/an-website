@@ -30,9 +30,7 @@ from typing import Final
 import regex
 from tornado.web import HTTPError as HTTPEwwow
 
-from .. import CONTAINERIZED
-from .. import DIR as ROOT_DIR
-from .. import NAME
+from .. import CONTAINERIZED, DIR as ROOT_DIR, NAME
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
 

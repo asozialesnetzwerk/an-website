@@ -69,8 +69,7 @@ from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
-from .. import DIR as ROOT_DIR
-from .. import STATIC_DIR
+from .. import DIR as ROOT_DIR, STATIC_DIR
 
 if TYPE_CHECKING:
     from .background_tasks import BackgroundTask

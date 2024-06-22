@@ -25,8 +25,7 @@ import tornado.web
 import yaml
 from time_machine import travel
 
-from an_website.swapped_words import config_file as sw_config
-from an_website.swapped_words import swap
+from an_website.swapped_words import config_file as sw_config, swap
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
