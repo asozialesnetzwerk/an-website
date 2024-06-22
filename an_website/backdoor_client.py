@@ -436,9 +436,9 @@ def main() -> int | str:  # noqa: C901
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
     # pylint: disable=import-outside-toplevel, import-error, useless-suppression
-    from pyrepl.python_reader import (  # type: ignore[import, unused-ignore]
-        ReaderConsole,
-        main as _main,
+    from pyrepl.python_reader import ReaderConsole
+    from pyrepl.python_reader import (
+        main as _main,  # type: ignore[import, unused-ignore]
     )
 
     if "--help" in sys.argv or "-h" in sys.argv:
