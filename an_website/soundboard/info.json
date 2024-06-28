@@ -22,7 +22,7 @@
       "name": "Die Känguru-Chroniken",
       "kapitel": [
         {
-          "name": "Kapitel 1 - Das Känguru von gegenüber (Sehr alte Version)",
+          "name": "Kapitel 1 - Das Känguru von gegenüber",
           "dateien": [
             "muk-Ja, herzlich willkommen!",
             "kaenguru-Hallo!",
@@ -32,24 +32,25 @@
           ]
         },
         {
-          "name": "Kapitel 2 - Kleinkunst (Sehr alte Version)",
+          "name": "Kapitel 2 - Kleinkunst",
           "dateien": [
             "kaenguru-Ich bin Kommunist.",
             "kaenguru-Köstlich!",
             "kaenguru-Hier sind wir, jetzt unterhalte uns.",
+            "kaenguru-Offensichtlich nicht, denken sie nicht mit?",
             "kaenguru-Wolln wir uns dutzen?",
             "muk-Von mir aus."
           ]
         },
         {
-          "name": "Kapitel 3 - Tütensuppentotalitarismus (Sehr alte Version)",
+          "name": "Kapitel 3 - Tütensuppentotalitarismus",
           "dateien": [
             "kaenguru-Ich darf nich und ich will nich.",
             "kaenguru-Alles Kapitalismus, alles Nestle, alles Hähnchen!"
           ]
         },
         {
-          "name": "Kapitel 4 - 69 Cent pro Minute (Sehr alte Version)",
+          "name": "Kapitel 4 - 69 Cent pro Minute",
           "dateien": [
             "kaenguru-Ja! Ja!"
           ]
