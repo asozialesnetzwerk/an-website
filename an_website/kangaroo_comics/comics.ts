@@ -255,7 +255,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             }
         }
         // URLs with incrementing number in them
-        const arr = link.toLowerCase().match(oldLinkRegex);
+        const arr = oldLinkRegex.exec(link.toLowerCase());
         if (arr && arr.length > 1) {
             // @ts-expect-error TS2345
             const num = parseInt(arr[1]) - 5;
