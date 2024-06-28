@@ -69,7 +69,7 @@ function startLoadingComics() {
         [
             getDateBy(2023, 3, 2),
             "administratives/kaenguru-comics/2023-03/2/original",
-        ]
+        ],
     ];
 
     const dateEquals = (
