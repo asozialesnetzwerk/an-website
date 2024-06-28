@@ -66,6 +66,10 @@ function startLoadingComics() {
             getDateBy(2022, 8, 29),
             "administratives/kaenguru-comics/2022-08/29-3/original",
         ],
+        [
+            getDateBy(2023, 3, 2),
+            "administratives/kaenguru-comics/2023-03/2/original",
+        ]
     ];
 
     const dateEquals = (
@@ -99,7 +103,7 @@ function startLoadingComics() {
         getDateBy(date.getFullYear(), date.getMonth() + 1, date.getDate());
 
     // get today without hours, minutes, seconds and ms
-    const getToday = (): Date => copyDate(new Date());
+    const getToday = (): Date => copyDate(new Date("2023-03-06")); // not today, but the last date a comic was published
 
     const comics: string[] = [];
 
@@ -255,7 +259,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             }
         }
         // URLs with incrementing number in them
-        const arr = oldLinkRegex.exec(link.toLowerCase());
+        const arr = link.toLowerCase().match(oldLinkRegex);
         if (arr && arr.length > 1) {
             // @ts-expect-error TS2345
             const num = parseInt(arr[1]) - 5;
