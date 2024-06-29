@@ -337,7 +337,7 @@ class BaseRequestHandler(RequestHandler):
             ) in self.user_settings.as_dict_with_str_values().items():
                 query_args.setdefault(key, value)
             for key, value in self.user_settings.as_dict_with_str_values(
-                include_argument=False
+                include_query_argument=False, include_body_argument=False
             ).items():
                 if value == query_args[key]:
                     query_args[key] = None

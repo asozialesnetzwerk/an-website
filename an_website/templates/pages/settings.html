@@ -79,11 +79,11 @@
         </label>
 
         <label class="form-element">
-            Aktiviere Spezialeffekte
+            Deaktiviere Spezialeffekte
             <input type="checkbox"
                    name="effects"
-                   {% if effects %} checked {% end %}
-                   value="sure">
+                   {% if not effects %} checked {% end %}
+                   value="nope">
         </label>
 
         <label class="form-element">

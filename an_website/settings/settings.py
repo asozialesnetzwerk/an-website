@@ -16,8 +16,9 @@
 from __future__ import annotations
 
 import contextlib
+import types
 from base64 import b64encode
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Mapping
 
 from ..utils.options import Options
 from ..utils.request_handler import HTMLRequestHandler
@@ -57,6 +58,7 @@ class SettingsPage(HTMLRequestHandler):
             save_in_cookie=self.get_bool_argument("save_in_cookie", True),
             show_token_input=self.get_bool_argument("auth", False),
             token="",
+            advanced_settings=self.show_advanced_settings(),
         )
 
     async def post(self) -> None:
@@ -74,7 +76,14 @@ class SettingsPage(HTMLRequestHandler):
             self.set_cookie("advanced_settings", bool_to_str(advanced_settings))
             for option in self.user_settings.iter_options():
                 self.set_cookie(
-                    option.name, option.value_to_string(option.get_value(self))
+                    option.name,
+                    option.value_to_string(
+                        option.get_value(
+                            self,
+                            include_cookie=False,
+                            include_query_argument=False,
+                        )
+                    ),
                 )
 
             replace_url_with = self.fix_url(
@@ -90,27 +99,42 @@ class SettingsPage(HTMLRequestHandler):
                 access_token=access_token,
                 advanced_settings=advanced_settings,
                 save_in_cookie=False,
-                **self.user_settings.as_dict_with_str_values(),
+                **self.user_settings.as_dict_with_str_values(
+                    include_cookie=False, include_query_argument=False
+                ),
             )
 
         if replace_url_with != self.request.full_url():
             return self.redirect(replace_url_with)
 
         await self.render_settings(
+            advanced_settings=advanced_settings,
             save_in_cookie=save_in_cookie,
             show_token_input=bool(
                 token or self.get_bool_argument("auth", False)
             ),
             token=token,
+            kwargs={
+                option.name: option.get_value(
+                    self, include_cookie=False, include_query_argument=False
+                )
+                for option in self.user_settings.iter_options()
+            },
         )
 
-    def render_settings(
-        self, *, save_in_cookie: bool, show_token_input: bool, token: str
+    def render_settings(  # pylint: disable=too-many-arguments
+        self,
+        *,
+        save_in_cookie: bool,
+        show_token_input: bool,
+        token: str,
+        advanced_settings: bool,
+        kwargs: Mapping[str, object] = types.MappingProxyType({}),
     ) -> Awaitable[None]:
         """Render the settings page."""
         return self.render(
             "pages/settings.html",
-            advanced_settings=self.show_advanced_settings(),
+            advanced_settings=advanced_settings,
             ask_before_leaving_default=(
                 Options.ask_before_leaving.get_default_value(self)
             ),
@@ -120,6 +144,7 @@ class SettingsPage(HTMLRequestHandler):
             show_token_input=show_token_input,
             themes=THEMES,
             token=token,
+            **kwargs,
         )
 
     def show_advanced_settings(self) -> bool:

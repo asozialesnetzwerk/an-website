@@ -85,14 +85,20 @@ class Option(ABC, Generic[T]):
         self,
         request_handler: RequestHandler,
         *,
-        include_argument: bool = True,
+        include_body_argument: bool = True,
+        include_query_argument: bool = True,
         include_cookie: bool = True,
     ) -> T:
         """Get the value for this option."""
-        return self.parse(
-            argument=(
-                request_handler.get_argument(self.name, None)
-                if include_argument
+        return self._parse(
+            body_argument=(
+                request_handler.get_body_argument(self.name, None)
+                if include_body_argument
+                else None
+            ),
+            query_argument=(
+                request_handler.get_query_argument(self.name, None)
+                if include_query_argument
                 else None
             ),
             cookie=(
@@ -106,14 +112,19 @@ class Option(ABC, Generic[T]):
     def option_in_arguments(self, request_handler: RequestHandler) -> bool:
         """Return whether the option is taken from the arguments."""
         return self.get_value(
-            request_handler, include_argument=False
+            request_handler, include_cookie=False
         ) != self.get_value(request_handler)
 
-    def parse(
-        self, *, argument: str | None, cookie: str | None, default: T
+    def _parse(
+        self,
+        *,
+        body_argument: str | None,
+        query_argument: str | None,
+        cookie: str | None,
+        default: T,
     ) -> T:
         """Parse the value from a string."""
-        for val in (argument, cookie):
+        for val in (body_argument, query_argument, cookie):
             if not val:
                 continue
             parsed = self.parse_from_string(self.normalize_string(val), default)
@@ -196,27 +207,37 @@ class Options:
         self.__request_handler = request_handler
 
     def as_dict(
-        self, *, include_argument: bool = True, include_cookie: bool = True
+        self,
+        *,
+        include_body_argument: bool = True,
+        include_query_argument: bool = True,
+        include_cookie: bool = True,
     ) -> dict[str, object]:
         """Get all the options in a dictionary."""
         return {
             option.name: option.get_value(
                 self.request_handler,
-                include_argument=include_argument,
+                include_body_argument=include_body_argument,
+                include_query_argument=include_query_argument,
                 include_cookie=include_cookie,
             )
             for option in self.iter_options()
         }
 
     def as_dict_with_str_values(
-        self, *, include_argument: bool = True, include_cookie: bool = True
+        self,
+        *,
+        include_body_argument: bool = True,
+        include_query_argument: bool = True,
+        include_cookie: bool = True,
     ) -> dict[str, str]:
         """Get all the options in a dictionary."""
         return {
             option.name: option.value_to_string(
                 option.get_value(
                     self.request_handler,
-                    include_argument=include_argument,
+                    include_body_argument=include_body_argument,
+                    include_query_argument=include_query_argument,
                     include_cookie=include_cookie,
                 )
             )
