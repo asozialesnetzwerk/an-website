@@ -64,17 +64,17 @@ async def test_setting_stuff_without_cookies(
                 "/einstellungen"
                 if request_body
                 else (
-                    "/einstellungen?theme=pink&no_3rd_party=s&dynload=s&openmoji=i"
-                    "&bumpscosity=0"
+                    "/einstellungen?theme=pink&no_3rd_party=sure&dynload=sure"
+                    "&openmoji=img&bumpscosity=0&save_in_cookie=nope"
                 )
             ),
-            method="POST",
+            method="POST" if request_body else "GET",
             headers=(
                 {"Content-Type": "application/json"}
                 if isinstance(request_body, bytes)
                 else None
             ),
-            body=request_body,
+            body=request_body or None,
             follow_redirects=True,
         )
         assert_valid_response(response, content_type="text/html;charset=utf-8")
@@ -112,15 +112,9 @@ async def test_setting_stuff_and_saving_to_cookies(
             }
         ),
         "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=s&openmoji=i&bumpscosity=0",
-        "",
     ):
         response = await fetch(
-            "/einstellungen"
-            + (
-                "?theme=pink&no_3rd_party=s&dynload=s&openmoji=i&save_in_cookie=s&bumpscosity=0"
-                if not request_body
-                else ""
-            ),
+            "/einstellungen",
             method="POST",
             headers=(
                 {"Content-Type": "application/json"}

@@ -20,6 +20,8 @@ import types
 from base64 import b64encode
 from collections.abc import Awaitable, Mapping
 
+from tornado.web import HTTPError
+
 from ..utils.options import Options
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import (
@@ -63,6 +65,8 @@ class SettingsPage(HTMLRequestHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the settings page."""
+        if not self.request.body.strip():
+            raise HTTPError(400, "No body provided")
         advanced_settings = self.get_bool_argument("advanced_settings", False)
         save_in_cookie: bool = self.get_bool_argument("save_in_cookie", False)
         token = self.get_argument("access_token", "")
