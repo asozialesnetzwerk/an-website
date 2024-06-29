@@ -72,6 +72,24 @@ class Option(ABC, Generic[T]):
         """Make this read-only."""
         raise AttributeError()
 
+    def _parse(
+        self,
+        *,
+        body_argument: str | None,
+        query_argument: str | None,
+        cookie: str | None,
+        default: T,
+    ) -> T:
+        """Parse the value from a string."""
+        for val in (body_argument, query_argument, cookie):
+            if not val:
+                continue
+            parsed = self.parse_from_string(self.normalize_string(val), default)
+            # is True to catch the case where is_valid returns NotImplemented
+            if self.is_valid(parsed) is True:
+                return parsed
+        return default
+
     def get_form_appendix(self, request_handler: RequestHandler) -> str:
         """Return the form appendix for this option."""
         if not self.option_in_arguments(request_handler):
@@ -114,24 +132,6 @@ class Option(ABC, Generic[T]):
         return self.get_value(
             request_handler, include_cookie=False
         ) != self.get_value(request_handler)
-
-    def _parse(
-        self,
-        *,
-        body_argument: str | None,
-        query_argument: str | None,
-        cookie: str | None,
-        default: T,
-    ) -> T:
-        """Parse the value from a string."""
-        for val in (body_argument, query_argument, cookie):
-            if not val:
-                continue
-            parsed = self.parse_from_string(self.normalize_string(val), default)
-            # is True to catch the case where is_valid returns NotImplemented
-            if self.is_valid(parsed) is True:
-                return parsed
-        return default
 
 
 def parse_int(value: str, default: int) -> int:
