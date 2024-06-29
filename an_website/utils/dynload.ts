@@ -97,67 +97,8 @@ function dynLoadOnData(
         );
         titleElement.innerText = data.title;
     }
-    dynLoadReplaceAnchors();
     urlData = data;
     return true;
-}
-
-function dynLoadReplaceAnchors() {
-    for (const anchor of document.getElementsByTagName("A")) {
-        dynLoadReplaceHrefOnAnchor(anchor as HTMLAnchorElement);
-    }
-}
-
-function dynLoadReplaceHrefOnAnchor(anchor: HTMLAnchorElement) {
-    if (anchor.hasAttribute("no-dynload")) {
-        return;
-    }
-
-    dynLoadFixHref(anchor);
-}
-
-function dynLoadFixHref(anchor: HTMLAnchorElement) {
-    if (anchor.target === "_blank") {
-        return;
-    }
-
-    const href = (
-        anchor.href.startsWith("/")
-            ? (window.location.origin + anchor.href)
-            : anchor.href
-    )
-        .trim();
-
-    const hrefWithoutQuery = href.split("?")[0];
-    if (
-        // link is to different domain
-        !href.startsWith(window.location.origin) ||
-        // link is to file, not HTML page
-        (
-            // @ts-expect-error TS2532
-            (hrefWithoutQuery.split("/").pop() ?? "").includes(".") &&
-            // URLs to redirect page are HTML pages
-            hrefWithoutQuery !== (window.location.origin + "/redirect")
-        ) ||
-        // link is to /chat, which redirects to another page
-        hrefWithoutQuery === (window.location.origin + "/chat")
-    ) {
-        return;
-    }
-
-    if (
-        // URL to the same page, but with hash
-        href.startsWith("#") ||
-        href.startsWith(window.location.href.split("#")[0] + "#")
-    ) {
-        return;
-    }
-
-    // TODO: this is broken because of CSP
-    anchor.onclick = (e) => {
-        e.preventDefault();
-        return dynLoad(href);
-    };
 }
 
 function dynLoad(url: string) {
@@ -229,5 +170,48 @@ async function dynLoadOnPopState(event: PopStateEvent) {
 
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
-dynLoadReplaceAnchors();
+document.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement | undefined)?.tagName !== "A") {
+        return;
+    }
+
+    const anchor = e.target as HTMLAnchorElement;
+    if (anchor.target === "_blank") {
+        return;
+    }
+
+    const href = (
+        anchor.href.startsWith("/")
+            ? (window.location.origin + anchor.href)
+            : anchor.href
+    )
+        .trim();
+
+    const hrefWithoutQuery = href.split("?")[0];
+    if (
+        // link is to different domain
+        !href.startsWith(window.location.origin) ||
+        // link is to file, not HTML page
+        (
+            // @ts-expect-error TS2532
+            (hrefWithoutQuery.split("/").pop() ?? "").includes(".") &&
+            // URLs to redirect page are HTML pages
+            hrefWithoutQuery !== (window.location.origin + "/redirect")
+        ) ||
+        // link is to /chat, which redirects to another page
+        hrefWithoutQuery === (window.location.origin + "/chat")
+    ) {
+        return;
+    }
+
+    if (
+        // URL to the same page, but with hash
+        href.startsWith("#") ||
+        href.startsWith(window.location.href.split("#")[0] + "#")
+    ) {
+        return;
+    }
+    e.preventDefault();
+    return dynLoad(href);
+});
 // @license-end
