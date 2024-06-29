@@ -429,20 +429,20 @@
         },
         "dunamai": {
             "hashes": [
-                "sha256:d7fea28ad2faf20a6ca5ec121e5c68e55eec6b8ada23d9c387e4e7a574cc559f",
-                "sha256:fe303541463648b8197c495decf62cd8f15234fb6d891a5f295015e452f656c8"
+                "sha256:05827fb5f032f5596bfc944b23f613c147e676de118681f3bb1559533d8a65c4",
+                "sha256:87db76405bf9366f9b4925ff5bb1db191a9a1bd9f9693f81c4d3abb8298be6f0"
             ],
             "markers": "python_version >= '3.5'",
-            "version": "==1.21.1"
+            "version": "==1.21.2"
         },
         "ecs-logging": {
             "hashes": [
-                "sha256:02581a56b7fc6cbae2de121a4a398ba3bd73d7bb2d67cd029a8a03df0b144098",
-                "sha256:222cc158d4331157d128bc903629010f7724eab8ba4b642efbffd0cb482f4cde"
+                "sha256:1dc9e216f614129db0e6a2f9f926da4e4cf8edf8de16d1045a20aa8e950291d3",
+                "sha256:f6e22d267770b06f797076f49b5fcc9d97108b22f452f5f9ed4b5367b1e61b5b"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==2.1.0"
+            "version": "==2.2.0"
         },
         "elastic-apm": {
             "hashes": [
@@ -1499,11 +1499,11 @@
                 "hiredis"
             ],
             "hashes": [
-                "sha256:38473cd7c6389ad3e44a91f4c3eaf6bcb8a9f746007f29bf4fb20824ff0b2197",
-                "sha256:c0d6d990850c627bbf7be01c5c4cbaadf67b48593e913bb71c9819c30df37eee"
+                "sha256:0e479e24da960c690be5d9b96d21f7b918a98c0cf49af3b6fafaa0753f93a0db",
+                "sha256:8f611490b93c8109b50adc317b31bfd84fff31def3475b92e7e80bf39f48175b"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==5.0.6"
+            "version": "==5.0.7"
         },
         "regex": {
             "hashes": [
@@ -2850,12 +2850,12 @@
         },
         "pylint": {
             "hashes": [
-                "sha256:02f6c562b215582386068d52a30f520d84fdbcf2a95fc7e855b816060d048b60",
-                "sha256:b3d7d2708a3e04b4679e02d99e72329a8b7ee8afb8d04110682278781f889fa8"
+                "sha256:32cd6c042b5004b8e857d727708720c54a676d1e22917cf1a2df9b4d4868abd6",
+                "sha256:e9b7171e242dcc6ebd0aaa7540481d1a72860748a0a7816b8fe6cf6c80a6fe7e"
             ],
             "index": "pypi",
             "markers": "python_full_version >= '3.8.0'",
-            "version": "==3.2.3"
+            "version": "==3.2.5"
         },
         "pylint-pytest": {
             "hashes": [

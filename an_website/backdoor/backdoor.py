@@ -149,7 +149,7 @@ class Backdoor(APIRequestHandler):
                 for key, value in session.items():
                     try:
                         session[key] = dill.loads(value)  # nosec: B301
-                    except BaseException:  # pylint: disable=broad-except  # noqa: B036  # fmt: skip
+                    except BaseException:  # pylint: disable=broad-except  # noqa: B036, B950  # fmt: skip
                         LOGGER.exception(
                             "Error while loading %r in session %r. Data: %r",
                             key,
@@ -236,7 +236,7 @@ class Backdoor(APIRequestHandler):
                 return await self.finish_serialized_dict(
                     success=..., output=output_str, result=exc
                 )
-            except BaseException as exc:  # pylint: disable=broad-except  # noqa: B036  # fmt: skip
+            except BaseException as exc:  # pylint: disable=broad-except  # noqa: B036, B950  # fmt: skip
                 exception = exc  # pylint: disable=redefined-variable-type
                 result = exc
             else:

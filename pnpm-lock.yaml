@@ -8,7 +8,7 @@ overrides:
   jest-worker>@types/node: ^18.19.38
   webpack@4: '5'
 
-pnpmfileChecksum: qqevvzgkr2bbp2oqzw3fe4ialq
+pnpmfileChecksum: vvbnln73y65logeoikw26uappm
 
 patchedDependencies:
   core-js-builder@3.37.1:
