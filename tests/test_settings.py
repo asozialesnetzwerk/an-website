@@ -15,7 +15,9 @@
 
 from __future__ import annotations
 
+import itertools
 from http.cookies import SimpleCookie
+from urllib.parse import urlencode
 
 import orjson as json
 
@@ -158,3 +160,89 @@ async def test_setting_stuff_and_saving_to_cookies(
                 assert morsel.value == "nope"
             else:
                 assert morsel.value == "sure"
+
+
+async def test_setting_stuff_and_saving_to_cookies2(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
+    """Test changing settings with requests with saving to cookie."""
+    options = (
+        {
+            "theme": "christmas",
+            "no_3rd_party": "nope",
+            "dynload": "nope",
+            "openmoji": "glyf_colr1",
+            "bumpscosity": "76",
+            "advanced_settings": "nope",
+            "compat": "nope",
+            "access_token": "xyzzy",
+            "ask_before_leaving": "nope",
+            "effects": "nope",
+        },
+        {
+            "theme": "pink",
+            "no_3rd_party": "sure",
+            "dynload": "sure",
+            "openmoji": "img",
+            "bumpscosity": "0",
+            "advanced_settings": None,
+            "compat": "sure",
+            "ask_before_leaving": "sure",
+            "effects": "sure",
+        },
+        {
+            "bumpscosity": "100",
+            "theme": "default",
+            "no_3rd_party": "nope",
+            "dynload": None,
+            "openmoji": "img",
+            "advanced_settings": "sure",
+            "compat": "nope",
+            "ask_before_leaving": "nope",
+            "effects": "nope",
+        },
+    )
+    cookies: list[str | None] = [
+        "; ".join([f"{key}={value}" for key, value in data.items()])
+        for data in options
+    ]
+    cookies.append(None)
+
+    for data, cookie in itertools.product(options, cookies):
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        if cookie is not None:
+            headers["Cookie"] = cookie
+        del cookie
+        response = await fetch(
+            "/einstellungen",
+            method="POST",
+            headers=headers,
+            body=urlencode(
+                {
+                    "save_in_cookie": "sure",
+                    **{
+                        key: value
+                        for key, value in data.items()
+                        if value is not None
+                    },
+                }
+            ),
+        )
+        assert_valid_response(response, content_type="text/html;charset=utf-8")
+
+        for cookie_header in response.headers.get_list("Set-Cookie"):
+            cookie = parse_cookie(cookie_header)
+            assert len(cookie) == 1
+            morsel = cookie[tuple(cookie)[0]]
+            assert morsel["expires"]
+            assert morsel["path"] == "/"
+            assert morsel["samesite"] == "Strict"
+            assert (
+                morsel.key in data
+            ), f"{morsel.key} not in {list(data.keys())}"
+            if morsel.key == "access_token":
+                assert morsel.value == "eHl6enk="
+            else:
+                assert morsel.value == (
+                    data[morsel.key] or "nope"
+                ), f"{morsel.value} != {data[morsel.key]}"
