@@ -62,7 +62,7 @@ try:
 except ModuleNotFoundError:
     pass
 else:
-    uvloop.install()
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 
 FLUFL = True

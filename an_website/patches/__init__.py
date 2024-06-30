@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
@@ -77,7 +78,9 @@ def patch_asyncio() -> None:
     """Make stuff faster."""
     if "DISABLE_UVLOOP" not in os.environ:
         with suppress(ModuleNotFoundError):
-            import_module("uvloop").install()
+            asyncio.set_event_loop_policy(
+                import_module("uvloop").EventLoopPolicy()
+            )
 
 
 def patch_certifi() -> None:

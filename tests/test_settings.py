@@ -166,7 +166,7 @@ async def test_setting_stuff_and_saving_to_cookies2(
     fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test changing settings with requests with saving to cookie."""
-    options = (
+    options: tuple[dict[str, str | None], ...] = (
         {
             "theme": "christmas",
             "no_3rd_party": "nope",
@@ -208,11 +208,10 @@ async def test_setting_stuff_and_saving_to_cookies2(
     ]
     cookies.append(None)
 
-    for data, cookie in itertools.product(options, cookies):
+    for data, req_cookie in itertools.product(options, cookies):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        if cookie is not None:
-            headers["Cookie"] = cookie
-        del cookie
+        if req_cookie is not None:
+            headers["Cookie"] = req_cookie
         response = await fetch(
             "/einstellungen",
             method="POST",

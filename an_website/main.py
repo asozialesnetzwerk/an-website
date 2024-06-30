@@ -1053,7 +1053,9 @@ def main(  # noqa: C901  # pragma: no cover
             if perf8 and "PERF8" in os.environ:
                 loop.run_until_complete(perf8.disable())
             if redis := app.settings.get("REDIS"):
-                loop.run_until_complete(redis.close(close_connection_pool=True))
+                loop.run_until_complete(
+                    redis.aclose(close_connection_pool=True)
+                )
             if elasticsearch := app.settings.get("ELASTICSEARCH"):
                 loop.run_until_complete(elasticsearch.close())
         finally:
