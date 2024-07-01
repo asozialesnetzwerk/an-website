@@ -190,7 +190,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20
+          node-version: "18.20"
           cache: pnpm
       - name: Cache
         uses: pat-s/always-upload-cache@v3
@@ -218,7 +218,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20
+          node-version: "18.20"
           cache: pnpm
       - name: Install tsc
         run: pnpm install

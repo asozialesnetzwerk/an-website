@@ -2,7 +2,7 @@
 {
   "ts-node": {"esm": true},
   "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
-  "include": ["scripts", "eslint.config.js"],
+  "include": ["scripts", "eslint.config.js", ".pnpmfile.cjs"],
   "exclude": ["scripts/deno"],
   "compilerOptions": {
     "noEmit": true,
