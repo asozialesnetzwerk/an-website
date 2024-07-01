@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "77d37ca76ce539df2733dda284bfa216bcce27c35585e30a1c8a1a87d2288874"
+            "sha256": "aef2a479919b8eb66ad1ca6b8f2046322dd3ac6dfdb053c4d7b7e92950fca977"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -2777,11 +2777,11 @@
         },
         "pkginfo": {
             "hashes": [
-                "sha256:2e0dca1cf4c8e39644eed32408ea9966ee15e0d324c62ba899a393b3c6b467aa",
-                "sha256:bfa76a714fdfc18a045fcd684dbfc3816b603d9d075febef17cb6582bea29573"
+                "sha256:5df73835398d10db79f8eecd5cd86b1f6d29317589ea70796994d49399af6297",
+                "sha256:889a6da2ed7ffc58ab5b900d888ddce90bce912f2d2de1dc1c26f4cb9fe65097"
             ],
-            "markers": "python_version >= '3.8'",
-            "version": "==1.11.1"
+            "markers": "python_version >= '3.6'",
+            "version": "==1.10.0"
         },
         "platformdirs": {
             "hashes": [
@@ -3173,12 +3173,12 @@
         },
         "twine": {
             "hashes": [
-                "sha256:929bc3c280033347a00f847236564d1c52a3e61b1ac2516c97c48f3ceab756d8",
-                "sha256:9e102ef5fdd5a20661eb88fad46338806c3bd32cf1db729603fe3697b1bc83c8"
+                "sha256:215dbe7b4b94c2c50a7315c0275d2258399280fbb7d04182c7e55e24b5f93997",
+                "sha256:9aa0825139c02b3434d913545c7b847a21c835e11597f5255842d457da2322db"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.7'",
-            "version": "==4.0.2"
+            "markers": "python_version >= '3.8'",
+            "version": "==5.1.1"
         },
         "types-beautifulsoup4": {
             "hashes": [
