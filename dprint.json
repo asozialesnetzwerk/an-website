@@ -18,14 +18,11 @@
     "deno": true
   },
   "excludes": [
-    "**/node_modules",
     "an_website/static/css",
     "an_website/static/js",
     "an_website/vendored",
-    "build/lib/an_website",
     "scripts/vendored",
-    "style/snow.css",
-    "venv"
+    "style/snow.css"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.91.1.wasm",

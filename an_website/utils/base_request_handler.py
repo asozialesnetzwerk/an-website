@@ -328,7 +328,7 @@ class BaseRequestHandler(RequestHandler):
             path = path.upper()
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
             query_args.update(
-                {key: None for key in self.user_settings.iter_option_names()}
+                dict.fromkeys(self.user_settings.iter_option_names())
             )
         else:
             for (

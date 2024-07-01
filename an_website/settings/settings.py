@@ -95,7 +95,7 @@ class SettingsPage(HTMLRequestHandler):
                 access_token=None,
                 advanced_settings=None,
                 save_in_cookie=None,
-                **{key: None for key in self.user_settings.iter_option_names()},
+                **dict.fromkeys(self.user_settings.iter_option_names()),
             )
         else:
             replace_url_with = self.fix_url(
