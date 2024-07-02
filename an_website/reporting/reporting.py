@@ -236,7 +236,7 @@ class ReportingAPI(APIRequestHandler):
             report["@timestamp"] = self.now - timedelta(
                 milliseconds=max(0, cast(int, report.pop("age")))
             )
-            report["ecs"] = {"version": "1.12.2"}
+            report["ecs"] = {"version": "8.12.0"}
             report["_op_type"] = "create"
             report.pop("_index", None)  # DO NOT REMOVE
         await async_bulk(

@@ -33,6 +33,7 @@ import traceback
 import uuid
 from base64 import b64encode
 from collections.abc import Callable, Iterable, MutableMapping
+from importlib import import_module
 from textwrap import dedent
 from types import EllipsisType
 from typing import Any, Required, TypeAlias, TypedDict, cast
@@ -57,12 +58,9 @@ try:
 except ModuleNotFoundError:
     socks = None  # pylint: disable=invalid-name
 
-try:
-    import uvloop
-except ModuleNotFoundError:
-    pass
-else:
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+if "DISABLE_UVLOOP" not in os.environ:
+    with contextlib.suppress(ModuleNotFoundError):
+        asyncio.set_event_loop_policy(import_module("uvloop").EventLoopPolicy())
 
 
 FLUFL = True

@@ -43,7 +43,7 @@ markdown-it-py==3.0.0
 mccabe==0.7.0
 mdurl==0.1.2
 more-itertools==10.3.0
-mypy@ git+https://github.com/python/mypy.git@177c8ee7b8166b3dcf89c034a676ef5818edbc38
+mypy@ git+https://github.com/python/mypy.git@d1d3c780c7a2d30b2a038903289ea7487303a218
 mypy-extensions==1.0.0
 nh3==0.2.17
 nodeenv==1.9.1
@@ -87,7 +87,7 @@ time-machine==2.14.2
 tomli==2.0.1
 tomlkit==0.12.5
 tornado==6.4.1
-trove-classifiers==2023.11.29
+trove-classifiers==2024.7.1
 twine==5.1.1
 types-beautifulsoup4==4.12.0.20240511
 types-cffi==1.16.0.20240331
@@ -139,7 +139,7 @@ lxml==5.2.2
 multidict==6.0.5
 openmoji-dist==15.0.0.3
 orjson==3.10.5
-pillow==10.3.0
+pillow==10.4.0
 pillow-jxl-plugin==1.2.4
 pycares==4.4.0
 pycryptodome==3.20.0

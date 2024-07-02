@@ -1,8 +1,9 @@
 {
   "_meta": {
-    "documentation": "https://www.elastic.co/guide/en/ecs/1.12/ecs-orchestrator.html",
-    "ecs_version": "1.12.2+exp"
+    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-orchestrator.html",
+    "ecs_version": "8.12.0-dev"
   },
+  "version": 2,
   "template": {
     "mappings": {
       "properties": {
@@ -14,6 +15,10 @@
             },
             "cluster": {
               "properties": {
+                "id": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
                 "name": {
                   "ignore_above": 1024,
                   "type": "keyword"
@@ -38,9 +43,32 @@
             },
             "resource": {
               "properties": {
+                "annotation": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "id": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "ip": {
+                  "type": "ip"
+                },
+                "label": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
                 "name": {
                   "ignore_above": 1024,
                   "type": "keyword"
+                },
+                "parent": {
+                  "properties": {
+                    "type": {
+                      "ignore_above": 1024,
+                      "type": "keyword"
+                    }
+                  }
                 },
                 "type": {
                   "ignore_above": 1024,

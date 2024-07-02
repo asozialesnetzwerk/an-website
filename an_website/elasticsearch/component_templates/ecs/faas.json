@@ -1,22 +1,17 @@
 {
   "_meta": {
-    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-agent.html",
+    "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-faas.html",
     "ecs_version": "8.12.0-dev"
   },
   "template": {
     "mappings": {
       "properties": {
-        "agent": {
+        "faas": {
           "properties": {
-            "build": {
-              "properties": {
-                "original": {
-                  "ignore_above": 1024,
-                  "type": "keyword"
-                }
-              }
+            "coldstart": {
+              "type": "boolean"
             },
-            "ephemeral_id": {
+            "execution": {
               "ignore_above": 1024,
               "type": "keyword"
             },
@@ -28,9 +23,17 @@
               "ignore_above": 1024,
               "type": "keyword"
             },
-            "type": {
-              "ignore_above": 1024,
-              "type": "keyword"
+            "trigger": {
+              "properties": {
+                "request_id": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "type": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                }
+              }
             },
             "version": {
               "ignore_above": 1024,

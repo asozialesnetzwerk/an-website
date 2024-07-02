@@ -9,5 +9,8 @@ rules:
     - true
     - severity: "warning"
       browsers: "Chrome 120, Firefox ESR, Safari 15.6"
+reportDescriptionlessDisables: false
+reportInvalidScopeDisables: true
+reportNeedlessDisables: true
 ignoreFiles:
   - "snow.css*"
