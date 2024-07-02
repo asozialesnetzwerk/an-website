@@ -76,7 +76,9 @@ def apply() -> None:
 
 def patch_asyncio() -> None:
     """Make stuff faster."""
-    if "DISABLE_UVLOOP" not in os.environ:
+    if os.environ.get("DISABLE_UVLOOP") not in {
+        "y", "yes", "t", "true", "on", "1"  # fmt: skip
+    }:
         with suppress(ModuleNotFoundError):
             asyncio.set_event_loop_policy(
                 import_module("uvloop").EventLoopPolicy()

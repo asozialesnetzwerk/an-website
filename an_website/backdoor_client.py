@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import ast
 import asyncio
-import contextlib
 import http.client
 import io
 import os
@@ -33,13 +32,14 @@ import traceback
 import uuid
 from base64 import b64encode
 from collections.abc import Callable, Iterable, MutableMapping
+from contextlib import suppress
 from importlib import import_module
 from textwrap import dedent
 from types import EllipsisType
 from typing import Any, Required, TypeAlias, TypedDict, cast
 from urllib.parse import SplitResult, quote, quote_plus, urlsplit
 
-with contextlib.suppress(ModuleNotFoundError):
+with suppress(ModuleNotFoundError):
     # pylint: disable=shadowed-import
     import dill as pickle  # type: ignore[import-untyped, no-redef]  # noqa: F811, B950  # nosec: B403
 
@@ -58,18 +58,17 @@ try:
 except ModuleNotFoundError:
     socks = None  # pylint: disable=invalid-name
 
-if "DISABLE_UVLOOP" not in os.environ:
-    with contextlib.suppress(ModuleNotFoundError):
+if os.environ.get("DISABLE_UVLOOP") not in {"y", "yes", "t", "true", "on", "1"}:
+    with suppress(ModuleNotFoundError):
         asyncio.set_event_loop_policy(import_module("uvloop").EventLoopPolicy())
-
-
-FLUFL = True
 
 E = eval(  # pylint: disable=eval-used  # nosec: B307
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
 )
 
 ErrorTuple: TypeAlias = tuple[int, str]
+
+FLUFL = True
 
 
 class Response(TypedDict):  # noqa: D101
@@ -180,7 +179,7 @@ async def request(  # noqa: C901
     if "Host" not in header_names:
         host: None | str = None
         if idna:  # type: ignore[truthy-bool]
-            with contextlib.suppress(idna.core.InvalidCodepoint):
+            with suppress(idna.core.InvalidCodepoint):
                 host = idna.encode(url.hostname).decode("ASCII")
                 host = f"{host}:{url.port}" if url.port else host
         if not host:
@@ -684,7 +683,7 @@ def main() -> int | str:  # noqa: C901
     ReaderConsole.execute = _run_and_print
 
     # run the reader
-    with contextlib.suppress(EOFError):
+    with suppress(EOFError):
         _main(print_banner=False, clear_main=False)
 
     # restore the original method

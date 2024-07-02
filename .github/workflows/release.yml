@@ -210,7 +210,7 @@ jobs:
         with:
           name: artifact
       - name: Install Twine
-        run: pip install "twine==4.*"
+        run: pip install "twine==5.*"
       - name: Run Twine
         run: |
           twine check --strict *.tar.gz *.whl
