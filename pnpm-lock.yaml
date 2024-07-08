@@ -7,7 +7,7 @@ settings:
 overrides:
   webpack@4: '5'
 
-pnpmfileChecksum: ohiosxymim5np3muy3743dlsb4
+pnpmfileChecksum: vrhcemurldcculbbmluoytclp4
 
 patchedDependencies:
   core-js-builder@3.37.1:

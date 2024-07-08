@@ -28,7 +28,7 @@ from setuptools.build_meta import SetupRequirementsError
 
 BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.22.1"
-GET_VERSION = "get_version==3.5.5"
+GET_VERSION = "get-version==3.5.5"
 TROVE_CLASSIFIERS = "trove-classifiers"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
