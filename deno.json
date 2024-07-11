@@ -1,8 +1,8 @@
 {
   "tasks": {
     "build": "deno task build:css && deno task build:js",
-    "build:css": "deno task esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
-    "build:js": "deno task esbuild --minify --sourcemap --outbase=an_website --outdir=an_website/static/js 'an_website/**/*.ts'",
+    "build:css": "deno task esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css' && find an_website/static/css -type f '!' -name '*gz' -exec pigz -11 -fmk '{}' +",
+    "build:js": "deno task esbuild --minify --sourcemap --outbase=an_website --outdir=an_website/static/js 'an_website/**/*.ts' && find an_website/static/js -type f '!' -name '*gz' -exec pigz -11 -fmk '{}' +",
     "clean": "deno task clean:css && deno task clean:js",
     "clean:css": "rm -fr an_website/static/css",
     "clean:js": "rm -fr an_website/static/js",
