@@ -47,6 +47,7 @@
             <a href="{{fix_url('/kontakt', subject=f'Fehler bei {type} {id}', message=f'{text}\n({canonical_url})')}}"
                tooltip="Melde Fehler"
                tooltip-position="left"
+               rel="nofollow"
                class="button-container-a"
                id="report">
                 <img class="report-img" alt="Fehler melden" src="{{fix_static('img/report.svg')}}">

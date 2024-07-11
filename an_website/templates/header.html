@@ -50,10 +50,11 @@
             </ul>
             {% if settings.get("CONTACT_USE_FORM") %}
                 <a href="{{fix_url('/kontakt')}}"
+                   rel="nofollow"
                    class="contact-anchor">KONTAKT</a>
             {% end %}
             {% if settings.get("NETCUP") %}
-                <a id="oekostrom" href="{{fix_url('https://www.netcup.de/?ref=95236')}}">
+                <a id="oekostrom" href="{{fix_url('https://www.netcup.de/?ref=95236')}}" rel="sponsored external">
                     <picture>
                         <source srcset="{{fix_static('img/netcup-oekostrom2.jxl')}}" type="image/jxl">
                         <img src="{{fix_static('img/netcup-oekostrom2.png')}}" alt="netcup Ökostrom">

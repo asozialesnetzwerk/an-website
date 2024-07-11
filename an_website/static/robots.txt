@@ -2,3 +2,4 @@ User-Agent: *
 Disallow: /redirect
 Disallow: /zitate/share
 Disallow: /kontakt
+Disallow: /troet
