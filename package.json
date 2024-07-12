@@ -22,7 +22,7 @@
     "core-js-compat": "3.37.1",
     "dax-sh": "^0.40.1",
     "doiuse": "^6.0.2",
-    "electron-to-chromium": "1.4.816",
+    "electron-to-chromium": "1.4.820",
     "esbuild": "^0.20.2",
     "eslint": "^8.57.0",
     "eslint-formatter-codeframe": "^7.32.1",
