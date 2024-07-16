@@ -29,10 +29,12 @@ def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     return ModuleInfo(
         handlers=(
-            (r"/LOLWUT", LOLWUT),
-            (r"/LOLWUT/((?:\d+/)*\d+)", LOLWUT),
-            (r"/API/LOLWUT", LOLWUTAPI),
-            (r"/API/LOLWUT/((?:\d+/)*\d+)", LOLWUTAPI),
+            (r"(?i)/LOLWUT", LOLWUT),
+            (r"(?i)/LOLWUT/((?:\d+/)*\d+)", LOLWUT),
+            (r"/api/lolwut", LOLWUTAPI),
+            (r"/api/lolwut/((?:\d+/)*\d+)", LOLWUTAPI),
+            (r"(?i)/API/LOLWUT", LOLWUTAPI),
+            (r"(?i)/API/LOLWUT/((?:\d+/)*\d+)", LOLWUTAPI),
         ),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",
@@ -68,6 +70,10 @@ class LOLWUT(HTMLRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
+        if not self.request.path.isupper():
+            self.redirect(self.request.path.upper())
+            return
+
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
@@ -94,6 +100,10 @@ class LOLWUTAPI(APIRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT API."""
+        if not self.request.path.isupper():
+            self.redirect(self.request.path.upper())
+            return
+
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
