@@ -37,8 +37,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.0
       '@std/cli':
-        specifier: npm:@jsr/std__cli@1.0.0-rc.3
-        version: '@jsr/std__cli@1.0.0-rc.3'
+        specifier: npm:@jsr/std__cli@1.0.0-rc.5
+        version: '@jsr/std__cli@1.0.0-rc.5'
       '@tsconfig/node18':
         specifier: ^18.2.4
         version: 18.2.4
@@ -112,8 +112,8 @@ importers:
         specifier: ^8.4.39
         version: 8.4.39
       prettier:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: ^3.3.3
+        version: 3.3.3
       stylelint:
         specifier: ^16.7.0
         version: 16.7.0(typescript@5.5.3)
@@ -127,8 +127,8 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1(caniuse-lite@1.0.30001640)(electron-to-chromium@1.4.820)(stylelint@16.7.0(typescript@5.5.3))
       stylelint-prettier:
-        specifier: ^5.0.0
-        version: 5.0.0(prettier@3.3.2)(stylelint@16.7.0(typescript@5.5.3))
+        specifier: ^5.0.1
+        version: 5.0.1(prettier@3.3.3)(stylelint@16.7.0(typescript@5.5.3))
       ts-node:
         specifier: github:isaacs/ts-node#isaacs/node-20-fix
         version: https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=cstrxxonjryn63zbkj6xbnmhqa)(@types/node@18.19.39)(typescript@5.5.3)
@@ -399,8 +399,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@jsr/std__cli@1.0.0-rc.3':
-    resolution: {integrity: sha512-AWZtCE04PBkk7cnvvPZkrvIoQoficDnuWc5c+wDdPhO7VHfPkLgEqkAfWW5oNuH3l0cixF4iIFUAz9k4C7ttkQ==, tarball: https://npm.jsr.io/~/11/@jsr/std__cli/1.0.0-rc.3.tgz}
+  '@jsr/std__cli@1.0.0-rc.5':
+    resolution: {integrity: sha512-0RucQVXyAoy0jEPb8hxUKR6EqTuWyQF28Jyz1BdRr+nJlHKg92Oiy714GHlUXctEutcHo1D3pzO3eRL3+ZNzyw==, tarball: https://npm.jsr.io/~/11/@jsr/std__cli/1.0.0-rc.5.tgz}
 
   '@mdn/browser-compat-data@5.5.39':
     resolution: {integrity: sha512-22awGsC5t7sGOT2u5EU1RA64L+F87GWYXHZkh0ofjJsLGObqNDDVSTlumd/+6YK3QwlOIEVWAsqmJymrrSqBlA==}
@@ -625,8 +625,8 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
-  ajv@8.16.0:
-    resolution: {integrity: sha512-F0twR8U1ZU67JIEtekUcLkXkoO5mMMmgGD8sK/xUFzJ805jxHQl92hImFAqqXMyMYjSPOyUPAwHYhB72g5sTXw==}
+  ajv@8.17.1:
+    resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -954,6 +954,9 @@ packages:
 
   fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
+
+  fast-uri@3.0.1:
+    resolution: {integrity: sha512-MWipKbbYiYI0UC7cl8m/i/IWTqfC8YXsqjzybjddLsFjStroQzsHXkc73JutMvBiXmOvapk+axIl79ig5t55Bw==}
 
   fastest-levenshtein@1.0.16:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
@@ -1346,8 +1349,8 @@ packages:
     resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
     engines: {node: '>=6.0.0'}
 
-  prettier@3.3.2:
-    resolution: {integrity: sha512-rAVeHYMcv8ATV5d508CFdn+8/pHPpXeIid1DdrPwXnaAdH7cqjVbpJaT5eq4yRAFU/lsbwYwSF/n5iNrdJHPQA==}
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -1530,8 +1533,8 @@ packages:
     peerDependencies:
       stylelint: ^14.0.0 || ^15.0.0 || ^16.0.1
 
-  stylelint-prettier@5.0.0:
-    resolution: {integrity: sha512-RHfSlRJIsaVg5Br94gZVdWlz/rBTyQzZflNE6dXvSxt/GthWMY3gEHsWZEBaVGg7GM+XrtVSp4RznFlB7i0oyw==}
+  stylelint-prettier@5.0.1:
+    resolution: {integrity: sha512-blsBcSiCv7ZNmUadZPo9tv/ZHxTDRUbByn/NUp3irH5AozPFnAE7SHM/md/2DMdQizUwfuD9/3kOKB5+4a1/4Q==}
     engines: {node: '>=18.12.0'}
     peerDependencies:
       prettier: '>=3.0.0'
@@ -1951,7 +1954,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@jsr/std__cli@1.0.0-rc.3': {}
+  '@jsr/std__cli@1.0.0-rc.5': {}
 
   '@mdn/browser-compat-data@5.5.39': {}
 
@@ -2233,12 +2236,12 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  ajv@8.16.0:
+  ajv@8.17.1:
     dependencies:
       fast-deep-equal: 3.1.3
+      fast-uri: 3.0.1
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
-      uri-js: 4.4.1
 
   ansi-regex@5.0.1: {}
 
@@ -2621,6 +2624,8 @@ snapshots:
 
   fast-levenshtein@2.0.6: {}
 
+  fast-uri@3.0.1: {}
+
   fastest-levenshtein@1.0.16: {}
 
   fastq@1.17.1:
@@ -2959,7 +2964,7 @@ snapshots:
     dependencies:
       fast-diff: 1.3.0
 
-  prettier@3.3.2: {}
+  prettier@3.3.3: {}
 
   punycode@2.3.1: {}
 
@@ -3124,9 +3129,9 @@ snapshots:
       postcss-sorting: 8.0.2(postcss@8.4.39)
       stylelint: 16.7.0(typescript@5.5.3)
 
-  stylelint-prettier@5.0.0(prettier@3.3.2)(stylelint@16.7.0(typescript@5.5.3)):
+  stylelint-prettier@5.0.1(prettier@3.3.3)(stylelint@16.7.0(typescript@5.5.3)):
     dependencies:
-      prettier: 3.3.2
+      prettier: 3.3.3
       prettier-linter-helpers: 1.0.0
       stylelint: 16.7.0(typescript@5.5.3)
 
@@ -3205,7 +3210,7 @@ snapshots:
 
   table@6.8.2:
     dependencies:
-      ajv: 8.16.0
+      ajv: 8.17.1
       lodash.truncate: 4.4.2
       slice-ansi: 4.0.0
       string-width: 4.2.3
