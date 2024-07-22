@@ -41,7 +41,7 @@ markdown-it-py==3.0.0
 mccabe==0.7.0
 mdurl==0.1.2
 more-itertools==10.3.0
-mypy@ git+https://github.com/python/mypy.git@d1d3c780c7a2d30b2a038903289ea7487303a218
+mypy==1.11.0
 mypy-extensions==1.0.0
 nh3==0.2.18
 nodeenv==1.9.1
@@ -126,7 +126,7 @@ frozenlist==1.4.1
 funcparserlib==1.0.1
 get-version==3.5.5
 hangman-solver-rs==0.3.1
-hiredis==2.3.2
+hiredis==3.0.0
 html2text==2020.1.16
 hy==0.29.0
 hyrule==0.6.0
@@ -136,7 +136,7 @@ multidict==6.0.5
 openmoji-dist==15.0.0.3
 orjson==3.10.6
 pillow==10.4.0
-pillow-jxl-plugin==1.2.4
+pillow-jxl-plugin==1.2.5
 pycares==4.4.0
 pycryptodome==3.20.0
 pycurl==7.45.2

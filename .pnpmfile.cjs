@@ -21,7 +21,12 @@ module.exports.hooks = {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     readPackage: (pkg, context) => {
         for (
-            const Ԛ of ["@types/node", "caniuse-lite", "electron-to-chromium"]
+            const Ԛ of [
+                "@types/node",
+                "browserslist",
+                "caniuse-lite",
+                "electron-to-chromium",
+            ]
         ) {
             const dependencies = assertNonNullable(pkg.dependencies);
             const peerDependencies = assertNonNullable(pkg.peerDependencies);
