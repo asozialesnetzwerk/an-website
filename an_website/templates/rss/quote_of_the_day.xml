@@ -18,7 +18,7 @@
                 <rating>{{data.wrong_quote.rating}}</rating>
                 <link>{{data.get_quote_url()}}</link>
                 <image>{{data.get_quote_image_url()}}</image>
-                <guid>{{data.wrong_quote.get_id_as_str()}}</guid>
+                <guid>{{data.get_guid()}}</guid>
                 <pubDate>{{data.get_date_for_rss()}}</pubDate>
             </item>
         {% end %}

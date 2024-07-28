@@ -43,6 +43,13 @@ class QuoteOfTheDayData:
             True,
         )
 
+    def get_guid(self) -> str:
+        """Get the GUID for the quote of the day."""
+        # TODO: Remove this if after 2024-08-08
+        if self.date < date(2024, 7, 29):
+            return f"{self.wrong_quote.get_id_as_str()}"
+        return f"{self.date.isoformat()}_{self.wrong_quote.get_id_as_str()}"
+
     def get_quote_as_str(self, new_line_char: str = "\n") -> str:
         """Get the quote as a string with new line."""
         return (
