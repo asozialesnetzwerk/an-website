@@ -82,6 +82,7 @@ async def test_setting_stuff_without_cookies(
             follow_redirects=True,
         )
         assert_valid_response(response, content_type="text/html;charset=utf-8")
+
         assert_url_query(
             response.effective_url,
             theme="pink",
@@ -89,6 +90,19 @@ async def test_setting_stuff_without_cookies(
             dynload="sure",
             openmoji="img",
             save_in_cookie="nope",
+            bumpscosity="0",
+        )
+
+        root = HTMLParser(namespaceHTMLElements=False).parse(response.body)
+        home_url = root.xpath("//*[@id='back-to-home']")[0].get("href")
+
+        assert_url_query(
+            home_url,
+            theme="pink",
+            no_3rd_party="sure",
+            dynload="sure",
+            openmoji="img",
+            save_in_cookie=None,
             bumpscosity="0",
         )
 
