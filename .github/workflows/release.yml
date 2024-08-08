@@ -95,7 +95,7 @@ jobs:
           #- basic
           #- trial
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v16
+          - docker.io/redis/redis-stack-server:6.2.6-v15
           #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:
