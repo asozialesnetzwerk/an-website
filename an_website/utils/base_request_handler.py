@@ -1012,7 +1012,10 @@ class BaseRequestHandler(RequestHandler):
             ", ".join(self.get_allowed_methods()),
         )
         self.set_header("Cross-Origin-Resource-Policy", "cross-origin")
-        self.set_header("Permissions-Policy", "interest-cohort=()")
+        self.set_header(
+            "Permissions-Policy",
+            "join-ad-interest-group=(),run-ad-auction=(),browsing-topics=()",
+        )
         self.set_header("Referrer-Policy", "same-origin")
         self.set_header(
             "Cross-Origin-Opener-Policy", "same-origin; report-to=default"
@@ -1046,9 +1049,11 @@ class BaseRequestHandler(RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
-        self.set_header("Vary", "Accept,Accept-Encoding,Authorization,Cookie")
+        self.set_header("Vary", "Accept, Authorization, Cookie")
         self.origin_trial(
-            "AqP0dXp3uiIft5WtVI2f2KoR13gQy0w2lrhRj7E8zo0J0XlmWGPDSulJZvPqj+GtF+WQtqQJdht4bQgi852+2QAAAABmeyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJBcHBUYWJTdHJpcCIsImV4cGlyeSI6MTcyMjk4ODc5OSwiaXNTdWJkb21haW4iOnRydWV9"  # noqa: B950  # pylint: disable=line-too-long, useless-suppression
+            "AtmCLo6pBk5FVvAouMNTMnuKR6qZ59kLvYSyVFU54oq7wbRmx1cx1FhR+FivJqRPEeJAIEHXlM6L"
+            "hH7UcETrWw4AAABmeyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUi"
+            "OiJXZWJBcHBUYWJTdHJpcCIsImV4cGlyeSI6MTczMzE4NDAwMCwiaXNTdWJkb21haW4iOnRydWV9"
         )
 
     @classmethod
