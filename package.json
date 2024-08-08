@@ -6,7 +6,7 @@
     "@core-js/compat": "4.0.0-alpha.0",
     "@eslint/eslintrc": "^2.1.4",
     "@eslint/js": "^8.57.0",
-    "@pnpm/types": "^11.0.0",
+    "@pnpm/types": "^11.1.0",
     "@std/cli": "npm:@jsr/std__cli@1.0.0-rc.5",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
@@ -39,7 +39,7 @@
     "stylelint-no-unsupported-browser-features": "^8.0.1",
     "stylelint-prettier": "^5.0.2",
     "ts-node": "github:isaacs/ts-node#isaacs/node-20-fix",
-    "type-fest": "^4.22.1",
+    "type-fest": "^4.23.0",
     "typescript": "~5.5.3",
     "typescript-eslint": "8.0.0-alpha.30",
     "typescript-eslint-language-service": "^5.0.5"
