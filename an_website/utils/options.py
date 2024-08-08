@@ -194,7 +194,7 @@ class Options:
     )
     ask_before_leaving: Option[bool] = BoolOption(
         name="ask_before_leaving",
-        get_default_value=true,  # Maybe change this!
+        get_default_value=false,
     )
     bumpscosity: Option[BumpscosityValue] = Option(
         name="bumpscosity",
