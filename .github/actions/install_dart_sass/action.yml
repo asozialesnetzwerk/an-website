@@ -4,7 +4,7 @@ inputs:
   version:
     description: The version of dart-sass
     required: false
-    default: 1.77.5
+    default: 1.77.8
   sass-proto-version:
     description: The version of the protobuf spec
     required: false
