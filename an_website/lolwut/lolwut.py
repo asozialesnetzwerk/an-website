@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Awaitable
 from typing import ClassVar
 
 from redis.asyncio import Redis
@@ -46,23 +47,9 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def generate_art(
-    redis: Redis[str],
-    args: None | str = None,
-    head: bool = False,
-) -> None | str:
+def generate_art(redis: Redis[str], args: str | None) -> Awaitable[bytes]:
     """Generate art."""
-    if args:
-        arguments = args.split("/")
-        for argument in arguments:
-            if not argument:
-                raise HTTPError(404)
-        command = "LOLWUT VERSION " + " ".join(arguments)
-    else:
-        command = "LOLWUT"
-    if head:
-        return None
-    return await redis.execute_command(command)  # type: ignore[no-any-return, no-untyped-call]  # noqa: B950
+    return redis.lolwut(*(args.split("/") if args else ()))
 
 
 class LOLWUT(HTMLRequestHandler):
@@ -77,7 +64,7 @@ class LOLWUT(HTMLRequestHandler):
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        art = await generate_art(self.redis, args, head)
+        art = await generate_art(self.redis, args)
 
         if head:
             return
@@ -98,7 +85,7 @@ class LOLWUTAPI(APIRequestHandler):
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
     )
 
-    async def get(self, args: None | str = None, *, head: bool = False) -> None:
+    async def get(self, args: None | str = None) -> None:
         """Handle GET requests to the LOLWUT API."""
         if not self.request.path.isupper():
             self.redirect(self.request.path.upper())
@@ -107,7 +94,7 @@ class LOLWUTAPI(APIRequestHandler):
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        art = await generate_art(self.redis, args, head)
+        art = await generate_art(self.redis, args)
 
         if self.content_type == "text/plain":
             return await self.finish(art)
