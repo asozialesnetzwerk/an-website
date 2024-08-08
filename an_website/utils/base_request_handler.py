@@ -337,7 +337,9 @@ class BaseRequestHandler(RequestHandler):
             ) in self.user_settings.as_dict_with_str_values().items():
                 query_args.setdefault(key, value)
             for key, value in self.user_settings.as_dict_with_str_values(
-                include_query_argument=False, include_body_argument=False
+                include_query_argument=False,
+                include_body_argument=self.request.path == "/einstellungen"
+                and self.get_bool_argument("save_in_cookie", False),
             ).items():
                 if value == query_args[key]:
                     query_args[key] = None
