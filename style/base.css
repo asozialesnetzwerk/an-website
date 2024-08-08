@@ -9,10 +9,6 @@ img.emoji {
     vertical-align: bottom;
 }
 
-#openmoji-attribution {
-    font-size: 0.69rem;
-}
-
 .openmoji {
     font-family: OpenMojiColor, ui-sans-serif, system-ui, sans-serif;
 }
@@ -135,12 +131,18 @@ footer {
     width: 100vw;
     max-width: 100%;
     margin-top: 2.6rem;
-    margin-bottom: 0.5rem;
+    padding-bottom: 0.7rem;
     text-align: center;
 }
 
 #ai-policy {
     font-size: 0.5rem;
+    margin-top: 1.2rem;
+}
+
+#openmoji-attribution {
+    font-size: 0.69rem;
+    margin-top: 1.2rem;
 }
 
 /* footer end */
