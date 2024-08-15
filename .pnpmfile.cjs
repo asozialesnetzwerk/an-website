@@ -20,6 +20,9 @@ module.exports.hooks = {
     // @ts-expect-error TS6133
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     readPackage: (pkg, context) => {
+        const dependencies = assertNonNullable(pkg.dependencies);
+        const peerDependencies = assertNonNullable(pkg.peerDependencies);
+        delete dependencies["update-browserslist-db"];
         for (
             const Ԛ of [
                 "@types/node",
@@ -28,8 +31,6 @@ module.exports.hooks = {
                 "electron-to-chromium",
             ]
         ) {
-            const dependencies = assertNonNullable(pkg.dependencies);
-            const peerDependencies = assertNonNullable(pkg.peerDependencies);
             if (dependencies[Ԛ]) {
                 peerDependencies[Ԛ] = dependencies[Ԛ];
                 // eslint-disable-next-line @typescript-eslint/no-dynamic-delete

@@ -1,10 +1,9 @@
 name: Check
-on: [ push, pull_request ]
+on: [push, pull_request]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
-
   fix_stupid_mistakes:
     name: Fix stupid mistakes
     runs-on: ubuntu-24.04
@@ -27,7 +26,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 1.40.5
+          deno-version: 1.45.5
       - name: Install required stuff
         run: |
           sudo apt-get update

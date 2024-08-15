@@ -188,7 +188,7 @@ header {
     height: 100%;
 }
 
-@media (width <=31rem) {
+@media (width <= 31rem) {
     #title {
         visibility: hidden;
     }

@@ -3,12 +3,11 @@ on:
   schedule:
     - cron: "0 0 1 * *"
   push:
-    tags: [ v* ]
+    tags: [v*]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-24.04
@@ -92,8 +91,8 @@ jobs:
           - 3.12
           - 3.13
         #license:
-          #- basic
-          #- trial
+        #- basic
+        #- trial
         redis-image:
           - docker.io/redis/redis-stack-server:6.2.6-v15
           #- docker.dragonflydb.io/dragonflydb/dragonfly

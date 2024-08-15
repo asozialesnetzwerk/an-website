@@ -16,9 +16,8 @@
 from __future__ import annotations
 
 import itertools
-import urllib.parse
 from http.cookies import SimpleCookie
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import orjson as json
 from lxml.html.html5parser import HTMLParser  # nosec: B410
@@ -248,7 +247,7 @@ async def test_setting_stuff_and_saving_to_cookies2(
         root = HTMLParser(namespaceHTMLElements=False).parse(response.body)
         home_url = root.xpath("//*[@id='back-to-home']")[0].get("href")
 
-        if query := urllib.parse.urlsplit(home_url).query:
+        if query := urlsplit(home_url).query:
             raise AssertionError(f"Back to home URL has query: {query}")
 
         for cookie_header in response.headers.get_list("Set-Cookie"):
