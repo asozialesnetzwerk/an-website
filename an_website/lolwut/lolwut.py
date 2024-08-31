@@ -16,26 +16,28 @@
 from __future__ import annotations
 
 from collections.abc import Awaitable
-from typing import ClassVar
+from typing import ClassVar, Final
 
+import regex
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
+from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
+    args = r"(?:\d+/)*\d+"
     return ModuleInfo(
         handlers=(
-            (r"(?i)/LOLWUT", LOLWUT),
-            (r"(?i)/LOLWUT/((?:\d+/)*\d+)", LOLWUT),
-            (r"/api/lolwut", LOLWUTAPI),
-            (r"/api/lolwut/((?:\d+/)*\d+)", LOLWUTAPI),
-            (r"(?i)/API/LOLWUT", LOLWUTAPI),
-            (r"(?i)/API/LOLWUT/((?:\d+/)*\d+)", LOLWUTAPI),
+            (r"/LOLWUT", LOLWUT),
+            (rf"/LOLWUT/({args})", LOLWUT),
+            (r"/api/LOLWUT", LOLWUTAPI),
+            (rf"/api/LOLWUT/({args})", LOLWUTAPI),
+            (rf"(?i)(?:/api)?/lolwut(?:/{args})?", LOLWUTRedirectHandler),
         ),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",
@@ -57,10 +59,6 @@ class LOLWUT(HTMLRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
-        if not self.request.path.isupper():
-            self.redirect(self.request.path.upper())
-            return
-
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
@@ -87,10 +85,6 @@ class LOLWUTAPI(APIRequestHandler):
 
     async def get(self, args: None | str = None) -> None:
         """Handle GET requests to the LOLWUT API."""
-        if not self.request.path.isupper():
-            self.redirect(self.request.path.upper())
-            return
-
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
@@ -100,3 +94,25 @@ class LOLWUTAPI(APIRequestHandler):
             return await self.finish(art)
 
         await self.finish({"LOLWUT": art})
+
+
+class LOLWUTRedirectHandler(BaseRequestHandler):
+    """Redirect to the LOLWUT page."""
+
+    REPL_PATTERN: Final = regex.compile(r"/lolwut(/|\?|$)", regex.IGNORECASE)
+
+    @staticmethod
+    def repl_match(match: regex.Match[str]) -> str:
+        """Return the correct replacement for the given match."""
+        return f"/LOLWUT{match.group(1)}"
+
+    def get(self) -> None:
+        """Handle requests to the lolwut (sic!) page."""
+        self.redirect(
+            LOLWUTRedirectHandler.REPL_PATTERN.sub(
+                LOLWUTRedirectHandler.repl_match, self.request.full_url(), 1
+            )
+        )
+
+    head = get
+    post = get
