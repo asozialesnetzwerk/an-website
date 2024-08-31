@@ -8,36 +8,35 @@
 {% end %}
 
 {% block body %}
-    <table>
-        <tr>
-            <th>
-                {% block info_column %}{% end %}
-            </th>
-            <th>
-                <a class="no-style-a button-container-a"
-                   tooltip="Neues falsches Zitat hinzufügen"
-                   href="{{fix_url('/zitate/erstellen', **create_kwargs)}}">
-                    <img class="button-img" alt="Zitat hinzufügen."
+    <div class="info-page-0">
+        <div class="info-page-data">{% block info_column %}{% end %}</div>
+        <div class="info-page-q-col">
+            <span>
+                 <a class="no-style-a button-container-a"
+                    tooltip="Neues falsches Zitat hinzufügen"
+                    href="{{fix_url('/zitate/erstellen', **create_kwargs)}}">
+                     <img class="button-img" alt="Zitat hinzufügen."
                          src="{{fix_static('img/plus.svg')}}">
-                </a>
-                {% if len(wrong_quotes) != 0 %}
-                    Falsche Zitate:
-                    <ol>
-                        {% for wq in wrong_quotes %}
-                            <li>
-                                <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}')}}"
-                                   class="wrong-quote-a">{{str(wq)}}</a>
-                                (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
-                                                >{{wq.rating}}</div>)
-                            </li>
-                        {% end %}
-                    </ol>
-                {% else %}
-                    Keine falschen Zitate gefunden.
-                {% end %}
-            </th>
-        </tr>
-    </table>
+                 </a>
+                {% if wrong_quotes %}<b>Falsche Zitate:</b> {% end %}
+            </span>
+
+            {% if wrong_quotes %}
+                <ol>
+                    {% for wq in wrong_quotes %}
+                        <li>
+                            <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}')}}"
+                               class="wrong-quote-a">{{str(wq)}}</a>
+                            (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
+                                            >{{wq.rating}}</div>)
+                        </li>
+                    {% end %}
+                </ol>
+            {% else %}
+                Keine falschen Zitate gefunden.
+            {% end %}
+        </div>
+    </div>
     <span data-elastic-exclude id="disclaimer">
         <div>
             Die auf dieser Seite präsentierten Informationen sind nicht notwendigerweise
