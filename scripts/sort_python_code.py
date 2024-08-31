@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import ast
 import os
-import re  # pylint: disable=preferred-module
 import sys
 from collections.abc import Sequence
 from functools import cmp_to_key
@@ -27,7 +26,6 @@ from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
 from typing import Any, Final, NamedTuple, TypeAlias, cast
-from urllib.parse import uses_query
 
 REPO_ROOT: Final[str] = os.path.dirname(
     os.path.dirname(os.path.normpath(__file__))
@@ -70,10 +68,10 @@ def main() -> int | str:
 
 def ast_uses_name(root: ast.AST, name: str) -> bool:
     """Return true if the AST uses the given name."""
-    for node in ast.walk(root):
-        if isinstance(node, ast.Name) and node.id == name:
-            return True
-    return False
+    return any(
+        isinstance(node, ast.Name) and node.id == name
+        for node in ast.walk(root)
+    )
 
 
 def sort_file(file: Path) -> str | bool:
@@ -215,7 +213,7 @@ def sort_class(
         functions.append(
             BlockOfCode(
                 lines.copy(),
-                node,
+                cast(Any, node),
                 Position(node.lineno - 1, node.col_offset),
                 Position(
                     cast(int, node.end_lineno) - 1,
