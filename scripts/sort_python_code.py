@@ -118,7 +118,7 @@ class BlockOfCode:
     node: None | FunctionOrClassDef
     uses: tuple[str, ...]
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         lines: Sequence[str],
         node: None | FunctionOrClassDef,
@@ -129,24 +129,6 @@ class BlockOfCode:
         """Create an instance of this class."""
         self.node = node
         self.uses = uses
-        # if isinstance(node, ast.Assign):
-        #     text = lines[
-        #         node.targets[0].lineno - 1 : node.targets[-1].end_lineno
-        #     ]
-        #     text[-1] = text[-1][: node.targets[-1].end_col_offset]
-        #     self.name = "\n".join(text).strip()
-        #     if len(node.targets) > 1:
-        #         self.defines = tuple(
-        #             target.strip() for target in self.name.split(",")
-        #         )
-        #     else:
-        #         self.defines = (self.name,)
-        # elif isinstance(node, ast.AnnAssign):
-        #     self.name = lines[node.target.lineno - 1][
-        #         : node.target.end_col_offset
-        #     ].strip()
-        #     self.defines = (self.name,)
-        # el
         if hasattr(node, "name"):
             self.name = cast(Any, node).name.strip()
             self.defines = (self.name,)  # type: ignore[assignment]
@@ -174,6 +156,19 @@ class BlockOfCode:
         self.code = "\n".join(
             lines[self.pos.line : self.end_pos.line + 1]  # noqa: E203
         )
+
+
+def compare(a: BlockOfCode, b: BlockOfCode) -> int:
+    """Compare two blocks."""
+    if set(a.uses) & set(b.defines):
+        return 1
+    if set(b.uses) & set(a.defines):
+        return -1
+    if (a.name or "").lower() > (b.name or "").lower():
+        return 1
+    if (a.name or "").lower() < (b.name or "").lower():
+        return -1
+    return 0
 
 
 def sort_class(
@@ -230,18 +225,6 @@ def sort_class(
             lines[: function.pos.line]
             + lines[1 + function.end_pos.line :]  # noqa: E203
         )
-
-    def compare(a: BlockOfCode, b: BlockOfCode) -> int:
-        """Compare two blocks."""
-        if set(a.uses) & set(b.defines):
-            return 1
-        if set(b.uses) & set(a.defines):
-            return -1
-        if (a.name or "").lower() > (b.name or "").lower():
-            return 1
-        if (a.name or "").lower() < (b.name or "").lower():
-            return -1
-        return 0
 
     for function in sorted(functions, key=cmp_to_key(compare)):
         lines.extend(function.code.split("\n"))
