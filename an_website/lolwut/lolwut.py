@@ -101,11 +101,6 @@ class LOLWUTRedirectHandler(BaseRequestHandler):
 
     REPL_PATTERN: Final = regex.compile(r"/lolwut(/|\?|$)", regex.IGNORECASE)
 
-    @staticmethod
-    def repl_match(match: regex.Match[str]) -> str:
-        """Return the correct replacement for the given match."""
-        return f"/LOLWUT{match.group(1)}"
-
     def get(self) -> None:
         """Handle requests to the lolwut (sic!) page."""
         self.redirect(
@@ -116,3 +111,8 @@ class LOLWUTRedirectHandler(BaseRequestHandler):
 
     head = get
     post = get
+
+    @staticmethod
+    def repl_match(match: regex.Match[str]) -> str:
+        """Return the correct replacement for the given match."""
+        return f"/LOLWUT{match.group(1)}"
