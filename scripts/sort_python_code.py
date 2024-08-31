@@ -19,9 +19,9 @@ from __future__ import annotations
 
 import ast
 import os
-import re  # pylint: disable=preferred-module
 import sys
 from collections.abc import Sequence
+from functools import cmp_to_key
 from os import PathLike
 from pathlib import Path
 from traceback import format_exception_only
@@ -66,6 +66,14 @@ def main() -> int | str:
     return "\n".join(f"{file}: {err}" for file, err in errors) if errors else 0
 
 
+def ast_uses_name(root: ast.AST, name: str) -> bool:
+    """Return true if the AST uses the given name."""
+    return any(
+        isinstance(node, ast.Name) and node.id == name
+        for node in ast.walk(root)
+    )
+
+
 def sort_file(file: Path) -> str | bool:
     """Sort a given file."""
     code = file.read_text("UTF-8")
@@ -108,34 +116,19 @@ class BlockOfCode:
     pos: Position
     end_pos: Position
     node: None | FunctionOrClassDef
+    uses: tuple[str, ...]
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         lines: Sequence[str],
         node: None | FunctionOrClassDef,
         pos: Position,
         end_pos: Position,
+        uses: tuple[str, ...] = (),
     ):
         """Create an instance of this class."""
         self.node = node
-        # if isinstance(node, ast.Assign):
-        #     text = lines[
-        #         node.targets[0].lineno - 1 : node.targets[-1].end_lineno
-        #     ]
-        #     text[-1] = text[-1][: node.targets[-1].end_col_offset]
-        #     self.name = "\n".join(text).strip()
-        #     if len(node.targets) > 1:
-        #         self.defines = tuple(
-        #             target.strip() for target in self.name.split(",")
-        #         )
-        #     else:
-        #         self.defines = (self.name,)
-        # elif isinstance(node, ast.AnnAssign):
-        #     self.name = lines[node.target.lineno - 1][
-        #         : node.target.end_col_offset
-        #     ].strip()
-        #     self.defines = (self.name,)
-        # el
+        self.uses = uses
         if hasattr(node, "name"):
             self.name = cast(Any, node).name.strip()
             self.defines = (self.name,)  # type: ignore[assignment]
@@ -164,11 +157,18 @@ class BlockOfCode:
             lines[self.pos.line : self.end_pos.line + 1]  # noqa: E203
         )
 
-    def uses(self, other: BlockOfCode) -> bool:
-        """Return if self's code uses stuff from the other block of code."""
-        # TODO: improve this
-        code = re.sub(r'"""(.|\n)+"""', "", (self.unparsed_code or self.code))
-        return any(def_ in code for def_ in other.defines)
+
+def compare(a: BlockOfCode, b: BlockOfCode) -> int:
+    """Compare two blocks."""
+    if set(a.uses) & set(b.defines):
+        return 1
+    if set(b.uses) & set(a.defines):
+        return -1
+    if (a.name or "").lower() > (b.name or "").lower():
+        return 1
+    if (a.name or "").lower() < (b.name or "").lower():
+        return -1
+    return 0
 
 
 def sort_class(
@@ -182,18 +182,41 @@ def sort_class(
 
     lines = code.split("\n")
 
-    functions = [  # get all the functions in the class
-        BlockOfCode(
-            lines.copy(),
-            node,
-            Position(node.lineno - 1, node.col_offset),
-            Position(
-                cast(int, node.end_lineno) - 1, cast(int, node.end_col_offset)
+    functions: list[BlockOfCode] = []
+
+    for node in class_.body:
+        if isinstance(node, ast.AsyncFunctionDef | ast.FunctionDef):
+            functions.append(
+                BlockOfCode(
+                    lines.copy(),
+                    node,
+                    Position(node.lineno - 1, node.col_offset),
+                    Position(
+                        cast(int, node.end_lineno) - 1,
+                        cast(int, node.end_col_offset),
+                    ),
+                )
+            )
+            continue
+        uses: list[str] = []
+        for fun in functions:
+            uses.extend(
+                name for name in fun.defines if ast_uses_name(node, name)
+            )
+        if not uses:
+            continue
+        functions.append(
+            BlockOfCode(
+                lines.copy(),
+                cast(Any, node),
+                Position(node.lineno - 1, node.col_offset),
+                Position(
+                    cast(int, node.end_lineno) - 1,
+                    cast(int, node.end_col_offset),
+                ),
+                uses=tuple(uses),
             ),
         )
-        for node in class_.body
-        if isinstance(node, ast.AsyncFunctionDef | ast.FunctionDef)
-    ]
 
     for function in sorted(
         functions, key=lambda func: func.pos.line, reverse=True
@@ -203,9 +226,7 @@ def sort_class(
             + lines[1 + function.end_pos.line :]  # noqa: E203
         )
 
-    for function in sorted(
-        functions, key=lambda func: cast(str, func.name).lower()
-    ):
+    for function in sorted(functions, key=cmp_to_key(compare)):
         lines.extend(function.code.split("\n"))
 
     return lines

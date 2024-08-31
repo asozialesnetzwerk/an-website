@@ -15,26 +15,29 @@
 
 from __future__ import annotations
 
-from typing import ClassVar
+from collections.abc import Awaitable
+from typing import ClassVar, Final
 
+import regex
 from redis.asyncio import Redis
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
+from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
+    args = r"(?:\d+/)*\d+"
     return ModuleInfo(
         handlers=(
-            (r"(?i)/LOLWUT", LOLWUT),
-            (r"(?i)/LOLWUT/((?:\d+/)*\d+)", LOLWUT),
-            (r"/api/lolwut", LOLWUTAPI),
-            (r"/api/lolwut/((?:\d+/)*\d+)", LOLWUTAPI),
-            (r"(?i)/API/LOLWUT", LOLWUTAPI),
-            (r"(?i)/API/LOLWUT/((?:\d+/)*\d+)", LOLWUTAPI),
+            (r"/LOLWUT", LOLWUT),
+            (rf"/LOLWUT/({args})", LOLWUT),
+            (r"/api/LOLWUT", LOLWUTAPI),
+            (rf"/api/LOLWUT/({args})", LOLWUTAPI),
+            (rf"(?i)(?:/api)?/lolwut(?:/{args})?", LOLWUTRedirectHandler),
         ),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",
@@ -46,23 +49,9 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-async def generate_art(
-    redis: Redis[str],
-    args: None | str = None,
-    head: bool = False,
-) -> None | str:
+def generate_art(redis: Redis[str], args: str | None) -> Awaitable[bytes]:
     """Generate art."""
-    if args:
-        arguments = args.split("/")
-        for argument in arguments:
-            if not argument:
-                raise HTTPError(404)
-        command = "LOLWUT VERSION " + " ".join(arguments)
-    else:
-        command = "LOLWUT"
-    if head:
-        return None
-    return await redis.execute_command(command)  # type: ignore[no-any-return, no-untyped-call]  # noqa: B950
+    return redis.lolwut(*(args.split("/") if args else ()))
 
 
 class LOLWUT(HTMLRequestHandler):
@@ -70,14 +59,10 @@ class LOLWUT(HTMLRequestHandler):
 
     async def get(self, args: None | str = None, *, head: bool = False) -> None:
         """Handle GET requests to the LOLWUT page."""
-        if not self.request.path.isupper():
-            self.redirect(self.request.path.upper())
-            return
-
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        art = await generate_art(self.redis, args, head)
+        art = await generate_art(self.redis, args)
 
         if head:
             return
@@ -98,18 +83,36 @@ class LOLWUTAPI(APIRequestHandler):
         *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
     )
 
-    async def get(self, args: None | str = None, *, head: bool = False) -> None:
+    async def get(self, args: None | str = None) -> None:
         """Handle GET requests to the LOLWUT API."""
-        if not self.request.path.isupper():
-            self.redirect(self.request.path.upper())
-            return
-
         if not EVENT_REDIS.is_set():
             raise HTTPError(503)
 
-        art = await generate_art(self.redis, args, head)
+        art = await generate_art(self.redis, args)
 
         if self.content_type == "text/plain":
             return await self.finish(art)
 
         await self.finish({"LOLWUT": art})
+
+
+class LOLWUTRedirectHandler(BaseRequestHandler):
+    """Redirect to the LOLWUT page."""
+
+    REPL_PATTERN: Final = regex.compile(r"/lolwut(/|\?|$)", regex.IGNORECASE)
+
+    def get(self) -> None:
+        """Handle requests to the lolwut (sic!) page."""
+        self.redirect(
+            LOLWUTRedirectHandler.REPL_PATTERN.sub(
+                LOLWUTRedirectHandler.repl_match, self.request.full_url(), 1
+            )
+        )
+
+    head = get
+    post = get
+
+    @staticmethod
+    def repl_match(match: regex.Match[str]) -> str:
+        """Return the correct replacement for the given match."""
+        return f"/LOLWUT{match.group(1)}"
