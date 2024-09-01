@@ -1,5 +1,5 @@
 :root {
-    color-scheme: light;
+    color-scheme: only light;
 
     /* colors: */
     --main: hsl(0deg 100% 33%);

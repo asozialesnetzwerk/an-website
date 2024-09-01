@@ -1,23 +1,15 @@
-table {
-    margin-right: auto;
-    margin-left: auto;
-}
-
-th {
-    width: 45%;
-}
-
 .rating {
     display: inline;
     color: var(--secondary-text-color);
 }
 
 .positive {
-    color: green;
+    color: green;  /* for old browsers */
+    color: light-dark(green, #0f0);
 }
 
 .negative {
-    color: red;
+    color: #f00;
 }
 
 .wrong-quote-a {
@@ -35,6 +27,10 @@ th {
     .info-page-0 {
         flex-direction: row;
     }
+
+    .info-page-0 div {
+        flex: 30%;
+    }
 }
 
 .info-page-data {
@@ -50,17 +46,18 @@ th {
     place-content: center;
 }
 
-.info-page-q-col  span {
+.info-page-q-col span {
     display: flex;
     flex-direction: row;
     place-content: center;
-    gap:  1ch;
+    gap: 1ch;
 }
 
 #disclaimer {
     display: flex;
     flex-direction: row;
     margin-top: 2rem;
+    gap: 1rem;
 }
 
 .button-container-a {

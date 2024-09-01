@@ -10,7 +10,8 @@
 {% block body %}
     <div class="info-page-0">
         <div class="info-page-data">{% block info_column %}{% end %}</div>
-        <div class="info-page-q-col">
+        <div {% if not wrong_quotes %}style="flex:min-content"{% end %}
+            class="info-page-q-col">
             <span>
                  <a class="no-style-a button-container-a"
                     tooltip="Neues falsches Zitat hinzufügen"
@@ -27,13 +28,13 @@
                         <li>
                             <a href="{{fix_url(f'/zitate/{wq.get_id_as_str()}')}}"
                                class="wrong-quote-a">{{str(wq)}}</a>
-                            (Rating: <div class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
-                                            >{{wq.rating}}</div>)
+                            (Rating: <b class="rating {% if wq.rating > 0 %}positive{% elif wq.rating < 0 %}negative{% end %}"
+                                            >{{wq.rating}}</b>)
                         </li>
                     {% end %}
                 </ol>
             {% else %}
-                Keine falschen Zitate gefunden.
+                <span>Keine falschen Zitate gefunden.</span>
             {% end %}
         </div>
     </div>
