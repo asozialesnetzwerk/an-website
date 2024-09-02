@@ -986,11 +986,11 @@
         },
         "openmoji-dist": {
             "hashes": [
-                "sha256:5051363c78e4748a826d47e32293c7bd3ec605d3ed2afc30d8553c66a95121c0",
-                "sha256:80dd790dc7dff8fd5d6605bce1c36c02ce82283c3d6b44256da0cfa970eb63f3"
+                "sha256:4a66a2e10c86edfc25abc755725c8802b3907d23202628c49d76db0dd3f4785d",
+                "sha256:a386e314f6ff5ea7780450577bbc6ad493bed39dd1a6923f6a1e06fbb6cf47ec"
             ],
             "index": "pypi",
-            "version": "==15.0.0.3"
+            "version": "==15.0.0.4"
         },
         "orjson": {
             "hashes": [
