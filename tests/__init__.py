@@ -204,6 +204,7 @@ def fetch(
             url = f"{host}/{url.removeprefix('/')}"
         kwargs.setdefault("raise_error", False)
         kwargs.setdefault("follow_redirects", False)
+        kwargs.setdefault("use_gzip", False)
         if not kwargs.get("headers"):
             kwargs["headers"] = {}
         kwargs["headers"].setdefault("Accept", "text/html, */*")

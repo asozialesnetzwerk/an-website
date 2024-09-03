@@ -15,6 +15,8 @@
 
 from __future__ import annotations
 
+import gzip
+
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
@@ -34,6 +36,17 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
     )
     assert response.headers["Cache-Control"] == CACHE_CONTROL
     size = len(response.body)
+
+    for encoding in ("gzip", "zstd"):
+        compressed_response = await fetch(
+            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            headers={"Accept-Encoding": encoding},
+        )
+        assert size > (size_compre := len(compressed_response.body))
+        assert compressed_response.headers["Content-Encoding"] == encoding
+        assert int(compressed_response.headers["Content-Length"]) == size_compre
+        if encoding == "gzip":
+            assert response.body == gzip.decompress(compressed_response.body)
 
     part_response = assert_valid_response(
         await fetch(
