@@ -180,7 +180,7 @@ class SoundInfo(Info):
             "</a>"
             "«"
             "<br>"
-            "<audio controls>"
+            '<audio controls preload="none">'
             f"<source src={file_url!r} type='audio/mpeg'>"
             "</audio>"
             "</li>"
