@@ -47,7 +47,7 @@ from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
 from tornado.log import gen_log
 from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
 
-from .. import DIR as ROOT_DIR, MEDIA_TYPES
+from .. import CA_BUNDLE_PATH, MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
 
 
@@ -84,7 +84,7 @@ def patch_asyncio() -> None:
 
 def patch_certifi() -> None:
     """Make everything use our CA bundle."""
-    certifi.where = lambda: os.path.join(ROOT_DIR, "ca-bundle.crt")
+    certifi.where = lambda: CA_BUNDLE_PATH
     certifi.contents = lambda: Path(certifi.where()).read_text("ASCII")
 
 

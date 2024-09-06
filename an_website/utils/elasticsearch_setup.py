@@ -15,9 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from collections.abc import Awaitable, Callable
-from pathlib import Path
 from typing import Final, Literal, TypeAlias, TypedDict, cast
 
 import orjson
@@ -25,9 +23,9 @@ from elastic_transport import ObjectApiResponse
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from tornado.web import Application
 
-from .. import DIR
+from .. import CA_BUNDLE_PATH, DIR
 from .better_config_parser import BetterConfigParser
-from .utils import none_to_default
+from .utils import none_to_default, recurse_directory
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -53,9 +51,12 @@ async def setup_elasticsearch_configs(
 
         what: ES_WHAT_LITERAL = ES_WHAT_LITERALS[i]
 
-        base_path = Path(DIR, "elasticsearch", what)
+        base_path = DIR / "elasticsearch" / what
 
-        for path in base_path.rglob("*.json"):
+        for rel_path in recurse_directory(
+            base_path, lambda path: path.name.endswith(".json")
+        ):
+            path = base_path / rel_path
             if not path.is_file():
                 LOGGER.warning("%s is not a file", path)
                 continue
@@ -64,11 +65,11 @@ async def setup_elasticsearch_configs(
                 path.read_bytes().replace(b"{prefix}", prefix.encode("ASCII"))
             )
 
-            name = f"{prefix}-{str(path.relative_to(base_path))[:-5].replace('/', '-')}"
+            name = f"{prefix}-{rel_path[:-5].replace('/', '-')}"
 
             spam.append(
                 setup_elasticsearch_config(
-                    elasticsearch, what, body, name, path
+                    elasticsearch, what, body, name, rel_path
                 )
             )
 
@@ -80,7 +81,7 @@ async def setup_elasticsearch_config(
     what: ES_WHAT_LITERAL,
     body: dict[str, object],
     name: str,
-    path: str | Path = "<unknown>",
+    path: str = "<unknown>",
 ) -> None | ObjectApiResponse[object]:
     """Setup Elasticsearch config."""  # noqa: D401
     get: Callable[..., Awaitable[ObjectApiResponse[object]]]
@@ -183,7 +184,7 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
         basic_auth=(
             None if None in basic_auth else cast(tuple[str, str], basic_auth)
         ),
-        ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+        ca_certs=CA_BUNDLE_PATH,
         **kwargs,
     )
     app.settings["ELASTICSEARCH"] = elasticsearch

@@ -19,7 +19,6 @@ import abc
 import asyncio
 import contextlib
 import logging
-import os
 import random
 import sys
 import time
@@ -39,6 +38,7 @@ from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import (
+    CA_BUNDLE_PATH,
     DIR as ROOT_DIR,
     EVENT_REDIS,
     EVENT_SHUTDOWN,
@@ -49,7 +49,7 @@ from .. import (
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, Permission, emojify, ratelimit
 
-DIR: Final = os.path.dirname(__file__)
+DIR: Final = ROOT_DIR / "quotes"
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -360,7 +360,7 @@ async def make_api_request(
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         body=body_str,
         raise_error=False,
-        ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+        ca_certs=CA_BUNDLE_PATH,
     )
     if response.code != 200:
         normed_response_code = (

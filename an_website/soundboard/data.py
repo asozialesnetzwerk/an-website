@@ -20,18 +20,17 @@ import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
 from typing import Final
 
 import orjson as json
 import regex
 
+from .. import DIR as ROOT_DIR
 from ..utils.static_file_handling import hash_file
-from ..utils.utils import name_to_id, replace_umlauts
+from ..utils.utils import name_to_id, replace_umlauts, size_of_file
 
-DIR: Final = os.path.dirname(__file__)
-
-with open(os.path.join(DIR, "info.json"), encoding="UTF-8") as file:
+DIR: Final = ROOT_DIR / "soundboard"
+with (DIR / "info.json").open("r", encoding="UTF-8") as file:
     info = json.loads(file.read())
 
 # {"muk": "Marc-Uwe Kling", ...}
@@ -168,7 +167,7 @@ class SoundInfo(Info):
         file = self.get_filename()  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"files/{file}.mp3"
-        file_url = f"/soundboard/{path}?v={hash_file(Path(DIR, path))}"
+        file_url = f"/soundboard/{path}?v={hash_file(DIR / path)}"
         return (
             f"<li id={file!r}>"
             f"<a href={href!r} class='a_hover'>"
@@ -190,8 +189,8 @@ class SoundInfo(Info):
         """Parse the info to a RSS item."""
         filename = self.get_filename()
         rel_path = f"files/{filename}.mp3"
-        abs_path = os.path.join(DIR, rel_path)
-        file_size = os.path.getsize(abs_path)
+        abs_path = DIR / rel_path
+        file_size = size_of_file(abs_path)
         mod_time_since_epoch = os.path.getmtime(abs_path)
         # convert seconds since epoch to readable timestamp
         modification_time = email.utils.formatdate(mod_time_since_epoch, True)

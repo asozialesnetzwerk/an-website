@@ -15,17 +15,16 @@
 
 from __future__ import annotations
 
-from os.path import abspath, dirname
-from pathlib import Path
 from typing import Final
 
 from tornado.web import RedirectHandler
 
+from .. import DIR as ROOT_DIR
 from ..utils.static_file_from_traversable import TraversableStaticFileHandler
 from ..utils.utils import ModuleInfo, PageInfo
 from .soundboard import SoundboardHTMLHandler, SoundboardRSSHandler
 
-DIR: Final = abspath(dirname(__file__))
+DIR: Final = ROOT_DIR / "soundboard"
 
 
 def get_module_info() -> ModuleInfo:
@@ -43,7 +42,7 @@ def get_module_info() -> ModuleInfo:
             (
                 r"/soundboard/files/(.*mp3)",
                 TraversableStaticFileHandler,
-                {"root": Path(DIR) / "files", "hashes": {}},
+                {"root": DIR / "files", "hashes": {}},
             ),
             (
                 r"/soundboard/feed",

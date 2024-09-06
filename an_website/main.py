@@ -65,7 +65,15 @@ from tornado.process import fork_processes, task_id
 from tornado.web import Application, RedirectHandler
 from typed_stream import Stream
 
-from . import DIR, EVENT_SHUTDOWN, NAME, TEMPLATES_DIR, UPTIME, VERSION
+from . import (
+    CA_BUNDLE_PATH,
+    DIR,
+    EVENT_SHUTDOWN,
+    NAME,
+    TEMPLATES_DIR,
+    UPTIME,
+    VERSION,
+)
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import background_tasks, static_file_handling
 from .utils.base_request_handler import BaseRequestHandler
@@ -74,6 +82,7 @@ from .utils.elasticsearch_setup import setup_elasticsearch
 from .utils.logging import WebhookFormatter, WebhookHandler
 from .utils.request_handler import NotFoundHandler
 from .utils.static_file_from_traversable import TraversableStaticFileHandler
+from .utils.template_loader import TemplateLoader
 from .utils.utils import (
     ArgparseNamespace,
     Handler,
@@ -109,20 +118,20 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
     loaded_modules: list[str] = []
     errors: list[str] = []
 
-    for potential_module in os.listdir(DIR):
+    for potential_module in DIR.iterdir():
         if (
-            potential_module.startswith("_")
-            or potential_module in IGNORED_MODULES
-            or not os.path.isdir(os.path.join(DIR, potential_module))
+            potential_module.name.startswith("_")
+            or potential_module.name in IGNORED_MODULES
+            or not potential_module.is_dir()
         ):
             continue
 
         _module_infos = get_module_infos_from_module(
-            potential_module, errors, ignore_not_found=True
+            potential_module.name, errors, ignore_not_found=True
         )
         if _module_infos:
             module_infos.extend(_module_infos)
-            loaded_modules.append(potential_module)
+            loaded_modules.append(potential_module.name)
             LOGGER.debug(
                 (
                     "Found module_infos in %s.__init__.py, "
@@ -135,12 +144,12 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
         if f"{potential_module}.*" in IGNORED_MODULES:
             continue
 
-        for potential_file in os.listdir(os.path.join(DIR, potential_module)):
-            module_name = f"{potential_module}.{potential_file[:-3]}"
+        for potential_file in potential_module.iterdir():
+            module_name = f"{potential_module.name}.{potential_file.name[:-3]}"
             if (
-                not potential_file.endswith(".py")
+                not potential_file.name.endswith(".py")
                 or module_name in IGNORED_MODULES
-                or potential_file.startswith("_")
+                or potential_file.name.startswith("_")
             ):
                 continue
             _module_infos = get_module_infos_from_module(module_name, errors)
@@ -377,8 +386,9 @@ def make_app(config: ConfigParser) -> str | Application:
         ),
         websocket_ping_interval=10,
         # Template settings
-        template_path=TEMPLATES_DIR,
-        template_whitespace="oneline",
+        template_loader=TemplateLoader(
+            root=TEMPLATES_DIR, whitespace="oneline"
+        ),
     )
 
 
@@ -709,7 +719,7 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
             host,
             bearer_auth=key,
             verify_certs=verify_certs,
-            ca_certs=os.path.join(DIR, "ca-bundle.crt"),
+            ca_certs=CA_BUNDLE_PATH,
         )
         if host
         else None
@@ -752,7 +762,7 @@ def setup_redis(app: Application) -> None | Redis[str]:
     }
     redis_ssl_kwargs: Kwargs = {
         "connection_class": SSLConnection,
-        "ssl_ca_certs": os.path.join(DIR, "ca-bundle.crt"),
+        "ssl_ca_certs": CA_BUNDLE_PATH,
         "ssl_keyfile": config.get("REDIS", "SSL_KEYFILE", fallback=None),
         "ssl_certfile": config.get("REDIS", "SSL_CERTFILE", fallback=None),
         "ssl_cert_reqs": config.get(

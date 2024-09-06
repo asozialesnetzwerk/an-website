@@ -19,7 +19,6 @@ Only to inform, not to brag.
 
 from __future__ import annotations
 
-import os
 import shutil
 import sys
 from collections.abc import Mapping
@@ -30,11 +29,14 @@ from typing import Final
 import regex
 from tornado.web import HTTPError as HTTPEwwow
 
-from .. import CONTAINERIZED, DIR as ROOT_DIR, NAME
+from .. import CONTAINERIZED, DIR as ROOT_DIR, NAME, traversable_to_file
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo, PageInfo, run
 
-SCREENFETCH_PATH: Final = os.path.join(ROOT_DIR, "vendored", "screenfetch")
+SCREENFETCH: Final = (
+    shutil.which("bash") or "bash",
+    traversable_to_file(ROOT_DIR / "vendored" / "screenfetch").as_posix(),
+)
 UWUFETCH_PATH: Final = shutil.which("uwufetch")
 ENV: Final[Mapping[str, str]] = {
     "USER": NAME,
@@ -99,10 +101,10 @@ class HostInfo(HTMLRequestHandler):
         logo = self.SCREENFETCH_CACHE.value
 
         if not logo:
-            logo = minify_ansi_art((await run(SCREENFETCH_PATH, "-L"))[1])
+            logo = minify_ansi_art((await run(*SCREENFETCH, "-L"))[1])
             self.SCREENFETCH_CACHE.value = logo
 
-        screenfetch_bytes = (await run(SCREENFETCH_PATH, "-n", env=ENV))[1]
+        screenfetch_bytes = (await run(*SCREENFETCH, "-n", env=ENV))[1]
 
         if self.content_type == "text/plain":
             return await self.finish(logo + b"\n\n" + screenfetch_bytes)

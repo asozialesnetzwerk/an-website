@@ -119,7 +119,7 @@ setup(
     .read_text("UTF-8")
     .split("\n"),
     include_package_data=True,
-    zip_safe=False,
+    zip_safe=True,
     entry_points={
         "console_scripts": (
             "an-website = an_website.__main__:main",

@@ -24,15 +24,13 @@ and https://www.gnu.org/licenses/javascript-labels.html
 from __future__ import annotations
 
 import logging
-import os
 from collections.abc import Mapping
 from functools import cache
-from pathlib import Path
 from typing import Final
 
 from .. import STATIC_DIR
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, recurse_directory
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -69,12 +67,14 @@ def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
 
     Returns a list of tuples with filename, license and license URL.
     """
-    js_files_dir = os.path.join(STATIC_DIR, "js")
+    js_files_dir = STATIC_DIR / "js"
     licenses_list: list[tuple[str, str, str]] = []
-    for path in Path(js_files_dir).rglob("*.js"):
+    for filename in recurse_directory(
+        js_files_dir, lambda path: path.name.endswith(".js")
+    ):
+        path = js_files_dir / filename
         if not path.is_file():
             continue
-        filename = str(path.relative_to(js_files_dir))
         with path.open(encoding="UTF-8") as file:
             license_line = file.readline().strip().removeprefix('"use strict";')
         if not license_line.startswith("// @license "):

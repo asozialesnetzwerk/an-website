@@ -21,11 +21,11 @@ import sys
 import time
 from asyncio import Event
 from collections.abc import Mapping
-from os.path import abspath, dirname
+from importlib.metadata import Distribution
+from importlib.resources import files
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Final, TypedDict
-
-from get_version import get_version
 
 try:
     import orjson as json
@@ -85,20 +85,35 @@ UPTIME: Final = UptimeTimer()
 EPOCH: Final[int] = 1651075200
 EPOCH_MS: Final[int] = EPOCH * 1000
 
-DIR: Final[str] = abspath(dirname(__file__))
+DIR: Final[Traversable] = files(__name__)
 
 MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
-    Path(DIR, "vendored", "mime-db.json").read_bytes()
+    (DIR / "vendored" / "mime-db.json").read_bytes()
 )
 
 NAME = "an-website"
-VERSION: Final[str] = get_version(__file__, vcs="git")
+
+
+def get_version() -> str:
+    """Get the version of the package."""
+    if isinstance(DIR, Path):
+        # pylint: disable-next=import-outside-toplevel
+        from get_version import get_version as gv
+
+        return gv(__file__, vcs="git")
+
+    return Distribution.from_name(NAME).version
+
+
+VERSION: Final[str] = get_version()
+
 GH_ORG_URL: Final[str] = "https://github.com/asozialesnetzwerk"
 GH_REPO_URL: Final[str] = f"{GH_ORG_URL}/{NAME}"
 GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 
-STATIC_DIR: Final[Path] = Path(DIR) / "static"
-TEMPLATES_DIR: Final[str] = os.path.join(DIR, "templates")
+CACHE_DIR: Final[Path] = Path("~/.cache/", NAME).expanduser().absolute()
+STATIC_DIR: Final[Traversable] = DIR / "static"
+TEMPLATES_DIR: Final[Traversable] = DIR / "templates"
 
 ORJSON_OPTIONS: Final[int] = (
     json.OPT_SERIALIZE_NUMPY | json.OPT_NAIVE_UTC | json.OPT_UTC_Z
@@ -107,6 +122,23 @@ ORJSON_OPTIONS: Final[int] = (
 CONTAINERIZED: Final[bool] = "container" in os.environ or os.path.exists(
     "/.dockerenv"
 )
+
+
+def traversable_to_file(traversable: Traversable) -> Path:
+    """Convert a traversable to a path to a file directly in the fs."""
+    if isinstance(traversable, Path):
+        return traversable
+    folder = CACHE_DIR / "temp"
+    folder.mkdir(parents=True, exist_ok=True)
+    file = folder / traversable.name
+    file.write_bytes(traversable.read_bytes())
+    return file
+
+
+CA_BUNDLE_PATH: Final[str] = traversable_to_file(
+    DIR / "ca-bundle.crt"
+).as_posix()
+
 
 if pytest_is_running():
     NAME += "-test"

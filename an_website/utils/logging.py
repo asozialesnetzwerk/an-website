@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from asyncio import AbstractEventLoop
 from collections.abc import Awaitable
 from concurrent.futures import Future
@@ -28,7 +27,7 @@ from typing import Any
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 
-from .. import DIR as ROOT_DIR
+from .. import CA_BUNDLE_PATH
 
 
 class AsyncHandler(logging.Handler):
@@ -149,7 +148,7 @@ class WebhookHandler(AsyncHandler):
                 method="POST",
                 headers={"Content-Type": self.content_type},
                 body=message.strip(),
-                ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+                ca_certs=CA_BUNDLE_PATH,
             )
         except Exception:  # pylint: disable=broad-except
             self.handleError(record)

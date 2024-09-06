@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import os
 import time
 from typing import Final
 
@@ -23,7 +22,7 @@ import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
-from .. import DIR as ROOT_DIR
+from .. import CA_BUNDLE_PATH
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -65,7 +64,7 @@ async def url_returns_200(url: str) -> bool:
         url,
         method="HEAD",
         raise_error=False,
-        ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+        ca_certs=CA_BUNDLE_PATH,
     )
     return response.code == 200
 
@@ -85,7 +84,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
     # try getting the invite from the widget
     url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
     response = await AsyncHTTPClient().fetch(
-        url, raise_error=False, ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt")
+        url, raise_error=False, ca_certs=CA_BUNDLE_PATH
     )
     if response.code == 200:
         response_json = json.loads(response.body)
@@ -96,7 +95,7 @@ async def get_invite(guild_id: str = GUILD_ID) -> tuple[str, str]:
     # try getting the invite from DISBOARD
     url = f"https://disboard.org/site/get-invite/{guild_id}"
     response = await AsyncHTTPClient().fetch(
-        url, raise_error=False, ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt")
+        url, raise_error=False, ca_certs=CA_BUNDLE_PATH
     )
     if response.code == 200:
         return (

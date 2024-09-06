@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from datetime import datetime, timedelta, timezone
 from typing import Final, cast
 from urllib.parse import quote as quote_url
@@ -25,7 +24,7 @@ import orjson as json
 import regex
 from tornado.httpclient import AsyncHTTPClient
 
-from .. import DIR as ROOT_DIR, EVENT_REDIS
+from .. import CA_BUNDLE_PATH, EVENT_REDIS
 from ..utils.request_handler import HTMLRequestHandler
 from .utils import get_author_by_id, get_quote_by_id, get_wrong_quotes
 
@@ -78,7 +77,7 @@ async def search_wikipedia(
             f"{api}?action=opensearch&namespace=0&profile=normal&"
             f"search={quote_url(query)}&limit=1&redirects=resolve&format=json"
         ),
-        ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+        ca_certs=CA_BUNDLE_PATH,
     )
     response_json = json.loads(response.body)
     if not response_json[1]:
@@ -105,7 +104,7 @@ async def get_wikipedia_page_content(
             f"{api}?action=query&prop=extracts&exsectionformat=plain&exintro&"
             f"titles={quote_url(page_name)}&explaintext&format=json&exsentences=5"
         ),
-        ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+        ca_certs=CA_BUNDLE_PATH,
     )
     response_json = json.loads(response.body)
     if "query" not in response_json or "pages" not in response_json["query"]:

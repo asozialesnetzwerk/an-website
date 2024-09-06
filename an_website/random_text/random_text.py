@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from random import Random
 from typing import ClassVar
 
@@ -52,7 +51,7 @@ class Arguments:
 
 
 WORDS = tuple(
-    Path(DIR, "words.txt")
+    (DIR / "words.txt")
     .read_text(encoding="UTF-8")
     .replace("sozial", "asozial")
     .replace("Sozial", "Asozial")

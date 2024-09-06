@@ -19,13 +19,14 @@ import logging
 import sys
 from collections.abc import Awaitable, Iterable, Mapping, Sequence
 from importlib.resources.abc import Traversable
-from pathlib import Path
 from typing import Any, Final, Literal, override
 from urllib.parse import urlsplit, urlunsplit
 
 from tornado import httputil, iostream
 from tornado.web import GZipContentEncoding, HTTPError, RequestHandler
 from typed_stream import Stream
+
+from an_website.utils.utils import size_of_file
 
 from .static_file_handling import content_type_from_path
 
@@ -102,12 +103,7 @@ class TraversableStaticFileHandler(RequestHandler):
             # pylint: disable-next=protected-access
             request_range = httputil._parse_request_range(range_header)
 
-        size: int = (
-            absolute_path.stat().st_size
-            if isinstance(absolute_path, Path)
-            # pylint: disable-next=bad-builtin
-            else sum(map(len, self.get_content(absolute_path)))
-        )
+        size: int = size_of_file(absolute_path)
 
         if request_range:
             start, end = request_range

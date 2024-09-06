@@ -20,11 +20,9 @@ This should only contain request handlers and the get_module_info function.
 from __future__ import annotations
 
 import logging
-import os
 from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 from http.client import responses
-from pathlib import Path
 from typing import Any, ClassVar, Final, override
 from urllib.parse import unquote, urlsplit
 
@@ -32,7 +30,7 @@ import regex
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
-from .. import DIR as ROOT_DIR
+from .. import CA_BUNDLE_PATH, DIR as ROOT_DIR
 from .base_request_handler import BaseRequestHandler
 from .utils import (
     SUS_PATHS,
@@ -239,7 +237,7 @@ class ElasticRUM(BaseRequestHandler):
             response = await AsyncHTTPClient().fetch(
                 self.URL.format(version, spam, eggs),
                 raise_error=False,
-                ca_certs=os.path.join(ROOT_DIR, "ca-bundle.crt"),
+                ca_certs=CA_BUNDLE_PATH,
             )
             if response.code != 200:
                 raise HTTPError(response.code, reason=response.reason)
@@ -272,7 +270,7 @@ for key, file in {
     "5.12.0.min": "elastic-apm-rum.umd.min.js",
     "5.12.0.min.map": "elastic-apm-rum.umd.min.js.map",
 }.items():
-    path = Path(ROOT_DIR) / "vendored" / "apm-rum" / file
+    path = ROOT_DIR / "vendored" / "apm-rum" / file
     ElasticRUM.SCRIPTS[key] = path.read_bytes()
 
 del key, file, path  # type: ignore[possibly-undefined]  # pylint: disable=undefined-loop-variable  # noqa: B950

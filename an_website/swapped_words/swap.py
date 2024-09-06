@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import os
 from asyncio import Future
 from base64 import b64decode, b64encode
 from dataclasses import dataclass
@@ -23,16 +22,15 @@ from typing import ClassVar, Final
 
 from tornado.web import HTTPError, MissingArgumentError
 
+from .. import DIR as ROOT_DIR
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from .config_file import InvalidConfigError, SwappedWordsConfig
 
-DIR: Final = os.path.dirname(__file__)
-
 # the max char count of the text to process
 MAX_CHAR_COUNT: Final[int] = 32769 - 1
 
-with open(os.path.join(DIR, "config.sw"), encoding="UTF-8") as file:
+with (ROOT_DIR / "swapped_words/config.sw").open("r", encoding="UTF-8") as file:
     DEFAULT_CONFIG: Final[SwappedWordsConfig] = SwappedWordsConfig(file.read())
 
 

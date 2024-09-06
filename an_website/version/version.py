@@ -17,13 +17,12 @@ from __future__ import annotations
 
 from ctypes import c_char
 from multiprocessing import Array
-from pathlib import Path
 
 from Crypto.Hash import RIPEMD160
 
 from .. import DIR as ROOT_DIR, VERSION
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, recurse_directory
 
 FILE_HASHES = Array(c_char, 1024**2)
 HASH_OF_FILE_HASHES = Array(c_char, 40)
@@ -52,9 +51,11 @@ def hash_bytes(data: bytes) -> str:
 def hash_all_files() -> str:
     """Hash all files."""
     return "\n".join(
-        f"{hash_bytes(path.read_bytes())} {path.relative_to(ROOT_DIR)}"
-        for path in sorted(Path(ROOT_DIR).rglob("*"))
-        if path.is_file() and "__pycache__" not in path.parts
+        f"{hash_bytes((ROOT_DIR / path).read_bytes())} {path}"
+        for path in sorted(
+            recurse_directory(ROOT_DIR, lambda path: path.is_file())
+        )
+        if "__pycache__" not in path.split("/")
     )
 
 

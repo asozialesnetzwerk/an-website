@@ -20,7 +20,7 @@ import asyncio
 import contextlib
 import heapq
 import logging
-import os
+import os.path
 import pathlib
 import random
 import sys
@@ -40,6 +40,7 @@ from datetime import datetime, timezone
 from enum import IntFlag
 from functools import cache, partial
 from hashlib import sha1
+from importlib.resources.abc import Traversable
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 from pathlib import Path
 from typing import (
@@ -98,7 +99,7 @@ BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
 )
 
-PRINT = int.from_bytes(Path(ROOT_DIR, "primes.bin").read_bytes(), "big")
+PRINT = int.from_bytes((ROOT_DIR / "primes.bin").read_bytes(), "big")
 
 IP_HASH_SALT: Final = {
     "date": datetime.now(timezone.utc).date(),
@@ -538,9 +539,9 @@ def get_close_matches(  # based on difflib.get_close_matches
 
 def get_themes() -> tuple[str, ...]:
     """Get a list of available themes."""
-    files = os.listdir(STATIC_DIR / "css/themes")
+    files = (STATIC_DIR / "css/themes").iterdir()
     return (
-        *(file[:-4] for file in files if file.endswith(".css")),
+        *(file.name[:-4] for file in files if file.name.endswith(".css")),
         "random",  # add random to the list of themes
         "random_dark",
     )
@@ -724,6 +725,31 @@ def replace_umlauts(string: str) -> str:
     )
 
 
+def recurse_directory(
+    root: Traversable,
+    # pylint: disable-next=redefined-builtin
+    filter: Callable[[Traversable], bool] = lambda _: True,
+) -> Iterable[str]:
+    """Recursively iterate over entries in a directory."""
+    next_dirs: list[str] = ["."]
+    while next_dirs:  # pylint: disable=while-used
+        curr_dirs = tuple(next_dirs)
+        next_dirs.clear()
+        for curr_dir in curr_dirs:
+            for path in (
+                root if curr_dir == "." else (root / curr_dir)
+            ).iterdir():
+                current: str = (
+                    path.name
+                    if curr_dir == "."
+                    else os.path.join(curr_dir, path.name)
+                )
+                if path.is_dir():
+                    next_dirs.append(current)
+                if filter(path):
+                    yield current
+
+
 async def run(
     program: str,
     *args: str,
@@ -743,6 +769,15 @@ async def run(
     )
     output = await proc.communicate()
     return proc.returncode, *output
+
+
+def size_of_file(file: Traversable) -> int:
+    """Calculate the size of a file."""
+    if isinstance(file, Path):
+        return file.stat().st_size
+
+    with file.open("rb") as data:
+        return sum(map(len, data))  # pylint: disable=bad-builtin
 
 
 def str_to_bool(val: None | str | bool, default: None | bool = None) -> bool:

@@ -30,7 +30,7 @@ from blake3 import blake3
 from openmoji_dist import VERSION as OPENMOJI_VERSION, get_openmoji_data
 
 from .. import DIR as ROOT_DIR, STATIC_DIR
-from .utils import Handler
+from .utils import Handler, recurse_directory
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -46,10 +46,10 @@ def hash_file(path: Traversable) -> str:
 
 def create_file_hashes_dict() -> dict[str, str]:
     """Create a dict of file hashes."""
+    static = Path("/static")
     file_hashes_dict = {
-        path.as_posix()[len(ROOT_DIR) :]: hash_file(path)
-        for path in STATIC_DIR.rglob("*")
-        if path.is_file()
+        f"{(static / path).as_posix()}": hash_file(STATIC_DIR / path)
+        for path in recurse_directory(STATIC_DIR, lambda path: path.is_file())
     }
     file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
     file_hashes_dict["/favicon.jxl"] = file_hashes_dict["/static/favicon.jxl"]
@@ -60,7 +60,7 @@ def create_file_hashes_dict() -> dict[str, str]:
 FILE_HASHES_DICT: Final[Mapping[str, str]] = create_file_hashes_dict()
 
 CONTENT_TYPES: Final[Mapping[str, str]] = json.loads(
-    Path(ROOT_DIR, "vendored", "media-types.json").read_bytes()
+    (ROOT_DIR / "vendored" / "media-types.json").read_bytes()
 )
 
 
@@ -86,8 +86,12 @@ def get_handlers() -> list[Handler]:
             {"url": fix_static_path("favicon.png")},
         ),
     ]
-    debug_style_dir = Path(ROOT_DIR).absolute().parent / "style"
-    if sys.flags.dev_mode and debug_style_dir.exists():
+    debug_style_dir = (
+        ROOT_DIR.absolute().parent / "style"
+        if isinstance(ROOT_DIR, Path)
+        else None
+    )
+    if sys.flags.dev_mode and debug_style_dir and debug_style_dir.exists():
         # add handlers for the unminified CSS files
         handlers.append(
             (

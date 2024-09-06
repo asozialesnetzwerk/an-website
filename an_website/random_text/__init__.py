@@ -15,7 +15,8 @@
 
 from __future__ import annotations
 
-from os.path import abspath, dirname
 from typing import Final
 
-DIR: Final = abspath(dirname(__file__))
+from .. import DIR as ROOT_DIR
+
+DIR: Final = ROOT_DIR / "random_text"

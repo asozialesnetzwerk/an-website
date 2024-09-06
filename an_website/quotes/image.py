@@ -54,18 +54,14 @@ QUOTE_MAX_WIDTH: Final[int] = 900
 DEBUG_COLOR: Final[tuple[int, int, int]] = 245, 53, 170
 DEBUG_COLOR2: Final[tuple[int, int, int]] = 224, 231, 34
 TEXT_COLOR: Final[tuple[int, int, int]] = 230, 230, 230
-FONT: Final = ImageFont.truetype(
-    font=os.path.join(DIR, "files/oswald.regular.ttf"),
-    size=50,
-)
-FONT_SMALLER: Final = ImageFont.truetype(
-    font=os.path.join(DIR, "files/oswald.regular.ttf"),
-    size=44,
-)
-HOST_NAME_FONT: Final = ImageFont.truetype(
-    font=os.path.join(DIR, "files/oswald.regular.ttf"),
-    size=23,
-)
+
+with (DIR / "files/oswald.regular.ttf").open("rb") as data:
+    FONT: Final = ImageFont.truetype(font=data, size=50)
+with (DIR / "files/oswald.regular.ttf").open("rb") as data:
+    FONT_SMALLER: Final = ImageFont.truetype(font=data, size=44)
+with (DIR / "files/oswald.regular.ttf").open("rb") as data:
+    HOST_NAME_FONT: Final = ImageFont.truetype(font=data, size=23)
+del data
 
 CONTENT_TYPES: Final[Mapping[str, str]] = {
     "spider": "image/x-spider",
@@ -103,10 +99,9 @@ IMAGE_CONTENT_TYPES_WITHOUT_TXT: Final[tuple[str, ...]] = tuple(
 
 def load_png(filename: str) -> Image.Image:
     """Load a PNG image into memory."""
-    with Image.open(
-        os.path.join(DIR, "files", f"{filename}.png"), formats=("PNG",)
-    ) as image:
-        return image.copy()
+    with (DIR / "files" / f"{filename}.png").open("rb") as file:  # noqa: SIM117
+        with Image.open(file, formats=("PNG",)) as image:
+            return image.copy()
 
 
 BACKGROUND_IMAGE: Final = load_png("bg")
