@@ -347,6 +347,17 @@ jobs:
     runs-on: ubuntu-24.04
     needs:
       - build-oci-image
+    strategy:
+      fail-fast: false
+      matrix:
+        redis-image:
+          - docker.io/redis/redis-stack-server:6.2.6-v15
+          #- docker.dragonflydb.io/dragonflydb/dragonfly
+    services:
+      redis:
+        image: ${{ matrix.redis-image }}
+        ports:
+          - 6379:6379
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

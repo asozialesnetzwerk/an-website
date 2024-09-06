@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-
 from tornado.web import RedirectHandler
 
 from ..utils.utils import ModuleInfo, PageInfo
