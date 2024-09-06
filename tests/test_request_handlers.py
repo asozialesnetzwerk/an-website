@@ -347,7 +347,7 @@ async def test_request_handlers4(fetch: FetchCallable) -> None:  # noqa: F811
 async def test_request_handlers5(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
     await check_html_page(fetch, "/betriebszeit", codes={200})
-    await check_html_page(fetch, "/discord", codes={200})
+    await check_html_page(fetch, "/discord?ask_before_leaving=1", codes={200})
     await check_html_page(fetch, "/einstellungen", codes={200})
     await check_html_page(fetch, "/endpunkte", codes={200})
     await check_html_page(fetch, "/hangman-loeser", codes={200})
@@ -364,7 +364,7 @@ async def test_request_handlers5(fetch: FetchCallable) -> None:  # noqa: F811
     await check_html_page(fetch, "/version", codes={200})
     await check_html_page(fetch, "/vertauschte-woerter", codes={200})
     await check_html_page(fetch, "/waehrungs-rechner", codes={200})
-    await check_html_page(fetch, "/wiki", codes={200})
+    await check_html_page(fetch, "/wiki?ask_before_leaving=1", codes={200})
     await check_html_page(fetch, "/wortspiel-helfer", codes={200})
 
 
@@ -379,7 +379,7 @@ async def test_request_handlers6(fetch: FetchCallable) -> None:  # noqa: F811
     )
     assert_valid_dynload_response(
         await fetch(
-            "/discord",
+            "/discord?ask_before_leaving=sure",
             headers={"Accept": "application/vnd.asozial.dynload+json"},
         ),
         {200},
@@ -496,7 +496,8 @@ async def test_request_handlers6(fetch: FetchCallable) -> None:  # noqa: F811
     )
     assert_valid_dynload_response(
         await fetch(
-            "/wiki", headers={"Accept": "application/vnd.asozial.dynload+json"}
+            "/wiki?ask_before_leaving=sure",
+            headers={"Accept": "application/vnd.asozial.dynload+json"},
         ),
         {200},
     )

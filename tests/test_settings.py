@@ -172,7 +172,11 @@ async def test_setting_stuff_and_saving_to_cookies(
                 assert morsel.value == "img"
             elif morsel.key == "bumpscosity":
                 assert morsel.value == "0"
-            elif morsel.key in {"advanced_settings", "compat"}:
+            elif morsel.key in {
+                "advanced_settings",
+                "compat",
+                "ask_before_leaving",
+            }:
                 assert morsel.value == "nope"
             else:
                 assert morsel.value == "sure"

@@ -153,6 +153,8 @@ async def assert_valid_response(
     valid_response_codes = {200, 503}
     if path == "/api/reports":
         valid_response_codes.add(404)
+    elif path in {"/discord", "/wiki"}:
+        valid_response_codes = {307}
     head_response = await _fetch(
         path,
         headers={"Accept": accept_header},
@@ -170,7 +172,8 @@ async def assert_valid_response(
         follow_redirects=follow_redirects,
     )
     assert get_response.code == head_response.code
-    assert get_response.body.endswith(b"\n")
+    if get_response.code not in {204, 307, 308}:
+        assert get_response.body.endswith(b"\n")
     for header in (
         "Content-Type",
         "Onion-Location",

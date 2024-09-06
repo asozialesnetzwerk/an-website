@@ -19,6 +19,8 @@ from __future__ import annotations
 import sys
 from os.path import abspath, dirname, join
 
+from an_website.utils.utils import str_to_bool
+
 # add parent dir to sys.path
 # this makes importing an_website possible
 DIR = abspath(dirname(__file__))
@@ -340,6 +342,18 @@ async def check_html_page(
             not in checked_urls
         ):
             checked_urls.add(link.removeprefix(scheme_and_netloc) or "/")
+            resp = await fetch(link)
+            if link.removeprefix(scheme_and_netloc).split("?")[0] in {
+                "/discord",
+                "/wiki",
+            } and not str_to_bool(
+                dict(parse_qsl(urlsplit(link).query, True, True)).get(
+                    "ask_before_leaving", "0"
+                )
+            ):
+                assert resp.code == 307
+                continue
+            assert resp.code in {307, *codes}
             resp = assert_valid_response(
                 await fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type
