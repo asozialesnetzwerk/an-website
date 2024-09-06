@@ -16,9 +16,8 @@
 from __future__ import annotations
 
 import email.utils
-import os
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Final
 
@@ -133,6 +132,29 @@ class SoundInfo(Info):
     chapter: Chapter
     person: Person
 
+    filename: str = field(init=False)
+    pub_date: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Init post."""
+        person_, timestamp, text = self.text.split("-", 2)
+        object.__setattr__(
+            self,
+            "filename",
+            regex.sub(
+                r"[^a-z0-9_-]+",
+                "",
+                replace_umlauts(
+                    (person_ + "-" + text).lower().replace(" ", "_")
+                ),
+            ),
+        )
+        object.__setattr__(self, "text", text)
+        # convert seconds since epoch to readable timestamp
+        object.__setattr__(
+            self, "pub_date", email.utils.formatdate(float(timestamp), True)
+        )
+
     def contains(self, string: None | str) -> bool:
         """Check whether this sound info contains a given string."""
         if string is None:
@@ -146,25 +168,13 @@ class SoundInfo(Info):
             for word in replace_umlauts(string.lower()).split(" ")
         )
 
-    def get_filename(self) -> str:
-        """Parse the text to return the name of the file."""
-        return regex.sub(
-            r"[^a-z0-9_-]+",
-            "",
-            replace_umlauts(self.text.lower().replace(" ", "_")),
-        )
-
-    def get_text(self) -> str:
-        """Parse the text to only return the quote."""
-        return self.text.split("-", 1)[1]
-
     def to_html(
         self,
         fix_url_func: Callable[[str], str] = lambda url: url,
         query: None | str = None,
     ) -> str:
         """Parse the info to a list element with an audio element."""
-        file = self.get_filename()  # pylint: disable=redefined-outer-name
+        file = self.filename  # pylint: disable=redefined-outer-name
         href = fix_url_func(f"/soundboard/{self.person.name}")
         path = f"files/{file}.mp3"
         file_url = f"/soundboard/{path}?v={hash_file(DIR / path)}"
@@ -175,7 +185,7 @@ class SoundInfo(Info):
             "</a>"
             ": »"
             f"<a no-dynload href={file_url!r} class='quote-a'>"
-            f"{mark_query(self.get_text(), query)}"
+            f"{mark_query(self.text, query)}"
             "</a>"
             "«"
             "<br>"
@@ -187,15 +197,12 @@ class SoundInfo(Info):
 
     def to_rss(self, url: None | str) -> str:
         """Parse the info to a RSS item."""
-        filename = self.get_filename()
+        filename = self.filename
         rel_path = f"files/{filename}.mp3"
         abs_path = DIR / rel_path
         file_size = size_of_file(abs_path)
-        mod_time_since_epoch = os.path.getmtime(abs_path)
-        # convert seconds since epoch to readable timestamp
-        modification_time = email.utils.formatdate(mod_time_since_epoch, True)
         link = f"/soundboard/{rel_path}"
-        text = self.get_text()
+        text = self.text
         if url is not None:
             link = url + link
         return (
@@ -213,7 +220,7 @@ class SoundInfo(Info):
             f" length={str(file_size)!r}>"
             "</enclosure>"
             f"<guid>{filename}</guid>"
-            f"<pubDate>{modification_time}</pubDate>"
+            f"<pubDate>{self.pub_date}</pubDate>"
             "</item>"
         )
 

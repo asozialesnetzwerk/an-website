@@ -201,18 +201,18 @@ class Search(HTMLRequestHandler):
             search.DataProvider(
                 ALL_SOUNDS,
                 lambda sound_info: (
-                    sound_info.get_text(),
+                    sound_info.text,
                     sound_info.person.value,
                 ),
                 lambda sound_info: (
                     (
                         "url",
                         self.fix_url(
-                            f"/soundboard/{sound_info.person.name}#{sound_info.get_filename()}"
+                            f"/soundboard/{sound_info.person.name}#{sound_info.filename}"
                         ),
                     ),
                     ("title", f"Soundboard ({sound_info.person.value})"),
-                    ("description", sound_info.get_text()),
+                    ("description", sound_info.text),
                 ),
             )
         )
