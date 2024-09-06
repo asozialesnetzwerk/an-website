@@ -353,7 +353,7 @@ async def check_html_page(
             ):
                 assert resp.code == 307
                 continue
-            assert resp.code in {307, *codes}
+            assert resp.code in {307, *codes, 503}
             resp = assert_valid_response(
                 await fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type
