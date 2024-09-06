@@ -14,8 +14,3 @@
 """A 🆒 chat."""
 
 from __future__ import annotations
-
-from os.path import abspath, dirname
-from typing import Final
-
-DIR: Final = abspath(dirname(__file__))

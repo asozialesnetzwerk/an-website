@@ -16,8 +16,6 @@
 from __future__ import annotations
 
 import sys
-from os.path import abspath, dirname
-from typing import Final
 
 from .request_handler import (
     ElasticRUM,
@@ -26,8 +24,6 @@ from .request_handler import (
     ZeroDivision,
 )
 from .utils import ModuleInfo
-
-DIR: Final = abspath(dirname(__file__))
 
 
 def get_module_info() -> ModuleInfo:

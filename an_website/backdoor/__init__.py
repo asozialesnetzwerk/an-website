@@ -15,13 +15,8 @@
 
 from __future__ import annotations
 
-from os.path import abspath, dirname
-from typing import Final
-
 from ..utils.utils import ModuleInfo
 from .backdoor import Backdoor
-
-DIR: Final = abspath(dirname(__file__))
 
 
 def get_module_info() -> ModuleInfo:

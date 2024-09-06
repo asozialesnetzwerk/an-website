@@ -26,11 +26,10 @@ from collections.abc import Callable
 from configparser import RawConfigParser
 from contextlib import suppress
 from importlib import import_module
-from os.path import abspath, dirname
 from pathlib import Path
 from threading import Thread
 from types import MethodType
-from typing import Any, Final
+from typing import Any
 from urllib.parse import urlsplit
 
 import certifi
@@ -50,8 +49,6 @@ from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
 
 from .. import DIR as ROOT_DIR, MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
-
-DIR: Final = abspath(dirname(__file__))
 
 
 def apply() -> None:
