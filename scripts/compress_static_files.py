@@ -18,13 +18,10 @@
 from __future__ import annotations
 
 import abc
-import gzip
-import shutil
-import subprocess  # nosec: B404
 import sys
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable
 from pathlib import Path
-from typing import ClassVar, override
+from typing import override
 
 type CompressionResult = tuple[Path, float, bool]
 
@@ -64,40 +61,25 @@ class FileCompressor(abc.ABC):
         """
         raise NotImplementedError()
 
+    @abc.abstractmethod
+    def get_missing_dependencies(self) -> Iterable[str]:
+        """Get the missing dependencies."""
+        raise NotImplementedError()
+
 
 class GzipFileCompressor(FileCompressor):
     """Compress files using gzip compression."""
 
-    USE_PIGZ: ClassVar[bool] = True
-
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        if self.USE_PIGZ:
-            compressed = GzipFileCompressor.compress_using_pigz(data)
-            if compressed:
-                return (compressed,)
-            type(self).USE_PIGZ = False
+        # pylint: disable-next=import-outside-toplevel,import-error
+        import zopfli  # type: ignore[import-not-found]
 
-        return (gzip.compress(data, compresslevel=9, mtime=0),)
+        c = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_GZIP)
 
-    @staticmethod
-    def compress_using_pigz(data: bytes) -> bytes | None:
-        """Compress better."""
-        if not (pigz := shutil.which("pigz")):
-            return None
-
-        result = subprocess.run(  # nosec: B603
-            [pigz, "-11", "--no-time", "--to-stdout", "-"],
-            check=False,
-            capture_output=True,
-            input=data,
-        )
-
-        if result.returncode:
-            return None
-
-        return result.stdout
+        yield c.compress(data)
+        yield c.flush()
 
     @classmethod
     @override
@@ -107,6 +89,15 @@ class GzipFileCompressor(FileCompressor):
         e.g.: 'gz'
         """
         return "gz"
+
+    def get_missing_dependencies(self) -> Iterable[str]:
+        """Get the missing dependencies."""
+        try:
+            # pylint: disable-next=import-outside-toplevel,unused-import
+            import zopfli  # noqa: F401
+        except ModuleNotFoundError as exc:
+            assert exc.name == "zopfli"
+            yield "zopflipy==1.10"
 
 
 class ZstdFileCompressor(FileCompressor):
@@ -118,7 +109,7 @@ class ZstdFileCompressor(FileCompressor):
         # pylint: disable-next=import-outside-toplevel,import-error
         import zstd  # type: ignore[import-not-found]
 
-        return (zstd.compress(data, 22),)
+        yield zstd.compress(data, 22)
 
     @classmethod
     @override
@@ -129,9 +120,18 @@ class ZstdFileCompressor(FileCompressor):
         """
         return "zst"
 
+    def get_missing_dependencies(self) -> Iterable[str]:
+        """Get the missing dependencies."""
+        try:
+            # pylint: disable-next=import-outside-toplevel,unused-import
+            import zstd  # noqa: F401
+        except ModuleNotFoundError as exc:
+            assert exc.name == "zstd"
+            yield "zstd==1.5.5.1"
+
 
 def compress_dir(
-    dir_: Path, compressors: Sequence[FileCompressor]
+    dir_: Path, compressors: Collection[FileCompressor]
 ) -> Iterable[CompressionResult]:
     """Compress a directory."""
     assert dir_.is_dir(), "needs to be a directory"
@@ -153,9 +153,15 @@ def get_static_dirs() -> Iterable[Path]:
     yield source_dir / "soundboard" / "files"
 
 
-def get_compressors() -> Sequence[FileCompressor]:
+def get_compressors() -> Collection[FileCompressor]:
     """Get the available compressors."""
     return ZstdFileCompressor(), GzipFileCompressor()
+
+
+def get_missing_dependencies() -> Iterable[str]:
+    """Get the missing dependencies."""
+    for compressor in get_compressors():
+        yield from compressor.get_missing_dependencies()
 
 
 def compress_static_files() -> Iterable[CompressionResult]:
