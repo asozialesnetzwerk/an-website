@@ -731,23 +731,19 @@ def recurse_directory(
     filter: Callable[[Traversable], bool] = lambda _: True,
 ) -> Iterable[str]:
     """Recursively iterate over entries in a directory."""
-    next_dirs: list[str] = ["."]
-    while next_dirs:  # pylint: disable=while-used
-        curr_dirs = tuple(next_dirs)
-        next_dirs.clear()
-        for curr_dir in curr_dirs:
-            for path in (
-                root if curr_dir == "." else (root / curr_dir)
-            ).iterdir():
-                current: str = (
-                    path.name
-                    if curr_dir == "."
-                    else os.path.join(curr_dir, path.name)
-                )
-                if path.is_dir():
-                    next_dirs.append(current)
-                if filter(path):
-                    yield current
+    dirs: list[str] = ["."]
+    while dirs:  # pylint: disable=while-used
+        curr_dir = dirs.pop()
+        for path in (root if curr_dir == "." else root / curr_dir).iterdir():
+            current: str = (
+                path.name
+                if curr_dir == "."
+                else os.path.join(curr_dir, path.name)
+            )
+            if path.is_dir():
+                dirs.append(current)
+            if filter(path):
+                yield current
 
 
 async def run(
