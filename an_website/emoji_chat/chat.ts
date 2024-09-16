@@ -140,7 +140,7 @@ const handleWebSocketData = (event: { data: string }) => {
         }
         case "init": {
             displayCurrentUser(data.current_user);
-            console.log("Connected as", data.current_user.join(""));
+            console.debug("Connected as", data.current_user.join(""));
             setConnectionState("connected");
             reconnectTimeout = 100;
             reconnectTries = 0;

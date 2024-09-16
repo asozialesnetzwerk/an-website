@@ -27,7 +27,7 @@ function ondata(
     onpopstate = false,
 ) {
     if (!data) {
-        console.log("data is falsy!");
+        console.debug("data is falsy!");
         return;
     }
     if (data.error) {
