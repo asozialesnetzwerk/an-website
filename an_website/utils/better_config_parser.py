@@ -87,12 +87,26 @@ class BetterConfigParser(ConfigParser):
                     option,
                     section,
                 )
-            self._arg_parser.add_argument(
-                f"--{option_name}".replace("_", "-"),
-                required=False,
-                type=conv,
-                help=f"Override {option!r} in the {section!r} section of the config",
-            )
+            if conv == self._convert_to_boolean:
+                self._arg_parser.add_argument(
+                    f"--no-{option_name}".replace("_", "-"),
+                    action="store_false",
+                    required=False,
+                    dest=option_name.replace("_", "-"),
+                )
+                self._arg_parser.add_argument(
+                    f"--{option_name}".replace("_", "-"),
+                    required=False,
+                    action="store_true",
+                    help=f"Override {option!r} in the {section!r} section of the config",
+                )
+            else:
+                self._arg_parser.add_argument(
+                    f"--{option_name}".replace("_", "-"),
+                    required=False,
+                    type=conv,
+                    help=f"Override {option!r} in the {section!r} section of the config",
+                )
             self._arg_parser_options_added.add((section, option))
         value = getattr(
             self._arg_parser.parse_known_args(get_arguments_without_help())[0],
