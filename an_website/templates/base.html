@@ -35,10 +35,7 @@
             {% end %}
             <script type="module" src="{{fix_static('js/utils/utils.js')}}"></script>
             {% if dynload %}
-                <script type="module" nonce="{{nonce}}">
-                    import { enableDynload } from "{{fix_static('js/utils/utils.js')}}";
-                    enableDynload();
-                </script>
+                <script type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
             {% if openmoji and "glyf_colr" in openmoji %}
                 <link rel="stylesheet" type="text/css" href="{{fix_static(f'openmoji/font/{openmoji}.css')}}">
