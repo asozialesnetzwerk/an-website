@@ -78,8 +78,7 @@ def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
         with path.open(encoding="UTF-8") as file:
             license_line = file.readline().strip().removeprefix('"use strict";')
         if not license_line.startswith("// @license "):
-            LOGGER.warning("%s has no license comment", filename)
-            # TODO: exit in dev mode if this fails
+            LOGGER.critical("%s has no license comment", filename)
             continue
         magnet, name = (
             license_line.removeprefix("// @license").strip().split(" ")

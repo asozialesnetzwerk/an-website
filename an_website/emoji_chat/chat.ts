@@ -171,8 +171,8 @@ const handleWebSocketData = (event: { data: string }) => {
 const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
-        (window.location.protocol === "https:" ? "wss:" : "ws:") +
-            `//${window.location.host}/websocket/emoji-chat`,
+        (location.protocol === "https:" ? "wss:" : "ws:") +
+            `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         ws.send("");

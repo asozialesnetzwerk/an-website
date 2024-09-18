@@ -1,5 +1,6 @@
-// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-let lastLocation = String(window.location);
+export { hideSitePane, showSitePane } from "./better_ui.ts";
+
+let lastLocation = String(location);
 
 export function getLastLocation(): string {
     return lastLocation;
@@ -56,7 +57,7 @@ export const PopStateHandlers: Record<
 > = {
     // always reload the location if URLParamChange
     URLParamChange: () => {
-        window.location.reload();
+        location.reload();
     },
 };
 
@@ -77,37 +78,37 @@ export function setMultipleURLParams(
     push = true,
 ) {
     // log("setURLParam", param, value, state, onpopstate);
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     for (const [param, value] of params) {
         urlParams.set(param, value);
     }
     const newUrl =
-        `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+        `${location.origin}${location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);
     (state as { stateType: string }).stateType = stateType;
-    if (push && newUrl !== window.location.href) {
+    if (push && newUrl !== location.href) {
         history.pushState(state, newUrl, newUrl);
     } else {
         history.replaceState(state, newUrl, newUrl);
     }
-    lastLocation = window.location.href;
+    lastLocation = location.href;
     return newUrl;
 }
 
 function scrollToId() {
-    if (window.location.hash === "") {
+    if (location.hash === "") {
         return;
     }
     const header = document.getElementById("header");
     if (!header) {
         return;
     }
-    const el = document.querySelector(window.location.hash);
+    const el = document.querySelector(location.hash);
     if (!el) {
         return;
     }
 
-    window.scrollBy(
+    scrollBy(
         0,
         el.getBoundingClientRect().top - Math.floor(
             parseFloat(getComputedStyle(header).height),
@@ -119,9 +120,9 @@ setTimeout(scrollToId, 4);
 window.onhashchange = scrollToId;
 
 window.onpopstate = (event: PopStateEvent) => {
-    if (lastLocation.split("#")[0] === window.location.href.split("#")[0]) {
+    if (lastLocation.split("#")[0] === location.href.split("#")[0]) {
         // Only hash changed
-        lastLocation = window.location.href;
+        lastLocation = location.href;
         scrollToId();
         return;
     }
@@ -131,7 +132,7 @@ window.onpopstate = (event: PopStateEvent) => {
         if (stateHandler) {
             event.preventDefault();
             stateHandler(event);
-            lastLocation = window.location.href;
+            lastLocation = location.href;
             scrollToId();
             return;
         } else {
@@ -140,7 +141,7 @@ window.onpopstate = (event: PopStateEvent) => {
     }
 
     console.error("Couldn't handle state. ", event.state);
-    lastLocation = window.location.href;
-    window.location.reload();
+    lastLocation = location.href;
+    location.reload();
 };
 // @license-end

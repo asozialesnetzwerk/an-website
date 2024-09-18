@@ -45,4 +45,3 @@ searchForm.onsubmit = (e: Event) => {
         );
     });
 };
-// @license-end

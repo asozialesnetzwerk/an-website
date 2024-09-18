@@ -324,4 +324,3 @@ function addEventListeners() {
 }
 
 addEventListeners();
-// @license-end

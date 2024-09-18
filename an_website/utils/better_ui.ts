@@ -1,6 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-export {};
-
 // these functions break if using the CSS-only functionality of the site-pane
 export function showSitePane() {
     document.getElementById("site-pane")?.setAttribute("open", "");
@@ -70,7 +68,7 @@ document.ontouchmove = (e) => {
     startPos.x = null;
     startPos.y = null;
 
-    const minDiffX = Math.max(12, 0.01 * window.screen.width, diffY * 1.5);
+    const minDiffX = Math.max(12, 0.01 * screen.width, diffY * 1.5);
 
     console.debug({ diffX, minDiffX });
 
@@ -78,4 +76,3 @@ document.ontouchmove = (e) => {
         diffX > 0 ? showSitePane() : hideSitePane();
     }
 };
-// @license-end

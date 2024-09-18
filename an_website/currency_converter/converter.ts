@@ -184,4 +184,3 @@ for (const field of fields) {
 }
 // fix form submit
 (document.getElementById("form") as HTMLFormElement).onsubmit = onSubmit;
-// @license-end

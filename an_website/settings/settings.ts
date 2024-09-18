@@ -91,4 +91,3 @@ function createBumpscositySlider() {
 }
 
 createBumpscositySlider();
-// @license-end

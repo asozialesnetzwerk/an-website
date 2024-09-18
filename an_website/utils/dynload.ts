@@ -1,6 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { get, PopStateHandlers, setLastLocation } from "./utils.js";
-import { hideSitePane } from "./better_ui.js";
+import { get, PopStateHandlers, setLastLocation, hideSitePane } from "./utils.js";
 
 const contentContainer = document.getElementById("main") as HTMLDivElement;
 
@@ -29,7 +28,7 @@ function dynLoadOnData(
         return;
     }
     if (data.redirect) {
-        window.location.href = data.redirect;
+        location.href = data.redirect;
         return;
     }
     const url = data.url;
@@ -51,7 +50,7 @@ function dynLoadOnData(
         setLastLocation(url);
     }
     if (!data.body) {
-        window.location.reload();
+        location.reload();
         return;
     }
 
@@ -106,7 +105,7 @@ function dynLoad(url: string) {
     history.replaceState( // save current scrollPos
         {
             data: urlData,
-            url: window.location.href,
+            url: location.href,
             scrollPos: [
                 document.documentElement.scrollLeft || document.body.scrollLeft,
                 document.documentElement.scrollTop || document.body.scrollTop,
@@ -114,13 +113,13 @@ function dynLoad(url: string) {
             stateType: "dynLoad",
         },
         document.title,
-        window.location.href,
+        location.href,
     );
     return dynLoadSwitchToURL(url);
 }
 
 async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
-    if (!allowSameUrl && url === window.location.href) {
+    if (!allowSameUrl && url === location.href) {
         console.log("URL is the same as current, just hide site pane");
         // @ts-expect-error TS2774
         if (window.hideSitePane) {
@@ -134,10 +133,10 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await get(url, "", (data) => dynLoadOnData(data, false), (error) => {
         console.log(error);
-        if (url === window.location.href) {
-            window.location.reload();
+        if (url === location.href) {
+            location.reload();
         } else {
-            window.location.href = url;
+            location.href = url;
         }
     }, "application/vnd.asozial.dynload+json");
 }
@@ -152,12 +151,12 @@ async function dynLoadOnPopState(event: PopStateEvent) {
         ) {
             // when the data did not get handled properly
             await dynLoadSwitchToURL(
-                state.url || window.location.href,
+                state.url || location.href,
                 true,
             );
         }
         if (state.scrollPos) {
-            window.scrollTo(
+            scrollTo(
                 state.scrollPos[0],
                 state.scrollPos[1],
             );
@@ -165,7 +164,7 @@ async function dynLoadOnPopState(event: PopStateEvent) {
         }
     }
     console.error("Couldn't handle state.", event.state);
-    window.location.reload();
+    location.reload();
 }
 
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
@@ -182,7 +181,7 @@ document.addEventListener("click", (e) => {
 
     const href = (
         anchor.href.startsWith("/")
-            ? (window.location.origin + anchor.href)
+            ? (location.origin + anchor.href)
             : anchor.href
     )
         .trim();
@@ -190,16 +189,16 @@ document.addEventListener("click", (e) => {
     const hrefWithoutQuery = href.split("?")[0];
     if (
         // link is to different domain
-        !href.startsWith(window.location.origin) ||
+        !href.startsWith(location.origin) ||
         // link is to file, not HTML page
         (
             // @ts-expect-error TS2532
             (hrefWithoutQuery.split("/").pop() ?? "").includes(".") &&
             // URLs to redirect page are HTML pages
-            hrefWithoutQuery !== (window.location.origin + "/redirect")
+            hrefWithoutQuery !== (location.origin + "/redirect")
         ) ||
         // link is to /chat, which redirects to another page
-        hrefWithoutQuery === (window.location.origin + "/chat")
+        hrefWithoutQuery === (location.origin + "/chat")
     ) {
         return;
     }
@@ -207,7 +206,7 @@ document.addEventListener("click", (e) => {
     if (
         // URL to the same page, but with hash
         href.startsWith("#") ||
-        href.startsWith(window.location.href.split("#")[0] + "#")
+        href.startsWith(location.href.split("#")[0] + "#")
     ) {
         return;
     }

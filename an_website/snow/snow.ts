@@ -9,7 +9,7 @@ let pageHeightVh: number;
 
 function setHeightVariables(): void {
     bodyHeightPx = document.documentElement.getBoundingClientRect().height;
-    pageHeightVh = 100 * Math.max(bodyHeightPx / window.innerHeight, 1);
+    pageHeightVh = 100 * Math.max(bodyHeightPx / innerHeight, 1);
 }
 
 function getSnowAttributes(): void {
@@ -93,7 +93,6 @@ export function createSnow(): void {
     //     spawnSnow(snowflakesCount);
     // }
 }
-// @license-end
 
 // TODO add option to easily re-render scenery. For example when window resizes.
 // this should be easy as CSS rerenders after display block -> none -> block;

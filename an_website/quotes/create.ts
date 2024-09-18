@@ -29,4 +29,3 @@ quoteInput.oninput = () => {
         realAuthorInput.value = author;
     }
 };
-// @license-end

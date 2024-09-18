@@ -437,4 +437,3 @@ if (startButton !== null) {
 } else {
     startLoadingComics();
 }
-// @license-end

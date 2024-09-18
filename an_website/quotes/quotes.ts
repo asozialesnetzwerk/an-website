@@ -20,7 +20,7 @@ function startQuotes() {
         (document.getElementById("top")!).getAttribute("quote-id")!,
     ];
     const nextQuoteId = [nextButton.getAttribute("quote-id")!];
-    const params = window.location.search;
+    const params = location.search;
 
     const keys = (() => {
         const k = new URLSearchParams(params).get("keys");
@@ -46,7 +46,7 @@ function startQuotes() {
                 upvoteButton.click();
                 break;
             case `Key${keys[1]}`:
-                window.history.back();
+                history.back();
                 break;
             case `Key${keys[2]}`:
                 downvoteButton.click();
@@ -196,7 +196,7 @@ function startQuotes() {
 
                 data.stateType = "quotes";
                 data.url = `/zitate/${data.id}${params}`;
-                window.history.pushState(data, "Falsche Zitate", data.url);
+                history.pushState(data, "Falsche Zitate", data.url);
                 setLastLocation(data.url);
             },
         );
@@ -237,4 +237,3 @@ for (
 }
 
 startQuotes();
-// @license-end
