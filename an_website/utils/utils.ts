@@ -1,4 +1,4 @@
-export { hideSitePane, showSitePane } from "./better_ui.ts";
+export { hideSitePane, showSitePane } from "./better_ui_.js";
 
 let lastLocation = String(location);
 

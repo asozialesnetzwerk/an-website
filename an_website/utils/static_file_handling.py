@@ -120,8 +120,6 @@ def fix_static_path(path: str) -> str:
     if path.startswith("/static/openmoji/"):
         return f"{path}?v={OPENMOJI_VERSION}"
     path = path.lower()
-    if path.startswith("/static/js/utils/"):  # TODO: improve this
-        return path
     if path in FILE_HASHES_DICT:
         hash_ = FILE_HASHES_DICT[path]
         return f"{path}?v={hash_}"

@@ -1,7 +1,7 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
 // stolen from: https://github.com/asozialesnetzwerk/Hangman-Solver/blob/ba693776f634e682553ac37a45157cd0ceeab6a9/js/index.js
 
-import { PopStateHandlers, setMultipleURLParams } from "../utils/utils.js";
+import { PopStateHandlers, setMultipleURLParams } from "@utils/utils.js";
 
 const wildCardChar = "_";
 // to replace "_" with regex

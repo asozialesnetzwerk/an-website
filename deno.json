@@ -1,13 +1,13 @@
 {
   "tasks": {
-    "build": "deno task build:css && deno task build:js",
-    "build:css": "deno task esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
-    "build:js:debug": "deno task esbuild $(find an_website -name '*.ts' '!' -name 'better_ui.ts' -exec echo '{}' +) --charset=utf8 --bundle '--external:*.js' --legal-comments=inline '--footer:js=// @license-end' --format=esm --minify --tree-shaking=false --sourcemap --outbase=an_website --outdir=an_website/static/js",
+    "build": "deno task build:js 2> /dev/null ; deno task build:css && deno task build:js",
+    "build:css": "deno task esbuild --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
+    "build:js:debug": "deno task esbuild an_website/**/*[!_].ts --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' --format=esm --outbase=an_website --outdir=an_website/static/js \"--alias:@utils/utils.js=$(python3 -c 'print(__import__(\"an_website.utils.static_file_handling\").utils.static_file_handling.fix_static_path(\"js/utils/utils.js\"))' || echo /static/js/utils/utils.js)\"",
     "build:js": "deno task build:js:debug --pure:console.log --pure:console.debug",
     "clean": "deno task clean:css && deno task clean:js && ./scripts/compress_static_files.py --clean",
     "clean:css": "rm -fr an_website/static/css",
     "clean:js": "rm -fr an_website/static/js",
-    "esbuild": "deno run -A https://raw.githubusercontent.com/asozialesnetzwerk/deno-esbuild/447d06ce059c82524fd769c212b6d6cdfd7c7c0c/mod.js --target=$(deno task target),chrome79,edge123,firefox115,ios12.2,opera107,safari15.6 --charset=utf8 --tree-shaking=true",
+    "esbuild": "deno run -A https://raw.githubusercontent.com/asozialesnetzwerk/deno-esbuild/447d06ce059c82524fd769c212b6d6cdfd7c7c0c/mod.js --target=$(deno task target),chrome79,edge123,firefox115,ios12.2,opera107,safari15.6 --charset=utf8 --minify --sourcemap --tree-shaking=false",
     "target": "echo es$(python3 -c 'from datetime import datetime, timezone; print(min((now := datetime.now(timezone.utc)).year - (5 + (now.month < 7)), 2022))')",
     "watch:css": "deno task build:css --watch",
     "watch:js": "deno task build:js --watch",
