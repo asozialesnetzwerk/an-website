@@ -4,18 +4,14 @@ inputs:
   version:
     description: The version of dart-sass
     required: false
-    default: 1.77.8
-  sass-proto-version:
-    description: The version of the protobuf spec
-    required: false
-    default: 2.7.1
+    default: 1.79.1
 runs:
   using: composite
   steps:
     - name: Setup Dart
       uses: dart-lang/setup-dart@v1
       with:
-        sdk: 3.3.4
+        sdk: 3.4.0
     - name: Install buf
       shell: bash
       run: |
@@ -28,8 +24,8 @@ runs:
         wget https://github.com/sass/dart-sass/archive/refs/tags/${{ inputs.version }}.tar.gz
         tar xf ${{ inputs.version }}.tar.gz
         cd dart-sass-${{ inputs.version }}
+        dart pub add dev:analyzer:6.5.0
         dart pub get
-        sed -i 's/"main"/"embedded-protocol-${{ inputs.sass-proto-version }}"/' tool/grind.dart
         dart run grinder protobuf
         sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
         dart compile exe bin/sass.dart --output /usr/local/bin/dart-sass
