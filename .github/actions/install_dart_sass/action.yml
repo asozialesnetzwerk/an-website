@@ -1,34 +1,19 @@
 name: Install dart-sass
 description: Install dart-sass
 inputs:
-  version:
-    description: The version of dart-sass
+  tar_gz_release_file:
+    description: The .tar.gz release file.
     required: false
-    default: 1.79.1
+    default: https://github.com/asozialesnetzwerk/dart-sass/releases/download/1.79.2%2Basozial/dart-sass-1.79.2+asozial-linux-x64.tar.gz
 runs:
   using: composite
   steps:
-    - name: Setup Dart
-      uses: dart-lang/setup-dart@v1
-      with:
-        sdk: 3.4.0
-    - name: Install buf
-      shell: bash
-      run: |
-        wget -O /usr/local/bin/buf "https://github.com/bufbuild/buf/releases/download/v1.32.2/buf-$(uname -s)-$(uname -m)"
-        chmod +x /usr/local/bin/buf
     - name: Install dart-sass
       shell: bash
       run: |
-        pushd /tmp
-        wget https://github.com/sass/dart-sass/archive/refs/tags/${{ inputs.version }}.tar.gz
-        tar xf ${{ inputs.version }}.tar.gz
-        cd dart-sass-${{ inputs.version }}
-        dart pub add dev:analyzer:6.5.0
-        dart pub get
-        dart run grinder protobuf
-        sed -i "s/math.Random()/math.Random(0)/" lib/src/functions/*.dart
-        dart compile exe bin/sass.dart --output /usr/local/bin/dart-sass
-        cd ..
-        rm -fr ${{ inputs.version }}.tar.gz dart-sass-${{ inputs.version }}
+        pushd "$(mktemp -d)"
+        wget "${{ inputs.tar_gz_release_file }}"
+        tar xf *.tar.gz
+        rm *.tar.gz
+        mv ./dart-sass/* /usr/local/bin/
         popd

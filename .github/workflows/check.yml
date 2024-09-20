@@ -47,7 +47,7 @@ jobs:
       - name: Install dart-sass
         uses: ./.github/actions/install_dart_sass
       - name: Generate snow
-        run: dart-sass -s compressed style/snow.scss style/snow.css
+        run: sass -s compressed --random-seed 0 style/snow.scss style/snow.css
       - name: Build JS & CSS
         run: deno task clean && deno task build
       - name: Generate humans.txt
