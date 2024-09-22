@@ -4,7 +4,7 @@ inputs:
   tar_gz_release_file:
     description: The .tar.gz release file.
     required: false
-    default: https://github.com/asozialesnetzwerk/dart-sass/releases/download/1.79.2%2Basozial/dart-sass-1.79.2+asozial-linux-x64.tar.gz
+    default: https://github.com/asozialesnetzwerk/dart-sass/releases/download/1.79.3%2Basozial/dart-sass-1.79.3-linux-x64.tar.gz
 runs:
   using: composite
   steps:
