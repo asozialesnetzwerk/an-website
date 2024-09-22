@@ -2,7 +2,7 @@
 {
   "ts-node": {"esm": true},
   "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
-  "include": ["scripts", "eslint.config.js", ".pnpmfile.cjs"],
+  "include": [".pnpmfile.cjs", "eslint.config.js", "scripts", "sudoku.ts"],
   "exclude": ["scripts/deno"],
   "compilerOptions": {
     "noEmit": true,
@@ -10,8 +10,9 @@
       {"name": "typescript-eslint-language-service"}
     ],
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "resolveJsonModule": true,
-    "noUnusedLocals": false
+    "verbatimModuleSyntax": true
   }
 }

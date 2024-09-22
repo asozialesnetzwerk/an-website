@@ -26,7 +26,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 1.45.5
+          deno-version: 1.46.1
       - name: Install required stuff
         run: |
           sudo apt-get update
@@ -49,6 +49,8 @@ jobs:
         run: dart-sass -s compressed style/snow.scss style/snow.css
       - name: Build JS & CSS
         run: deno task clean && deno task build
+        env:
+          DENO_FUTURE: 1
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Sort methods

@@ -9,7 +9,7 @@ rules:
     - true
     - severity: "warning"
       browsers: "Chrome 120, Firefox ESR, Safari 15.6"
-reportDescriptionlessDisables: false
+reportDescriptionlessDisables: [true, { severity: "warning" }]
 reportInvalidScopeDisables: true
 reportNeedlessDisables: true
 ignoreFiles:

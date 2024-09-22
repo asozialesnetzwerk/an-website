@@ -17,12 +17,10 @@ module.exports.hooks = {
      * @param {PackageManifest} pkg
      * @param {unknown} context
      */
-    // @ts-expect-error TS6133
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     readPackage: (pkg, context) => {
         const dependencies = assertNonNullable(pkg.dependencies);
         const peerDependencies = assertNonNullable(pkg.peerDependencies);
-        delete dependencies["update-browserslist-db"];
         for (
             const Ԛ of [
                 "@types/node",
