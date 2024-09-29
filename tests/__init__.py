@@ -44,7 +44,7 @@ from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime, timezone
 from os import environ  # pylint: disable=ungrouped-imports
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Final, cast
 from urllib.parse import parse_qsl, urlsplit
 from zoneinfo import ZoneInfo
 
@@ -67,7 +67,9 @@ from an_website.quotes.utils import parse_wrong_quote
 from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.better_config_parser import BetterConfigParser
-from scripts.fix_static_url_path import ERROR_QUERY
+
+# Same as in ../scripts/fix_static_url_path.py
+ERROR_QUERY: Final[str] = "XXX-COULD-NOT-ADD-HASH-XXX"
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1

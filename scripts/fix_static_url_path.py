@@ -23,8 +23,9 @@ from collections.abc import Iterable
 from os.path import dirname, normpath
 from typing import Final, NamedTuple, TextIO
 
-ERROR_QUERY: Final[str] = "XXX-COULD-NOT-ADD-HASH-XXX"
 REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
+# Same as in ../tests/__init__.py
+ERROR_QUERY: Final[str] = "XXX-COULD-NOT-ADD-HASH-XXX"
 
 
 class FixResult(NamedTuple):
