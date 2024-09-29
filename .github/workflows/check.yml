@@ -54,8 +54,6 @@ jobs:
         run: ./scripts/humans.py
       - name: Sort methods
         run: ./scripts/sort_python_code.py
-      - name: Fix word-files for hangman solver
-        run: ./scripts/fix_hangman_solver_word_files.py
       - name: Generate config.ini.default
         run: python3 -m an_website --save-config-to example-configurations/config.ini.default -c
       - name: Update env
