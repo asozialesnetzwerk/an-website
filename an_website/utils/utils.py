@@ -70,7 +70,7 @@ from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
-from .. import DIR as ROOT_DIR, STATIC_DIR
+from .. import DIR as ROOT_DIR
 
 if TYPE_CHECKING:
     from .background_tasks import BackgroundTask
@@ -537,16 +537,6 @@ def get_close_matches(  # based on difflib.get_close_matches
     return tuple(word for score, word in heapq.nsmallest(count, result))
 
 
-def get_themes() -> tuple[str, ...]:
-    """Get a list of available themes."""
-    files = (STATIC_DIR / "css/themes").iterdir()
-    return (
-        *(file.name[:-4] for file in files if file.name.endswith(".css")),
-        "random",  # add random to the list of themes
-        "random_dark",
-    )
-
-
 def hash_bytes(*args: bytes, hasher: Any = None, size: int = 32) -> str:
     """Hash bytes and return the Base85 representation."""
     digest: bytes
@@ -897,6 +887,3 @@ class ModuleInfo(PageInfo):
                 return page_info
 
         return self
-
-
-THEMES: Final[tuple[str, ...]] = get_themes()

@@ -67,6 +67,7 @@ from an_website.quotes.utils import parse_wrong_quote
 from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.better_config_parser import BetterConfigParser
+from scripts.fix_static_url_path import ERROR_QUERY
 
 WRONG_QUOTE_DATA = {
     # https://zitate.prapsschnalinen.de/api/wrongquotes/1
@@ -249,6 +250,8 @@ def assert_valid_response(
     assert response.code in codes or print(
         url, codes, response.code, response.body
     )
+
+    assert ERROR_QUERY.encode("UTF-8") not in response.body or print(url)
 
     if response.request.method == "HEAD":
         assert not response.body

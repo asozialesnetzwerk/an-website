@@ -71,8 +71,8 @@ from .. import (
 from .decorators import is_authorized
 from .options import Options
 from .static_file_handling import FILE_HASHES_DICT, fix_static_path
+from .themes import THEMES
 from .utils import (
-    THEMES,
     ModuleInfo,
     Permission,
     add_args_to_url,

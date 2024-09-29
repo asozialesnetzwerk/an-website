@@ -23,8 +23,8 @@ from typing import Generic, Literal, TypeVar, overload
 
 from tornado.web import RequestHandler
 
+from .themes import THEMES
 from .utils import (
-    THEMES,
     BumpscosityValue,
     OpenMojiValue,
     bool_to_str,

@@ -17,17 +17,19 @@ from __future__ import annotations
 
 import sys
 
-from .request_handler import (
-    ElasticRUM,
-    ErrorPage,
-    NotFoundHandler,
-    ZeroDivision,
-)
 from .utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
+    # pylint: disable-next=import-outside-toplevel
+    from .request_handler import (
+        ElasticRUM,
+        ErrorPage,
+        NotFoundHandler,
+        ZeroDivision,
+    )
+
     return ModuleInfo(
         name="Utilities",
         description="Nützliche Werkzeuge für alle möglichen Sachen.",

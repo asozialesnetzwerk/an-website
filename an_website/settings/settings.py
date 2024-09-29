@@ -24,9 +24,9 @@ from tornado.web import HTTPError
 
 from ..utils.options import Options
 from ..utils.request_handler import HTMLRequestHandler
+from ..utils.themes import THEMES
 from ..utils.utils import (
     BUMPSCOSITY_VALUES,
-    THEMES,
     ModuleInfo,
     bool_to_str,
     str_to_bool,

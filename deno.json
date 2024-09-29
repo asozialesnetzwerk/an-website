@@ -2,7 +2,7 @@
   "tasks": {
     "build": "deno task build:js 2> /dev/null ; deno task build:css && deno task build:js",
     "build:css": "deno task esbuild --outbase=style --outdir=an_website/static/css 'style/**/*.css'",
-    "build:js:debug": "deno task esbuild an_website/**/*[!_].ts --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' --format=esm --outbase=an_website --outdir=an_website/static/js \"--alias:@utils/utils.js=$(python3 -c 'print(__import__(\"an_website.utils.static_file_handling\").utils.static_file_handling.fix_static_path(\"js/utils/utils.js\"))' || echo /static/js/utils/utils.js)\"",
+    "build:js:debug": "deno task esbuild an_website/**/*[!_].ts --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' --format=esm --outbase=an_website --outdir=an_website/static/js \"--alias:@utils/utils.js=$(./scripts/fix_static_url_path.py /static/js/utils/utils.js)\"",
     "build:js": "deno task build:js:debug --pure:console.log --pure:console.debug",
     "clean": "deno task clean:css && deno task clean:js && ./scripts/compress_static_files.py --clean",
     "clean:css": "rm -fr an_website/static/css",
