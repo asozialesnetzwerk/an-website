@@ -36,10 +36,10 @@ function ondata(
     }
     if (!onpopstate) {
         data.stateType = "swappedWords";
-        window.history.pushState(
+        history.pushState(
             data,
             "Vertauschte Wörter",
-            window.location.href,
+            location.href,
         );
     }
     textInput.value = data.text || "";
@@ -48,9 +48,8 @@ function ondata(
     errorText.innerText = "";
 }
 
-function onerror(
-    e: { error: string | null; line_num: number; line: string },
-) {
+function onerror(error: unknown) {
+    const e = error as { error: string | null; line_num: number; line: string };
     console.error(e);
     if (e.error) {
         alert(e.error);
@@ -91,6 +90,7 @@ function onerror(
     );
 
 PopStateHandlers["swappedWords"] = (event: PopStateEvent) => {
-    event.state && ondata(event.state as SwappedWordsData, true);
+    if (event.state) {
+        ondata(event.state as SwappedWordsData, true);
+    }
 };
-// @license-end

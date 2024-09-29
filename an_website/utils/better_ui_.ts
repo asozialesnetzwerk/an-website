@@ -34,7 +34,9 @@ document.onfocus = (event: FocusEvent) => {
 // phone users
 openPane.onclick = showSitePane;
 document.onclick = (e) => {
-    belongsToSitePane(e.target as HTMLElement) || hideSitePane();
+    if (!belongsToSitePane(e.target as HTMLElement)) {
+        hideSitePane();
+    }
 };
 
 // swipe gestures (for phone users)
@@ -73,6 +75,10 @@ document.ontouchmove = (e) => {
     console.debug({ diffX, minDiffX });
 
     if (Math.abs(diffX) >= minDiffX) {
-        diffX > 0 ? showSitePane() : hideSitePane();
+        if (diffX > 0) {
+            showSitePane();
+        } else {
+            hideSitePane();
+        }
     }
 };

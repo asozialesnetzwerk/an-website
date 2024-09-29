@@ -172,7 +172,9 @@ function startQuotes() {
     }
 
     PopStateHandlers["quotes"] = (event: PopStateEvent) => {
-        event.state && handleData(event.state as API_DATA);
+        if (event.state) {
+            handleData(event.state as API_DATA);
+        }
     };
 
     interface POP_STATE_API_DATA extends API_DATA {

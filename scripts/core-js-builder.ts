@@ -20,9 +20,8 @@ const bundle = await builder({
         console: { size: args.format === "bundle", modules: false },
         comment: { size: false, modules: args.format === "bundle" },
     },
-    format: args.format,
-    // @ts-expect-error TS2412
-    filename: args._[0],
+    format: args.format as ("bundle" | "esm" | "cjs"),
+    filename: args._[0] as string,
 });
 
 if (args.format === "bundle") {

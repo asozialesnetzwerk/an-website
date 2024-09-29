@@ -14,7 +14,7 @@ export function post(
     url: string,
     params = {},
     ondata = console.log,
-    onerror = console.error,
+    onerror: (data: unknown) => void = console.error,
     accept = "application/json",
 ): Promise<void> {
     return fetch(url, {
@@ -35,7 +35,7 @@ export function get(
     url: string,
     params: Record<string, string> | string = {},
     ondata = console.log,
-    onerror = console.error,
+    onerror: (data: unknown) => void = console.error,
     accept = "application/json",
 ): Promise<void> {
     const paramsString = (new URLSearchParams(params)).toString();
@@ -144,4 +144,3 @@ window.onpopstate = (event: PopStateEvent) => {
     lastLocation = location.href;
     location.reload();
 };
-// @license-end

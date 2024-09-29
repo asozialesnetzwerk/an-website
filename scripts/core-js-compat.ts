@@ -14,11 +14,11 @@ const args = parseArgs(process.argv.slice(2), {
 const {
     list,
     targets,
-    // @ts-expect-error TS2379
 } = compat({
     modules: "core-js/stable",
     targets: args.targets,
-    version: args.version,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    version: args.version!,
     inverse: args.inverse,
 });
 

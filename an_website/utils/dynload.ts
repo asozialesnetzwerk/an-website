@@ -87,10 +87,7 @@ function dynLoadOnData(
         }
     }
 
-    // @ts-expect-error TS2774
-    if (window.hideSitePane) {
-        hideSitePane();
-    }
+    hideSitePane();
 
     document.title = data.title;
     const titleElement = document.getElementById("title");
@@ -126,10 +123,7 @@ function dynLoad(url: string) {
 async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     if (!allowSameUrl && url === location.href) {
         console.log("URL is the same as current, just hide site pane");
-        // @ts-expect-error TS2774
-        if (window.hideSitePane) {
-            hideSitePane();
-        }
+        hideSitePane();
         return;
     }
     contentContainer.prepend(
@@ -211,11 +205,10 @@ document.addEventListener("click", (e) => {
     if (
         // URL to the same page, but with hash
         href.startsWith("#") ||
-        href.startsWith(location.href.split("#")[0] + "#")
+        href.startsWith(`${location.href.split("#")[0]}#`)
     ) {
         return;
     }
     e.preventDefault();
-    return dynLoad(href);
+    void dynLoad(href);
 });
-// @license-end

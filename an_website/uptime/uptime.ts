@@ -33,4 +33,3 @@ function startDisplayingUptime() {
     setInterval(displayUptime, 1000);
 }
 startDisplayingUptime();
-// @license-end

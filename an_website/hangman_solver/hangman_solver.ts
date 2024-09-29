@@ -117,7 +117,7 @@ function getInvalidChars(state: State) {
 function getRegex(state: State) {
     const invalidChars = "[^" + getInvalidChars(state) + "]";
     const regexStr = state.input.replace(wildCardRegex, (s) => {
-        return invalidChars + (s.length > 1 ? "{" + s.length + "}" : "");
+        return invalidChars + (s.length > 1 ? `{${s.length}}` : "");
     });
     return new RegExp("^" + regexStr + "$", "u");
 }

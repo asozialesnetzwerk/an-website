@@ -4,7 +4,7 @@ import { PopStateHandlers, setURLParam } from "@utils/utils.js";
 let bigIntType = "bigint";
 try {
     BigInt(69);
-} catch (e) {
+} catch {
     // fix for cool browsers like Pale Moon that don't support BigInt
     // eslint-disable-next-line no-global-assign
     BigInt = Number as unknown as BigIntConstructor;
@@ -66,7 +66,7 @@ function getDisplayValue(wert: bigint | number | string): string | null {
         let [int, dec] = num.split(".");
         dec = dec ?? "";
         // @ts-expect-error TS2345
-        str = int + dec + "0".repeat(parseInt(pow) - dec.length);
+        str = (int ?? "") + dec + "0".repeat(parseInt(pow) - dec.length);
     }
     if (isZero(str)) {
         return "0"; // is empty string or 0

@@ -259,6 +259,7 @@ administratives/kaenguru-comics/kaenguru-045/original
             }
         }
         // URLs with incrementing number in them
+        // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
         const arr = link.toLowerCase().match(oldLinkRegex);
         if (arr && arr.length > 1) {
             // @ts-expect-error TS2345
@@ -336,11 +337,11 @@ administratives/kaenguru-comics/kaenguru-045/original
             // @ts-expect-error TS2345
             const date = getDateFromLink(link);
             if (date === null) {
-                console.error("No date found for " + link);
+                console.error(`No date found for ${link}`);
                 continue;
             }
             // @ts-expect-error TS2532
-            link = link.startsWith("/") ? link : "https://img.zeit.de/" + link;
+            link = link.startsWith("/") ? link : `https://img.zeit.de/${link}`;
 
             const listItem = document.createElement("li");
             const header = document.createElement("a");
@@ -413,6 +414,9 @@ administratives/kaenguru-comics/kaenguru-045/original
     const today = dateIncreaseByDays(getToday(), 1);
     setCurrentComic(today);
     currentImg.onerror = () => {
+        if (today.getUTCFullYear() < 2020) {
+            return;
+        }
         dateIncreaseByDays(today, -1);
         setCurrentComic(today);
 
