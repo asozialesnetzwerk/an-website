@@ -146,6 +146,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: .coverage
+          if-no-files-found: error
+          include-hidden-files: true
           name: coverage
 
   release:
