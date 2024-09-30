@@ -210,5 +210,7 @@ document.addEventListener("click", (e) => {
         return;
     }
     e.preventDefault();
-    void dynLoad(href);
+    void dynLoad(href).then(() => {
+        anchor.blur();
+    });
 });

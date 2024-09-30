@@ -1,10 +1,8 @@
-export { hideSitePane, showSitePane } from "./better_ui_.js";
+export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
 
 let lastLocation = String(location);
 
-export function getLastLocation(): string {
-    return lastLocation;
-}
+// export function getLastLocation(): string { return lastLocation; }
 
 export function setLastLocation(url: string): void {
     lastLocation = url;
