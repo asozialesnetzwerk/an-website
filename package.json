@@ -12,14 +12,14 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^18.19.44",
-    "@typescript-eslint/eslint-plugin": "^8.1.0",
-    "@typescript-eslint/parser": "^8.1.0",
+    "@types/node": "^18.19.45",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
     "browserslist": "4.23.3",
     "browserslist-to-esbuild": "^2.1.1",
     "caniuse-lite": "1.0.30001646",
-    "core-js-builder": "3.38.0",
-    "core-js-compat": "3.38.0",
+    "core-js-builder": "3.38.1",
+    "core-js-compat": "3.38.1",
     "dax-sh": "^0.40.1",
     "doiuse": "^6.0.2",
     "electron-to-chromium": "1.5.4",
@@ -39,9 +39,9 @@
     "stylelint-no-unsupported-browser-features": "^8.0.1",
     "stylelint-prettier": "^5.0.2",
     "ts-node": "github:isaacs/ts-node#isaacs/node-20-fix",
-    "type-fest": "^4.24.0",
+    "type-fest": "^4.25.0",
     "typescript": "~5.5.4",
-    "typescript-eslint": "^8.1.0",
+    "typescript-eslint": "^8.2.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
   "packageManager": "pnpm@9.7.1+sha512.faf344af2d6ca65c4c5c8c2224ea77a81a5e8859cbc4e06b1511ddce2f0151512431dd19e6aff31f2c6a8f5f2aced9bd2273e1fed7dd4de1868984059d2c4247",
@@ -54,7 +54,7 @@
       "webpack@4": "5"
     },
     "patchedDependencies": {
-      "core-js-builder@3.38.0": "patches/core-js-builder@3.38.0.patch",
+      "core-js-builder@3.38.1": "patches/core-js-builder@3.38.1.patch",
       "ts-node@10.9.1": "patches/ts-node@10.9.1.patch"
     }
   }
