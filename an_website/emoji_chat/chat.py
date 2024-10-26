@@ -86,7 +86,9 @@ async def save_new_message(
     await redis.ltrim(
         f"{redis_prefix}:emoji-chat:message-list", -MAX_MESSAGE_SAVE_COUNT, -1
     )
-    await redis.publish(REDIS_CHANNEL, json.dumps(message_dict, option=ORJSON_OPTIONS))
+    await redis.publish(
+        REDIS_CHANNEL, json.dumps(message_dict, option=ORJSON_OPTIONS)
+    )
 
 
 async def get_messages(

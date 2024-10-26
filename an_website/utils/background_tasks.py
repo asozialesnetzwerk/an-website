@@ -27,9 +27,10 @@ from elasticsearch import AsyncElasticsearch
 from redis.asyncio import Redis
 from tornado.web import Application
 
+from an_website.emoji_chat.chat import subscribe_to_redis_channel
+
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, EVENT_SHUTDOWN
 from .elasticsearch_setup import setup_elasticsearch_configs
-from an_website.emoji_chat.chat import subscribe_to_redis_channel
 
 if TYPE_CHECKING:
     from .utils import ModuleInfo
