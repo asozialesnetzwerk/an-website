@@ -59,6 +59,7 @@ def get_module_info() -> ModuleInfo:
 
 MAX_MESSAGE_SAVE_COUNT: Final = 100
 MAX_MESSAGE_LENGTH: Final = 20
+REDIS_CHANNEL: Final = "emoji_chat_channel"
 
 
 def get_ms_timestamp() -> int:
@@ -85,17 +86,7 @@ async def save_new_message(
     await redis.ltrim(
         f"{redis_prefix}:emoji-chat:message-list", -MAX_MESSAGE_SAVE_COUNT, -1
     )
-    await asyncio.gather(
-        *[
-            conn.write_message(
-                {
-                    "type": "message",
-                    "message": message_dict,
-                }
-            )
-            for conn in OPEN_CONNECTIONS
-        ]
-    )
+    await redis.publish(REDIS_CHANNEL, json.dumps(message_dict, option=ORJSON_OPTIONS))
 
 
 async def get_messages(
@@ -317,6 +308,7 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
             conn.send_users()
 
         await self.send_messages()
+        asyncio.create_task(subscribe_to_redis_channel(self.redis))
 
     async def prepare(self) -> None:  # noqa: D102
         self.now = await self.get_time()
@@ -389,3 +381,19 @@ class ChatWebSocketHandler(WebSocketHandler, ChatHandler):
                     ],
                 }
             )
+
+
+async def subscribe_to_redis_channel(redis: Redis[str]) -> None:
+    """Subscribe to the Redis channel and handle incoming messages."""
+    pubsub = redis.pubsub()
+    await pubsub.subscribe(REDIS_CHANNEL)
+    async for message in pubsub.listen():
+        if message["type"] == "message":
+            message_dict = json.loads(message["data"])
+            for conn in OPEN_CONNECTIONS:
+                await conn.write_message(
+                    {
+                        "type": "message",
+                        "message": message_dict,
+                    }
+                )

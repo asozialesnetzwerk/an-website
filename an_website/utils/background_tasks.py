@@ -29,6 +29,7 @@ from tornado.web import Application
 
 from .. import EVENT_ELASTICSEARCH, EVENT_REDIS, EVENT_SHUTDOWN
 from .elasticsearch_setup import setup_elasticsearch_configs
+from an_website.emoji_chat.chat import subscribe_to_redis_channel
 
 if TYPE_CHECKING:
     from .utils import ModuleInfo
@@ -155,6 +156,7 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         )
         .chain([check_elasticsearch] if elasticsearch_is_enabled else ())
         .chain([check_redis] if redis_is_enabled else ())
+        .chain([subscribe_to_redis_channel])
         .distinct()
         .peek(
             PEAK_FUNC
