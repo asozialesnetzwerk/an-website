@@ -1035,7 +1035,6 @@ def main(  # noqa: C901  # pragma: no cover
 
     server.add_sockets(sockets)
 
-    # pylint: disable-next=unused-variable
     tasks = background_tasks.start_background_tasks(  # noqa: F841
         module_infos=app.settings["MODULE_INFOS"],
         loop=loop,
@@ -1078,4 +1077,4 @@ def main(  # noqa: C901  # pragma: no cover
                 loop.close()
                 background_tasks.HEARTBEAT = 0
 
-    return 0
+    return len(tasks)

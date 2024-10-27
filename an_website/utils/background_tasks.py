@@ -18,7 +18,7 @@ import asyncio
 import logging
 import os
 import time
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Set
 from functools import wraps
 from typing import TYPE_CHECKING, Final, Protocol, assert_type, cast
 
@@ -134,7 +134,7 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
     elasticsearch_is_enabled: bool,
     redis_is_enabled: bool,
     worker: int | None,
-) -> Sequence[asyncio.Task[object]]:
+) -> Set[asyncio.Task[None]]:
     """Start all required background tasks."""
 
     async def execute_background_task(task: BackgroundTask, /) -> None:
@@ -157,7 +157,9 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
                 task.__name__,
             )
 
-    return assert_type(
+    background_tasks: set[asyncio.Task[None]] = set()
+
+    task_stream: typed_stream.Stream[asyncio.Task[None]] = assert_type(
         typed_stream.Stream(module_infos)
         .flat_map(lambda info: info.required_background_tasks)
         .chain(
@@ -188,6 +190,10 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         )
         .map(execute_background_task)
         .map(loop.create_task)
-        .collect(tuple),
-        tuple[asyncio.Task[None], ...],
+        .peek(lambda task: task.add_done_callback(background_tasks.discard)),
+        typed_stream.Stream[asyncio.Task[None]],
     )
+
+    background_tasks.update(task_stream)
+
+    return background_tasks
