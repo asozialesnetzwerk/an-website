@@ -18,7 +18,7 @@ import asyncio
 import logging
 import os
 import time
-from collections.abc import Callable, Iterable, Set
+from collections.abc import Iterable, Set
 from functools import wraps
 from typing import TYPE_CHECKING, Final, Protocol, assert_type, cast
 
@@ -36,9 +36,6 @@ if TYPE_CHECKING:
 LOGGER: Final = logging.getLogger(__name__)
 
 HEARTBEAT: float = 0
-NOOP_PEAK_FUNC: Final[Callable[[BackgroundTask], object]] = (
-    typed_stream.functions.noop
-)
 
 
 class BackgroundTask(Protocol):
@@ -141,6 +138,8 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         """Execute a background task with error handling."""
         try:
             await task(app=app, worker=worker)
+        except asyncio.exceptions.CancelledError:
+            pass
         except BaseException as exc:  # pylint: disable=broad-exception-caught
             LOGGER.exception(
                 "A %s exception occured while executing background task %s.%s",
@@ -158,6 +157,15 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
             )
 
     background_tasks: set[asyncio.Task[None]] = set()
+
+    def create_task(fun: BackgroundTask, /) -> asyncio.Task[None]:
+        """Create an asyncio.Task object from a BackgroundTask."""
+        name = f"{fun.__module__}.{fun.__name__}"
+        if not worker:  # log only once
+            LOGGER.info("starting %s background task", name)
+        task = loop.create_task(execute_background_task(fun), name=name)
+        task.add_done_callback(background_tasks.discard)
+        return task
 
     task_stream: typed_stream.Stream[asyncio.Task[None]] = assert_type(
         typed_stream.Stream(module_infos)
@@ -179,18 +187,7 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         .chain([check_elasticsearch] if elasticsearch_is_enabled else ())
         .chain([check_redis] if redis_is_enabled else ())
         .distinct()
-        .peek(
-            NOOP_PEAK_FUNC
-            if worker
-            else lambda fun: LOGGER.info(
-                "starting %s.%s background service",
-                fun.__module__,
-                fun.__name__,
-            )
-        )
-        .map(execute_background_task)
-        .map(loop.create_task)
-        .peek(lambda task: task.add_done_callback(background_tasks.discard)),
+        .map(create_task),
         typed_stream.Stream[asyncio.Task[None]],
     )
 
