@@ -30,6 +30,7 @@ import uuid
 from asyncio import Future
 from base64 import b64decode
 from collections.abc import Awaitable, Callable, Coroutine
+from contextvars import ContextVar
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from functools import cached_property, partial, reduce
 from random import Random, choice as random_choice
@@ -50,11 +51,13 @@ from elastic_transport import ApiError, TransportError
 from elasticsearch import AsyncElasticsearch
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from redis.asyncio import Redis
+from tornado.httputil import HTTPServerRequest
 from tornado.web import (
     Finish,
     GZipContentEncoding,
     HTTPError,
     MissingArgumentError,
+    OutputTransform,
     RequestHandler,
 )
 
@@ -99,6 +102,8 @@ TEXT_CONTENT_TYPES: Final[set[str]] = {
     "application/yaml",
 }
 
+request_ctx_var: ContextVar[HTTPServerRequest] = ContextVar("current_request")
+
 
 class BaseRequestHandler(RequestHandler):
     """The base request handler used by every page and API."""
@@ -129,6 +134,12 @@ class BaseRequestHandler(RequestHandler):
     apm_script: None | str
     crawler: bool = False
     nonce: str
+
+    async def _execute(
+        self, transforms: list[OutputTransform], *args: bytes, **kwargs: bytes
+    ) -> None:
+        request_ctx_var.set(self.request)
+        return await super()._execute(transforms, *args, **kwargs)
 
     def _finish(
         self, chunk: None | str | bytes | dict[str, Any] = None

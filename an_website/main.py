@@ -33,6 +33,7 @@ import threading
 import time
 import types
 import uuid
+from asyncio import AbstractEventLoop
 from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Iterable, Mapping, MutableSequence
@@ -76,7 +77,7 @@ from . import (
 )
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import background_tasks, static_file_handling
-from .utils.base_request_handler import BaseRequestHandler
+from .utils.base_request_handler import BaseRequestHandler, request_ctx_var
 from .utils.better_config_parser import BetterConfigParser
 from .utils.elasticsearch_setup import setup_elasticsearch
 from .utils.logging import WebhookFormatter, WebhookHandler
@@ -836,14 +837,23 @@ def install_signal_handler() -> None:  # pragma: no cover
         signal.signal(signal.SIGHUP, signal_handler)
 
 
-def supervise() -> None:
+def supervise(loop: AbstractEventLoop) -> None:
     """Supervise."""
     while foobarbaz := background_tasks.HEARTBEAT:  # pylint: disable=while-used
         if time.monotonic() - foobarbaz >= 10:
             worker = task_id()
             pid = os.getpid()
+
+            task = asyncio.current_task(loop)
+            request = task.get_context().get(request_ctx_var) if task else None
+
             LOGGER.fatal(
-                "Heartbeat timed out for worker %d (pid %d)", worker, pid
+                "Heartbeat timed out for worker %d (pid %d), "
+                "current request: %s, current task: %s",
+                worker,
+                pid,
+                request,
+                task,
             )
             atexit._run_exitfuncs()  # pylint: disable=protected-access
             os.abort()
@@ -1049,7 +1059,7 @@ def main(  # noqa: C901  # pragma: no cover
     if run_supervisor_thread:
         background_tasks.HEARTBEAT = time.monotonic()
         threading.Thread(
-            target=supervise, name="supervisor", daemon=True
+            target=supervise, args=(loop,), name="supervisor", daemon=True
         ).start()
 
     try:
