@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 LOGGER: Final = logging.getLogger(__name__)
 
 HEARTBEAT: float = 0
-PEAK_FUNC: Final[Callable[[BackgroundTask], object]] = (
+NOOP_PEAK_FUNC: Final[Callable[[BackgroundTask], object]] = (
     typed_stream.functions.noop
 )
 
@@ -136,6 +136,27 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
     worker: int | None,
 ) -> Sequence[asyncio.Task[object]]:
     """Start all required background tasks."""
+
+    async def execute_background_task(task: BackgroundTask, /) -> None:
+        """Execute a background task with error handling."""
+        try:
+            await task(app=app, worker=worker)
+        except BaseException as exc:  # pylint: disable=broad-exception-caught
+            LOGGER.exception(
+                "A %s exception occured while executing background task %s.%s",
+                exc.__class__.__name__,
+                task.__module__,
+                task.__name__,
+            )
+            if not isinstance(exc, Exception):
+                raise
+        else:
+            LOGGER.debug(
+                "Background task %s.%s finished executing",
+                task.__module__,
+                task.__name__,
+            )
+
     return assert_type(
         typed_stream.Stream(module_infos)
         .flat_map(lambda info: info.required_background_tasks)
@@ -157,7 +178,7 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         .chain([check_redis] if redis_is_enabled else ())
         .distinct()
         .peek(
-            PEAK_FUNC
+            NOOP_PEAK_FUNC
             if worker
             else lambda fun: LOGGER.info(
                 "starting %s.%s background service",
@@ -165,7 +186,7 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
                 fun.__name__,
             )
         )
-        .map(lambda fun: fun(app=app, worker=worker))
+        .map(execute_background_task)
         .map(loop.create_task)
         .collect(tuple),
         tuple[asyncio.Task[None], ...],
