@@ -19,16 +19,24 @@ import abc
 import asyncio
 import contextlib
 import logging
+import multiprocessing.synchronize
 import random
 import sys
 import time
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import (
+    Callable,
+    Iterable,
+    Mapping,
+    MutableMapping,
+    Sequence,
+)
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
 
+import dill  # type: ignore[import-untyped]  # nosec: B403
 import elasticapm
 import orjson as json
 import typed_stream
@@ -55,10 +63,22 @@ LOGGER: Final = logging.getLogger(__name__)
 
 API_URL: Final[str] = "https://zitate.prapsschnalinen.de/api"
 
-QUOTES_CACHE: Final[dict[int, Quote]] = UltraDict(buffer_size=1024**2)
-AUTHORS_CACHE: Final[dict[int, Author]] = UltraDict(buffer_size=1024**2)
-WRONG_QUOTES_CACHE: Final[dict[tuple[int, int], WrongQuote]] = UltraDict(
-    buffer_size=1024**2
+
+# pylint: disable-next=undefined-variable,too-few-public-methods
+class UltraDictType[K, V](MutableMapping[K, V], abc.ABC):
+    """The type of the shared dictionaries."""
+
+    lock: multiprocessing.synchronize.RLock
+
+
+QUOTES_CACHE: Final[UltraDictType[int, Quote]] = UltraDict(
+    buffer_size=1024**2, serializer=dill
+)
+AUTHORS_CACHE: Final[UltraDictType[int, Author]] = UltraDict(
+    buffer_size=1024**2, serializer=dill
+)
+WRONG_QUOTES_CACHE: Final[UltraDictType[tuple[int, int], WrongQuote]] = (
+    UltraDict(buffer_size=1024**2, serializer=dill)
 )
 
 MAX_QUOTES_ID = Value("Q", 0)
@@ -132,21 +152,13 @@ class Author(QuotesObjBase):
             ),
         }
 
-    def update_name(self, name: str) -> None:
-        """Update author data with another author."""
-        name = fix_author_name(name)
-        if self.name != name:
-            # name changed -> info should change too
-            self.info = None
-            self.name = name
-
 
 @dataclass(slots=True)
 class Quote(QuotesObjBase):
     """The quote object with a quote text and an author."""
 
     quote: str
-    author: Author
+    author_id: int
 
     def __str__(self) -> str:
         """Return the content of the quote."""
@@ -155,6 +167,11 @@ class Quote(QuotesObjBase):
             if (now := datetime.now(timezone.utc)).day == 1 and now.month == 4
             else self.quote.strip()
         )
+
+    @property
+    def author(self) -> Author:
+        """Get the corresponding author object."""
+        return AUTHORS_CACHE[self.author_id]
 
     async def fetch_new_data(self) -> Quote:
         """Fetch new data from the API."""
@@ -178,23 +195,13 @@ class Quote(QuotesObjBase):
             "path": self.get_path(),
         }
 
-    def update_quote(
-        self, quote: str, author_id: int, author_name: str
-    ) -> None:
-        """Update quote data with new data."""
-        self.quote = fix_quote_str(quote)
-        if self.author.id == author_id:
-            self.author.update_name(author_name)
-            return
-        self.author = get_author_updated_with(author_id, author_name)
-
 
 @dataclass(slots=True)
 class WrongQuote(QuotesObjBase):
     """The wrong quote object with a quote, an author and a rating."""
 
-    quote: Quote
-    author: Author
+    quote_id: int
+    author_id: int
     rating: int
 
     def __str__(self) -> str:
@@ -205,15 +212,20 @@ class WrongQuote(QuotesObjBase):
         """
         return f"»{self.quote}« - {self.author}"
 
+    @property
+    def author(self) -> Author:
+        """Get the corresponding author object."""
+        return AUTHORS_CACHE[self.author_id]
+
     async def fetch_new_data(self) -> WrongQuote:
         """Fetch new data from the API."""
         if self.id == -1:
             api_data = await make_api_request(
                 "wrongquotes",
                 {
-                    "quote": str(self.quote.id),
+                    "quote": str(self.quote_id),
                     "simulate": "true",
-                    "author": str(self.author.id),
+                    "author": str(self.author_id),
                 },
                 entity_should_exist=True,
             )
@@ -233,7 +245,7 @@ class WrongQuote(QuotesObjBase):
 
         :return tuple(quote_id, author_id)
         """
-        return self.quote.id, self.author.id
+        return self.quote_id, self.author_id
 
     def get_id_as_str(self, minify: bool = False) -> str:
         """
@@ -243,11 +255,16 @@ class WrongQuote(QuotesObjBase):
         """
         if minify and self.id != -1:
             return str(self.id)
-        return f"{self.quote.id}-{self.author.id}"
+        return f"{self.quote_id}-{self.author_id}"
 
     def get_path(self) -> str:
         """Return the path to the wrong quote."""
         return f"/zitate/{self.get_id_as_str()}"
+
+    @property
+    def quote(self) -> Quote:
+        """Get the corresponding quote object."""
+        return QUOTES_CACHE[self.quote_id]
 
     def to_json(self) -> dict[str, Any]:
         """Get the wrong quote as JSON."""
@@ -297,21 +314,19 @@ def get_wrong_quotes(
     """Get cached wrong quotes."""
     if shuffle and sort:
         raise ValueError("Sort and shuffle can't be both true.")
-    wqs: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
-    if filter_fun is not None:
-        # pylint: disable=bad-builtin
-        wqs = filter(filter_fun, wqs)
-    if filter_real_quotes:
-        # pylint: disable=bad-builtin
-        wqs = filter(lambda wq: wq.quote.author.id != wq.author.id, wqs)
-    if not (shuffle or sort):
-        return tuple(wqs)
-    wqs_list = list(wqs)  # shuffle or sort is True
+    wqs: list[WrongQuote] = list(WRONG_QUOTES_CACHE.values())
+    if filter_fun or filter_real_quotes:
+        for i in reversed(range(len(wqs))):
+            if (filter_fun and not filter_fun(wqs[i])) or (
+                filter_real_quotes
+                and wqs[i].quote.author_id == wqs[i].author_id
+            ):
+                del wqs[i]
     if shuffle:
-        random.shuffle(wqs_list)
-    if sort:
-        wqs_list.sort(key=lambda wq: wq.rating, reverse=True)
-    return wqs_list
+        random.shuffle(wqs)
+    elif sort:
+        wqs.sort(key=lambda wq: wq.rating, reverse=True)
+    return wqs
 
 
 def get_quotes(
@@ -320,8 +335,10 @@ def get_quotes(
 ) -> list[Quote]:
     """Get cached quotes."""
     quotes: list[Quote] = list(QUOTES_CACHE.values())
-    if filter_fun is not None:
-        quotes = [_q for _q in quotes if filter_fun(_q)]
+    if filter_fun:
+        for i in reversed(range(len(quotes))):
+            if not filter_fun(quotes[i]):
+                del quotes[i]
     if shuffle:
         random.shuffle(quotes)
     return quotes
@@ -333,11 +350,13 @@ def get_authors(
 ) -> list[Author]:
     """Get cached authors."""
     authors: list[Author] = list(AUTHORS_CACHE.values())
-    if filter_fun is not None:
-        authors = [_a for _a in authors if filter_fun(_a)]
+    if filter_fun:
+        for i in reversed(range(len(authors))):
+            if not filter_fun(authors[i]):
+                del authors[i]
     if shuffle:
         random.shuffle(authors)
-    return list(authors)
+    return authors
 
 
 async def make_api_request(
@@ -395,28 +414,24 @@ def fix_author_name(name: str) -> str:
     return name.strip()
 
 
-def get_author_updated_with(author_id: int, name: str) -> Author:
-    """Get the author with the given id and the name."""
-    name = fix_author_name(name)
-    if not name:
-        name = "None"
-
-    author = AUTHORS_CACHE.get(author_id)
-    if author is None:  # author not in cache, create new one
-        # pylint: disable=too-many-function-args
-        author = Author(author_id, name, None)
-        MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, author_id)
-    else:  # update to make sure cache is correct
-        author.update_name(name)
-
-    AUTHORS_CACHE[author.id] = author
-
-    return author
-
-
 def parse_author(json_data: Mapping[str, Any]) -> Author:
     """Parse an author from JSON data."""
-    return get_author_updated_with(int(json_data["id"]), json_data["author"])
+    id_ = int(json_data["id"])
+    name = fix_author_name(json_data["author"])
+
+    with AUTHORS_CACHE.lock:
+        author = AUTHORS_CACHE.get(id_)
+        if author is None:
+            # pylint: disable-next=too-many-function-args
+            author = Author(id_, name, None)
+            MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, id_)
+        elif author.name != name:
+            author.name = name
+            author.info = None  # reset info
+
+        AUTHORS_CACHE[author.id] = author
+
+    return author
 
 
 def fix_quote_str(quote_str: str) -> str:
@@ -440,16 +455,18 @@ def parse_quote(
     author = parse_author(json_data["author"])  # update author
     quote_str = fix_quote_str(json_data["quote"])
 
-    if quote is None:  # no quote supplied, try getting it from cache
-        quote = QUOTES_CACHE.get(quote_id)
-    if quote is None:  # new quote
-        # pylint: disable=too-many-function-args
-        quote = Quote(quote_id, quote_str, author)
-        MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
-    else:  # quote was already saved
-        quote.update_quote(quote_str, author.id, author.name)
+    with QUOTES_CACHE.lock:
+        if quote is None:  # no quote supplied, try getting it from cache
+            quote = QUOTES_CACHE.get(quote_id)
+        if quote is None:  # new quote
+            # pylint: disable=too-many-function-args
+            quote = Quote(quote_id, quote_str, author.id)
+            MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
+        else:  # quote was already saved
+            quote.quote = quote_str
+            quote.author_id = author.id
 
-    QUOTES_CACHE[quote.id] = quote
+        QUOTES_CACHE[quote.id] = quote
 
     return quote
 
@@ -466,21 +483,23 @@ def parse_wrong_quote(
     wrong_quote_id = int(json_data.get("id") or -1)
 
     if wrong_quote is None:
-        wrong_quote = WRONG_QUOTES_CACHE.get(id_tuple)
-        if wrong_quote is None:
-            wrong_quote = WrongQuote(  # pylint: disable=unexpected-keyword-arg
-                id=wrong_quote_id,
-                quote=quote,
-                author=author,
-                rating=rating,
-            )
+        with WRONG_QUOTES_CACHE.lock:
+            wrong_quote = WRONG_QUOTES_CACHE.get(id_tuple)
+            if wrong_quote is None:
+                wrong_quote = (
+                    WrongQuote(  # pylint: disable=unexpected-keyword-arg
+                        id=wrong_quote_id,
+                        quote_id=quote.id,
+                        author_id=author.id,
+                        rating=rating,
+                    )
+                )
+                WRONG_QUOTES_CACHE[id_tuple] = wrong_quote
+                return wrong_quote
 
     # make sure the wrong quote is the correct one
-    if (wrong_quote.quote.id, wrong_quote.author.id) != id_tuple:
+    if (wrong_quote.quote_id, wrong_quote.author_id) != id_tuple:
         raise HTTPError(reason="ERROR: -41")
-
-    wrong_quote.quote = quote
-    wrong_quote.author = author
 
     # update the data of the wrong quote
     if wrong_quote.rating != rating:
@@ -528,16 +547,16 @@ async def update_cache_periodically(
     apm: None | elasticapm.Client
     if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
         await parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
-            parse_wrong_quote,
+            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
+            parse_author,
         )
         await parse_list_of_quote_data(
             await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950
             parse_quote,
         )
         await parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
-            parse_author,
+            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
+            parse_wrong_quote,
         )
         if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
             last_update = await redis.get(
@@ -690,12 +709,8 @@ async def get_wrong_quote(
     if use_cache and quote_id in QUOTES_CACHE and author_id in AUTHORS_CACHE:
         # we don't need to request anything, as the wrong_quote probably has
         # no ratings just use the cached quote and author
-        return WrongQuote(  # pylint: disable=too-many-function-args
-            -1,
-            QUOTES_CACHE[quote_id],
-            AUTHORS_CACHE[author_id],
-            0,
-        )
+        # pylint: disable-next=too-many-function-args
+        return WrongQuote(-1, quote_id, author_id, 0)
     # request the wrong quote from the API
     result = await make_api_request(
         "wrongquotes",

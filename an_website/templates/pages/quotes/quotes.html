@@ -13,10 +13,10 @@
 {% block body %}
     <div id="quote-container">
         <article id="top" quote-id="{{wrong_quote.get_id_as_str()}}">
-            <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote.id}')}}"
+            <a href="{{fix_url(f'/zitate/info/z/{wrong_quote.quote_id}')}}"
                class="no-style-a-block quote-text"
                id="quote">»{{wrong_quote.quote}}«</a>
-            <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author.id}')}}"
+            <a href="{{fix_url(f'/zitate/info/a/{wrong_quote.author_id}')}}"
                class="no-style-a-block quote-author"
                id="author">- {{wrong_quote.author}}</a>
         </article>
@@ -148,7 +148,7 @@
     <span data-elastic-exclude>
         Der/die richtige Autor/-in dieses Zitats ist vermutlich
         „<a class="no-style-a"
-            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author.id}')}}"
+            href="{{fix_url(f'/zitate/info/a/{wrong_quote.quote.author_id}')}}"
             id="real-author-name">{{wrong_quote.quote.author}}</a>“.
         <br><br>
         Wenn dein Browser JavaScript unterstützt (und es aktiviert ist),

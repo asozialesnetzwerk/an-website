@@ -42,7 +42,7 @@ class QuotesInfoPage(HTMLRequestHandler):
         quote = await get_quote_by_id(quote_id)
         if head:
             return
-        wqs = get_wrong_quotes(lambda wq: wq.quote.id == quote_id, sort=True)
+        wqs = get_wrong_quotes(lambda wq: wq.quote_id == quote_id, sort=True)
         await self.render(
             "pages/quotes/quote_info.html",
             quote=quote,
@@ -181,7 +181,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                     )
 
         wqs = get_wrong_quotes(
-            lambda wq: wq.author.id == author_id,
+            lambda wq: wq.author_id == author_id,
             sort=True,
         )
 

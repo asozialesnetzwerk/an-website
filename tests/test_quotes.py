@@ -81,7 +81,9 @@ def test_author_updating() -> None:
     """Test updating the author."""
     get_wrong_quote()
 
-    assert (author := quotes.get_author_updated_with(1, "test")).name == "test"
+    assert (
+        author := quotes.parse_author({"id": 1, "author": "test"})
+    ).name == "test"
 
     quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
 

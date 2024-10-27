@@ -113,7 +113,8 @@ def get_next_id(rating_filter: RatingFilter) -> tuple[int, int]:
         case "rated":
             wrong_quotes = get_wrong_quotes(lambda wq: wq.id not in {-1, None})
         case _:
-            wrong_quotes = ()
+            LOGGER.error("Invalid rating filter %s", rating_filter)
+            return get_random_id()
 
     if not wrong_quotes:
         # invalid rating filter or no wrong quotes with that filter
@@ -272,7 +273,7 @@ def wrong_quote_to_json(
         "quote": str(wq_.quote),
         "author": str(wq_.author),
         "real_author": str(wq_.quote.author),
-        "real_author_id": wq_.quote.author.id,
+        "real_author_id": wq_.quote.author_id,
         "rating": rating,
         "vote": vote,
         "next": f"{next_q}-{next_a}",
@@ -303,11 +304,7 @@ class QuoteById(QuoteBaseHandler):
             wqs = get_wrong_quotes(lambda wq: wq.id == int_quote_id)
             if not wqs:
                 raise HTTPError(404, f"No wrong quote with id {quote_id}")
-            return self.redirect(
-                self.fix_url(
-                    self.LONG_PATH % (wqs[0].quote.id, wqs[0].author.id)
-                )
-            )
+            return self.redirect(self.fix_url(self.LONG_PATH % wqs[0].get_id()))
 
         if head:
             return
@@ -361,7 +358,7 @@ class QuoteById(QuoteBaseHandler):
             and self.request.method
             and self.request.method.upper() == "GET"
             and await self.get_saved_vote(
-                wrong_quote.quote.id, wrong_quote.author.id
+                wrong_quote.quote_id, wrong_quote.author_id
             )
             is None
         ):
