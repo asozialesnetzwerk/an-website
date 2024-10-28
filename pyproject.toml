@@ -42,6 +42,6 @@ enable_error_code = [
 local_partial_types = true
 disable_bytearray_promotion = true
 disable_memoryview_promotion = true
-enable_incomplete_feature = ["NewGenericSyntax", "PreciseTupleTypes"]
+enable_incomplete_feature = ["PreciseTupleTypes"]
 packages = ["an_website", "tests", "scripts"]
 modules = "setup"

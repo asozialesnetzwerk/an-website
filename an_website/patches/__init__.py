@@ -39,7 +39,7 @@ import orjson
 import pycurl
 import tornado.httputil
 import yaml
-from emoji import EMOJI_DATA, unicode_codes as euc
+from emoji import EMOJI_DATA
 from pillow_jxl import JpegXLImagePlugin  # noqa: F401
 from setproctitle import setthreadtitle
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
@@ -137,9 +137,6 @@ def patch_emoji() -> None:
             "status": 2,
             "E": 11,
         }
-    for lang in euc.LANGUAGES:
-        euc._EMOJI_UNICODE[lang] = None  # type: ignore[attr-defined]
-    euc._ALIASES_UNICODE.clear()  # type: ignore[attr-defined]
 
 
 def patch_http() -> None:

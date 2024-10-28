@@ -171,7 +171,7 @@ async def request(  # noqa: C901
     if isinstance(body, str):
         body = body.encode("UTF-8")
     if isinstance(body, memoryview):
-        body = body.tobytes()  # type: ignore[unreachable]
+        body = body.tobytes()
     if isinstance(body, Iterable) and not isinstance(body, (bytes, bytearray)):
         body = b"".join(body)  # type: ignore[arg-type]
     https = url.scheme == "https"

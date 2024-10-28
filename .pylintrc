@@ -59,6 +59,8 @@ disable=
     duplicate-code,
     # broken
     preferred-module,
+    # annoying
+    too-many-positional-arguments,
 
 [FORMAT]
 max-line-length=120

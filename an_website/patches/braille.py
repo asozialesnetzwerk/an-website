@@ -47,7 +47,7 @@ def morb() -> CodecInfo:
     return CodecInfo(
         name="braille",
         encode=encode,
-        decode=decode,
+        decode=decode,  # type: ignore[arg-type]
     )
 
 

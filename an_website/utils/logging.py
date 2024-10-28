@@ -22,7 +22,6 @@ from collections.abc import Awaitable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
-from typing import Any
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -33,7 +32,7 @@ from .. import CA_BUNDLE_PATH
 class AsyncHandler(logging.Handler):
     """A logging handler that can handle log records asynchronously."""
 
-    futures: set[Future[Any]]
+    futures: set[Future[object]]
     loop: AbstractEventLoop
 
     def __init__(
@@ -47,7 +46,7 @@ class AsyncHandler(logging.Handler):
         self.futures = set()
         self.loop = loop
 
-    def callback(self, future: Future[Any]) -> None:
+    def callback(self, future: Future[object]) -> None:
         """Remove the reference to the future from the handler."""
         self.acquire()
         try:
@@ -57,7 +56,7 @@ class AsyncHandler(logging.Handler):
 
     def emit(  # type: ignore[override]
         self, record: LogRecord
-    ) -> None | Awaitable[Any]:
+    ) -> None | Awaitable[object]:
         """
         Do whatever it takes to actually log the specified logging record.
 

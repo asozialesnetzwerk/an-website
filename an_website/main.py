@@ -956,7 +956,7 @@ def main(  # noqa: C901  # pragma: no cover
             os.process_cpu_count()  # type: ignore[attr-defined]
             if sys.version_info >= (3, 13)
             else os.cpu_count()
-        )
+        ) or 0
 
     worker: None | int = None
 
