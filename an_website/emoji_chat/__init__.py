@@ -14,3 +14,27 @@
 """A 🆒 chat."""
 
 from __future__ import annotations
+
+from ..utils.utils import ModuleInfo
+from .chat import (
+    APIChatHandler,
+    ChatWebSocketHandler,
+    HTMLChatHandler,
+    subscribe_to_redis_channel,
+)
+
+
+def get_module_info() -> ModuleInfo:
+    """Create and return the ModuleInfo for this module."""
+    return ModuleInfo(
+        handlers=(
+            (r"/emoji-chat", HTMLChatHandler),
+            (r"/api/emoji-chat", APIChatHandler),
+            (r"/websocket/emoji-chat", ChatWebSocketHandler),
+        ),
+        name="Emoji-Chat",
+        description="Ein 🆒er Chat",
+        path="/emoji-chat",
+        keywords=("Emoji Chat",),
+        required_background_tasks=(subscribe_to_redis_channel,),
+    )

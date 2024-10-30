@@ -27,14 +27,14 @@ import orjson as json
 from emoji import purely_emoji  # type: ignore[attr-defined]
 from emoji import EMOJI_DATA, demojize, emoji_list, emojize
 from redis.asyncio import Redis
-from redis.asyncio.client import PubSub
 from tornado.web import Application, HTTPError
 from tornado.websocket import WebSocketHandler
 
 from .. import EPOCH_MS, EVENT_REDIS, EVENT_SHUTDOWN, NAME, ORJSON_OPTIONS
 from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, Permission, ratelimit
+from ..utils.utils import Permission, ratelimit
+from .pub_sub_provider import PubSubProvider
 
 LOGGER: Final = logging.getLogger(__name__)
 
@@ -42,23 +42,6 @@ EMOJIS: Final[tuple[str, ...]] = tuple(EMOJI_DATA)
 EMOJIS_NO_FLAGS: Final[tuple[str, ...]] = tuple(
     emoji for emoji in EMOJIS if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
 )
-
-
-def get_module_info() -> ModuleInfo:
-    """Create and return the ModuleInfo for this module."""
-    return ModuleInfo(
-        handlers=(
-            (r"/emoji-chat", HTMLChatHandler),
-            (r"/api/emoji-chat", APIChatHandler),
-            (r"/websocket/emoji-chat", ChatWebSocketHandler),
-        ),
-        name="Emoji-Chat",
-        description="Ein 🆒er Chat",
-        path="/emoji-chat",
-        keywords=("Emoji Chat",),
-        required_background_tasks=(subscribe_to_redis_channel,),
-    )
-
 
 MAX_MESSAGE_SAVE_COUNT: Final = 100
 MAX_MESSAGE_LENGTH: Final = 20
@@ -74,40 +57,45 @@ async def subscribe_to_redis_channel(
     app: Application, worker: int | None
 ) -> None:
     """Subscribe to the Redis channel and handle incoming messages."""
-    redis: Redis[str] | None = app.settings.get("REDIS")
-    if redis is None:
-        LOGGER.error("Could not get Redis connection on worker %d", worker)
-        return
-    pubsub: PubSub = redis.pubsub()
-    await pubsub.subscribe(REDIS_CHANNEL)
+    get_pubsub = PubSubProvider((REDIS_CHANNEL,), app.settings, worker)
+    del app
+
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
+        ps = await get_pubsub()
         try:
-            message = await pubsub.get_message(timeout=5.0)
+            message = await ps.get_message(timeout=5.0)
         except Exception as exc:  # pylint: disable=broad-exception-caught
             if str(exc) == "Connection closed by server.":
                 continue
-            LOGGER.exception("Failed to get message on worker %d", worker)
+            LOGGER.exception("Failed to get message on worker %s", worker)
             await asyncio.sleep(0)
             continue
 
         match message:
             case None:
                 pass
-            case {"type": "message", "data": str(data)}:
+            case {
+                "type": "message",
+                "data": str(data),
+                "channel": channel,
+            } if channel == REDIS_CHANNEL:
                 await asyncio.gather(
                     *[conn.write_message(data) for conn in OPEN_CONNECTIONS]
                 )
-            case {"type": "subscribe", "data": 1}:
+            case {
+                "type": "subscribe",
+                "data": 1,
+                "channel": channel,
+            } if channel == REDIS_CHANNEL:
                 logging.info(
-                    "Subscribed to Redis channel %r on worker %d",
-                    REDIS_CHANNEL,
+                    "Subscribed to Redis channel %r on worker %s",
+                    channel,
                     worker,
                 )
             case _:
                 logging.error(
-                    "Got unexpected message %s from Redis channel %r on worker %d",
+                    "Got unexpected message %s on worker %s",
                     message,
-                    REDIS_CHANNEL,
                     worker,
                 )
         await asyncio.sleep(0)

@@ -848,7 +848,7 @@ def supervise(loop: AbstractEventLoop) -> None:
             request = task.get_context().get(request_ctx_var) if task else None
 
             LOGGER.fatal(
-                "Heartbeat timed out for worker %d (pid %d), "
+                "Heartbeat timed out for worker %s (pid %d), "
                 "current request: %s, current task: %s",
                 worker,
                 pid,
