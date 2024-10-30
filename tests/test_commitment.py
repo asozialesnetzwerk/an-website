@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from os.path import join
 
 from an_website.commitment.commitment import get_commit_data
@@ -40,12 +40,12 @@ async def test_parsing() -> None:
         assert len(data) == 2
 
         assert data["50821273052022fbc283e310e09168dc65fb3cce"] == (
-            datetime(2022, 8, 29, 19, 56, 6),
+            datetime(2022, 8, 29, 19, 56, 6, tzinfo=UTC),
             "💬 fix kangaroo comic of today",
         )
 
         assert data["7335914237808031fa15f32a854ba1e6b1544420"] == (
-            datetime(2021, 7, 21, 22, 29, 26),
+            datetime(2021, 7, 21, 22, 29, 26, tzinfo=UTC),
             "no_js → no_3rd_party",
         )
 
@@ -115,11 +115,10 @@ async def test_yaml_api(fetch: FetchCallable) -> None:  # noqa: F811
         )
         del response["permalink"]
         assert len(response) == 3
-        assert response["commit_message"] == "no_js → no_3rd_party"
-        assert response["hash"] == "7335914237808031fa15f32a854ba1e6b1544420"
-        assert response["date"] in {
-            "2021-07-21T22:29:26Z",
-            datetime(2021, 7, 21, 22, 29, 26),
+        assert response == {
+            "commit_message": "no_js → no_3rd_party",
+            "hash": "7335914237808031fa15f32a854ba1e6b1544420",
+            "date": datetime(2021, 7, 21, 22, 29, 26, tzinfo=UTC),
         }
 
 

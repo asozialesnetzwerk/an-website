@@ -22,7 +22,7 @@ from __future__ import annotations
 import logging
 import random
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Final, TypeAlias
 
 import emoji
@@ -75,7 +75,7 @@ async def get_commit_data(commitment_uri: str) -> Commits:
         if not line:
             continue
         hash_, date, msg = line.split(" ", 2)
-        data[hash_] = (datetime.utcfromtimestamp(int(date)), msg)
+        data[hash_] = (datetime.fromtimestamp(int(date), UTC), msg)
 
     COMMIT_DATA[commitment_uri] = data
     return data
