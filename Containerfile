@@ -28,6 +28,7 @@ RUN set -eux \
  && apt-get install -y --no-install-recommends curl libcurl3-gnutls libjxl0.7 \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
+ && apt-get purge -y --autoremove curl \
  && tar xvf uwufetch_2.1-linux.tar.gz \
  && cd uwufetch_2.1-linux \
  && bash install.sh \
