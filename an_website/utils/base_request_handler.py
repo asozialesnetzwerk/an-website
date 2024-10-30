@@ -34,6 +34,7 @@ from contextvars import ContextVar
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from functools import cached_property, partial, reduce
 from random import Random, choice as random_choice
+from types import TracebackType
 from typing import Any, ClassVar, Final, cast, override
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
@@ -52,6 +53,7 @@ from elasticsearch import AsyncElasticsearch
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from redis.asyncio import Redis
 from tornado.httputil import HTTPServerRequest
+from tornado.iostream import StreamClosedError
 from tornado.web import (
     Finish,
     GZipContentEncoding,
@@ -698,6 +700,31 @@ class BaseRequestHandler(RequestHandler):
     ) -> bool | None:
         """Check whether the request is authorized."""
         return is_authorized(self, permission, allow_cookie_auth)
+
+    @override
+    def log_exception(
+        self,
+        typ: None | type[BaseException],
+        value: None | BaseException,
+        tb: None | TracebackType,
+    ) -> None:
+        """Customize logging of uncaught exceptions."""
+        if isinstance(value, HTTPError):
+            super().log_exception(typ, value, tb)
+            return
+
+        LOGGER.log(
+            (
+                logging.WARNING
+                if isinstance(value, StreamClosedError)
+                else logging.ERROR
+            ),
+            "Uncaught exception %r in %s\n%r",
+            value,
+            self._request_summary(),
+            self.request,
+            exc_info=(typ, value, tb),  # type: ignore[arg-type]
+        )
 
     @cached_property
     def now(self) -> datetime:
