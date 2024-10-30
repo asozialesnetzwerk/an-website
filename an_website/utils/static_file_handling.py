@@ -97,7 +97,7 @@ def get_handlers() -> list[Handler]:
             (
                 r"/static/css/(.+\.css)",
                 TraversableStaticFileHandler,
-                {"root": debug_style_dir},
+                {"root": debug_style_dir, "hashes": {}},
             )
         )
     handlers.append(
