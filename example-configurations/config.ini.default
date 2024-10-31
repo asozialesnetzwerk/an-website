@@ -7,6 +7,7 @@ webhook_body_format = {"text":"[%(levelname)1.1s %(asctime)s %(module)s:%(lineno
 #webhook_timestamp_format = 
 #webhook_timestamp_timezone = 
 webhook_escape_message = sure
+#webhook_max_message_length = 
 
 [GENERAL]
 ignored_modules = element_web_link

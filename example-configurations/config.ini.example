@@ -23,6 +23,7 @@
 #webhook_timestamp_timezone = ...
 #webhook_timestamp_format = ...
 #webhook_escape_message = sure
+#webhook_max_message_length = 4000
 
 #[REPORTING]
 #enabled = sure

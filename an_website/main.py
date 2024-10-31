@@ -557,6 +557,7 @@ class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
         "timestamp_format",
         "timestamp_timezone",
         "escape_message",
+        "max_message_length",
     )
 
     url: str | None
@@ -565,6 +566,7 @@ class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
     timestamp_format: str | None
     timestamp_timezone: str | None
     escape_message: bool
+    max_message_length: int | None
 
     def __init__(self, config: ConfigParser) -> None:
         """Initialize Webhook logging options."""
@@ -593,6 +595,9 @@ class WebhookLoggingOptions:  # pylint: disable=too-few-public-methods
             "WEBHOOK_ESCAPE_MESSAGE",
             fallback=True,
         )
+        self.max_message_length = config.getint(
+            "LOGGING", "WEBHOOK_MAX_MESSAGE_LENGTH", fallback=None
+        )
 
 
 def setup_webhook_logging(  # pragma: no cover
@@ -602,6 +607,8 @@ def setup_webhook_logging(  # pragma: no cover
     """Setup Webhook logging."""  # noqa: D401
     if not options.url:
         return
+
+    LOGGER.info("Setting up Webhook logging")
 
     root_logger = logging.getLogger()
 
@@ -622,6 +629,7 @@ def setup_webhook_logging(  # pragma: no cover
         else ZoneInfo(options.timestamp_format)
     )
     formatter.escape_message = options.escape_message
+    formatter.max_message_length = options.max_message_length
     webhook_handler.setFormatter(formatter)
     root_logger.addHandler(webhook_handler)
 

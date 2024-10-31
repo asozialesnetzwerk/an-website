@@ -17,16 +17,57 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import traceback
 from asyncio import AbstractEventLoop
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Iterable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
+from pathlib import Path
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
 
+from an_website import DIR as AN_WEBSITE_DIR
+
 from .. import CA_BUNDLE_PATH
+
+HOME: str = Path("~/").expanduser().as_posix().rstrip("/")
+
+
+def minify_filepath(path: str) -> str:
+    """Make a filepath smaller."""
+    if path.startswith(f"{HOME}/"):
+        return "~" + path.removeprefix(HOME)
+    return path
+
+
+def get_minimal_traceback(
+    record: LogRecord, prefix: str = "\n\n"
+) -> Iterable[str]:
+    """Get a minimal traceback from the log record."""
+    if not record.exc_info:
+        return
+    (_, value, tb) = record.exc_info
+    if not (value and tb):
+        return
+
+    yield prefix
+    yield from traceback.format_exception(value, limit=0)
+
+    summary = traceback.extract_tb(tb)
+    if isinstance(AN_WEBSITE_DIR, Path):
+        start_path = f"{str(AN_WEBSITE_DIR).rstrip('/')}/"
+
+        for i in reversed(range(len(summary))):
+            if summary[i].filename.startswith(start_path):
+                summary = traceback.StackSummary(summary[i:])
+                break
+
+    for frame in summary:
+        frame.filename = minify_filepath(frame.filename)
+
+    yield from summary.format()
 
 
 class AsyncHandler(logging.Handler):
@@ -107,14 +148,29 @@ class WebhookFormatter(DatetimeFormatter):
     """A logging formatter optimized for logging to a webhook."""
 
     escape_message = False
+    max_message_length: int | None = None
 
     def format(self, record: LogRecord) -> str:
         """Format the specified record as text."""
         record.message = record.getMessage()
-        if self.escape_message:
-            record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         if self.usesTime():
             record.asctime = self.formatTime(record, self.datefmt)
+        if (
+            self.max_message_length is not None
+            and len(record.message) > self.max_message_length
+        ):
+            record.message = record.message[: self.max_message_length]
+        for line in get_minimal_traceback(record):
+            if (
+                self.max_message_length is not None
+                and len(line) + len(record.message) > self.max_message_length
+            ):
+                if len("...") + len(record.message) <= self.max_message_length:
+                    record.message += "..."
+                break
+            record.message += line
+        if self.escape_message:
+            record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         return self.formatMessage(record)
 
 

@@ -719,8 +719,7 @@ class BaseRequestHandler(RequestHandler):
             )
         else:
             LOGGER.error(
-                "Uncaught %s %s",
-                typ.__name__ if typ else "exception",
+                "Uncaught exception %s",
                 self._request_summary(),
                 exc_info=(typ, value, tb),  # type: ignore[arg-type]
             )
