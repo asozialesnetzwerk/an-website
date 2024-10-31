@@ -711,20 +711,19 @@ class BaseRequestHandler(RequestHandler):
         """Customize logging of uncaught exceptions."""
         if isinstance(value, HTTPError):
             super().log_exception(typ, value, tb)
-            return
-
-        LOGGER.log(
-            (
-                logging.WARNING
-                if isinstance(value, StreamClosedError)
-                else logging.ERROR
-            ),
-            "Uncaught exception %r in %s\n%r",
-            value,
-            self._request_summary(),
-            self.request,
-            exc_info=(typ, value, tb),  # type: ignore[arg-type]
-        )
+        elif typ is StreamClosedError:
+            LOGGER.debug(
+                "Stream closed %s",
+                self._request_summary(),
+                exc_info=(typ, value, tb),  # type: ignore[arg-type]
+            )
+        else:
+            LOGGER.error(
+                "Uncaught %s %s",
+                typ.__name__ if typ else "exception",
+                self._request_summary(),
+                exc_info=(typ, value, tb),  # type: ignore[arg-type]
+            )
 
     @cached_property
     def now(self) -> datetime:
