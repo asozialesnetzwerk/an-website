@@ -1052,7 +1052,7 @@ class BaseRequestHandler(RequestHandler):
         self.set_header("Cross-Origin-Resource-Policy", "cross-origin")
         self.set_header(
             "Permissions-Policy",
-            "join-ad-interest-group=(),run-ad-auction=(),browsing-topics=()",
+            "browsing-topics=(),identity-credentials-get=(),join-ad-interest-group=(),private-state-token-issuance=(),private-state-token-redemption=(),run-ad-auction=()",
         )
         self.set_header("Referrer-Policy", "same-origin")
         self.set_header(

@@ -16,7 +16,7 @@ dill = "<2"
 ecs-logging = "==2.*"
 elastic-apm = "==6.*"
 elastic-enterprise-search = "<8.13"
-elasticsearch = {version = "==8.12.*", extras = ["async"]}
+elasticsearch = {version = "==8.15.*", extras = ["async"]}
 emoji = "<3"
 # frozendict = "==2.*"
 get-version = "==3.*"
@@ -34,8 +34,6 @@ pillow-jxl-plugin = "==1.*"
 pycryptodome = "==3.*"
 pycurl = "==7.45.2"  # later may have broken wheels
 pysocks = "==1.*"
-# pyston-lite = {version = "==2.*", markers = "python_version < '3.11'"}
-# pyston-lite-autoload = {version = "==2.*", markers = "python_version < '3.11'"}
 python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "==2019.1224"
 python-geoip-yplan = "==1.*"
