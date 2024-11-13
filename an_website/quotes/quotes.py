@@ -484,6 +484,7 @@ class QuoteById(QuoteBaseHandler):
         raise HTTPError(500, "Could not save vote")
 
 
+# pylint: disable-next=too-many-ancestors
 class QuoteAPIHandler(APIRequestHandler, QuoteById):
     """API request handler for the quotes page."""
 

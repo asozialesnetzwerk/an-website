@@ -43,6 +43,7 @@ import elasticapm
 import html2text
 import orjson as json
 import regex
+import tornado.web
 import yaml
 from accept_types import get_best_match  # type: ignore[import-untyped]
 from ansi2html import Ansi2HTMLConverter
@@ -60,7 +61,6 @@ from tornado.web import (
     HTTPError,
     MissingArgumentError,
     OutputTransform,
-    RequestHandler,
 )
 
 from .. import (
@@ -107,7 +107,53 @@ TEXT_CONTENT_TYPES: Final[set[str]] = {
 request_ctx_var: ContextVar[HTTPServerRequest] = ContextVar("current_request")
 
 
-class BaseRequestHandler(RequestHandler):
+class _RequestHandler(tornado.web.RequestHandler):
+    """Base for tornado request handlers."""
+
+    @override
+    async def _execute(
+        self, transforms: list[OutputTransform], *args: bytes, **kwargs: bytes
+    ) -> None:
+        request_ctx_var.set(self.request)
+        return await super()._execute(transforms, *args, **kwargs)
+
+    # pylint: disable-next=protected-access
+    _execute.__doc__ = tornado.web.RequestHandler._execute.__doc__
+
+    @override
+    def data_received(  # noqa: D102
+        self, chunk: bytes
+    ) -> None | Awaitable[None]:
+        pass
+
+    data_received.__doc__ = tornado.web.RequestHandler.data_received.__doc__
+
+    @override
+    def log_exception(
+        self,
+        typ: None | type[BaseException],
+        value: None | BaseException,
+        tb: None | TracebackType,
+    ) -> None:
+        if isinstance(value, HTTPError):
+            super().log_exception(typ, value, tb)
+        elif typ is StreamClosedError:
+            LOGGER.debug(
+                "Stream closed %s",
+                self._request_summary(),
+                exc_info=(typ, value, tb),  # type: ignore[arg-type]
+            )
+        else:
+            LOGGER.error(
+                "Uncaught exception %s",
+                self._request_summary(),
+                exc_info=(typ, value, tb),  # type: ignore[arg-type]
+            )
+
+    log_exception.__doc__ = tornado.web.RequestHandler.log_exception.__doc__
+
+
+class BaseRequestHandler(_RequestHandler):
     """The base request handler used by every page and API."""
 
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
@@ -136,12 +182,6 @@ class BaseRequestHandler(RequestHandler):
     apm_script: None | str
     crawler: bool = False
     nonce: str
-
-    async def _execute(
-        self, transforms: list[OutputTransform], *args: bytes, **kwargs: bytes
-    ) -> None:
-        request_ctx_var.set(self.request)
-        return await super()._execute(transforms, *args, **kwargs)
 
     def _finish(
         self, chunk: None | str | bytes | dict[str, Any] = None
@@ -304,6 +344,8 @@ class BaseRequestHandler(RequestHandler):
         }
 
         return self._finish(dictionary)
+
+    finish.__doc__ = _RequestHandler.finish.__doc__
 
     def finish_dict(self, **kwargs: Any) -> Future[None]:
         """Finish the request with a dictionary."""
@@ -701,29 +743,6 @@ class BaseRequestHandler(RequestHandler):
         """Check whether the request is authorized."""
         return is_authorized(self, permission, allow_cookie_auth)
 
-    @override
-    def log_exception(
-        self,
-        typ: None | type[BaseException],
-        value: None | BaseException,
-        tb: None | TracebackType,
-    ) -> None:
-        """Customize logging of uncaught exceptions."""
-        if isinstance(value, HTTPError):
-            super().log_exception(typ, value, tb)
-        elif typ is StreamClosedError:
-            LOGGER.debug(
-                "Stream closed %s",
-                self._request_summary(),
-                exc_info=(typ, value, tb),  # type: ignore[arg-type]
-            )
-        else:
-            LOGGER.error(
-                "Uncaught exception %s",
-                self._request_summary(),
-                exc_info=(typ, value, tb),  # type: ignore[arg-type]
-            )
-
     @cached_property
     def now(self) -> datetime:
         """Get the current time."""
@@ -932,6 +951,8 @@ class BaseRequestHandler(RequestHandler):
         self.used_render = True
         return super().render(template_name, **kwargs)
 
+    render.__doc__ = _RequestHandler.render.__doc__
+
     def set_content_type_header(self) -> None:
         """Set the Content-Type header based on `self.content_type`."""
         if str(self.content_type).startswith("text/"):  # RFC 2616 (3.7.1)
@@ -965,6 +986,8 @@ class BaseRequestHandler(RequestHandler):
             expires_days,
             **kwargs,
         )
+
+    set_cookie.__doc__ = _RequestHandler.set_cookie.__doc__
 
     def set_csp_header(self) -> None:
         """Set the Content-Security-Policy header."""
@@ -1099,6 +1122,8 @@ class BaseRequestHandler(RequestHandler):
             "OiJXZWJBcHBUYWJTdHJpcCIsImV4cGlyeSI6MTczMzE4NDAwMCwiaXNTdWJkb21haW4iOnRydWV9"
         )
 
+    set_default_headers.__doc__ = _RequestHandler.set_default_headers.__doc__
+
     @classmethod
     def supports_head(cls) -> bool:
         """Check whether this request handler supports HEAD requests."""
@@ -1140,6 +1165,8 @@ class BaseRequestHandler(RequestHandler):
                 )
 
         super().write(chunk)
+
+    write.__doc__ = _RequestHandler.write.__doc__
 
     @override
     def write_error(self, status_code: int, **kwargs: Any) -> None:
@@ -1189,9 +1216,4 @@ class BaseRequestHandler(RequestHandler):
             f"{status_code} {self.get_error_message(**kwargs)}\n"
         )
 
-
-BaseRequestHandler.data_received.__doc__ = RequestHandler.data_received.__doc__
-BaseRequestHandler.finish.__doc__ = RequestHandler.finish.__doc__
-BaseRequestHandler.render.__doc__ = RequestHandler.render.__doc__
-BaseRequestHandler.set_cookie.__doc__ = RequestHandler.set_cookie.__doc__
-BaseRequestHandler.write.__doc__ = RequestHandler.write.__doc__
+    write_error.__doc__ = _RequestHandler.write_error.__doc__

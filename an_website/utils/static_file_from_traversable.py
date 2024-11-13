@@ -15,6 +15,7 @@
 """A static file handler for the Traversable abc."""
 from __future__ import annotations
 
+import contextlib
 import logging
 import sys
 from collections.abc import Awaitable, Iterable, Mapping, Sequence
@@ -23,11 +24,12 @@ from typing import Any, Final, Literal, override
 from urllib.parse import urlsplit, urlunsplit
 
 from tornado import httputil, iostream
-from tornado.web import GZipContentEncoding, HTTPError, RequestHandler
+from tornado.web import GZipContentEncoding, HTTPError
 from typed_stream import Stream
 
 from an_website.utils.utils import size_of_file
 
+from .base_request_handler import _RequestHandler
 from .static_file_handling import content_type_from_path
 
 type Encoding = Literal["gz", "zst"]
@@ -44,7 +46,7 @@ REVERSE_ENCODINGS_MAP: Mapping[Encoding, str] = {
 }
 
 
-class TraversableStaticFileHandler(RequestHandler):
+class TraversableStaticFileHandler(_RequestHandler):
     """A static file handler for the Traversable abc."""
 
     root: Traversable
@@ -54,12 +56,6 @@ class TraversableStaticFileHandler(RequestHandler):
     def compute_etag(self) -> None | str:
         """Return a pre-computed ETag."""
         return getattr(self, "file_hashes", {}).get(self.request.path)
-
-    @override
-    def data_received(  # noqa: D102
-        self, chunk: bytes
-    ) -> None | Awaitable[None]:
-        pass
 
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
@@ -149,15 +145,16 @@ class TraversableStaticFileHandler(RequestHandler):
             assert self.request.method == "HEAD"
             await self.finish()
             return
-        content = self.get_content(absolute_path, start, end)
-        for chunk in content:
+
+        for chunk in self.get_content(absolute_path, start=start, end=end):
+            self.write(chunk)
             try:
-                self.write(chunk)
                 await self.flush()
             except iostream.StreamClosedError:
                 return
 
-        await self.finish()
+        with contextlib.suppress(iostream.StreamClosedError):
+            await self.finish()
 
     def get_absolute_path(self, path: str) -> Traversable:
         """Get the absolute path of a file."""
