@@ -8,8 +8,8 @@ rules:
   "plugin/no-unsupported-browser-features":
     - true
     - severity: "warning"
-      browsers: "Chrome 120, Firefox ESR, Safari 15.6"
-reportDescriptionlessDisables: false
+      browsers: "Chrome 120, Firefox 115, Safari 15.6"
+reportDescriptionlessDisables: [true, { severity: "warning" }]
 reportInvalidScopeDisables: true
 reportNeedlessDisables: true
 ignoreFiles:

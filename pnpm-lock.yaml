@@ -7,14 +7,14 @@ settings:
 overrides:
   webpack@4: '5'
 
-pnpmfileChecksum: ywflofsit3qw2lcaugokzwrx7q
+pnpmfileChecksum: sha256-5KFld5gANFMF2cq54TM6ci/ZMXd2mNJIqi0h+lPvqTE=
 
 patchedDependencies:
   core-js-builder@3.39.0:
-    hash: uaigxb4svfncpmuo7pakfqf4ai
+    hash: e687cf6b265ca8af68594873718b115f3545eacf952e0a1505b6f179ce0558a0
     path: patches/core-js-builder@3.39.0.patch
   ts-node@10.9.1:
-    hash: cstrxxonjryn63zbkj6xbnmhqa
+    hash: fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2
     path: patches/ts-node@10.9.1.patch
 
 importers:
@@ -71,7 +71,7 @@ importers:
         version: 1.0.30001676
       core-js-builder:
         specifier: 3.39.0
-        version: 3.39.0(patch_hash=uaigxb4svfncpmuo7pakfqf4ai)(@types/node@18.19.63)(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))(esbuild@0.24.0)
+        version: 3.39.0(patch_hash=e687cf6b265ca8af68594873718b115f3545eacf952e0a1505b6f179ce0558a0)(@types/node@18.19.63)(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))(esbuild@0.24.0)
       core-js-compat:
         specifier: 3.39.0
         version: 3.39.0(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))
@@ -128,7 +128,7 @@ importers:
         version: 5.0.2(prettier@3.3.3)(stylelint@16.10.0(typescript@5.6.3))
       ts-node:
         specifier: github:isaacs/ts-node#isaacs/node-20-fix
-        version: https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=cstrxxonjryn63zbkj6xbnmhqa)(@types/node@18.19.63)(typescript@5.6.3)
+        version: https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2)(@types/node@18.19.63)(typescript@5.6.3)
       type-fest:
         specifier: ^4.26.1
         version: 4.26.1
@@ -2307,7 +2307,7 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  core-js-builder@3.39.0(patch_hash=uaigxb4svfncpmuo7pakfqf4ai)(@types/node@18.19.63)(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))(esbuild@0.24.0):
+  core-js-builder@3.39.0(patch_hash=e687cf6b265ca8af68594873718b115f3545eacf952e0a1505b6f179ce0558a0)(@types/node@18.19.63)(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))(esbuild@0.24.0):
     dependencies:
       core-js: 3.39.0
       core-js-compat: 3.39.0(browserslist@4.24.2(caniuse-lite@1.0.30001676)(electron-to-chromium@1.5.50))
@@ -3180,7 +3180,7 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
-  ts-node@https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=cstrxxonjryn63zbkj6xbnmhqa)(@types/node@18.19.63)(typescript@5.6.3):
+  ts-node@https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2)(@types/node@18.19.63)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node14': 14.1.2

@@ -6,11 +6,10 @@ build-backend = "setuptools.build_meta"
 skips = ["B101", "B311", "B413"]
 
 [tool.black]
-target-version = ["py312"]
+target-version = ["py312", "py313"]
 line-length = 80
 
 [tool.isort]
-add_imports = ["from __future__ import annotations"]
 atomic = true
 combine_as_imports = true
 line_length = 80

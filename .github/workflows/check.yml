@@ -27,7 +27,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: 1.40.5
+          deno-version: 2.0.3
       - name: Install required stuff
         run: |
           sudo apt-get update
@@ -41,7 +41,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.47.2
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.47.5
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass
@@ -188,6 +188,8 @@ jobs:
         with:
           node-version: "18.20"
           cache: pnpm
+      - name: Enable corepack
+        run: corepack enable
       - name: Cache
         uses: pat-s/always-upload-cache@v3
         with:
@@ -214,6 +216,8 @@ jobs:
         with:
           node-version: "18.20"
           cache: pnpm
+      - name: Enable corepack
+        run: corepack enable
       - name: Install tsc
         run: pnpm install
       - name: Run tsc

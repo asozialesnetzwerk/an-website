@@ -30,7 +30,7 @@
     "esbuild": "https://deno.land/x/esbuild@v0.20.2/wasm.js",
     "std/": "https://deno.land/std@0.224.0/"
   },
-  "nodeModulesDir": false,
+  "nodeModulesDir": "none",
   "lint": {
     "include": [
       "scripts/deno"

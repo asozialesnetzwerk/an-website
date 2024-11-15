@@ -5,7 +5,7 @@ autoflake==2.3.1
 bandit==1.7.10
 black==24.10.0
 build==1.2.2.post1
-certifi==2023.11.17
+certifi==2024.8.30
 cffi==1.17.1
 cfgv==3.4.0
 charset-normalizer==3.4.0
@@ -19,7 +19,7 @@ dulwich==0.22.3
 faker==22.7.0
 filelock==3.16.1
 flake8==7.1.1
-flake8-bugbear==24.8.19
+flake8-bugbear==24.10.31
 flake8-comprehensions==3.16.0
 flake8-docstrings==1.7.0
 flake8-no-pep420==2.8.0
@@ -84,7 +84,7 @@ stevedore==5.3.0
 time-machine==2.16.0
 tomlkit==0.13.2
 tornado==6.4.1
-trove-classifiers==2024.7.1
+trove-classifiers==2024.10.16
 twine==5.1.1
 types-beautifulsoup4==4.12.0.20241020
 types-cffi==1.16.0.20240331
@@ -102,7 +102,7 @@ types-regex==2024.9.11.20240912
 types-setuptools==69.5.0.20240522
 typing-extensions==4.12.2
 urllib3==2.2.3
-virtualenv==20.27.0
+virtualenv==20.27.1
 webencodings==0.5.1
 zipp==3.20.2
 accept-types==0.4.1
@@ -121,7 +121,7 @@ ecs-logging==2.2.0
 elastic-apm==6.23.0
 elastic-enterprise-search==8.11.0
 elastic-transport==8.15.1
-elasticsearch==8.12.1
+elasticsearch==8.15.1
 emoji==2.14.0
 frozenlist==1.5.0
 funcparserlib==1.0.1
@@ -157,4 +157,4 @@ tzdata==2024.2
 ultradict==0.0.6
 uvloop==0.21.0
 wrapt==1.16.0
-yarl==1.16.0
+yarl==1.17.1

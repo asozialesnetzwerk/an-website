@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f275eb6f7c7979b22a50ae8217a653a120cc9805d5f38bb476350926d74ac46f"
+            "sha256": "85ca71ba0e16ed6aecdb87f66b0bb4e0deda4d5fb842da3c5f7e07ef7545302b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -341,12 +341,12 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:9b469f3a900bf28dc19b8cfbf8019bf47f7fdd1a65a1d4ffb98fc14166beb4d1",
-                "sha256:e036ab49d5b79556f99cfc2d9320b34cfbe5be05c5871b51de9329f0603b0474"
+                "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8",
+                "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==2023.11.17"
+            "version": "==2024.8.30"
         },
         "cffi": {
             "hashes": [
@@ -2251,12 +2251,12 @@
         },
         "certifi": {
             "hashes": [
-                "sha256:9b469f3a900bf28dc19b8cfbf8019bf47f7fdd1a65a1d4ffb98fc14166beb4d1",
-                "sha256:e036ab49d5b79556f99cfc2d9320b34cfbe5be05c5871b51de9329f0603b0474"
+                "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8",
+                "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.6'",
-            "version": "==2023.11.17"
+            "version": "==2024.8.30"
         },
         "cffi": {
             "hashes": [
@@ -3403,11 +3403,11 @@
         },
         "trove-classifiers": {
             "hashes": [
-                "sha256:3529595c443758741a8e34af06704d7468fd92ad77d17f9159a6f3a6815a64c2",
-                "sha256:380dcc30d5df74933223108c58a035e8bacab1de39977692f8fe7b37f0531d54"
+                "sha256:8a3570c880f7ca2ffebbc91806aee3e8f5cd221422dfc8cd2cad4b48789ac69b",
+                "sha256:9b02a4cb49bd2e85c13e728ee461f4f332d6334736b18d61254c964643687144"
             ],
             "index": "pypi",
-            "version": "==2024.7.1"
+            "version": "==2024.10.16"
         },
         "twine": {
             "hashes": [

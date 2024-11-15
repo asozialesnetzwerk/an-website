@@ -676,8 +676,6 @@ def main() -> int | str:  # noqa: C901
             )
             traceback.print_exc()
 
-    # pylint: disable=redefined-variable-type
-
     # patch the reader console to use our function
     rc_execute = ReaderConsole.execute
     ReaderConsole.execute = _run_and_print
