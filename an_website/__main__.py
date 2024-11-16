@@ -37,17 +37,6 @@ warnings.filterwarnings("ignore", module="defusedxml")
 warnings.filterwarnings("ignore", module="dill._dill", category=EncodingWarning)
 warnings.simplefilter("ignore", PickleWarning)
 
-try:
-    # fmt: off
-    assert eval(  # pylint: disable=eval-used  # nosec: B307
-        """f'''{
-        ... # 42
-        }'''"""
-    ) == str(...)
-except Exception:  # pylint: disable=broad-except
-    os.abort()
-    # fmt: on
-
 
 from setproctitle import getproctitle
 

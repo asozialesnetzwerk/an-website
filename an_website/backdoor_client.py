@@ -678,14 +678,16 @@ def main() -> int | str:  # noqa: C901
 
     # patch the reader console to use our function
     rc_execute = ReaderConsole.execute
-    ReaderConsole.execute = _run_and_print
-
-    # run the reader
-    with suppress(EOFError):
+    try:
+        ReaderConsole.execute = _run_and_print
+        # run the reader
         _main(print_banner=False, clear_main=False)
-
-    # restore the original method
-    ReaderConsole.execute = rc_execute
+    except EOFError:
+        pass
+    finally:
+        # restore the original method
+        # pylint: disable-next=redefined-variable-type
+        ReaderConsole.execute = rc_execute
 
     return 0
 

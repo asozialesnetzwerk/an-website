@@ -49,9 +49,7 @@ from typing import (
     Any,
     Final,
     Literal,
-    ParamSpec,
     TypeAlias,
-    TypeVar,
     Union,
     cast,
     get_args,
@@ -77,23 +75,14 @@ if TYPE_CHECKING:
 
 LOGGER: Final = logging.getLogger(__name__)
 
-T = TypeVar("T")
-P = ParamSpec("P")
-
-T_Val = TypeVar("T_Val")  # pylint: disable=invalid-name
-
-TOptionalStr = TypeVar(  # pylint: disable=invalid-name
-    "TOptionalStr", None, str
-)
-
 # pylint: disable=consider-alternative-union-syntax
-Handler: TypeAlias = Union[
+type Handler = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
     tuple[str, type[RequestHandler], dict[str, Any], str],
 ]
 
-OpenMojiValue: TypeAlias = Literal[False, "img", "glyf_colr1", "glyf_colr0"]
+type OpenMojiValue = Literal[False, "img", "glyf_colr1", "glyf_colr0"]
 BumpscosityValue: TypeAlias = Literal[0, 1, 12, 50, 76, 100, 1000]
 BUMPSCOSITY_VALUES: Final[tuple[BumpscosityValue, ...]] = get_args(
     BumpscosityValue
@@ -147,16 +136,16 @@ class ArgparseNamespace(argparse.Namespace):
     save_config_to: pathlib.Path | None
 
 
-class AwaitableValue(Awaitable[T_Val]):
+class AwaitableValue[T](Awaitable[T]):  # pylint: disable=undefined-variable
     # pylint: disable=too-few-public-methods
     """An awaitable that always returns the same value."""
 
-    def __await__(self) -> Generator[None, None, T_Val]:
+    def __await__(self) -> Generator[None, None, T]:
         """Return the value."""
         yield
         return self._value
 
-    def __init__(self, value: T_Val) -> None:
+    def __init__(self, value: T) -> None:
         """Set the value."""
         self._value = value
 
@@ -205,8 +194,7 @@ class Timer:
 
 
 @cache
-def add_args_to_url(url: str | SplitResult, **kwargs: Any) -> str:
-    # pylint: disable=confusing-consecutive-elif
+def add_args_to_url(url: str | SplitResult, **kwargs: object) -> str:
     """Add query arguments to a URL."""
     if isinstance(url, str):
         url = urlsplit(url)
@@ -218,10 +206,11 @@ def add_args_to_url(url: str | SplitResult, **kwargs: Any) -> str:
         parse_qsl(url.query, keep_blank_values=True)
     )
 
-    for key, value in kwargs.items():  # type: str, Any
+    for key, value in kwargs.items():
         if value is None:
             if key in url_args:
                 del url_args[key]
+        # pylint: disable-next=confusing-consecutive-elif
         elif isinstance(value, bool):
             url_args[key] = bool_to_str(value)
         else:
@@ -238,9 +227,9 @@ def add_args_to_url(url: str | SplitResult, **kwargs: Any) -> str:
     )
 
 
-def anonymize_ip(
-    address: TOptionalStr, *, ignore_invalid: bool = False
-) -> TOptionalStr:
+def anonymize_ip[  # noqa: D103
+    A: (str, None, str | None)
+](address: A, *, ignore_invalid: bool = False) -> A:
     """Anonymize an IP address."""
     if address is None:
         return None
@@ -296,7 +285,7 @@ def apm_anonymization_processor(
     return event
 
 
-def apply(value: T_Val, fun: Callable[[T_Val], T]) -> T:
+def apply[V, Ret](value: V, fun: Callable[[V], Ret]) -> Ret:  # noqa: D103
     """Apply a function to a value and return the result."""
     return fun(value)
 
@@ -590,7 +579,7 @@ def length_of_match(match: regex.Match[Any]) -> int:
     return match.end() - match.start()
 
 
-def n_from_set(set_: Set[T], n: int) -> set[T]:
+def n_from_set[T](set_: Set[T], n: int) -> set[T]:  # noqa: D103
     """Get and return n elements of the set as a new set."""
     new_set = set()
     for i, element in enumerate(set_):
@@ -609,7 +598,7 @@ def name_to_id(val: str) -> str:
     ).strip("-")
 
 
-def none_to_default(value: None | T, default: T_Val) -> T_Val | T:
+def none_to_default[T, D](value: None | T, default: D) -> D | T:  # noqa: D103
     """Like ?? in ECMAScript."""
     return default if value is None else value
 
@@ -819,9 +808,11 @@ def strangle(string: str) -> float:
     return int.from_bytes(hasher.digest()[:2], "little") / (1 << 16) * 360
 
 
-def time_function(
-    function: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> tuple[T, float]:
+def time_function[  # noqa: D103
+    T, **P  # pylint: disable=invalid-name
+](function: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> tuple[
+    T, float
+]:
     """Run the function and return the result and the time it took in seconds."""
     timer = Timer()
     return function(*args, **kwargs), timer.stop()
