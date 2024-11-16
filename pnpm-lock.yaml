@@ -13,9 +13,6 @@ patchedDependencies:
   core-js-builder@3.39.0:
     hash: e687cf6b265ca8af68594873718b115f3545eacf952e0a1505b6f179ce0558a0
     path: patches/core-js-builder@3.39.0.patch
-  ts-node@10.9.1:
-    hash: fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2
-    path: patches/ts-node@10.9.1.patch
 
 importers:
 
@@ -127,8 +124,8 @@ importers:
         specifier: ^5.0.2
         version: 5.0.2(prettier@3.3.3)(stylelint@16.10.0(typescript@5.6.3))
       ts-node:
-        specifier: github:isaacs/ts-node#isaacs/node-20-fix
-        version: https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2)(@types/node@18.19.63)(typescript@5.6.3)
+        specifier: https://asozial.beer/ts-node-241116.tgz
+        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.63)(typescript@5.6.3)
       type-fest:
         specifier: ^4.26.1
         version: 4.26.1
@@ -1593,15 +1590,15 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-node@https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774:
-    resolution: {tarball: https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774}
-    version: 10.9.1
+  ts-node@https://asozial.beer/ts-node-241116.tgz:
+    resolution: {tarball: https://asozial.beer/ts-node-241116.tgz}
+    version: 11.0.0-beta.1
     hasBin: true
     peerDependencies:
-      '@swc/core': '>=1.2.50'
-      '@swc/wasm': '>=1.2.50'
+      '@swc/core': '>=1.3.85'
+      '@swc/wasm': '>=1.3.85'
       '@types/node': '*'
-      typescript: '>=4.2'
+      typescript: '>=4.4'
     peerDependenciesMeta:
       '@swc/core':
         optional: true
@@ -3180,7 +3177,7 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
-  ts-node@https://codeload.github.com/isaacs/ts-node/tar.gz/b614b1be4d3dacbaf26b31a9320e31287eaf4774(patch_hash=fa27a1acf07317f18abb6c1e91454e5a6a963f2e884cdf7213067b2d9ce764c2)(@types/node@18.19.63)(typescript@5.6.3):
+  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.63)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node14': 14.1.2

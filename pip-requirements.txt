@@ -33,7 +33,7 @@ jsonpickle==3.3.0; python_version >= '3.7'
 lxml==5.3.0; python_version >= '3.6'
 multidict==6.1.0; python_version >= '3.8'
 openmoji-dist==15.0.0.4
-orjson==3.10.10; python_version >= '3.8'
+orjson==3.10.11; python_version >= '3.8'
 packaging==24.1; python_version >= '3.8'
 pillow==11.0.0; python_version >= '3.9'
 pillow-jxl-plugin==1.2.8; python_version >= '3.8'

@@ -15,7 +15,7 @@ cryptography==42.0.8
 dill==0.3.9
 distlib==0.3.9
 docutils==0.21.2
-dulwich==0.22.3
+dulwich==0.22.4
 faker==22.7.0
 filelock==3.16.1
 flake8==7.1.1
@@ -75,7 +75,7 @@ requests==2.32.3
 requests-toolbelt==1.0.0
 restructuredtext-lint==1.4.0
 rfc3986==2.0.0
-rich==13.9.3
+rich==13.9.4
 secretstorage==3.3.3
 setuptools==69.5.1
 six==1.16.0
@@ -135,7 +135,7 @@ jsonpickle==3.3.0
 lxml==5.3.0
 multidict==6.1.0
 openmoji-dist==15.0.0.4
-orjson==3.10.10
+orjson==3.10.11
 pillow==11.0.0
 pillow-jxl-plugin==1.2.8
 propcache==0.2.0
