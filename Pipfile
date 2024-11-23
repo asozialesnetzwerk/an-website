@@ -23,7 +23,7 @@ get-version = "==3.*"
 hangman-solver-rs = "<2"
 html2text = "==2024.2.26"
 hyrule = {version = "<2", markers = "python_version < '3.13'"}
-jsonpickle = "==3.*"
+jsonpickle = "==4.*"
 lxml = "==5.*"
 # more-itertools = "==10.*"
 openmoji-dist = "*"
