@@ -529,75 +529,78 @@ async def parse_list_of_quote_data(
     return tuple(return_list)
 
 
+async def _initialize_cache_on_startup(settings: dict[str, Any]) -> None:
+    """Initialize the cache on startup (called in update_cache_periodically)."""
+    if not EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
+        return
+    redis: Redis[str] = cast("Redis[str]", settings.get("REDIS"))
+    prefix: str = settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
+    await parse_list_of_quote_data(
+        await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
+        parse_author,
+    )
+    await parse_list_of_quote_data(
+        await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950
+        parse_quote,
+    )
+    await parse_list_of_quote_data(
+        await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
+        parse_wrong_quote,
+    )
+    if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
+        last_update = await redis.get(f"{prefix}:cached-quote-data:last-update")
+        if last_update:
+            last_update_int = int(last_update)
+            since_last_update = int(time.time()) - last_update_int
+            if 0 <= since_last_update < 60 * 60:
+                # wait until the last update is at least one hour old
+                update_cache_in = 60 * 60 - since_last_update
+                if not sys.flags.dev_mode and update_cache_in > 60:
+                    # if in production mode update wrong quotes just to be sure
+                    try:
+                        await update_cache(
+                            settings, update_quotes=False, update_authors=False
+                        )
+                    except Exception:  # pylint: disable=broad-except
+                        LOGGER.exception("Updating quotes cache failed")
+                        apm: None | elasticapm.Client = settings.get(
+                            "ELASTIC_APM", {}
+                        ).get("CLIENT")
+                        if apm:
+                            apm.capture_exception()  # type: ignore[no-untyped-call]
+                        del apm
+                    else:
+                        LOGGER.info("Updated quotes cache successfully")
+                LOGGER.info(
+                    "Next update of quotes cache in %d seconds",
+                    update_cache_in,
+                )
+                await asyncio.sleep(update_cache_in)
+
+
 async def update_cache_periodically(
     app: Application, worker: int | None
 ) -> None:
     """Start updating the cache every hour."""
     # pylint: disable=too-complex, too-many-branches
-    if "/troet" in typed_stream.Stream(
-        cast(Iterable[ModuleInfo], app.settings.get("MODULE_INFOS", ()))
-    ).map(lambda m: m.path):
-        app.settings["SHOW_SHARING_ON_MASTODON"] = True
+    settings = app.settings
+    del app
     if worker:
         return
     with contextlib.suppress(asyncio.TimeoutError):
         await asyncio.wait_for(EVENT_REDIS.wait(), 5)
-    redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
-    prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
-    apm: None | elasticapm.Client
-    if EVENT_REDIS.is_set():  # pylint: disable=too-many-nested-blocks
-        await parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:authors"),  # type: ignore[arg-type]  # noqa: B950
-            parse_author,
-        )
-        await parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:quotes"),  # type: ignore[arg-type]  # noqa: B950
-            parse_quote,
-        )
-        await parse_list_of_quote_data(
-            await redis.get(f"{prefix}:cached-quote-data:wrongquotes"),  # type: ignore[arg-type]  # noqa: B950
-            parse_wrong_quote,
-        )
-        if QUOTES_CACHE and AUTHORS_CACHE and WRONG_QUOTES_CACHE:
-            last_update = await redis.get(
-                f"{prefix}:cached-quote-data:last-update"
-            )
-            if last_update:
-                last_update_int = int(last_update)
-                since_last_update = int(time.time()) - last_update_int
-                if 0 <= since_last_update < 60 * 60:
-                    # wait until the last update is at least one hour old
-                    update_cache_in = 60 * 60 - since_last_update
-                    if not sys.flags.dev_mode and update_cache_in > 60:
-                        # if in production mode update wrong quotes just to be sure
-                        try:
-                            await update_cache(
-                                app, update_quotes=False, update_authors=False
-                            )
-                        except Exception:  # pylint: disable=broad-except
-                            LOGGER.exception("Updating quotes cache failed")
-                            apm = app.settings.get("ELASTIC_APM", {}).get(
-                                "CLIENT"
-                            )
-                            if apm:
-                                apm.capture_exception()  # type: ignore[no-untyped-call]
-                        else:
-                            LOGGER.info("Updated quotes cache successfully")
-                    LOGGER.info(
-                        "Next update of quotes cache in %d seconds",
-                        update_cache_in,
-                    )
-                    await asyncio.sleep(update_cache_in)
-
+    await _initialize_cache_on_startup(settings)
     # update the cache every hour
+    apm: None | elasticapm.Client
     failed = 0
     while not EVENT_SHUTDOWN.is_set():  # pylint: disable=while-used
         try:
-            await update_cache(app)
+            await update_cache(settings)
         except Exception:  # pylint: disable=broad-except
             LOGGER.exception("Updating quotes cache failed")
-            if apm := app.settings.get("ELASTIC_APM", {}).get("CLIENT"):
+            if apm := settings.get("ELASTIC_APM", {}).get("CLIENT"):
                 apm.capture_exception()
+                del apm
             failed += 1
             await asyncio.sleep(pow(min(failed * 2, 60), 2))  # 4,16,...,60*60
         else:
@@ -607,15 +610,15 @@ async def update_cache_periodically(
 
 
 async def update_cache(
-    app: Application,
+    settings: dict[str, Any],
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,
     update_authors: bool = True,
 ) -> None:
     """Fill the cache with all data from the API."""
     LOGGER.info("Updating quotes cache")
-    redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
-    prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
+    redis: Redis[str] = cast("Redis[str]", settings.get("REDIS"))
+    prefix: str = settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     redis_available = EVENT_REDIS.is_set()
 
     if update_wrong_quotes:

@@ -121,6 +121,28 @@ async def wait_for_shutdown() -> None:  # pragma: no cover
     loop.stop()
 
 
+async def _execute_background_task(
+    fun: BackgroundTask, name: str, app: Application, worker: int | None
+) -> None:
+    """Execute a background task with error handling."""
+    task = fun(app=app, worker=worker)
+    del fun, app, worker
+    try:
+        await task
+    except asyncio.exceptions.CancelledError:
+        pass
+    except BaseException as exc:  # pylint: disable=broad-exception-caught
+        LOGGER.exception(
+            "A %s exception occured while executing background task %r",
+            exc.__class__.__name__,
+            name,
+        )
+        if not isinstance(exc, Exception):
+            raise
+    else:
+        LOGGER.debug("Background task %r finished executing", name)
+
+
 def start_background_tasks(  # pylint: disable=too-many-arguments
     *,
     app: Application,
@@ -133,29 +155,6 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
     worker: int | None,
 ) -> Set[asyncio.Task[None]]:
     """Start all required background tasks."""
-
-    async def execute_background_task(task: BackgroundTask, /) -> None:
-        """Execute a background task with error handling."""
-        try:
-            await task(app=app, worker=worker)
-        except asyncio.exceptions.CancelledError:
-            pass
-        except BaseException as exc:  # pylint: disable=broad-exception-caught
-            LOGGER.exception(
-                "A %s exception occured while executing background task %s.%s",
-                exc.__class__.__name__,
-                task.__module__,
-                task.__name__,
-            )
-            if not isinstance(exc, Exception):
-                raise
-        else:
-            LOGGER.debug(
-                "Background task %s.%s finished executing",
-                task.__module__,
-                task.__name__,
-            )
-
     background_tasks: set[asyncio.Task[None]] = set()
 
     def create_task(fun: BackgroundTask, /) -> asyncio.Task[None]:
@@ -163,7 +162,9 @@ def start_background_tasks(  # pylint: disable=too-many-arguments
         name = f"{fun.__module__}.{fun.__name__}"
         if not worker:  # log only once
             LOGGER.info("starting %s background task", name)
-        task = loop.create_task(execute_background_task(fun), name=name)
+        task = loop.create_task(
+            _execute_background_task(fun, name, app, worker), name=name
+        )
         task.add_done_callback(background_tasks.discard)
         return task
 

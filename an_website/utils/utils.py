@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
+import dataclasses
 import heapq
 import logging
 import os.path
@@ -35,7 +36,7 @@ from collections.abc import (
     Mapping,
     Set,
 )
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, is_dataclass
 from datetime import datetime, timezone
 from enum import IntFlag
 from functools import cache, partial
@@ -62,10 +63,11 @@ from blake3 import blake3
 from elastic_transport import ApiError, TransportError
 from elasticsearch import AsyncElasticsearch
 from geoip import geolite2  # type: ignore[import-untyped]
+from immortal import immortalize
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from rapidfuzz.distance.Levenshtein import normalized_distance
 from redis.asyncio import Redis
-from tornado.web import HTTPError, RequestHandler
+from tornado.web import HTTPError, RequestHandler, Application
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
@@ -832,6 +834,10 @@ def time_to_str(spam: float) -> str:
     )
 
 
+_EMPTY_TUPLE: tuple[Any, ...] = ()
+immortalize(_EMPTY_TUPLE)
+
+
 @dataclass(order=True, frozen=True, slots=True)
 class PageInfo:
     """The PageInfo class that is used for the subpages of a ModuleInfo."""
@@ -840,7 +846,7 @@ class PageInfo:
     description: str
     path: None | str = None
     # keywords that can be used for searching
-    keywords: tuple[str, ...] = field(default_factory=tuple)
+    keywords: tuple[str, ...] = field(default=_EMPTY_TUPLE)
     hidden: bool = False  # whether to hide this page info on the page
     short_name: None | str = None  # short name for the page
 
@@ -853,12 +859,14 @@ class ModuleInfo(PageInfo):
     This gets created by every module to add the handlers.
     """
 
-    handlers: tuple[Handler, ...] = field(default_factory=tuple[Handler, ...])
-    sub_pages: tuple[PageInfo, ...] = field(default_factory=tuple)
-    aliases: tuple[str, ...] | Mapping[str, str] = field(default_factory=tuple)
+    handlers: tuple[Handler, ...] = field(default=_EMPTY_TUPLE)
+    sub_pages: tuple[PageInfo, ...] = field(default=_EMPTY_TUPLE)
+    aliases: tuple[str, ...] | Mapping[str, str] = field(default=_EMPTY_TUPLE)
     required_background_tasks: Collection[BackgroundTask] = field(
-        default_factory=frozenset
+        default=_EMPTY_TUPLE
     )
+    pre_fork_inits: Collection[Callable[[Application], None]] = field(default=_EMPTY_TUPLE)
+
 
     def get_keywords_as_str(self, path: str) -> str:
         """Get the keywords as comma-seperated string."""

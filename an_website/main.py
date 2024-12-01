@@ -52,6 +52,7 @@ from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
 from elasticapm.contrib.tornado import ElasticAPM
+from immortal import immortalize
 from redis.asyncio import (
     BlockingConnectionPool,
     Redis,
@@ -960,11 +961,16 @@ def main(  # noqa: C901  # pragma: no cover
     )
 
     if processes < 0:
-        processes = (
+        _processes = (
             os.process_cpu_count()  # type: ignore[attr-defined]
             if sys.version_info >= (3, 13)
             else os.cpu_count()
         ) or 0
+        processes = max(
+            _processes + processes,
+            0,
+        )
+        del _processes
 
     worker: None | int = None
 
@@ -996,6 +1002,14 @@ def main(  # noqa: C901  # pragma: no cover
 
     UPTIME.reset()
     main_pid = os.getpid()
+
+    immortalize(app)
+    immortalize(app.settings)
+
+    for module_info in cast(Iterable[ModuleInfo], app.settings["MODULE_INFOS"]):
+        immortalize(module_info)
+        for _init in module_info.pre_fork_inits:
+            _init(app)
 
     if processes:
         setproctitle(f"{NAME} - Master")

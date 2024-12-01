@@ -15,7 +15,11 @@
 
 from __future__ import annotations
 
-from tornado.web import RedirectHandler
+from collections.abc import Iterable
+from typing import cast
+
+import typed_stream
+from tornado.web import Application, RedirectHandler
 
 from ..utils.utils import ModuleInfo, PageInfo
 from .create import CreatePage1, CreatePage2
@@ -160,5 +164,15 @@ def get_module_info() -> ModuleInfo:
             "falsche Zitate",
             "falsch zugeordnete Zitate",
         ),
-        required_background_tasks=frozenset({update_cache_periodically}),
+        required_background_tasks=(update_cache_periodically,),
+        pre_fork_inits=(_init,),
     )
+
+def _init(
+    app: Application
+) -> None:
+    """Configure settings."""
+    if "/troet" in typed_stream.Stream(
+        cast(Iterable[ModuleInfo], app.settings.get("MODULE_INFOS", ()))
+    ).map(lambda m: m.path):
+        app.settings["SHOW_SHARING_ON_MASTODON"] = True

@@ -41,13 +41,13 @@ def get_module_info() -> ModuleInfo:
         path="/redirect",
         short_name="Weiterleitung",
         hidden=True,
-        required_background_tasks=(_confirm_loading,),
+        pre_fork_inits=(_confirm_loading,),
     )
 
 
-async def _confirm_loading(app: Application, worker: int | None) -> None:
+def _confirm_loading(app: Application) -> None:
     """Save in settings that the redirect module has been loaded."""
-    app.settings["REDIRECT_MODULE_LOADED"] = worker or True  # noqa: SIM222
+    app.settings["REDIRECT_MODULE_LOADED"] = True  # noqa: SIM222
 
 
 class RedirectPage(HTMLRequestHandler):

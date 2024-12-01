@@ -15,7 +15,7 @@
 
 from __future__ import annotations
 
-from typing import ClassVar, cast
+from typing import ClassVar, Iterable, cast
 
 import orjson as json
 
@@ -61,7 +61,7 @@ class Endpoints(HTMLRequestHandler):
     ) -> list[dict[str, str | list[dict[str, str | list[str]]]]]:
         """Get a list of all API endpoints and return it."""
         endpoints: list[dict[str, str | list[dict[str, str | list[str]]]]] = []
-        for module_info in self.settings["MODULE_INFOS"]:
+        for module_info in cast(Iterable[ModuleInfo], self.settings["MODULE_INFOS"]):
             api_paths: list[dict[str, str | list[str]]] = [
                 {
                     "path": handler[0],
