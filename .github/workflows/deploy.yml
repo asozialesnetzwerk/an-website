@@ -43,7 +43,6 @@ jobs:
     needs:
       - build
     permissions: {}
-    continue-on-error: ${{ matrix.python-version == 3.13 }}
     strategy:
       fail-fast: false
       matrix:
@@ -75,7 +74,6 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-    continue-on-error: ${{ matrix.python-version == 3.13 }}
     strategy:
       fail-fast: false
       matrix:
@@ -139,7 +137,7 @@ jobs:
           path: .coverage
           if-no-files-found: error
           include-hidden-files: true
-          name: coverage
+          name: coverage-${{ matrix.python-version }}
 
   sourcemaps:
     name: Upload sourcemaps
@@ -245,7 +243,7 @@ jobs:
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
-          name: coverage
+          name: coverage-3.12
       - name: Make directory
         run: mkdir github-pages
       - name: Hash files
