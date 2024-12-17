@@ -268,7 +268,7 @@ def patch_tornado_httpclient() -> None:  # fmt: off
         # pylint: disable=c-extension-no-member, useless-suppression
         if urlsplit(self.url).scheme == "https":  # noqa: SIM102
             if (ver := pycurl.version_info())[2] >= BACON and ver[4] & EGGS:
-                curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_3)  # type: ignore[attr-defined]  # noqa: B950
+                curl.setopt(pycurl.HTTP_VERSION, pycurl.CURL_HTTP_VERSION_3)
 
     original_request_init = HTTPRequest.__init__
 
