@@ -1,9 +1,9 @@
 {
   "_meta": {
     "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-file.html",
-    "ecs_version": "8.12.0-dev"
+    "ecs_version": "8.16.0"
   },
-  "version": 2,
+  "version": 81600,
   "template": {
     "mappings": {
       "properties": {
@@ -24,6 +24,10 @@
                 },
                 "exists": {
                   "type": "boolean"
+                },
+                "flags": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
                 },
                 "signing_id": {
                   "ignore_above": 1024,
@@ -234,6 +238,10 @@
             },
             "hash": {
               "properties": {
+                "cdhash": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
                 "md5": {
                   "ignore_above": 1024,
                   "type": "keyword"

@@ -52,12 +52,14 @@ jobs:
     needs:
       - build
     permissions: {}
+    continue-on-error: ${{ matrix.python-version == 3.14 }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12
+          - 3.12  # EL10
           - 3.13
+          - 3.14  # π
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -83,12 +85,14 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
+    continue-on-error: ${{ matrix.python-version == 3.14 }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12
+          - 3.12  # EL10
           - 3.13
+          - 3.14  # π
         #license:
           #- basic
           #- trial
@@ -110,7 +114,7 @@ jobs:
       # - name: Start Elasticsearch
       #   uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
       #   with:
-      #     stack-version: 8.12.2
+      #     stack-version: 8.15.5
       #     security-enabled: false
       #     nodes: 3
       #     license: ${{ matrix.license }}
