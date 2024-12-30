@@ -220,6 +220,8 @@ def patch_tornado_arguments() -> None:  # noqa: C901
             except Exception as exc:  # pylint: disable=broad-except
                 gen_log.warning("Invalid JSON body: %s", exc)
             else:
+                if not isinstance(spam, dict):
+                    return
                 for key, value in spam.items():
                     if value is not None:
                         arguments.setdefault(key, []).append(
@@ -237,6 +239,8 @@ def patch_tornado_arguments() -> None:  # noqa: C901
             except Exception as exc:  # pylint: disable=broad-except
                 gen_log.warning("Invalid YAML body: %s", exc)
             else:
+                if not isinstance(spam, dict):
+                    return
                 for key, value in spam.items():
                     if value is not None:
                         arguments.setdefault(key, []).append(
