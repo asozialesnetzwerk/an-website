@@ -27,7 +27,7 @@ from dill._dill import (  # type: ignore[import-untyped]  # isort: skip
     PickleWarning,  # nosec: B403
 )
 
-os.abort() if ip_address("3fff::").is_global else ...
+_ = os.abort() if ip_address("3fff::").is_global else ...
 
 if sys.flags.dev_mode and not (
     "PYTHONWARNINGS" in os.environ or " -W" in " ".join(sys.orig_argv)
