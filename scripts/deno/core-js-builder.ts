@@ -26,7 +26,9 @@ const output = await builder({
 });
 
 if (args.format === "bundle") {
-    const minified = (await esbuild.transform(output.script, { minify: true })).code;
+    const minified = (await esbuild
+        .transform(output.script, { minify: true }))
+        .code;
     console.log(
         "Minified size:",
         minified.length,
