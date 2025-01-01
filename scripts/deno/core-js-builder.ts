@@ -1,5 +1,5 @@
 #!/usr/bin/env -S DENO_NO_PACKAGE_JSON=1 deno run --no-prompt --allow-net=deno.land --allow-env=TMPDIR,TMP,TEMP --allow-read --allow-write=.,/tmp
-import builder from "npm:core-js-builder@3";
+import builder from "npm:@core-js/builder@4.0.0-alpha.0";
 import { parseArgs } from "std/cli/mod.ts";
 import { gzipSize } from "npm:gzip-size";
 import * as esbuild from "esbuild";
@@ -13,7 +13,7 @@ const args = parseArgs(Deno.args, {
     },
 });
 
-const bundle = await builder({
+const output = await builder({
     modules: "core-js/stable",
     targets: args.targets,
     summary: {
@@ -26,7 +26,7 @@ const bundle = await builder({
 });
 
 if (args.format === "bundle") {
-    const minified = (await esbuild.transform(bundle, { minify: true })).code;
+    const minified = (await esbuild.transform(output.script, { minify: true })).code;
     console.log(
         "Minified size:",
         minified.length,

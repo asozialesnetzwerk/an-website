@@ -1,4 +1,4 @@
-#!/usr/bin/env -S pnpm ts-node -T
+#!/usr/bin/env -S node --loader=ts-node/esm
 import builder from "core-js-builder";
 import { gzipSize } from "gzip-size";
 import { transform } from "esbuild";
@@ -13,7 +13,7 @@ const args = parseArgs(process.argv.slice(2), {
     },
 });
 
-const bundle = await builder({
+const output = await builder({
     modules: "core-js/stable",
     targets: args.targets,
     summary: {
@@ -25,7 +25,7 @@ const bundle = await builder({
 });
 
 if (args.format === "bundle") {
-    const minified = (await transform(bundle, { minify: true })).code;
+    const minified = (await transform(output, { minify: true })).code;
     console.log(
         "Minified size:",
         minified.length,

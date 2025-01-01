@@ -1,5 +1,5 @@
 #!/usr/bin/env -S DENO_NO_PACKAGE_JSON=1 deno run --no-prompt --allow-read
-import compat from "npm:core-js-compat@3";
+import compat from "npm:@core-js/compat@4.0.0-alpha.0";
 import { parseArgs } from "std/cli/mod.ts";
 
 const args = parseArgs(Deno.args, {

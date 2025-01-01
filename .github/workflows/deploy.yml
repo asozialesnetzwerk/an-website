@@ -87,12 +87,9 @@ jobs:
         #license:
           #- basic
           #- trial
-        redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v15
-          #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:
-        image: ${{ matrix.redis-image }}
+        image: docker.io/redis/redis-stack-server:6.2.6-v15
         ports:
           - 6379:6379
     steps:

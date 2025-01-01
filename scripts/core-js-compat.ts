@@ -1,4 +1,4 @@
-#!/usr/bin/env -S pnpm ts-node -T
+#!/usr/bin/env -S node --loader=ts-node/esm
 import compat from "core-js-compat";
 import { parseArgs } from "@std/cli/parse-args";
 

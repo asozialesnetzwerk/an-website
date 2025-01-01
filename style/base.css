@@ -130,19 +130,19 @@ a:not(.no-style-a, .no-style-a-block, .no-style-a-emoji) {
 footer {
     width: 100vw;
     max-width: 100%;
-    margin-top: 2.6rem;
     padding-bottom: 0.7rem;
+    margin-top: 2.6rem;
     text-align: center;
 }
 
 #ai-policy {
-    font-size: 0.5rem;
     margin-top: 1.2rem;
+    font-size: 0.5rem;
 }
 
 #openmoji-attribution {
-    font-size: 0.69rem;
     margin-top: 1.2rem;
+    font-size: 0.69rem;
 }
 
 /* footer end */
