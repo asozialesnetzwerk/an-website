@@ -22,7 +22,12 @@ from typing import ClassVar, Final
 from tornado.web import HTTPError
 
 from ...utils.request_handler import APIRequestHandler
-from ..utils import QuoteReadyCheckHandler, get_wrong_quote, get_wrong_quotes
+from ..utils import (
+    QuoteReadyCheckHandler,
+    WrongQuote,
+    get_wrong_quote,
+    get_wrong_quotes,
+)
 from .data import QuoteOfTheDayData
 from .store import (
     QUOTE_COUNT_TO_SHOW_IN_FEED,
@@ -112,6 +117,11 @@ class QuoteOfTheDayRSS(QuoteOfTheDayBaseHandler):
 class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
     """Handler for the JSON API that returns the quote of the day."""
 
+    POSSIBLE_CONTENT_TYPES: ClassVar[tuple[str, ...]] = (
+        *APIRequestHandler.POSSIBLE_CONTENT_TYPES,
+        "text/plain",
+    )
+
     async def get(
         self,
         date_str: None | str = None,
@@ -128,10 +138,14 @@ class QuoteOfTheDayAPI(APIRequestHandler, QuoteOfTheDayBaseHandler):
         if not quote_data:
             raise HTTPError(404 if date_str else 503)
 
+        wrong_quote: WrongQuote = quote_data.wrong_quote
+
+        if self.content_type == "text/plain":
+            return await self.finish(str(wrong_quote))
+
         if self.request.path.endswith("/full"):
             return await self.finish(quote_data.to_json())
 
-        wrong_quote = quote_data.wrong_quote
         await self.finish_dict(
             date=quote_data.date.isoformat(),
             url=quote_data.get_quote_url(),
