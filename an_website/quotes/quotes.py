@@ -237,26 +237,6 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         return self.fix_url(f"/zitate/{quote_id}-{author_id}", r=rating_param)
 
 
-class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
-    """Redirect to the API for a random quote."""
-
-    async def get(  # pylint: disable=unused-argument
-        self, suffix: str = "", *, head: bool = False
-    ) -> None:
-        """Redirect to a random funny quote."""
-        next_filter = parse_rating_filter(self.get_argument("r", "") or "w")
-        quote_id, author_id = get_next_id(next_filter)
-        kwargs: dict[str, str] = {"r": next_filter}
-        if self.get_show_rating():
-            kwargs["show-rating"] = "sure"
-        return self.redirect(
-            self.fix_url(
-                f"/api/zitate/{quote_id}-{author_id}{suffix}",
-                **kwargs,
-            )
-        )
-
-
 def wrong_quote_to_json(
     wq_: WrongQuote, vote: int, next_: tuple[int, int], rating: str, full: bool
 ) -> dict[str, Any]:  # TODO: improve lazy return type typing
@@ -510,5 +490,27 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
                 self.next_id,
                 await self.get_rating_str(wrong_quote),
                 self.request.path.endswith("/full"),
+            )
+        )
+
+
+class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
+    """Redirect to the API for a random quote."""
+
+    POSSIBLE_CONTENT_TYPES = QuoteAPIHandler.POSSIBLE_CONTENT_TYPES
+
+    async def get(  # pylint: disable=unused-argument
+        self, suffix: str = "", *, head: bool = False
+    ) -> None:
+        """Redirect to a random funny quote."""
+        next_filter = parse_rating_filter(self.get_argument("r", "") or "w")
+        quote_id, author_id = get_next_id(next_filter)
+        kwargs: dict[str, str] = {"r": next_filter}
+        if self.get_show_rating():
+            kwargs["show-rating"] = "sure"
+        return self.redirect(
+            self.fix_url(
+                f"/api/zitate/{quote_id}-{author_id}{suffix}",
+                **kwargs,
             )
         )
