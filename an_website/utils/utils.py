@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import bisect
 import contextlib
-import heapq
 import logging
 import os.path
 import pathlib
@@ -59,13 +59,14 @@ from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 import elasticapm
 import regex
 from blake3 import blake3
+from editdistancek_rs import distance
 from elastic_transport import ApiError, TransportError
 from elasticsearch import AsyncElasticsearch
 from geoip import geolite2  # type: ignore[import-untyped]
 from openmoji_dist import VERSION as OPENMOJI_VERSION
-from rapidfuzz.distance.Levenshtein import normalized_distance
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
+from typed_stream import Stream
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
 from .. import DIR as ROOT_DIR
@@ -517,13 +518,21 @@ def get_close_matches(  # based on difflib.get_close_matches
         raise ValueError(f"count must be > 0: {count}")
     if not 0.0 <= cutoff <= 1.0:
         raise ValueError(f"cutoff must be in [0.0, 1.0]: {cutoff}")
+    word_len = len(word)
+    if not word_len:
+        if cutoff < 1.0:
+            return ()
+        return Stream(possibilities).limit(count).collect(tuple)
     result: list[tuple[float, str]] = []
     for possibility in possibilities:
-        ratio: float = normalized_distance(possibility, word)
-        if ratio <= cutoff:
-            result.append((ratio, possibility))
+        if max_dist := max(word_len, len(possibility)):
+            dist = distance(possibility, word, 1 + int(cutoff * max_dist))
+            if (ratio := dist / max_dist) <= cutoff:
+                bisect.insort(result, (ratio, possibility))
+                if len(result) > count:
+                    result.pop(-1)
     # Strip scores for the best count matches
-    return tuple(word for score, word in heapq.nsmallest(count, result))
+    return tuple(word for score, word in result)
 
 
 def hash_bytes(*args: bytes, hasher: Any = None, size: int = 32) -> str:

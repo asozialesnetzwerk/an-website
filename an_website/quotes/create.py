@@ -18,7 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
-from rapidfuzz.distance.Levenshtein import distance
+from editdistancek_rs import distance
 from tornado.web import HTTPError, MissingArgumentError
 
 from ..utils.data_parsing import parse_args
@@ -117,7 +117,10 @@ async def get_authors(author_name: str) -> list[Author | str]:
         *(
             author
             for author in AUTHORS_CACHE.values()
-            if distance(author.name.lower(), author_name_lower) <= max_distance
+            if distance(
+                author.name.lower(), author_name_lower, max_distance + 1
+            )
+            <= max_distance
         ),
         fix_author_name(author_name),
     ]
@@ -165,7 +168,8 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
         *(
             quote
             for quote in QUOTES_CACHE.values()
-            if distance(quote.quote.lower(), lower_quote_str) <= max_distance
+            if distance(quote.quote.lower(), lower_quote_str, max_distance + 1)
+            <= max_distance
         ),
         fix_quote_str(quote_str),
     ]

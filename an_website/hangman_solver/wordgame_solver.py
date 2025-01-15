@@ -17,8 +17,8 @@ from __future__ import annotations
 
 from collections.abc import Collection
 
+from editdistancek_rs import distance
 from hangman_solver import Language, read_words_with_length
-from rapidfuzz.distance.Levenshtein import distance
 from typed_stream import Stream
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
@@ -56,7 +56,7 @@ def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
             )
         )
         .exclude(ignore.__contains__)
-        .filter(lambda test_word: distance(word, test_word) == 1)
+        .filter(lambda test_word: distance(word, test_word, 2) == 1)
     )
 
 

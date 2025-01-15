@@ -137,6 +137,20 @@ def test_time_to_str() -> None:
     assert utils.time_to_str(133769420) == "1548d 6h 10min 20s"
 
 
+def test_get_close_matches() -> None:
+    """Test the get_close_matches function."""
+    assert utils.get_close_matches("a", ("a", "b"), cutoff=0) == ("a",)
+    assert utils.get_close_matches("", ("a", "b"), cutoff=1.0) == ("a", "b")
+    assert utils.get_close_matches("aa", ("ab", "baa", "acab")) == (
+        "baa",
+        "ab",
+        "acab",
+    )
+    assert utils.get_close_matches("ab", "bcdefghiajklmnop") == ("a", "b")
+    assert utils.get_close_matches("a", "awawawawawawawawawawawa", 1) == ("a",)
+    assert utils.get_close_matches("a𓆗", "a") == ("a",)
+
+
 if __name__ == "__main__":
     test_adding_stuff_to_url()
     test_anonomyze_ip()
@@ -147,3 +161,4 @@ if __name__ == "__main__":
     test_name_to_id()
     test_replace_umlauts()
     test_time_to_str()
+    test_get_close_matches()
