@@ -17,12 +17,11 @@ from __future__ import annotations
 
 from collections.abc import Collection
 
-from editdistancek_rs import distance
 from hangman_solver import Language, read_words_with_length
 from typed_stream import Stream
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo
+from ..utils.utils import ModuleInfo, bounded_edit_distance
 
 
 def get_module_info() -> ModuleInfo:
@@ -56,7 +55,9 @@ def find_solutions(word: str, ignore: Collection[str]) -> Stream[str]:
             )
         )
         .exclude(ignore.__contains__)
-        .filter(lambda test_word: distance(word, test_word, 2) == 1)
+        .filter(
+            lambda test_word: bounded_edit_distance(word, test_word, 2) == 1
+        )
     )
 
 

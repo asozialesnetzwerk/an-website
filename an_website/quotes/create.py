@@ -18,10 +18,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import cast
 
-from editdistancek_rs import distance
 from tornado.web import HTTPError, MissingArgumentError
 
 from ..utils.data_parsing import parse_args
+from ..utils.utils import bounded_edit_distance
 from .utils import (
     AUTHORS_CACHE,
     QUOTES_CACHE,
@@ -117,7 +117,7 @@ async def get_authors(author_name: str) -> list[Author | str]:
         *(
             author
             for author in AUTHORS_CACHE.values()
-            if distance(
+            if bounded_edit_distance(
                 author.name.lower(), author_name_lower, max_distance + 1
             )
             <= max_distance
@@ -168,7 +168,9 @@ async def get_quotes(quote_str: str) -> list[Quote | str]:
         *(
             quote
             for quote in QUOTES_CACHE.values()
-            if distance(quote.quote.lower(), lower_quote_str, max_distance + 1)
+            if bounded_edit_distance(
+                quote.quote.lower(), lower_quote_str, max_distance + 1
+            )
             <= max_distance
         ),
         fix_quote_str(quote_str),

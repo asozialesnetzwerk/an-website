@@ -59,11 +59,11 @@ from urllib.parse import SplitResult, parse_qsl, urlencode, urlsplit, urlunsplit
 import elasticapm
 import regex
 from blake3 import blake3
-from editdistancek_rs import distance
 from elastic_transport import ApiError, TransportError
 from elasticsearch import AsyncElasticsearch
 from geoip import geolite2  # type: ignore[import-untyped]
 from openmoji_dist import VERSION as OPENMOJI_VERSION
+from rapidfuzz.distance.Levenshtein import distance
 from redis.asyncio import Redis
 from tornado.web import HTTPError, RequestHandler
 from typed_stream import Stream
@@ -300,6 +300,16 @@ def bool_to_str(val: bool) -> str:
     return "sure" if val else "nope"
 
 
+def bounded_edit_distance(s1: str, s2: str, /, k: int) -> int:
+    """Return a bounded edit distance between two strings.
+
+    k is the maximum number returned
+    """
+    if (dist := distance(s1, s2, score_cutoff=k)) == k + 1:
+        return k
+    return dist
+
+
 def country_code_to_flag(code: str) -> str:
     """Convert a two-letter ISO country code to a flag emoji."""
     return "".join(chr(ord(char) + 23 * 29 * 191) for char in code.upper())
@@ -526,7 +536,9 @@ def get_close_matches(  # based on difflib.get_close_matches
     result: list[tuple[float, str]] = []
     for possibility in possibilities:
         if max_dist := max(word_len, len(possibility)):
-            dist = distance(possibility, word, 1 + int(cutoff * max_dist))
+            dist = bounded_edit_distance(
+                possibility, word, 1 + int(cutoff * max_dist)
+            )
             if (ratio := dist / max_dist) <= cutoff:
                 bisect.insort(result, (ratio, possibility))
                 if len(result) > count:

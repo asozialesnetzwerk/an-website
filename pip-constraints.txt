@@ -118,7 +118,6 @@ defity==0.5.1
 defusedxml==0.7.1
 dunamai==1.23.0
 ecs-logging==2.2.0
-editdistancek-rs==1.0.0
 elastic-apm==6.23.0
 elastic-enterprise-search==8.11.0
 elastic-transport==8.17.0
@@ -148,6 +147,7 @@ pysocks==1.7.1
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
 pytz==2024.2
+rapidfuzz==3.11.0
 redis==5.2.1
 regex==2024.9.11
 setproctitle==1.3.4
