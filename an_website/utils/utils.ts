@@ -1,5 +1,11 @@
 export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
 
+export const d = document;
+function getElementById(id: string): HTMLElement | null {
+    return d.getElementById(id)
+}
+export const e = getElementById;
+
 let lastLocation = String(location);
 
 // export function getLastLocation(): string { return lastLocation; }
@@ -97,11 +103,11 @@ function scrollToId() {
     if (location.hash === "") {
         return;
     }
-    const header = document.getElementById("header");
+    const header = getElementById("header");
     if (!header) {
         return;
     }
-    const el = document.querySelector(location.hash);
+    const el = d.querySelector(location.hash);
     if (!el) {
         return;
     }

@@ -4,9 +4,11 @@ import {
     hideSitePane,
     PopStateHandlers,
     setLastLocation,
+    d,
+    e as getElementById,
 } from "@utils/utils.js";
 
-const contentContainer = document.getElementById("main") as HTMLDivElement;
+const contentContainer = getElementById("main") as HTMLDivElement;
 
 let urlData = {};
 
@@ -61,16 +63,16 @@ function dynLoadOnData(
 
     // d.onkeyup = () => {}; // not used in any JS file
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    document.onkeydown = () => {}; // remove keydown listeners
+    d.onkeydown = () => {}; // remove keydown listeners
 
     contentContainer.innerHTML = data.body;
     if (data.css) {
-        const style = document.createElement("style");
+        const style = d.createElement("style");
         style.innerHTML = data.css;
         contentContainer.appendChild(style);
     }
     for (const scriptURL of data.stylesheets) {
-        const link = document.createElement("link");
+        const link = d.createElement("link");
         link.rel = "stylesheet";
         link.type = "text/css";
         link.href = scriptURL;
@@ -78,7 +80,7 @@ function dynLoadOnData(
     }
     for (const script of data.scripts) {
         if (script.src) {
-            const scriptElement = document.createElement("script");
+            const scriptElement = d.createElement("script");
             scriptElement.type = script.type;
             scriptElement.src = script.src;
             contentContainer.appendChild(scriptElement);
@@ -89,8 +91,8 @@ function dynLoadOnData(
 
     hideSitePane();
 
-    document.title = data.title;
-    const titleElement = document.getElementById("title");
+    d.title = data.title;
+    const titleElement = getElementById("title");
     if (titleElement) {
         titleElement.setAttribute(
             "short_title",
@@ -109,12 +111,12 @@ function dynLoad(url: string) {
             data: urlData,
             url: location.href,
             scrollPos: [
-                document.documentElement.scrollLeft || document.body.scrollLeft,
-                document.documentElement.scrollTop || document.body.scrollTop,
+                d.documentElement.scrollLeft || d.body.scrollLeft,
+                d.documentElement.scrollTop || d.body.scrollTop,
             ],
             stateType: "dynLoad",
         },
-        document.title,
+        d.title,
         location.href,
     );
     return dynLoadSwitchToURL(url);
@@ -130,7 +132,7 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await get(url, "", (data) => dynLoadOnData(data, false), (error) => {
+    await get(url, "", (data) => dynLoadOnData(data, false), (error: unknown) => {
         console.log(error);
         if (url === location.href) {
             location.reload();
@@ -168,7 +170,7 @@ async function dynLoadOnPopState(event: PopStateEvent) {
 
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
-document.addEventListener("click", (e) => {
+d.addEventListener("click", (e) => {
     if ((e.target as HTMLElement | undefined)?.tagName !== "A") {
         return;
     }

@@ -1,18 +1,18 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { get, PopStateHandlers, post, setLastLocation } from "@utils/utils.js";
+import { get, PopStateHandlers, post, setLastLocation, d, e as getElementById } from "@utils/utils.js";
 
 function startQuotes() {
-    const nextButton = document.getElementById("next") as HTMLAnchorElement;
-    const upvoteButton = document.getElementById("upvote") as HTMLButtonElement;
-    const downvoteButton = document.getElementById(
+    const nextButton = getElementById("next") as HTMLAnchorElement;
+    const upvoteButton = getElementById("upvote") as HTMLButtonElement;
+    const downvoteButton = getElementById(
         "downvote",
     ) as HTMLButtonElement;
-    const reportButton = document.getElementById("report") as
+    const reportButton = getElementById("report") as
         | HTMLAnchorElement
         | null;
 
     const thisQuoteId = [
-        (document.getElementById("top")!).getAttribute("quote-id")!,
+        (getElementById("top")!).getAttribute("quote-id")!,
     ];
     const nextQuoteId = [nextButton.getAttribute("quote-id")!];
     const params = location.search;
@@ -31,11 +31,11 @@ function startQuotes() {
         }
     })(); // currently only letter keys are supported
 
-    (document.getElementById("wasd")!).innerText =
+    (getElementById("wasd")!).innerText =
         `${keys[0]} (Witzig), ${keys[2]} (Nicht Witzig), ` +
         `${keys[1]} (Vorheriges) und ${keys[3]} (Nächstes)`;
 
-    document.onkeydown = (event) => {
+    d.onkeydown = (event) => {
         switch (event.code) {
             case `Key${keys[0]}`:
                 upvoteButton.click();
@@ -51,19 +51,19 @@ function startQuotes() {
         }
     };
 
-    const shareButton = document.getElementById("share") as HTMLAnchorElement;
-    const downloadButton = document.getElementById(
+    const shareButton = getElementById("share") as HTMLAnchorElement;
+    const downloadButton = getElementById(
         "download",
     ) as HTMLAnchorElement;
 
-    const author = document.getElementById("author") as HTMLAnchorElement;
-    const quote = document.getElementById("quote") as HTMLAnchorElement;
-    const realAuthor = document.getElementById(
+    const author = getElementById("author") as HTMLAnchorElement;
+    const quote = getElementById("quote") as HTMLAnchorElement;
+    const realAuthor = getElementById(
         "real-author-name",
     ) as HTMLAnchorElement;
 
-    const ratingText = document.getElementById("rating-text") as HTMLDivElement;
-    const ratingImageContainer = document.getElementById(
+    const ratingText = getElementById("rating-text") as HTMLDivElement;
+    const ratingImageContainer = getElementById(
         "rating-img-container",
     ) as HTMLDivElement;
 
@@ -86,7 +86,7 @@ function startQuotes() {
             return;
         }
         const ratingNum = Number.parseInt(rating);
-        const ratingImg = document.createElement("div");
+        const ratingImg = d.createElement("div");
         ratingImg.className = "rating-img" + (
             ratingNum > 0 ? " witzig" : " nicht-witzig"
         );
@@ -152,7 +152,7 @@ function startQuotes() {
             author.innerText = `- ${data.author}`;
             realAuthor.innerText = data.real_author;
             realAuthor.href = `/zitate/info/a/${data.real_author_id}${params}`;
-            if (reportButton) {
+            if (reportButton?.href) {
                 const reportHrefParams = new URLSearchParams(params);
                 reportHrefParams.set(
                     "subject",
@@ -224,7 +224,7 @@ function startQuotes() {
 }
 
 for (
-    const autoSubmitEl of (document.getElementsByClassName(
+    const autoSubmitEl of (d.getElementsByClassName(
         "auto-submit-element",
     ) as HTMLCollectionOf<HTMLInputElement>)
 ) {
