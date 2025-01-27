@@ -1,12 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { PopStateHandlers, post } from "@utils/utils.js";
+import { PopStateHandlers, post, e as getElementById } from "@utils/utils.js";
 
-const textInput = document.getElementById("text") as HTMLInputElement;
-const configInput = document.getElementById(
+const textInput = getElementById("text") as HTMLInputElement;
+const configInput = getElementById(
     "config-textarea",
 ) as HTMLTextAreaElement;
-const outputText = document.getElementById("output")!;
-const errorText = document.getElementById("error-msg") as HTMLDivElement;
+const outputText = getElementById("output")!;
+const errorText = getElementById("error-msg") as HTMLDivElement;
 
 if (errorText.innerHTML.trim()) {
     alert(errorText.innerHTML.trim());
@@ -60,11 +60,11 @@ function onerror(error: unknown) {
     }
 }
 
-(document.getElementById("form") as HTMLFormElement).onsubmit = (e) => {
+(getElementById("form") as HTMLFormElement).onsubmit = (e) => {
     e.preventDefault();
 };
 
-(document.getElementById("reset")!).onclick = () =>
+(getElementById("reset")!).onclick = () =>
     post(
         "/api/vertauschte-woerter",
         {
@@ -76,7 +76,7 @@ function onerror(error: unknown) {
         onerror,
     );
 
-(document.getElementById("submit")!).onclick = () =>
+(getElementById("submit")!).onclick = () =>
     post(
         "/api/vertauschte-woerter",
         {

@@ -28,6 +28,7 @@ from .quote_of_the_day import (
     QuoteOfTheDayRSS,
 )
 from .quotes import QuoteAPIHandler, QuoteById, QuoteMainPage, QuoteRedirectAPI
+from .report import QuoteReportApi
 from .share import ShareQuote
 from .utils import update_cache_periodically
 
@@ -117,6 +118,8 @@ def get_module_info() -> ModuleInfo:
             # author/quote info
             (r"/zitate/info/a/([0-9]{1,10})", AuthorsInfoPage),
             (r"/zitate/info/z/([0-9]{1,10})", QuotesInfoPage),
+            # report
+            (r"/api/zitate/melden", QuoteReportApi),
         ),
         name="Falsch zugeordnete Zitate",
         short_name="Falsche Zitate",
