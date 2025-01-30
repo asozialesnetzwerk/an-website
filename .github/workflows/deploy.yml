@@ -159,7 +159,7 @@ jobs:
         with:
           name: artifact
       - name: Install required library
-        run: pip install packaging==23.2
+        run: pip install packaging==24.2
       - name: Version
         id: version
         shell: python
@@ -306,7 +306,7 @@ jobs:
         with:
           python-version: 3.12
       - name: Install Setuptools
-        run: pip install "setuptools==69.*"
+        run: pip install "setuptools==70.3.0"
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:

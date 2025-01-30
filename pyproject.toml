@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools==69.5.1", "wheel==0.42.0"]
+requires = ["setuptools==70.3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.bandit]
@@ -20,6 +20,7 @@ skip_gitignore = true
 
 [tool.mypy]
 strict = true
+strict_bytes = true
 sqlite_cache = true
 python_version = "3.12"
 warn_unreachable = true
@@ -39,8 +40,6 @@ enable_error_code = [
   "unused-awaitable",
 ]
 local_partial_types = true
-disable_bytearray_promotion = true
-disable_memoryview_promotion = true
 enable_incomplete_feature = ["PreciseTupleTypes"]
 packages = ["an_website", "tests", "scripts"]
 modules = "setup"

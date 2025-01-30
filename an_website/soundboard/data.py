@@ -67,7 +67,7 @@ def mark_query(text: str, query: None | str) -> str:
     for word in query.split(" "):
         text = regex.sub(
             word,
-            lambda match: f'<div class="marked">{match[0]}</div>',
+            lambda match: f'<div class="marked">{match[0]}</div>',  # type: ignore[str-bytes-safe]  # noqa: B950
             text,
             regex.IGNORECASE,
         )

@@ -85,6 +85,7 @@ if path(".git").exists():
         assert classifiers == sorted(classifiers)
 
 
+# <cursed>
 compress_script_path = path("scripts/compress_static_files.py")
 if compress_script_path.exists():
     compress_spec = spec_from_file_location(
@@ -100,25 +101,28 @@ if compress_script_path.exists():
             pass
     del compress_spec, compress_module
 del compress_script_path
+# </cursed>
+
+
+install_requires=path("pip-requirements.txt").read_text("UTF-8").split("\n")
+long_description=path("README.md").read_text("UTF-8")
 
 setup(
-    name="an-website",
-    license="AGPL-3.0-or-later",
-    platforms="OS Independent",
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
-    description="#1 Website in the Worlds",
-    long_description_content_type="text/markdown",
-    long_description=path("README.md").read_text("UTF-8"),
-    version=get_version(),
-    url="https://github.com/asozialesnetzwerk/an-website",
     classifiers=classifiers,
-    packages=["an_website"],
-    python_requires=">=3.12",
-    install_requires=path("pip-requirements.txt")
-    .read_text("UTF-8")
-    .split("\n"),
+    description="#1 Website in the Worlds",
     include_package_data=True,
+    install_requires=install_requires,
+    license="AGPL-3.0-or-later",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    name="an-website",
+    packages=["an_website"],
+    platforms="OS Independent",
+    python_requires=">=3.12",
+    url="https://github.com/asozialesnetzwerk/an-website",
+    version=get_version(),
     zip_safe=True,
     entry_points={
         "console_scripts": (

@@ -7,7 +7,7 @@
     "clean": "deno task clean:css && deno task clean:js && ./scripts/compress_static_files.py --clean",
     "clean:css": "rm -fr an_website/static/css",
     "clean:js": "rm -fr an_website/static/js",
-    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.24.0/mod.js --target=$(deno task target),chrome79,edge123,firefox115,ios12.2,opera107,safari15.6 --charset=utf8 --minify --sourcemap --tree-shaking=false",
+    "esbuild": "deno run -A https://deno.land/x/esbuild@v0.24.2/mod.js --target=$(deno task target),chrome103,edge129,firefox115,ios11,opera114,safari15.6 --charset=utf8 --minify --sourcemap --tree-shaking=false",
     "target": "echo es$(python3 -c 'from datetime import datetime, timezone; print(min((now := datetime.now(timezone.utc)).year - (5 + (now.month < 7)), 2022))')",
     "watch:css": "deno task build:css --watch",
     "watch:js": "deno task build:js --watch",
@@ -24,8 +24,8 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
-    "dax": "https://jsr.io/@david/dax/0.40.1/mod.ts",
-    "esbuild": "https://deno.land/x/esbuild@v0.20.2/wasm.js",
+    "dax": "https://jsr.io/@david/dax/0.42.0/mod.ts",
+    "esbuild": "https://deno.land/x/esbuild@v0.24.2/wasm.js",
     "std/": "https://deno.land/std@0.224.0/"
   },
   "nodeModulesDir": "none",

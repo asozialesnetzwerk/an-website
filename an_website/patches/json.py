@@ -42,7 +42,7 @@ def get_caller_name() -> None | str:  # noqa: D103
             return None
         name = frame.f_globals["__name__"]
         while (  # pylint: disable=while-used
-            frame and frame.f_globals.get("__name__") == name  # type: ignore[redundant-expr, truthy-bool]  # noqa: B950
+            frame and frame.f_globals.get("__name__") == name  # type: ignore[truthy-bool]  # noqa: B950
         ):
             frame = frame.f_back
         caller = frame.f_globals.get("__name__") if frame else None
