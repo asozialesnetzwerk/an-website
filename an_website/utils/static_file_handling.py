@@ -26,36 +26,16 @@ from typing import Final
 import defity
 import orjson as json
 import tornado.web
-from blake3 import blake3
-from openmoji_dist import VERSION as OPENMOJI_VERSION, get_openmoji_data
+from openmoji_dist import get_openmoji_data
 
 from .. import DIR as ROOT_DIR, STATIC_DIR
-from .utils import Handler, recurse_directory
+from .fix_static_path_impl import (
+    create_file_hashes_dict,
+    fix_static_path_impl,
+)
+from .utils import Handler
 
 LOGGER: Final = logging.getLogger(__name__)
-
-
-def hash_file(path: Traversable) -> str:
-    """Hash a file with BLAKE3."""
-    hasher = blake3()
-    with path.open("rb") as file:
-        for data in file:
-            hasher.update(data)
-    return hasher.hexdigest(8)
-
-
-def create_file_hashes_dict() -> dict[str, str]:
-    """Create a dict of file hashes."""
-    static = Path("/static")
-    file_hashes_dict = {
-        f"{(static / path).as_posix()}": hash_file(STATIC_DIR / path)
-        for path in recurse_directory(STATIC_DIR, lambda path: path.is_file())
-    }
-    file_hashes_dict["/favicon.png"] = file_hashes_dict["/static/favicon.png"]
-    file_hashes_dict["/favicon.jxl"] = file_hashes_dict["/static/favicon.jxl"]
-    file_hashes_dict["/humans.txt"] = file_hashes_dict["/static/humans.txt"]
-    return file_hashes_dict
-
 
 FILE_HASHES_DICT: Final[Mapping[str, str]] = create_file_hashes_dict()
 
@@ -113,18 +93,7 @@ def get_handlers() -> list[Handler]:
 @cache
 def fix_static_path(path: str) -> str:
     """Fix the path for static files."""
-    if not path.startswith("/"):
-        path = f"/static/{path}"
-    if "?" in path:
-        path = path.split("?")[0]
-    if path.startswith("/static/openmoji/"):
-        return f"{path}?v={OPENMOJI_VERSION}"
-    path = path.lower()
-    if path in FILE_HASHES_DICT:
-        hash_ = FILE_HASHES_DICT[path]
-        return f"{path}?v={hash_}"
-    LOGGER.warning("%s not in FILE_HASHES_DICT", path)
-    return path
+    return fix_static_path_impl(path, FILE_HASHES_DICT)
 
 
 def content_type_from_path(url_path: str, file: Traversable) -> str | None:

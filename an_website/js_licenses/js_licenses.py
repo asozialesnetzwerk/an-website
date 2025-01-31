@@ -29,8 +29,9 @@ from functools import cache
 from typing import Final
 
 from .. import STATIC_DIR
+from ..utils.fix_static_path_impl import recurse_directory
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo, recurse_directory
+from ..utils.utils import ModuleInfo
 
 LOGGER: Final = logging.getLogger(__name__)
 

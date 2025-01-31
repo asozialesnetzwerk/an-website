@@ -21,8 +21,9 @@ from multiprocessing import Array
 from Crypto.Hash import RIPEMD160
 
 from .. import DIR as ROOT_DIR, VERSION
+from ..utils.fix_static_path_impl import recurse_directory
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
-from ..utils.utils import ModuleInfo, recurse_directory
+from ..utils.utils import ModuleInfo
 
 FILE_HASHES = Array(c_char, 1024**2)
 HASH_OF_FILE_HASHES = Array(c_char, 40)

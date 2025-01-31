@@ -25,7 +25,7 @@ import orjson as json
 import regex
 
 from .. import DIR as ROOT_DIR
-from ..utils.static_file_handling import hash_file
+from ..utils.fix_static_path_impl import hash_file
 from ..utils.utils import name_to_id, replace_umlauts, size_of_file
 
 DIR: Final = ROOT_DIR / "soundboard"

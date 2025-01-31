@@ -25,7 +25,8 @@ from tornado.web import Application
 
 from .. import CA_BUNDLE_PATH, DIR
 from .better_config_parser import BetterConfigParser
-from .utils import none_to_default, recurse_directory
+from .fix_static_path_impl import recurse_directory
+from .utils import none_to_default
 
 LOGGER: Final = logging.getLogger(__name__)
 

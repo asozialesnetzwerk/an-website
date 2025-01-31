@@ -20,7 +20,6 @@ import asyncio
 import bisect
 import contextlib
 import logging
-import os.path
 import pathlib
 import random
 import sys
@@ -723,27 +722,6 @@ def replace_umlauts(string: str) -> str:
         .replace("Ü", "Ue")
         .replace("ẞ", "SS")
     )
-
-
-def recurse_directory(
-    root: Traversable,
-    # pylint: disable-next=redefined-builtin
-    filter: Callable[[Traversable], bool] = lambda _: True,
-) -> Iterable[str]:
-    """Recursively iterate over entries in a directory."""
-    dirs: list[str] = ["."]
-    while dirs:  # pylint: disable=while-used
-        curr_dir = dirs.pop()
-        for path in (root if curr_dir == "." else root / curr_dir).iterdir():
-            current: str = (
-                path.name
-                if curr_dir == "."
-                else os.path.join(curr_dir, path.name)
-            )
-            if path.is_dir():
-                dirs.append(current)
-            if filter(path):
-                yield current
 
 
 async def run(

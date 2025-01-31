@@ -19,11 +19,15 @@ from __future__ import annotations
 
 import os
 import sys
+import typing
 from collections.abc import Iterable
-from os.path import dirname, normpath
+from pathlib import Path
 from typing import Final, NamedTuple, TextIO
 
-REPO_ROOT: Final[str] = dirname(dirname(normpath(__file__)))
+REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
+FIX_STATIC_FILE_SOURCE: Final = (
+    REPO_ROOT / "an_website/utils/fix_static_path_impl.py"
+)
 # Same as in ../tests/__init__.py
 ERROR_QUERY: Final[str] = "XXX-COULD-NOT-ADD-HASH-XXX"
 
@@ -44,10 +48,16 @@ def fix_static_url_path(path: str, /) -> FixResult:
     if "?" in path:
         return FixResult(False, "already contains query")
 
-    # pylint: disable-next=import-outside-toplevel
-    from an_website.utils.static_file_handling import fix_static_path
+    objects: dict[str, typing.Any] = {
+        "STATIC_DIR": REPO_ROOT / "an_website/static"
+    }
+    exec(FIX_STATIC_FILE_SOURCE.read_text("UTF-8"), objects)
 
-    if (fixed_path := fix_static_path(path)) == path:
+    create_file_hashes_dict = objects["create_file_hashes_dict"]
+    fix_static_path_impl = objects["fix_static_path_impl"]
+
+    file_hashes = create_file_hashes_dict(path.removeprefix("/static/").__eq__)
+    if (fixed_path := fix_static_path_impl(path, file_hashes)) == path:
         fixed_path = f"{path}?{ERROR_QUERY}"
     return FixResult(True, fixed_path)
 
@@ -79,5 +89,4 @@ def main(args: Iterable[str], /) -> int:
 
 
 if __name__ == "__main__":
-    sys.path.insert(0, REPO_ROOT)
     sys.exit(main(sys.argv[1:]))

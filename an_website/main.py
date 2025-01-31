@@ -327,7 +327,7 @@ def get_normed_paths_from_module_infos(
     """Get all paths from the module infos."""
 
     def tuple_has_no_none(
-        value: tuple[str | None, str | None]
+        value: tuple[str | None, str | None],
     ) -> TypeGuard[tuple[str, str]]:
         return None not in value
 
