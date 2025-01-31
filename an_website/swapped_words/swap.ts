@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { PopStateHandlers, post, e as getElementById } from "@utils/utils.js";
+import { e as getElementById, PopStateHandlers, post } from "@utils/utils.js";
 
 const textInput = getElementById("text") as HTMLInputElement;
 const configInput = getElementById(

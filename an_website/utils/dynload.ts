@@ -1,11 +1,11 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
 import {
+    d,
+    e as getElementById,
     get,
     hideSitePane,
     PopStateHandlers,
     setLastLocation,
-    d,
-    e as getElementById,
 } from "@utils/utils.js";
 
 const contentContainer = getElementById("main") as HTMLDivElement;
@@ -132,14 +132,20 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await get(url, "", (data) => dynLoadOnData(data, false), (error: unknown) => {
-        console.log(error);
-        if (url === location.href) {
-            location.reload();
-        } else {
-            location.href = url;
-        }
-    }, "application/vnd.asozial.dynload+json");
+    await get(
+        url,
+        "",
+        (data) => dynLoadOnData(data, false),
+        (error: unknown) => {
+            console.log(error);
+            if (url === location.href) {
+                location.reload();
+            } else {
+                location.href = url;
+            }
+        },
+        "application/vnd.asozial.dynload+json",
+    );
 }
 
 async function dynLoadOnPopState(event: PopStateEvent) {

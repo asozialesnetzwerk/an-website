@@ -2,7 +2,7 @@ export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
 
 export const d = document;
 function getElementById(id: string): HTMLElement | null {
-    return d.getElementById(id)
+    return d.getElementById(id);
 }
 export const e = getElementById;
 
