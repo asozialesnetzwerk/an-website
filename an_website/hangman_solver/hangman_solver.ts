@@ -123,6 +123,7 @@ function getRegex(state: State) {
 }
 
 async function loadWords(state: State): Promise<string[]> {
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const wordLength = [...state.input].length;
     try {
         return await _loadWords(state.lang, wordLength);
@@ -177,6 +178,7 @@ function updateLettersMap(
         }
         return;
     }
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const used = [...inputWithoutWildCards];
     for (const char of word) {
         if (used.includes(char)) {

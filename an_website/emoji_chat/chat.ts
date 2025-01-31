@@ -63,6 +63,7 @@ const displayCurrentUser = (name: string[]) => {
 };
 
 const emojiToIMG = (emoji: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const chars = [...emoji];
     const emojiCode = (
         chars.length == 2 && chars[1] === "\uFE0F" ? [chars[0]!] : chars
