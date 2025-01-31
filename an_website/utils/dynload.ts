@@ -131,11 +131,10 @@ async function dynLoadSwitchToURL(url: string, allowSameUrl = false) {
     contentContainer.prepend(
         "Laden... Wenn dies zu lange (über ein paar Sekunden) dauert, lade bitte die Seite neu.",
     );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await get(
         url,
         "",
-        (data) => dynLoadOnData(data, false),
+        (data: DynloadData) => dynLoadOnData(data, false),
         (error: unknown) => {
             console.log(error);
             if (url === location.href) {
