@@ -1,20 +1,20 @@
-import { post, e as getElementById } from "@utils/utils.js";
+import { e as getElementById, post } from "@utils/utils.js";
 
 interface Reasoned {
     reason?: string;
 }
 
 type Data = {
-    author_id: number,
-    quote_id: number,
+    author_id: number;
+    quote_id: number;
 } | {
-    author_id: number,
+    author_id: number;
 } | {
-    quote_id: number,
+    quote_id: number;
 };
 
 function getDataFromUrl(): Data {
-    const path: string[] = location.pathname.split('/');
+    const path: string[] = location.pathname.split("/");
     console.debug(path);
     if (path[path.length - 1] == "") {
         path.pop();
@@ -37,7 +37,7 @@ function getDataFromUrl(): Data {
 }
 
 function createReportButton(anchor: HTMLAnchorElement) {
-    anchor.removeAttribute('href')
+    anchor.removeAttribute("href");
     anchor.addEventListener("click", (event: Event) => {
         event.preventDefault();
         const data: Data & Reasoned = getDataFromUrl();
@@ -61,9 +61,9 @@ function reportQuote(reportData: Data & Reasoned): Promise<void> {
         reportData,
         (data: boolean) => {
             if (data) {
-                alert("Erfolgreich gemeldet!")
+                alert("Erfolgreich gemeldet!");
             }
-        }
+        },
     );
 }
 

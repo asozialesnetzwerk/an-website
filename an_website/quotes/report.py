@@ -37,19 +37,6 @@ class QuoteReportArgs:
     quote_id: int | None = None
     reason: str | None = None
 
-    def validate(self) -> None:
-        """Validate the arguments."""
-        if self.author_id is None and self.quote_id is None:
-            raise MissingArgumentError("quote_id")
-
-    def get_quote_url_path(self) -> str:
-        """Get the URL that got reported."""
-        if self.author_id is None:
-            return f"/zitate/info/q/{self.quote_id}"
-        if self.quote_id is None:
-            return f"/zitate/info/a/{self.author_id}"
-        return f"/zitate/{self.quote_id}-{self.quote_id}"
-
     async def get_quote_object(self) -> Quote | WrongQuote | Author | None:
         """Get the quote object."""
         if self.author_id is not None:
@@ -61,6 +48,19 @@ class QuoteReportArgs:
         if self.quote_id is not None:
             return QUOTES_CACHE.get(self.quote_id)
         return None
+
+    def get_quote_url_path(self) -> str:
+        """Get the URL that got reported."""
+        if self.author_id is None:
+            return f"/zitate/info/q/{self.quote_id}"
+        if self.quote_id is None:
+            return f"/zitate/info/a/{self.author_id}"
+        return f"/zitate/{self.quote_id}-{self.quote_id}"
+
+    def validate(self) -> None:
+        """Validate the arguments."""
+        if self.author_id is None and self.quote_id is None:
+            raise MissingArgumentError("quote_id")
 
 
 class QuoteReportApi(APIRequestHandler):
