@@ -97,7 +97,7 @@ class GzipFileCompressor(FileCompressor):
             import zopfli  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zopfli"
-            yield "zopflipy==1.10"
+            yield "zopflipy==1.11"
 
 
 class ZstdFileCompressor(FileCompressor):
@@ -127,7 +127,7 @@ class ZstdFileCompressor(FileCompressor):
             import zstd  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zstd"
-            yield "zstd==1.5.5.1"
+            yield "zstd==1.5.6.2"
 
 
 def compress_dir(
