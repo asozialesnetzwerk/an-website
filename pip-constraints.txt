@@ -147,7 +147,7 @@ pyjwt==2.10.1
 pysocks==1.7.1
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
-pytz==2024.2
+pytz==2025.1
 rapidfuzz==3.12.1
 redis==5.2.1
 regex==2024.11.6
