@@ -73,8 +73,8 @@ class GzipFileCompressor(FileCompressor):
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        # pylint: disable-next=import-outside-toplevel
-        import zopfli
+        # pylint: disable-next=import-outside-toplevel,import-error
+        import zopfli  # type: ignore[import-not-found]
 
         c = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_GZIP)
 
@@ -106,8 +106,8 @@ class ZstdFileCompressor(FileCompressor):
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        # pylint: disable-next=import-outside-toplevel
-        import zstd
+        # pylint: disable-next=import-outside-toplevel,import-error
+        import zstd  # type: ignore[import-untyped]
 
         yield zstd.compress(data, 22)
 

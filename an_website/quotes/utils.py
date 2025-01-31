@@ -64,7 +64,7 @@ LOGGER: Final = logging.getLogger(__name__)
 API_URL: Final[str] = "https://zitate.prapsschnalinen.de/api"
 
 
-# pylint: disable-next=undefined-variable,too-few-public-methods
+# pylint: disable-next=too-few-public-methods
 class UltraDictType[K, V](MutableMapping[K, V], abc.ABC):
     """The type of the shared dictionaries."""
 

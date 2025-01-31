@@ -54,9 +54,9 @@ import regex
 import time_machine as tm
 import yaml
 from blake3 import blake3
-from lxml import etree  # nosec: B410
-from lxml.html import document_fromstring  # nosec: B410
-from lxml.html.html5parser import HTMLParser  # nosec: B410
+from lxml import etree
+from lxml.html import document_fromstring
+from lxml.html.html5parser import HTMLParser
 from openmoji_dist import VERSION as OPENMOJI_VERSION
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPResponse
 from tornado.web import Application
@@ -437,7 +437,7 @@ def assert_valid_rss_response(
     """Assert a valid RSS response with the given status code."""
     assert_valid_response(response, "application/rss+xml", codes)
     body = response.body
-    parsed_xml = etree.fromstring(  # nosec: B320
+    parsed_xml = etree.fromstring(
         body,
         parser=etree.XMLParser(resolve_entities=False),
         base_url=response.request.url,

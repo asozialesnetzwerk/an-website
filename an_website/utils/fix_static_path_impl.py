@@ -16,7 +16,7 @@
 import logging
 import os
 from collections.abc import Callable, Iterable, Mapping
-from importlib.abc import Traversable
+from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Final
 

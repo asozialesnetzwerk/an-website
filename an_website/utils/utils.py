@@ -136,7 +136,7 @@ class ArgparseNamespace(argparse.Namespace):
     save_config_to: pathlib.Path | None
 
 
-class AwaitableValue[T](Awaitable[T]):  # pylint: disable=undefined-variable
+class AwaitableValue[T](Awaitable[T]):
     # pylint: disable=too-few-public-methods
     """An awaitable that always returns the same value."""
 

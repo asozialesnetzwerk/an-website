@@ -99,13 +99,10 @@ types-pyyaml==6.0.12.20241230
 types-redis==4.6.0.20241004
 types-regex==2024.11.6.20241221
 types-setuptools==70.3.0.20240710
-types-zstd==1.5.6.2.20250126
 typing-extensions==4.12.2
 urllib3==2.3.0
 virtualenv==20.29.1
 webencodings==0.5.1
-zopflipy==1.11
-zstd==1.5.6.2
 accept-types==0.4.1
 aiodns==3.2.0
 aiohappyeyeballs==2.4.4

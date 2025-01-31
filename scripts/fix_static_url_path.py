@@ -51,7 +51,8 @@ def fix_static_url_path(path: str, /) -> FixResult:
     objects: dict[str, typing.Any] = {
         "STATIC_DIR": REPO_ROOT / "an_website/static"
     }
-    exec(FIX_STATIC_FILE_SOURCE.read_text("UTF-8"), objects)
+    # pylint: disable-next=exec-used
+    exec(FIX_STATIC_FILE_SOURCE.read_text("UTF-8"), objects)  # nosec: B102
 
     create_file_hashes_dict = objects["create_file_hashes_dict"]
     fix_static_path_impl = objects["fix_static_path_impl"]

@@ -21,7 +21,7 @@ from http.cookies import SimpleCookie
 from urllib.parse import urlencode
 
 import orjson as json
-from lxml.html.html5parser import HTMLParser  # nosec: B410
+from lxml.html.html5parser import HTMLParser
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
