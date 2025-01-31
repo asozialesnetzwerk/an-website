@@ -104,8 +104,8 @@ del compress_script_path
 # </cursed>
 
 
-install_requires=path("pip-requirements.txt").read_text("UTF-8").split("\n")
-long_description=path("README.md").read_text("UTF-8")
+install_requires = path("pip-requirements.txt").read_text("UTF-8").split("\n")
+long_description = path("README.md").read_text("UTF-8")
 
 setup(
     author="Das Asoziale Netzwerk",
