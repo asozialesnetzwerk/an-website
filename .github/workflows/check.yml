@@ -53,6 +53,8 @@ jobs:
         run: sass -s compressed --random-seed 0 style/snow.scss style/snow.css
       - name: Build JS & CSS
         run: just clean && just build
+      - name: Format Justfile
+        run: just --fmt --unstable
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Sort methods
