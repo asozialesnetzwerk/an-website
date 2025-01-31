@@ -24,6 +24,9 @@ jobs:
           python-version: 3.12
           cache: pip
           cache-dependency-path: Pipfile.lock
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.39.0
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
@@ -49,7 +52,7 @@ jobs:
       - name: Generate snow
         run: sass -s compressed --random-seed 0 style/snow.scss style/snow.css
       - name: Build JS & CSS
-        run: deno task clean && deno task build
+        run: just clean && just build
       - name: Generate humans.txt
         run: ./scripts/humans.py
       - name: Sort methods
