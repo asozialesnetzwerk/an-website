@@ -96,7 +96,7 @@ if compress_script_path.exists():
     compress_spec.loader.exec_module(compress_module)
     if "egg_info" in sys.argv[1:]:
         BACKEND_REQUIRES.update(compress_module.get_missing_dependencies())
-    else:
+    elif "sdist" in sys.argv[1:]:
         for _ in compress_module.compress_static_files():
             pass
     del compress_spec, compress_module
