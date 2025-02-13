@@ -1,4 +1,5 @@
 @font-face {
+    font-display: swap;
     font-family: comic;
     font-style: normal;
 
@@ -18,6 +19,7 @@
 }
 
 @font-face {
+    font-display: swap;
     font-family: comic-mono;
     font-style: normal;
 

@@ -5,7 +5,8 @@
 }
 
 @font-face {
-    /* used in JS */
+    /* used in JS, without js the time doesn't get displayed like a digital clock */
+    font-display: swap;
     font-family: clock-face;
     font-style: normal;
 
