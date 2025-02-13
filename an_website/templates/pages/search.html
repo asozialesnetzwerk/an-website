@@ -1,10 +1,11 @@
 {% extends "../base.html" %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/form.css')}}">
-    <style>em{color:var(--contrast-2);}</style>
     <script type="module" src="{{fix_static('js/search/search.js')}}"></script>
+{% end %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{fix_static('css/form.css')}}">
+    <style>em{color:var(--contrast-2);}</style>
 {% end %}
 
 {% block body %}

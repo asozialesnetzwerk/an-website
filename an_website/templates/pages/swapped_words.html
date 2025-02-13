@@ -1,9 +1,10 @@
 {% extends "../base.html" %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/form.css')}}">
-    <script type="module" src="{{fix_static('js/swapped_words/swap.js')}}"></script>
+    <script defer type="module" src="{{fix_static('js/swapped_words/swap.js')}}"></script>
+{% end %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{fix_static('css/form.css')}}">
 {% end %}
 
 {% block body %}

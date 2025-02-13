@@ -1,9 +1,10 @@
 {% extends "../base.html" %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/uptime.css')}}">
-    <script type="module" src="{{fix_static('js/uptime/uptime.js')}}"></script>
+    <script defer type="module" src="{{fix_static('js/uptime/uptime.js')}}"></script>
+{% end %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{fix_static('css/uptime.css')}}">
 {% end %}
 
 {% block description %}Diese Webseite läuft bereits {{uptime_str}}{% end %}

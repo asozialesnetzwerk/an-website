@@ -1,11 +1,13 @@
 {% extends "../base.html" %}
 
 {% block head %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/soundboard.css')}}">
     {% if query is None and feed_url %}
         <link rel="alternate" type="application/rss+xml" href="{{feed_url}}">
     {% end %}
+{% end %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css"
+          href="{{fix_static('css/soundboard.css')}}">
 {% end %}
 
 {% block body %}

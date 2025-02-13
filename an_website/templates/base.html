@@ -19,30 +19,22 @@
             <link rel="author" type="text/plain" href="{{fix_static('/humans.txt')}}">
             <link rel="icon" type="image/png" href="{{fix_static('/favicon.png')}}">
         <!--<link rel="icon" type="image/jxl" href="{{fix_static('/favicon.jxl')}}">-->
-            <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
-            {% if c %}<link rel="stylesheet" type="text/css" href="{{fix_static('css/comic.css')}}">{% end %}
-            <link rel="stylesheet" type="text/css" href="{{fix_static(f'css/themes/{display_theme}.css')}}">
-            {% if compat %}
-                <script defer src="{{fix_static('js/vendored/vanilla.js')}}"></script>
-            {% end %}
+
+            <link rel="preload" href="{{fix_static('css/base.css')}}" as="style">
             {% if effects and display_theme == "christmas" %}
-                <noscript><link rel="stylesheet" type="text/css" href="{{fix_static('css/snow.css')}}"></noscript>
+                <noscript><link rel="preload" type="text/css" href="{{fix_static('css/snow.css')}}"  as="style"></noscript>
                 <script type="module" nonce="{{nonce}}">
                     import { createSnow, showSnow } from "{{fix_static('js/snow/snow.js')}}";
                     window.showSnow = showSnow;
                     createSnow();
                 </script>
             {% end %}
-            <script type="module" src="{{fix_static('js/utils/utils.js')}}"></script>
+            {% if compat %}
+                <script defer src="{{fix_static('js/vendored/vanilla.js')}}"></script>
+            {% end %}
+            <script defer type="module" src="{{fix_static('js/utils/utils.js')}}"></script>
             {% if dynload %}
-                <script type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
-            {% end %}
-            {% if openmoji and "glyf_colr" in openmoji %}
-                <link rel="stylesheet" type="text/css" href="{{fix_static(f'openmoji/font/{openmoji}.css')}}">
-            {% end %}
-            {% if apm_script %}
-                <script src="{{fix_url(elastic_rum_url)}}"></script>
-                <script>{% raw apm_script %}</script>
+                <script defer type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
         {% end %}
         {% block head %} {% end %}
@@ -71,5 +63,22 @@
         {% if as_html %}
             {% include "footer.html" %}
         {% end %}
+
+        {% if as_html %}
+            <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
+            {% if c %}<link defer rel="stylesheet" type="text/css" href="{{fix_static('css/comic.css')}}">{% end %}
+            <link rel="stylesheet" type="text/css" href="{{fix_static(f'css/themes/{display_theme}.css')}}">
+            {% if openmoji and "glyf_colr" in openmoji %}
+                <link rel="stylesheet" type="text/css" href="{{fix_static(f'openmoji/font/{openmoji}.css')}}">
+            {% end %}
+            {% if effects and display_theme == "christmas" %}
+                <noscript><link rel="stylesheet" type="text/css" href="{{fix_static('css/snow.css')}}"></noscript>
+            {% end %}
+            {% if apm_script %}
+                <script src="{{fix_url(elastic_rum_url)}}"></script>
+                <script>{% raw apm_script %}</script>
+            {% end %}
+        {% end %}
+        {% block stylesheets %}{% end %}
     </body>
 </html>

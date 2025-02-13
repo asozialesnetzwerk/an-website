@@ -1,8 +1,10 @@
 {% extends "../base.html" %}
 
 {% block head %}
+    <script defer type="module" src="{{fix_static('js/kangaroo_comics/comics.js')}}"></script>
+{% end %}
+{% block stylesheets %}
     <link rel="stylesheet" href="{{fix_static('css/kangaroo_comics.css')}}">
-    <script type="module" src="{{fix_static('js/kangaroo_comics/comics.js')}}"></script>
 {% end %}
 
 {% block body %}

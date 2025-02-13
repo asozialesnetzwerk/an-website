@@ -2,12 +2,14 @@
 
 {% block head %}
     <meta class="elastic" name="quote_rating" content="{{wrong_quote.rating}}">
+    {% include "./link_rss.html" %}
+    <script defer type="module" src="{{fix_static('js/quotes/quotes.js')}}"></script>
+{% end %}
+{% block stylesheets %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/form.css')}}">
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/quotes/quotes.css')}}">
-    <script type="module" src="{{fix_static('js/quotes/quotes.js')}}"></script>
-    {% include "./link_rss.html" %}
 {% end %}
 
 {% block body %}

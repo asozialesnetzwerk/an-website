@@ -1,10 +1,12 @@
 {% extends "../base.html" %}
 
 {% block head %}
+    <script defer type="module" src="{{fix_static('js/currency_converter/converter.js')}}"></script>
+{% end %}
+{% block stylesheets %}
     <style>.invalid{color:var(--contrast-2)}</style>
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/form.css')}}">
-    <script type="module" src="{{fix_static('js/currency_converter/converter.js')}}"></script>
 {% end %}
 
 {% block body %}

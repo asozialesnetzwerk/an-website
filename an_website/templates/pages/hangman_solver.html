@@ -1,9 +1,11 @@
 {% extends "../base.html" %}
 
 {% block head %}
+    <script type="module" src="{{ fix_static('js/hangman_solver/hangman_solver.js') }}"></script>
+{% end %}
+{% block stylesheets %}
     <link rel="stylesheet" type="text/css"
           href="{{fix_static('css/form.css')}}">
-    <script type="module" src="{{ fix_static('js/hangman_solver/hangman_solver.js') }}"></script>
 {% end %}
 
 {% block body %}
