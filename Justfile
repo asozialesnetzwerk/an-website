@@ -1,3 +1,5 @@
+export PATH := `. venv/bin/activate && echo "${PATH}"`
+
 default:
     @just --list --justfile "{{ justfile() }}"
 
@@ -58,3 +60,80 @@ watch_js_debug: (build_js_debug '--watch')
 
 wat:
     @deno eval 'console.log(Array(16).join("wat" - 1) + " Batman!")'
+
+[group('python')]
+[no-exit-message]
+check: (requirements '--quiet') setup-precommit
+    #!/bin/sh
+    FAILED=0
+    alias "just=$(command -v just) --set PATH '${PATH}' --one"
+    just isort || FAILED=$(( 2 | FAILED ))
+    if ! just black --check --diff --color .; then
+      echo 'Run "python3 -m black ." to reformat'
+      FAILED=$(( 4 | FAILED ))
+    fi
+    just mypy || FAILED=$(( 8 | FAILED ))
+    just flake8 || FAILED=$(( 16 | FAILED ))
+    just pylint || FAILED=$(( 32 | FAILED ))
+    just bandit || FAILED=$(( 64 | FAILED ))
+    exit "$FAILED"
+
+[group('python')]
+[no-exit-message]
+format: isort black
+
+[group('python')]
+[no-exit-message]
+[positional-arguments]
+@black *args:
+    echo {{ BOLD }}black $@ .{{ NORMAL }}
+    black  "$@" .
+
+[group('python')]
+[no-exit-message]
+isort:
+    isort .
+
+[group('python')]
+requirements arg="--require-virtualenv": (pip_install arg 'pip>=25.0') (pip_install arg '-r' 'pip-dev-requirements.txt')
+
+[positional-arguments]
+[private]
+@pip_install *args:
+    pip install --disable-pip-version-check --require-virtualenv "$@"
+
+[group('python')]
+[no-exit-message]
+mypy:
+    mypy --pretty
+
+[group('python')]
+[no-exit-message]
+flake8:
+    flake8 --show-source
+
+[group('python')]
+@pylint $DISABLE_PYSTON="1":
+    echo "{{ BOLD }}pylint .{{ NORMAL }}"
+    pylint -d all -e fixme --exit-zero --score=no --persistent=no .
+    pylint -d fixme .
+
+[group('python')]
+[no-exit-message]
+bandit:
+    bandit -qrc pyproject.toml .
+
+[group('python')]
+[no-exit-message]
+[positional-arguments]
+test *args:
+    pytest --durations=0 --durations-min=0.5 "$@"
+
+[group('python')]
+[no-exit-message]
+test-cov:
+    @just test --cov --cov-report=term:skip-covered
+
+[group('python')]
+@setup-precommit:
+    python3 -m pre_commit install
