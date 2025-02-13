@@ -4,14 +4,16 @@ default:
 do-it:
     @xdg-open https://youtu.be/AkygX8Fncpk
 
-clean: clean_css clean_js
-    ./scripts/compress_static_files.py --clean
+clean: clean_compressed clean_css clean_js
 
 clean_css:
     rm -fr "{{ justfile_directory() }}/an_website/static/css"
 
 clean_js:
     rm -fr "{{ justfile_directory() }}/an_website/static/js"
+
+clean_compressed:
+    ./scripts/compress_static_files.py --clean
 
 build:
     -@just build_js 2> /dev/null

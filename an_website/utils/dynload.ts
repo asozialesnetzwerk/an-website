@@ -176,11 +176,12 @@ async function dynLoadOnPopState(event: PopStateEvent) {
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
 d.addEventListener("click", (e) => {
-    if ((e.target as HTMLElement | undefined)?.tagName !== "A") {
+    const anchor = e.target.closest("a") as HTMLAnchorElement | undefined;
+    console.debug({ msg: "clicked on: ", target: e.target, anchor });
+    if (!anchor) {
         return;
     }
 
-    const anchor = e.target as HTMLAnchorElement;
     if (anchor.target === "_blank") {
         return;
     }
@@ -196,16 +197,10 @@ d.addEventListener("click", (e) => {
     if (
         // link is to different domain
         !href.startsWith(location.origin) ||
-        // link is to file, not HTML page
-        (
-            // @ts-expect-error TS2532
-            (hrefWithoutQuery.split("/").pop() ?? "").includes(".") &&
-            // URLs to redirect page are HTML pages
-            hrefWithoutQuery !== (location.origin + "/redirect")
-        ) ||
-        // link is to /chat, which redirects to another page
-        hrefWithoutQuery === (location.origin + "/chat")
+        // link should not be dynloaded
+        anchor.hasAttribute("no-dynload")
     ) {
+        console.log({ msg: "cannot handle click", anchor });
         return;
     }
 

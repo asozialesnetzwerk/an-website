@@ -310,7 +310,7 @@ class BaseRequestHandler(_RequestHandler):
         if as_plain_text:
             return self._finish(soup.get_text("\n", True))
 
-        dictionary: dict[str, Any] = {
+        dictionary: dict[str, object] = {
             "url": self.fix_url(),
             "title": self.title,
             "short_title": (
@@ -320,27 +320,15 @@ class BaseRequestHandler(_RequestHandler):
                 str(element)
                 for element in soup.find_all(name="main")[0].contents
             ).strip(),
-            "scripts": (
-                [
-                    {"script": script.string} | script.attrs
-                    for script in soup.find_all("script")
-                ]
-                if soup.head
-                else []
-            ),
-            "stylesheets": (
-                [
-                    stylesheet.get("href").strip()
-                    for stylesheet in soup.find_all("link", rel="stylesheet")
-                ]
-                if soup.head
-                else []
-            ),
-            "css": (
-                "\n".join(style.string for style in soup.find_all("style"))
-                if soup.head
-                else ""
-            ),
+            "scripts": [
+                {"script": script.string} | script.attrs
+                for script in soup.find_all("script")
+            ],
+            "stylesheets": [
+                stylesheet.get("href").strip()
+                for stylesheet in soup.find_all("link", rel="stylesheet")
+            ],
+            "css": "\n".join(style.string for style in soup.find_all("style")),
         }
 
         return self._finish(dictionary)
