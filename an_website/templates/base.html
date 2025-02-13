@@ -20,7 +20,6 @@
             <link rel="icon" type="image/png" href="{{fix_static('/favicon.png')}}">
         <!--<link rel="icon" type="image/jxl" href="{{fix_static('/favicon.jxl')}}">-->
 
-            <link rel="preload" href="{{fix_static('css/base.css')}}" as="style">
             {% if effects and display_theme == "christmas" %}
                 <noscript><link rel="preload" type="text/css" href="{{fix_static('css/snow.css')}}"  as="style"></noscript>
                 <script type="module" nonce="{{nonce}}">
@@ -38,6 +37,10 @@
             {% end %}
         {% end %}
         {% block head %} {% end %}
+        {% if as_html %}
+            <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
+        {% end %}
+        {% block stylesheets %}{% end %}
     </head>
     <body>
         {% if as_html %}
@@ -65,7 +68,6 @@
         {% end %}
 
         {% if as_html %}
-            <link rel="stylesheet" type="text/css" href="{{fix_static('css/base.css')}}">
             {% if c %}<link defer rel="stylesheet" type="text/css" href="{{fix_static('css/comic.css')}}">{% end %}
             <link rel="stylesheet" type="text/css" href="{{fix_static(f'css/themes/{display_theme}.css')}}">
             {% if openmoji and "glyf_colr" in openmoji %}
@@ -79,6 +81,5 @@
                 <script>{% raw apm_script %}</script>
             {% end %}
         {% end %}
-        {% block stylesheets %}{% end %}
     </body>
 </html>
