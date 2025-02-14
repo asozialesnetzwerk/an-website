@@ -202,7 +202,7 @@ jobs:
           key: eslint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: eslint-${{ github.repository }}-${{ github.ref }}-
       - name: Install ESLint
-        run: pnpm install
+        run: env COREPACK_INTEGRITY_KEYS=0 pnpm install
       - name: Run ESLint
         run: pnpm eslint --cache .
 
@@ -224,7 +224,7 @@ jobs:
       - name: Enable corepack
         run: corepack enable
       - name: Install tsc
-        run: pnpm install
+        run: env COREPACK_INTEGRITY_KEYS=0 pnpm install
       - name: Run tsc
         run: |
           pnpm tsc
