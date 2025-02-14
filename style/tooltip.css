@@ -1,0 +1,128 @@
+[tooltip] {
+    position: relative;
+}
+
+[tooltip]::before,
+[tooltip]::after {
+    position: absolute;
+    z-index: 1000000000; /* on top of everything */
+    display: none;
+    font-size: 1rem; /* reset font size, so it doesn't depend on parent */
+    opacity: 0;
+    pointer-events: none; /* ignore hover over tooltip so it disappears when leaving parent */
+    visibility: hidden;
+}
+
+/* the tooltip */
+[tooltip]::after {
+    width: max-content;
+    max-width: max(100%, 8.8rem);
+    padding: 0.4rem;
+    border-width: thin;
+    border-style: solid;
+    border-color: var(--tp-border-color);
+    border-radius: 0.4rem;
+    background-color: var(--tp-bg-color);
+    color: var(--tp-text-color);
+    content: attr(tooltip);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    hyphens: initial;
+    letter-spacing: normal;
+    opacity: 1;
+    text-align: center;
+    white-space: pre-line;
+}
+
+/* the triangle that points from tooltip to parent */
+[tooltip]::before {
+    border-width: 0.3125rem;
+    border-style: solid;
+    border-color: transparent;
+    content: " ";
+}
+
+[tooltip]:hover::after,
+[tooltip]:hover::before,
+[tooltip]:focus::after,
+[tooltip]:focus::before,
+[tooltip].show-tooltip::after,
+[tooltip].show-tooltip::before {
+    /* make tooltip and triangle visible */
+    display: inherit;
+    opacity: 1;
+    transition: all 0.05s ease 0.1s;
+    visibility: visible;
+}
+
+/* top tooltip after and before */
+[tooltip][tooltip-position="top"]::after,
+[tooltip][tooltip-position="top"]::before,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::after,
+[tooltip]:not([tooltip-position])::before,
+/* bottom tooltip after and before */
+[tooltip][tooltip-position="bottom"]::after,
+[tooltip][tooltip-position="bottom"]::before {
+    /* if position top or bottom center tooltip horizontally */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* left tooltip after and before */
+[tooltip][tooltip-position="left"]::after,
+[tooltip][tooltip-position="left"]::before,
+/* right tooltip after and before  */
+[tooltip][tooltip-position="right"]::after,
+[tooltip][tooltip-position="right"]::before {
+    /* if position left or right center tooltip vertically */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+[tooltip][tooltip-position="top"]::after,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::after {
+    /* if position top move the tooltip above the parent */
+    bottom: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position="bottom"]::after {
+    /* if position bottom move the tooltip below the parent */
+    top: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position="left"]::after {
+    /* if position left move the tooltip left of the parent */
+    right: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position="right"]::after {
+    /* if position right move the tooltip right of the parent */
+    left: calc(100% - var(--tp-offset));
+}
+
+[tooltip][tooltip-position="top"]::before,
+/* no tooltip-position defaults to top */
+[tooltip]:not([tooltip-position])::before {
+    /* position top */
+    top: var(--tp-offset);
+    border-top-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position="bottom"]::before {
+    /* position bottom */
+    bottom: var(--tp-offset);
+    border-bottom-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position="left"]::before {
+    /* position left */
+    left: var(--tp-offset);
+    border-left-color: var(--tp-border-color);
+}
+
+[tooltip][tooltip-position="right"]::before {
+    /* position right */
+    right: var(--tp-offset);
+    border-right-color: var(--tp-border-color);
+}
