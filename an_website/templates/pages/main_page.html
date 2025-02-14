@@ -1,17 +1,13 @@
 {% extends "../base.html" %}
 
-{% block stylesheets %}
-    <link rel="stylesheet" type="text/css"
-          href="{{fix_static('css/main_page.css')}}">
-{% end %}
-
 {% block body %}
+    <style>#pages-list li{margin-top:0.2rem;}</style>
     {% if quote_data %}
         <a class="no-style-a"
            href="{{fix_url(quote_data.get_quote_url())}}"
            tooltip="Das Zitat des Tages"
            tooltip-position="bottom"
-           id="quote-of-the-day">
+           style="text-align:center">
             {{quote_data.wrong_quote.quote}}<br>
             - {{quote_data.wrong_quote.author}}
         </a>
@@ -42,7 +38,7 @@
     </ul>
 
     {% if settings.get("ONION_ADDRESS") and not request.host_name.endswith(".onion") %}
-        <section id="onion-address-section">
+        <section style="margin-top:2rem">
             Wir sind übrigens auch über das Tor-Netzwerk erreichbar:
             <a href="{{settings.get('ONION_ADDRESS')}}"
                no-dynload>{{'­'.join(char for char in settings.get('ONION_ADDRESS'))}}</a>
