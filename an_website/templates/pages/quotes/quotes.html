@@ -44,6 +44,7 @@
             <a tooltip="Downloade das Zitat als Bild."
                tooltip-position="bottom"
                id="download"
+               no-dynload
                href="{{fix_url(f'/zitate/{wrong_quote.get_id_as_str()}.gif')}}"
                download="zitat-{{ wrong_quote.get_id_as_str() }}.gif">
                 <img class="button-img"
@@ -63,6 +64,7 @@
             <a tooltip="Gehe zum nächsten Zitat."
                tooltip-position="bottom"
                id="next"
+               no-dynload
                quote-id="{{next_id}}"
                href="{{next_href}}">
                 <img class="button-img"
