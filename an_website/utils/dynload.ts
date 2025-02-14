@@ -175,44 +175,42 @@ async function dynLoadOnPopState(event: PopStateEvent) {
 
 PopStateHandlers["dynLoad"] = dynLoadOnPopState;
 
-d.addEventListener("click", (e) => {
-    const anchor = e.target.closest("a") as HTMLAnchorElement | undefined;
+d.addEventListener("click", (e: DocumentEventMap["click"]) => {
+    const anchor = (e.target as HTMLElement | undefined)?.closest("a") as
+        | HTMLAnchorElement
+        | undefined;
     console.debug({ msg: "clicked on: ", target: e.target, anchor });
-    if (!anchor) {
-        return;
-    }
 
-    if (anchor.target === "_blank") {
-        return;
-    }
-
-    const href = (
-        anchor.href.startsWith("/")
-            ? (location.origin + anchor.href)
-            : anchor.href
-    )
-        .trim();
-
-    const hrefWithoutQuery = href.split("?")[0];
     if (
-        // link is to different domain
-        !href.startsWith(location.origin) ||
+        // anchor not found
+        !anchor ||
+        // not supposed to be opened inline
+        anchor.target === "_blank" ||
         // link should not be dynloaded
         anchor.hasAttribute("no-dynload")
     ) {
-        console.log({ msg: "cannot handle click", anchor });
+        console.debug("Ignoring click.");
         return;
     }
 
+    const anchor_url = (anchor.href.startsWith("/") ? location.origin : "") +
+        anchor.href;
+
     if (
         // URL to the same page, but with hash
-        href.startsWith("#") ||
-        href.startsWith(`${location.href.split("#")[0]}#`)
+        anchor_url.startsWith("#") ||
+        anchor_url.startsWith(`${location.href.split("#")[0]}#`) ||
+        // link is to different domain
+        !anchor_url.startsWith(location.origin)
     ) {
+        console.log({ msg: "cannot handle click", anchor, anchor_url });
         return;
     }
+
     e.preventDefault();
-    void dynLoad(href).then(() => {
+
+    void dynLoad(anchor_url).then(() => {
+        console.log("blurring", anchor);
         anchor.blur();
     });
 });

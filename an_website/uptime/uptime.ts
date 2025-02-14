@@ -1,7 +1,7 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
 export {};
 
-const UPTIME_STRING = "uptime" as const;
+const UPTIME_STRING = "uptime";
 
 const currentTimeInSeconds = () => (performance.now() / 1000);
 const floor = Math.floor;
@@ -28,9 +28,11 @@ const startDisplayingUptime = () => {
             div_60 % 60, // minutes
             uptime % 60, // seconds
         ]
-            .map((n: number) => ("" + floor(n)).padStart(2, "0"))
+            .map((n: number) =>
+                (floor(n) as unknown as string + "").padStart(2, "0")
+            )
             .join(":");
-        uptimeDiv.setAttribute(UPTIME_STRING, uptime);
+        uptimeDiv.setAttribute(UPTIME_STRING, uptime as unknown as string);
     };
 
     displayUptime();

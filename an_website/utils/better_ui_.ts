@@ -1,65 +1,98 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-const openPane = document.getElementById("open-pane");
-const sitePane = document.getElementById("site-pane");
+const d = document;
+
+type EventHandler<T extends keyof HTMLElementEventMap> = (
+    event: HTMLElementEventMap[T],
+) => unknown;
+const addEventListener = <T extends keyof HTMLElementEventMap>(
+    element: HTMLElement,
+    type: T,
+    fun: EventHandler<T>,
+) => {
+    element.addEventListener(type, fun);
+};
+
+type DocumentEventHandler<T extends keyof DocumentEventMap> = (
+    event: DocumentEventMap[T],
+) => unknown;
+const addDocumentEventListener = <T extends keyof DocumentEventMap>(
+    type: T,
+    fun: DocumentEventHandler<T>,
+) => {
+    d.addEventListener(type, fun);
+};
+
+const openPane = d.getElementById("open-pane");
+const sitePane = d.getElementById("site-pane");
 
 if (!openPane || !sitePane) {
     throw Error("open-pane or site-pane not found");
 }
 
-function setSitePaneState(state: "open" | "close") {
+const setSitePaneState = (state: "open" | "close") => {
     console.debug(`${state} sitePane`);
-    sitePane?.setAttribute("state", state);
-}
+    sitePane.setAttribute("state", state);
+};
 
-export function showSitePane() {
+export const showSitePane = () => {
     setSitePaneState("open");
-}
-export function hideSitePane() {
+};
+export const hideSitePane = () => {
     setSitePaneState("close");
-}
+};
 
 const belongsToSitePane = (el: HTMLElement) => (
     el === openPane || el === sitePane || sitePane.contains(el)
 );
 
 // mouse users
-openPane.onmouseover = showSitePane;
-sitePane.onmouseleave = hideSitePane;
+addEventListener(openPane, "mouseover", showSitePane);
+addEventListener(openPane, "mouseleave", hideSitePane);
 
 // keyboard users
-document.onfocus = (event: FocusEvent) => {
+addDocumentEventListener("focusin", (event) => {
     if (belongsToSitePane(event.target as HTMLElement)) {
+        console.debug("showing site pane because of focus event", event);
         showSitePane();
     } else {
+        console.debug("hiding site pane because of focus event", event);
         hideSitePane();
     }
-};
+});
+addDocumentEventListener("focusout", (event) => {
+    if (belongsToSitePane(event.target as HTMLElement)) {
+        console.debug("hiding site pane because of blur event", event);
+        hideSitePane();
+    } else {
+        console.debug("blur event", event);
+    }
+});
 
 // phone users
-openPane.onclick = showSitePane;
-document.onclick = (e: Event) => {
-    if (!belongsToSitePane(e.target as HTMLElement)) {
+addEventListener(openPane, "click", showSitePane);
+addDocumentEventListener("click", (event) => {
+    if (!belongsToSitePane(event.target as HTMLElement)) {
         hideSitePane();
     }
-};
+});
 
 // swipe gestures (for phone users)
 const startPos: { x: number | null; y: number | null } = {
     x: null,
     y: null,
 };
-document.ontouchstart = (e: TouchEvent) => {
+addDocumentEventListener("touchstart", (event) => {
     // save start pos of touch
-    startPos.x = e.touches[0]?.clientX ?? null;
-    startPos.y = e.touches[0]?.clientY ?? null;
-};
-document.ontouchmove = (e: TouchEvent) => {
+    startPos.x = event.touches[0]?.clientX ?? null;
+    startPos.y = event.touches[0]?.clientY ?? null;
+});
+addDocumentEventListener("touchmove", (event) => {
     if (startPos.x === null || startPos.y === null) {
         return;
     }
     // calculate difference
-    const diffX = startPos.x - (e.touches[0]?.clientX ?? 0);
-    const diffY = startPos.y - (e.touches[0]?.clientY ?? 0);
+    const diffX = startPos.x - (event.touches[0]?.clientX ?? 0);
+    const diffY = startPos.y - (event.touches[0]?.clientY ?? 0);
 
     // early return if just clicked, not swiped
     if (diffX === 0 && diffY === 0) {
@@ -81,4 +114,4 @@ document.ontouchmove = (e: TouchEvent) => {
             hideSitePane();
         }
     }
-};
+});
