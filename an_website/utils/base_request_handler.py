@@ -1026,6 +1026,7 @@ class BaseRequestHandler(_RequestHandler):
             " allow-popups-to-escape-sandbox allow-scripts allow-popups"
             " allow-top-navigation-by-user-activation allow-forms;"
             "report-to default;"
+            "base-uri 'none';"
             + (
                 f"report-uri {self.get_reporting_api_endpoint()};"
                 if self.settings.get("REPORTING")
