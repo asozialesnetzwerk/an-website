@@ -959,7 +959,9 @@ class BaseRequestHandler(_RequestHandler):
         expires: None | float | tuple[int, ...] | datetime = None,
         path: str = "/",
         expires_days: None | float = 400,  # changed
+        *,
         secure: bool | None = None,
+        httponly: bool = True,
         **kwargs: Any,
     ) -> None:
         if "samesite" not in kwargs:
@@ -976,6 +978,7 @@ class BaseRequestHandler(_RequestHandler):
             secure=(
                 self.request.protocol == "https" if secure is None else secure
             ),
+            httponly=httponly,
             **kwargs,
         )
 
