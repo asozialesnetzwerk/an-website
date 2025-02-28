@@ -1,8 +1,8 @@
 default:
     @just --list --justfile "{{ justfile() }}"
 
-do-it:
-    @xdg-open https://youtu.be/AkygX8Fncpk
+do_it:
+    @mpv https://youtu.be/AkygX8Fncpk
 
 clean: clean_compressed clean_css clean_js
 
@@ -48,5 +48,5 @@ watch_js: (build_js '--watch')
 
 watch_js_debug: (build_js_debug '--watch')
 
-watman:
+wat:
     @deno eval 'console.log(Array(16).join("wat" - 1) + " Batman!")'

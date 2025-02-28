@@ -7,14 +7,14 @@
     "@eslint/eslintrc": "^2.1.4",
     "@eslint/js": "^8.57.1",
     "@pnpm/types": "^1000.1.1",
-    "@std/cli": "npm:@jsr/std__cli@^1.0.12",
+    "@std/cli": "npm:@jsr/std__cli@^1.0.13",
     "@tsconfig/node18": "^18.2.4",
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^18.19.74",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
+    "@types/node": "^18.19.76",
+    "@typescript-eslint/eslint-plugin": "^8.24.0",
+    "@typescript-eslint/parser": "^8.24.0",
     "browserslist": "4.24.4",
     "browserslist-to-esbuild": "^2.1.1",
     "caniuse-lite": "1.0.30001690",
@@ -23,27 +23,27 @@
     "dax-sh": "^0.42.0",
     "doiuse": "^6.0.5",
     "electron-to-chromium": "1.5.76",
-    "esbuild": "^0.24.2",
+    "esbuild": "^0.25.0",
     "eslint": "^8.57.1",
     "eslint-formatter-codeframe": "^7.32.1",
     "eslint-formatter-table": "^7.32.1",
     "eslint-plugin-compat": "^6.0.2",
     "eslint-plugin-deprecation": "^3.0.0",
     "gzip-size": "^7.0.0",
-    "postcss": "^8.5.1",
-    "prettier": "^3.4.2",
+    "postcss": "^8.5.2",
+    "prettier": "^3.5.1",
     "stylelint": "^16.14.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard-scss": "^14.0.0",
     "stylelint-no-unsupported-browser-features": "^8.0.4",
     "stylelint-prettier": "^5.0.3",
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
-    "type-fest": "^4.33.0",
+    "type-fest": "^4.34.1",
     "typescript": "5.8.0-beta",
-    "typescript-eslint": "^8.22.0",
+    "typescript-eslint": "^8.24.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
-  "packageManager": "pnpm@10.1.0+sha512.c89847b0667ddab50396bbbd008a2a43cf3b581efd59cf5d9aa8923ea1fb4b8106c041d540d08acb095037594d73ebc51e1ec89ee40c88b30b8a66c0fae0ac1b",
+  "packageManager": "pnpm@10.4.0+sha512.6b849d0787d97f8f4e1f03a9b8ff8f038e79e153d6f11ae539ae7c435ff9e796df6a862c991502695c7f9e8fac8aeafc1ac5a8dab47e36148d183832d886dd52",
   "engines": {
     "npm": "0",
     "yarn": "0"
@@ -54,6 +54,9 @@
     },
     "patchedDependencies": {
       "core-js-builder": "patches/core-js-builder.patch"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

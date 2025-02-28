@@ -3,11 +3,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Comodo CA Limited, CN = AAA Certificate Services
+        Issuer: C=GB, ST=Greater Manchester, L=Salford, O=Comodo CA Limited, CN=AAA Certificate Services
         Validity
             Not Before: Jan  1 00:00:00 2004 GMT
             Not After : Dec 31 23:59:59 2028 GMT
-        Subject: C = GB, ST = Greater Manchester, L = Salford, O = Comodo CA Limited, CN = AAA Certificate Services
+        Subject: C=GB, ST=Greater Manchester, L=Salford, O=Comodo CA Limited, CN=AAA Certificate Services
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -91,11 +91,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 6271844772424770508 (0x570a119742c4e3cc)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = IT, L = Milan, O = Actalis S.p.A./03358520967, CN = Actalis Authentication Root CA
+        Issuer: C=IT, L=Milan, O=Actalis S.p.A./03358520967, CN=Actalis Authentication Root CA
         Validity
             Not Before: Sep 22 11:22:02 2011 GMT
             Not After : Sep 22 11:22:02 2030 GMT
-        Subject: C = IT, L = Milan, O = Actalis S.p.A./03358520967, CN = Actalis Authentication Root CA
+        Subject: C=IT, L=Milan, O=Actalis S.p.A./03358520967, CN=Actalis Authentication Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -216,11 +216,11 @@ Certificate:
         Serial Number:
             06:6c:9f:cf:99:bf:8c:0a:39:e2:f0:78:8a:43:e6:96:36:5b:ca
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = Amazon, CN = Amazon Root CA 1
+        Issuer: C=US, O=Amazon, CN=Amazon Root CA 1
         Validity
             Not Before: May 26 00:00:00 2015 GMT
             Not After : Jan 17 00:00:00 2038 GMT
-        Subject: C = US, O = Amazon, CN = Amazon Root CA 1
+        Subject: C=US, O=Amazon, CN=Amazon Root CA 1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -295,11 +295,11 @@ Certificate:
         Serial Number:
             06:6c:9f:d2:96:35:86:9f:0a:0f:e5:86:78:f8:5b:26:bb:8a:37
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = Amazon, CN = Amazon Root CA 2
+        Issuer: C=US, O=Amazon, CN=Amazon Root CA 2
         Validity
             Not Before: May 26 00:00:00 2015 GMT
             Not After : May 26 00:00:00 2040 GMT
-        Subject: C = US, O = Amazon, CN = Amazon Root CA 2
+        Subject: C=US, O=Amazon, CN=Amazon Root CA 2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -416,11 +416,11 @@ Certificate:
         Serial Number:
             06:6c:9f:d5:74:97:36:66:3f:3b:0b:9a:d9:e8:9e:76:03:f2:4a
         Signature Algorithm: ecdsa-with-SHA256
-        Issuer: C = US, O = Amazon, CN = Amazon Root CA 3
+        Issuer: C=US, O=Amazon, CN=Amazon Root CA 3
         Validity
             Not Before: May 26 00:00:00 2015 GMT
             Not After : May 26 00:00:00 2040 GMT
-        Subject: C = US, O = Amazon, CN = Amazon Root CA 3
+        Subject: C=US, O=Amazon, CN=Amazon Root CA 3
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (256 bit)
@@ -464,11 +464,11 @@ Certificate:
         Serial Number:
             06:6c:9f:d7:c1:bb:10:4c:29:43:e5:71:7b:7b:2c:c8:1a:c1:0e
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Amazon, CN = Amazon Root CA 4
+        Issuer: C=US, O=Amazon, CN=Amazon Root CA 4
         Validity
             Not Before: May 26 00:00:00 2015 GMT
             Not After : May 26 00:00:00 2040 GMT
-        Subject: C = US, O = Amazon, CN = Amazon Root CA 4
+        Subject: C=US, O=Amazon, CN=Amazon Root CA 4
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -516,11 +516,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 33554617 (0x20000b9)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = IE, O = Baltimore, OU = CyberTrust, CN = Baltimore CyberTrust Root
+        Issuer: C=IE, O=Baltimore, OU=CyberTrust, CN=Baltimore CyberTrust Root
         Validity
             Not Before: May 12 18:46:00 2000 GMT
             Not After : May 12 23:59:00 2025 GMT
-        Subject: C = IE, O = Baltimore, OU = CyberTrust, CN = Baltimore CyberTrust Root
+        Subject: C=IE, O=Baltimore, OU=CyberTrust, CN=Baltimore CyberTrust Root
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -595,11 +595,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 2 (0x2)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = NO, O = Buypass AS-983163327, CN = Buypass Class 2 Root CA
+        Issuer: C=NO, O=Buypass AS-983163327, CN=Buypass Class 2 Root CA
         Validity
             Not Before: Oct 26 08:38:03 2010 GMT
             Not After : Oct 26 08:38:03 2040 GMT
-        Subject: C = NO, O = Buypass AS-983163327, CN = Buypass Class 2 Root CA
+        Subject: C=NO, O=Buypass AS-983163327, CN=Buypass Class 2 Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -715,11 +715,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 2 (0x2)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = NO, O = Buypass AS-983163327, CN = Buypass Class 3 Root CA
+        Issuer: C=NO, O=Buypass AS-983163327, CN=Buypass Class 3 Root CA
         Validity
             Not Before: Oct 26 08:28:58 2010 GMT
             Not After : Oct 26 08:28:58 2040 GMT
-        Subject: C = NO, O = Buypass AS-983163327, CN = Buypass Class 3 Root CA
+        Subject: C=NO, O=Buypass AS-983163327, CN=Buypass Class 3 Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -836,11 +836,11 @@ Certificate:
         Serial Number:
             1f:47:af:aa:62:00:70:50:54:4c:01:9e:9b:63:99:2a
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = GB, ST = Greater Manchester, L = Salford, O = COMODO CA Limited, CN = COMODO ECC Certification Authority
+        Issuer: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO ECC Certification Authority
         Validity
             Not Before: Mar  6 00:00:00 2008 GMT
             Not After : Jan 18 23:59:59 2038 GMT
-        Subject: C = GB, ST = Greater Manchester, L = Salford, O = COMODO CA Limited, CN = COMODO ECC Certification Authority
+        Subject: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO ECC Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -892,11 +892,11 @@ Certificate:
         Serial Number:
             4c:aa:f9:ca:db:63:6f:e0:1f:f7:4e:d8:5b:03:86:9d
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = GB, ST = Greater Manchester, L = Salford, O = COMODO CA Limited, CN = COMODO RSA Certification Authority
+        Issuer: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Certification Authority
         Validity
             Not Before: Jan 19 00:00:00 2010 GMT
             Not After : Jan 18 23:59:59 2038 GMT
-        Subject: C = GB, ST = Greater Manchester, L = Salford, O = COMODO CA Limited, CN = COMODO RSA Certification Authority
+        Subject: C=GB, ST=Greater Manchester, L=Salford, O=COMODO CA Limited, CN=COMODO RSA Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -1016,11 +1016,11 @@ Certificate:
         Serial Number:
             06:25:33:b1:47:03:33:27:5c:f9:8d:9a:b9:bf:cc:f8
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Certainly, CN = Certainly Root E1
+        Issuer: C=US, O=Certainly, CN=Certainly Root E1
         Validity
             Not Before: Apr  1 00:00:00 2021 GMT
             Not After : Apr  1 00:00:00 2046 GMT
-        Subject: C = US, O = Certainly, CN = Certainly Root E1
+        Subject: C=US, O=Certainly, CN=Certainly Root E1
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -1069,11 +1069,11 @@ Certificate:
         Serial Number:
             8e:0f:f9:4b:90:71:68:65:33:54:f4:d4:44:39:b7:e0
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = Certainly, CN = Certainly Root R1
+        Issuer: C=US, O=Certainly, CN=Certainly Root R1
         Validity
             Not Before: Apr  1 00:00:00 2021 GMT
             Not After : Apr  1 00:00:00 2046 GMT
-        Subject: C = US, O = Certainly, CN = Certainly Root R1
+        Subject: C=US, O=Certainly, CN=Certainly Root R1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -1190,11 +1190,11 @@ Certificate:
         Serial Number:
             ca:e9:1b:89:f1:55:03:0d:a3:e6:41:6d:c4:e3:a6:e1
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = FR, O = Dhimyotis, OU = 0002 48146308100036, CN = Certigna Root CA
+        Issuer: C=FR, O=Dhimyotis, OU=0002 48146308100036, CN=Certigna Root CA
         Validity
             Not Before: Oct  1 08:32:27 2013 GMT
             Not After : Oct  1 08:32:27 2033 GMT
-        Subject: C = FR, O = Dhimyotis, OU = 0002 48146308100036, CN = Certigna Root CA
+        Subject: C=FR, O=Dhimyotis, OU=0002 48146308100036, CN=Certigna Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -1326,11 +1326,11 @@ Certificate:
         Serial Number:
             fe:dc:e3:01:0f:c9:48:ff
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = FR, O = Dhimyotis, CN = Certigna
+        Issuer: C=FR, O=Dhimyotis, CN=Certigna
         Validity
             Not Before: Jun 29 15:13:05 2007 GMT
             Not After : Jun 29 15:13:05 2027 GMT
-        Subject: C = FR, O = Dhimyotis, CN = Certigna
+        Subject: C=FR, O=Dhimyotis, CN=Certigna
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1412,11 +1412,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 279744 (0x444c0)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = PL, O = Unizeto Technologies S.A., OU = Certum Certification Authority, CN = Certum Trusted Network CA
+        Issuer: C=PL, O=Unizeto Technologies S.A., OU=Certum Certification Authority, CN=Certum Trusted Network CA
         Validity
             Not Before: Oct 22 12:07:37 2008 GMT
             Not After : Dec 31 12:07:37 2029 GMT
-        Subject: C = PL, O = Unizeto Technologies S.A., OU = Certum Certification Authority, CN = Certum Trusted Network CA
+        Subject: C=PL, O=Unizeto Technologies S.A., OU=Certum Certification Authority, CN=Certum Trusted Network CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1492,11 +1492,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 623603 (0x983f3)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = DE, O = D-Trust GmbH, CN = D-TRUST Root Class 3 CA 2 2009
+        Issuer: C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 2009
         Validity
             Not Before: Nov  5 08:35:58 2009 GMT
             Not After : Nov  5 08:35:58 2029 GMT
-        Subject: C = DE, O = D-Trust GmbH, CN = D-TRUST Root Class 3 CA 2 2009
+        Subject: C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 2009
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1580,11 +1580,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 623604 (0x983f4)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = DE, O = D-Trust GmbH, CN = D-TRUST Root Class 3 CA 2 EV 2009
+        Issuer: C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 EV 2009
         Validity
             Not Before: Nov  5 08:50:46 2009 GMT
             Not After : Nov  5 08:50:46 2029 GMT
-        Subject: C = DE, O = D-Trust GmbH, CN = D-TRUST Root Class 3 CA 2 EV 2009
+        Subject: C=DE, O=D-Trust GmbH, CN=D-TRUST Root Class 3 CA 2 EV 2009
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1669,11 +1669,11 @@ Certificate:
         Serial Number:
             0c:e7:e0:e5:17:d8:46:fe:8f:e5:60:fc:1b:f0:30:39
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root CA
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root CA
         Validity
             Not Before: Nov 10 00:00:00 2006 GMT
             Not After : Nov 10 00:00:00 2031 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root CA
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1752,11 +1752,11 @@ Certificate:
         Serial Number:
             0b:93:1c:3a:d6:39:67:ea:67:23:bf:c3:af:9a:f4:4b
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root G2
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G2
         Validity
             Not Before: Aug  1 12:00:00 2013 GMT
             Not After : Jan 15 12:00:00 2038 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root G2
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1833,11 +1833,11 @@ Certificate:
         Serial Number:
             0b:a1:5a:fa:1d:df:a0:b5:49:44:af:cd:24:a0:6c:ec
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root G3
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G3
         Validity
             Not Before: Aug  1 12:00:00 2013 GMT
             Not After : Jan 15 12:00:00 2038 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Assured ID Root G3
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Assured ID Root G3
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -1888,11 +1888,11 @@ Certificate:
         Serial Number:
             08:3b:e0:56:90:42:46:b1:a1:75:6a:c9:59:91:c7:4a
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root CA
         Validity
             Not Before: Nov 10 00:00:00 2006 GMT
             Not After : Nov 10 00:00:00 2031 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root CA
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -1971,11 +1971,11 @@ Certificate:
         Serial Number:
             03:3a:f1:e6:a7:11:a9:a0:bb:28:64:b1:1d:09:fa:e5
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root G2
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2
         Validity
             Not Before: Aug  1 12:00:00 2013 GMT
             Not After : Jan 15 12:00:00 2038 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root G2
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -2052,11 +2052,11 @@ Certificate:
         Serial Number:
             05:55:56:bc:f2:5e:a4:35:35:c3:a4:0f:d5:ab:45:72
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root G3
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G3
         Validity
             Not Before: Aug  1 12:00:00 2013 GMT
             Not After : Jan 15 12:00:00 2038 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Global Root G3
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Global Root G3
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -2107,11 +2107,11 @@ Certificate:
         Serial Number:
             02:ac:5c:26:6a:0b:40:9b:8f:0b:79:f2:ae:46:25:77
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert High Assurance EV Root CA
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA
         Validity
             Not Before: Nov 10 00:00:00 2006 GMT
             Not After : Nov 10 00:00:00 2031 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert High Assurance EV Root CA
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -2191,11 +2191,11 @@ Certificate:
         Serial Number:
             09:e0:93:65:ac:f7:d9:c8:b9:3e:1c:0b:04:2a:2e:f3
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = "DigiCert, Inc.", CN = DigiCert TLS ECC P384 Root G5
+        Issuer: C=US, O=DigiCert, Inc., CN=DigiCert TLS ECC P384 Root G5
         Validity
             Not Before: Jan 15 00:00:00 2021 GMT
             Not After : Jan 14 23:59:59 2046 GMT
-        Subject: C = US, O = "DigiCert, Inc.", CN = DigiCert TLS ECC P384 Root G5
+        Subject: C=US, O=DigiCert, Inc., CN=DigiCert TLS ECC P384 Root G5
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -2245,11 +2245,11 @@ Certificate:
         Serial Number:
             08:f9:b4:78:a8:fa:7e:da:6a:33:37:89:de:7c:cf:8a
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = "DigiCert, Inc.", CN = DigiCert TLS RSA4096 Root G5
+        Issuer: C=US, O=DigiCert, Inc., CN=DigiCert TLS RSA4096 Root G5
         Validity
             Not Before: Jan 15 00:00:00 2021 GMT
             Not After : Jan 14 23:59:59 2046 GMT
-        Subject: C = US, O = "DigiCert, Inc.", CN = DigiCert TLS RSA4096 Root G5
+        Subject: C=US, O=DigiCert, Inc., CN=DigiCert TLS RSA4096 Root G5
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -2366,11 +2366,11 @@ Certificate:
         Serial Number:
             05:9b:1b:57:9e:8e:21:32:e2:39:07:bd:a7:77:75:5c
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Trusted Root G4
+        Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Trusted Root G4
         Validity
             Not Before: Aug  1 12:00:00 2013 GMT
             Not After : Jan 15 12:00:00 2038 GMT
-        Subject: C = US, O = DigiCert Inc, OU = www.digicert.com, CN = DigiCert Trusted Root G4
+        Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert Trusted Root G4
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -2488,11 +2488,11 @@ Certificate:
         Serial Number:
             02:03:e5:93:6f:31:b0:13:49:88:6b:a2:17
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = Google Trust Services LLC, CN = GTS Root R1
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R1
         Validity
             Not Before: Jun 22 00:00:00 2016 GMT
             Not After : Jun 22 00:00:00 2036 GMT
-        Subject: C = US, O = Google Trust Services LLC, CN = GTS Root R1
+        Subject: C=US, O=Google Trust Services LLC, CN=GTS Root R1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -2609,11 +2609,11 @@ Certificate:
         Serial Number:
             02:03:e5:ae:c5:8d:04:25:1a:ab:11:25:aa
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = Google Trust Services LLC, CN = GTS Root R2
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R2
         Validity
             Not Before: Jun 22 00:00:00 2016 GMT
             Not After : Jun 22 00:00:00 2036 GMT
-        Subject: C = US, O = Google Trust Services LLC, CN = GTS Root R2
+        Subject: C=US, O=Google Trust Services LLC, CN=GTS Root R2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -2730,11 +2730,11 @@ Certificate:
         Serial Number:
             02:03:e5:b8:82:eb:20:f8:25:27:6d:3d:66
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Google Trust Services LLC, CN = GTS Root R3
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R3
         Validity
             Not Before: Jun 22 00:00:00 2016 GMT
             Not After : Jun 22 00:00:00 2036 GMT
-        Subject: C = US, O = Google Trust Services LLC, CN = GTS Root R3
+        Subject: C=US, O=Google Trust Services LLC, CN=GTS Root R3
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -2783,11 +2783,11 @@ Certificate:
         Serial Number:
             02:03:e5:c0:68:ef:63:1a:9c:72:90:50:52
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Google Trust Services LLC, CN = GTS Root R4
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
         Validity
             Not Before: Jun 22 00:00:00 2016 GMT
             Not After : Jun 22 00:00:00 2036 GMT
-        Subject: C = US, O = Google Trust Services LLC, CN = GTS Root R4
+        Subject: C=US, O=Google Trust Services LLC, CN=GTS Root R4
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -2836,11 +2836,11 @@ Certificate:
         Serial Number:
             04:00:00:00:00:01:15:4b:5a:c3:94
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+        Issuer: C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA
         Validity
             Not Before: Sep  1 12:00:00 1998 GMT
             Not After : Jan 28 12:00:00 2028 GMT
-        Subject: C = BE, O = GlobalSign nv-sa, OU = Root CA, CN = GlobalSign Root CA
+        Subject: C=BE, O=GlobalSign nv-sa, OU=Root CA, CN=GlobalSign Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -2916,11 +2916,11 @@ Certificate:
         Serial Number:
             11:d2:bb:ba:33:6e:d4:bc:e6:24:68:c5:0d:84:1d:98:e8:43
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = BE, O = GlobalSign nv-sa, CN = GlobalSign Root E46
+        Issuer: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root E46
         Validity
             Not Before: Mar 20 00:00:00 2019 GMT
             Not After : Mar 20 00:00:00 2046 GMT
-        Subject: C = BE, O = GlobalSign nv-sa, CN = GlobalSign Root E46
+        Subject: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root E46
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -2969,11 +2969,11 @@ Certificate:
         Serial Number:
             11:d2:bb:b9:d7:23:18:9e:40:5f:0a:9d:2d:d0:df:25:67:d1
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = BE, O = GlobalSign nv-sa, CN = GlobalSign Root R46
+        Issuer: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root R46
         Validity
             Not Before: Mar 20 00:00:00 2019 GMT
             Not After : Mar 20 00:00:00 2046 GMT
-        Subject: C = BE, O = GlobalSign nv-sa, CN = GlobalSign Root R46
+        Subject: C=BE, O=GlobalSign nv-sa, CN=GlobalSign Root R46
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -3090,11 +3090,11 @@ Certificate:
         Serial Number:
             60:59:49:e0:26:2e:bb:55:f9:0a:77:8a:71:f9:4a:d8:6c
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: OU = GlobalSign ECC Root CA - R5, O = GlobalSign, CN = GlobalSign
+        Issuer: OU=GlobalSign ECC Root CA - R5, O=GlobalSign, CN=GlobalSign
         Validity
             Not Before: Nov 13 00:00:00 2012 GMT
             Not After : Jan 19 03:14:07 2038 GMT
-        Subject: OU = GlobalSign ECC Root CA - R5, O = GlobalSign, CN = GlobalSign
+        Subject: OU=GlobalSign ECC Root CA - R5, O=GlobalSign, CN=GlobalSign
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -3144,11 +3144,11 @@ Certificate:
         Serial Number:
             04:00:00:00:00:01:21:58:53:08:a2
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: OU = GlobalSign Root CA - R3, O = GlobalSign, CN = GlobalSign
+        Issuer: OU=GlobalSign Root CA - R3, O=GlobalSign, CN=GlobalSign
         Validity
             Not Before: Mar 18 10:00:00 2009 GMT
             Not After : Mar 18 10:00:00 2029 GMT
-        Subject: OU = GlobalSign Root CA - R3, O = GlobalSign, CN = GlobalSign
+        Subject: OU=GlobalSign Root CA - R3, O=GlobalSign, CN=GlobalSign
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -3224,11 +3224,11 @@ Certificate:
         Serial Number:
             45:e6:bb:03:83:33:c3:85:65:48:e6:ff:45:51
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: OU = GlobalSign Root CA - R6, O = GlobalSign, CN = GlobalSign
+        Issuer: OU=GlobalSign Root CA - R6, O=GlobalSign, CN=GlobalSign
         Validity
             Not Before: Dec 10 00:00:00 2014 GMT
             Not After : Dec 10 00:00:00 2034 GMT
-        Subject: OU = GlobalSign Root CA - R6, O = GlobalSign, CN = GlobalSign
+        Subject: OU=GlobalSign Root CA - R6, O=GlobalSign, CN=GlobalSign
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -3347,11 +3347,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, ST = Arizona, L = Scottsdale, O = "GoDaddy.com, Inc.", CN = Go Daddy Root Certificate Authority - G2
+        Issuer: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., CN=Go Daddy Root Certificate Authority - G2
         Validity
             Not Before: Sep  1 00:00:00 2009 GMT
             Not After : Dec 31 23:59:59 2037 GMT
-        Subject: C = US, ST = Arizona, L = Scottsdale, O = "GoDaddy.com, Inc.", CN = Go Daddy Root Certificate Authority - G2
+        Subject: C=US, ST=Arizona, L=Scottsdale, O=GoDaddy.com, Inc., CN=Go Daddy Root Certificate Authority - G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -3428,11 +3428,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: ecdsa-with-SHA256
-        Issuer: C = GR, L = Athens, O = Hellenic Academic and Research Institutions Cert. Authority, CN = Hellenic Academic and Research Institutions ECC RootCA 2015
+        Issuer: C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions ECC RootCA 2015
         Validity
             Not Before: Jul  7 10:37:12 2015 GMT
             Not After : Jun 30 10:37:12 2040 GMT
-        Subject: C = GR, L = Athens, O = Hellenic Academic and Research Institutions Cert. Authority, CN = Hellenic Academic and Research Institutions ECC RootCA 2015
+        Subject: C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions ECC RootCA 2015
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -3484,11 +3484,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = GR, L = Athens, O = Hellenic Academic and Research Institutions Cert. Authority, CN = Hellenic Academic and Research Institutions RootCA 2015
+        Issuer: C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions RootCA 2015
         Validity
             Not Before: Jul  7 10:11:21 2015 GMT
             Not After : Jun 30 10:11:21 2040 GMT
-        Subject: C = GR, L = Athens, O = Hellenic Academic and Research Institutions Cert. Authority, CN = Hellenic Academic and Research Institutions RootCA 2015
+        Subject: C=GR, L=Athens, O=Hellenic Academic and Research Institutions Cert. Authority, CN=Hellenic Academic and Research Institutions RootCA 2015
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -3609,11 +3609,11 @@ Certificate:
         Serial Number:
             82:10:cf:b0:d2:40:e3:59:44:63:e0:bb:63:82:8b:00
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = Internet Security Research Group, CN = ISRG Root X1
+        Issuer: C=US, O=Internet Security Research Group, CN=ISRG Root X1
         Validity
             Not Before: Jun  4 11:04:38 2015 GMT
             Not After : Jun  4 11:04:38 2035 GMT
-        Subject: C = US, O = Internet Security Research Group, CN = ISRG Root X1
+        Subject: C=US, O=Internet Security Research Group, CN=ISRG Root X1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -3730,11 +3730,11 @@ Certificate:
         Serial Number:
             41:d2:9d:d1:72:ea:ee:a7:80:c1:2c:6c:e9:2f:87:52
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Internet Security Research Group, CN = ISRG Root X2
+        Issuer: C=US, O=Internet Security Research Group, CN=ISRG Root X2
         Validity
             Not Before: Sep  4 00:00:00 2020 GMT
             Not After : Sep 17 16:00:00 2040 GMT
-        Subject: C = US, O = Internet Security Research Group, CN = ISRG Root X2
+        Subject: C=US, O=Internet Security Research Group, CN=ISRG Root X2
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -3784,11 +3784,11 @@ Certificate:
         Serial Number:
             0a:01:42:80:00:00:01:45:23:c8:44:b5:00:00:00:02
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = IdenTrust, CN = IdenTrust Commercial Root CA 1
+        Issuer: C=US, O=IdenTrust, CN=IdenTrust Commercial Root CA 1
         Validity
             Not Before: Jan 16 18:12:23 2014 GMT
             Not After : Jan 16 18:12:23 2034 GMT
-        Subject: C = US, O = IdenTrust, CN = IdenTrust Commercial Root CA 1
+        Subject: C=US, O=IdenTrust, CN=IdenTrust Commercial Root CA 1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -3905,11 +3905,11 @@ Certificate:
         Serial Number:
             0a:01:42:80:00:00:01:45:23:cf:46:7c:00:00:00:02
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = IdenTrust, CN = IdenTrust Public Sector Root CA 1
+        Issuer: C=US, O=IdenTrust, CN=IdenTrust Public Sector Root CA 1
         Validity
             Not Before: Jan 16 17:53:32 2014 GMT
             Not After : Jan 16 17:53:32 2034 GMT
-        Subject: C = US, O = IdenTrust, CN = IdenTrust Public Sector Root CA 1
+        Subject: C=US, O=IdenTrust, CN=IdenTrust Public Sector Root CA 1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4026,11 +4026,11 @@ Certificate:
         Serial Number:
             66:f2:3d:af:87:de:8b:b1:4a:ea:0c:57:31:01:c2:ec
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = Microsoft Corporation, CN = Microsoft ECC Root Certificate Authority 2017
+        Issuer: C=US, O=Microsoft Corporation, CN=Microsoft ECC Root Certificate Authority 2017
         Validity
             Not Before: Dec 18 23:06:45 2019 GMT
             Not After : Jul 18 23:16:04 2042 GMT
-        Subject: C = US, O = Microsoft Corporation, CN = Microsoft ECC Root Certificate Authority 2017
+        Subject: C=US, O=Microsoft Corporation, CN=Microsoft ECC Root Certificate Authority 2017
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -4083,11 +4083,11 @@ Certificate:
         Serial Number:
             1e:d3:97:09:5f:d8:b4:b3:47:70:1e:aa:be:7f:45:b3
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, O = Microsoft Corporation, CN = Microsoft RSA Root Certificate Authority 2017
+        Issuer: C=US, O=Microsoft Corporation, CN=Microsoft RSA Root Certificate Authority 2017
         Validity
             Not Before: Dec 18 22:51:22 2019 GMT
             Not After : Jul 18 23:00:23 2042 GMT
-        Subject: C = US, O = Microsoft Corporation, CN = Microsoft RSA Root Certificate Authority 2017
+        Subject: C=US, O=Microsoft Corporation, CN=Microsoft RSA Root Certificate Authority 2017
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4208,11 +4208,11 @@ Certificate:
         Serial Number:
             78:58:5f:2e:ad:2c:19:4b:e3:37:07:35:34:13:28:b5:96:d4:65:93
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 1 G3
+        Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 1 G3
         Validity
             Not Before: Jan 12 17:27:44 2012 GMT
             Not After : Jan 12 17:27:44 2042 GMT
-        Subject: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 1 G3
+        Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 1 G3
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4329,11 +4329,11 @@ Certificate:
         Serial Number:
             44:57:34:24:5b:81:89:9b:35:f2:ce:b8:2b:3b:5b:a7:26:f0:75:28
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 2 G3
+        Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2 G3
         Validity
             Not Before: Jan 12 18:59:32 2012 GMT
             Not After : Jan 12 18:59:32 2042 GMT
-        Subject: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 2 G3
+        Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2 G3
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4449,11 +4449,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1289 (0x509)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 2
+        Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2
         Validity
             Not Before: Nov 24 18:27:00 2006 GMT
             Not After : Nov 24 18:23:33 2031 GMT
-        Subject: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 2
+        Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4576,11 +4576,11 @@ Certificate:
         Serial Number:
             2e:f5:9b:02:28:a7:db:7a:ff:d5:a3:a9:ee:bd:03:a0:cf:12:6a:1d
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 3 G3
+        Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3 G3
         Validity
             Not Before: Jan 12 20:26:32 2012 GMT
             Not After : Jan 12 20:26:32 2042 GMT
-        Subject: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 3 G3
+        Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3 G3
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4696,11 +4696,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1478 (0x5c6)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 3
+        Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3
         Validity
             Not Before: Nov 24 19:11:23 2006 GMT
             Not After : Nov 24 19:06:44 2031 GMT
-        Subject: C = BM, O = QuoVadis Limited, CN = QuoVadis Root CA 3
+        Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 3
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4832,11 +4832,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 6248227494352943350 (0x56b629cd34bc78f6)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com EV Root Certification Authority RSA R2
+        Issuer: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority RSA R2
         Validity
             Not Before: May 31 18:14:37 2017 GMT
             Not After : May 30 18:14:37 2042 GMT
-        Subject: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com EV Root Certification Authority RSA R2
+        Subject: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com EV Root Certification Authority RSA R2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -4957,11 +4957,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 8495723813297216424 (0x75e6dfcbc1685ba8)
         Signature Algorithm: ecdsa-with-SHA256
-        Issuer: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com Root Certification Authority ECC
+        Issuer: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority ECC
         Validity
             Not Before: Feb 12 18:14:03 2016 GMT
             Not After : Feb 12 18:14:03 2041 GMT
-        Subject: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com Root Certification Authority ECC
+        Subject: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority ECC
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -5014,11 +5014,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 8875640296558310041 (0x7b2c9bd316803299)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com Root Certification Authority RSA
+        Issuer: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority RSA
         Validity
             Not Before: Feb 12 17:39:39 2016 GMT
             Not After : Feb 12 17:39:39 2041 GMT
-        Subject: C = US, ST = Texas, L = Houston, O = SSL Corporation, CN = SSL.com Root Certification Authority RSA
+        Subject: C=US, ST=Texas, L=Houston, O=SSL Corporation, CN=SSL.com Root Certification Authority RSA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -5140,11 +5140,11 @@ Certificate:
         Serial Number:
             14:03:f5:ab:fb:37:8b:17:40:5b:e2:43:b2:a5:d1:c4
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, O = SSL Corporation, CN = SSL.com TLS ECC Root CA 2022
+        Issuer: C=US, O=SSL Corporation, CN=SSL.com TLS ECC Root CA 2022
         Validity
             Not Before: Aug 25 16:33:48 2022 GMT
             Not After : Aug 19 16:33:47 2046 GMT
-        Subject: C = US, O = SSL Corporation, CN = SSL.com TLS ECC Root CA 2022
+        Subject: C=US, O=SSL Corporation, CN=SSL.com TLS ECC Root CA 2022
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -5196,11 +5196,11 @@ Certificate:
         Serial Number:
             6f:be:da:ad:73:bd:08:40:e2:8b:4d:be:d4:f7:5b:91
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, O = SSL Corporation, CN = SSL.com TLS RSA Root CA 2022
+        Issuer: C=US, O=SSL Corporation, CN=SSL.com TLS RSA Root CA 2022
         Validity
             Not Before: Aug 25 16:34:22 2022 GMT
             Not After : Aug 19 16:34:21 2046 GMT
-        Subject: C = US, O = SSL Corporation, CN = SSL.com TLS RSA Root CA 2022
+        Subject: C=US, O=SSL Corporation, CN=SSL.com TLS RSA Root CA 2022
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -5320,11 +5320,11 @@ Certificate:
         Serial Number:
             0c:f0:8e:5c:08:16:a5:ad:42:7f:f0:eb:27:18:59:d0
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = SecureTrust Corporation, CN = SecureTrust CA
+        Issuer: C=US, O=SecureTrust Corporation, CN=SecureTrust CA
         Validity
             Not Before: Nov  7 19:31:18 2006 GMT
             Not After : Dec 31 19:40:55 2029 GMT
-        Subject: C = US, O = SecureTrust Corporation, CN = SecureTrust CA
+        Subject: C=US, O=SecureTrust Corporation, CN=SecureTrust CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -5407,11 +5407,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, ST = Arizona, L = Scottsdale, O = "Starfield Technologies, Inc.", CN = Starfield Root Certificate Authority - G2
+        Issuer: C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Root Certificate Authority - G2
         Validity
             Not Before: Sep  1 00:00:00 2009 GMT
             Not After : Dec 31 23:59:59 2037 GMT
-        Subject: C = US, ST = Arizona, L = Scottsdale, O = "Starfield Technologies, Inc.", CN = Starfield Root Certificate Authority - G2
+        Subject: C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Root Certificate Authority - G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -5488,11 +5488,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = US, ST = Arizona, L = Scottsdale, O = "Starfield Technologies, Inc.", CN = Starfield Services Root Certificate Authority - G2
+        Issuer: C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Services Root Certificate Authority - G2
         Validity
             Not Before: Sep  1 00:00:00 2009 GMT
             Not After : Dec 31 23:59:59 2037 GMT
-        Subject: C = US, ST = Arizona, L = Scottsdale, O = "Starfield Technologies, Inc.", CN = Starfield Services Root Certificate Authority - G2
+        Subject: C=US, ST=Arizona, L=Scottsdale, O=Starfield Technologies, Inc., CN=Starfield Services Root Certificate Authority - G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -5571,11 +5571,11 @@ Certificate:
         Serial Number:
             bb:40:1c:43:f5:5e:4f:b0
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = CH, O = SwissSign AG, CN = SwissSign Gold CA - G2
+        Issuer: C=CH, O=SwissSign AG, CN=SwissSign Gold CA - G2
         Validity
             Not Before: Oct 25 08:30:35 2006 GMT
             Not After : Oct 25 08:30:35 2036 GMT
-        Subject: C = CH, O = SwissSign AG, CN = SwissSign Gold CA - G2
+        Subject: C=CH, O=SwissSign AG, CN=SwissSign Gold CA - G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -5698,11 +5698,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 5700383053117599563 (0x4f1bd42f54bb2f4b)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = CH, O = SwissSign AG, CN = SwissSign Silver CA - G2
+        Issuer: C=CH, O=SwissSign AG, CN=SwissSign Silver CA - G2
         Validity
             Not Before: Oct 25 08:32:46 2006 GMT
             Not After : Oct 25 08:32:46 2036 GMT
-        Subject: C = CH, O = SwissSign AG, CN = SwissSign Silver CA - G2
+        Subject: C=CH, O=SwissSign AG, CN=SwissSign Silver CA - G2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -5825,11 +5825,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = DE, O = T-Systems Enterprise Services GmbH, OU = T-Systems Trust Center, CN = T-TeleSec GlobalRoot Class 2
+        Issuer: C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 2
         Validity
             Not Before: Oct  1 10:40:14 2008 GMT
             Not After : Oct  1 23:59:59 2033 GMT
-        Subject: C = DE, O = T-Systems Enterprise Services GmbH, OU = T-Systems Trust Center, CN = T-TeleSec GlobalRoot Class 2
+        Subject: C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -5906,11 +5906,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 1 (0x1)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = DE, O = T-Systems Enterprise Services GmbH, OU = T-Systems Trust Center, CN = T-TeleSec GlobalRoot Class 3
+        Issuer: C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 3
         Validity
             Not Before: Oct  1 10:29:56 2008 GMT
             Not After : Oct  1 23:59:59 2033 GMT
-        Subject: C = DE, O = T-Systems Enterprise Services GmbH, OU = T-Systems Trust Center, CN = T-TeleSec GlobalRoot Class 3
+        Subject: C=DE, O=T-Systems Enterprise Services GmbH, OU=T-Systems Trust Center, CN=T-TeleSec GlobalRoot Class 3
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -5987,11 +5987,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 3262 (0xcbe)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = TW, O = TAIWAN-CA, OU = Root CA, CN = TWCA Global Root CA
+        Issuer: C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA Global Root CA
         Validity
             Not Before: Jun 27 06:28:33 2012 GMT
             Not After : Dec 31 15:59:59 2030 GMT
-        Subject: C = TW, O = TAIWAN-CA, OU = Root CA, CN = TWCA Global Root CA
+        Subject: C=TW, O=TAIWAN-CA, OU=Root CA, CN=TWCA Global Root CA
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -6106,11 +6106,11 @@ Certificate:
         Serial Number:
             01:67:5f:27:d6:fe:7a:e3:e4:ac:be:09:5b:05:9e
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = FI, O = Telia Finland Oyj, CN = Telia Root CA v2
+        Issuer: C=FI, O=Telia Finland Oyj, CN=Telia Root CA v2
         Validity
             Not Before: Nov 29 11:55:54 2018 GMT
             Not After : Nov 29 11:55:54 2043 GMT
-        Subject: C = FI, O = Telia Finland Oyj, CN = Telia Root CA v2
+        Subject: C=FI, O=Telia Finland Oyj, CN=Telia Root CA v2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -6230,11 +6230,11 @@ Certificate:
         Serial Number:
             95:be:16:a0:f7:2e:46:f1:7b:39:82:72:fa:8b:cd:96
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: O = TeliaSonera, CN = TeliaSonera Root CA v1
+        Issuer: O=TeliaSonera, CN=TeliaSonera Root CA v1
         Validity
             Not Before: Oct 18 12:00:50 2007 GMT
             Not After : Oct 18 12:00:50 2032 GMT
-        Subject: O = TeliaSonera, CN = TeliaSonera Root CA v1
+        Subject: O=TeliaSonera, CN=TeliaSonera Root CA v1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -6350,11 +6350,11 @@ Certificate:
         Serial Number:
             5c:8b:99:c5:5a:94:c5:d2:71:56:de:cd:89:80:cc:26
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust ECC Certification Authority
+        Issuer: C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust ECC Certification Authority
         Validity
             Not Before: Feb  1 00:00:00 2010 GMT
             Not After : Jan 18 23:59:59 2038 GMT
-        Subject: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust ECC Certification Authority
+        Subject: C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust ECC Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -6406,11 +6406,11 @@ Certificate:
         Serial Number:
             01:fd:6d:30:fc:a3:ca:51:a8:1b:bc:64:0e:35:03:2d
         Signature Algorithm: sha384WithRSAEncryption
-        Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
+        Issuer: C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority
         Validity
             Not Before: Feb  1 00:00:00 2010 GMT
             Not After : Jan 18 23:59:59 2038 GMT
-        Subject: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
+        Subject: C=US, ST=New Jersey, L=Jersey City, O=The USERTRUST Network, CN=USERTrust RSA Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)
@@ -6530,11 +6530,11 @@ Certificate:
         Serial Number:
             50:94:6c:ec:18:ea:d5:9c:4d:d5:97:ef:75:8f:a0:ad
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, OU = www.xrampsecurity.com, O = XRamp Security Services Inc, CN = XRamp Global Certification Authority
+        Issuer: C=US, OU=www.xrampsecurity.com, O=XRamp Security Services Inc, CN=XRamp Global Certification Authority
         Validity
             Not Before: Nov  1 17:14:04 2004 GMT
             Not After : Jan  1 05:37:19 2035 GMT
-        Subject: C = US, OU = www.xrampsecurity.com, O = XRamp Security Services Inc, CN = XRamp Global Certification Authority
+        Subject: C=US, OU=www.xrampsecurity.com, O=XRamp Security Services Inc, CN=XRamp Global Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -6621,11 +6621,11 @@ Certificate:
         Serial Number:
             3c:f6:07:a9:68:70:0e:da:8b:84
         Signature Algorithm: ecdsa-with-SHA384
-        Issuer: C = IN, OU = emSign PKI, O = eMudhra Technologies Limited, CN = emSign ECC Root CA - G3
+        Issuer: C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign ECC Root CA - G3
         Validity
             Not Before: Feb 18 18:30:00 2018 GMT
             Not After : Feb 18 18:30:00 2043 GMT
-        Subject: C = IN, OU = emSign PKI, O = eMudhra Technologies Limited, CN = emSign ECC Root CA - G3
+        Subject: C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign ECC Root CA - G3
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
@@ -6676,11 +6676,11 @@ Certificate:
         Serial Number:
             31:f5:e4:62:0c:6c:58:ed:d6:d8
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = IN, OU = emSign PKI, O = eMudhra Technologies Limited, CN = emSign Root CA - G1
+        Issuer: C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign Root CA - G1
         Validity
             Not Before: Feb 18 18:30:00 2018 GMT
             Not After : Feb 18 18:30:00 2043 GMT
-        Subject: C = IN, OU = emSign PKI, O = eMudhra Technologies Limited, CN = emSign Root CA - G1
+        Subject: C=IN, OU=emSign PKI, O=eMudhra Technologies Limited, CN=emSign Root CA - G1
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -6756,11 +6756,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = "The Go Daddy Group, Inc.", OU = Go Daddy Class 2 Certification Authority
+        Issuer: C=US, O=The Go Daddy Group, Inc., OU=Go Daddy Class 2 Certification Authority
         Validity
             Not Before: Jun 29 17:06:20 2004 GMT
             Not After : Jun 29 17:06:20 2034 GMT
-        Subject: C = US, O = "The Go Daddy Group, Inc.", OU = Go Daddy Class 2 Certification Authority
+        Subject: C=US, O=The Go Daddy Group, Inc., OU=Go Daddy Class 2 Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -6840,11 +6840,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C = JP, O = "SECOM Trust Systems CO.,LTD.", OU = Security Communication RootCA2
+        Issuer: C=JP, O=SECOM Trust Systems CO.,LTD., OU=Security Communication RootCA2
         Validity
             Not Before: May 29 05:00:39 2009 GMT
             Not After : May 29 05:00:39 2029 GMT
-        Subject: C = JP, O = "SECOM Trust Systems CO.,LTD.", OU = Security Communication RootCA2
+        Subject: C=JP, O=SECOM Trust Systems CO.,LTD., OU=Security Communication RootCA2
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -6919,11 +6919,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 0 (0x0)
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = US, O = "Starfield Technologies, Inc.", OU = Starfield Class 2 Certification Authority
+        Issuer: C=US, O=Starfield Technologies, Inc., OU=Starfield Class 2 Certification Authority
         Validity
             Not Before: Jun 29 17:39:16 2004 GMT
             Not After : Jun 29 17:39:16 2034 GMT
-        Subject: C = US, O = "Starfield Technologies, Inc.", OU = Starfield Class 2 Certification Authority
+        Subject: C=US, O=Starfield Technologies, Inc., OU=Starfield Class 2 Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (2048 bit)
@@ -7004,11 +7004,11 @@ Certificate:
         Serial Number:
             15:c8:bd:65:47:5c:af:b8:97:00:5e:e4:06:d2:bc:9d
         Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C = TW, O = "Chunghwa Telecom Co., Ltd.", OU = ePKI Root Certification Authority
+        Issuer: C=TW, O=Chunghwa Telecom Co., Ltd., OU=ePKI Root Certification Authority
         Validity
             Not Before: Dec 20 02:31:27 2004 GMT
             Not After : Dec 20 02:31:27 2034 GMT
-        Subject: C = TW, O = "Chunghwa Telecom Co., Ltd.", OU = ePKI Root Certification Authority
+        Subject: C=TW, O=Chunghwa Telecom Co., Ltd., OU=ePKI Root Certification Authority
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 Public-Key: (4096 bit)

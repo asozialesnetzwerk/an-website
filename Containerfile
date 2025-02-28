@@ -1,4 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1.6
+# syntax=docker.io/docker/dockerfile:1.12
 ARG BASE=docker.io/library/python:3.12-slim-bookworm
 
 FROM $BASE AS builder

@@ -10,9 +10,9 @@ parserOptions: {projectService: true}
 overrides:
   - files: "an_website/**"
     rules:
+      "@typescript-eslint/ban-ts-comment": "off"
       "@typescript-eslint/no-non-null-assertion": "off"
       "@typescript-eslint/restrict-template-expressions": "off"
-      "@typescript-eslint/ban-ts-comment": "off"
     extends:
       - "plugin:compat/recommended"
     settings:

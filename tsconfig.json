@@ -11,7 +11,9 @@
     ],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "resolveJsonModule": true,
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "module": "node18",
   }
 }
