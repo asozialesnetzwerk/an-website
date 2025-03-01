@@ -57,9 +57,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12  # EL10
+          - 3.12.7  # EL10
           - 3.13
-          - 3.14  # π
+          - 3.14    # π
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -90,9 +90,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12  # EL10
+          - 3.12.7  # EL10
           - 3.13
-          - 3.14  # π
+          - 3.14    # π
         #license:
           #- basic
           #- trial

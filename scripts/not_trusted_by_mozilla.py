@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+"""Lists CAs that aren't trusted by Mozilla."""
+
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -48,9 +50,11 @@ DISTRUSTED = (
 
 
 def main() -> None:
+    """Do stuff."""
     m = frozenset(
         load_pem_x509_certificates(
-            urlopen("https://curl.se/ca/cacert.pem").read()
+            # pylint: disable-next=consider-using-with
+            urlopen("https://curl.se/ca/cacert.pem").read()  # nosec: B310
         )
     )
     certs: list[Certificate] = []

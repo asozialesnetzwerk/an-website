@@ -75,7 +75,7 @@ if TYPE_CHECKING:
 
 LOGGER: Final = logging.getLogger(__name__)
 
-# pylint: disable=consider-alternative-union-syntax
+# pylint: disable-next=consider-alternative-union-syntax
 type Handler = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],
@@ -256,7 +256,8 @@ ansi_replace.__doc__ = "Remove ANSI escape sequences from a string."
 
 
 def apm_anonymization_processor(
-    client: elasticapm.Client,  # pylint: disable=unused-argument
+    # pylint: disable-next=unused-argument
+    client: elasticapm.Client,
     event: dict[str, Any],
 ) -> dict[str, Any]:
     """Anonymize an APM event."""
@@ -383,7 +384,8 @@ async def geoip(
     if not ip:
         return None
 
-    cache = caches.get(ip, {})  # pylint: disable=redefined-outer-name
+    # pylint: disable-next=redefined-outer-name
+    cache = caches.get(ip, {})
     if database not in cache:
         if not elasticsearch:
             if allow_fallback and database in {
@@ -647,7 +649,8 @@ def parse_openmoji_arg(value: str, default: OpenMojiValue) -> OpenMojiValue:
     return default
 
 
-async def ratelimit(  # pylint: disable=too-many-arguments
+# pylint: disable-next=too-many-arguments
+async def ratelimit(
     redis: Redis[str],
     redis_prefix: str,
     remote_ip: str,
@@ -808,7 +811,8 @@ def strangle(string: str) -> float:
 
 
 def time_function[  # noqa: D103
-    T, **P  # pylint: disable=invalid-name
+    # pylint: disable-next=invalid-name
+    T, **P  # fmt: skip
 ](function: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> tuple[
     T, float
 ]:

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+"""Generates a CA bundle."""
+
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
-from subprocess import run
+from subprocess import run  # nosec: B404
 
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import Encoding
@@ -60,6 +62,7 @@ DISTRUSTED = (
 
 
 def main() -> None:
+    """Do stuff."""
     certs: list[Certificate] = []
     for path in Path(sys.argv[1]).iterdir():
         if path.name == "README":
@@ -72,7 +75,7 @@ def main() -> None:
             continue
         pem = cert.public_bytes(Encoding.PEM)
         print(cert.subject.rfc4514_string(), file=sys.stderr)
-        run(("openssl", "x509", "-text"), check=True, input=pem)
+        run(("openssl", "x509", "-text"), check=True, input=pem)  # nosec: B603
         print(flush=True)
 
 
