@@ -99,10 +99,12 @@ types-pyyaml==6.0.12.20241230; python_version >= '3.8'
 types-redis==4.6.0.20241004; python_version >= '3.8'
 types-regex==2024.11.6.20241221; python_version >= '3.8'
 types-setuptools==70.3.0.20240710; python_version >= '3.8'
+types-zstd==1.5.6.4.20250224; python_version >= '3.9'
 typing-extensions==4.12.2; python_version >= '3.8'
 urllib3==2.3.0; python_version >= '3.9'
 virtualenv==20.29.2; python_version >= '3.8'
 webencodings==0.5.1
+zopflipy==1.11; python_version >= '3.9'
 accept-types==0.4.1
 aiodns==3.2.0
 aiohappyeyeballs==2.4.6; python_version >= '3.9'
