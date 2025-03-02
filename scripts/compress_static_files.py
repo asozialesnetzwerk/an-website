@@ -93,7 +93,7 @@ class GzipFileCompressor(FileCompressor):
     def get_missing_dependencies(self) -> Iterable[str]:
         """Get the missing dependencies."""
         try:
-            # pylint: disable-next=import-outside-toplevel
+            # pylint: disable-next=import-outside-toplevel,unused-import
             import zopfli  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zopfli"
@@ -123,7 +123,7 @@ class ZstdFileCompressor(FileCompressor):
     def get_missing_dependencies(self) -> Iterable[str]:
         """Get the missing dependencies."""
         try:
-            # pylint: disable-next=import-outside-toplevel
+            # pylint: disable-next=import-outside-toplevel,unused-import
             import zstd  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zstd"
