@@ -686,7 +686,6 @@ def main() -> int | str:  # noqa: C901
         pass
     finally:
         # restore the original method
-        # pylint: disable-next=redefined-variable-type
         ReaderConsole.execute = rc_execute
 
     return 0

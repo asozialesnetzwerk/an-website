@@ -73,7 +73,7 @@ class GzipFileCompressor(FileCompressor):
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        # pylint: disable-next=import-outside-toplevel,import-error
+        # pylint: disable-next=import-outside-toplevel
         import zopfli
 
         c = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_GZIP)
@@ -93,7 +93,7 @@ class GzipFileCompressor(FileCompressor):
     def get_missing_dependencies(self) -> Iterable[str]:
         """Get the missing dependencies."""
         try:
-            # pylint: disable-next=import-outside-toplevel,unused-import
+            # pylint: disable-next=import-outside-toplevel
             import zopfli  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zopfli"
@@ -106,7 +106,7 @@ class ZstdFileCompressor(FileCompressor):
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        # pylint: disable-next=import-outside-toplevel,import-error
+        # pylint: disable-next=import-outside-toplevel
         import zstd
 
         yield zstd.compress(data, 22)
@@ -123,7 +123,7 @@ class ZstdFileCompressor(FileCompressor):
     def get_missing_dependencies(self) -> Iterable[str]:
         """Get the missing dependencies."""
         try:
-            # pylint: disable-next=import-outside-toplevel,unused-import
+            # pylint: disable-next=import-outside-toplevel
             import zstd  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zstd"

@@ -327,7 +327,7 @@ jobs:
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
-          name: coverage-3.12
+          name: coverage-3.12.7
       - name: Make directory
         run: mkdir github-pages
       - name: Hash files

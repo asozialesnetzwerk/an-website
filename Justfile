@@ -34,7 +34,7 @@ build_js *args:
 
 [positional-arguments]
 esbuild *args:
-    deno run -A https://deno.land/x/esbuild@v0.24.2/mod.js "--target=$(just target),chrome103,edge129,firefox115,ios11,opera114,safari15.6" --charset=utf8 --minify --sourcemap --tree-shaking=false "$@"
+    deno run -A https://deno.land/x/esbuild@v0.25.0/mod.js "--target=$(just target),chrome103,edge129,firefox115,ios11,opera114,safari15.6" --charset=utf8 --minify --sourcemap --tree-shaking=false "$@"
 
 target:
     #!/usr/bin/env python3
