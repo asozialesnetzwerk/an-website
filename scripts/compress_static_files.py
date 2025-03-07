@@ -97,7 +97,7 @@ class GzipFileCompressor(FileCompressor):
             import zopfli  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zopfli"
-            yield "zopflipy==1.11"
+            yield "zopflipy"
 
 
 class ZstdFileCompressor(FileCompressor):
@@ -127,7 +127,7 @@ class ZstdFileCompressor(FileCompressor):
             import zstd  # noqa: F401
         except ModuleNotFoundError as exc:
             assert exc.name == "zstd"
-            yield "zstd==1.5.6.2"
+            yield "zstd"
 
 
 def compress_dir(
@@ -158,10 +158,24 @@ def get_compressors() -> Collection[FileCompressor]:
     return ZstdFileCompressor(), GzipFileCompressor()
 
 
+def _get_constraints() -> list[str]:
+    """Get the constraints for the libraries."""
+    # TODO: parse properly with packaging
+    file = Path(__file__).absolute().parent.parent / "pip-constraints.txt"
+    return file.read_text().splitlines()
+
+
 def get_missing_dependencies() -> Iterable[str]:
     """Get the missing dependencies."""
+    constraints = _get_constraints()
     for compressor in get_compressors():
-        yield from compressor.get_missing_dependencies()
+        for dep in compressor.get_missing_dependencies():
+            for const in constraints:
+                if const.startswith(f"{dep}=="):
+                    yield const
+                    break
+            else:
+                raise AssertionError(f"Could not get version of {dep}")
 
 
 def compress_static_files() -> Iterable[CompressionResult]:

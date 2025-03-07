@@ -1,45 +1,46 @@
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: check-ast
-      - id: check-case-conflict
-      - id: check-executables-have-shebangs
-      - id: check-json
-      - id: check-merge-conflict
-      - id: check-shebang-scripts-are-executable
-      - id: check-symlinks
-      - id: check-toml
-      - id: check-yaml
-      - id: destroyed-symlinks
-      - id: end-of-file-fixer
-      - id: fix-byte-order-marker
-      - id: mixed-line-ending
-      - id: pretty-format-json
-        args: [--autofix, --no-ensure-ascii, --no-sort-keys]
-      - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
-  - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.4
-    hooks:
-      - id: remove-tabs
-        exclude: ^an_website/static/humans.txt$
-      - id: insert-license
-        files: ^.+\.py$
-        args:
-          - --license-filepath
-          - license_header.txt          # defaults to: LICENSE.txt
-      #- id: insert-license
-      #  files: \*\.css$
-      #  args:
-      #    - --license-filepath
-      #    - license_header.txt          # defaults to: LICENSE.txt
-      #    - --comment-style
-      #    - /*| *| */                   # defaults to: #
-      #- id: insert-license
-      #  files: \*\.html$
-      #  args:
-      #    - --license-filepath
-      #    - license_header.txt          # defaults to: LICENSE.txt
-      #    - --comment-style
-      #    - '{#||#}'                    # defaults to: #
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.5.0
+      hooks:
+          - id: check-ast
+          - id: check-case-conflict
+          - id: check-executables-have-shebangs
+          - id: check-json
+          - id: check-merge-conflict
+          - id: check-shebang-scripts-are-executable
+          - id: check-symlinks
+          - id: check-toml
+          - id: check-yaml
+          - id: destroyed-symlinks
+          - id: end-of-file-fixer
+          - id: fix-byte-order-marker
+          - id: mixed-line-ending
+          - id: pretty-format-json
+            args: [--autofix, --no-ensure-ascii, --no-sort-keys]
+            exclude: ^Pipfile.lock$
+          - id: trailing-whitespace
+            args: [--markdown-linebreak-ext=md]
+    - repo: https://github.com/Lucas-C/pre-commit-hooks
+      rev: v1.5.4
+      hooks:
+          - id: remove-tabs
+            exclude: ^an_website/static/humans.txt$
+          - id: insert-license
+            files: ^.+\.py$
+            args:
+                - --license-filepath
+                - license_header.txt # defaults to: LICENSE.txt
+          #- id: insert-license
+          #  files: \*\.css$
+          #  args:
+          #    - --license-filepath
+          #    - license_header.txt          # defaults to: LICENSE.txt
+          #    - --comment-style
+          #    - /*| *| */                   # defaults to: #
+          #- id: insert-license
+          #  files: \*\.html$
+          #  args:
+          #    - --license-filepath
+          #    - license_header.txt          # defaults to: LICENSE.txt
+          #    - --comment-style
+          #    - '{#||#}'                    # defaults to: #
