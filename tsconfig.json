@@ -15,9 +15,6 @@
     "erasableSyntaxOnly": true,
     "resolveJsonModule": true,
     "noUnusedLocals": false,
-    "module": "node18",
-    "jsx": "preserve",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
+    "module": "node18"
   }
 }

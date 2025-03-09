@@ -27,21 +27,27 @@ interface Message {
 const appendMessage = (msg: Message) => {
     const emojiType = getOpenMojiType();
 
-    messageSection.append(
+    const children: (string | Node)[] = [
+        ...msg.author.map((emoji): (string | HTMLImageElement) =>
+            emojiType === "img"
+                ? <EmojiImgComponent emoji={emoji} />
+                : emoji
+        ),
+        ": ",
+        ...msg.content.map((emoji): (string | HTMLImageElement) =>
+            emojiType === "img"
+                ? <EmojiImgComponent emoji={emoji} />
+                : emoji
+        ),
+    ]
+
+    const element = (
         <div tooltip={timeStampToText(msg.timestamp)}>
-            {...msg.author.map((emoji) =>
-                emojiType === "img"
-                    ? <EmojiImgComponent emoji={emoji} />
-                    : [emoji]
-            )}
-            {": "}
-            {...msg.content.map((emoji) =>
-                emojiType === "img"
-                    ? <EmojiImgComponent emoji={emoji} />
-                    : emoji
-            )}
-        </div>,
+            {...children}
+        </div>
     );
+
+    messageSection.append(element);
 };
 
 const displayCurrentUser = (name: string[]) => {
@@ -59,7 +65,7 @@ const displayCurrentUser = (name: string[]) => {
     currentUser.innerText = name.join("");
 };
 
-const EmojiImgComponent = ({ emoji }: { emoji: string }) => {
+const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
     // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const chars = [...emoji];
     const emojiCode = (
@@ -70,13 +76,11 @@ const EmojiImgComponent = ({ emoji }: { emoji: string }) => {
         .toUpperCase();
 
     const path = `/static/openmoji/svg/${emojiCode}.svg`;
-    return (
-        <img
-            src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
-            alt={emoji}
-            className="emoji"
-        />
-    );
+    return <img
+        src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
+        alt={emoji}
+        className="emoji"
+    /> as HTMLImageElement;
 };
 
 const resetLastMessage = () => {

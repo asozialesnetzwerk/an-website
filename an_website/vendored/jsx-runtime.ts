@@ -1,14 +1,34 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 // Source: https://github.com/VanishMax/vanilla-jsx
+declare global {
+    namespace JSX {
+        interface __Props {
+            id?: string;
+            className?: string;
+            tooltip?: string;
+        }
 
-type Tag = string | ((props: Props, children: Children) => Element);
+        interface IntrinsicElements {
+            div: __Props;
+            img: __Props & { src?: string, alt?: string };
+        }
+    }
+}
+
+type Component = (props: Props, children: Children) => HTMLElement;
+type Tag = (keyof JSX.IntrinsicElements) | Component;
 type Props = Record<string, string | number | null | undefined> | null;
 type Children = (Node | string)[];
 
-export const jsx = (tag: Tag, props: Props, ...children: Children) => {
+export const jsx = <T extends Tag>(
+    tag: T,
+    props: Props,
+    ...children: Children
+): T extends Component ? ReturnType<T> : HTMLElement => {
+    console.debug("jsx", { tag, props, children });
     // If the tag is a function component, pass props and children inside it
     if (typeof tag === 'function') {
-        return tag({ ...props }, children);
+        return tag({ ...props }, children) as (T extends Component ? ReturnType<T> : HTMLElement);
     }
 
     // Create the element and add attributes to it
@@ -29,6 +49,16 @@ export const jsx = (tag: Tag, props: Props, ...children: Children) => {
         el.append(child);
     }
 
-    return el;
+    return el as (T extends Component ? ReturnType<T> : HTMLElement);
 };
-export { jsx as jsxs };
+
+export const jsxs = <T extends Tag>(
+    tag: T,
+    props: Props & { children: Children },
+): T extends Component ? ReturnType<T> : HTMLElement => {
+    console.debug("jsxs", { tag, props: { ...props } });
+    const children = props.children;
+    const properties: Props = props;
+    delete properties["children"];
+    return jsx(tag, properties, ...children);
+};

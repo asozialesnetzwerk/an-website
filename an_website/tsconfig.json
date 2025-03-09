@@ -17,7 +17,9 @@
     "types": [],
     "paths": {
       "@utils/utils.js": ["./utils/utils.ts"],
-      "@vendored": ["./vendored"]
-    }
+      "@vendored/jsx-runtime": ["./vendored/jsx-runtime.ts"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "@vendored"
   }
 }
