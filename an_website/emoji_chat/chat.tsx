@@ -28,18 +28,14 @@ const appendMessage = (msg: Message) => {
     const emojiType = getOpenMojiType();
 
     const children: (string | Node)[] = [
-        ...msg.author.map((emoji): (string | HTMLImageElement) =>
-            emojiType === "img"
-                ? <EmojiImgComponent emoji={emoji} />
-                : emoji
+        ...msg.author.map((emoji): string | HTMLImageElement =>
+            emojiType === "img" ? <EmojiImgComponent emoji={emoji} /> : emoji
         ),
         ": ",
-        ...msg.content.map((emoji): (string | HTMLImageElement) =>
-            emojiType === "img"
-                ? <EmojiImgComponent emoji={emoji} />
-                : emoji
+        ...msg.content.map((emoji): string | HTMLImageElement =>
+            emojiType === "img" ? <EmojiImgComponent emoji={emoji} /> : emoji
         ),
-    ]
+    ];
 
     const element = (
         <div tooltip={timeStampToText(msg.timestamp)}>
@@ -76,11 +72,13 @@ const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
         .toUpperCase();
 
     const path = `/static/openmoji/svg/${emojiCode}.svg`;
-    return <img
-        src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
-        alt={emoji}
-        className="emoji"
-    /> as HTMLImageElement;
+    return (
+        <img
+            src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
+            alt={emoji}
+            className="emoji"
+        />
+    ) as HTMLImageElement;
 };
 
 const resetLastMessage = () => {
@@ -93,7 +91,7 @@ const resetLastMessage = () => {
 const setConnectionState = (state: string) => {
     let tooltip;
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    connectionIndicator.onclick = () => { };
+    connectionIndicator.onclick = () => {};
     if (state === "connecting") {
         tooltip = "Versuche mit WebSocket zu verbinden";
     } else if (state === "connected") {
@@ -104,7 +102,7 @@ const setConnectionState = (state: string) => {
             reconnectTries = 0;
             reconnectTimeout = 500;
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            connectionIndicator.onclick = () => { };
+            connectionIndicator.onclick = () => {};
             openWS();
         };
     } else {
@@ -173,14 +171,14 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-        `//${location.host}/websocket/emoji-chat`,
+            `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         ws.send("");
     }, 10000);
     ws.onclose = (event) => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        messageInputForm.onsubmit = () => { };
+        messageInputForm.onsubmit = () => {};
         if (event.wasClean) {
             console.debug(
                 `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
