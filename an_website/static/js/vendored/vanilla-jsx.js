@@ -1,0 +1,4 @@
+var d=Object.defineProperty;var a=Object.getOwnPropertySymbols;var p=Object.prototype.hasOwnProperty,u=Object.prototype.propertyIsEnumerable;var o=(t,e,r)=>e in t?d(t,e,{enumerable:!0,configurable:!0,writable:!0,value:r}):t[e]=r,l=(t,e)=>{for(var r in e||(e={}))p.call(e,r)&&o(t,r,e[r]);if(a)for(var r of a(e))u.call(e,r)&&o(t,r,e[r]);return t};// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
+var f=(t,e,...r)=>{if(typeof t=="function")return t(l({},e),r);let s=document.createElement(t);return e&&Object.entries(e).forEach(([n,i])=>{if(n==="className"){s.classList.add(...(i||"").trim().split(" "));return}s.setAttribute(n,i)}),r.flatMap(n=>Array.isArray(n)?n:[n]).forEach(n=>{s.append(n)}),s};export{f as h};
+// @license-end
+//# sourceMappingURL=vanilla-jsx.js.map
