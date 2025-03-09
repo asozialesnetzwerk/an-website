@@ -6,6 +6,7 @@ declare global {
             id?: string;
             className?: string;
             tooltip?: string;
+            children?: (Node | string)[];
         }
 
         interface IntrinsicElements {
