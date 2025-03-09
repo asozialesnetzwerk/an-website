@@ -35,9 +35,10 @@ You need:
 - Packages from pip-dev-requirements.txt
 - C and C++ compiler for some of the dependencies
 - Depending on the used version of CPython: Rust
-- For formatting TypeScript and Markdown: dprint
-- For building JavaScript and CSS: Deno\
-  (`./deno upgrade --output ~/.local/bin/deno`)
+- [Just](https://just.systems/man/en/introduction.html)
+- For formatting TypeScript and Markdown: [dprint](https://dprint.dev/)
+- For building JavaScript and CSS: [Deno](https://deno.com/)\
+  (`just build`)
 - For linting TypeScript: Node.js and pnpm\
   (`corepack enable` or `alias pnpm="corepack pnpm"`)
 
@@ -47,7 +48,7 @@ You need:
 
 ### How to run
 
-- `python -Xdev -Xwarn_default_encoding -m an_website`
+- `python -Xdev -m an_website  --redis-enabled=1 --ratelimits=0 --port=8080`
 
 (`-Xdev` enables development mode)
 
