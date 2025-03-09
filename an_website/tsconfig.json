@@ -16,7 +16,8 @@
     "verbatimModuleSyntax": true,
     "types": [],
     "paths": {
-        "@utils/utils.js": ["./utils/utils.ts"]
+      "@utils/utils.js": ["./utils/utils.ts"],
+      "@vendored": ["./vendored"]
     }
   }
 }

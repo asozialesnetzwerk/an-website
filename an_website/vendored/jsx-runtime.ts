@@ -3,9 +3,9 @@
 
 type Tag = string | ((props: Props, children: Children) => Element);
 type Props = Record<string, string | number | null | undefined> | null;
-type Children = (Node | string | (Node | string)[])[];
+type Children = (Node | string)[];
 
-export const h = (tag: Tag, props: Props, ...children: Children) => {
+export const jsx = (tag: Tag, props: Props, ...children: Children) => {
     // If the tag is a function component, pass props and children inside it
     if (typeof tag === 'function') {
         return tag({ ...props }, children);
@@ -25,9 +25,10 @@ export const h = (tag: Tag, props: Props, ...children: Children) => {
     }
 
     // Append all children to the element
-    children.flatMap((child) => Array.isArray(child) ? child : [child]).forEach((child) => {
+    for (const child of children) {
         el.append(child);
-    });
+    }
 
     return el;
 };
+export { jsx as jsxs };

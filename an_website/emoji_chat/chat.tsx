@@ -1,6 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { h } from "../vendored/vanilla-jsx";
-
 const messageInput = document.getElementById(
     "message-input",
 ) as HTMLInputElement;
@@ -31,13 +29,13 @@ const appendMessage = (msg: Message) => {
 
     messageSection.append(
         <div tooltip={timeStampToText(msg.timestamp)}>
-            {msg.author.map((emoji) =>
+            {...msg.author.map((emoji) =>
                 emojiType === "img"
                     ? <EmojiImgComponent emoji={emoji} />
-                    : emoji
+                    : [emoji]
             )}
             {": "}
-            {msg.content.map((emoji) =>
+            {...msg.content.map((emoji) =>
                 emojiType === "img"
                     ? <EmojiImgComponent emoji={emoji} />
                     : emoji
@@ -91,7 +89,7 @@ const resetLastMessage = () => {
 const setConnectionState = (state: string) => {
     let tooltip;
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    connectionIndicator.onclick = () => {};
+    connectionIndicator.onclick = () => { };
     if (state === "connecting") {
         tooltip = "Versuche mit WebSocket zu verbinden";
     } else if (state === "connected") {
@@ -102,7 +100,7 @@ const setConnectionState = (state: string) => {
             reconnectTries = 0;
             reconnectTimeout = 500;
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            connectionIndicator.onclick = () => {};
+            connectionIndicator.onclick = () => { };
             openWS();
         };
     } else {
@@ -171,14 +169,14 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-            `//${location.host}/websocket/emoji-chat`,
+        `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         ws.send("");
     }, 10000);
     ws.onclose = (event) => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        messageInputForm.onsubmit = () => {};
+        messageInputForm.onsubmit = () => { };
         if (event.wasClean) {
             console.debug(
                 `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
