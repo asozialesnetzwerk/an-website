@@ -16,7 +16,10 @@
     "verbatimModuleSyntax": true,
     "types": [],
     "paths": {
-        "@utils/utils.js": ["./utils/utils.ts"]
-    }
+      "@utils/utils.js": ["./utils/utils.ts"],
+      "@utils/jsx-runtime": ["./utils/utils.ts"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "@utils"
   }
 }

@@ -1,6 +1,4 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-const d = document;
-
 type EventHandler<T extends keyof HTMLElementEventMap> = (
     event: HTMLElementEventMap[T],
 ) => unknown;
@@ -19,11 +17,11 @@ const addDocumentEventListener = <T extends keyof DocumentEventMap>(
     type: T,
     fun: DocumentEventHandler<T>,
 ) => {
-    d.addEventListener(type, fun);
+    document.addEventListener(type, fun);
 };
 
-const openPane = d.getElementById("open-pane");
-const sitePane = d.getElementById("site-pane");
+const openPane = document.getElementById("open-pane");
+const sitePane = document.getElementById("site-pane");
 
 if (!openPane || !sitePane) {
     throw Error("open-pane or site-pane not found");

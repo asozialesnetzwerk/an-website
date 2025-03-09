@@ -238,28 +238,32 @@ async function onStateChange(state: State) {
 
     const outputs = getHtmlOutputElements();
     if (foundWords.length > 0) {
-        outputs.wordOutput.innerHTML = `${
-            Math.min(state.max_words, foundWords.length)
-        }/${foundWords.length} passenden Wörter:`;
-        const list = document.createElement("ul");
-        for (const word of foundWords.slice(0, state.max_words)) {
-            const li = document.createElement("li");
-            li.innerText = word;
-            list.appendChild(li);
-        }
-        outputs.wordOutput.appendChild(list);
+        outputs.wordOutput.replaceChildren(
+            Math.min(state.max_words, foundWords.length).toString(),
+            "/",
+            foundWords.length.toString(),
+            " passenden Wörter:",
+            <ul>
+                {foundWords.slice(0, state.max_words).map((word) => (
+                    <li>{[word]}</li>
+                ))}
+            </ul>,
+        );
 
         const lettersSorted: [string, number][] = [...letters.entries()].filter(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             ([_, count]) => count > 0,
         );
         lettersSorted.sort((a, b) => b[1] - a[1]);
-        outputs.letterOutput.innerText = "Mögliche Buchstaben: " + lettersSorted
-            .map((value) => value.join(": "))
-            .join(", ");
+        outputs.letterOutput.replaceChildren(
+            "Mögliche Buchstaben: ",
+            lettersSorted
+                .map((value) => value.join(": "))
+                .join(", "),
+        );
     } else {
-        outputs.letterOutput.innerText = "Nichts gefunden.";
-        outputs.wordOutput.innerText = "";
+        outputs.letterOutput.replaceChildren("Nichts gefunden.");
+        outputs.wordOutput.replaceChildren("");
     }
 }
 

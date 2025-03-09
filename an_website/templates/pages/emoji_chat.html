@@ -21,7 +21,7 @@
     <form method="post">
         <div tooltip="Nicht mit WebSocket verbunden (kein JS verfügbar)"
              tooltip-position="right"
-             state="disconnected"
+             data-state="disconnected"
              id="connection-state"></div>
         Du bist: <div id="current-user">{% for emoji in user_name %}{% raw emoji2html(emoji) %}{% end %}</div>
         <input id="message-input" type="text" name="message">

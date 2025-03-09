@@ -1,0 +1,88 @@
+// @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
+function createBumpscositySlider() {
+    const select = document.getElementById(
+        "bumpscosity-select",
+    ) as HTMLSelectElement | undefined;
+
+    if (!select) {
+        return;
+    }
+
+    select.classList.add("hidden");
+
+    const possibleLevels: number[] = [...select.options]
+        .map((node) => parseInt(node.value));
+    const startLevel = parseInt(select.value);
+
+    const currentValueDiv = (
+        <div
+            tooltip={startLevel.toString()}
+            style="position: absolute; translateX(-50%)"
+        />
+    ) as HTMLDivElement;
+
+    const rangeSlider = (
+        <input
+            type="range"
+            min="0"
+            max={(possibleLevels.length - 1).toString()}
+            value={possibleLevels.indexOf(startLevel).toString()}
+            onpointermove={() => {
+                // @ts-expect-error TS2532
+                const value = possibleLevels[parseInt(rangeSlider.value)]
+                    .toString();
+                select.value = value;
+                currentValueDiv.setAttribute("tooltip", value);
+                currentValueDiv.classList.add("show-tooltip");
+                currentValueDiv.style.left = (1 +
+                    (98 *
+                        parseInt(rangeSlider.value) /
+                        (possibleLevels.length - 1)))
+                    .toString() + "%";
+            }}
+            onpointerleave={() => {
+                currentValueDiv.classList.remove("show-tooltip");
+            }}
+            onchange={() => {
+                let sliderVal = parseInt(rangeSlider.value);
+                const promptStart = `Willst du die Bumpscosity wirklich auf ${
+                    possibleLevels[sliderVal]
+                } setzen? `;
+                if (sliderVal === possibleLevels.length - 1) {
+                    if (
+                        !confirm(
+                            promptStart +
+                                "Ein so hoher Wert kann katastrophale Folgen haben.",
+                        )
+                    ) {
+                        sliderVal--;
+                    }
+                } else if (sliderVal === 0) {
+                    if (
+                        !confirm(
+                            promptStart +
+                                "Fehlende Bumpscosity kann großes Unbehagen verursachen.",
+                        )
+                    ) {
+                        sliderVal++;
+                    }
+                } else {
+                    return;
+                }
+
+                if (sliderVal !== parseInt(rangeSlider.value)) {
+                    rangeSlider.value = sliderVal.toString();
+                    // @ts-expect-error TS2532
+                    select.value = possibleLevels[parseInt(rangeSlider.value)]
+                        .toString();
+                }
+            }}
+        />
+    ) as HTMLInputElement;
+
+    const parent = select.parentElement!;
+    parent.style.position = "relative";
+    parent.append(<>{currentValueDiv}{rangeSlider}</>);
+}
+
+createBumpscositySlider();

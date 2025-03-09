@@ -32,17 +32,15 @@ export function showSnow(value: boolean): void {
 // Creating snowflakes
 function spawnSnow(snowDensity = 200): void {
     for (let i = 1; i <= snowDensity; i++) {
-        const flake = document.createElement("p");
-        snow.appendChild(flake);
+        snow.append(<p />);
     }
 }
 
 // Append style for each snowflake to the head
-function addCss(rule: string): void {
-    const css = document.createElement("style");
-    css.appendChild(document.createTextNode(rule)); // Support for the rest
-    // @ts-expect-error TS2532
-    document.getElementsByTagName("head")[0].appendChild(css);
+function addCss(rules: string[]): void {
+    document.querySelector("head")!.append(
+        <style>{rules}</style>,
+    );
 }
 
 // Math
@@ -62,7 +60,7 @@ function getRandomArbitrary(min: number, max: number): number {
 
 // Create style for snowflake
 function spawnSnowCSS(snowDensity = 200): void {
-    let rule = "";
+    const rule: string[] = [];
 
     for (let i = 1; i <= snowDensity; i++) {
         const randomX = Math.random() * 100; // vw
@@ -76,11 +74,13 @@ function spawnSnowCSS(snowDensity = 200): void {
         const fallDelay = randomInt(30) * -1; // s
         const opacity = Math.random();
 
-        rule +=
+        rule.push(
             `#snow p:nth-child(${i}){opacity:${opacity};transform:translate(${randomX}vw,-10px) scale(${randomScale});animation:fall-${i} ${fallDuration}s ${fallDelay}s linear infinite}@keyframes fall-${i}{${
                 randomYoyoTime * 100
-            }%{transform:translate(${randomXEnd}vw,${randomYoyoY}vh) scale(${randomScale})}to{transform:translate(${randomXEndYoyo}vw,100vh) scale(${randomScale})}}`;
+            }%{transform:translate(${randomXEnd}vw,${randomYoyoY}vh) scale(${randomScale})}to{transform:translate(${randomXEndYoyo}vw,100vh) scale(${randomScale})}}`,
+        );
     }
+
     addCss(rule);
 }
 

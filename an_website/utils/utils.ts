@@ -1,5 +1,3 @@
-export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
-
 export const d = document;
 function getElementById(id: string): HTMLElement | null {
     return d.getElementById(id);
@@ -14,19 +12,21 @@ export function setLastLocation(url: string): void {
     lastLocation = url;
 }
 
+const jsonContentType = "application/json";
+
 export function post(
     url: string,
     params = {},
     ondata = console.log,
     onerror: (data: unknown) => void = console.error,
-    accept = "application/json",
+    accept = jsonContentType,
 ): Promise<void> {
     return fetch(url, {
         method: "POST",
         body: JSON.stringify(params),
         headers: {
             "Accept": accept,
-            "Content-Type": "application/json",
+            "Content-Type": jsonContentType,
         },
     })
         .then((response) => response.json())
@@ -40,7 +40,7 @@ export function get(
     params: Record<string, string> | string = {},
     ondata = console.log,
     onerror: (data: unknown) => void = console.error,
-    accept = "application/json",
+    accept = jsonContentType,
 ): Promise<void> {
     const paramsString = (new URLSearchParams(params)).toString();
     return fetch(paramsString ? `${url}?${paramsString}` : url, {
@@ -58,18 +58,20 @@ export function get(
 export const PopStateHandlers: Record<
     string,
     (state: PopStateEvent) => unknown
-> = {
+> = {};
+
+const urlParamChangeStateType = "URLParamChange";
+
+PopStateHandlers[urlParamChangeStateType] = () => {
     // always reload the location if URLParamChange
-    URLParamChange: () => {
-        location.reload();
-    },
+    location.reload();
 };
 
 export function setURLParam(
     param: string,
     value: string,
     state: unknown,
-    stateType = "URLParamChange",
+    stateType = urlParamChangeStateType,
     push = true,
 ) {
     return setMultipleURLParams([[param, value]], state, stateType, push);
@@ -78,14 +80,14 @@ export function setURLParam(
 export function setMultipleURLParams(
     params: [string, string][],
     state: unknown,
-    stateType = "URLParamChange",
+    stateType = urlParamChangeStateType,
     push = true,
 ) {
     // log("setURLParam", param, value, state, onpopstate);
     const urlParams = new URLSearchParams(location.search);
-    for (const [param, value] of params) {
-        urlParams.set(param, value);
-    }
+    params.forEach(([key, value]) => {
+        urlParams.set(key, value);
+    });
     const newUrl =
         `${location.origin}${location.pathname}?${urlParams.toString()}`;
     // log("newUrl", newUrl);
@@ -100,24 +102,16 @@ export function setMultipleURLParams(
 }
 
 function scrollToId() {
-    if (location.hash === "") {
-        return;
-    }
     const header = getElementById("header");
-    if (!header) {
-        return;
+    const el = getElementById(location.hash.slice(1));
+    if (header && el) {
+        scrollBy(
+            0,
+            el.getBoundingClientRect().top - Math.floor(
+                Number(getComputedStyle(header).height),
+            ),
+        );
     }
-    const el = d.querySelector(location.hash);
-    if (!el) {
-        return;
-    }
-
-    scrollBy(
-        0,
-        el.getBoundingClientRect().top - Math.floor(
-            parseFloat(getComputedStyle(header).height),
-        ),
-    );
 }
 // scroll after few ms so the scroll is right on page load
 setTimeout(scrollToId, 4);
@@ -140,11 +134,14 @@ window.onpopstate = (event: PopStateEvent) => {
             scrollToId();
             return;
         } else {
-            console.error("Couldn't find state handler for state", state);
+            console.error("No state handler", state);
         }
     }
 
-    console.error("Couldn't handle state. ", event.state);
+    console.error("Couldn't handle", event);
     lastLocation = location.href;
     location.reload();
 };
+
+export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
+export { Fragment, jsx, jsxs } from "./jsx_runtime_.js";

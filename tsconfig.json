@@ -9,11 +9,12 @@
     "plugins": [
       {"name": "typescript-eslint-language-service"}
     ],
+    "isolatedModules": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true,
     "resolveJsonModule": true,
     "noUnusedLocals": false,
-    "module": "node18",
+    "module": "node18"
   }
 }

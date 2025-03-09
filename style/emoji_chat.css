@@ -6,15 +6,15 @@
     vertical-align: bottom;
 }
 
-#connection-state[state="disconnected"] {
+#connection-state[data-state="disconnected"] {
     background-color: red;
 }
 
-#connection-state[state="connected"] {
+#connection-state[data-state="connected"] {
     background-color: green;
 }
 
-#connection-state[state="connecting"] {
+#connection-state[data-state="connecting"] {
     background-color: orange;
 }
 

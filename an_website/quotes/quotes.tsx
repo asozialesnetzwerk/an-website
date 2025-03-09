@@ -87,21 +87,20 @@ function startQuotes() {
 
     function updateRating(rating: number | string) {
         rating = rating.toString();
-        ratingText.innerText = rating;
+        ratingText.replaceChildren(rating);
         if (["---", "???", "0"].includes(rating)) {
-            ratingImageContainer.innerHTML = "";
+            ratingImageContainer.replaceChildren("");
             return;
         }
         const ratingNum = Number.parseInt(rating);
-        const ratingImg = d.createElement("div");
-        ratingImg.className = "rating-img" + (
-            ratingNum > 0 ? " witzig" : " nicht-witzig"
+        const className = `rating-img ${
+            ratingNum > 0 ? "witzig" : "nicht-witzig"
+        }`;
+        ratingImageContainer.replaceChildren(
+            ...Array
+                .from({ length: Math.min(4, Math.abs(ratingNum)) }, () => 1)
+                .map(() => <div className={className} />),
         );
-        ratingImageContainer.innerHTML = (ratingImg.outerHTML + " ")
-            .repeat(
-                Math.min(4, Math.abs(ratingNum)),
-            )
-            .trim();
     }
 
     function updateVote(vote: number | string): void {
