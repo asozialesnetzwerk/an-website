@@ -15,7 +15,7 @@ declare global {
             img: __Props & { src?: string; alt?: string };
         }
 
-        type Element = HTMLElement | string;
+        type Element = Node | string;
     }
 }
 
@@ -78,4 +78,15 @@ export const jsxs = (
 ): JSX.Element => {
     console.debug("jsxs", { tag, props, key });
     return jsx(tag, props, key, false);
+};
+
+export const Fragment = (
+    props: { children?: Children },
+): JSX.Element => {
+    console.debug("Fragment", props);
+    const frag = document.createDocumentFragment();
+    props.children?.forEach((child) => {
+        frag.append(child);
+    });
+    return frag;
 };
