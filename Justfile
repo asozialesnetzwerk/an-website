@@ -27,11 +27,11 @@ build_css *args:
 [positional-arguments]
 build_js_debug *args:
     @just esbuild an_website/**/*[!_].ts an_website/**/*[!_].tsx \
-        --jsx-import-source=@vendored --jsx=automatic \
+        --jsx-import-source=@utils --jsx=automatic \
         --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' \
         --format=esm --outbase=an_website --outdir=an_website/static/js \
         "--alias:@utils/utils.js=$(./scripts/fix_static_url_path.py /static/js/utils/utils.js)" \
-        "--alias:@vendored/jsx-runtime=$(./scripts/fix_static_url_path.py /static/js/vendored/jsx-runtime.js)" \
+        "--alias:@utils/jsx-runtime=$(./scripts/fix_static_url_path.py /static/js/utils/jsx-runtime.js)" \
         "$@"
 
 [positional-arguments]
