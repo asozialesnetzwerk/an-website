@@ -26,9 +26,20 @@ build_css *args:
 
 [positional-arguments]
 build_js_debug *args:
-    @just esbuild an_website/**/*[!_].ts an_website/**/*[!_].tsx \
+    @find an_website -regex '.*[^_]\.tsx?' -exec just _build_single_js_file_debug '{}' "$@" ';'
+
+[positional-arguments]
+_build_single_js_file_debug *args:
+    #!/bin/sh
+    set -eu
+    FILE="${1}"
+    shift
+    just esbuild "${FILE}" \
         --jsx-import-source=@utils --jsx=automatic \
-        --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' \
+        "--banner:js=$(head -n1 "${FILE}")" \
+        '--footer:js=// @license-end' \
+        '--legal-comments=none' \
+        --bundle '--external:/static/*' \
         --format=esm --outbase=an_website --outdir=an_website/static/js \
         "--alias:@utils/utils.js=$(./scripts/fix_static_url_path.py /static/js/utils/utils.js)" \
         "--alias:@utils/jsx-runtime=$(./scripts/fix_static_url_path.py /static/js/utils/jsx-runtime.js)" \
@@ -40,7 +51,9 @@ build_js *args:
 
 [positional-arguments]
 esbuild *args:
-    deno run -A https://deno.land/x/esbuild@v0.25.0/mod.js "--target=$(just target),chrome103,edge129,firefox115,ios11,opera114,safari15.6" --charset=utf8 --minify --sourcemap --tree-shaking=false "$@"
+    deno run -A https://deno.land/x/esbuild@v0.25.0/mod.js \
+        "--target=$(just target),chrome103,edge129,firefox115,ios11,opera114,safari15.6" \
+        --charset=utf8 --minify --sourcemap --tree-shaking=false "$@"
 
 target:
     #!/usr/bin/env python3
