@@ -69,7 +69,7 @@ const displayCurrentUser = (name: string[]) => {
     getElementById(id)!.replaceWith(
         <div className={getOpenMojiType() ? "openmoji" : ""} id={id}>
             {name.map((emoji) => <EmojiComponent emoji={emoji} />)}
-        </div>,
+        </div>
     );
 };
 
@@ -101,13 +101,12 @@ const setConnectionState = (state: ConnectionState) => {
         : undefined;
 
     getElementById(id)!.replaceWith(
-        <div
-            tooltip={stateMapping[state]}
+        <div tooltip={stateMapping[state]}
             tooltip-position="right"
             onclick={onclick}
             data-state={state}
             id={id}
-        />,
+        />
     );
 };
 
@@ -172,7 +171,7 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-            `//${location.host}/websocket/emoji-chat`,
+        `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         if (ws.readyState == ws.OPEN) {
@@ -219,7 +218,7 @@ const openWS = () => {
 
     ws.addEventListener("error", (event) => {
         console.error({ msg: "got error from websocket", event });
-    }, eventListenerOptions);
+    }, eventListenerOptions)
 
     ws.addEventListener("message", (event) => {
         handleWebSocketData(event);
@@ -237,6 +236,6 @@ const openWS = () => {
             messageInput.value = "";
         }
         event.preventDefault();
-    }, eventListenerOptions);
+    }, eventListenerOptions)
 };
 openWS();
