@@ -24,30 +24,45 @@ interface Message {
     timestamp: number;
 }
 
+const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-spread
+    const chars = [...emoji];
+    const emojiCode = (
+        chars.length == 2 && chars[1] === "\uFE0F" ? [chars[0]!] : chars
+    )
+        .map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
+        .join("-")
+        .toUpperCase();
+
+    const path = `/static/openmoji/svg/${emojiCode}.svg`;
+    return (
+        <img
+            src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
+            alt={emoji}
+            className="emoji"
+        />
+    ) as HTMLImageElement;
+};
+
+const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element =>
+    getOpenMojiType() === "img" ? <EmojiImgComponent emoji={emoji} /> : emoji;
+
+const MessageComponent = (msg: Message): JSX.Element => (
+    <div tooltip={timeStampToText(msg.timestamp)}>
+        {[
+            ...msg
+                .author
+                .map((emoji) => <EmojiComponent emoji={emoji} />),
+            ": ",
+            ...msg
+                .content
+                .map((emoji) => <EmojiComponent emoji={emoji} />),
+        ]}
+    </div>
+);
+
 const appendMessage = (msg: Message) => {
-    const emojiType = getOpenMojiType();
-
-    const children: (string | Node)[] = [
-        ...msg.author.map((emoji): (string | HTMLImageElement) =>
-            emojiType === "img"
-                ? <EmojiImgComponent emoji={emoji} />
-                : emoji
-        ),
-        ": ",
-        ...msg.content.map((emoji): (string | HTMLImageElement) =>
-            emojiType === "img"
-                ? <EmojiImgComponent emoji={emoji} />
-                : emoji
-        ),
-    ]
-
-    const element = (
-        <div tooltip={timeStampToText(msg.timestamp)}>
-            {...children}
-        </div>
-    );
-
-    messageSection.append(element);
+    messageSection.append(<MessageComponent {...msg} />);
 };
 
 const displayCurrentUser = (name: string[]) => {
@@ -65,24 +80,6 @@ const displayCurrentUser = (name: string[]) => {
     currentUser.innerText = name.join("");
 };
 
-const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
-    // eslint-disable-next-line @typescript-eslint/no-misused-spread
-    const chars = [...emoji];
-    const emojiCode = (
-        chars.length == 2 && chars[1] === "\uFE0F" ? [chars[0]!] : chars
-    )
-        .map((e: string) => e.codePointAt(0)!.toString(16).padStart(4, "0"))
-        .join("-")
-        .toUpperCase();
-
-    const path = `/static/openmoji/svg/${emojiCode}.svg`;
-    return <img
-        src={openmojiVersion ? `${path}?v=${openmojiVersion}` : path}
-        alt={emoji}
-        className="emoji"
-    /> as HTMLImageElement;
-};
-
 const resetLastMessage = () => {
     if (lastMessage && !messageInput.value) {
         messageInput.value = lastMessage;
@@ -93,7 +90,7 @@ const resetLastMessage = () => {
 const setConnectionState = (state: string) => {
     let tooltip;
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    connectionIndicator.onclick = () => { };
+    connectionIndicator.onclick = () => {};
     if (state === "connecting") {
         tooltip = "Versuche mit WebSocket zu verbinden";
     } else if (state === "connected") {
@@ -104,7 +101,7 @@ const setConnectionState = (state: string) => {
             reconnectTries = 0;
             reconnectTimeout = 500;
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            connectionIndicator.onclick = () => { };
+            connectionIndicator.onclick = () => {};
             openWS();
         };
     } else {
@@ -173,14 +170,14 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-        `//${location.host}/websocket/emoji-chat`,
+            `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         ws.send("");
     }, 10000);
     ws.onclose = (event) => {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        messageInputForm.onsubmit = () => { };
+        messageInputForm.onsubmit = () => {};
         if (event.wasClean) {
             console.debug(
                 `Connection closed cleanly, code=${event.code} reason=${event.reason}`,

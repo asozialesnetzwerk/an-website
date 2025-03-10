@@ -1,4 +1,4 @@
-var c=Object.defineProperty;var l=Object.getOwnPropertySymbols;var p=Object.prototype.hasOwnProperty,T=Object.prototype.propertyIsEnumerable;var d=(t,e,n)=>e in t?c(t,e,{enumerable:!0,configurable:!0,writable:!0,value:n}):t[e]=n,o=(t,e)=>{for(var n in e||(e={}))p.call(e,n)&&d(t,n,e[n]);if(l)for(var n of l(e))T.call(e,n)&&d(t,n,e[n]);return t};// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
-var m=(t,e,...n)=>{if(typeof t=="function")return t(o({},e),n);let s=document.createElement(t);e&&Object.entries(e).forEach(([r,i])=>{if(r==="className"){s.classList.add(...(i||"").trim().split(" "));return}s.setAttribute(r,i)});for(let r of n)s.append(r);return s},u=(t,e)=>{o({},e);let n=e.children,s=e;return delete s.children,m(t,s,...n)};export{m as jsx,u as jsxs};
+// @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
+var l=(e,n,i,o=!0)=>{if(typeof e=="function")return e(n);let t=document.createElement(e);return Object.entries(n).forEach(([r,s])=>{r==="children"?s==null||s.forEach(c=>{t.append(c)}):r==="className"?t.className=s:r.startsWith("on")?t.addEventListener(r.slice(2),s):t.setAttribute(r,s)}),t},d=(e,n,i)=>l(e,n,i,!1);export{l as jsx,d as jsxs};
 // @license-end
 //# sourceMappingURL=jsx-runtime.js.map
