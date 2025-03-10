@@ -165,6 +165,9 @@ const handleWebSocketData = (event: { data: string }) => {
 };
 
 const openWS = () => {
+    const controller = new AbortController();
+    const eventListenerOptions = { signal: controller.signal };
+
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
@@ -175,10 +178,10 @@ const openWS = () => {
             ws.send("");
         }
     }, 10000);
-    ws.onclose = (event) => {
+
+    ws.addEventListener("close", (event) => {
+        controller.abort();
         clearInterval(pingInterval);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        messageInputForm.onsubmit = () => { };
         if (event.wasClean) {
             console.debug(
                 `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
@@ -187,11 +190,11 @@ const openWS = () => {
             return;
         }
         console.debug(
-            `Connection closed, reconnecting in ${reconnectTimeout}ms`,
+            `Connection closed, reconnecting in ${reconnectTimeout}ms  (${reconnectTries})`,
         );
         setConnectionState("connecting");
-        if (reconnectTries > 20) {
-            // ~3 minutes not connected, just give up
+        if (reconnectTries > 10) {
+            // not connected for long time, just give up
             setConnectionState("disconnected");
             return;
         }
@@ -206,13 +209,22 @@ const openWS = () => {
             reconnectTries++;
             openWS(); // restart connection
         }, reconnectTimeout);
-    };
-    ws.onopen = (event) => {
-        console.debug("Opened WebSocket", event);
-    };
-    ws.onmessage = handleWebSocketData;
+    }, eventListenerOptions);
 
-    messageInputForm.onsubmit = (event) => {
+    ws.addEventListener("open", (event) => {
+        setConnectionState("connected");
+        console.debug("Opened WebSocket", event);
+    }, eventListenerOptions);
+
+    ws.addEventListener("error", (event) => {
+        console.error({ msg: "got error from websocket", event });
+    }, eventListenerOptions)
+
+    ws.addEventListener("message", (event) => {
+        handleWebSocketData(event);
+    }, eventListenerOptions);
+
+    messageInputForm.addEventListener("submit", (event) => {
         if (messageInput.value !== "") {
             lastMessage = messageInput.value;
             ws.send(
@@ -224,6 +236,6 @@ const openWS = () => {
             messageInput.value = "";
         }
         event.preventDefault();
-    };
+    }, eventListenerOptions)
 };
 openWS();
