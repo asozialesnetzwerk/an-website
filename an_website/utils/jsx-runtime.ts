@@ -7,11 +7,12 @@ declare global {
             className?: string;
             tooltip?: string;
             children?: (Node | string)[];
+            onclick?: undefined | ((event: HTMLElementEventMap["click"]) => void);
         }
 
         interface IntrinsicElements {
             div: __Props;
-            img: __Props & { src?: string, alt?: string };
+            img: __Props & { src?: string; alt?: string };
         }
 
         type Element = HTMLElement | string;
@@ -20,7 +21,12 @@ declare global {
 
 type Component = (props: Props, key?: string) => JSX.Element;
 type Tag = (keyof JSX.IntrinsicElements) | Component;
-type Props = Record<string, string | number | null | undefined | EventListener | EventListenerObject> & { children?: Children };
+type Props =
+    & Record<
+        string,
+        string | number | null | undefined | EventListener | EventListenerObject
+    >
+    & { children?: Children };
 type Children = (Node | string)[];
 
 export const jsx = (
@@ -49,7 +55,12 @@ export const jsx = (
         } else if (key === "className") {
             el.className = val as string;
         } else if (key.startsWith("on")) {
-            el.addEventListener(key.slice(2), val as (EventListener | EventListenerObject));
+            if (val) {
+                el.addEventListener(
+                    key.slice(2),
+                    val as (EventListener | EventListenerObject),
+                );
+            }
         } else {
             el.setAttribute(key, val as string);
         }
@@ -67,4 +78,4 @@ export const jsxs = (
 ): JSX.Element => {
     console.debug("jsxs", { tag, props, key });
     return jsx(tag, props, key, false);
-}
+};

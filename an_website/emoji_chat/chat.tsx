@@ -1,13 +1,12 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-const messageInput = document.getElementById(
+import { e as getElementById } from "@utils/utils.js";
+const messageInput = getElementById(
     "message-input",
 ) as HTMLInputElement;
 const messageInputForm = messageInput.form!;
-const messageSection = document.getElementById("message-section")!;
-const usingOpenMoji = document.getElementById("openmoji-attribution");
+const messageSection = getElementById("message-section")!;
+const usingOpenMoji = getElementById("openmoji-attribution");
 const openmojiVersion = usingOpenMoji?.getAttribute("openmoji-version");
-const connectionIndicator = document.getElementById("connection-state")!;
-const currentUser = document.getElementById("current-user")!;
 let reconnectTimeout = 100;
 let reconnectTries = 0;
 let lastMessage = "";
@@ -66,18 +65,12 @@ const appendMessage = (msg: Message) => {
 };
 
 const displayCurrentUser = (name: string[]) => {
-    currentUser.innerHTML = "";
-    const emojiType = getOpenMojiType();
-    if (emojiType === "img") {
-        for (const emoji of name) {
-            currentUser.append(<EmojiImgComponent emoji={emoji} />);
-        }
-        return;
-    }
-    if (emojiType) {
-        currentUser.classList.add("openmoji");
-    }
-    currentUser.innerText = name.join("");
+    const id = "current-user";
+    getElementById(id)!.replaceWith(
+        <div className={getOpenMojiType() ? "openmoji" : ""} id={id}>
+            {name.map((emoji) => <EmojiComponent emoji={emoji} />)}
+        </div>
+    );
 };
 
 const resetLastMessage = () => {
@@ -87,29 +80,34 @@ const resetLastMessage = () => {
     }
 };
 
-const setConnectionState = (state: string) => {
-    let tooltip;
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    connectionIndicator.onclick = () => {};
-    if (state === "connecting") {
-        tooltip = "Versuche mit WebSocket zu verbinden";
-    } else if (state === "connected") {
-        tooltip = "Mit WebSocket verbunden!";
-    } else if (state === "disconnected") {
-        tooltip = "Verbindung getrennt. Drücke hier um erneut zu versuchen.";
-        connectionIndicator.onclick = () => {
+type ConnectionState = "connecting" | "connected" | "disconnected";
+
+const stateMapping: Record<ConnectionState, string> = {
+    connecting: "Versuche mit WebSocket zu verbinden",
+    connected: "Mit WebSocket verbunden!",
+    disconnected: "Verbindung getrennt. Drücke hier um erneut zu versuchen.",
+};
+
+const setConnectionState = (state: ConnectionState) => {
+    const id = "connection-state";
+
+    const onclick = state == "disconnected"
+        ? (() => {
             reconnectTries = 0;
             reconnectTimeout = 500;
-            // eslint-disable-next-line @typescript-eslint/no-empty-function
-            connectionIndicator.onclick = () => {};
+            getElementById(id)!.removeEventListener("click", onclick!);
             openWS();
-        };
-    } else {
-        console.error("invalid state", state);
-        return;
-    }
-    connectionIndicator.setAttribute("state", state);
-    connectionIndicator.setAttribute("tooltip", tooltip);
+        })
+        : undefined;
+
+    getElementById(id)!.replaceWith(
+        <div tooltip={stateMapping[state]}
+            tooltip-position="right"
+            onclick={onclick}
+            data-state={state}
+            id={id}
+        />
+    );
 };
 
 const handleWebSocketData = (event: { data: string }) => {
@@ -170,14 +168,17 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-            `//${location.host}/websocket/emoji-chat`,
+        `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
-        ws.send("");
+        if (ws.readyState == ws.OPEN) {
+            ws.send("");
+        }
     }, 10000);
     ws.onclose = (event) => {
+        clearInterval(pingInterval);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        messageInputForm.onsubmit = () => {};
+        messageInputForm.onsubmit = () => { };
         if (event.wasClean) {
             console.debug(
                 `Connection closed cleanly, code=${event.code} reason=${event.reason}`,
@@ -189,7 +190,6 @@ const openWS = () => {
             `Connection closed, reconnecting in ${reconnectTimeout}ms`,
         );
         setConnectionState("connecting");
-        clearInterval(pingInterval);
         if (reconnectTries > 20) {
             // ~3 minutes not connected, just give up
             setConnectionState("disconnected");
