@@ -7,7 +7,9 @@ declare global {
             className?: string;
             tooltip?: string;
             children?: (Node | string)[];
-            onclick?: undefined | ((event: HTMLElementEventMap["click"]) => void);
+            onclick?:
+                | undefined
+                | ((event: HTMLElementEventMap["click"]) => void);
         }
 
         interface IntrinsicElements {
