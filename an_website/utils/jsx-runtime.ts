@@ -1,5 +1,6 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
         interface __Props {
             id?: string;
@@ -48,7 +49,7 @@ export const jsx = (
         } else if (key === "className") {
             el.className = val as string;
         } else if (key.startsWith("on")) {
-            el.addEventListener(key.slice(2)!, val as (EventListener | EventListenerObject));
+            el.addEventListener(key.slice(2), val as (EventListener | EventListenerObject));
         } else {
             el.setAttribute(key, val as string);
         }
