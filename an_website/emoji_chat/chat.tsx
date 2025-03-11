@@ -47,7 +47,7 @@ const EmojiImgComponent = ({ emoji }: { emoji: string }): JSX.Element => {
 const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element =>
     getOpenMojiType() === "img" ? <EmojiImgComponent emoji={emoji} /> : emoji;
 
-const MessageComponent = (msg: Message): JSX.Element => (
+const MessageComponent = ({ msg }: { msg: Message }): JSX.Element => (
     <div tooltip={timeStampToText(msg.timestamp)}>
         <>
             {msg
@@ -64,7 +64,7 @@ const MessageComponent = (msg: Message): JSX.Element => (
 );
 
 const appendMessage = (msg: Message) => {
-    messageSection.append(<MessageComponent {...msg} />);
+    messageSection.append(<MessageComponent msg={msg} />);
 };
 
 const displayCurrentUser = (name: string[]) => {
