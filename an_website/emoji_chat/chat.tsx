@@ -49,17 +49,17 @@ const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element =>
 
 const MessageComponent = (msg: Message): JSX.Element => (
     <div tooltip={timeStampToText(msg.timestamp)}>
-        <>{
-            msg
+        <>
+            {msg
                 .author
-                .map((emoji) => <EmojiComponent emoji={emoji} />)
-        }</>
+                .map((emoji) => <EmojiComponent emoji={emoji} />)}
+        </>
         {": "}
-        <>{
-            msg
+        <>
+            {msg
                 .content
-                .map((emoji) => <EmojiComponent emoji={emoji} />)
-        }</>
+                .map((emoji) => <EmojiComponent emoji={emoji} />)}
+        </>
     </div>
 );
 
@@ -72,7 +72,7 @@ const displayCurrentUser = (name: string[]) => {
     getElementById(id)!.replaceWith(
         <div className={getOpenMojiType() ? "openmoji" : ""} id={id}>
             {name.map((emoji) => <EmojiComponent emoji={emoji} />)}
-        </div>
+        </div>,
     );
 };
 
@@ -104,12 +104,13 @@ const setConnectionState = (state: ConnectionState) => {
         : undefined;
 
     getElementById(id)!.replaceWith(
-        <div tooltip={stateMapping[state]}
+        <div
+            tooltip={stateMapping[state]}
             tooltip-position="right"
             onclick={onclick}
             data-state={state}
             id={id}
-        />
+        />,
     );
 };
 
@@ -168,9 +169,6 @@ const handleWebSocketData = (event: { data: string }) => {
 };
 
 const openWS = () => {
-    const controller = new AbortController();
-    const eventListenerOptions = { signal: controller.signal };
-
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
@@ -183,7 +181,6 @@ const openWS = () => {
     }, 10000);
 
     ws.addEventListener("close", (event) => {
-        controller.abort();
         clearInterval(pingInterval);
         if (event.wasClean) {
             console.debug(
@@ -212,20 +209,20 @@ const openWS = () => {
             reconnectTries++;
             openWS(); // restart connection
         }, reconnectTimeout);
-    }, eventListenerOptions);
+    });
 
     ws.addEventListener("open", (event) => {
         setConnectionState("connected");
         console.debug("Opened WebSocket", event);
-    }, eventListenerOptions);
+    });
 
     ws.addEventListener("error", (event) => {
         console.error({ msg: "got error from websocket", event });
-    }, eventListenerOptions)
+    });
 
     ws.addEventListener("message", (event) => {
         handleWebSocketData(event);
-    }, eventListenerOptions);
+    });
 
     messageInputForm.addEventListener("submit", (event) => {
         if (messageInput.value !== "") {
@@ -239,6 +236,6 @@ const openWS = () => {
             messageInput.value = "";
         }
         event.preventDefault();
-    }, eventListenerOptions)
+    });
 };
 openWS();

@@ -93,9 +93,12 @@ function startQuotes() {
             return;
         }
         const ratingNum = Number.parseInt(rating);
-        const className = `rating-img ${ratingNum > 0 ? "witzig" : "nicht-witzig"}`;
+        const className = `rating-img ${
+            ratingNum > 0 ? "witzig" : "nicht-witzig"
+        }`;
         ratingImageContainer.replaceChildren(
-            ...Array.from({ length: Math.min(4, Math.abs(ratingNum)) }, () => 1)
+            ...Array
+                .from({ length: Math.min(4, Math.abs(ratingNum)) }, () => 1)
                 .map(() => <div className={className} />),
         );
     }

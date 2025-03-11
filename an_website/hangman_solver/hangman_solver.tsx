@@ -244,7 +244,9 @@ async function onStateChange(state: State) {
             foundWords.length.toString(),
             " passenden Wörter:",
             <ul>
-                {foundWords.slice(0, state.max_words).map((word) => <li>{[word]}</li>)}
+                {foundWords.slice(0, state.max_words).map((word) => (
+                    <li>{[word]}</li>
+                ))}
             </ul>,
         );
 
@@ -257,7 +259,7 @@ async function onStateChange(state: State) {
             "Mögliche Buchstaben: ",
             lettersSorted
                 .map((value) => value.join(": "))
-                .join(", ")
+                .join(", "),
         );
     } else {
         outputs.letterOutput.replaceChildren("Nichts gefunden.");

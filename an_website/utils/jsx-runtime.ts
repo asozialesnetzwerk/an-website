@@ -2,19 +2,24 @@
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
+        interface __CanHaveChildren {
+            children?: (Node | string)[];
+        }
         interface __Props {
             id?: string;
             className?: string;
             tooltip?: string;
-            children?: (Node | string)[];
-            onclick?: undefined | ((event: HTMLElementEventMap["click"]) => void);
+            onclick?:
+            | undefined
+            | ((event: HTMLElementEventMap["click"]) => void);
         }
 
         interface IntrinsicElements {
-            div: __Props;
-            img: __Props & { src?: string; alt?: string };
-            ul: __Props,
-            li: __Props,
+            div: __CanHaveChildren & __Props;
+            img: __CanHaveChildren & __Props & { src?: string; alt?: string };
+            ul: __CanHaveChildren & __Props;
+            li: __CanHaveChildren & __Props;
+            a: __CanHaveChildren & __Props & { href?: string };
         }
 
         type Element = Node | string;

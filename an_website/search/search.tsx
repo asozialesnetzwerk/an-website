@@ -1,6 +1,5 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
 import {
-    d,
     e as getElementById,
     get,
     PopStateHandlers,
@@ -19,14 +18,17 @@ interface Result {
 }
 
 function displayResults(results: Result[]) {
-    resultsList.innerHTML = "";
-    for (const result of results) {
-        const resultElement = d.createElement("li");
-        resultElement.setAttribute("score", String(result.score));
-        resultElement.innerHTML = `<a href='${result.url}'>` +
-            `${result.title}</a> ${result.description}`;
-        resultsList.appendChild(resultElement);
-    }
+    resultsList.replaceChildren(
+        ...results.map((result) => (
+            <li data-score={result.score}>
+                <a href={result.url}>
+                    {[result.title]}
+                </a>
+                {": "}
+                {result.description}
+            </li>
+        )),
+    );
 }
 
 PopStateHandlers["search"] = (event: PopStateEvent) => {
