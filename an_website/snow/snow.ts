@@ -77,8 +77,7 @@ function spawnSnowCSS(snowDensity = 200): void {
         const opacity = Math.random();
 
         rule +=
-            `#snow p:nth-child(${i}){opacity:${opacity};transform:translate(${randomX}vw,-10px) scale(${randomScale});animation:fall-${i} ${fallDuration}s ${fallDelay}s linear infinite}@keyframes fall-${i}{${
-                randomYoyoTime * 100
+            `#snow p:nth-child(${i}){opacity:${opacity};transform:translate(${randomX}vw,-10px) scale(${randomScale});animation:fall-${i} ${fallDuration}s ${fallDelay}s linear infinite}@keyframes fall-${i}{${randomYoyoTime * 100
             }%{transform:translate(${randomXEnd}vw,${randomYoyoY}vh) scale(${randomScale})}to{transform:translate(${randomXEndYoyo}vw,100vh) scale(${randomScale})}}`;
     }
     addCss(rule);

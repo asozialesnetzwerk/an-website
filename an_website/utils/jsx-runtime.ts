@@ -13,6 +13,8 @@ declare global {
         interface IntrinsicElements {
             div: __Props;
             img: __Props & { src?: string; alt?: string };
+            ul: __Props,
+            li: __Props,
         }
 
         type Element = Node | string;
