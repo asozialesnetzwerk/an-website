@@ -24,7 +24,7 @@ interface Message {
     timestamp: number;
 }
 
-const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
+const EmojiImgComponent = ({ emoji }: { emoji: string }): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-misused-spread
     const chars = [...emoji];
     const emojiCode = (
@@ -41,7 +41,7 @@ const EmojiImgComponent = ({ emoji }: { emoji: string }): HTMLImageElement => {
             alt={emoji}
             className="emoji"
         />
-    ) as HTMLImageElement;
+    );
 };
 
 const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element =>

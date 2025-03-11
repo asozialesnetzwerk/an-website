@@ -28,7 +28,7 @@ from collections.abc import Mapping
 from functools import cache
 from typing import Final
 
-from .. import STATIC_DIR
+from .. import STATIC_DIR, pytest_is_running
 from ..utils.fix_static_path_impl import recurse_directory
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
@@ -51,6 +51,7 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+LICENSE_COMMENT_START: Final = "// @license "
 LICENSES: Final[Mapping[str, str]] = {
     "magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt": (
         "https://www.gnu.org/licenses/agpl-3.0.html"
@@ -77,12 +78,19 @@ def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
         if not path.is_file():
             continue
         with path.open(encoding="UTF-8") as file:
-            license_line = file.readline().strip().removeprefix('"use strict";')
-        if not license_line.startswith("// @license "):
+            license_line = file.readline()
+        if LICENSE_COMMENT_START not in license_line:
             LOGGER.critical("%s has no license comment", filename)
+            if pytest_is_running():
+                raise AssertionError(f"Could not get license of: {filename}")
             continue
         magnet, name = (
-            license_line.removeprefix("// @license").strip().split(" ")
+            license_line[
+                license_line.index(LICENSE_COMMENT_START)
+                + len(LICENSE_COMMENT_START) :
+            ]
+            .strip()
+            .split(" ")
         )
         licenses_list.append((filename, name.strip(), LICENSES[magnet.strip()]))
     return licenses_list
