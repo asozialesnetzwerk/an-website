@@ -10,8 +10,18 @@ declare global {
             className?: string;
             tooltip?: string;
             onclick?:
-            | undefined
-            | ((event: HTMLElementEventMap["click"]) => void);
+                | undefined
+                | ((event: HTMLElementEventMap["click"]) => void);
+            onchange?:
+                | undefined
+                | ((event: HTMLElementEventMap["change"]) => void);
+            style?: string;
+            onpointermove?:
+                | undefined
+                | ((event: HTMLElementEventMap["pointermove"]) => void);
+            onpointerleave?:
+                | undefined
+                | ((event: HTMLElementEventMap["pointerleave"]) => void);
         }
 
         interface IntrinsicElements {
@@ -20,6 +30,12 @@ declare global {
             ul: __CanHaveChildren & __Props;
             li: __CanHaveChildren & __Props;
             a: __CanHaveChildren & __Props & { href?: string };
+            input: __Props & {
+                type: string;
+                min?: string;
+                max?: string;
+                value?: string;
+            };
         }
 
         type Element = Node | string;

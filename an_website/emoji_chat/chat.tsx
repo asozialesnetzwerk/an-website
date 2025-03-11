@@ -172,7 +172,7 @@ const openWS = () => {
     setConnectionState("connecting");
     const ws = new WebSocket(
         (location.protocol === "https:" ? "wss:" : "ws:") +
-        `//${location.host}/websocket/emoji-chat`,
+            `//${location.host}/websocket/emoji-chat`,
     );
     const pingInterval = setInterval(() => {
         if (ws.readyState == ws.OPEN) {
