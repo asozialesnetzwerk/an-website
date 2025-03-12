@@ -39,7 +39,7 @@ function spawnSnow(snowDensity = 200): void {
 // Append style for each snowflake to the head
 function addCss(rules: string[]): void {
     document.querySelector("head")!.append(
-        <style>{rules}</style>
+        <style>{rules}</style>,
     );
 }
 
@@ -75,8 +75,9 @@ function spawnSnowCSS(snowDensity = 200): void {
         const opacity = Math.random();
 
         rule.push(
-            `#snow p:nth-child(${i}){opacity:${opacity};transform:translate(${randomX}vw,-10px) scale(${randomScale});animation:fall-${i} ${fallDuration}s ${fallDelay}s linear infinite}@keyframes fall-${i}{${randomYoyoTime * 100
-            }%{transform:translate(${randomXEnd}vw,${randomYoyoY}vh) scale(${randomScale})}to{transform:translate(${randomXEndYoyo}vw,100vh) scale(${randomScale})}}`
+            `#snow p:nth-child(${i}){opacity:${opacity};transform:translate(${randomX}vw,-10px) scale(${randomScale});animation:fall-${i} ${fallDuration}s ${fallDelay}s linear infinite}@keyframes fall-${i}{${
+                randomYoyoTime * 100
+            }%{transform:translate(${randomXEnd}vw,${randomYoyoY}vh) scale(${randomScale})}to{transform:translate(${randomXEndYoyo}vw,100vh) scale(${randomScale})}}`,
         );
     }
 

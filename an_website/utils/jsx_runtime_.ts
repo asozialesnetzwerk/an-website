@@ -1,5 +1,5 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
-import { d } from "./utils.js"
+import { d } from "./utils.js";
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
@@ -14,8 +14,10 @@ declare global {
         }
 
         type __Events = {
-            [Prop in keyof HTMLElementEventMap as `on${Prop}`]?: undefined | ((event: HTMLElementEventMap[Prop]) => void);
-        }
+            [Prop in keyof HTMLElementEventMap as `on${Prop}`]?:
+                | undefined
+                | ((event: HTMLElementEventMap[Prop]) => void);
+        };
 
         type __Props = ___Props & __Events;
 

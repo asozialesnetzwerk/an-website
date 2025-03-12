@@ -18,7 +18,7 @@ export function post(
     url: string,
     params = {},
     ondata = console.log,
-    onerror: ((data: unknown) => void) = console.error,
+    onerror: (data: unknown) => void = console.error,
     accept = jsonContentType,
 ): Promise<void> {
     return fetch(url, {
@@ -39,7 +39,7 @@ export function get(
     url: string,
     params: Record<string, string> | string = {},
     ondata = console.log,
-    onerror: ((data: unknown) => void) = console.error,
+    onerror: (data: unknown) => void = console.error,
     accept = jsonContentType,
 ): Promise<void> {
     const paramsString = (new URLSearchParams(params)).toString();
@@ -144,4 +144,4 @@ window.onpopstate = (event: PopStateEvent) => {
 };
 
 export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
-export { jsx, jsxs, Fragment } from "./jsx_runtime_.js";
+export { Fragment, jsx, jsxs } from "./jsx_runtime_.js";
