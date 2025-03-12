@@ -104,7 +104,7 @@ export const Fragment = (
     props: { children?: Children },
 ): JSX.Element => {
     console.debug("Fragment", props);
-    const frag = d.createDocumentFragment();
+    const frag = new DocumentFragment();
     props.children?.forEach((child) => {
         frag.append(child);
     });
