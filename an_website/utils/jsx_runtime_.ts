@@ -25,12 +25,14 @@ declare global {
             ul: __CanHaveChildren & __Props;
             li: __CanHaveChildren & __Props;
             a: __CanHaveChildren & __Props & { href?: string };
+            p: __CanHaveChildren & __Props;
             input: __Props & {
                 type: string;
                 min?: string;
                 max?: string;
                 value?: string;
             };
+            style: __CanHaveChildren;
         }
 
         type Element = Node | string;
