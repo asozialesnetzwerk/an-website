@@ -17,7 +17,7 @@
     "types": [],
     "paths": {
       "@utils/utils.js": ["./utils/utils.ts"],
-      "@utils/jsx-runtime": ["./utils/jsx-runtime.ts"]
+      "@utils/jsx-runtime": ["./utils/utils.ts"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "@utils"

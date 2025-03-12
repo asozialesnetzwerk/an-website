@@ -1,28 +1,23 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
+import { d } from "./utils.js"
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace JSX {
         interface __CanHaveChildren {
             children?: (Node | string)[];
         }
-        interface __Props {
+        interface ___Props {
             id?: string;
             className?: string;
             tooltip?: string;
-            onclick?:
-                | undefined
-                | ((event: HTMLElementEventMap["click"]) => void);
-            onchange?:
-                | undefined
-                | ((event: HTMLElementEventMap["change"]) => void);
             style?: string;
-            onpointermove?:
-                | undefined
-                | ((event: HTMLElementEventMap["pointermove"]) => void);
-            onpointerleave?:
-                | undefined
-                | ((event: HTMLElementEventMap["pointerleave"]) => void);
         }
+
+        type __Events = {
+            [Prop in keyof HTMLElementEventMap as `on${Prop}`]?: undefined | ((event: HTMLElementEventMap[Prop]) => void);
+        }
+
+        type __Props = ___Props & __Events;
 
         interface IntrinsicElements {
             div: __CanHaveChildren & __Props;
@@ -67,7 +62,7 @@ export const jsx = (
     }
 
     // Create the element and add attributes to it
-    const el = document.createElement(tag);
+    const el = d.createElement(tag);
 
     Object.entries(props).forEach(([key, val]) => {
         if (key === "children") {
@@ -107,7 +102,7 @@ export const Fragment = (
     props: { children?: Children },
 ): JSX.Element => {
     console.debug("Fragment", props);
-    const frag = document.createDocumentFragment();
+    const frag = d.createDocumentFragment();
     props.children?.forEach((child) => {
         frag.append(child);
     });

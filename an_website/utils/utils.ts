@@ -1,5 +1,3 @@
-export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
-
 export const d = document;
 function getElementById(id: string): HTMLElement | null {
     return d.getElementById(id);
@@ -148,3 +146,6 @@ window.onpopstate = (event: PopStateEvent) => {
     lastLocation = location.href;
     location.reload();
 };
+
+export { hideSitePane /*, showSitePane */ } from "./better_ui_.js";
+export { jsx, jsxs, Fragment } from "./jsx_runtime_.js";
