@@ -80,6 +80,10 @@ main {
     padding: 0.5rem 2vw 0;
 }
 
+main * {
+    scroll-margin-top: var(--header-height);
+}
+
 /* .text is for version page */
 main,
 .text,
