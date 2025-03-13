@@ -103,7 +103,7 @@ export function setMultipleURLParams(
 
 function scrollToId() {
     const header = getElementById("header");
-    const el = d.querySelector(location.hash);
+    const el = getElementById(location.hash.slice(1));
     if (header && el) {
         scrollBy(
             0,
