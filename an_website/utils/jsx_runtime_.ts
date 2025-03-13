@@ -51,15 +51,21 @@ type Props =
     & { children?: Children };
 type Children = (Node | string)[];
 
+const children = "children";
+const className = "className";
+
+const appendChildren = (element: ParentNode, children?: Children): void => {
+    children?.forEach((child) => {
+        element.append(child);
+    });
+};
+
 export const jsx = (
     tag: Tag,
     props: Props,
-    key?: string,
-    log = true,
 ): JSX.Element => {
-    if (log) {
-        console.debug("jsx", { tag, props, key });
-    }
+    console.debug("jsx", { tag, props });
+
     // If the tag is a function component, pass props and children inside it
     if (typeof tag === "function") {
         return tag(props);
@@ -69,13 +75,11 @@ export const jsx = (
     const el = d.createElement(tag);
 
     Object.entries(props).forEach(([key, val]) => {
-        if (key === "children") {
+        if (key === children) {
             // Append all children to the element
-            (val as Children | undefined)?.forEach((child) => {
-                el.append(child);
-            });
-        } else if (key === "className") {
-            el.className = val as string;
+            appendChildren(el, val as Children | undefined);
+        } else if (key === className) {
+            el[className] = val as string;
         } else if (key.startsWith("on")) {
             if (val) {
                 el.addEventListener(
@@ -96,10 +100,9 @@ export const jsx = (
 export const jsxs = (
     tag: Tag,
     props: Props & { children: Children },
-    key?: string,
 ): JSX.Element => {
-    console.debug("jsxs", { tag, props, key });
-    return jsx(tag, props, key, false);
+    console.debug("jsxs", { tag, props });
+    return jsx(tag, props);
 };
 
 export const Fragment = (
@@ -107,8 +110,6 @@ export const Fragment = (
 ): JSX.Element => {
     console.debug("Fragment", props);
     const frag = new DocumentFragment();
-    props.children?.forEach((child) => {
-        frag.append(child);
-    });
+    appendChildren(frag, props[children]);
     return frag;
 };

@@ -134,11 +134,11 @@ window.onpopstate = (event: PopStateEvent) => {
             scrollToId();
             return;
         } else {
-            console.error("Couldn't find state handler for state", state);
+            console.error("No state handler", state);
         }
     }
 
-    console.error("Couldn't handle state. ", event.state);
+    console.error("Couldn't handle", event);
     lastLocation = location.href;
     location.reload();
 };
