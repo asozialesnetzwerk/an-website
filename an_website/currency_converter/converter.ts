@@ -1,16 +1,21 @@
 // @license magnet:?xt=urn:btih:0b31508aeb0634b347b8270c7bee4d411b5d4109&dn=agpl-3.0.txt AGPL-3.0-or-later
-import { PopStateHandlers, setURLParam } from "@utils/utils.js";
+import {
+    e as getElementById,
+    PopStateHandlers,
+    setURLParam,
+} from "@utils/utils.js";
 
-let bigIntType = "bigint";
+const numberType = "number";
+let bigIntType: "bigint" | "number" = "bigint";
 try {
     BigInt(69);
 } catch {
     // fix for cool browsers like Pale Moon that don't support BigInt
     // eslint-disable-next-line no-global-assign
     BigInt = Number as unknown as BigIntConstructor;
-    bigIntType = "number";
+    bigIntType = numberType;
 }
-const output = document.getElementById("output") as HTMLInputElement;
+const output = getElementById("output") as HTMLInputElement;
 
 const fields: [
     HTMLInputElement,
@@ -18,10 +23,10 @@ const fields: [
     HTMLInputElement,
     HTMLInputElement,
 ] = [
-    document.getElementById("euro") as HTMLInputElement, // Euro
-    document.getElementById("mark") as HTMLInputElement, // Deutsche Mark
-    document.getElementById("ost") as HTMLInputElement, // Ostmark
-    document.getElementById("schwarz") as HTMLInputElement, // Ostmark auf dem Schwarzmarkt
+    getElementById("euro") as HTMLInputElement, // Euro
+    getElementById("mark") as HTMLInputElement, // Deutsche Mark
+    getElementById("ost") as HTMLInputElement, // Ostmark
+    getElementById("schwarz") as HTMLInputElement, // Ostmark auf dem Schwarzmarkt
 ];
 const factors: [
     bigint | number,
@@ -53,7 +58,7 @@ function getDisplayValue(wert: bigint | number | string): string | null {
     }
 
     let str = wert.toString();
-    if (bigIntType === "number" && str.includes("e")) {
+    if (bigIntType === numberType && str.includes("e")) {
         const [num, pow] = str.split("e");
 
         // @ts-expect-error TS2532
@@ -103,7 +108,8 @@ function strToBigInt(str: string): bigint | number {
     return BigInt(int + dec);
 }
 
-PopStateHandlers["currencyConverter"] = (e: PopStateEvent) => {
+const stateType = "currencyConverter";
+PopStateHandlers[stateType] = (e: PopStateEvent) => {
     setAllFields(
         strToBigInt((e.state as { euro: string }).euro.toString()),
     );
@@ -114,7 +120,7 @@ const setEuroParam = (euroVal: string, push: boolean) =>
         "euro",
         euroVal,
         { euro: euroVal },
-        "currencyConverter",
+        stateType,
         push,
     );
 
@@ -138,10 +144,10 @@ function setAllFields(
 
 const updateOutput = () => {
     // dprint-ignore
-    output.value = fields[0].value + " Euro, das sind ja " +
-        fields[1].value + " Mark; " +
-        fields[2].value + " Ostmark und " +
-        fields[3].value + " Ostmark auf dem Schwarzmarkt!";
+    output.value = fields[0].value + " Euro, das sind ja "
+                 + fields[1].value + " Mark; "
+                 + fields[2].value + " Ostmark und "
+                 + fields[3].value + " Ostmark auf dem Schwarzmarkt!";
 };
 
 function onSubmit(event: Event) {
@@ -183,4 +189,4 @@ for (const field of fields) {
     field.value = field.placeholder;
 }
 // fix form submit
-(document.getElementById("form") as HTMLFormElement).onsubmit = onSubmit;
+(getElementById("form") as HTMLFormElement).onsubmit = onSubmit;
