@@ -1,14 +1,16 @@
+/* TODO: set -light and -dark variants of the variables to make this theme adaptive */
+
 :root {
-    color-scheme: only light;
+    color-scheme: only light !important;
 
     /* colors: */
-    --main: hsl(0deg 100% 33%);
-    --main-2: hsl(5deg 90% 22%);
-    --text-color: hsl(0deg 0% 0%);
-    --secondary-text-color: hsl(0deg 0% 15%);
-    --bg: hsl(180deg 30% 90%);
-    --secondary-bg: hsl(180deg 10% 75%);
-    --tertiary-bg: hsl(180deg 10% 60%);
-    --contrast: hsl(195deg 100% 26%);
-    --contrast-2: hsl(240deg 100% 50%);
+    --main: hsl(0deg 100% 33%) !important;
+    --main-2: hsl(5deg 90% 22%) !important;
+    --text-color: hsl(0deg 0% 0%) !important;
+    --secondary-text-color: hsl(0deg 0% 15%) !important;
+    --bg: hsl(180deg 30% 90%) !important;
+    --secondary-bg: hsl(180deg 10% 75%) !important;
+    --tertiary-bg: hsl(180deg 10% 60%) !important;
+    --contrast: hsl(195deg 100% 26%) !important;
+    --contrast-2: hsl(240deg 100% 50%) !important;
 }

@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../style/themes/light.css"],
-  "sourcesContent": [":root {\n    color-scheme: only light;\n\n    /* colors: */\n    --main: hsl(0deg 100% 33%);\n    --main-2: hsl(5deg 90% 22%);\n    --text-color: hsl(0deg 0% 0%);\n    --secondary-text-color: hsl(0deg 0% 15%);\n    --bg: hsl(180deg 30% 90%);\n    --secondary-bg: hsl(180deg 10% 75%);\n    --tertiary-bg: hsl(180deg 10% 60%);\n    --contrast: hsl(195deg 100% 26%);\n    --contrast-2: hsl(240deg 100% 50%);\n}\n"],
-  "mappings": "AAAA,MACI,aAAc,KAAK,MAGnB,QAAQ,IAAI,KAAK,KAAK,KACtB,UAAU,IAAI,KAAK,IAAI,KACvB,cAAc,IAAI,KAAK,GAAG,IAC1B,wBAAwB,IAAI,KAAK,GAAG,KACpC,MAAM,IAAI,OAAO,IAAI,KACrB,gBAAgB,IAAI,OAAO,IAAI,KAC/B,eAAe,IAAI,OAAO,IAAI,KAC9B,YAAY,IAAI,OAAO,KAAK,KAC5B,cAAc,IAAI,OAAO,KAAK,IAClC",
+  "sourcesContent": ["/* TODO: set -light and -dark variants of the variables to make this theme adaptive */\n\n:root {\n    color-scheme: only light !important;\n\n    /* colors: */\n    --main: hsl(0deg 100% 33%) !important;\n    --main-2: hsl(5deg 90% 22%) !important;\n    --text-color: hsl(0deg 0% 0%) !important;\n    --secondary-text-color: hsl(0deg 0% 15%) !important;\n    --bg: hsl(180deg 30% 90%) !important;\n    --secondary-bg: hsl(180deg 10% 75%) !important;\n    --tertiary-bg: hsl(180deg 10% 60%) !important;\n    --contrast: hsl(195deg 100% 26%) !important;\n    --contrast-2: hsl(240deg 100% 50%) !important;\n}\n"],
+  "mappings": "AAEA,MACI,aAAc,KAAK,gBAGnB,QAAQ,IAAI,KAAK,KAAK,gBACtB,UAAU,IAAI,KAAK,IAAI,gBACvB,cAAc,IAAI,KAAK,GAAG,eAC1B,wBAAwB,IAAI,KAAK,GAAG,gBACpC,MAAM,IAAI,OAAO,IAAI,gBACrB,gBAAgB,IAAI,OAAO,IAAI,gBAC/B,eAAe,IAAI,OAAO,IAAI,gBAC9B,YAAY,IAAI,OAAO,KAAK,gBAC5B,cAAc,IAAI,OAAO,KAAK,eAClC",
   "names": []
 }

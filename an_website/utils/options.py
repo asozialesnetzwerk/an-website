@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import dataclasses
+import typing
 from abc import ABC
 from collections.abc import Callable, Iterable
 from functools import partial
@@ -35,6 +36,8 @@ from .utils import (
 
 T = TypeVar("T")
 U = TypeVar("U")
+
+type ColourScheme = Literal["light", "dark", "system"]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -179,6 +182,13 @@ class Options:
         is_valid=THEMES.__contains__,
         get_default_value=lambda _: "default",
         normalize_string=lambda s: s.replace("-", "_").lower(),
+    )
+    scheme: Option[ColourScheme] = Option(
+        name="scheme",
+        is_valid=("light", "dark", "system").__contains__,
+        get_default_value=lambda _: "system",
+        normalize_string=str.lower,
+        parse_from_string=lambda val, _: typing.cast(ColourScheme, val),
     )
     compat: Option[bool] = BoolOption(name="compat", get_default_value=false)
     dynload: Option[bool] = BoolOption(name="dynload", get_default_value=false)

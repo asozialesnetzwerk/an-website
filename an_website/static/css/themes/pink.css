@@ -1,2 +1,2 @@
-:root{color-scheme:only dark;--main: hsl(320deg 100% 67%);--main-2: hsl(320deg 80% 48%);--text-color: hsl(0deg 0% 90%);--secondary-text-color: hsl(0deg 0% 70%);--bg: hsl(0deg 0% 0%);--secondary-bg: hsl(0deg 0% 9%);--tertiary-bg: hsl(0deg 0% 18%);--contrast: hsl(0deg 90% 48%);--contrast-2: hsl(0deg 90% 62%)}
+:root{color-scheme:only dark!important;--main: hsl(320deg 100% 67%) !important;--main-2: hsl(320deg 80% 48%) !important;--text-color: hsl(0deg 0% 90%) !important;--secondary-text-color: hsl(0deg 0% 70%) !important;--bg: hsl(0deg 0% 0%) !important;--secondary-bg: hsl(0deg 0% 9%) !important;--tertiary-bg: hsl(0deg 0% 18%) !important;--contrast: hsl(0deg 90% 48%) !important;--contrast-2: hsl(0deg 90% 62%) !important}
 /*# sourceMappingURL=pink.css.map */

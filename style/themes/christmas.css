@@ -1,17 +1,25 @@
 :root {
-    color-scheme: only dark;
+    /* light colors: */
+    --main-light: hsl(0deg 100% 33%);
+    --main-2-light: hsl(5deg 90% 22%);
+    --text-color-light: hsl(0deg 0% 0%);
+    --secondary-text-color-light: hsl(0deg 0% 15%);
+    --bg-light: fixed radial-gradient(ellipse at bottom, hsl(180deg 30% 80%) 0%, hsl(180deg 30% 90%) 100%);
+    --secondary-bg-light: hsl(180deg 10% 75%);
+    --tertiary-bg-light: hsl(180deg 10% 60%);
+    --contrast-light: hsl(195deg 100% 26%);
+    --contrast-2-light: hsl(240deg 100% 50%);
 
-    /* colors: */
-    --main: hsl(0deg 90% 48%);
-    --main-2: hsl(0deg 90% 62%);
-    --text-color: hsl(0deg 0% 90%);
-    --secondary-text-color: hsl(0deg 0% 70%);
-    --bg: fixed radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-    --secondary-bg: hsl(0deg 0% 9%);
-    --tertiary-bg: hsl(0deg 0% 18%);
-    --contrast: hsl(240deg 100% 50%);
-    --contrast-2: hsl(195deg 100% 50%);
-    --tp-bg-color: hsl(0deg 0% 0%);
+    /* dark colors: */
+    --main-dark: hsl(0deg 90% 48%);
+    --main-2-dark: hsl(0deg 90% 62%);
+    --text-color-dark: hsl(0deg 0% 90%);
+    --secondary-text-color-dark: hsl(0deg 0% 70%);
+    --bg-dark: fixed radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    --secondary-bg-dark: hsl(0deg 0% 9%);
+    --tertiary-bg-dark: hsl(0deg 0% 18%);
+    --contrast-dark: hsl(240deg 100% 50%);
+    --contrast-2-dark: hsl(195deg 100% 50%);
 }
 
 #snow p {
@@ -23,16 +31,16 @@
     /* stylelint-disable-next-line comment-empty-line-before */
     /* Workaround for Chromium's selective color inversion */
     background: linear-gradient(white, white);
-    filter: drop-shadow(0 0 10px white);
+    filter: drop-shadow(0 0 10px var(--text-color));
 }
 
 main {
-    text-shadow: 0 0 10px white;
+    text-shadow: 0 0 10px var(--text-color);
 }
 
 header,
 #site-pane {
-    box-shadow: 0 0 10px white;
+    box-shadow: 0 0 10px var(--text-color);
 }
 
 textarea,
@@ -41,6 +49,8 @@ input[type="email"],
 input[type="range"],
 input[type="search"],
 input[type="text"],
-input[type="number"] {
-    background: hsl(0deg 0% 0%) !important;
+input[type="number"],
+[tooltip]::after {
+    /* normal bg (without gradient would be better) */
+    background: var(--secondary-bg) !important;
 }
