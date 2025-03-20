@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html prefix="og: https://ogp.me/ns#" lang="{{lang}}">
+<html prefix="og: https://ogp.me/ns#" lang="{{lang}}" data-scheme="{{scheme}}">
     <head>
         {% if as_html %}
             <title>{{title}}</title>
@@ -14,11 +14,12 @@
             <meta property="og:title" content="{{title}}">
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{canonical_url}}">
+            <meta property="color-scheme" content="{{ {'system': 'light dark', 'dark': 'only dark', 'light': 'only light'}.get(scheme) }}">
             <link rel="canonical" href="{{canonical_url}}">
             <link rel="manifest" href="{{fix_static('manifest.json')}}">
             <link rel="author" type="text/plain" href="{{fix_static('/humans.txt')}}">
             <link rel="icon" type="image/png" href="{{fix_static('/favicon.png')}}">
-        <!--<link rel="icon" type="image/jxl" href="{{fix_static('/favicon.jxl')}}">-->
+         {# <link rel="icon" type="image/jxl" href="{{fix_static('/favicon.jxl')}}"> #}
 
             {% if effects and display_theme == "christmas" %}
                 <noscript><link rel="preload" type="text/css" href="{{fix_static('css/snow.css')}}"  as="style"></noscript>

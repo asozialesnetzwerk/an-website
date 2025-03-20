@@ -1,14 +1,16 @@
 @import "/static/css/comic.css?v=0";
+/* TODO: set -light and -dark variants of the variables to make this theme adaptive */
 
 :root {
+    color-scheme: only light !important;
     /* colors: */
-    --main: hsl(48deg 100% 50%);
-    --main-2: hsl(30deg 100% 50%);
-    --text-color: hsl(106deg 100% 50%);
-    --secondary-text-color: hsl(159deg 100% 50%);
-    --bg: hsl(303deg 100% 50%);
-    --secondary-bg: hsl(289deg 100% 50%);
-    --tertiary-bg: hsl(264deg 100% 50%);
-    --contrast: hsl(207deg 100% 50%);
-    --contrast-2: hsl(195deg 100% 50%);
+    --main: hsl(48deg 100% 50%) !important;
+    --main-2: hsl(30deg 100% 50%) !important;
+    --text-color: hsl(106deg 100% 50%) !important;
+    --secondary-text-color: hsl(159deg 100% 50%) !important;
+    --bg: hsl(303deg 100% 50%) !important;
+    --secondary-bg: hsl(289deg 100% 50%) !important;
+    --tertiary-bg: hsl(264deg 100% 50%) !important;
+    --contrast: hsl(207deg 100% 50%) !important;
+    --contrast-2: hsl(195deg 100% 50%) !important;
 }

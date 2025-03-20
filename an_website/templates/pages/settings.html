@@ -71,11 +71,21 @@
         </label>
 
         <label class="form-element">
-            Theme
+            Thema
             <select name="theme">
                 {% for _ in themes %}
                     <option {% if _ == theme %} selected {% end %}
                             value="{{_}}">{{_}}</option>
+                {% end %}
+            </select>
+        </label>
+
+        <label class="form-element needs-light-dark-support">
+            Farbschema
+            <select name="scheme">
+                {% for (i, _) in enumerate(("system", "light", "dark")) %}
+                    <option {% if _ == scheme %} selected {% end %}
+                            value="{{_}}">{{ ("System", "Hell", "Dunkel")[i] }}</option>
                 {% end %}
             </select>
         </label>

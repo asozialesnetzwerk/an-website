@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../style/themes/fun.css"],
-  "sourcesContent": ["@import \"/static/css/comic.css?v=0\";\n\n:root {\n    /* colors: */\n    --main: hsl(48deg 100% 50%);\n    --main-2: hsl(30deg 100% 50%);\n    --text-color: hsl(106deg 100% 50%);\n    --secondary-text-color: hsl(159deg 100% 50%);\n    --bg: hsl(303deg 100% 50%);\n    --secondary-bg: hsl(289deg 100% 50%);\n    --tertiary-bg: hsl(264deg 100% 50%);\n    --contrast: hsl(207deg 100% 50%);\n    --contrast-2: hsl(195deg 100% 50%);\n}\n"],
-  "mappings": "mCAEA,MAEI,QAAQ,IAAI,MAAM,KAAK,KACvB,UAAU,IAAI,MAAM,KAAK,KACzB,cAAc,IAAI,OAAO,KAAK,KAC9B,wBAAwB,IAAI,OAAO,KAAK,KACxC,MAAM,IAAI,OAAO,KAAK,KACtB,gBAAgB,IAAI,OAAO,KAAK,KAChC,eAAe,IAAI,OAAO,KAAK,KAC/B,YAAY,IAAI,OAAO,KAAK,KAC5B,cAAc,IAAI,OAAO,KAAK,IAClC",
+  "sourcesContent": ["@import \"/static/css/comic.css?v=0\";\n/* TODO: set -light and -dark variants of the variables to make this theme adaptive */\n\n:root {\n    color-scheme: only light !important;\n    /* colors: */\n    --main: hsl(48deg 100% 50%) !important;\n    --main-2: hsl(30deg 100% 50%) !important;\n    --text-color: hsl(106deg 100% 50%) !important;\n    --secondary-text-color: hsl(159deg 100% 50%) !important;\n    --bg: hsl(303deg 100% 50%) !important;\n    --secondary-bg: hsl(289deg 100% 50%) !important;\n    --tertiary-bg: hsl(264deg 100% 50%) !important;\n    --contrast: hsl(207deg 100% 50%) !important;\n    --contrast-2: hsl(195deg 100% 50%) !important;\n}\n"],
+  "mappings": "mCAGA,MACI,aAAc,KAAK,gBAEnB,QAAQ,IAAI,MAAM,KAAK,gBACvB,UAAU,IAAI,MAAM,KAAK,gBACzB,cAAc,IAAI,OAAO,KAAK,gBAC9B,wBAAwB,IAAI,OAAO,KAAK,gBACxC,MAAM,IAAI,OAAO,KAAK,gBACtB,gBAAgB,IAAI,OAAO,KAAK,gBAChC,eAAe,IAAI,OAAO,KAAK,gBAC/B,YAAY,IAAI,OAAO,KAAK,gBAC5B,cAAc,IAAI,OAAO,KAAK,eAClC",
   "names": []
 }

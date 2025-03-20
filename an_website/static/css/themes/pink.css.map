@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../../../style/themes/pink.css"],
-  "sourcesContent": [":root {\n    color-scheme: only dark;\n\n    /* colors: */\n    --main: hsl(320deg 100% 67%);\n    --main-2: hsl(320deg 80% 48%);\n    --text-color: hsl(0deg 0% 90%);\n    --secondary-text-color: hsl(0deg 0% 70%);\n    --bg: hsl(0deg 0% 0%);\n    --secondary-bg: hsl(0deg 0% 9%);\n    --tertiary-bg: hsl(0deg 0% 18%);\n    --contrast: hsl(0deg 90% 48%);\n    --contrast-2: hsl(0deg 90% 62%);\n}\n"],
-  "mappings": "AAAA,MACI,aAAc,KAAK,KAGnB,QAAQ,IAAI,OAAO,KAAK,KACxB,UAAU,IAAI,OAAO,IAAI,KACzB,cAAc,IAAI,KAAK,GAAG,KAC1B,wBAAwB,IAAI,KAAK,GAAG,KACpC,MAAM,IAAI,KAAK,GAAG,IAClB,gBAAgB,IAAI,KAAK,GAAG,IAC5B,eAAe,IAAI,KAAK,GAAG,KAC3B,YAAY,IAAI,KAAK,IAAI,KACzB,cAAc,IAAI,KAAK,IAAI,IAC/B",
+  "sourcesContent": ["/* TODO: set -light and -dark variants of the variables to make this theme adaptive */\n\n:root {\n    color-scheme: only dark !important;\n\n    /* colors: */\n    --main: hsl(320deg 100% 67%) !important;\n    --main-2: hsl(320deg 80% 48%) !important;\n    --text-color: hsl(0deg 0% 90%) !important;\n    --secondary-text-color: hsl(0deg 0% 70%) !important;\n    --bg: hsl(0deg 0% 0%) !important;\n    --secondary-bg: hsl(0deg 0% 9%) !important;\n    --tertiary-bg: hsl(0deg 0% 18%) !important;\n    --contrast: hsl(0deg 90% 48%) !important;\n    --contrast-2: hsl(0deg 90% 62%) !important;\n}\n"],
+  "mappings": "AAEA,MACI,aAAc,KAAK,eAGnB,QAAQ,IAAI,OAAO,KAAK,gBACxB,UAAU,IAAI,OAAO,IAAI,gBACzB,cAAc,IAAI,KAAK,GAAG,gBAC1B,wBAAwB,IAAI,KAAK,GAAG,gBACpC,MAAM,IAAI,KAAK,GAAG,eAClB,gBAAgB,IAAI,KAAK,GAAG,eAC5B,eAAe,IAAI,KAAK,GAAG,gBAC3B,YAAY,IAAI,KAAK,IAAI,gBACzB,cAAc,IAAI,KAAK,IAAI,eAC/B",
   "names": []
 }

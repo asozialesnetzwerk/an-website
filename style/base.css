@@ -1,3 +1,67 @@
+/* theming */
+html {
+    color-scheme: only light;
+
+    --main: var(--main-light);
+    --main-2: var(--main-2-light);
+    --text-color: var(--text-color-light);
+    --secondary-text-color: var(--secondary-text-color-light);
+    --bg: var(--bg-light);
+    --secondary-bg: var(--secondary-bg-light);
+    --tertiary-bg: var(--tertiary-bg-light);
+    --contrast: var(--contrast-light);
+    --contrast-2: var(--contrast-2-light);
+}
+
+@media (prefers-color-scheme: dark) {
+    html {
+        color-scheme: only dark;
+
+        --main: var(--main-dark);
+        --main-2: var(--main-2-dark);
+        --text-color: var(--text-color-dark);
+        --secondary-text-color: var(--secondary-text-color-dark);
+        --bg: var(--bg-dark);
+        --secondary-bg: var(--secondary-bg-dark);
+        --tertiary-bg: var(--tertiary-bg-dark);
+        --contrast: var(--contrast-dark);
+        --contrast-2: var(--contrast-2-dark);
+    }
+}
+
+:root[data-scheme="light"],
+html[data-scheme="light"] * {
+    color-scheme: only light;
+
+
+    --main: var(--main-light);
+    --main-2: var(--main-2-light);
+    --text-color: var(--text-color-light);
+    --secondary-text-color: var(--secondary-text-color-light);
+    --bg: var(--bg-light);
+    --secondary-bg: var(--secondary-bg-light);
+    --tertiary-bg: var(--tertiary-bg-light);
+    --contrast: var(--contrast-light);
+    --contrast-2: var(--contrast-2-light);
+}
+
+:root[data-scheme="dark"],
+html[data-scheme="dark"] * {
+    color-scheme: only dark;
+
+    --main: var(--main-dark);
+    --main-2: var(--main-2-dark);
+    --text-color: var(--text-color-dark);
+    --secondary-text-color: var(--secondary-text-color-dark);
+    --bg: var(--bg-dark);
+    --secondary-bg: var(--secondary-bg-dark);
+    --tertiary-bg: var(--tertiary-bg-dark);
+    --contrast: var(--contrast-dark);
+    --contrast-2: var(--contrast-2-dark);
+}
+
+/* theming end */
+
 /* OpenMoji CSS */
 img.emoji {
     display: inline;
@@ -140,9 +204,9 @@ footer {
 }
 
 #ai-policy {
+    padding: 0.7rem;
     font-size: 0.5rem;
     text-align: center;
-    padding: 0.7rem;
 }
 
 #openmoji-attribution {
@@ -237,8 +301,8 @@ header {
 #site-pane[state="open"],
 #site-pane:hover,
 #site-pane:focus-within,
-#open-pane:focus + #site-pane,
-#open-pane:hover + #site-pane {
+#open-pane:focus+#site-pane,
+#open-pane:hover+#site-pane {
     right: 0;
 }
 
