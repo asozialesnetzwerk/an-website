@@ -215,7 +215,7 @@ def main() -> None:
 
     for out_path, ratio, success in compress_static_files():
         print(
-            f"./{out_path.relative_to(cwd, walk_up=True)}: {ratio:.2f}% {success}",
+            f"./{out_path.relative_to(cwd, walk_up=True)}: {ratio * 100:.1f}% {success}",
             file=sys.stderr,
         )
 
