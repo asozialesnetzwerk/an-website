@@ -452,16 +452,10 @@ class BaseRequestHandler(_RequestHandler):
         if theme == "default" and self.now.month == 12:
             return "christmas"
 
-        if theme.split("_")[0] != "random":
+        if theme != "random":
             return theme
 
-        ignore_themes = ["random", "random_dark"]
-
-        if self.now.month != 12:
-            ignore_themes.append("christmas")
-
-        if theme == "random_dark":
-            ignore_themes.extend(("default", "light", "light_blue", "fun"))
+        ignore_themes = ("random", "christmas")
 
         return random_choice(  # nosec: B311
             tuple(theme for theme in THEMES if theme not in ignore_themes)

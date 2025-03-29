@@ -267,7 +267,7 @@ async def test_request_handlers0(
 @travel(datetime(2000 + 1, 2, 3, 4, 5, 6, 7, hill_valley), tick=False)
 async def test_request_handlers1(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
-    for theme in ("default", "random_dark", "fun", "christmas"):
+    for theme in ("default", "random", "fun", "christmas"):
         response = assert_valid_html_response(await fetch(f"/?theme={theme}"))
         assert response.code == 200
         body = response.body.decode("UTF-8")
