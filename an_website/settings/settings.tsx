@@ -21,6 +21,24 @@ function createBumpscositySlider() {
         />
     ) as HTMLDivElement;
 
+    const showTooltip = () => {
+        currentValueDiv.classList.add("show-tooltip");
+    };
+    const hideTooltip = () => {
+        currentValueDiv.classList.remove("show-tooltip");
+    };
+    const updateSelectAndTooltip = () => {
+        const value = possibleLevels[parseInt(rangeSlider.value)]?.toString() ??
+            "50";
+        select.value = value;
+        currentValueDiv.setAttribute("tooltip", value);
+        currentValueDiv.style.left = (1 +
+            (98 *
+                parseInt(rangeSlider.value) /
+                (possibleLevels.length - 1)))
+            .toString() + "%";
+    };
+
     const rangeSlider = (
         <input
             type="range"
@@ -28,21 +46,12 @@ function createBumpscositySlider() {
             max={(possibleLevels.length - 1).toString()}
             value={possibleLevels.indexOf(startLevel).toString()}
             onpointermove={() => {
-                // @ts-expect-error TS2532
-                const value = possibleLevels[parseInt(rangeSlider.value)]
-                    .toString();
-                select.value = value;
-                currentValueDiv.setAttribute("tooltip", value);
-                currentValueDiv.classList.add("show-tooltip");
-                currentValueDiv.style.left = (1 +
-                    (98 *
-                        parseInt(rangeSlider.value) /
-                        (possibleLevels.length - 1)))
-                    .toString() + "%";
+                showTooltip();
+                updateSelectAndTooltip();
             }}
-            onpointerleave={() => {
-                currentValueDiv.classList.remove("show-tooltip");
-            }}
+            onpointerleave={hideTooltip}
+            onfocusin={showTooltip}
+            onblur={hideTooltip}
             onchange={() => {
                 let sliderVal = parseInt(rangeSlider.value);
                 const promptStart = `Willst du die Bumpscosity wirklich auf ${
@@ -66,16 +75,10 @@ function createBumpscositySlider() {
                     ) {
                         sliderVal++;
                     }
-                } else {
-                    return;
                 }
 
-                if (sliderVal !== parseInt(rangeSlider.value)) {
-                    rangeSlider.value = sliderVal.toString();
-                    // @ts-expect-error TS2532
-                    select.value = possibleLevels[parseInt(rangeSlider.value)]
-                        .toString();
-                }
+                rangeSlider.value = sliderVal.toString();
+                updateSelectAndTooltip();
             }}
         />
     ) as HTMLInputElement;
@@ -83,6 +86,8 @@ function createBumpscositySlider() {
     const parent = select.parentElement!;
     parent.style.position = "relative";
     parent.append(<>{currentValueDiv}{rangeSlider}</>);
+
+    updateSelectAndTooltip();
 }
 
 createBumpscositySlider();
