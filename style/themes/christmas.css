@@ -53,6 +53,7 @@ input[type="number"],
 [tooltip]::after {
     /* normal bg (without gradient would be better) */
     background: var(--secondary-bg) !important;
+
     /* better version with cool new css feature */
     background: light-dark(hsl(180deg 30% 90%), hsl(0deg 0% 0%)) !important;
 }

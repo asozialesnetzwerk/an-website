@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../style/themes/light.css"],
-  "sourcesContent": ["/* TODO: set -light and -dark variants of the variables to make this theme adaptive */\n\n:root {\n    color-scheme: only light !important;\n\n    /* colors: */\n    --main: hsl(0deg 100% 33%) !important;\n    --main-2: hsl(5deg 90% 22%) !important;\n    --text-color: hsl(0deg 0% 0%) !important;\n    --secondary-text-color: hsl(0deg 0% 15%) !important;\n    --bg: hsl(180deg 30% 90%) !important;\n    --secondary-bg: hsl(180deg 10% 75%) !important;\n    --tertiary-bg: hsl(180deg 10% 60%) !important;\n    --contrast: hsl(195deg 100% 26%) !important;\n    --contrast-2: hsl(240deg 100% 50%) !important;\n}\n"],
-  "mappings": "AAEA,MACI,aAAc,KAAK,gBAGnB,QAAQ,IAAI,KAAK,KAAK,gBACtB,UAAU,IAAI,KAAK,IAAI,gBACvB,cAAc,IAAI,KAAK,GAAG,eAC1B,wBAAwB,IAAI,KAAK,GAAG,gBACpC,MAAM,IAAI,OAAO,IAAI,gBACrB,gBAAgB,IAAI,OAAO,IAAI,gBAC/B,eAAe,IAAI,OAAO,IAAI,gBAC9B,YAAY,IAAI,OAAO,KAAK,gBAC5B,cAAc,IAAI,OAAO,KAAK,eAClC",
-  "names": []
-}
