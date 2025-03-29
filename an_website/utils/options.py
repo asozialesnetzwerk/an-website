@@ -20,7 +20,7 @@ import typing
 from abc import ABC
 from collections.abc import Callable, Iterable
 from functools import partial
-from typing import Generic, Literal, TypeVar, overload
+from typing import Final, Generic, Literal, TypeVar, overload
 
 from tornado.web import RequestHandler
 
@@ -37,7 +37,10 @@ from .utils import (
 T = TypeVar("T")
 U = TypeVar("U")
 
-type ColourScheme = Literal["light", "dark", "system"]
+type ColourScheme = Literal["light", "dark", "system", "random"]
+COLOUR_SCHEMES: Final[tuple[ColourScheme, ...]] = typing.get_args(
+    ColourScheme.__value__  # pylint: disable=no-member
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -185,7 +188,7 @@ class Options:
     )
     scheme: Option[ColourScheme] = Option(
         name="scheme",
-        is_valid=("light", "dark", "system").__contains__,
+        is_valid=COLOUR_SCHEMES.__contains__,
         get_default_value=lambda _: "system",
         normalize_string=str.lower,
         parse_from_string=lambda val, _: typing.cast(ColourScheme, val),

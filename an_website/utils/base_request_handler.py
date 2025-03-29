@@ -74,7 +74,7 @@ from .. import (
     pytest_is_running,
 )
 from .decorators import is_authorized
-from .options import Options
+from .options import ColourScheme, Options
 from .static_file_handling import FILE_HASHES_DICT, fix_static_path
 from .themes import THEMES
 from .utils import (
@@ -438,6 +438,13 @@ class BaseRequestHandler(_RequestHandler):
         except ValueError as err:
             raise HTTPError(400, f"{value} is not a boolean") from err
 
+    def get_display_scheme(self) -> ColourScheme:
+        """Get the scheme currently displayed."""
+        scheme = self.user_settings.scheme
+        if scheme == "random":
+            return ("light", "dark")[self.now.microsecond & 1]
+        return scheme
+
     def get_display_theme(self) -> str:
         """Get the theme currently displayed."""
         theme = self.user_settings.theme
@@ -584,6 +591,7 @@ class BaseRequestHandler(_RequestHandler):
             ).split("?")[0],
             description=self.description,
             display_theme=self.get_display_theme(),
+            display_scheme=self.get_display_scheme(),
             elastic_rum_url=self.ELASTIC_RUM_URL,
             fix_static=lambda path: self.fix_url(fix_static_path(path)),
             fix_url=self.fix_url,

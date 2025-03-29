@@ -19,8 +19,11 @@ import socket
 from datetime import datetime
 from urllib.parse import quote_from_bytes
 
+from html5lib import HTMLParser
 from time_machine import travel
 from tornado.simple_httpclient import SimpleAsyncHTTPClient
+
+from an_website.utils.options import COLOUR_SCHEMES
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
@@ -297,6 +300,22 @@ async def test_request_handlers1(fetch: FetchCallable) -> None:  # noqa: F811
             )
             == body
         )
+
+
+@travel(datetime(2000, 1, 2, 3, 4, 5, 6, hill_valley), tick=False)
+async def test_colour_scheme(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the scheme query parameter."""
+    assert COLOUR_SCHEMES
+    for scheme in COLOUR_SCHEMES:
+        response = assert_valid_html_response(await fetch(f"/?scheme={scheme}"))
+        assert response.code == 200
+        body = response.body.decode("UTF-8")
+        if scheme != "system":
+            assert f"?scheme={scheme}" in body
+        html = HTMLParser(namespaceHTMLElements=False).parse(response.body)
+        assert html.find(
+            f".[@data-scheme={"light" if scheme == "random" else scheme!r}]"
+        ), f"{scheme} should be specified in html"
 
 
 @travel(datetime.fromtimestamp(1990), tick=False)

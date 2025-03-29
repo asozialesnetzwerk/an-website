@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html prefix="og: https://ogp.me/ns#" lang="{{lang}}" data-scheme="{{scheme}}">
+<html prefix="og: https://ogp.me/ns#" lang="{{lang}}" data-scheme="{{display_scheme}}">
     <head>
         {% if as_html %}
             <title>{{title}}</title>
@@ -14,7 +14,7 @@
             <meta property="og:title" content="{{title}}">
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{canonical_url}}">
-            <meta property="color-scheme" content="{{ {'system': 'light dark', 'dark': 'only dark', 'light': 'only light'}.get(scheme) }}">
+            <meta property="color-scheme" content="{{ {'system': 'light dark', 'dark': 'only dark', 'light': 'only light'}.get(display_scheme) }}">
             <link rel="canonical" href="{{canonical_url}}">
             <link rel="manifest" href="{{fix_static('manifest.json')}}">
             <link rel="author" type="text/plain" href="{{fix_static('/humans.txt')}}">

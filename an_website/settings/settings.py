@@ -22,7 +22,7 @@ from collections.abc import Awaitable, Mapping
 
 from tornado.web import HTTPError
 
-from ..utils.options import Options
+from ..utils.options import COLOUR_SCHEMES, Options
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.themes import THEMES
 from ..utils.utils import (
@@ -147,6 +147,7 @@ class SettingsPage(HTMLRequestHandler):
             save_in_cookie=save_in_cookie,
             show_token_input=show_token_input,
             themes=THEMES,
+            colour_schemes=COLOUR_SCHEMES,
             token=token,
             **kwargs,
         )
