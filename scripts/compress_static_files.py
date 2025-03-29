@@ -19,11 +19,13 @@ from __future__ import annotations
 
 import abc
 import sys
-from collections.abc import Collection, Iterable
+from collections.abc import Collection, Iterable, Set
 from pathlib import Path
 from typing import Final, override
 
-IGNORED_EXTENSIONS: Final[frozenset[str]] = frozenset({"map"})
+IGNORED_EXTENSIONS: Final[Set[str]] = {"map"}
+BINARY: Final[Set[str]] = {"mp3", "png", "jpg", "woff2", "jxl"}
+
 
 type CompressionResult = tuple[Path, float, bool]
 
@@ -140,6 +142,8 @@ def compress_dir(
     compressed_extensions = frozenset(c.file_extension() for c in compressors)
     ignored_extensions = compressed_extensions | IGNORED_EXTENSIONS
 
+    results = []
+
     for file in dir_.rglob("*"):
         if not file.is_file():
             continue
@@ -147,7 +151,21 @@ def compress_dir(
             continue
         for compressor in compressors:
             if compressed := compressor.compress(file):
-                yield compressed
+                if compressed[2] is False:
+                    yield compressed
+                else:
+                    results.append(compressed)
+
+        if len(results) > 1 and file.suffix.removeprefix(".") in BINARY:
+            min_ = min(results, key=lambda x: (x[1], x[0].suffix))
+            results.remove(min_)
+            yield min_
+            for path, score, _ in results:
+                path.unlink()
+                yield file, score, False
+        else:
+            yield from results
+        results.clear()
 
 
 def get_static_dirs() -> Iterable[Path]:
