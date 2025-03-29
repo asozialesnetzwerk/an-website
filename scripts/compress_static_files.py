@@ -21,7 +21,9 @@ import abc
 import sys
 from collections.abc import Collection, Iterable
 from pathlib import Path
-from typing import override
+from typing import Final, override
+
+IGNORED_EXTENSIONS: Final[frozenset[str]] = frozenset({"map"})
 
 type CompressionResult = tuple[Path, float, bool]
 
@@ -136,10 +138,12 @@ def compress_dir(
     """Compress a directory."""
     assert dir_.is_dir(), "needs to be a directory"
     compressed_extensions = frozenset(c.file_extension() for c in compressors)
+    ignored_extensions = compressed_extensions | IGNORED_EXTENSIONS
+
     for file in dir_.rglob("*"):
         if not file.is_file():
             continue
-        if file.suffix.removeprefix(".") in compressed_extensions:
+        if file.suffix.removeprefix(".") in ignored_extensions:
             continue
         for compressor in compressors:
             if compressed := compressor.compress(file):
