@@ -22,7 +22,7 @@ emoji = "<3"
 get-version = "==3.*"
 hangman-solver-rs = "<2"
 html2text = "==2024.2.26"
-hyrule = {version = "<2" }
+hyrule = "==1.*"
 jsonpickle = "==4.*"
 lxml = "==5.*"
 # more-itertools = "==10.*"

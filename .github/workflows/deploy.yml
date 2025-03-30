@@ -62,9 +62,7 @@ jobs:
         with:
           name: artifact
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install wheel
         run: pip install *.whl
       - name: Test starting
@@ -122,9 +120,7 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install stuff needed for the tests
@@ -285,8 +281,7 @@ jobs:
           sudo dpkg -i netavark_1.4.0-4_amd64.deb
       - name: Upgrade Buildah
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
+          sudo apt-get install --update -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
           git clone -b v1.35.5 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
           pushd ~/go/src/github.com/containers/buildah
           make buildah docs
@@ -385,8 +380,7 @@ jobs:
           go-version: ~1.20
       - name: Upgrade Skopeo
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libdevmapper-dev libgpgme-dev
+          sudo apt-get install --update -y libdevmapper-dev libgpgme-dev
           git clone -b v1.15.2 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
           pushd ~/go/src/github.com/containers/skopeo
           make bin/skopeo
