@@ -4,9 +4,9 @@
     --main-2-light: hsl(33deg 100% 40%);
     --text-color-light: hsl(0deg 0% 0%);
     --secondary-text-color-light: hsl(0deg 0% 15%);
-    --bg-light: hsl(180deg, 19%, 92%);
-    --secondary-bg-light: hsl(180deg, 9%, 81%);
-    --tertiary-bg-light: hsl(225deg, 7%, 77%);
+    --bg-light: hsl(180deg 19% 92%);
+    --secondary-bg-light: hsl(180deg 9% 81%);
+    --tertiary-bg-light: hsl(225deg 7% 77%);
     --contrast-light: hsl(195deg 100% 26%);
     --contrast-2-light: hsl(240deg 100% 50%);
 

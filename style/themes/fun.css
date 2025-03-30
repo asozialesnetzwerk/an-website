@@ -14,12 +14,12 @@
 
     /* dark colors */
     --main-dark: hsl(69deg 97% 40%);
-    --main-2-dark: hsl(161deg, 84%, 27%);
-    --text-color-dark: hsl(60deg, 100%, 58%);
-    --secondary-text-color-dark: hsl(68deg, 93%, 36%);
-    --bg-dark: hsl(285deg, 70%, 10%);
-    --secondary-bg-dark: hsl(300deg, 43%, 6%);
+    --main-2-dark: hsl(161deg 84% 27%);
+    --text-color-dark: hsl(60deg 100% 58%);
+    --secondary-text-color-dark: hsl(68deg 93% 36%);
+    --bg-dark: hsl(285deg 70% 10%);
+    --secondary-bg-dark: hsl(300deg 43% 6%);
     --tertiary-bg-dark: hsl(0deg 100% 0%);
-    --contrast-dark: hsl(0deg, 82%, 38%);
-    --contrast-2-dark: hsl(0deg, 87%, 31%);
+    --contrast-dark: hsl(0deg 82% 38%);
+    --contrast-2-dark: hsl(0deg 87% 31%);
 }

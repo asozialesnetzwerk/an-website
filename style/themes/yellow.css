@@ -1,12 +1,12 @@
 :root {
     /* light colors: */
     --main-light: hsl(50deg 100% 42%);
-    --main-2-light: hsl(50deg, 73%, 33%);
+    --main-2-light: hsl(50deg 73% 33%);
     --text-color-light: hsl(0deg 0% 0%);
     --secondary-text-color-light: hsl(0deg 0% 15%);
     --bg-light: hsl(180deg 30% 90%);
     --secondary-bg-light: hsl(180deg 10% 75%);
-    --tertiary-bg-light: hsl(180deg, 4%, 40%);
+    --tertiary-bg-light: hsl(180deg 4% 40%);
     --contrast-light: hsl(0deg 100% 33%);
     --contrast-2-light: hsl(5deg 90% 22%);
 

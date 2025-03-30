@@ -29,10 +29,13 @@ html {
     }
 }
 
+main * {
+    scroll-margin-top: var(--header-height);
+}
+
 :root[data-scheme="light"],
 html[data-scheme="light"] * {
     color-scheme: only light;
-
 
     --main: var(--main-light);
     --main-2: var(--main-2-light);
@@ -142,10 +145,6 @@ main {
 
     /* top, right, bottom, left */
     padding: 0.5rem 2vw 0;
-}
-
-main * {
-    scroll-margin-top: var(--header-height);
 }
 
 /* .text is for version page */
@@ -271,7 +270,9 @@ header {
 #open-pane {
     position: absolute;
     top: calc(calc(var(--header-height) - calc(var(--header-height) / 2)) / 2);
-    right: calc(calc(var(--header-height) - calc(var(--header-height) / 2)) / 2);
+    right: calc(
+        calc(var(--header-height) - calc(var(--header-height) / 2)) / 2
+    );
     width: calc(var(--header-height) / 2);
     height: calc(var(--header-height) / 2);
 }
@@ -301,8 +302,8 @@ header {
 #site-pane[state="open"],
 #site-pane:hover,
 #site-pane:focus-within,
-#open-pane:focus+#site-pane,
-#open-pane:hover+#site-pane {
+#open-pane:focus + #site-pane,
+#open-pane:hover + #site-pane {
     right: 0;
 }
 

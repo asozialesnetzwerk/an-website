@@ -6,8 +6,8 @@
     --secondary-text-color-light: hsl(0deg 0% 15%);
     --bg-light: hsl(180deg 30% 90%);
     --secondary-bg-light: hsl(180deg 10% 75%);
-    --tertiary-bg-light: hsl(180deg, 48%, 77%);
-    --contrast-light: hsl(195deg, 90%, 44%);
+    --tertiary-bg-light: hsl(180deg 48% 77%);
+    --contrast-light: hsl(195deg 90% 44%);
     --contrast-2-light: hsl(240deg 100% 50%);
 
     /* dark colors: */

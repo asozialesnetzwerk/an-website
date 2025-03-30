@@ -178,6 +178,34 @@ jobs:
       - name: Run Bandit
         run: bandit -rc pyproject.toml .
 
+  stylelint:
+    name: Stylelint
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.20"
+          cache: pnpm
+      - name: Enable corepack
+        run: corepack enable
+      - name: Cache
+        uses: pat-s/always-upload-cache@v3
+        with:
+          path: .stylelintcache
+          key: stylelint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          restore-keys: stylelint-${{ github.repository }}-${{ github.ref }}-
+      - name: Install Stylelint
+        run: pnpm install
+      - name: Run Stylelint
+        run: pnpm stylelint --cache style/
+
   eslint:
     name: ESLint
     runs-on: ubuntu-24.04
@@ -202,7 +230,7 @@ jobs:
           key: eslint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: eslint-${{ github.repository }}-${{ github.ref }}-
       - name: Install ESLint
-        run: env COREPACK_INTEGRITY_KEYS=0 pnpm install
+        run: pnpm install
       - name: Run ESLint
         run: pnpm eslint --cache .
 
@@ -224,7 +252,7 @@ jobs:
       - name: Enable corepack
         run: corepack enable
       - name: Install tsc
-        run: env COREPACK_INTEGRITY_KEYS=0 pnpm install
+        run: pnpm install
       - name: Run tsc
         run: |
           pnpm tsc
