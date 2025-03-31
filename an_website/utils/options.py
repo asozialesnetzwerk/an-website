@@ -24,6 +24,7 @@ from typing import Final, Generic, Literal, TypeVar, overload
 
 from tornado.web import RequestHandler
 
+from . import base_request_handler as brh  # pylint: disable=cyclic-import
 from .themes import THEMES
 from .utils import (
     BumpscosityValue,
@@ -49,7 +50,7 @@ class Option(ABC, Generic[T]):
 
     name: str
     parse_from_string: Callable[[str, T], T]
-    get_default_value: Callable[[RequestHandler], T]
+    get_default_value: Callable[[brh.BaseRequestHandler], T]
     is_valid: Callable[[T], bool] = lambda _: True
     normalize_string: Callable[[str], str] = lambda value: value
     value_to_string: Callable[[T], str] = str
@@ -74,7 +75,7 @@ class Option(ABC, Generic[T]):
             return self
         return self.get_value(obj.request_handler)
 
-    def __set__(self, obj: RequestHandler, value: object) -> None:
+    def __set__(self, obj: brh.BaseRequestHandler, value: object) -> None:
         """Make this read-only."""
         raise AttributeError()
 
@@ -96,7 +97,7 @@ class Option(ABC, Generic[T]):
                 return parsed
         return default
 
-    def get_form_appendix(self, request_handler: RequestHandler) -> str:
+    def get_form_appendix(self, request_handler: brh.BaseRequestHandler) -> str:
         """Return the form appendix for this option."""
         if not self.option_in_arguments(request_handler):
             return ""
@@ -107,7 +108,7 @@ class Option(ABC, Generic[T]):
 
     def get_value(
         self,
-        request_handler: RequestHandler,
+        request_handler: brh.BaseRequestHandler,
         *,
         include_body_argument: bool = True,
         include_query_argument: bool = True,
@@ -133,7 +134,9 @@ class Option(ABC, Generic[T]):
             default=self.get_default_value(request_handler),
         )
 
-    def option_in_arguments(self, request_handler: RequestHandler) -> bool:
+    def option_in_arguments(
+        self, request_handler: brh.BaseRequestHandler
+    ) -> bool:
         """Return whether the option is taken from the arguments."""
         return self.get_value(
             request_handler, include_cookie=False
@@ -183,7 +186,12 @@ class Options:
     theme: Option[str] = StringOption(
         name="theme",
         is_valid=THEMES.__contains__,
-        get_default_value=lambda _: "default",
+        get_default_value=lambda _: (
+            "default"
+            # pylint: disable-next=misplaced-comparison-constant
+            if _.now.month != 4 or 2 <= _.now.day
+            else "fun"
+        ),
         normalize_string=lambda s: s.replace("-", "_").lower(),
     )
     scheme: Option[ColourScheme] = Option(
@@ -215,7 +223,7 @@ class Options:
         parse_from_string=lambda v, u: parse_bumpscosity(v),
     )
 
-    def __init__(self, request_handler: RequestHandler) -> None:
+    def __init__(self, request_handler: brh.BaseRequestHandler) -> None:
         """Initialize the options."""
         self.__request_handler = request_handler
 
@@ -279,6 +287,6 @@ class Options:
                 yield value
 
     @property
-    def request_handler(self) -> RequestHandler:
+    def request_handler(self) -> brh.BaseRequestHandler:
         """Return the request handler."""
         return self.__request_handler
