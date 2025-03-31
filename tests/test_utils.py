@@ -88,10 +88,36 @@ def test_country_code_to_flag() -> None:
 
 def test_emojify() -> None:
     """Test the emojify function."""
-    assert utils.emojify("aBc 123 #!*") == "🇦\u200c🇧\u200c🇨 1⃣2⃣3⃣ #⃣❗*⃣"
-    assert utils.emojify("!?!?!!") == "⁉⁉‼"
-    assert utils.emojify("Üẞ?!") == "🇺\u200c🇪\u200c🇸\u200c🇸❓❗"
-    assert utils.emojify("2 + 2 - 3 = 0!") == "2⃣ ➕ 2⃣ ➖ 3⃣ = 0⃣❗"
+    assert tuple(utils.emojify("aBc 123 #!*")) == (
+        "🇦",
+        "🇧",
+        "🇨",
+        " ",
+        "1️⃣",
+        "2️⃣",
+        "3️⃣",
+        " ",
+        "#️⃣",
+        "❗",
+        "*️⃣",
+    )
+    assert tuple(utils.emojify("!?!?!!")) == ("⁉", "⁉", "‼")
+    assert tuple(utils.emojify("Üẞ?!")) == ("🇺", "🇪", "🇸", "🇸", "❓", "❗")
+    assert tuple(utils.emojify("2 + 2 - 3 = 0!  ")) == (
+        "2️⃣",
+        " ",
+        "➕",
+        " ",
+        "2️⃣",
+        " ",
+        "➖",
+        " ",
+        "3️⃣",
+        " = ",
+        "0️⃣",
+        "❗",
+        "  ",
+    )
 
 
 def test_n_from_set() -> None:

@@ -351,24 +351,44 @@ def emoji2url(emoji: str) -> str:
     return f"/static/openmoji/svg/{code.upper()}.svg?v={OPENMOJI_VERSION}"
 
 
-def emojify(string: str) -> str:
+EMOJI_MAPPING: Final[Mapping[str, str]] = {
+    "⁉": "⁉",
+    "‼": "‼",
+    "?": "❓",
+    "!": "❗",
+    "-": "➖",
+    "+": "➕",
+    "\U0001F51F": "\U0001F51F",
+}
+
+
+def emojify(string: str) -> Iterable[str]:
     """Emojify a given string."""
-    string = regex.sub(
-        r"[a-zA-Z]+",
-        lambda match: "\u200C".join(country_code_to_flag(match[0])),
-        replace_umlauts(string),
-    )
-    string = regex.sub(
-        r"[0-9#*]+", lambda match: f"{'⃣'.join(match[0])}⃣", string
-    )
-    return (
-        string.replace("!?", "⁉")
+    non_emojis: list[str] = []
+    for ch in (
+        replace_umlauts(string)
+        .replace("!?", "⁉")
         .replace("!!", "‼")
-        .replace("?", "❓")
-        .replace("!", "❗")
-        .replace("-", "➖")
-        .replace("+", "➕")
-    )
+        .replace("10", "\U0001F51F")
+    ):
+        emoji: str | None = None
+        if ch.isascii():
+            if ch.isdigit() or ch in "#*":
+                emoji = f"{ch}\uFE0F\u20E3"
+            elif ch.isalpha():
+                emoji = country_code_to_flag(ch)
+        emoji = EMOJI_MAPPING.get(ch, emoji)
+
+        if emoji is None:
+            non_emojis.append(ch)
+        else:
+            if non_emojis:
+                yield "".join(non_emojis)
+                non_emojis.clear()
+            yield emoji
+
+    if non_emojis:
+        yield "".join(non_emojis)
 
 
 async def geoip(

@@ -31,7 +31,7 @@ from collections.abc import (
     Sequence,
 )
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date
 from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
@@ -55,7 +55,7 @@ from .. import (
     pytest_is_running,
 )
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.utils import ModuleInfo, Permission, emojify, ratelimit
+from ..utils.utils import ModuleInfo, Permission, ratelimit
 
 DIR: Final = ROOT_DIR / "quotes"
 
@@ -117,11 +117,7 @@ class Author(QuotesObjBase):
 
     def __str__(self) -> str:
         """Return the name of the author."""
-        return (
-            emojify(self.name.strip())
-            if (now := datetime.now(timezone.utc)).day == 1 and now.month == 4
-            else self.name.strip()
-        )
+        return self.name
 
     async def fetch_new_data(self) -> Author:
         """Fetch new data from the API."""
@@ -162,11 +158,7 @@ class Quote(QuotesObjBase):
 
     def __str__(self) -> str:
         """Return the content of the quote."""
-        return (
-            emojify(self.quote.strip())
-            if (now := datetime.now(timezone.utc)).day == 1 and now.month == 4
-            else self.quote.strip()
-        )
+        return self.quote.strip()
 
     @property
     def author(self) -> Author:
