@@ -18,6 +18,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from os.path import join
 
+from time_machine import travel
+
 from an_website.commitment.commitment import get_commit_data
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
@@ -97,6 +99,7 @@ async def test_json_api(fetch: FetchCallable) -> None:  # noqa: F811
         }
 
 
+@travel(datetime(2021, 7, 21, 22, 29, 26, tzinfo=UTC), tick=False)
 async def test_yaml_api(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the YAML API."""
     for query in (
@@ -117,8 +120,8 @@ async def test_yaml_api(fetch: FetchCallable) -> None:  # noqa: F811
         assert len(response) == 3
         assert response == {
             "commit_message": "no_js → no_3rd_party",
+            "date": datetime.now(UTC),
             "hash": "7335914237808031fa15f32a854ba1e6b1544420",
-            "date": datetime(2021, 7, 21, 22, 29, 26, tzinfo=UTC),
         }
 
 
