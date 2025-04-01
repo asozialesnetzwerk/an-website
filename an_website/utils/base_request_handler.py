@@ -1114,11 +1114,6 @@ class BaseRequestHandler(_RequestHandler):
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
         self.set_header("Vary", "Accept, Authorization, Cookie")
-        self.origin_trial(
-            "AtmCLo6pBk5FVvAouMNTMnuKR6qZ59kLvYSyVFU54oq7wbRmx1cx1FhR+FivJqRPEeJAIEHXlM6L"
-            "hH7UcETrWw4AAABmeyJvcmlnaW4iOiJodHRwczovL2Fzb3ppYWwub3JnOjQ0MyIsImZlYXR1cmUi"
-            "OiJXZWJBcHBUYWJTdHJpcCIsImV4cGlyeSI6MTczMzE4NDAwMCwiaXNTdWJkb21haW4iOnRydWV9"
-        )
 
     set_default_headers.__doc__ = _RequestHandler.set_default_headers.__doc__
 

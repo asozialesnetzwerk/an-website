@@ -1,4 +1,4 @@
->=0.1% and supports es6-module
+>=0.1% and supports es6-module-dynamic-import
 Chrome 120
 Firefox 115
 Safari 15.6

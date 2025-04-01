@@ -8,7 +8,7 @@ const args = parseArgs(process.argv.slice(2), {
     string: ["targets", "format"],
     default: {
         targets:
-            ">=0.1% and supports es6-module, Chrome 120, Firefox 115, Safari 15.6",
+            ">=0.1% and supports es6-module-dynamic-import, Chrome 120, Firefox 115, Safari 15.6",
         format: "bundle",
     },
 });

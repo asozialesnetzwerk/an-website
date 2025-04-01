@@ -56,6 +56,8 @@ DISTRUSTED = (
     "54455F7129C20B1447C418F997168F24C58FC5023BF5DA5BE2EB6E1DD8902ED5",
     # CN=SwissSign Platinum CA - G2,O=SwissSign AG,C=CH
     "3B222E566711E992300DC0B15AB9473DAFDEF8C84D0CEF7D3317B4C1821D1436",
+    # CN=SwissSign Silver CA - G2,O=SwissSign AG,C=CH
+    "BE6C4DA2BBB9BA59B6F3939768374246C3C005993FA98F020D1DEDBED48A81D5",
     # CN=emSign Root CA - G2,O=eMudhra Technologies Limited,OU=emSign PKI,C=IN
     "1AA0C2709E831BD6E3B5129A00BA41F7EEEF020872F1E6504BF0F6C3F24F3AF3",
 )
@@ -70,8 +72,10 @@ def main() -> None:
         certs.append(load_pem_x509_certificate(path.read_bytes()))
     for cert in sorted(certs, key=lambda c: c.subject.rfc4514_string()):
         if cert.fingerprint(SHA256()).hex().upper() in DISTRUSTED:
+            print("DISTRUSTED:", cert.subject.rfc4514_string(), file=sys.stderr)
             continue
         if cert.not_valid_after_utc < datetime.now(UTC):
+            print("EXPIRED:", cert.subject.rfc4514_string(), file=sys.stderr)
             continue
         pem = cert.public_bytes(Encoding.PEM)
         print(cert.subject.rfc4514_string(), file=sys.stderr)
