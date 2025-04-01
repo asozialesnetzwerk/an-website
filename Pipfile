@@ -15,8 +15,8 @@ defusedxml = "<2"
 dill = "<2"
 ecs-logging = "==2.*"
 elastic-apm = "==6.*"
-elastic-enterprise-search = "<8.16"
-elasticsearch = {version = "==8.15.*", extras = ["async"]}
+elastic-enterprise-search = "==8.*"
+elasticsearch = {version = "==8.*", extras = ["async"]}
 emoji = "<3"
 # frozendict = "==2.*"
 get-version = "==3.*"
