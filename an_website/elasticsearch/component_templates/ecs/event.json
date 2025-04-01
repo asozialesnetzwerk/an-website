@@ -1,9 +1,9 @@
 {
   "_meta": {
     "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-event.html",
-    "ecs_version": "8.16.0"
+    "ecs_version": "8.17.0"
   },
-  "version": 81600,
+  "version": 81700,
   "template": {
     "mappings": {
       "properties": {
@@ -19,6 +19,7 @@
             },
             "category": {
               "ignore_above": 1024,
+              "synthetic_source_keep": "none",
               "type": "keyword"
             },
             "code": {
@@ -99,10 +100,11 @@
             },
             "type": {
               "ignore_above": 1024,
+              "synthetic_source_keep": "none",
               "type": "keyword"
             },
             "url": {
-              "ignore_above": 1024,
+              "ignore_above": 2083,
               "type": "keyword"
             }
           }

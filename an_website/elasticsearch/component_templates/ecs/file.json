@@ -1,9 +1,9 @@
 {
   "_meta": {
     "documentation": "https://www.elastic.co/guide/en/ecs/current/ecs-file.html",
-    "ecs_version": "8.16.0"
+    "ecs_version": "8.17.0"
   },
-  "version": 81600,
+  "version": 81700,
   "template": {
     "mappings": {
       "properties": {
@@ -14,6 +14,7 @@
             },
             "attributes": {
               "ignore_above": 1024,
+              "synthetic_source_keep": "none",
               "type": "keyword"
             },
             "code_signature": {
