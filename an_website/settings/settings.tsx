@@ -9,6 +9,7 @@ function createBumpscositySlider() {
     }
 
     select.classList.add("hidden");
+    select.setAttribute("aria-hidden", "true");
 
     const possibleLevels: number[] = [...select.options]
         .map((node) => parseInt(node.value));
@@ -18,6 +19,7 @@ function createBumpscositySlider() {
         <div
             tooltip={startLevel.toString()}
             style="position: absolute; translateX(-50%)"
+            aria-hidden="true"
         />
     ) as HTMLDivElement;
 
@@ -43,6 +45,7 @@ function createBumpscositySlider() {
         <input
             type="range"
             min="0"
+            id={"bumpscosity-slider"}
             max={(possibleLevels.length - 1).toString()}
             value={possibleLevels.indexOf(startLevel).toString()}
             onpointermove={() => {
@@ -52,6 +55,10 @@ function createBumpscositySlider() {
             onpointerleave={hideTooltip}
             onfocusin={showTooltip}
             onblur={hideTooltip}
+            aria-valuetext={select.value}
+            aria-valuemin={possibleLevels[0]!.toString()}
+            aria-valuemax={possibleLevels[possibleLevels.length - 1]!
+                .toString()}
             onchange={() => {
                 let sliderVal = parseInt(rangeSlider.value);
                 const promptStart = `Willst du die Bumpscosity wirklich auf ${
@@ -79,6 +86,7 @@ function createBumpscositySlider() {
 
                 rangeSlider.value = sliderVal.toString();
                 updateSelectAndTooltip();
+                rangeSlider.setAttribute("aria-valuetext", select.value);
             }}
         />
     ) as HTMLInputElement;
@@ -86,6 +94,8 @@ function createBumpscositySlider() {
     const parent = select.parentElement!;
     parent.style.position = "relative";
     parent.append(<>{currentValueDiv}{rangeSlider}</>);
+
+    rangeSlider.parentElement!.setAttribute("for", rangeSlider.id);
 
     updateSelectAndTooltip();
 }
