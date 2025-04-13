@@ -88,6 +88,7 @@ class SettingsPage(HTMLRequestHandler):
                             include_query_argument=False,
                         )
                     ),
+                    httponly=option.httponly,
                 )
 
             replace_url_with = self.fix_url(

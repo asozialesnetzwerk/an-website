@@ -7,10 +7,11 @@ declare global {
             children?: (Node | string)[];
         }
         interface ___Props {
-            id?: string;
-            className?: string;
-            tooltip?: string;
-            style?: string;
+            "id"?: string;
+            "className"?: string;
+            "tooltip"?: string;
+            "style"?: string;
+            "aria-label"?: string;
         }
 
         type __Events = {
@@ -28,6 +29,7 @@ declare global {
             li: __CanHaveChildren & __Props;
             a: __CanHaveChildren & __Props & { href?: string };
             p: __CanHaveChildren & __Props;
+            button: __CanHaveChildren & __Props & { title?: string };
             input: __Props & {
                 type: string;
                 min?: string;

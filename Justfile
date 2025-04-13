@@ -26,8 +26,9 @@ build_css *args:
 
 [positional-arguments]
 build_js_debug *args:
-    @just esbuild an_website/**/*[!_].ts an_website/**/*[!_].tsx \
+    @just esbuild an_website/*/*[!_].ts an_website/*/*[!_].tsx an_website/*/*/*[!_].ts an_website/*/*/*[!_].tsx \
         --tree-shaking=true \
+        --loader:.svg=text \
         --jsx-import-source=@utils --jsx=automatic \
         --bundle '--external:/static/*' --legal-comments=inline '--footer:js=// @license-end' \
         --format=esm --outbase=an_website --outdir=an_website/static/js \

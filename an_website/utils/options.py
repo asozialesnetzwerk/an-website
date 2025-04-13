@@ -54,6 +54,7 @@ class Option(ABC, Generic[T]):
     is_valid: Callable[[T], bool] = lambda _: True
     normalize_string: Callable[[str], str] = lambda value: value
     value_to_string: Callable[[T], str] = str
+    httponly: bool = True
 
     @overload
     def __get__(  # noqa: D105
@@ -200,6 +201,7 @@ class Options:
         get_default_value=lambda _: "system",
         normalize_string=str.lower,
         parse_from_string=lambda val, _: typing.cast(ColourScheme, val),
+        httponly=False,
     )
     compat: Option[bool] = BoolOption(name="compat", get_default_value=false)
     dynload: Option[bool] = BoolOption(name="dynload", get_default_value=false)
