@@ -142,7 +142,7 @@ def get_module_infos() -> str | tuple[ModuleInfo, ...]:
             )
             continue
 
-        if f"{potential_module}.*" in IGNORED_MODULES:
+        if f"{potential_module.name}.*" in IGNORED_MODULES:
             continue
 
         for potential_file in potential_module.iterdir():
@@ -874,7 +874,7 @@ def main(  # noqa: C901  # pragma: no cover
     """
     Start everything.
 
-    This is the main function that is called when running this programm.
+    This is the main function that is called when running this program.
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
