@@ -12,7 +12,7 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^18.19.84",
+    "@types/node": "^18.19.86",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
     "browserslist": "4.24.4",
@@ -38,7 +38,7 @@
     "stylelint-no-unsupported-browser-features": "^8.0.4",
     "stylelint-prettier": "^5.0.3",
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
-    "type-fest": "^4.38.0",
+    "type-fest": "^4.39.0",
     "typescript": "5.8.2",
     "typescript-eslint": "^8.29.0",
     "typescript-eslint-language-service": "^5.0.5"

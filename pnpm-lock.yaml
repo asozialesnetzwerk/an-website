@@ -20,7 +20,7 @@ importers:
     devDependencies:
       '@core-js/builder':
         specifier: 4.0.0-alpha.0
-        version: 4.0.0-alpha.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
+        version: 4.0.0-alpha.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
       '@core-js/compat':
         specifier: 4.0.0-alpha.0
         version: 4.0.0-alpha.0(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))
@@ -49,8 +49,8 @@ importers:
         specifier: ^8.42.3
         version: 8.42.3
       '@types/node':
-        specifier: ^18.19.84
-        version: 18.19.84
+        specifier: ^18.19.86
+        version: 18.19.86
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.29.0
         version: 8.29.0(@typescript-eslint/parser@8.29.0(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)(typescript@5.8.2)
@@ -68,7 +68,7 @@ importers:
         version: 1.0.30001690
       core-js-builder:
         specifier: 3.40.0
-        version: 3.40.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
+        version: 3.40.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
       core-js-compat:
         specifier: 3.40.0
         version: 3.40.0(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))
@@ -125,10 +125,10 @@ importers:
         version: 5.0.3(prettier@3.5.3)(stylelint@16.17.0(typescript@5.8.2))
       ts-node:
         specifier: https://asozial.beer/ts-node-241116.tgz
-        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.84)(typescript@5.8.2)
+        version: https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.86)(typescript@5.8.2)
       type-fest:
-        specifier: ^4.38.0
-        version: 4.38.0
+        specifier: ^4.39.0
+        version: 4.39.0
       typescript:
         specifier: 5.8.2
         version: 5.8.2
@@ -468,8 +468,8 @@ packages:
   '@types/minimatch@3.0.5':
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
 
-  '@types/node@18.19.84':
-    resolution: {integrity: sha512-ACYy2HGcZPHxEeWTqowTF7dhXN+JU1o7Gr4b41klnn6pj2LD6rsiGqSZojMdk1Jh2ys3m76ap+ae1vvE4+5+vg==}
+  '@types/node@18.19.86':
+    resolution: {integrity: sha512-fifKayi175wLyKyc5qUfyENhQ1dCNI1UNjp653d8kuYcPQN5JhX3dGuP/XmvPTg/xRBn1VTLpbmi+H/Mr7tLfQ==}
 
   '@typescript-eslint/eslint-plugin@8.29.0':
     resolution: {integrity: sha512-PAIpk/U7NIS6H7TEtN45SPGLQaHNgB7wSjsQV/8+KYokAb2T/gloOA/Bee2yd4/yKVhPKe5LlaUGhAZk5zmSaQ==}
@@ -1213,8 +1213,8 @@ packages:
   mdn-data@2.12.2:
     resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
 
-  mdn-data@2.18.0:
-    resolution: {integrity: sha512-gtCy1yim/vpHF/tq3B4Z43x3zKWpYeb4IM3d/Mf4oMYcNuoXOYEaqtoFlLHw9zd7+WNN3jNh6/WXyUrD3OIiwQ==}
+  mdn-data@2.19.0:
+    resolution: {integrity: sha512-vXxcNOxiaUhwoBShl2gd8xOQFeKWLosotfwPeRQsDwtruBSDFAzPPLfg2KMgdK8iz4RUVdswyWMuZwOVojrVZQ==}
 
   meow@13.2.0:
     resolution: {integrity: sha512-pxQJQzB6djGPXh08dacEloMFopsOqGVRKFPYvPOt9XDZ1HasbgDZA74CJGreSU4G3Ak7EFJGoiH2auq+yXISgA==}
@@ -1647,8 +1647,8 @@ packages:
     resolution: {integrity: sha512-Ne+eE4r0/iWnpAxD852z3A+N0Bt5RN//NjJwRd2VFHEmrywxf5vsZlh4R6lixl6B+wz/8d+maTSAkN1FIkI3LQ==}
     engines: {node: '>=10'}
 
-  type-fest@4.38.0:
-    resolution: {integrity: sha512-2dBz5D5ycHIoliLYLi0Q2V7KRaDlH0uWIvmk7TYlAg5slqwiPv1ezJdZm1QEM0xgk29oYWMCbIG7E6gHpvChlg==}
+  type-fest@4.39.0:
+    resolution: {integrity: sha512-w2IGJU1tIgcrepg9ZJ82d8UmItNQtOFJG0HCUE3SzMokKkTsruVDALl2fAdiEzJlfduoU+VyXJWIIUZ+6jV+nw==}
     engines: {node: '>=16'}
 
   typescript-eslint-language-service@5.0.5:
@@ -1776,11 +1776,11 @@ snapshots:
       js-tokens: 4.0.0
       picocolors: 1.1.1
 
-  '@core-js/builder@4.0.0-alpha.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)':
+  '@core-js/builder@4.0.0-alpha.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)':
     dependencies:
       '@core-js/compat': 4.0.0-alpha.0(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))
       core-js: 4.0.0-alpha.0
-      webpack: 5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
+      webpack: 5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2014,7 +2014,7 @@ snapshots:
 
   '@types/minimatch@3.0.5': {}
 
-  '@types/node@18.19.84':
+  '@types/node@18.19.86':
     dependencies:
       undici-types: 5.26.5
 
@@ -2358,12 +2358,12 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  core-js-builder@3.40.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2):
+  core-js-builder@3.40.0(patch_hash=bb37b972354a99b27b3a0543624dea87d3cab420b099b8252bb629e983ae5e63)(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2):
     dependencies:
       core-js: 3.40.0
       core-js-compat: 3.40.0(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))
       mkdirp: 0.5.6
-      webpack: 5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
+      webpack: 5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
     transitivePeerDependencies:
       - '@swc/core'
       - '@types/node'
@@ -2783,9 +2783,9 @@ snapshots:
 
   isexe@3.1.1: {}
 
-  jest-worker@27.5.1(@types/node@18.19.84):
+  jest-worker@27.5.1(@types/node@18.19.86):
     dependencies:
-      '@types/node': 18.19.84
+      '@types/node': 18.19.86
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -2842,7 +2842,7 @@ snapshots:
 
   mdn-data@2.12.2: {}
 
-  mdn-data@2.18.0: {}
+  mdn-data@2.19.0: {}
 
   meow@13.2.0: {}
 
@@ -3134,7 +3134,7 @@ snapshots:
       css-tree: 3.1.0
       is-plain-object: 5.0.0
       known-css-properties: 0.35.0
-      mdn-data: 2.18.0
+      mdn-data: 2.19.0
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.6
       postcss-selector-parser: 7.1.0
@@ -3214,14 +3214,14 @@ snapshots:
 
   tapable@2.2.1: {}
 
-  terser-webpack-plugin@5.3.14(@types/node@18.19.84)(esbuild@0.25.2)(webpack@5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)):
+  terser-webpack-plugin@5.3.14(@types/node@18.19.86)(esbuild@0.25.2)(webpack@5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
-      jest-worker: 27.5.1(@types/node@18.19.84)
+      jest-worker: 27.5.1(@types/node@18.19.86)
       schema-utils: 4.3.0
       serialize-javascript: 6.0.2
       terser: 5.39.0
-      webpack: 5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
+      webpack: 5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2)
     optionalDependencies:
       esbuild: 0.25.2
     transitivePeerDependencies:
@@ -3248,14 +3248,14 @@ snapshots:
     dependencies:
       typescript: 5.8.2
 
-  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.84)(typescript@5.8.2):
+  ts-node@https://asozial.beer/ts-node-241116.tgz(@types/node@18.19.86)(typescript@5.8.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node14': 14.1.3
       '@tsconfig/node16': 16.1.3
       '@tsconfig/node18': 18.2.4
       '@tsconfig/node20': 20.1.5
-      '@types/node': 18.19.84
+      '@types/node': 18.19.86
       acorn: 8.14.1
       acorn-walk: 8.3.4
       arg: 4.1.3
@@ -3272,7 +3272,7 @@ snapshots:
 
   type-fest@0.20.2: {}
 
-  type-fest@4.38.0: {}
+  type-fest@4.39.0: {}
 
   typescript-eslint-language-service@5.0.5(@typescript-eslint/parser@8.29.0(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)(typescript@5.8.2):
     dependencies:
@@ -3317,7 +3317,7 @@ snapshots:
 
   webpack-sources@3.2.3: {}
 
-  webpack@5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2):
+  webpack@5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.7
@@ -3339,7 +3339,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.14(@types/node@18.19.84)(esbuild@0.25.2)(webpack@5.98.0(@types/node@18.19.84)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2))
+      terser-webpack-plugin: 5.3.14(@types/node@18.19.86)(esbuild@0.25.2)(webpack@5.98.0(@types/node@18.19.86)(browserslist@4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76))(esbuild@0.25.2))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:
