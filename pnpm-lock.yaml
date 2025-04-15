@@ -57,6 +57,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.29.0
         version: 8.29.0(eslint@8.57.1)(typescript@5.8.2)
+      '@typescript/lib-dom':
+        specifier: npm:@types/web@^0.0.216
+        version: '@types/web@0.0.216'
       browserslist:
         specifier: 4.24.4
         version: 4.24.4(caniuse-lite@1.0.30001690)(electron-to-chromium@1.5.76)
@@ -470,6 +473,9 @@ packages:
 
   '@types/node@18.19.86':
     resolution: {integrity: sha512-fifKayi175wLyKyc5qUfyENhQ1dCNI1UNjp653d8kuYcPQN5JhX3dGuP/XmvPTg/xRBn1VTLpbmi+H/Mr7tLfQ==}
+
+  '@types/web@0.0.216':
+    resolution: {integrity: sha512-HLaPWQKq1oh6aQv1JLRsiH0vW4VsO+L/zTOeOUmoGBnLVR2wCj4w4oWfa/0O5JFMqZXWC6VpipqQU6B1v2M/qg==}
 
   '@typescript-eslint/eslint-plugin@8.29.0':
     resolution: {integrity: sha512-PAIpk/U7NIS6H7TEtN45SPGLQaHNgB7wSjsQV/8+KYokAb2T/gloOA/Bee2yd4/yKVhPKe5LlaUGhAZk5zmSaQ==}
@@ -2017,6 +2023,8 @@ snapshots:
   '@types/node@18.19.86':
     dependencies:
       undici-types: 5.26.5
+
+  '@types/web@0.0.216': {}
 
   '@typescript-eslint/eslint-plugin@8.29.0(@typescript-eslint/parser@8.29.0(eslint@8.57.1)(typescript@5.8.2))(eslint@8.57.1)(typescript@5.8.2)':
     dependencies:
