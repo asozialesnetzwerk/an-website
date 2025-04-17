@@ -67,6 +67,7 @@ except ModuleNotFoundError:
 else:
     zipfile.ZipFile = zopfli.ZipFile
 
+
 def get_version() -> str:
     """Get the version."""
     if path(".git").exists():
@@ -186,7 +187,7 @@ dist = setup(
 if BACKEND_REQUIRES:
     raise SetupRequirementsError(BACKEND_REQUIRES)
 
-for (type, _, file) in dist.dist_files:
+for type, _, file in dist.dist_files:
     if type != "sdist":
         continue
     if not file.endswith(".gz"):
