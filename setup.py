@@ -18,7 +18,13 @@
 
 from __future__ import annotations
 
+import os
 import sys
+import tarfile
+import typing
+import zipfile
+from collections.abc import Callable
+from datetime import datetime, timedelta, timezone
 from importlib.metadata import Distribution
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
@@ -32,8 +38,14 @@ BACKEND_REQUIRES = set()
 DULWICH = "dulwich==0.22.7"
 GET_VERSION = "get-version==3.5.5"
 TROVE_CLASSIFIERS = "trove-classifiers==2024.10.16"
+TIME_MACHINE = "time-machine==2.16.0"
+ZOPFLIPY = "zopflipy==1.11"
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
+
+EGGINFO = "egg_info" in sys.argv[1:]
+SDIST = "sdist" in sys.argv[1:]
+WHEEL = "bdist_wheel" in sys.argv[1:]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -47,6 +59,19 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: CPython",
     "Typing :: Typed",
 ]
+
+os.environ.update(
+    GIT_CONFIG_COUNT="1",
+    GIT_CONFIG_KEY_0="core.abbrev",
+    GIT_CONFIG_VALUE_0="10",
+)
+
+try:
+    import zopfli
+except ModuleNotFoundError:
+    BACKEND_REQUIRES.add(ZOPFLIPY)
+else:
+    zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
 def get_version() -> str:
@@ -74,7 +99,14 @@ if path(".git").exists():
     except ModuleNotFoundError:
         BACKEND_REQUIRES.add(DULWICH)
     else:
-        path("REVISION.txt").write_bytes(Repo(path(".")).head())  # type: ignore[arg-type]
+        repo = Repo(path(".").as_posix())
+        path("REVISION.TXT").write_bytes(repo.head())
+        obj = repo[repo.head()]
+        dt = datetime.fromtimestamp(
+            obj.author_time, timezone(timedelta(seconds=obj.author_timezone))
+        )
+        path("TIMESTMP.TXT").write_text(dt.isoformat())
+        del dt, obj, repo, Repo
 
     try:
         import trove_classifiers as trove
@@ -83,6 +115,38 @@ if path(".git").exists():
     else:
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
+
+if EGGINFO:
+    BACKEND_REQUIRES.add(TIME_MACHINE)
+else:
+    import time_machine
+
+    time_machine.travel(path("TIMESTMP.TXT").read_text(), tick=False).start()
+
+    os.environ["SOURCE_DATE_EPOCH"] = str(int(datetime.now().timestamp()))
+
+    class Tarfile(tarfile.TarFile):
+        """Tarfile sub-class."""
+
+        def add(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+            """Add stuff."""
+            orig_filter: Callable[[tarfile.TarInfo], tarfile.TarInfo] = (
+                kwargs.get("filter", lambda _: _)
+            )
+
+            def filter_(tarinfo: tarfile.TarInfo) -> tarfile.TarInfo:
+                tarinfo = orig_filter(tarinfo)
+                tarinfo.mtime = datetime.now().timestamp()
+                tarinfo.gid = 0
+                tarinfo.gname = ""
+                tarinfo.uid = 0
+                tarinfo.uname = ""
+                return tarinfo
+
+            kwargs["filter"] = filter_
+            return super().add(*args, **kwargs)
+
+    tarfile.open = Tarfile.open  # type: ignore[assignment]
 
 
 # <cursed>
@@ -94,20 +158,19 @@ if compress_script_path.exists():
     assert compress_spec and compress_spec.loader
     compress_module = module_from_spec(compress_spec)
     compress_spec.loader.exec_module(compress_module)
-    if "egg_info" in sys.argv[1:]:
+    if EGGINFO:
         BACKEND_REQUIRES.update(compress_module.get_missing_dependencies())
-    elif "sdist" in sys.argv[1:]:
+    elif SDIST:
         for _ in compress_module.compress_static_files():
             pass
     del compress_spec, compress_module
 del compress_script_path
 # </cursed>
 
-
 install_requires = path("pip-requirements.txt").read_text("UTF-8").split("\n")
 long_description = path("README.md").read_text("UTF-8")
 
-setup(
+dist = setup(
     author="Das Asoziale Netzwerk",
     author_email="contact@asozial.org",
     classifiers=classifiers,
@@ -134,3 +197,14 @@ setup(
 
 if BACKEND_REQUIRES:
     raise SetupRequirementsError(BACKEND_REQUIRES)
+
+for t, _, file in dist.dist_files:
+    if t != "sdist":
+        continue
+    if not file.endswith(".gz"):
+        continue
+    f = zopfli.ZOPFLI_FORMAT_GZIP  # type: ignore[possibly-undefined]
+    d = zopfli.ZopfliDecompressor(f)
+    data = d.decompress(Path(file).read_bytes()) + d.flush()
+    c = zopfli.ZopfliCompressor(f)
+    Path(file).write_bytes(c.compress(data) + c.flush())

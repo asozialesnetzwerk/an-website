@@ -19,7 +19,7 @@ BASE=docker.io/${REPOSITORY}@${DIGEST}
 
 VERSION=$(./setup.py --version)
 
-REVISION=$(cat REVISION.txt)
+REVISION=$(cat REVISION.TXT)
 
 buildah build \
   --build-arg BASE="${BASE}" \
