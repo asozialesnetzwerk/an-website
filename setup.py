@@ -103,7 +103,7 @@ if path(".git").exists():
         path("REVISION.TXT").write_bytes(repo.head())
         obj = repo[repo.head()]
         dt = datetime.fromtimestamp(
-            obj.author_time, timezone(timedelta(seconds == obj.author_timezone))
+            obj.author_time, timezone(timedelta(seconds=obj.author_timezone))
         )
         path("TIMESTMP.TXT").write_text(dt.isoformat())
         del dt, obj, repo, Repo
