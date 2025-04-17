@@ -1,6 +1,6 @@
 *.py[cod]
-/NOW.txt
-/REVISION.txt
+/TIMESTMP.TXT
+/REVISION.TXT
 /an_website.egg-info
 /build
 /dist

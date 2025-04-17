@@ -100,10 +100,10 @@ if path(".git").exists():
         BACKEND_REQUIRES.add(DULWICH)
     else:
         repo = Repo(path(".").as_posix())
-        path("REVISION.txt").write_bytes(repo.head())
+        path("REVISION.TXT").write_bytes(repo.head())
         obj = repo[repo.head()]
         dt = datetime.fromtimestamp(obj.author_time, UTC)
-        path("NOW.txt").write_text(dt.isoformat())
+        path("TIMESTMP.TXT").write_text(dt.isoformat())
         del dt, obj, repo, Repo
 
     try:
@@ -119,7 +119,7 @@ if EGGINFO:
 else:
     import time_machine
 
-    time_machine.travel(path("NOW.txt").read_text(), tick=False).start()
+    time_machine.travel(path("TIMESTMP.TXT").read_text(), tick=False).start()
 
     os.environ["SOURCE_DATE_EPOCH"] = str(int(datetime.now().timestamp()))
 
