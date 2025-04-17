@@ -65,12 +65,21 @@ jobs:
           sudo apt-get install -y libcurl4-openssl-dev
       - name: Install wheel
         run: pip install *.whl
-      - name: Test starting
+      - name: Test help
         timeout-minutes: 1
-        run: an-website -c
+        run: python -m an_website --help
       - name: Test starting
         timeout-minutes: 1
         run: python -m an_website -c
+      - name: Test version
+        timeout-minutes: 1
+        run: an-website --version --verbose --verbose | tee hashes.txt
+      - name: Upload coverage as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: hashes.txt
+          if-no-files-found: error
+          name: file-hashes-${{ matrix.python-version }}
 
   tests:
     name: Run tests
@@ -221,7 +230,7 @@ jobs:
     name: GitHub Pages
     runs-on: ubuntu-24.04
     needs:
-      - build
+      - test-wheel
       - deploy
     permissions:
       actions: read
@@ -240,27 +249,21 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.12.7
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
           name: coverage-3.12.7
-      - name: Download artifact
+      - name: Download file hashes
         uses: actions/download-artifact@v4
         with:
-          name: artifact
-      - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
-      - name: Install wheel
-        run: pip install *.whl
+          name: file-hashes-3.13
       - name: Make directory
         run: mkdir github-pages
-      - name: Hash files
-        run: an-website --version --verbose --verbose > github-pages/hashes.txt
+      - name: Move file hashes
+        run: mv hashes.txt github-pages/hashes.txt
       - name: Install Coverage.py
         run: pip install -c pip-constraints.txt coverage
       - name: Create coverage files
