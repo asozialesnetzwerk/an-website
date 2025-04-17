@@ -24,7 +24,7 @@ import tarfile
 import typing
 import zipfile
 from collections.abc import Callable
-from datetime import UTC, datetime
+from datetime import datetime, timedelta, timezone
 from importlib.metadata import Distribution
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
@@ -102,7 +102,9 @@ if path(".git").exists():
         repo = Repo(path(".").as_posix())
         path("REVISION.TXT").write_bytes(repo.head())
         obj = repo[repo.head()]
-        dt = datetime.fromtimestamp(obj.author_time, UTC)
+        dt = datetime.fromtimestamp(
+            obj.author_time, timezone(timedelta(seconds==obj.author_timezone))
+        )
         path("TIMESTMP.TXT").write_text(dt.isoformat())
         del dt, obj, repo, Repo
 
