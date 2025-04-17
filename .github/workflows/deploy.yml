@@ -74,7 +74,7 @@ jobs:
       - name: Test version
         timeout-minutes: 1
         run: an-website --version --verbose --verbose | tee hashes.txt
-      - name: Upload coverage as artifact
+      - name: Upload file hashes as artifact
         uses: actions/upload-artifact@v4
         with:
           path: hashes.txt
