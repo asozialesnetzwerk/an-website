@@ -218,6 +218,7 @@ jobs:
     name: GitHub Pages
     runs-on: ubuntu-24.04
     needs:
+      - build
       - deploy
     permissions:
       actions: read
@@ -243,6 +244,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-3.12.7
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact
+      - name: Prepare an_website
+        run: |
+          rm -fr an_website
+          tar xf an_website*.tar.gz
+          mv an_website*/an_website .
       - name: Make directory
         run: mkdir github-pages
       - name: Hash files
