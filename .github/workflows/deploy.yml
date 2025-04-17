@@ -248,15 +248,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
-      - name: Prepare an_website
+      - name: Install libcurl4-openssl-dev for compiling PycURL
         run: |
-          rm -fr an_website
-          tar xf an_website*.tar.gz
-          mv an_website*/an_website .
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+      - name: Install wheel
+        run: pip install *.whl
       - name: Make directory
         run: mkdir github-pages
       - name: Hash files
-        run: ./scripts/hash_files.py > github-pages/hashes.txt
+        run: python -m an_website --version --verbose --verbose > github-pages/hashes.txt
       - name: Install Coverage.py
         run: pip install -c pip-constraints.txt coverage
       - name: Create coverage files

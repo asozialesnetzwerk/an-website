@@ -887,6 +887,26 @@ def main(  # noqa: C901  # pragma: no cover
         get_arguments_without_help(), ArgparseNamespace()
     )
 
+    if args.version:
+        print("Version:", VERSION)
+        if args.verbose:
+            # pylint: disable-next=import-outside-toplevel
+            from .version.version import (
+                get_file_hashes,
+                get_hash_of_file_hashes,
+            )
+
+            print()
+            print("Hash der Datei-Hashes:")
+            print(get_hash_of_file_hashes())
+
+            if args.verbose > 1:
+                print()
+                print("Datei-Hashes:")
+                print(get_file_hashes())
+
+        return 0
+
     config = config or BetterConfigParser.from_path(*args.config)
     assert config is not None
     config.add_override_argument_parser(parser)

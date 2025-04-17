@@ -130,10 +130,12 @@ class ArgparseNamespace(argparse.Namespace):
     """A class to fake type hints for argparse.Namespace."""
 
     # pylint: disable=too-few-public-methods
-    __slots__ = ("config", "save_config_to")
+    __slots__ = ("config", "save_config_to", "version", "verbose")
 
     config: list[pathlib.Path]
     save_config_to: pathlib.Path | None
+    version: bool
+    verbose: int
 
 
 class AwaitableValue[T](Awaitable[T]):
@@ -318,6 +320,17 @@ def country_code_to_flag(code: str) -> str:
 def create_argument_parser() -> argparse.ArgumentParser:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--version",
+        help="show the version of the website",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--verbose",
+        action="count",
+        default=0,
+    )
     parser.add_argument(
         "-c",
         "--config",
