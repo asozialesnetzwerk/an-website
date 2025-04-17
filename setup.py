@@ -65,7 +65,7 @@ try:
 except ModuleNotFoundError:
     BACKEND_REQUIRES.add(ZOPFLIPY)
 else:
-    zipfile.ZipFile = zopfli.ZipFile
+    zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
 def get_version() -> str:
@@ -118,7 +118,10 @@ else:
     os.environ["SOURCE_DATE_EPOCH"] = str(int(datetime.now().timestamp()))
 
     class Tarfile(tarfile.TarFile):
+        """Tarfile sub-class."""
+
         def add(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+            """Add stuff."""
             orig_filter: Callable[[tarfile.TarInfo], tarfile.TarInfo] = (
                 kwargs.get("filter", lambda _: _)
             )
@@ -135,7 +138,7 @@ else:
             kwargs["filter"] = filter_
             return super().add(*args, **kwargs)
 
-    tarfile.open = Tarfile.open
+    tarfile.open = Tarfile.open  # type: ignore[assignment]
 
 
 # <cursed>
@@ -187,12 +190,13 @@ dist = setup(
 if BACKEND_REQUIRES:
     raise SetupRequirementsError(BACKEND_REQUIRES)
 
-for type, _, file in dist.dist_files:
-    if type != "sdist":
+for t, _, file in dist.dist_files:
+    if t != "sdist":
         continue
     if not file.endswith(".gz"):
         continue
-    d = zopfli.ZopfliDecompressor(zopfli.ZOPFLI_FORMAT_GZIP)
+    f = zopfli.ZOPFLI_FORMAT_GZIP  # type: ignore[possibly-undefined]
+    d = zopfli.ZopfliDecompressor(f)
     data = d.decompress(Path(file).read_bytes()) + d.flush()
-    c = zopfli.ZopfliCompressor(zopfli.ZOPFLI_FORMAT_GZIP)
+    c = zopfli.ZopfliCompressor(f)
     Path(file).write_bytes(c.compress(data) + c.flush())
