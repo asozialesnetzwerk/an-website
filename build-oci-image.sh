@@ -17,7 +17,7 @@ HEADERS=$(curl -sSf --head --oauth2-bearer "${TOKEN}" -H "Accept: application/vn
 DIGEST=$(echo "${HEADERS}" | grep "digest" | cut -d " " -f 2 | git stripspace)
 BASE=docker.io/${REPOSITORY}@${DIGEST}
 
-VERSION=$(./setup.py --version)
+VERSION=$(./setup.py --version || :)
 
 REVISION=$(cat REVISION.TXT)
 
