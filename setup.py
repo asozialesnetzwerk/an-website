@@ -45,7 +45,6 @@ filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 EGGINFO = "egg_info" in sys.argv[1:]
 SDIST = "sdist" in sys.argv[1:]
-WHEEL = "bdist_wheel" in sys.argv[1:]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -116,11 +115,11 @@ if path(".git").exists():
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
 
-if EGGINFO:
+try:
+    import time_machine
+except ModuleNotFoundError:
     BACKEND_REQUIRES.add(TIME_MACHINE)
 else:
-    import time_machine
-
     time_machine.travel(path("TIMESTMP.TXT").read_text(), tick=False).start()
 
     os.environ["SOURCE_DATE_EPOCH"] = str(int(datetime.now().timestamp()))

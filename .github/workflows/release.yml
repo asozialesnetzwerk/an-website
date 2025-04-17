@@ -37,6 +37,8 @@ jobs:
         run: pip install "build==1.*"
       - name: Build
         run: python -m build
+      - name: Hash
+        run: sha256sum dist/*
       - name: Upload as build artifact
         uses: actions/upload-artifact@v4
         with:
