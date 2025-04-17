@@ -67,6 +67,9 @@ jobs:
         run: pip install *.whl
       - name: Test starting
         timeout-minutes: 1
+        run: an-website -c
+      - name: Test starting
+        timeout-minutes: 1
         run: python -m an_website -c
 
   tests:
@@ -257,7 +260,7 @@ jobs:
       - name: Make directory
         run: mkdir github-pages
       - name: Hash files
-        run: python -m an_website --version --verbose --verbose > github-pages/hashes.txt
+        run: an-website --version --verbose --verbose > github-pages/hashes.txt
       - name: Install Coverage.py
         run: pip install -c pip-constraints.txt coverage
       - name: Create coverage files
