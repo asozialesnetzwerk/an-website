@@ -60,6 +60,12 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+os.environ.update(
+    GIT_CONFIG_COUNT="1",
+    GIT_CONFIG_KEY_0="core.abbrev",
+    GIT_CONFIG_VALUE_0="10",
+)
+
 try:
     import zopfli
 except ModuleNotFoundError:
