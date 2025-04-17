@@ -1,4 +1,5 @@
 *.py[cod]
+/NOW.txt
 /REVISION.txt
 /an_website.egg-info
 /build
