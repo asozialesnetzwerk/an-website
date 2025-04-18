@@ -19,13 +19,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Fetch tags
-        if: github.event_name == 'schedule'
-        run: git fetch --tags
       - name: Check if already released
         if: github.event_name == 'schedule'
         run: test -z $(git tag --list "v*" --points-at)
@@ -528,3 +527,4 @@ jobs:
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
       - name: Tag image as latest
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest
+        if: github.ref_type == 'tag' || github.event_name == 'schedule'

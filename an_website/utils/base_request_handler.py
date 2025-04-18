@@ -160,6 +160,7 @@ class BaseRequestHandler(_RequestHandler):
 
     ELASTIC_RUM_URL: ClassVar[str] = (
         f"/@apm-rum/elastic-apm-rum.umd{'' if sys.flags.dev_mode else '.min'}.js"
+        "?v=5.12.0"
     )
 
     COMPUTE_ETAG: ClassVar[bool] = True
