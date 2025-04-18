@@ -4,11 +4,13 @@ on:
     - cron: "0 0 1 * *"
   push:
     tags: [ v* ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-24.04
@@ -55,9 +57,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12.7  # EL10
+          - 3.12.7 # EL10
           - 3.13
-          - 3.14    # π
+          - 3.14 # π
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -100,12 +102,12 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - 3.12.7  # EL10
+          - 3.12.7 # EL10
           - 3.13
-          - 3.14    # π
+          - 3.14 # π
         #license:
-          #- basic
-          #- trial
+        #- basic
+        #- trial
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v15
@@ -169,6 +171,7 @@ jobs:
       - test-running-oci-image
       - test-wheel
       - tests
+    if: github.event_name == 'schedule' || github.ref_type == "tag"
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -210,6 +213,7 @@ jobs:
       - test-running-oci-image
       - test-wheel
       - tests
+    if: github.event_name == 'schedule' || 'github.ref_type == "tag"
     permissions: {}
     steps:
       - name: Setup Python
@@ -233,7 +237,7 @@ jobs:
   sourcemaps:
     name: Upload sourcemaps
     runs-on: ubuntu-24.04
-    if: github.event_name == 'schedule'
+    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
     needs:
       - test-wheel
       - tests
@@ -284,7 +288,7 @@ jobs:
   deploy:
     name: Deploy website
     runs-on: ubuntu-24.04
-    if: github.event_name == 'schedule'
+    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
     needs:
       - test-wheel
       - sourcemaps
@@ -312,8 +316,9 @@ jobs:
   github-pages:
     name: GitHub Pages
     runs-on: ubuntu-24.04
-    if: github.event_name == 'schedule'
+    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
     needs:
+      - test-wheel
       - deploy
     permissions:
       actions: read
@@ -474,6 +479,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
+    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
     permissions:
       packages: write
     steps:
@@ -504,7 +510,9 @@ jobs:
           from time import strftime, gmtime
 
           path = Path(os.getenv("GITHUB_OUTPUT"))
-          if "${{ github.event_name }}" == "schedule":
+          if "${{ github.ref }}" == "refs/heads/main":
+            path.write_text("version=dev")
+          elif "${{ github.event_name }}" == "schedule":
             path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             path.write_text("version=${{ github.ref_name }}\n")
