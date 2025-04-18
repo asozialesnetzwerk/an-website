@@ -15,7 +15,7 @@ jobs:
     name: Build
     runs-on: ubuntu-24.04
     permissions:
-      contents: ${{ github.event_name == 'schedule' && 'write' || 'read' }}
+      contents: 'write'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -171,7 +171,7 @@ jobs:
       - test-running-oci-image
       - test-wheel
       - tests
-    if: github.event_name == 'schedule' || github.ref_type == "tag"
+    if: github.event_name == 'schedule' || github.ref_type == 'tag'
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -213,7 +213,7 @@ jobs:
       - test-running-oci-image
       - test-wheel
       - tests
-    if: github.event_name == 'schedule' || 'github.ref_type == "tag"
+    if: github.event_name == 'schedule' || 'github.ref_type == 'tag'
     permissions: {}
     steps:
       - name: Setup Python
@@ -237,7 +237,7 @@ jobs:
   sourcemaps:
     name: Upload sourcemaps
     runs-on: ubuntu-24.04
-    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
+    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
       - test-wheel
       - tests
@@ -288,7 +288,7 @@ jobs:
   deploy:
     name: Deploy website
     runs-on: ubuntu-24.04
-    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
+    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
       - test-wheel
       - sourcemaps
@@ -316,7 +316,7 @@ jobs:
   github-pages:
     name: GitHub Pages
     runs-on: ubuntu-24.04
-    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
+    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
       - test-wheel
       - deploy
@@ -479,7 +479,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
-    if: 'github.ref_type == "tag" || github.ref == "refs/heads/main" || github.event_name == "schedule"'
+    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     permissions:
       packages: write
     steps:
