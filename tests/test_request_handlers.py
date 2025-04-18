@@ -557,11 +557,13 @@ async def test_request_handlers7(fetch: FetchCallable) -> None:  # noqa: F811
         url = f"/@apm-rum/elastic-apm-rum.umd{'.min' if boolean else ''}.js"
         assert_valid_response(
             await fetch(url, follow_redirects=True),
-            "application/javascript",
+            "text/javascript; charset=UTF-8",
+            needs_to_end_with_line_feed=False,
         )
     assert_valid_response(
         await fetch(url + ".map", follow_redirects=True),  # type: ignore[possibly-undefined]  # noqa: B950
-        "application/json",
+        "text/plain; charset=UTF-8",
+        needs_to_end_with_line_feed=False,
     )
 
 
