@@ -138,13 +138,13 @@ def compress_dir(
     dir_: Path, compressors: Collection[FileCompressor]
 ) -> Iterable[CompressionResult]:
     """Compress a directory."""
-    assert dir_.is_dir(), "needs to be a directory"
+    assert dir_.exists(), "dir must exist"
     compressed_extensions = frozenset(c.file_extension() for c in compressors)
     ignored_extensions = compressed_extensions | IGNORED_EXTENSIONS
 
     results = []
 
-    for file in dir_.rglob("*"):
+    for file in [dir_] if dir_.is_file() else dir_.rglob("*"):
         if not file.is_file():
             continue
         if file.suffix.removeprefix(".") in ignored_extensions:
@@ -173,6 +173,7 @@ def get_static_dirs() -> Iterable[Path]:
     source_dir = Path(__file__).absolute().parent.parent / "an_website"
     yield source_dir / "static"
     yield source_dir / "soundboard" / "files"
+    yield source_dir / "vendored/apm-rum/elastic-apm-rum.umd.min.js"
 
 
 def get_compressors() -> Collection[FileCompressor]:

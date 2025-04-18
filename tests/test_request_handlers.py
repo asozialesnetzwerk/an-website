@@ -554,10 +554,7 @@ async def test_request_handlers7(fetch: FetchCallable) -> None:  # noqa: F811
     assert response.body.decode("UTF-8") == "🏓\n"
 
     for boolean in (bool(_) for _ in range(2)):
-        url = (
-            "/@elastic/apm-rum@5.12.0/dist/bundles/elastic-apm-rum"
-            f".umd{'.min' if boolean else ''}.js"
-        )
+        url = f"/@apm-rum/elastic-apm-rum.umd{'.min' if boolean else ''}.js"
         assert_valid_response(
             await fetch(url, follow_redirects=True),
             "application/javascript",

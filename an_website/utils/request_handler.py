@@ -21,16 +21,13 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Mapping
-from datetime import datetime, timedelta, timezone
 from http.client import responses
 from typing import Any, ClassVar, Final, override
-from urllib.parse import unquote, urlsplit
+from urllib.parse import unquote
 
 import regex
-from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
-from .. import CA_BUNDLE_PATH, DIR as ROOT_DIR
 from .base_request_handler import BaseRequestHandler
 from .utils import (
     SUS_PATHS,
@@ -198,79 +195,3 @@ class ZeroDivision(BaseRequestHandler):
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
         if self.request.method != "OPTIONS":
             420 / 0  # pylint: disable=pointless-statement
-
-
-class ElasticRUM(BaseRequestHandler):
-    """A request handler that serves the Elastic RUM Agent."""
-
-    POSSIBLE_CONTENT_TYPES = (
-        "application/javascript",
-        "application/json",
-        "text/javascript",  # RFC 9239 (6)
-    )
-
-    URL: ClassVar[str] = (
-        "https://unpkg.com/@elastic/apm-rum@{}"
-        "/dist/bundles/elastic-apm-rum.umd{}.js{}"
-    )
-
-    SCRIPTS: ClassVar[dict[str, bytes]] = {}
-
-    @override
-    async def get(
-        self,
-        version: str,
-        spam: str = "",
-        eggs: str = "",
-        *,
-        head: bool = False,
-    ) -> None:
-        """Serve the RUM script."""
-        self.handle_accept_header(
-            ("application/json",)
-            if eggs
-            else ("application/javascript", "text/javascript")
-        )
-
-        # pylint: disable=redefined-outer-name
-        if (key := version + spam + eggs) not in self.SCRIPTS and not head:
-            response = await AsyncHTTPClient().fetch(
-                self.URL.format(version, spam, eggs),
-                raise_error=False,
-                ca_certs=CA_BUNDLE_PATH,
-            )
-            if response.code != 200:
-                raise HTTPError(response.code, reason=response.reason)
-            self.SCRIPTS[key] = response.body
-            new_path = urlsplit(response.effective_url).path
-            if new_path.endswith(".js"):
-                BaseRequestHandler.ELASTIC_RUM_URL = new_path
-            LOGGER.info("RUM script %s updated", new_path)
-            self.redirect(self.fix_url(new_path), False)
-            return
-
-        if spam and not eggs:  # if serving minified JS (URL contains ".min")
-            self.set_header(
-                "SourceMap", self.request.full_url().split("?")[0] + ".map"
-            )
-
-        self.set_header(
-            "Expires", datetime.now(timezone.utc) + timedelta(days=365)
-        )
-        self.set_header(
-            "Cache-Control",
-            f"public, immutable, max-age={60 * 60 * 24 * 365}",
-        )
-
-        return await self.finish(self.SCRIPTS[key] or b"")
-
-
-for key, file in {
-    "5.12.0": "elastic-apm-rum.umd.js",
-    "5.12.0.min": "elastic-apm-rum.umd.min.js",
-    "5.12.0.min.map": "elastic-apm-rum.umd.min.js.map",
-}.items():
-    path = ROOT_DIR / "vendored" / "apm-rum" / file
-    ElasticRUM.SCRIPTS[key] = path.read_bytes()
-
-del key, file, path  # type: ignore[possibly-undefined]  # pylint: disable=undefined-loop-variable  # noqa: B950

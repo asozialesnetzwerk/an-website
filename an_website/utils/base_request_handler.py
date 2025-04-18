@@ -159,8 +159,7 @@ class BaseRequestHandler(_RequestHandler):
     # pylint: disable=too-many-instance-attributes, too-many-public-methods
 
     ELASTIC_RUM_URL: ClassVar[str] = (
-        "/@elastic/apm-rum@5.12.0/dist/bundles/elastic-apm-rum"
-        f".umd{'.min' if not sys.flags.dev_mode else ''}.js"
+        f"/@apm-rum/elastic-apm-rum.umd{'' if sys.flags.dev_mode else '.min'}.js"
     )
 
     COMPUTE_ETAG: ClassVar[bool] = True

@@ -17,18 +17,18 @@ from __future__ import annotations
 
 import sys
 
+from an_website.utils.static_file_from_traversable import (
+    TraversableStaticFileHandler,
+)
+
+from .. import DIR as ROOT_DIR
 from .utils import ModuleInfo
 
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
     # pylint: disable-next=import-outside-toplevel
-    from .request_handler import (
-        ElasticRUM,
-        ErrorPage,
-        NotFoundHandler,
-        ZeroDivision,
-    )
+    from .request_handler import ErrorPage, NotFoundHandler, ZeroDivision
 
     return ModuleInfo(
         name="Utilities",
@@ -41,9 +41,9 @@ def get_module_info() -> ModuleInfo:
             ),
             (r"/([1-5][0-9]{2}).html?", ErrorPage, {}),
             (
-                r"/@elastic/apm-rum@(5\.12\.0)/dist/bundles"
-                r"/elastic-apm-rum.umd(\.min|).js(\.map|)",
-                ElasticRUM,
+                r"/@apm-rum/(.*)",
+                TraversableStaticFileHandler,
+                {"root": ROOT_DIR / "vendored/apm-rum", "hashes": {}},
             ),
         ),
         hidden=True,
