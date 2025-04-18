@@ -213,7 +213,7 @@ jobs:
       - test-running-oci-image
       - test-wheel
       - tests
-    if: github.event_name == 'schedule' || 'github.ref_type == 'tag'
+    if: github.event_name == 'schedule' || github.ref_type == 'tag'
     permissions: {}
     steps:
       - name: Setup Python
