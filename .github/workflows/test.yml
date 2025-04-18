@@ -1,4 +1,4 @@
-name: Release
+name: Test
 on:
   schedule:
     - cron: "0 0 1 * *"
@@ -15,7 +15,7 @@ jobs:
     name: Build
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
+      contents: ${{ github.event_name == 'schedule' && 'write' || 'read' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
