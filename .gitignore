@@ -29,7 +29,9 @@
 /.idea
 
 # compressed files
-/an_website/static/**/*gz
-/an_website/static/**/*zst
-/an_website/soundboard/files/**/*gz
-/an_website/soundboard/files/**/*zst
+/an_website/static/**/*.gz
+/an_website/static/**/*.zst
+/an_website/soundboard/files/**/*.gz
+/an_website/soundboard/files/**/*.zst
+/an_website/vendored/apm-rum/*.gz
+/an_website/vendored/apm-rum/*.zst
