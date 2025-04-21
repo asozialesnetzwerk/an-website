@@ -23,8 +23,9 @@ import sys
 import tarfile
 import typing
 import zipfile
-from collections.abc import Callable
+from collections.abc import Callable, Mapping, Set
 from datetime import datetime, timedelta, timezone
+from functools import cache
 from importlib.metadata import Distribution
 from importlib.util import module_from_spec, spec_from_file_location
 from os import PathLike
@@ -34,12 +35,14 @@ from warnings import filterwarnings
 from setuptools import setup
 from setuptools.build_meta import SetupRequirementsError
 
-BACKEND_REQUIRES = set()
-DULWICH = "dulwich==0.22.7"
-GET_VERSION = "get-version==3.5.5"
-TROVE_CLASSIFIERS = "trove-classifiers==2024.10.16"
-TIME_MACHINE = "time-machine==2.16.0"
-ZOPFLIPY = "zopflipy==1.11"
+BACKEND_REQUIRES: set[str] = set()
+DULWICH = "dulwich"
+GET_VERSION = "get-version"
+TROVE_CLASSIFIERS = "trove-classifiers"
+TIME_MACHINE = "time-machine"
+ZOPFLIPY = "zopflipy"
+
+WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE, ZOPFLIPY}
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -73,6 +76,19 @@ else:
     zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
+@cache
+def get_constraints() -> Mapping[str, str]:
+    """Get the constraints for the libraries."""
+    constraints_file = path("pip-constraints.txt")
+    if not constraints_file.exists():
+        constraints_file = path("CNSTRNTS.TXT")
+
+    return {
+        line.split("==")[0].strip(): line.strip()
+        for line in constraints_file.read_text().splitlines()
+    }
+
+
 def get_version() -> str:
     """Get the version."""
     if path(".git").exists():
@@ -91,6 +107,12 @@ def path(path: str | PathLike[str]) -> Path:
     # pylint: disable=redefined-outer-name
     return Path(__file__).resolve().parent / path
 
+
+if EGGINFO and path("pip-constraints.txt").exists():
+    path("CNSTRNTS.TXT").write_text(
+        "\n".join(sorted([get_constraints()[dep] for dep in WHEEL_BUILD_DEPS]))
+        + "\n"
+    )
 
 if path(".git").exists():
     try:
@@ -195,7 +217,9 @@ dist = setup(
 )
 
 if BACKEND_REQUIRES:
-    raise SetupRequirementsError(BACKEND_REQUIRES)
+    raise SetupRequirementsError(
+        {get_constraints()[dep] for dep in BACKEND_REQUIRES}
+    )
 
 for t, _, file in dist.dist_files:
     if t != "sdist":

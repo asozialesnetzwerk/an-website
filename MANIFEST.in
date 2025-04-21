@@ -7,5 +7,6 @@ global-exclude tsconfig.json
 global-exclude .eslintrc.*
 include build-oci-image.sh
 include Containerfile
-include TIMESTMP.TXT
+include CNSTRNTS.TXT
 include REVISION.TXT
+include TIMESTMP.TXT
