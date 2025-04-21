@@ -45,8 +45,8 @@ jobs:
         with:
           path: dist
 
-  test-wheel:
-    name: Test wheel
+  test-distribution:
+    name: Test distribution
     runs-on: ubuntu-24.04
     needs:
       - build
@@ -59,6 +59,11 @@ jobs:
           - 3.12.7  # EL10
           - 3.13
           - 3.14    # π
+        distribution:
+          - name: wheel
+            glob: '*.whl'
+          - name: sdist
+            glob: '*.tar.gz'
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -73,8 +78,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev
-      - name: Install wheel
-        run: pip install *.whl
+      - name: Check dirty
+        run: echo ${{ matrix.distribution.glob }} | grep -v dirty
+      - name: Install ${{ matrix.distribution.name }}
+        run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
         timeout-minutes: 1
         run: python -m an_website --help
@@ -83,13 +90,16 @@ jobs:
         run: python -m an_website -c
       - name: Test version
         timeout-minutes: 1
+        run: an-website --version | grep -v dirty
+      - name: Test verbose version
+        timeout-minutes: 1
         run: an-website --version --verbose --verbose | tee hashes.txt
       - name: Upload file hashes as artifact
         uses: actions/upload-artifact@v4
         with:
           path: hashes.txt
           if-no-files-found: error
-          name: file-hashes-${{ matrix.python-version }}
+          name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
 
   tests:
     name: Run tests
@@ -168,7 +178,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
-      - test-wheel
+      - test-distribution
       - tests
     if: github.event_name == 'schedule' || github.ref_type == 'tag'
     steps:
@@ -210,7 +220,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
-      - test-wheel
+      - test-distribution
       - tests
     if: github.event_name == 'schedule' || github.ref_type == 'tag'
     permissions: {}
@@ -238,7 +248,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
-      - test-wheel
+      - test-distribution
       - tests
     permissions: {}
     outputs:
@@ -289,7 +299,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
-      - test-wheel
+      - test-distribution
       - sourcemaps
     permissions: {}
     environment:
@@ -317,7 +327,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
-      - test-wheel
+      - test-distribution
       - deploy
     permissions:
       actions: read
@@ -346,7 +356,7 @@ jobs:
       - name: Download file hashes
         uses: actions/download-artifact@v4
         with:
-          name: file-hashes-3.13
+          name: file-hashes-wheel-3.12.7
       - name: Make directory
         run: mkdir github-pages
       - name: Move file hashes
