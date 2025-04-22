@@ -18,9 +18,11 @@ from __future__ import annotations
 import urllib.parse
 from datetime import datetime, timezone as tz
 from functools import cache
+from io import BytesIO
 
 import orjson as json
 import pytest
+from PIL import Image
 
 import an_website.quotes.quotes as main_page
 from an_website.quotes import create, utils as quotes
@@ -273,6 +275,11 @@ async def test_quote_request_handlers(
         ).body
     )
 
+
+async def test_quote_image_handlers(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
+    """Text downloading quotes as images."""
     for ext, name in FILE_EXTENSIONS.items():
         content_type = CONTENT_TYPES[name]
         image1 = assert_valid_response(
@@ -295,7 +302,24 @@ async def test_quote_request_handlers(
                 ),
                 content_type,
             ).body
-            assert image1 == image2 == image3 == image4 or name == "xlsx"
+            if name == "xlsx":
+                continue
+            assert image1 == image2 == image3 == image4
+            if name == "pdf":
+                continue
+            img = Image.open(BytesIO(image4), formats=[name])
+            try:
+                img.load()
+                assert img.width == 1000
+                assert img.height == 750
+                if name == "gif":
+                    assert img.getpixel((0, 0)) == 255
+                elif name == "spider":
+                    assert not img.getpixel((0, 0))
+                else:
+                    assert img.getpixel((0, 0)) == (0, 0, 0), f"{name}"
+            finally:
+                img.close()
 
 
 def test_parsing_vote_str() -> None:

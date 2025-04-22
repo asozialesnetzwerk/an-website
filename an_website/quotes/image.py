@@ -23,10 +23,13 @@ import os
 import sys
 import textwrap
 import time
+from collections import ChainMap
 from collections.abc import Iterable, Mapping, Set
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
+import numpy
+import qoi  # type: ignore[import-untyped]
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import new as create_empty_image
 from tornado.web import HTTPError
@@ -63,11 +66,6 @@ with (DIR / "files/oswald.regular.ttf").open("rb") as data:
     HOST_NAME_FONT: Final = ImageFont.truetype(font=data, size=23)
 del data
 
-CONTENT_TYPES: Final[Mapping[str, str]] = {
-    "spider": "image/x-spider",
-    "tga": "image/x-tga",
-} | dict(static_file_handling.CONTENT_TYPES)
-
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
     "gif": "gif",
@@ -86,8 +84,19 @@ FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "tiff": "tiff",
     "txt": "txt",
     "webp": "webp",
+    "qoi": "qoi",
     **({"xlsx": "xlsx"} if to_excel else {}),
 }
+
+CONTENT_TYPES: Final[Mapping[str, str]] = ChainMap(
+    {
+        "spider": "image/x-spider",
+        "tga": "image/x-tga",
+        "qoi": "image/qoi",
+    },
+    static_file_handling.CONTENT_TYPES,  # type: ignore[arg-type]
+)
+
 CONTENT_TYPE_FILE_TYPE_MAPPING: Final[Mapping[str, str]] = {
     CONTENT_TYPES[ext]: ext for ext in FILE_EXTENSIONS.values()
 }
@@ -300,6 +309,10 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             HOST_NAME_FONT,
             0,
         )
+
+    if file_type == "qoi":
+        qoi_data: bytes = qoi.encode(numpy.asarray(image))
+        return qoi_data
 
     if to_excel and file_type == "xlsx":
         with TemporaryDirectory() as tempdir_name:

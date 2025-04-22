@@ -38,6 +38,7 @@ python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "==2019.1224"
 python-geoip-yplan = "==1.*"
 PyYAML = "==6.*"
+qoi = "<2"
 rapidfuzz = "==3.*"
 redis = {version = "==5.*", extras = ["hiredis"]}
 regex = "==2024.11.6"

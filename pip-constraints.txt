@@ -45,7 +45,7 @@ mypy@ git+https://github.com/python/mypy.git@a49d99139ace6627143fd8a913f04252c0f
 mypy-extensions==1.1.0
 nh3==0.2.21
 nodeenv==1.9.1
-numpy==1.26.4
+numpy==2.2.5
 packaging==24.2
 pathspec==0.12.1
 pbr==6.1.1
@@ -146,6 +146,7 @@ pyjwt==2.10.1
 pysocks==1.7.1
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
+qoi==0.7.2
 rapidfuzz==3.13.0
 redis==5.2.1
 regex==2024.11.6
