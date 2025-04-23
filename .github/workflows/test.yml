@@ -215,7 +215,7 @@ jobs:
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install stuff needed for the tests
-        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstd
+        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstd zopfli
       - name: Run script
         run: ./scripts/compress_static_files.py
       - name: Run pytest
