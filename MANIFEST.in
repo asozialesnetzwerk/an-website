@@ -9,4 +9,8 @@ include build-oci-image.sh
 include Containerfile
 include CNSTRNTS.TXT
 include REVISION.TXT
+include TESTDEPS.TXT
 include TIMESTMP.TXT
+include tests/__init__.py
+include tests/commitment.txt
+include tests/config.ini

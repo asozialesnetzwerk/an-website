@@ -85,7 +85,7 @@ def get_constraints() -> Mapping[str, str]:
 
     return {
         line.split("==")[0].strip(): line.strip()
-        for line in constraints_file.read_text().splitlines()
+        for line in constraints_file.read_text("UTF-8").splitlines()
     }
 
 
@@ -110,8 +110,23 @@ def path(path: str | PathLike[str]) -> Path:
 
 if EGGINFO and path("pip-constraints.txt").exists():
     path("CNSTRNTS.TXT").write_text(
-        "\n".join(sorted([get_constraints()[dep] for dep in WHEEL_BUILD_DEPS]))
-        + "\n"
+        "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
+        + "\n",
+        encoding="UTF-8",
+    )
+
+    path("TESTDEPS.TXT").write_text(
+        "\n".join(
+            sorted(
+                line
+                for line in path("pip-dev-requirements.txt")
+                .read_text("UTF-8")
+                .splitlines()
+                if line.startswith(("pytest", "html5lib==", "time-machine=="))
+            )
+        )
+        + "\n",
+        encoding="UTF-8",
     )
 
 if path(".git").exists():
@@ -126,7 +141,7 @@ if path(".git").exists():
         dt = datetime.fromtimestamp(
             obj.author_time, timezone(timedelta(seconds=obj.author_timezone))
         )
-        path("TIMESTMP.TXT").write_text(dt.isoformat())
+        path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
         del dt, obj, repo, Repo
 
     try:
@@ -142,7 +157,9 @@ try:
 except ModuleNotFoundError:
     BACKEND_REQUIRES.add(TIME_MACHINE)
 else:
-    time_machine.travel(path("TIMESTMP.TXT").read_text(), tick=False).start()
+    time_machine.travel(
+        path("TIMESTMP.TXT").read_text("UTF-8"), tick=False
+    ).start()
 
     os.environ["SOURCE_DATE_EPOCH"] = str(int(datetime.now().timestamp()))
 

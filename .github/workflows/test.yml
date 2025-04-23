@@ -101,6 +101,63 @@ jobs:
           if-no-files-found: error
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
 
+  sdist-tests:
+    name: Run tests in source-distribution
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    needs:
+      - build
+    continue-on-error: ${{ matrix.python-version == 3.14 }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - 3.12.7  # EL10
+          - 3.13
+          - 3.14    # π
+        # license:
+        #   - basic
+        #   - trial
+    services:
+      redis:
+        image: docker.io/redis/redis-stack-server:6.2.6-v15
+        ports:
+          - 6379:6379
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact
+      - name: Install libcurl4-openssl-dev for compiling PycURL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev
+      - name: Unpack sdist
+        run: |
+          tar xf *.tar.gz
+          rm *.tar.gz *.whl
+      - name: Install requirements
+        run: pip install -r an_website-*/pip-requirements.txt -r an_website-*/TESTDEPS.TXT
+      - name: Run pytest
+        timeout-minutes: 5
+        run: |
+          cd an_website-*
+          pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
+          mv .coverage ../
+      - name: Upload coverage as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: .coverage
+          if-no-files-found: error
+          include-hidden-files: true
+          name: coverage-${{ matrix.python-version }}
+
   tests:
     name: Run tests
     runs-on: ubuntu-24.04
@@ -161,14 +218,7 @@ jobs:
         run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine
       - name: Run pytest
         timeout-minutes: 5
-        run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
-      - name: Upload coverage as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: .coverage
-          if-no-files-found: error
-          include-hidden-files: true
-          name: coverage-${{ matrix.python-version }}
+        run: pytest --durations=0 --verbose
 
   release:
     name: Create release
@@ -177,6 +227,7 @@ jobs:
       contents: write
     needs:
       - run-tests-in-oci-image
+      - sdist-tests
       - test-running-oci-image
       - test-distribution
       - tests
@@ -219,6 +270,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs:
       - run-tests-in-oci-image
+      - sdist-tests
       - test-running-oci-image
       - test-distribution
       - tests
@@ -248,6 +300,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
+      - sdist-tests
       - test-distribution
       - tests
     permissions: {}
@@ -299,7 +352,6 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
-      - test-distribution
       - sourcemaps
     permissions: {}
     environment:
@@ -327,6 +379,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
     needs:
+      - sdist-tests
       - test-distribution
       - deploy
     permissions:
@@ -486,6 +539,7 @@ jobs:
     name: Push OCI image
     runs-on: ubuntu-24.04
     needs:
+      - deploy
       - run-tests-in-oci-image
       - test-running-oci-image
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'

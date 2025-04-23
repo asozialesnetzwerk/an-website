@@ -1,6 +1,7 @@
 *.py[cod]
 /CNSTRNTS.TXT
 /REVISION.TXT
+/TESTDEPS.TXT
 /TIMESTMP.TXT
 /an_website.egg-info
 /build
