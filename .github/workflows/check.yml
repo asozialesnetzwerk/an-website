@@ -1,5 +1,10 @@
 name: Check
-on: [ push, pull_request ]
+on:
+  push:
+    tags: [ v* ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
