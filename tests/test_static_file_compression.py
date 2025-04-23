@@ -81,11 +81,13 @@ async def test_static_file_compression(
             elif encoding == "zstd":
                 assert zstd_file
                 with contextlib.suppress(ModuleNotFoundError):
-                    import zstd
+                    import zstd  # pylint: disable=import-outside-toplevel
+
                     decompressed_body = zstd.decompress(body)
                     assert uncompressed_body == decompressed_body
                 with contextlib.suppress(ModuleNotFoundError):
-                    import zstandard
+                    import zstandard  # pylint: disable=import-outside-toplevel
+
                     decompressed_body = zstandard.decompress(body)
             else:
                 raise AssertionError(f"Unknown encoding {encoding}")
