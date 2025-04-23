@@ -34,8 +34,6 @@ STATIC_DIR = ROOT_DIR / "static"
 async def test_static_file_compression(fetch: FetchCallable) -> None:
     """Test fetching static files"""
 
-    from tornado.curl_httpclient import CurlAsyncHTTPClient
-
     file_count = 0
     gzip_count = 0
     zstd_count = 0
