@@ -31,23 +31,22 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 STATIC_DIR = ROOT_DIR / "static"
 
 
-async def test_static_file_compression(fetch: FetchCallable) -> None:
-    """Test fetching static files"""
-
-    file_count = 0
-    gzip_count = 0
-    zstd_count = 0
+async def test_static_file_compression(
+    fetch: FetchCallable,  # noqa: F811
+) -> None:
+    """Test fetching static files."""
+    file_count, gzip_count, zstd_count = 0, 0, 0
 
     for file in recurse_directory(
         STATIC_DIR,
-        filter=lambda p: p.suffix not in {".zst", ".gz"} and p.is_file(),
+        filter=lambda p: p.is_file() and not p.name.endswith((".zst", ".gz")),
     ):
-        gzip_file = STATIC_DIR / f"{file}.gz"
-        zstd_file = STATIC_DIR / f"{file}.zst"
+        gzip_file = (STATIC_DIR / f"{file}.gz").is_file()
+        zstd_file = (STATIC_DIR / f"{file}.zst").is_file()
 
         file_count += 1
-        gzip_count += gzip_file.exists()
-        zstd_count += zstd_file.exists()
+        gzip_count += gzip_file
+        zstd_count += zstd_file
 
         uncompressed_body = b""
 
@@ -62,28 +61,28 @@ async def test_static_file_compression(fetch: FetchCallable) -> None:
                 assert "Content-Encoding" not in response.headers
                 uncompressed_body = body
                 continue
-            elif "Content-Encoding" not in response.headers:
+            if "Content-Encoding" not in response.headers:
                 if encoding == "gzip":
-                    assert not gzip_file.exists()
+                    assert not gzip_file
                 elif encoding == "zstd":
-                    assert not zstd_file.exists()
+                    assert not zstd_file
                 else:
-                    assert False
+                    raise AssertionError(f"Unknown encoding {encoding}")
                 continue
-            else:
-                assert response.headers.get("Content-Encoding") == encoding
+
+            assert response.headers.get("Content-Encoding") == encoding
 
             body = response.body
             assert len(body) < len(uncompressed_body)
 
             if encoding == "gzip":
-                assert gzip_file.exists()
+                assert gzip_file
                 assert uncompressed_body == gzip.decompress(body)
             elif encoding == "zstd":
-                assert zstd_file.exists()
+                assert zstd_file
                 assert uncompressed_body == zstd.decompress(body)
             else:
-                assert False
+                raise AssertionError(f"Unknown encoding {encoding}")
 
     assert file_count >= gzip_count > 0
     assert file_count >= zstd_count > 0
