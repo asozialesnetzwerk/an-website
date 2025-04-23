@@ -122,7 +122,9 @@ if EGGINFO and path("pip-constraints.txt").exists():
                 for line in path("pip-dev-requirements.txt")
                 .read_text("UTF-8")
                 .splitlines()
-                if line.startswith(("pytest", "html5lib==", "time-machine==", "zstd=="))
+                if line.startswith(
+                    ("pytest", "html5lib==", "time-machine==", "zstd==")
+                )
             )
         )
         + "\n",
