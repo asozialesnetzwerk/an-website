@@ -32,7 +32,6 @@ extension-pkg-allow-list=
     lxml,
     orjson,
     pycurl,
-    zstd,
 recursive=yes
 py-version=3.12
 # temporary bugfix

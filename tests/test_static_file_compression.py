@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
-import contextlib
 import gzip
+
+import zstandard
 
 from an_website import DIR as ROOT_DIR
 from an_website.utils.fix_static_path_impl import recurse_directory
@@ -80,15 +81,7 @@ async def test_static_file_compression(
                 decompressed_body = gzip.decompress(body)
             elif encoding == "zstd":
                 assert zstd_file
-                with contextlib.suppress(ModuleNotFoundError):
-                    import zstd  # pylint: disable=import-outside-toplevel
-
-                    decompressed_body = zstd.decompress(body)
-                    assert uncompressed_body == decompressed_body
-                with contextlib.suppress(ModuleNotFoundError):
-                    import zstandard  # pylint: disable=import-outside-toplevel
-
-                    decompressed_body = zstandard.decompress(body)
+                decompressed_body = zstandard.decompress(body)
             else:
                 raise AssertionError(f"Unknown encoding {encoding}")
 

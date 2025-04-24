@@ -123,7 +123,7 @@ if EGGINFO and path("pip-constraints.txt").exists():
                 .read_text("UTF-8")
                 .splitlines()
                 if line.startswith(
-                    ("pytest", "html5lib==", "time-machine==", "zstd==")
+                    ("pytest", "html5lib==", "time-machine==", "zstandard==")
                 )
             )
         )
