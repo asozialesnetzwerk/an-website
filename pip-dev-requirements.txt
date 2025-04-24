@@ -105,6 +105,7 @@ urllib3==2.3.0; python_version >= '3.9'
 virtualenv==20.30.0; python_version >= '3.8'
 webencodings==0.5.1
 zopflipy==1.11; python_version >= '3.9'
+zstandard==0.23.0
 zstd==1.5.6.6
 accept-types==0.4.1
 aiodns==3.2.0
