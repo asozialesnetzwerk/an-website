@@ -142,14 +142,13 @@ jobs:
         run: |
           tar xf *.tar.gz
           rm *.tar.gz *.whl
+          mv an_website-*/* .
+          rmdir an_website-*
       - name: Install requirements
-        run: pip install -r an_website-*/pip-requirements.txt -r an_website-*/TESTDEPS.TXT
+        run: pip install -r pip-requirements.txt -r TESTDEPS.TXT
       - name: Run pytest
         timeout-minutes: 5
-        run: |
-          cd an_website-*
-          pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
-          mv .coverage ../
+        run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -541,7 +540,6 @@ jobs:
     name: Push OCI image
     runs-on: ubuntu-24.04
     needs:
-      - deploy
       - run-tests-in-oci-image
       - test-running-oci-image
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
