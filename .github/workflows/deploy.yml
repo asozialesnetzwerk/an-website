@@ -1,4 +1,4 @@
-name: Test
+name: Deploy
 on:
   schedule:
     - cron: "0 0 1 * *"
@@ -148,14 +148,7 @@ jobs:
         run: pip install -r pip-requirements.txt -r TESTDEPS.TXT
       - name: Run pytest
         timeout-minutes: 5
-        run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
-      - name: Upload coverage as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: .coverage
-          if-no-files-found: error
-          include-hidden-files: true
-          name: coverage-${{ matrix.python-version }}
+        run: pytest --durations=0 --verbose
 
   tests:
     name: Run tests
@@ -219,7 +212,14 @@ jobs:
         run: ./scripts/compress_static_files.py
       - name: Run pytest
         timeout-minutes: 5
-        run: pytest --durations=0 --verbose
+        run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
+      - name: Upload coverage as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: .coverage
+          if-no-files-found: error
+          include-hidden-files: true
+          name: coverage-${{ matrix.python-version }}
 
   release:
     name: Create release
