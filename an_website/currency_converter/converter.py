@@ -212,7 +212,7 @@ class CurrencyConverter(HTMLRequestHandler):
 
         for i, key in enumerate(KEYS):
             num_str = self.get_argument(key, None)
-            if num_str is not None:
+            if num_str:
                 arg_list.append((i, key, num_str))
 
         too_many_params = len(arg_list) > 1
