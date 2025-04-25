@@ -3,7 +3,7 @@ relative_files = true
 source = an_website
 omit =
     an_website/__main__.py
-    an_website/backdoor/client.py
+    an_website/backdoor_client.py
 
 [report]
 exclude_lines =

@@ -74,6 +74,7 @@ from . import (
     TEMPLATES_DIR,
     UPTIME,
     VERSION,
+    pytest_is_running,
 )
 from .contact.contact import apply_contact_stuff_to_app
 from .utils import background_tasks, static_file_handling
@@ -105,7 +106,7 @@ IGNORED_MODULES: Final[set[str]] = {
     "patches",
     "static",
     "templates",
-} | (set() if sys.flags.dev_mode else {"example"})
+} | (set() if sys.flags.dev_mode or pytest_is_running() else {"example"})
 
 LOGGER: Final = logging.getLogger(__name__)
 
