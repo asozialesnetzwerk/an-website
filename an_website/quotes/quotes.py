@@ -59,6 +59,8 @@ SMART_RATING_FILTERS: Final[tuple[RatingFilter, ...]] = (
 
 @dataclass(frozen=True)
 class VoteArgument:
+    """Voting matters."""
+
     vote: Literal[-1, 0, 1]
 
 

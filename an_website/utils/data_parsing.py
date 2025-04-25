@@ -31,7 +31,7 @@ from .utils import str_to_bool
 T = TypeVar("T")
 
 
-def parse(
+def parse(  # noqa: C901  # pylint: disable=too-many-branches
     type_: type[T],
     data: Iterable[Mapping[str, Any]] | Mapping[str, Any] | Any,
     *,
@@ -51,7 +51,7 @@ def parse(
     ):
         return data
 
-    if simple_type is Literal:
+    if simple_type is Literal:  # type: ignore[comparison-overlap]
         possible = tuple(typing.get_args(type_))
         for pos in possible:
             if pos == data:
