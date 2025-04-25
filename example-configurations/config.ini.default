@@ -10,7 +10,7 @@ webhook_escape_message = sure
 #webhook_max_message_length = 
 
 [GENERAL]
-ignored_modules = element_web_link
+ignored_modules = 
 compress_response = nope
 cookie_secret = xyzzy
 #domain = 

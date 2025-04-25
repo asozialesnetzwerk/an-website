@@ -316,9 +316,7 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
 def ignore_modules(config: BetterConfigParser) -> None:
     """Read ignored modules from the config."""
     IGNORED_MODULES.update(
-        config.getset(
-            "GENERAL", "IGNORED_MODULES", fallback={"element_web_link"}
-        )
+        config.getset("GENERAL", "IGNORED_MODULES", fallback=set())
     )
 
 
