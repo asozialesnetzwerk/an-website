@@ -82,8 +82,7 @@ def get_module_info() -> ModuleInfo:
                 {"url": "/zitate/share/{0}-{1}"},
             ),
             (r"/zitate/share/([0-9]{1,10})-([0-9]{1,10})", ShareQuote),
-            (r"/api/zitate", QuoteRedirectAPI),
-            (r"/api/zitate/full", QuoteRedirectAPI),
+            (r"/api/zitate(/full|)", QuoteRedirectAPI),
             (
                 r"/api/zitate/([0-9]{1,10})-([0-9]{1,10})(?:/full|)",
                 QuoteAPIHandler,
@@ -150,6 +149,12 @@ def get_module_info() -> ModuleInfo:
                     "Witzig",
                     "Känguru",
                 ),
+            ),
+            PageInfo(
+                name="Zitate API",
+                description="Ein zufälliges falsches Zitat",
+                path="/api/zitate",
+                hidden=True,
             ),
         ),
         keywords=(
