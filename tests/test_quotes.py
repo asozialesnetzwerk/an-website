@@ -21,10 +21,8 @@ from functools import cache
 from io import BytesIO
 
 import orjson as json
-import pytest
 from PIL import Image
 
-import an_website.quotes.quotes as main_page
 from an_website.quotes import create, utils as quotes
 from an_website.quotes.image import CONTENT_TYPES, FILE_EXTENSIONS
 
