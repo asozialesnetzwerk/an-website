@@ -322,26 +322,6 @@ async def test_quote_image_handlers(
                 img.close()
 
 
-def test_parsing_vote_str() -> None:
-    """Test parsing vote str."""
-    # pylint: disable=compare-to-zero
-    assert main_page.vote_to_int("-1") == -1
-    assert main_page.vote_to_int("-2") == -1
-    assert main_page.vote_to_int("-3") == -1
-
-    assert main_page.vote_to_int("0") == 0
-    assert main_page.vote_to_int("00") == 0
-    assert main_page.vote_to_int("") == 0
-    assert main_page.vote_to_int(None) == 0  # type: ignore[arg-type]
-
-    assert main_page.vote_to_int("1") == 1
-    assert main_page.vote_to_int("2") == 1
-    assert main_page.vote_to_int("3") == 1
-
-    with pytest.raises(ValueError):
-        main_page.vote_to_int("x")
-
-
 async def test_quote_redirect_api(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the quote redirect API."""
     response = await fetch(

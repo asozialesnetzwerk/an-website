@@ -22,7 +22,7 @@ import typing
 from collections.abc import Callable, Iterable, Mapping
 from inspect import Parameter
 from types import UnionType
-from typing import Any, TypeVar, get_origin
+from typing import Any, Literal, TypeVar, get_origin
 
 from tornado.web import HTTPError, RequestHandler
 
@@ -51,8 +51,20 @@ def parse(
     ):
         return data
 
+    if simple_type is Literal:
+        possible = tuple(typing.get_args(type_))
+        for pos in possible:
+            if pos == data:
+                return typing.cast(T, pos)
+        if isinstance(data, str):
+            data = data.strip()
+            for pos in possible:
+                if str(pos) == data:
+                    return typing.cast(T, pos)
+        raise ValueError(f"Unable to parse {data!r} into {type_}")
+
     if simple_type == UnionType:
-        possible = list(typing.get_args(type_))
+        possible = tuple(typing.get_args(type_))
         for pos in possible:
             with contextlib.suppress(ValueError):
                 return typing.cast(T, parse(pos, data, strict=strict))

@@ -23,12 +23,14 @@ import asyncio
 import logging
 import random
 from asyncio import AbstractEventLoop, Future
+from dataclasses import dataclass
 from typing import Any, ClassVar, Final, Literal, TypeAlias, cast
 
 import regex
 from tornado.web import HTTPError
 
 from .. import EVENT_REDIS
+from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import hash_ip
 from .image import IMAGE_CONTENT_TYPES, create_image
@@ -47,30 +49,17 @@ from .utils import (
 LOGGER: Final = logging.getLogger(__name__)
 
 
-def vote_to_int(vote: str) -> Literal[-1, 0, 1]:
-    """Parse a vote str to the corresponding int."""
-    if vote == "-1":
-        return -1
-    if vote in {"0", "", None}:
-        return 0
-    if vote == "1":
-        return 1
-
-    int_vote = int(vote)
-    if int_vote < 0:
-        return -1
-    if int_vote > 0:
-        return 1
-
-    return 0
-
-
 RatingFilter: TypeAlias = Literal["w", "n", "unrated", "rated", "all", "smart"]
 SMART_RATING_FILTERS: Final[tuple[RatingFilter, ...]] = (
     *(("n",) * 1),
     *(("all",) * 5),
     *(("w",) * 5),
 )
+
+
+@dataclass(frozen=True)
+class VoteArgument:
+    vote: Literal[-1, 0, 1]
 
 
 def parse_rating_filter(rating_filter_str: str) -> RatingFilter:
@@ -375,13 +364,26 @@ class QuoteById(QuoteBaseHandler):
             return 1
         return None
 
-    async def post(self, quote_id_str: str, author_id_str: str) -> None:
+    @parse_args(type_=VoteArgument)
+    async def post(
+        self,
+        quote_id_str: str,
+        author_id_str: str | None = None,
+        *,
+        args: VoteArgument,
+    ) -> None:
         """
         Handle POST requests to this page and render the quote.
 
         This is used to vote the quote, without changing the URL.
         """
         quote_id = int(quote_id_str)
+        if author_id_str is None:
+            wqs = get_wrong_quotes(lambda wq: wq.id == quote_id)
+            if not wqs:
+                raise HTTPError(404, f"No wrong quote with id {quote_id}")
+            return self.redirect(self.fix_url(self.LONG_PATH % wqs[0].get_id()))
+
         author_id = int(author_id_str)
 
         new_vote_str = self.get_argument("vote", None)
@@ -393,7 +395,7 @@ class QuoteById(QuoteBaseHandler):
             quote_id, author_id
         )
 
-        new_vote: Literal[-1, 0, 1] = vote_to_int(new_vote_str)
+        new_vote: Literal[-1, 0, 1] = args.vote
         vote_diff: int = new_vote - old_vote
 
         if not vote_diff:  # == 0
