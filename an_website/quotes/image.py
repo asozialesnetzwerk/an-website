@@ -28,8 +28,7 @@ from collections.abc import Iterable, Mapping, Set
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
-import numpy
-import qoi  # type: ignore[import-untyped]
+import qoi_rs
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import new as create_empty_image
 from tornado.web import HTTPError
@@ -311,8 +310,9 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         )
 
     if file_type == "qoi":
-        qoi_data: bytes = qoi.encode(numpy.asarray(image))
-        return qoi_data
+        return qoi_rs.encode(
+            image.getdata(), width=image.width, height=image.height
+        )
 
     if to_excel and file_type == "xlsx":
         with TemporaryDirectory() as tempdir_name:
