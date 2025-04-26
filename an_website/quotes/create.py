@@ -249,6 +249,7 @@ class CreatePage1(QuoteReadyCheckHandler):
             # fake author just redirect to the page of this quote
             return self.redirect(
                 self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
+                status=303,
             )
 
         if not quote:
@@ -277,7 +278,10 @@ class CreatePage1(QuoteReadyCheckHandler):
                 fake_authors[0],
                 quotes[0],
             )
-            return self.redirect(self.fix_url(f"/zitate/{wq_id}"))
+            return self.redirect(
+                self.fix_url(f"/zitate/{wq_id}"),
+                status=303,
+            )
 
         await self.render(
             "pages/quotes/create2.html",
@@ -309,6 +313,7 @@ class CreatePage2(QuoteReadyCheckHandler):
             # fake author just redirect to the page of this quote
             return self.redirect(
                 self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
+                status=303,
             )
 
         real_author = self.get_argument("real-author-2", None)
@@ -330,5 +335,6 @@ class CreatePage2(QuoteReadyCheckHandler):
         return self.redirect(
             self.fix_url(
                 f"/zitate/{wq_id}",
-            )
+            ),
+            status=303,
         )

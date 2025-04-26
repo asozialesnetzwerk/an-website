@@ -269,7 +269,8 @@ class ContactPage(HTMLRequestHandler):
                 quote_via=quote,
             )
             self.redirect(
-                f"mailto:{self.settings.get('CONTACT_ADDRESS')}?{query}"
+                f"mailto:{self.settings.get('CONTACT_ADDRESS')}?{query}",
+                status=303,
             )
             return
 

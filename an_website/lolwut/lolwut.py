@@ -102,7 +102,7 @@ class LOLWUTRedirectHandler(BaseRequestHandler):
     REPL_PATTERN: Final = regex.compile(r"/lolwut(/|\?|$)", regex.IGNORECASE)
 
     def get(self) -> None:
-        """Handle requests to the lolwut (sic!) page."""
+        """Handle requests to the LOLWUT page."""
         self.redirect(
             LOLWUTRedirectHandler.REPL_PATTERN.sub(
                 LOLWUTRedirectHandler.repl_match, self.request.full_url(), 1

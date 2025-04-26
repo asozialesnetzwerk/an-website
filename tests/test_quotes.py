@@ -178,6 +178,7 @@ async def test_argument_checking_create_pages(
                     f"fake-author-{num}": wrong_quote.quote.author.name.upper(),
                 }
             ),
+            codes={303},
         )
         await assert_valid_redirect(
             fetch,
@@ -191,6 +192,7 @@ async def test_argument_checking_create_pages(
                     f"fake-author-{num}": wrong_quote.author.name.lower(),
                 }
             ),
+            codes={303},
         )
 
 
