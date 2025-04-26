@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
-from typing import cast
+from typing import Final, cast
 
 from tornado.web import HTTPError, MissingArgumentError
 
@@ -35,6 +36,8 @@ from .utils import (
     parse_quote,
 )
 
+LOGGER: Final = logging.getLogger(__name__)
+
 
 async def create_quote(quote_str: str, author: Author) -> Quote:
     """Create a quote."""
@@ -44,7 +47,7 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
     if quote is not None:
         return quote
 
-    return parse_quote(
+    result = parse_quote(
         await make_api_request(
             "quotes",
             method="POST",
@@ -56,6 +59,10 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
         )
     )
 
+    LOGGER.info("Created quote %d: %r", result.id, result.quote)
+
+    return result
+
 
 async def create_author(author_str: str) -> Author:
     """Create an author."""
@@ -65,7 +72,7 @@ async def create_author(author_str: str) -> Author:
     if author is not None:
         return author
 
-    return parse_author(
+    result = parse_author(
         await make_api_request(
             "authors",
             method="POST",
@@ -73,6 +80,10 @@ async def create_author(author_str: str) -> Author:
             entity_should_exist=False,
         )
     )
+
+    LOGGER.info("Created author %d: %r", result.id, result.name)
+
+    return result
 
 
 async def create_wrong_quote(
@@ -303,6 +314,13 @@ class CreatePage2(QuoteReadyCheckHandler):
         real_author = self.get_argument("real-author-2", None)
         if not real_author:
             raise MissingArgumentError("real-author-2")
+
+        LOGGER.info(
+            "Creating wrong quote: %r (%r) - %r",
+            quote_str,
+            real_author,
+            fake_author_str,
+        )
 
         wq_id = await create_wrong_quote(
             real_author,

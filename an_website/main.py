@@ -632,6 +632,15 @@ def setup_webhook_logging(  # pragma: no cover
     webhook_handler.setFormatter(formatter)
     root_logger.addHandler(webhook_handler)
 
+    info_handler = WebhookHandler(
+        logging.INFO,
+        loop=loop,
+        url=options.url,
+        content_type=webhook_content_type,
+    )
+    info_handler.setFormatter(formatter)
+    logging.getLogger("an_website.quotes.create").addHandler(info_handler)
+
 
 def setup_apm(app: Application) -> None:  # pragma: no cover
     """Setup APM."""  # noqa: D401
