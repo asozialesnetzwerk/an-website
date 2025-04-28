@@ -1,5 +1,5 @@
 [flake8]
-extend-exclude = build,node_modules,venv
+extend-exclude = build,node_modules,venv,.venv
 max-line-length = 80
 max-complexity = 15
 ignore = E203,E501,E704,W503

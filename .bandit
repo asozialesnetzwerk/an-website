@@ -1,2 +1,2 @@
 [bandit]
-exclude = .git,/build,/venv
+exclude = .git,/build,/venv,/.venv
