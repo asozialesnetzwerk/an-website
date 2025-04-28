@@ -38,9 +38,10 @@ from .pub_sub_provider import PubSubProvider
 
 LOGGER: Final = logging.getLogger(__name__)
 
-EMOJIS: Final[tuple[str, ...]] = tuple(EMOJI_DATA)
 EMOJIS_NO_FLAGS: Final[tuple[str, ...]] = tuple(
-    emoji for emoji in EMOJIS if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
+    emoji
+    for emoji in EMOJI_DATA
+    if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
 )
 
 MAX_MESSAGE_SAVE_COUNT: Final = 100
