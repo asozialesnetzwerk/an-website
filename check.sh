@@ -3,12 +3,12 @@ set -eu
 
 for venv in venv .venv
 do
-    if [ -d venv ]; then
+    if [ -d "${venv}" ]; then
         # shellcheck disable=SC1091
-        if ! . venv/bin/activate; then
+        if ! . "${venv}/bin/activate"; then
             echo "Activating venv failed"
-            echo "You have a $venv directory, but it isn't a valid Python virtual environment"
-            echo "Either run 'rm -r $venv' or run 'python -m venv $venv'"
+            echo "You have a ${venv} directory, but it isn't a valid Python virtual environment"
+            echo "Either run 'rm -r ${venv}' or run 'python -m venv ${venv}'"
             exit 1
         fi
         break
