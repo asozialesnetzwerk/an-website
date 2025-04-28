@@ -404,21 +404,17 @@ def shellify(code: str) -> str:
     if not code.startswith("!"):
         return code
 
-    code = (
-        code[1:]
-        .strip()
-        .replace("\\", r"\\")
-        .replace("\n", r"\n")
-        .replace('"', r"\"")
-    )
     return f"""
 async def run_shell_50821273052022fbc283():
-    import asyncio
+    from os.path import dirname
+    import asyncio, sys, os
+    path = ":".join(filter(bool, [dirname(sys.executable), os.environ.get("PATH")]))
     proc = await asyncio.create_subprocess_shell(
-        {code!r},
+        r'''{code[1:].strip().replace("'''", """''' "'''" r'''""")} '''.strip(),
         asyncio.subprocess.DEVNULL,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.STDOUT,
+        env={{"PATH": path}},
     )
     output, _ = await asyncio.wait_for(proc.communicate(), 60 * 60)
     if output:
