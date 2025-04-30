@@ -210,6 +210,8 @@ jobs:
         run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstandard zopflipy
       - name: Run script
         run: ./scripts/compress_static_files.py
+      # - name: Run pytest with -Xdev
+      #   run: python3 -Xdev -Xwarn_default_encoding -m pytest
       - name: Run pytest
         timeout-minutes: 5
         run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered

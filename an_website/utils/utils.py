@@ -68,7 +68,7 @@ from tornado.web import HTTPError, RequestHandler
 from typed_stream import Stream
 from UltraDict import UltraDict  # type: ignore[import-untyped]
 
-from .. import DIR as ROOT_DIR
+from .. import DIR as ROOT_DIR, pytest_is_running
 
 if TYPE_CHECKING:
     from .background_tasks import BackgroundTask
@@ -362,6 +362,24 @@ def emoji2url(emoji: str) -> str:
         emoji = emoji.removesuffix("\uFE0F")
     code = "-".join(f"{ord(c):04x}" for c in emoji)
     return f"/static/openmoji/svg/{code.upper()}.svg?v={OPENMOJI_VERSION}"
+
+
+if sys.flags.dev_mode or pytest_is_running():
+    __origignal_emoji2url = emoji2url
+
+    def emoji2url(emoji: str) -> str:  # pylint: disable=function-redefined
+        """Convert an emoji to an URL."""
+        import openmoji_dist  # pylint: disable=import-outside-toplevel
+        from emoji import is_emoji  # pylint: disable=import-outside-toplevel
+
+        assert is_emoji(emoji), f"{emoji} needs to be emoji"
+        result = __origignal_emoji2url(emoji)
+        file = (
+            openmoji_dist.get_openmoji_data()
+            / result.removeprefix("/static/openmoji/").split("?")[0]
+        )
+        assert file.is_file(), f"{file} needs to exist"
+        return result
 
 
 EMOJI_MAPPING: Final[Mapping[str, str]] = {

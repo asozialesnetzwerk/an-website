@@ -595,7 +595,7 @@ class BaseRequestHandler(_RequestHandler):
                 else (
                     (lambda emoji: f'<span class="openmoji">{emoji}</span>')
                     if self.user_settings.openmoji
-                    else (lambda emoji: emoji)
+                    else (lambda emoji: f"<span>{emoji}</span>")
                 )
             ),
             form_appendix=self.user_settings.get_form_appendix(),
