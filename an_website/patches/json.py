@@ -23,12 +23,12 @@ from typing import IO, Any, Protocol, TypeVar
 import orjson
 import regex
 
-_T_co = TypeVar("_T_co", covariant=True)
+T_co = TypeVar("T_co", covariant=True)
 
 
-class SupportsRead(Protocol[_T_co]):  # noqa: D101
+class SupportsRead(Protocol[T_co]):  # noqa: D101
     # pylint: disable=missing-class-docstring, too-few-public-methods
-    def read(self, __length: int = ...) -> _T_co:  # noqa: D102
+    def read(self, __length: int = ...) -> T_co:  # noqa: D102
         # pylint: disable=missing-function-docstring
         ...
 

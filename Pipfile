@@ -38,9 +38,9 @@ python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "==2019.1224"
 python-geoip-yplan = "==1.*"
 PyYAML = "==6.*"
-qoi-rs = "==1.*"
+qoi-rs = "==2.*"
 rapidfuzz = "==3.*"
-redis = {version = "==5.*", extras = ["hiredis"]}
+redis = {version = "==5.*, !=5.3.0", extras = ["hiredis"]}
 regex = "==2024.11.6"
 setproctitle = "==1.*"
 tornado = "==6.*"
