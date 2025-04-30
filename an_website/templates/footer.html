@@ -41,6 +41,8 @@
     {% elif now.month == 4 and now.day == 27 %}
         <a href="{{fix_url(f'https://stanleyparable{2 if now.utctimetuple().tm_hour >= 16 else str()}.com')}}"
            class="no-style-a-emoji">{% raw emoji2html("🪣") %}</a>
+    {% elif now.month == 5 and now.day == 1 %}
+        <span>☭</span>
     {% elif now.month == 5 and now.day == 4 %}
         {% raw emoji2html("✨") %}
     {% elif now.month == 5 and now.day == 20 %}
