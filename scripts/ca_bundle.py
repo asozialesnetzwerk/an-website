@@ -56,7 +56,7 @@ def main() -> None:
     m = frozenset(
         load_pem_x509_certificates(
             # pylint: disable-next=consider-using-with
-            urlopen("https://curl.se/ca/cacert.pem").read() # nosec: B310
+            urlopen("https://curl.se/ca/cacert.pem").read()  # nosec: B310
         )
     )
     certs: list[Certificate] = []
