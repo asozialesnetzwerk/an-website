@@ -42,7 +42,7 @@ TROVE_CLASSIFIERS = "trove-classifiers"
 TIME_MACHINE = "time-machine"
 ZOPFLIPY = "zopflipy"
 
-WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE, ZOPFLIPY}
+WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
@@ -67,13 +67,6 @@ os.environ.update(
     GIT_CONFIG_KEY_0="core.abbrev",
     GIT_CONFIG_VALUE_0="10",
 )
-
-try:
-    import zopfli
-except ModuleNotFoundError:
-    BACKEND_REQUIRES.add(ZOPFLIPY)
-else:
-    zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
 @cache
@@ -131,6 +124,7 @@ if EGGINFO and path("pip-constraints.txt").exists():
         encoding="UTF-8",
     )
 
+
 if path(".git").exists():
     try:
         from dulwich.repo import Repo
@@ -153,6 +147,14 @@ if path(".git").exists():
     else:
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
+
+    try:
+        import zopfli
+    except ModuleNotFoundError:
+        BACKEND_REQUIRES.add(ZOPFLIPY)
+    else:
+        zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
+
 
 try:
     import time_machine
