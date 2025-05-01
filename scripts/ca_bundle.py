@@ -6,10 +6,15 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from subprocess import run  # nosec: B404
+from urllib.request import urlopen
 
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import Encoding
-from cryptography.x509 import Certificate, load_pem_x509_certificate
+from cryptography.x509 import (
+    Certificate,
+    load_pem_x509_certificate,
+    load_pem_x509_certificates,
+)
 
 DISTRUSTED = (
     # Symantec
@@ -43,28 +48,17 @@ DISTRUSTED = (
     "0C258A12A5674AEF25F28BA7DCFAECEEA348E541E6F5CC4EE63B71B361606AC3",
     "063E4AFAC491DFD332F3089B8542E94617D893D7FE944E10A7937EE29D9693C0",
     "136335439334A7698016A0D324DE72284E079D7B5220BB8FBD747816EEBEBACA",
-    # Not trusted by Mozilla:
-    # CN=Certum CA,O=Unizeto Sp. z o.o.,C=PL
-    "D8E0FEBC1DB2E38D00940F37D27D41344D993E734B99D5656D9778D4D8143624",
-    # CN=DigiCert CS ECC P384 Root G5,O=DigiCert\, Inc.,C=US
-    "26C56AD2208D1E9B152F66853BF4797CBEB7552C1F3F477251E8CB1AE7E797BF",
-    # CN=DigiCert CS RSA4096 Root G5,O=DigiCert\, Inc.,C=US
-    "7353B6D6C2D6DA4247773F3F07D075DECB5134212BEAD0928EF1F46115260941",
-    # CN=GlobalSign,O=GlobalSign,OU=GlobalSign ECC Root CA - R4
-    "BEC94911C2955676DB6C0A550986D76E3BA005667C442C9762B4FBB773DE228C",
-    # CN=LuxTrust Global Root 2,O=LuxTrust S.A.,C=LU
-    "54455F7129C20B1447C418F997168F24C58FC5023BF5DA5BE2EB6E1DD8902ED5",
-    # CN=SwissSign Platinum CA - G2,O=SwissSign AG,C=CH
-    "3B222E566711E992300DC0B15AB9473DAFDEF8C84D0CEF7D3317B4C1821D1436",
-    # CN=SwissSign Silver CA - G2,O=SwissSign AG,C=CH
-    "BE6C4DA2BBB9BA59B6F3939768374246C3C005993FA98F020D1DEDBED48A81D5",
-    # CN=emSign Root CA - G2,O=eMudhra Technologies Limited,OU=emSign PKI,C=IN
-    "1AA0C2709E831BD6E3B5129A00BA41F7EEEF020872F1E6504BF0F6C3F24F3AF3",
 )
 
 
 def main() -> None:
     """Do stuff."""
+    m = frozenset(
+        load_pem_x509_certificates(
+            # pylint: disable-next=consider-using-with
+            urlopen("https://curl.se/ca/cacert.pem").read() # nosec: B310
+        )
+    )
     certs: list[Certificate] = []
     for path in Path(sys.argv[1]).iterdir():
         if path.name == "README":
@@ -76,6 +70,9 @@ def main() -> None:
             continue
         if cert.not_valid_after_utc < datetime.now(UTC):
             print("EXPIRED:", cert.subject.rfc4514_string(), file=sys.stderr)
+            continue
+        if cert not in m:
+            print("MOZILLA:", cert.subject.rfc4514_string(), file=sys.stderr)
             continue
         pem = cert.public_bytes(Encoding.PEM)
         print(cert.subject.rfc4514_string(), file=sys.stderr)

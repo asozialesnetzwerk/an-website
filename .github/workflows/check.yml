@@ -38,8 +38,7 @@ jobs:
           deno-version: ~2.1
       - name: Install required stuff
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+          sudo apt-get install --update -y libcurl4-openssl-dev
           pip install -r pip-requirements.txt
           pip install -c pip-constraints.txt autoflake black isort
       - name: Run autoflake
@@ -100,9 +99,7 @@ jobs:
           key: mypy-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: mypy-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install mypy + stuff required for checking the tests and setup.py
@@ -152,9 +149,7 @@ jobs:
           key: pylint-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: pylint-${{ github.repository }}-${{ github.ref }}-
       - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install Pylint + stuff required for checking the tests and setup.py
@@ -196,7 +191,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18.20"
+          node-version: "20"
           cache: pnpm
       - name: Enable corepack
         run: corepack enable
@@ -224,7 +219,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18.20"
+          node-version: "20"
           cache: pnpm
       - name: Enable corepack
         run: corepack enable
@@ -252,7 +247,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18.20"
+          node-version: "20"
           cache: pnpm
       - name: Enable corepack
         run: corepack enable

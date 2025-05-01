@@ -121,9 +121,9 @@ defusedxml==0.7.1
 dunamai==1.23.1
 ecs-logging==2.2.0
 elastic-apm==6.23.0
-elastic-enterprise-search==8.11.0
+elastic-enterprise-search==8.18.0
 elastic-transport==8.17.1
-elasticsearch==8.15.1
+elasticsearch==8.18.1
 emoji==2.14.1
 frozenlist==1.6.0
 funcparserlib==1.0.1
