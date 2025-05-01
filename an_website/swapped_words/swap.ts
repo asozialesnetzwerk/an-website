@@ -55,7 +55,7 @@ function onerror(error: unknown) {
         alert(e.error);
         errorText.innerText = `${e.error} In line ${e.line_num}: "${e.line}"`;
     } else {
-        alert(e);
+        alert(error as string);
         errorText.innerText = JSON.stringify(e);
     }
 }
