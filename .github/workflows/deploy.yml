@@ -234,7 +234,7 @@ jobs:
       - test-running-oci-image
       - test-distribution
       - tests
-    if: github.event_name == 'schedule' || github.ref_type == 'tag'
+    if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -277,7 +277,7 @@ jobs:
       - test-running-oci-image
       - test-distribution
       - tests
-    if: github.event_name == 'schedule' || github.ref_type == 'tag'
+    if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     permissions: {}
     steps:
       - name: Setup Python
@@ -301,7 +301,7 @@ jobs:
   sourcemaps:
     name: Upload sourcemaps
     runs-on: ubuntu-24.04
-    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
       - test-distribution
@@ -353,7 +353,7 @@ jobs:
   deploy:
     name: Deploy website
     runs-on: ubuntu-24.04
-    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sourcemaps
     permissions: {}
@@ -380,7 +380,7 @@ jobs:
   github-pages:
     name: GitHub Pages
     runs-on: ubuntu-24.04
-    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
       - test-distribution
@@ -544,7 +544,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
-    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.event_name == 'schedule'
+    if: github.event_name == 'push' || github.event_name == 'schedule'
     permissions:
       packages: write
     steps:
@@ -575,14 +575,10 @@ jobs:
           from time import strftime, gmtime
 
           path = Path(os.getenv("GITHUB_OUTPUT"))
-          if "${{ github.ref }}" == "refs/heads/main":
-            path.write_text("version=dev")
-          elif "${{ github.event_name }}" == "schedule":
+          if "${{ github.event_name }}" == "schedule":
             path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
           elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
             path.write_text("version=${{ github.ref_name }}\n")
-          else:
-            assert 6 * 9 == 42
       - name: Log in to ghcr.io
         uses: redhat-actions/podman-login@v1
         with:
@@ -590,7 +586,10 @@ jobs:
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
       - name: Push image to ghcr.io
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:dev
+      - name: Push image as ${{ steps.version.outputs.version }} to ghcr.io
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+        if: steps.version.outputs.version
       - name: Tag image as latest
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest
-        if: github.ref_type == 'tag' || github.event_name == 'schedule'
+        if: steps.version.outputs.version
