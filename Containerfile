@@ -3,7 +3,8 @@ ARG BASE=docker.io/library/python:3.12-slim-bookworm
 
 FROM $BASE AS builder
 RUN set -eux \
- && apt-get install --update --no-install-recommends -y g++ git libcurl4-gnutls-dev libgnutls28-dev \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends g++ git libcurl4-gnutls-dev libgnutls28-dev \
  && rm -fr /var/lib/apt/lists/*
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
@@ -23,7 +24,8 @@ RUN /venv/bin/pip install --no-deps .
 
 FROM $BASE
 RUN set -eux \
- && apt-get install --update --no-install-recommends -y curl libcurl3-gnutls libjxl0.7 \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends curl libcurl3-gnutls libjxl0.7 \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
  && apt-get purge -y --autoremove curl \
