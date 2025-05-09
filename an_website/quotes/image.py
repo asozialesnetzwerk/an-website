@@ -311,7 +311,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     if file_type == "qoi":
         return qoi_rs.encode(
-            image.getdata(), width=image.width, height=image.height
+            image.tobytes(), width=image.width, height=image.height
         )
 
     if to_excel and file_type == "xlsx":

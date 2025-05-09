@@ -53,7 +53,7 @@ pathspec==0.12.1
 pbr==6.1.1
 pep8-naming==0.15.1
 pipenv==2023.12.1
-platformdirs==4.3.7
+platformdirs==4.3.8
 pluggy==1.5.0
 pre-commit==3.8.0
 pycodestyle==2.13.0
@@ -80,7 +80,7 @@ rich==14.0.0
 secretstorage==3.3.3
 setuptools==70.3.0
 six==1.17.0
-snowballstemmer==2.2.0
+snowballstemmer==3.0.0.1
 soupsieve==2.7
 stevedore==5.4.1
 time-machine==2.16.0
@@ -104,12 +104,12 @@ types-regex==2024.11.6.20250403
 types-setuptools==70.3.0.20240710
 typing-extensions==4.13.2
 urllib3==2.4.0
-virtualenv==20.31.1
+virtualenv==20.31.2
 webencodings==0.5.1
 zopflipy==1.11
 zstandard==0.23.0
 accept-types==0.4.1
-aiodns==3.3.0
+aiodns==3.4.0
 aiohappyeyeballs==2.6.1
 aiohttp==3.11.18
 aiosignal==1.3.2
@@ -118,7 +118,7 @@ blake3==1.0.4
 brotli==1.1.0
 defity==0.5.1
 defusedxml==0.7.1
-dunamai==1.23.2
+dunamai==1.24.0
 ecs-logging==2.2.0
 elastic-apm==6.23.0
 elastic-enterprise-search==8.18.0
@@ -131,7 +131,7 @@ get-version==3.5.5
 hangman-solver-rs==0.4.2
 hiredis==3.1.0
 html2text==2025.4.15
-hy==1.0.0
+hy==1.1.0
 hyrule==1.0.0
 jsonpickle==4.0.5
 lxml==5.4.0
@@ -148,7 +148,7 @@ pyjwt==2.10.1
 pysocks==1.7.1
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
-qoi-rs==2.0.1
+qoi-rs==2.1.0
 rapidfuzz==3.13.0
 redis==5.2.1
 regex==2024.11.6
