@@ -33,7 +33,6 @@ from pathlib import Path
 from warnings import filterwarnings
 
 from setuptools import setup
-from setuptools.build_meta import SetupRequirementsError
 
 BACKEND_REQUIRES: set[str] = set()
 DULWICH = "dulwich"
@@ -48,6 +47,7 @@ filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 EGGINFO = "egg_info" in sys.argv[1:]
 SDIST = "sdist" in sys.argv[1:]
+WHEEL = "bdist_wheel" in sys.argv[1:]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -85,13 +85,12 @@ def get_constraints() -> Mapping[str, str]:
 def get_version() -> str:
     """Get the version."""
     if path(".git").exists():
-        try:
+        BACKEND_REQUIRES.add(GET_VERSION)
+        if SDIST:
             # pylint: disable=redefined-outer-name
             from get_version import get_version
 
             return get_version(__file__, vcs="git")
-        except ModuleNotFoundError:
-            BACKEND_REQUIRES.add(GET_VERSION)
     return Distribution.at(path(".")).version
 
 
@@ -126,11 +125,10 @@ if EGGINFO and path("pip-constraints.txt").exists():
 
 
 if path(".git").exists():
-    try:
+    BACKEND_REQUIRES.add(DULWICH)
+    if SDIST:
         from dulwich.repo import Repo
-    except ModuleNotFoundError:
-        BACKEND_REQUIRES.add(DULWICH)
-    else:
+
         repo = Repo(path(".").as_posix())
         path("REVISION.TXT").write_bytes(repo.head())
         obj = repo[repo.head()]
@@ -140,27 +138,24 @@ if path(".git").exists():
         path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
         del dt, obj, repo, Repo
 
-    try:
+    BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
+    if SDIST:
         import trove_classifiers as trove
-    except ModuleNotFoundError:
-        BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
-    else:
+
         assert all(_ in trove.classifiers for _ in classifiers)
         assert classifiers == sorted(classifiers)
 
-    try:
+    BACKEND_REQUIRES.add(ZOPFLIPY)
+    if SDIST:
         import zopfli
-    except ModuleNotFoundError:
-        BACKEND_REQUIRES.add(ZOPFLIPY)
-    else:
+
         zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
-try:
+BACKEND_REQUIRES.add(TIME_MACHINE)
+if SDIST or WHEEL:
     import time_machine
-except ModuleNotFoundError:
-    BACKEND_REQUIRES.add(TIME_MACHINE)
-else:
+
     time_machine.travel(
         path("TIMESTMP.TXT").read_text("UTF-8"), tick=False
     ).start()
@@ -200,9 +195,8 @@ if compress_script_path.exists():
     assert compress_spec and compress_spec.loader
     compress_module = module_from_spec(compress_spec)
     compress_spec.loader.exec_module(compress_module)
-    if EGGINFO:
-        BACKEND_REQUIRES.update(compress_module.get_missing_dependencies())
-    elif SDIST:
+    BACKEND_REQUIRES.update(compress_module.get_missing_dependencies())
+    if SDIST:
         for _ in compress_module.compress_static_files():
             pass
     del compress_spec, compress_module
@@ -229,6 +223,7 @@ dist = setup(
     url="https://github.com/asozialesnetzwerk/an-website",
     version=get_version(),
     zip_safe=True,
+    setup_requires=[get_constraints()[dep] for dep in BACKEND_REQUIRES],
     entry_points={
         "console_scripts": (
             "an-website = an_website.__main__:main",
@@ -236,11 +231,6 @@ dist = setup(
         )
     },
 )
-
-if BACKEND_REQUIRES:
-    raise SetupRequirementsError(
-        {get_constraints()[dep] for dep in BACKEND_REQUIRES}
-    )
 
 for t, _, file in dist.dist_files:
     if t != "sdist":

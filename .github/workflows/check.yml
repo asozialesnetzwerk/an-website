@@ -153,7 +153,7 @@ jobs:
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install Pylint + stuff required for checking the tests and setup.py
-        run: pip install -c pip-constraints.txt cryptography html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers zopflipy zstandard
+        run: pip install -c pip-constraints.txt cryptography dulwich html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers zopflipy zstandard
       - name: Run Pylint
         run: pylint -r y -d fixme .
         env:
