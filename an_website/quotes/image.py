@@ -310,9 +310,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         )
 
     if file_type == "qoi":
-        return qoi_rs.encode(
-            image.tobytes(), width=image.width, height=image.height
-        )
+        return qoi_rs.encode_pillow(image, mode="RGB")
 
     if to_excel and file_type == "xlsx":
         with TemporaryDirectory() as tempdir_name:

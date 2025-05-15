@@ -369,7 +369,7 @@ def make_app(config: ConfigParser) -> str | Application:
         )
     handlers = get_all_handlers(module_infos)
     return Application(
-        handlers,  # type: ignore[arg-type]
+        handlers,
         MODULE_INFOS=module_infos,
         SHOW_HAMBURGER_MENU=not Stream(module_infos)
         .exclude(lambda info: info.hidden)

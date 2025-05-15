@@ -45,9 +45,9 @@ WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
-EGGINFO = "egg_info" in sys.argv[1:]
-SDIST = "sdist" in sys.argv[1:]
-WHEEL = "bdist_wheel" in sys.argv[1:]
+HELP = "--help" in sys.argv[1:]
+SDIST = not HELP and "sdist" in sys.argv[1:]
+WHEEL = not HELP and "bdist_wheel" in sys.argv[1:]
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -100,7 +100,7 @@ def path(path: str | PathLike[str]) -> Path:
     return Path(__file__).resolve().parent / path
 
 
-if EGGINFO and path("pip-constraints.txt").exists():
+if SDIST and path("pip-constraints.txt").exists():
     path("CNSTRNTS.TXT").write_text(
         "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
         + "\n",

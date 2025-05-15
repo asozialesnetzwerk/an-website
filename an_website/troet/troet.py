@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-from typing import cast
 from urllib.parse import urlencode, urlsplit
 
 from ..utils.request_handler import HTMLRequestHandler
@@ -78,4 +77,4 @@ class Troeter(HTMLRequestHandler):
 
     def saved_mastodon_instance(self) -> str:
         """Get the mastodon instance saved in a cookie."""
-        return cast(str, self.get_cookie("mastodon-instance", ""))
+        return self.get_cookie("mastodon-instance", "")

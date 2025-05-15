@@ -48,7 +48,7 @@ You need:
 
 ### How to run
 
-- `python -Xdev -m an_website  --redis-enabled=1 --ratelimits=0 --port=8080`
+- `python -Xdev -Xwarn_default_encoding -m an_website --redis-enabled=1 --ratelimits=0 --port=8080`
 
 (`-Xdev` enables development mode)
 

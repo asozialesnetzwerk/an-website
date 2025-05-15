@@ -175,7 +175,7 @@ def patch_threading() -> None:
 
 def patch_tornado_418() -> None:
     """Add support for RFC 7168."""
-    RequestHandler.SUPPORTED_METHODS += (  # type: ignore[assignment]
+    RequestHandler.SUPPORTED_METHODS += (
         "PROPFIND",
         "BREW",
         "WHEN",

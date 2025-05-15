@@ -36,7 +36,13 @@ if sys.flags.dev_mode and not (
     warnings.simplefilter("error", RuntimeWarning)
     warnings.simplefilter("error", EncodingWarning)
     warnings.simplefilter("error", DeprecationWarning)
-warnings.filterwarnings("ignore", module="defusedxml")
+warnings.filterwarnings(
+    "ignore", module="an_website.main", category=DeprecationWarning
+)
+warnings.filterwarnings("ignore", module="regex", category=EncodingWarning)
+warnings.filterwarnings(
+    "ignore", module="defusedxml", category=DeprecationWarning
+)
 warnings.filterwarnings("ignore", module="dill._dill", category=EncodingWarning)
 warnings.simplefilter("ignore", PickleWarning)
 

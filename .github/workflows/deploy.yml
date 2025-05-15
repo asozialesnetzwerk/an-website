@@ -78,6 +78,12 @@ jobs:
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Check dirty
         run: echo ${{ matrix.distribution.glob }} | grep -v dirty
+      - name: Install ${{ matrix.distribution.name }} without dependencies
+        run: pip install --no-deps ${{ matrix.distribution.glob }}
+        timeout-minutes: 0.3
+      - name: Uninstall an-website
+        run: pip uninstall -y an-website
+        timeout-minutes: 1
       - name: Install ${{ matrix.distribution.name }}
         run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
@@ -86,6 +92,9 @@ jobs:
       - name: Test starting
         timeout-minutes: 1
         run: python -m an_website -c
+      - name: Test starting with recommended dev options
+        timeout-minutes: 1
+        run: python -Xdev -Xwarn_default_encoding -m an_website -c
       - name: Test version
         timeout-minutes: 1
         run: an-website --version | grep -v dirty

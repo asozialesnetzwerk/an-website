@@ -82,7 +82,7 @@ def is_authorized(
         *(keys.get(_) for _ in inst.get_arguments("key")),
         (
             keydecode(
-                cast(str, inst.get_cookie("access_token", "")),
+                inst.get_cookie("access_token", ""),
                 keys,
                 token_secret,
             )
