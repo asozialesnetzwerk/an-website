@@ -21,19 +21,24 @@ from __future__ import annotations
 
 import logging
 import random
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Final, TypeAlias
+from typing import Final
 
 import emoji
-from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
+from typed_stream import Stream
 
+from .. import DIR as ROOT_DIR
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
 LOGGER: Final = logging.getLogger(__name__)
+
+type Commit = tuple[datetime, str]
+type Commits = Mapping[str, Commit]
 
 
 def get_module_info() -> ModuleInfo:
@@ -51,34 +56,23 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-Commit: TypeAlias = tuple[datetime, str]
-Commits: TypeAlias = dict[str, Commit]
-COMMIT_DATA: dict[str, Commits] = {}
+def parse_commits_txt(data: str) -> Commits:
+    """Parse the contents of commits.txt."""
+    return {
+        split[0]: (datetime.fromtimestamp(int(split[1]), UTC), split[2])
+        for line in data.splitlines()
+        if (split := line.rstrip().split(" ", 2))
+    }
 
 
-async def get_commit_data(commitment_uri: str) -> Commits:
-    """Get data from URI."""
-    if commitment_uri in COMMIT_DATA:
-        return COMMIT_DATA[commitment_uri]
-    file_content: bytes
-    if commitment_uri.startswith(("https://", "http://")):
-        file_content = (await AsyncHTTPClient().fetch(commitment_uri)).body
-    else:
-        if commitment_uri.startswith("file:///"):
-            commitment_uri = commitment_uri.removeprefix("file://")
-        with open(commitment_uri, "rb") as file:
-            file_content = file.read()
+def read_commits_txt() -> None | Commits:
+    """Read the contents of the local commits.txt file."""
+    if not (file := ROOT_DIR / "static" / "commits.txt").is_file():
+        return None
+    return parse_commits_txt(file.read_text("UTF-8"))
 
-    data: Commits = {}
 
-    for line in file_content.decode("UTF-8").split("\n"):
-        if not line:
-            continue
-        hash_, date, msg = line.split(" ", 2)
-        data[hash_] = (datetime.fromtimestamp(int(date), UTC), msg)
-
-    COMMIT_DATA[commitment_uri] = data
-    return data
+COMMITS: None | Commits = read_commits_txt()
 
 
 @dataclass(slots=True)
@@ -101,43 +95,48 @@ class CommitmentAPI(APIRequestHandler):
     async def get(self, *, args: Arguments, head: bool = False) -> None:
         """Handle GET requests to the API."""
         # pylint: disable=unused-argument
-        try:
-            data = await get_commit_data(self.settings["COMMITMENT_URI"])
-        except Exception as exc:
-            raise HTTPError(503) from exc
+        if not COMMITS:
+            raise HTTPError(
+                503,
+                log_message="No COMMITS found, make sure to create commits.txt",
+            )
 
         if args.hash is None:
             return await self.write_commit(
                 *random.choice(
                     [
                         (com, (_, msg))
-                        for com, (_, msg) in data.items()
-                        if not args.require_emoji or emoji.emoji_count(msg)
+                        for com, (_, msg) in COMMITS.items()
+                        if not args.require_emoji or any(emoji.analyze(msg))
                     ]
                 )
             )
 
         if len(args.hash) + 2 == 42:
-            if args.hash in data:
-                return await self.write_commit(args.hash, data[args.hash])
+            if args.hash in COMMITS:
+                return await self.write_commit(args.hash, COMMITS[args.hash])
             raise HTTPError(404)
 
         if len(args.hash) + 1 >= 42:
             raise HTTPError(404)
 
-        results = [
-            item
-            for item in data.items()
-            if item[0].startswith(args.hash)
-            if not args.require_emoji or emoji.emoji_count(item[1][1])
-        ]
+        results = (
+            Stream(
+                (com, (_, msg))
+                for com, (_, msg) in COMMITS.items()
+                if com.startswith(args.hash)
+                if not args.require_emoji or any(emoji.analyze(msg))
+            )
+            .limit(2)
+            .collect()
+        )
 
-        if not results:
+        if len(results) != 1:
             raise HTTPError(404)
 
-        results.sort(key=lambda m: m[1][0])
+        [(hash_, commit)] = results
 
-        return await self.write_commit(*results[0])
+        return await self.write_commit(hash_, commit)
 
     async def write_commit(self, hash_: str, commit: Commit) -> None:
         """Write the commit data."""

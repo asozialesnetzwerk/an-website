@@ -46,8 +46,7 @@ WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 HELP = "--help" in sys.argv[1:]
-SDIST = not HELP and "sdist" in sys.argv[1:]
-WHEEL = not HELP and "bdist_wheel" in sys.argv[1:]
+BUILDING = not HELP and {"sdist", "bdist_wheel"} & {*sys.argv[1:]}
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -86,7 +85,7 @@ def get_version() -> str:
     """Get the version."""
     if path(".git").exists():
         BACKEND_REQUIRES.add(GET_VERSION)
-        if SDIST:
+        if BUILDING:
             # pylint: disable=redefined-outer-name
             from get_version import get_version
 
@@ -100,7 +99,7 @@ def path(path: str | PathLike[str]) -> Path:
     return Path(__file__).resolve().parent / path
 
 
-if SDIST and path("pip-constraints.txt").exists():
+if path("pip-constraints.txt").exists() and BUILDING:
     path("CNSTRNTS.TXT").write_text(
         "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
         + "\n",
@@ -124,36 +123,47 @@ if SDIST and path("pip-constraints.txt").exists():
     )
 
 
-if path(".git").exists():
+if not path(".git").exists():
+    pass
+elif not BUILDING:
     BACKEND_REQUIRES.add(DULWICH)
-    if SDIST:
-        from dulwich.repo import Repo
-
-        repo = Repo(path(".").as_posix())
-        path("REVISION.TXT").write_bytes(repo.head())
-        obj = repo[repo.head()]
-        dt = datetime.fromtimestamp(
-            obj.author_time, timezone(timedelta(seconds=obj.author_timezone))
-        )
-        path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
-        del dt, obj, repo, Repo
-
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
-    if SDIST:
-        import trove_classifiers as trove
-
-        assert all(_ in trove.classifiers for _ in classifiers)
-        assert classifiers == sorted(classifiers)
-
     BACKEND_REQUIRES.add(ZOPFLIPY)
-    if SDIST:
-        import zopfli
+else:
+    from dulwich.repo import Repo
 
-        zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
+    repo = Repo(path(".").as_posix())
+    path("REVISION.TXT").write_bytes(repo.head())
+    head = repo[repo.head()]
+    dt = datetime.fromtimestamp(
+        head.author_time, timezone(timedelta(seconds=head.author_timezone))
+    )
+    path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
+    del dt, head, Repo
+    with path("an_website/static/commits.txt").open("wb") as file:
+        for entry in repo.get_walker():
+            file.write(entry.commit.id)
+            file.write(b" ")
+            file.write(str(entry.commit.author_time).encode("UTF-8"))
+            file.write(b" ")
+            file.write(entry.commit.message.split(b"\n")[0])
+            file.write(b"\n")
+            del entry
+        file.flush()
+    del repo, file
+
+    import trove_classifiers as trove
+
+    assert all(_ in trove.classifiers for _ in classifiers)
+    assert classifiers == sorted(classifiers)
+
+    import zopfli
+
+    zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
 
 
 BACKEND_REQUIRES.add(TIME_MACHINE)
-if SDIST or WHEEL:
+if BUILDING:
     import time_machine
 
     time_machine.travel(
@@ -196,7 +206,7 @@ if compress_script_path.exists():
     compress_module = module_from_spec(compress_spec)
     compress_spec.loader.exec_module(compress_module)
     BACKEND_REQUIRES.update(compress_module.get_missing_dependencies())
-    if SDIST:
+    if BUILDING:
         for _ in compress_module.compress_static_files():
             pass
     del compress_spec, compress_module
@@ -232,13 +242,13 @@ dist = setup(
     },
 )
 
-for t, _, file in dist.dist_files:
+for t, _, dist_file in dist.dist_files:
     if t != "sdist":
         continue
-    if not file.endswith(".gz"):
+    if not dist_file.endswith(".gz"):
         continue
     f = zopfli.ZOPFLI_FORMAT_GZIP  # type: ignore[possibly-undefined]
     d = zopfli.ZopfliDecompressor(f)
-    data = d.decompress(Path(file).read_bytes()) + d.flush()
+    data = d.decompress(Path(dist_file).read_bytes()) + d.flush()
     c = zopfli.ZopfliCompressor(f)
-    Path(file).write_bytes(c.compress(data) + c.flush())
+    Path(dist_file).write_bytes(c.compress(data) + c.flush())

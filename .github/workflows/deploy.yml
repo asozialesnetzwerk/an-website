@@ -198,6 +198,8 @@ jobs:
       #       mapper-annotated-text
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -208,11 +210,9 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
-        run: pip install -r pip-requirements.txt
+        run: pip install . && pip uninstall -y an-website
       - name: Install stuff needed for the tests
-        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstandard zopflipy
-      - name: Run script
-        run: ./scripts/compress_static_files.py
+        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstandard
       # - name: Run pytest with -Xdev
       #   run: python3 -Xdev -Xwarn_default_encoding -m pytest
       - name: Run pytest

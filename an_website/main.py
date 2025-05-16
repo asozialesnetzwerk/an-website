@@ -416,12 +416,6 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         "GENERAL", "NETCUP", fallback=False
     )
 
-    app.settings["COMMITMENT_URI"] = config.get(
-        "GENERAL",
-        "COMMITMENT_URI",
-        fallback="https://github.asozial.org/an-website/commitment.txt",
-    )
-
     onion_address = config.get("GENERAL", "ONION_ADDRESS", fallback=None)
     app.settings["ONION_ADDRESS"] = onion_address
     if onion_address is None:
