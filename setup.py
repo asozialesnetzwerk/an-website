@@ -141,7 +141,7 @@ else:
     )
     path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
     del dt, head, Repo
-    with path("an_website/commitment/commits.txt").open("wb") as file:
+    with path("an_website/static/commits.txt").open("wb") as file:
         for entry in repo.get_walker():
             file.write(entry.commit.id)
             file.write(b" ")
@@ -243,13 +243,13 @@ dist = setup(
     },
 )
 
-for t, _, file in dist.dist_files:
+for t, _, dist_file in dist.dist_files:
     if t != "sdist":
         continue
-    if not file.endswith(".gz"):
+    if not dist_file.endswith(".gz"):
         continue
     f = zopfli.ZOPFLI_FORMAT_GZIP  # type: ignore[possibly-undefined]
     d = zopfli.ZopfliDecompressor(f)
-    data = d.decompress(Path(file).read_bytes()) + d.flush()
+    data = d.decompress(Path(dist_file).read_bytes()) + d.flush()
     c = zopfli.ZopfliCompressor(f)
-    Path(file).write_bytes(c.compress(data) + c.flush())
+    Path(dist_file).write_bytes(c.compress(data) + c.flush())
