@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 import sys
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname
 
 from an_website.utils.utils import str_to_bool
 
@@ -122,7 +122,6 @@ def app() -> Application:
     assert NAME.endswith("-test")
 
     config = BetterConfigParser.from_path(Path(DIR, "config.ini"))
-    config.set("GENERAL", "COMMITMENT_URI", join(DIR, "commitment.txt"))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
