@@ -21,19 +21,25 @@ from __future__ import annotations
 
 import logging
 import random
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Final, TypeAlias
+from typing import Final
 
 import emoji
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import HTTPError
 
+from .. import DIR as ROOT_DIR
 from ..utils.data_parsing import parse_args
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
 LOGGER: Final = logging.getLogger(__name__)
+
+type Commit = tuple[datetime, str]
+type Commits = Mapping[str, Commit]
+COMMIT_DATA: dict[str, Commits] = {}
 
 
 def get_module_info() -> ModuleInfo:
@@ -51,9 +57,23 @@ def get_module_info() -> ModuleInfo:
     )
 
 
-Commit: TypeAlias = tuple[datetime, str]
-Commits: TypeAlias = dict[str, Commit]
-COMMIT_DATA: dict[str, Commits] = {}
+def parse_commits_txt(data: str) -> Commits:
+    """Parse the contents of commits.txt."""
+    return {
+        split[0]: (datetime.fromtimestamp(int(split[1]), UTC), split[2])
+        for line in data.splitlines()
+        if (split := line.split(" ", 2))
+    }
+
+
+def read_commits_txt() -> None | Commits:
+    """Read the contents of the local commits.txt file."""
+    if not (file := ROOT_DIR / "static" / "commits.txt").is_file():
+        return None
+    return parse_commits_txt(file.read_text("UTF-8"))
+
+
+COMMITS = read_commits_txt()
 
 
 async def get_commit_data(commitment_uri: str) -> Commits:
@@ -69,13 +89,7 @@ async def get_commit_data(commitment_uri: str) -> Commits:
         with open(commitment_uri, "rb") as file:
             file_content = file.read()
 
-    data: Commits = {}
-
-    for line in file_content.decode("UTF-8").split("\n"):
-        if not line:
-            continue
-        hash_, date, msg = line.split(" ", 2)
-        data[hash_] = (datetime.fromtimestamp(int(date), UTC), msg)
+    data = parse_commits_txt(file_content.decode("UTF-8"))
 
     COMMIT_DATA[commitment_uri] = data
     return data
@@ -102,7 +116,9 @@ class CommitmentAPI(APIRequestHandler):
         """Handle GET requests to the API."""
         # pylint: disable=unused-argument
         try:
-            data = await get_commit_data(self.settings["COMMITMENT_URI"])
+            data = COMMITS or await get_commit_data(
+                self.settings["COMMITMENT_URI"]
+            )
         except Exception as exc:
             raise HTTPError(503) from exc
 
