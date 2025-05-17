@@ -24,8 +24,7 @@ from collections.abc import Awaitable, Iterable, Mapping
 from typing import Any, Final, Literal
 
 import orjson as json
-from emoji import purely_emoji  # type: ignore[attr-defined]
-from emoji import EMOJI_DATA, demojize, emoji_list, emojize
+from emoji import EMOJI_DATA, demojize, emoji_list, emojize, purely_emoji
 from redis.asyncio import Redis
 from tornado.web import Application, HTTPError
 from tornado.websocket import WebSocketHandler
