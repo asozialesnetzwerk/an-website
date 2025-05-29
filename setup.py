@@ -90,6 +90,8 @@ def get_version() -> str:
             from get_version import get_version
 
             return get_version(__file__, vcs="git")
+    if path("VERSIONS.TXT").is_file():
+        return path("VERSIONS.TXT").read_text("UTF-8").strip()
     return Distribution.at(path(".")).version
 
 
@@ -128,7 +130,6 @@ if not path(".git").exists():
 elif not BUILDING:
     BACKEND_REQUIRES.add(DULWICH)
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
-    BACKEND_REQUIRES.add(ZOPFLIPY)
 else:
     from dulwich.repo import Repo
 
@@ -157,9 +158,9 @@ else:
     assert all(_ in trove.classifiers for _ in classifiers)
     assert classifiers == sorted(classifiers)
 
-    import zopfli
+    from zopfli import ZipFile
 
-    zipfile.ZipFile = zopfli.ZipFile  # type: ignore[assignment, misc]
+    zipfile.ZipFile = ZipFile  # type: ignore[assignment, misc]
 
 
 BACKEND_REQUIRES.add(TIME_MACHINE)
@@ -199,6 +200,7 @@ if BUILDING:
 # <cursed>
 compress_script_path = path("scripts/compress_static_files.py")
 if compress_script_path.exists():
+    BACKEND_REQUIRES.add(ZOPFLIPY)
     compress_spec = spec_from_file_location(
         "compress_static_files", compress_script_path
     )
@@ -247,7 +249,10 @@ for t, _, dist_file in dist.dist_files:
         continue
     if not dist_file.endswith(".gz"):
         continue
-    f = zopfli.ZOPFLI_FORMAT_GZIP  # type: ignore[possibly-undefined]
+
+    import zopfli
+
+    f = zopfli.ZOPFLI_FORMAT_GZIP
     d = zopfli.ZopfliDecompressor(f)
     data = d.decompress(Path(dist_file).read_bytes()) + d.flush()
     c = zopfli.ZopfliCompressor(f)

@@ -45,6 +45,35 @@ jobs:
         with:
           path: dist
 
+  build-source-tar-ball:
+    name: Create minimal source tar ball
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.7
+          allow-prereleases: true
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run setup.py
+        run: pip install --no-deps .
+      - name: Write version to file
+        run: "pip show an_website | grep -P '^Version: ' | cut '-d ' -f2 > VERSIONS.TXT"
+      - name: Create tar
+        run: git ls-files | xargs tar cf an-website.tar an_website/static/commits.txt REVISION.TXT TIMESTMP.TXT VERSIONS.TXT
+      - name: Compress tar
+        run: pigz -11 an-website.tar
+      - name: Upload as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: an-website.tar.gz
+          name: source-tar-ball
+
   test-distribution:
     name: Test distribution
     runs-on: ubuntu-24.04
@@ -107,6 +136,43 @@ jobs:
           path: hashes.txt
           if-no-files-found: error
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
+
+  test-source-tar-ball:
+    name: Test building from source tar ball
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    needs:
+      - build
+      - build-source-tar-ball
+    steps:
+      - name: Download source tar ball
+        uses: actions/download-artifact@v4
+        with:
+          name: source-tar-ball
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.7
+          allow-prereleases: true
+      - name: Install build
+        run: pip install build
+      - name: Build from tar ball
+        run: |
+          tar xf an-website.tar.gz
+          python -m build
+          sha256sum dist/*
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact
+      - name: Compare file hashes
+        run: |
+          set -xeu
+          BALL_HASHES="$(sha256sum dist/*)"
+          rm dist/* && mv an_website-* dist/
+          ORIG_HASHES="$(sha256sum dist/*)"
+          [ "$ORIG_HASHES" = "$BALL_HASHES" ]
 
   sdist-tests:
     name: Run tests in source-distribution
@@ -234,6 +300,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - sdist-tests
+      - test-source-tar-ball
       - test-running-oci-image
       - test-distribution
       - tests
@@ -247,6 +314,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
+      - name: Download source tar ball
+        uses: actions/download-artifact@v4
+        with:
+          name: source-tar-ball
       - name: Version
         id: version
         shell: python
@@ -279,6 +350,7 @@ jobs:
       - sdist-tests
       - test-running-oci-image
       - test-distribution
+      - test-source-tar-ball
       - tests
     if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     permissions: {}
@@ -309,6 +381,7 @@ jobs:
       - sdist-tests
       - test-distribution
       - tests
+      - test-source-tar-ball
     permissions: {}
     outputs:
       version: ${{ steps.version.outputs.version }}
