@@ -19,11 +19,12 @@ import asyncio
 import logging
 import traceback
 from asyncio import AbstractEventLoop
-from collections.abc import Awaitable, Iterable
+from collections.abc import Coroutine, Iterable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
 from pathlib import Path
+from typing import Never
 
 import orjson as json
 from tornado.httpclient import AsyncHTTPClient
@@ -97,7 +98,7 @@ class AsyncHandler(logging.Handler):
 
     def emit(  # type: ignore[override]
         self, record: LogRecord
-    ) -> None | Awaitable[object]:
+    ) -> None | Coroutine[None, Never, object]:
         """
         Do whatever it takes to actually log the specified logging record.
 
@@ -119,7 +120,7 @@ class AsyncHandler(logging.Handler):
             self.acquire()
             try:
                 if awaitable := self.emit(record):
-                    future = asyncio.run_coroutine_threadsafe(
+                    future: Future[object] = asyncio.run_coroutine_threadsafe(
                         awaitable, self.loop
                     )
                     self.futures.add(future)

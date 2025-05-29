@@ -572,7 +572,7 @@ async def update_cache_periodically(
                                 "CLIENT"
                             )
                             if apm:
-                                apm.capture_exception()  # type: ignore[no-untyped-call]
+                                apm.capture_exception()
                         else:
                             LOGGER.info("Updated quotes cache successfully")
                     LOGGER.info(

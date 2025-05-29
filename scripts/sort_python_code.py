@@ -131,7 +131,7 @@ class BlockOfCode:
         self.uses = uses
         if hasattr(node, "name"):
             self.name = cast(Any, node).name.strip()
-            self.defines = (self.name,)  # type: ignore[assignment]
+            self.defines = (self.name,)
         else:
             self.name = None
             self.defines = ()

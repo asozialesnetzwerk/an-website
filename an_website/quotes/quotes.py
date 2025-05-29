@@ -24,7 +24,7 @@ import logging
 import random
 from asyncio import AbstractEventLoop, Future
 from dataclasses import dataclass
-from typing import Any, ClassVar, Final, Literal, TypeAlias, cast
+from typing import Any, ClassVar, Final, Literal, TypeAlias
 
 import regex
 from tornado.web import HTTPError
@@ -405,7 +405,7 @@ class QuoteById(QuoteBaseHandler):
 
         await self.update_saved_votes(quote_id, author_id, new_vote)
 
-        to_vote = cast(Literal[-1, 1], -1 if vote_diff < 0 else 1)
+        to_vote: Literal[-1, 1] = -1 if vote_diff < 0 else 1
 
         contributed_by = f"an-website_{hash_ip(self.request.remote_ip, 10)}"
 

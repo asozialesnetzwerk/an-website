@@ -38,6 +38,7 @@ ES_WHAT_LITERALS: tuple[ES_WHAT_LITERAL, ...] = (
     "component_templates",
     "index_templates",
 )
+type AnyArgsAsyncMethod = Callable[..., Awaitable[ObjectApiResponse[object]]]
 
 
 async def setup_elasticsearch_configs(
@@ -85,12 +86,9 @@ async def setup_elasticsearch_config(
     path: str = "<unknown>",
 ) -> None | ObjectApiResponse[object]:
     """Setup Elasticsearch config."""  # noqa: D401
-    get: Callable[..., Awaitable[ObjectApiResponse[object]]]
-    put: Callable[..., Awaitable[ObjectApiResponse[object]]]
-
     if what == "component_templates":
-        get = es.cluster.get_component_template
-        put = es.cluster.put_component_template
+        get: AnyArgsAsyncMethod = es.cluster.get_component_template
+        put: AnyArgsAsyncMethod = es.cluster.put_component_template
     elif what == "index_templates":
         get = es.indices.get_index_template
         put = es.indices.put_index_template

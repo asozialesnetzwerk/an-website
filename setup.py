@@ -193,7 +193,7 @@ if BUILDING:
             kwargs["filter"] = filter_
             return super().add(*args, **kwargs)
 
-    tarfile.open = Tarfile.open  # type: ignore[assignment]
+    tarfile.open = Tarfile.open
 
 
 # <cursed>

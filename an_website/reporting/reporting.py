@@ -218,7 +218,7 @@ class ReportingAPI(APIRequestHandler):
         self.finish()  # type: ignore[unused-awaitable]
         for report in reports.copy():
             if not isinstance(report, dict):
-                reports.remove(report)  # type: ignore[unreachable]
+                reports.remove(report)
                 continue
             if isinstance((sauce := report.pop("_source", None)), dict):
                 report.update(sauce)
