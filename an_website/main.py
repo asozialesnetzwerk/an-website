@@ -50,7 +50,6 @@ from zoneinfo import ZoneInfo
 import regex
 from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
-from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
 from elasticapm.contrib.tornado import ElasticAPM
 from redis.asyncio import (
     BlockingConnectionPool,
@@ -719,6 +718,11 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
 
 def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
+    with catch_warnings():
+        simplefilter("ignore", DeprecationWarning)
+        # pylint: disable-next=import-outside-toplevel
+        from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
+
     config: BetterConfigParser = app.settings["CONFIG"]
     host = config.get("APP_SEARCH", "HOST", fallback=None)
     key = config.get("APP_SEARCH", "SEARCH_KEY", fallback=None)

@@ -17,10 +17,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Final, Literal, TypeAlias, cast
+from typing import Any, Final, Literal, TypeAlias, cast
 
 import orjson as json
-from elastic_enterprise_search import AppSearch  # type: ignore[import-untyped]
 from typed_stream import Stream
 
 from .. import NAME
@@ -119,7 +118,7 @@ class Search(HTMLRequestHandler):
         self,
         query: str,
         *,
-        app_search: AppSearch = ...,
+        app_search: Any = ...,
         app_search_engine: str = ...,  # type: ignore[assignment]
     ) -> list[dict[str, str | float]] | None:
         """Search the website using Elastic App Search."""
