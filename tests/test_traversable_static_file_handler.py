@@ -33,6 +33,16 @@ STATIC_DIR = ROOT_DIR / "static"
 CACHE_CONTROL = f"public, immutable, max-age={86400 * 365 * 10}"
 
 
+async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the /.well-known handler."""
+    assert_valid_response(
+        await fetch("/.well-known/test-file"),
+        content_type="text/plain;charset=utf-8",
+        codes={404},
+        headers={"Access-Control-Allow-Origin": "*"}
+    )
+
+
 async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
     """Test requesting an OpenMoji svg."""
     response = assert_valid_response(

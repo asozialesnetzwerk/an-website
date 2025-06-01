@@ -20,6 +20,7 @@ import logging
 import sys
 from collections.abc import Awaitable, Iterable, Mapping, Sequence
 from importlib.resources.abc import Traversable
+from types import MappingProxyType
 from typing import Any, Final, Literal, override
 from urllib.parse import urlsplit, urlunsplit
 
@@ -230,10 +231,16 @@ class TraversableStaticFileHandler(_RequestHandler):
         """Handle HEAD requests for files in the static file directory."""
         return self.get(path, head=True)
 
-    def initialize(self, root: Traversable, hashes: Mapping[str, str]) -> None:
+    def initialize(
+        self,
+        root: Traversable,
+        hashes: Mapping[str, str] = MappingProxyType({}),
+        headers: Iterable[tuple[str, str]] = (),
+    ) -> None:
         """Initialize this handler with a root directory and file hashes."""
         self.root = root
         self.file_hashes = hashes
+        self.headers = headers
         if not sys.flags.dev_mode:
             self.set_etag_header()
 
@@ -278,3 +285,4 @@ class TraversableStaticFileHandler(_RequestHandler):
         self.write(str(status_code))
         self.write(" ")
         self.write(self._reason)
+        self.write("\n")
