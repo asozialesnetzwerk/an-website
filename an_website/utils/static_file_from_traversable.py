@@ -50,12 +50,13 @@ class TraversableStaticFileHandler(_RequestHandler):
     """A static file handler for the Traversable abc."""
 
     root: Traversable
-    file_hashes: Mapping[str, str]
+    file_hashes: Mapping[str, str] = {}
+    headers: Iterable[tuple[str, str]] = ()
 
     @override
     def compute_etag(self) -> None | str:
         """Return a pre-computed ETag."""
-        return getattr(self, "file_hashes", {}).get(self.request.path)
+        return self.file_hashes.get(self.request.path)
 
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
         # pylint: disable=too-complex, too-many-branches
@@ -258,6 +259,9 @@ class TraversableStaticFileHandler(_RequestHandler):
     def set_default_headers(self) -> None:
         """Set the default headers for this handler."""
         super().set_default_headers()
+        for name, value in self.headers:
+            self.set_header(name, value)
+
         if not sys.flags.dev_mode:
             if "v" in self.request.arguments:
                 self.set_header(  # never changes

@@ -303,7 +303,10 @@ def get_all_handlers(module_infos: Iterable[ModuleInfo]) -> list[Handler]:
         (
             r"(?i)/\.well-known/(.*)",
             TraversableStaticFileHandler,
-            {"root": Path(".well-known"), "hashes": {}},
+            {
+                "root": Path(".well-known"),
+                "headers": (("Access-Control-Allow-Origin", "*"),),
+            },
         )
     )
 
