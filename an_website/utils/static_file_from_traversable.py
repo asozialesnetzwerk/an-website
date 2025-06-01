@@ -241,6 +241,8 @@ class TraversableStaticFileHandler(_RequestHandler):
         self.root = root
         self.file_hashes = hashes
         self.headers = headers
+        for name, value in headers:
+            self.set_header(name, value)
         if not sys.flags.dev_mode:
             self.set_etag_header()
 
