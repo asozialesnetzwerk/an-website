@@ -721,8 +721,8 @@ def setup_app_search(app: Application) -> None:  # pragma: no cover
     with catch_warnings():
         simplefilter("ignore", DeprecationWarning)
         # pylint: disable-next=import-outside-toplevel
-        from elastic_enterprise_search import (
-            AppSearch,  # type: ignore[import-untyped]
+        from elastic_enterprise_search import (  # type: ignore[import-untyped]
+            AppSearch,
         )
 
     config: BetterConfigParser = app.settings["CONFIG"]
