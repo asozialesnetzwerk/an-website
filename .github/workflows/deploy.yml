@@ -11,11 +11,35 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: yes
 
 jobs:
+  prepare-build:
+    name: Prepare building
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          fetch-deps: 0
+          fetch-tags: true
+      - name: Check if already released
+        if: github.event_name == 'schedule'
+        run: test -z $(git tag --list "v*" --points-at)
+      - name: Create tag
+        if: github.event_name == 'schedule'
+        run: git tag $(date -u '+v%y.%m')
+      - name: Push tag
+        if: github.event_name == 'schedule'
+        run: git push --tags
+
   build:
     name: Build
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
+      contents: read
+    needs:
+      - prepare-build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,15 +49,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Check if already released
-        if: github.event_name == 'schedule'
-        run: test -z $(git tag --list "v*" --points-at)
-      - name: Create tag
-        if: github.event_name == 'schedule'
-        run: git tag $(python -c "from time import strftime, gmtime; print(strftime('v%y.%m', gmtime()))")
-      - name: Push tag
-        if: github.event_name == 'schedule'
-        run: git push --tags
       - name: Install build frontend
         run: pip install "build==1.*"
       - name: Build
@@ -49,7 +64,9 @@ jobs:
     name: Create minimal source tar ball
     runs-on: ubuntu-24.04
     permissions:
-      contents: write
+      contents: read
+    needs:
+      - prepare-build
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
