@@ -39,7 +39,7 @@ async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811
         await fetch("/.well-known/test-file"),
         content_type="text/plain;charset=utf-8",
         codes={404},
-        headers={"Access-Control-Allow-Origin": "*"}
+        headers={"Access-Control-Allow-Origin": "*"},
     )
 
 
