@@ -65,6 +65,15 @@ def get_handlers() -> list[Handler]:
             tornado.web.RedirectHandler,
             {"url": fix_static_path("favicon.png")},
         ),
+        (
+            r"/static/(img/netcup-oekostrom2\..*)",
+            TraversableStaticFileHandler,
+            {
+                "root": STATIC_DIR,
+                "hashes": FILE_HASHES_DICT,
+                "headers": (("X-Robots-Tag", "noindex, nofollow"),),
+            },
+        ),
     ]
     debug_style_dir = (
         ROOT_DIR.absolute().parent / "style"
@@ -80,6 +89,7 @@ def get_handlers() -> list[Handler]:
                 {"root": debug_style_dir, "hashes": {}},
             )
         )
+
     handlers.append(
         (
             r"/static/(.*)",

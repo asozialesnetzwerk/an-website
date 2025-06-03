@@ -18,6 +18,7 @@ import os
 from collections.abc import Callable, Iterable, Mapping
 from importlib.resources.abc import Traversable
 from pathlib import Path
+from types import MappingProxyType
 from typing import Final
 
 from blake3 import blake3
@@ -61,7 +62,7 @@ def hash_file(path: Traversable) -> str:
 
 def create_file_hashes_dict(
     filter_path_fun: Callable[[str], bool] | None = None
-) -> dict[str, str]:
+) -> Mapping[str, str]:
     """Create a dict of file hashes."""
     static = Path("/static")
     file_hashes_dict = {
@@ -78,7 +79,7 @@ def create_file_hashes_dict(
             "/static/favicon.jxl"
         ]
         file_hashes_dict["/humans.txt"] = file_hashes_dict["/static/humans.txt"]
-    return file_hashes_dict
+    return MappingProxyType(file_hashes_dict)
 
 
 def fix_static_path_impl(path: str, file_hashes_dict: Mapping[str, str]) -> str:

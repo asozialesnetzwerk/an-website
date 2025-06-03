@@ -11,6 +11,7 @@
     </section>
     {# NETCUP won't be shown if SHOW_HAMBURGER_MENU is False (that looks ugly) #}
     {% if settings and settings.get("SHOW_HAMBURGER_MENU") %}
+    <div data-nosnippet>
         <img id="open-pane"
              src="{{fix_static('img/hamburger-menu-icon.svg')}}"
              alt="Menü">
@@ -62,6 +63,6 @@
                 </a>
             {% end %}
         </nav>
-
+    </div>
     {% end %}
 </header>
