@@ -141,7 +141,7 @@ class Option(ABC, Generic[T]):
         """Return whether the option is taken from the arguments."""
         return self.get_value(
             request_handler, include_cookie=False
-        ) != self.get_value(request_handler)
+        ) != self.get_default_value(request_handler)
 
 
 def parse_int(value: str, default: int) -> int:
