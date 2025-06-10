@@ -309,7 +309,7 @@ async def test_quote_image_handlers(
             if name == "pdf":
                 continue
             img = Image.open(BytesIO(image4), formats=[name])
-            try:
+            try:  # pylint: disable=too-many-try-statements
                 img.load()
                 assert img.width == 1000
                 assert img.height == 750
