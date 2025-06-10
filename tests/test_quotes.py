@@ -21,6 +21,7 @@ from functools import cache
 from io import BytesIO
 
 import orjson as json
+import qoi_rs
 from PIL import Image
 
 from an_website.quotes import create, utils as quotes
@@ -318,6 +319,14 @@ async def test_quote_image_handlers(
                     assert not img.getpixel((0, 0))
                 else:
                     assert img.getpixel((0, 0)) == (0, 0, 0), f"{name}"
+                if ext == "qoi":
+                    img2 = qoi_rs.decode_pillow(image4)
+                    assert tuple(img.getdata()) == tuple(img2.getdata())
+                    img2.close()
+                    qimg = qoi_rs.decode(image4)
+                    assert qimg.mode == "RGB"
+                    assert qimg.width == 1000
+                    assert qimg.height == 750
             finally:
                 img.close()
 
