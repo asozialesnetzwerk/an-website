@@ -745,12 +745,12 @@
         },
         "hangman-solver-rs": {
             "hashes": [
-                "sha256:4bb7e4214d6a582dc9cd557e88aa73dce49577db2a8485b580c52f8ad19c989d",
-                "sha256:efb849ada8391ea4b5fc244c563660dc48c5b26aa0d4c9115aa4b8b17bc77e30"
+                "sha256:0f9680a2fd647ffa045f114216634476e53bf3af3e4cd39813db57f4227430cb",
+                "sha256:26277d4cd176104855eb655d6f7aace9b0a148f2bc3d3aacc6a9b17bc49e0795"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.12'",
-            "version": "==0.5.0"
+            "version": "==0.6.0"
         },
         "hiredis": {
             "hashes": [

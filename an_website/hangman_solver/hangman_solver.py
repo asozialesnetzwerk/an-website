@@ -82,7 +82,7 @@ def solve_hangman(data: HangmanArguments) -> HangmanResult:
         ) from err
 
     return (solve_crossword if data.crossword_mode else solve)(
-        data.input, list(data.invalid), lang, data.get_max_words()
+        data.input, data.invalid, lang, data.get_max_words()
     )
 
 
