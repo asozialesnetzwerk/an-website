@@ -236,7 +236,7 @@ class ChatHandler(BaseRequestHandler):
         if "country_flag" in geoip:
             flag = geoip["country_flag"]
         elif self.request.host_name.endswith(".onion"):
-            flag = "🏴☠"
+            flag = "🏴‍☠"
         else:
             flag = "❔"
 
