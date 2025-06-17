@@ -53,7 +53,7 @@ const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element => {
         return <span className="openmoji">{[emoji]}</span>;
     }
     return emoji;
-}
+};
 
 const MessageComponent = ({ msg }: { msg: Message }): JSX.Element => (
     <div tooltip={timeStampToText(msg.timestamp)}>
