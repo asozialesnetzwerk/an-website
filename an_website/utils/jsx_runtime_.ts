@@ -30,6 +30,7 @@ declare global {
             a: __CanHaveChildren & __Props & { href?: string };
             p: __CanHaveChildren & __Props;
             button: __CanHaveChildren & __Props & { title?: string };
+            span: __CanHaveChildren & __Props;
             input: __Props & {
                 type: string;
                 min?: string;

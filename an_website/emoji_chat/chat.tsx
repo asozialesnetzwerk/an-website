@@ -44,8 +44,16 @@ const EmojiImgComponent = ({ emoji }: { emoji: string }): JSX.Element => {
     );
 };
 
-const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element =>
-    getOpenMojiType() === "img" ? <EmojiImgComponent emoji={emoji} /> : emoji;
+const EmojiComponent = ({ emoji }: { emoji: string }): JSX.Element => {
+    console.log(getOpenMojiType());
+    if (getOpenMojiType() === "img") {
+        return <EmojiImgComponent emoji={emoji} />;
+    }
+    if (getOpenMojiType()) {
+        return <span className="openmoji">{[emoji]}</span>;
+    }
+    return emoji;
+}
 
 const MessageComponent = ({ msg }: { msg: Message }): JSX.Element => (
     <div tooltip={timeStampToText(msg.timestamp)}>
