@@ -293,6 +293,27 @@ async def test_sw_json_request_handlers(
             headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
+                    "text": "x y z",
+                    "config": "# \n",
+                    "return_config": "sure",
+                    "minify_config": "nope",
+                }
+            ),
+        ),
+    )
+    assert response["text"] == "x y z"
+    assert response["replaced_text"] == "x y z"
+    assert response["return_config"] is True
+    assert response["minify_config"] is False
+    assert response["config"] == ""
+
+    response = assert_valid_json_response(
+        await fetch(
+            "/api/vertauschte-woerter",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body=json.dumps(
+                {
                     "text": "x z o",
                     "config": "x  => y\nz <=> o",
                     "return_config": True,
