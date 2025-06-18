@@ -305,6 +305,7 @@ async def test_sw_json_request_handlers(
     assert response["replaced_text"] == "x y z"
     assert response["return_config"] is True
     assert response["minify_config"] is False
+    # pylint: disable-next=use-implicit-booleaness-not-comparison-to-string
     assert response["config"] == ""
 
     response = assert_valid_json_response(
