@@ -26,9 +26,9 @@ from typing import Any, Final
 
 from an_website.backdoor_client import request
 
-DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "10.0.0"
+DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "b99439b8ab8e5807240b4919d559dab568ad3e4c"
 
-JSHTTP_MIME_DB_VERSION: Final[str] = "a76e5a824c228e2e58363c9404e42a54ee1d142f"
+JSHTTP_MIME_DB_VERSION: Final[str] = "9e629fb06cd19f57c30a4cb7f9f5edd2d72478bb"
 
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4.35.2"
+alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
 
 TAG=3.12-slim-bookworm
 REPOSITORY=library/python

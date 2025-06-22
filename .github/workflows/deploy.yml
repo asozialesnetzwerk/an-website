@@ -211,7 +211,7 @@ jobs:
         #   - trial
     services:
       redis:
-        image: docker.io/redis/redis-stack-server:6.2.6-v15
+        image: docker.io/redis/redis-stack-server:6.2.6-v20
         ports:
           - 6379:6379
     steps:
@@ -256,7 +256,7 @@ jobs:
         #   - trial
     services:
       redis:
-        image: docker.io/redis/redis-stack-server:6.2.6-v15
+        image: docker.io/redis/redis-stack-server:6.2.6-v20
         ports:
           - 6379:6379
     steps:
@@ -612,7 +612,7 @@ jobs:
       fail-fast: false
       matrix:
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v15
+          - docker.io/redis/redis-stack-server:6.2.6-v20
           #- docker.dragonflydb.io/dragonflydb/dragonfly
     services:
       redis:

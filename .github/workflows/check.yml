@@ -48,7 +48,7 @@ jobs:
       - name: Run Black
         run: black .
       - name: Install dprint
-        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.48.0
+        run: curl -sSf https://dprint.dev/install.sh | sh -s 0.50.0
       - name: Run dprint
         run: ~/.dprint/bin/dprint fmt --diff
       - name: Install dart-sass

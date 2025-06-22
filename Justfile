@@ -22,11 +22,12 @@ build:
 
 [positional-arguments]
 build_css *args:
-    @just esbuild --outbase=style --outdir=an_website/static/css 'style/**/*.css' "$@"
+    @just esbuild --minify --sourcemap --outbase=style --outdir=an_website/static/css 'style/**/*.css' "$@"
 
 [positional-arguments]
 build_js_debug *args:
     @just esbuild an_website/*/*[!_].ts an_website/*/*[!_].tsx an_website/*/*/*[!_].ts an_website/*/*/*[!_].tsx \
+        --minify --sourcemap \
         --tree-shaking=true \
         --loader:.svg=text \
         --jsx-import-source=@utils --jsx=automatic \
@@ -42,7 +43,7 @@ build_js *args:
 
 [positional-arguments]
 esbuild *args:
-    deno run -A https://deno.land/x/esbuild@v0.25.0/mod.js "--target=$(just target),chrome103,edge129,firefox115,ios11,opera114,safari15.6" --charset=utf8 --minify --sourcemap --tree-shaking=false "$@"
+    deno run -A https://deno.land/x/esbuild@v0.25.5/mod.js "--target=$(just target),chrome109,edge134,firefox115,ios11,opera117,safari15.6" --charset=utf8 "$@"
 
 target:
     #!/usr/bin/env python3
