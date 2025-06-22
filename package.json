@@ -15,12 +15,12 @@
     "@types/node": "^18.19.112",
     "@typescript-eslint/eslint-plugin": "^8.34.1",
     "@typescript-eslint/parser": "^8.34.1",
-    "@typescript/lib-dom": "npm:@types/web@^0.0.237",
+    "@typescript/lib-dom": "npm:@types/web@^0.0.243",
     "browserslist": "~4.25.0",
     "browserslist-to-esbuild": "^2.1.1",
     "caniuse-lite": "1.0.30001718",
-    "core-js-builder": "3.42.0",
-    "core-js-compat": "3.42.0",
+    "core-js-builder": "3.43.0",
+    "core-js-compat": "3.43.0",
     "dax-sh": "^0.42.0",
     "doiuse": "^6.0.5",
     "electron-to-chromium": "1.5.160",
@@ -57,6 +57,7 @@
       "core-js-builder": "patches/core-js-builder.patch"
     },
     "onlyBuiltDependencies": [
+      "core-js",
       "esbuild"
     ]
   }

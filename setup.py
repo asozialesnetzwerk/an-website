@@ -94,7 +94,7 @@ def get_version() -> str:
             version = get_version(__file__, vcs="git")
             path("VERSIONS.TXT").write_text(version + "\n")
         except ImportError:
-            return
+            return "MissingNo."
     if path("VERSIONS.TXT").is_file():
         return path("VERSIONS.TXT").read_text("UTF-8").strip()
     return Distribution.at(path(".")).version

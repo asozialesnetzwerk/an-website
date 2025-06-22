@@ -33,7 +33,7 @@ jobs:
         with:
           just-version: 1.40
       - name: Setup Deno
-        uses: denoland/setup-deno@v1
+        uses: denoland/setup-deno@v2
         with:
           deno-version: lts
       - name: Install required stuff

@@ -9,9 +9,8 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
-    "dax": "https://jsr.io/@david/dax/0.42.0/mod.ts",
-    "esbuild": "https://deno.land/x/esbuild@v0.24.2/wasm.js",
-    "std/": "https://deno.land/std@0.224.0/"
+    "std/": "https://deno.land/std@0.224.0/",
+    "dax": "https://jsr.io/@david/dax/0.42.0/mod.ts"
   },
   "nodeModulesDir": "none",
   "lint": {
