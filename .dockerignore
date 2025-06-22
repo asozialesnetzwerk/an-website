@@ -1,9 +1,12 @@
 *
+!setup.py
+!README.md
 !an_website
+!CNSTRNTS.TXT
+!TIMESTMP.TXT
+!VERSIONS.TXT
 !pip-requirements.txt
 **/tsconfig.json
 **/.eslintrc.*
-!CNSTRNTS.TXT
-!TIMESTMP.TXT
 **/*.py[cod]
 **/*.ts

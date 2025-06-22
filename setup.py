@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# THIS FILE IS CURSED, DO NOT LOOK AT IT!!!
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -85,11 +86,14 @@ def get_version() -> str:
     """Get the version."""
     if path(".git").exists():
         BACKEND_REQUIRES.add(GET_VERSION)
-        if BUILDING:
+        try:
             # pylint: disable=redefined-outer-name
             from get_version import get_version
 
-            return get_version(__file__, vcs="git")
+            version = get_version(__file__, vcs="git")
+            path("VERSIONS.TXT").write_text(version + "\n")
+        except ImportError:
+            return
     if path("VERSIONS.TXT").is_file():
         return path("VERSIONS.TXT").read_text("UTF-8").strip()
     return Distribution.at(path(".")).version
@@ -101,7 +105,7 @@ def path(path: str | PathLike[str]) -> Path:
     return Path(__file__).resolve().parent / path
 
 
-if path("pip-constraints.txt").exists() and BUILDING:
+if path("pip-constraints.txt").exists() and (BUILDING or HELP):
     path("CNSTRNTS.TXT").write_text(
         "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
         + "\n",
@@ -127,7 +131,7 @@ if path("pip-constraints.txt").exists() and BUILDING:
 
 if not path(".git").exists():
     pass
-elif not BUILDING:
+elif not (BUILDING or HELP):
     BACKEND_REQUIRES.add(DULWICH)
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
 else:
@@ -153,14 +157,15 @@ else:
         file.flush()
     del repo, file
 
-    import trove_classifiers as trove
+    if not HELP:
+        import trove_classifiers as trove
 
-    assert all(_ in trove.classifiers for _ in classifiers)
-    assert classifiers == sorted(classifiers)
+        assert all(_ in trove.classifiers for _ in classifiers)
+        assert classifiers == sorted(classifiers)
 
-    from zopfli import ZipFile
+        from zopfli import ZipFile
 
-    zipfile.ZipFile = ZipFile  # type: ignore[assignment, misc]
+        zipfile.ZipFile = ZipFile  # type: ignore[assignment, misc]
 
 
 BACKEND_REQUIRES.add(TIME_MACHINE)
@@ -197,7 +202,6 @@ if BUILDING:
     tarfile.open = Tarfile.open
 
 
-# <cursed>
 compress_script_path = path("scripts/compress_static_files.py")
 if compress_script_path.exists():
     BACKEND_REQUIRES.add(ZOPFLIPY)
@@ -213,7 +217,6 @@ if compress_script_path.exists():
             pass
     del compress_spec, compress_module
 del compress_script_path
-# </cursed>
 
 install_requires = path("pip-requirements.txt").read_text("UTF-8").split("\n")
 long_description = path("README.md").read_text("UTF-8")

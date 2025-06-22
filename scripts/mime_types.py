@@ -26,7 +26,9 @@ from typing import Any, Final
 
 from an_website.backdoor_client import request
 
-DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "b99439b8ab8e5807240b4919d559dab568ad3e4c"
+DEBIAN_MEDIA_TYPES_VERSION: Final[str] = (
+    "b99439b8ab8e5807240b4919d559dab568ad3e4c"
+)
 
 JSHTTP_MIME_DB_VERSION: Final[str] = "9e629fb06cd19f57c30a4cb7f9f5edd2d72478bb"
 

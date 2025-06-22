@@ -31,11 +31,11 @@ jobs:
           cache-dependency-path: Pipfile.lock
       - uses: extractions/setup-just@v2
         with:
-          just-version: 1.39.0
+          just-version: 1.40
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: ~2.1
+          deno-version: lts
       - name: Install required stuff
         run: |
           sudo apt-get install --update -y libcurl4-openssl-dev
