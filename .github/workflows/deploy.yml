@@ -577,7 +577,7 @@ jobs:
       - name: Build image
         run: |
           cd an_website-*/
-          sudo ./build-oci-image.sh -t an-website --timestamp 1651075200
+          sudo ./build-oci-image.sh -t an-website
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki

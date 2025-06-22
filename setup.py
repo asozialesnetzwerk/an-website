@@ -47,6 +47,7 @@ WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 
 HELP = "--help" in sys.argv[1:]
+VERSION = "--version" in sys.argv[1:]
 BUILDING = not HELP and {"sdist", "bdist_wheel"} & {*sys.argv[1:]}
 
 classifiers = [
@@ -105,7 +106,7 @@ def path(path: str | PathLike[str]) -> Path:
     return Path(__file__).resolve().parent / path
 
 
-if path("pip-constraints.txt").exists() and (BUILDING or HELP):
+if path("pip-constraints.txt").exists() and (BUILDING or VERSION):
     path("CNSTRNTS.TXT").write_text(
         "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
         + "\n",
@@ -131,7 +132,7 @@ if path("pip-constraints.txt").exists() and (BUILDING or HELP):
 
 if not path(".git").exists():
     pass
-elif not (BUILDING or HELP):
+elif not (BUILDING or VERSION):
     BACKEND_REQUIRES.add(DULWICH)
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
 else:
@@ -141,7 +142,7 @@ else:
     path("REVISION.TXT").write_bytes(repo.head())
     head = repo[repo.head()]
     dt = datetime.fromtimestamp(
-        head.author_time, timezone(timedelta(seconds=head.author_timezone))
+        head.commit_time, timezone(timedelta(seconds=head.commit_timezone))
     )
     path("TIMESTMP.TXT").write_text(dt.isoformat(), encoding="UTF-8")
     del dt, head, Repo
@@ -149,7 +150,7 @@ else:
         for entry in repo.get_walker():
             file.write(entry.commit.id)
             file.write(b" ")
-            file.write(str(entry.commit.author_time).encode("UTF-8"))
+            file.write(str(entry.commit.commit_time).encode("UTF-8"))
             file.write(b" ")
             file.write(entry.commit.message.split(b"\n")[0])
             file.write(b"\n")
@@ -157,7 +158,7 @@ else:
         file.flush()
     del repo, file
 
-    if not HELP:
+    if not VERSION:
         import trove_classifiers as trove
 
         assert all(_ in trove.classifiers for _ in classifiers)

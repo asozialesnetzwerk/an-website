@@ -21,7 +21,10 @@ VERSION=$(./setup.py --version)
 
 REVISION=$(cat REVISION.TXT)
 
+TIMESTAMP=$(python3 -c "from datetime import datetime; print(int(datetime.fromisoformat(\"$(cat TIMESTMP.TXT)\").timestamp()))")
+
 buildah build \
+  --timestamp "$TIMESTAMP" \
   --build-arg BASE="${BASE}" \
   --annotation org.opencontainers.image.authors="contact@asozial.org" \
   --annotation org.opencontainers.image.source="https://github.com/asozialesnetzwerk/an-website" \
