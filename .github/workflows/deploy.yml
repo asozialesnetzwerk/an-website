@@ -116,6 +116,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
@@ -220,6 +222,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
@@ -290,6 +294,8 @@ jobs:
           allow-prereleases: true
           cache: pip
           cache-dependency-path: Pipfile.lock
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
@@ -542,7 +548,7 @@ jobs:
           go-version: ~1.20
       - name: Install netavark
         run: |
-          wget http://mirrors.kernel.org/ubuntu/pool/universe/n/netavark/netavark_1.4.0-4_amd64.deb
+          wget http://mirrors.kernel.org/ubuntu/pool/universe/n/netavark/netavark_1.4.0-4_arm64.deb
           sudo dpkg -i netavark_1.4.0-4_amd64.deb
       - name: Upgrade Buildah
         run: |
@@ -555,7 +561,7 @@ jobs:
           popd
       - name: Download youki
         run: |
-          wget https://github.com/containers/youki/releases/download/v${VERSION}/youki-${VERSION}-x86_64-musl.tar.gz
+          wget https://github.com/containers/youki/releases/download/v${VERSION}/youki-${VERSION}-aarch64-musl.tar.gz
           tar xOf youki-${VERSION}-x86_64-musl.tar.gz youki > /opt/youki
           rm -f youki-${VERSION}-x86_64-musl.tar.gz
           chmod +x /opt/youki
