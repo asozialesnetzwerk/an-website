@@ -60,8 +60,8 @@ jobs:
         with:
           path: dist
 
-  build-source-tar-ball:
-    name: Create minimal source tar ball
+  build-source-tarball:
+    name: Create minimal source tarball
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: an-website.tar.gz
-          name: source-tar-ball
+          name: source-tarball
 
   test-distribution:
     name: Test distribution
@@ -154,19 +154,19 @@ jobs:
           if-no-files-found: error
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
 
-  test-source-tar-ball:
-    name: Test building from source tar ball
+  test-source-tarball:
+    name: Test building from source tarball
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     needs:
       - build
-      - build-source-tar-ball
+      - build-source-tarball
     steps:
-      - name: Download source tar ball
+      - name: Download source tarball
         uses: actions/download-artifact@v4
         with:
-          name: source-tar-ball
+          name: source-tarball
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -174,7 +174,7 @@ jobs:
           allow-prereleases: true
       - name: Install build
         run: pip install build
-      - name: Build from tar ball
+      - name: Build from tarball
         run: |
           tar xf an-website.tar.gz
           python -m build
@@ -192,7 +192,7 @@ jobs:
           [ "$ORIG_HASHES" = "$BALL_HASHES" ]
 
   sdist-tests:
-    name: Run tests in source-distribution
+    name: Run tests in source distribution
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -269,7 +269,7 @@ jobs:
       # - name: Start Elasticsearch
       #   uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
       #   with:
-      #     stack-version: 8.15.5
+      #     stack-version: 8.18.2
       #     security-enabled: false
       #     nodes: 3
       #     license: ${{ matrix.license }}
@@ -317,7 +317,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - sdist-tests
-      - test-source-tar-ball
+      - test-source-tarball
       - test-running-oci-image
       - test-distribution
       - tests
@@ -331,10 +331,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
-      - name: Download source tar ball
+      - name: Download source tarball
         uses: actions/download-artifact@v4
         with:
-          name: source-tar-ball
+          name: source-tarball
       - name: Version
         id: version
         shell: python
@@ -367,7 +367,7 @@ jobs:
       - sdist-tests
       - test-running-oci-image
       - test-distribution
-      - test-source-tar-ball
+      - test-source-tarball
       - tests
     if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     permissions: {}
@@ -398,7 +398,7 @@ jobs:
       - sdist-tests
       - test-distribution
       - tests
-      - test-source-tar-ball
+      - test-source-tarball
     permissions: {}
     outputs:
       version: ${{ steps.version.outputs.version }}

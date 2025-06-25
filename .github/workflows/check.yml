@@ -269,7 +269,7 @@ jobs:
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
         env:
-          SHELLCHECK_OPTS: -x -o all
+          SHELLCHECK_OPTS: -xo all
         with:
           version: v0.10.0
           check_together: yes
