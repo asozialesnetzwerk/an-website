@@ -134,7 +134,7 @@ hy==1.1.0
 hyrule==1.0.0
 jsonpickle==4.1.1
 lxml==5.4.0
-multidict==6.5.0
+multidict==6.6.0
 openmoji-dist==15.1.0
 orjson==3.10.18
 pillow==11.2.1

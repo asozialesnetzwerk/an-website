@@ -134,7 +134,7 @@ hy==1.1.0; python_version < '3.15' and python_version >= '3.9'
 hyrule==1.0.0; python_version < '3.13'
 jsonpickle==4.1.1; python_version >= '3.8'
 lxml==5.4.0; python_version >= '3.6'
-multidict==6.5.0; python_version >= '3.9'
+multidict==6.6.0; python_version >= '3.9'
 openmoji-dist==15.1.0
 orjson==3.10.18; python_version >= '3.9'
 pillow==11.2.1; python_version >= '3.9'
