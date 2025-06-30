@@ -108,7 +108,7 @@ request_ctx_var: ContextVar[HTTPServerRequest] = ContextVar("current_request")
 
 
 class _RequestHandler(tornado.web.RequestHandler):
-    """Base for tornado request handlers."""
+    """Base for Tornado request handlers."""
 
     @override
     async def _execute(
@@ -120,6 +120,16 @@ class _RequestHandler(tornado.web.RequestHandler):
     # pylint: disable-next=protected-access
     _execute.__doc__ = tornado.web.RequestHandler._execute.__doc__
 
+    @property
+    def apm_client(self) -> None | elasticapm.Client:
+        """Get the APM client from the settings."""
+        return self.settings.get("ELASTIC_APM", {}).get("CLIENT")  # type: ignore[no-any-return]
+
+    @property
+    def apm_enabled(self) -> bool:
+        """Return whether APM is enabled."""
+        return bool(self.settings.get("ELASTIC_APM", {}).get("ENABLED"))
+
     @override
     def data_received(  # noqa: D102
         self, chunk: bytes
@@ -127,6 +137,60 @@ class _RequestHandler(tornado.web.RequestHandler):
         pass
 
     data_received.__doc__ = tornado.web.RequestHandler.data_received.__doc__
+
+    @property
+    def elasticsearch(self) -> AsyncElasticsearch:
+        """
+        Get the Elasticsearch client from the settings.
+
+        This is None if Elasticsearch is not enabled.
+        """
+        return cast(AsyncElasticsearch, self.settings.get("ELASTICSEARCH"))
+
+    @property
+    def elasticsearch_prefix(self) -> str:
+        """Get the Elasticsearch prefix from the settings."""
+        return self.settings.get(  # type: ignore[no-any-return]
+            "ELASTICSEARCH_PREFIX", NAME
+        )
+
+    def geoip(
+        self,
+        ip: None | str = None,
+        database: str = geoip.__defaults__[0],  # type: ignore[index]
+        *,
+        allow_fallback: bool = True,
+    ) -> Coroutine[None, None, None | dict[str, Any]]:
+        """Get GeoIP information."""
+        if not ip:
+            ip = self.request.remote_ip
+        if not EVENT_ELASTICSEARCH.is_set():
+            return geoip(ip, database)
+        return geoip(
+            ip, database, self.elasticsearch, allow_fallback=allow_fallback
+        )
+
+    async def get_time(self) -> datetime:
+        """Get the start time of the request in the users' timezone."""
+        tz: tzinfo = timezone.utc
+        try:
+            geoip = await self.geoip()  # pylint: disable=redefined-outer-name
+        except (ApiError, TransportError):
+            LOGGER.exception("Elasticsearch request failed")
+            if self.apm_client:
+                self.apm_client.capture_exception()  # type: ignore[no-untyped-call]
+        else:
+            if geoip and "timezone" in geoip:
+                tz = ZoneInfo(geoip["timezone"])
+        return datetime.fromtimestamp(
+            self.request._start_time, tz=tz  # pylint: disable=protected-access
+        )
+
+    def is_authorized(
+        self, permission: Permission, allow_cookie_auth: bool = True
+    ) -> bool | None:
+        """Check whether the request is authorized."""
+        return is_authorized(self, permission, allow_cookie_auth)
 
     @override
     def log_exception(
@@ -151,6 +215,145 @@ class _RequestHandler(tornado.web.RequestHandler):
             )
 
     log_exception.__doc__ = tornado.web.RequestHandler.log_exception.__doc__
+
+    @cached_property
+    def now(self) -> datetime:
+        """Get the current time."""
+        # pylint: disable=method-hidden
+        if pytest_is_running():
+            raise AssertionError("Now accessed before it was set")
+        if self.request.method in self.SUPPORTED_METHODS:
+            LOGGER.error("Now accessed before it was set", stacklevel=3)
+        return datetime.fromtimestamp(
+            self.request._start_time,  # pylint: disable=protected-access
+            tz=timezone.utc,
+        )
+
+    @override
+    async def prepare(self) -> None:
+        """Check authorization and call self.ratelimit()."""
+        # pylint: disable=invalid-overridden-method
+        self.now = await self.get_time()
+
+        if crawler_secret := self.settings.get("CRAWLER_SECRET"):
+            self.crawler = crawler_secret in self.request.headers.get(
+                "User-Agent", ""
+            )
+
+        if (
+            self.request.method in {"GET", "HEAD"}
+            and self.redirect_to_canonical_domain()
+        ):
+            return
+
+        if self.request.method != "OPTIONS":
+            if not await self.ratelimit(True):
+                await self.ratelimit()
+
+    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
+        """Take b1nzy to space using Redis."""
+        if (
+            not self.settings.get("RATELIMITS")
+            or self.request.method == "OPTIONS"
+            or self.is_authorized(Permission.RATELIMITS)
+            or self.crawler
+        ):
+            return False
+
+        if not EVENT_REDIS.is_set():
+            LOGGER.warning(
+                (
+                    "Ratelimits are enabled, but Redis is not available. "
+                    "This can happen shortly after starting the website."
+                ),
+            )
+            raise HTTPError(503)
+
+        if global_ratelimit:  # TODO: add to _RequestHandler
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
+                bucket=None,
+                max_burst=99,  # limit = 100
+                count_per_period=20,  # 20 requests per second
+                period=1,
+                tokens=10 if self.settings.get("UNDER_ATTACK") else 1,
+            )
+        else:
+            method = (
+                "GET" if self.request.method == "HEAD" else self.request.method
+            )
+            if not (limit := getattr(self, f"RATELIMIT_{method}_LIMIT", 0)):
+                return False
+            ratelimited, headers = await ratelimit(
+                self.redis,
+                self.redis_prefix,
+                str(self.request.remote_ip),
+                bucket=getattr(
+                    self,
+                    f"RATELIMIT_{method}_BUCKET",
+                    self.__class__.__name__.lower(),
+                ),
+                max_burst=limit - 1,
+                count_per_period=getattr(  # request count per period
+                    self,
+                    f"RATELIMIT_{method}_COUNT_PER_PERIOD",
+                    30,
+                ),
+                period=getattr(
+                    self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
+                ),
+                tokens=1 if self.request.method != "HEAD" else 0,
+            )
+
+        for header, value in headers.items():
+            self.set_header(header, value)
+
+        if ratelimited:
+            if self.now.date() == date(self.now.year, 4, 20):
+                self.set_status(420)
+                self.write_error(420)
+            else:
+                self.set_status(429)
+                self.write_error(429)
+
+        return ratelimited
+
+    def redirect_to_canonical_domain(self) -> bool:
+        """Redirect to the canonical domain."""
+        if (
+            not (domain := self.settings.get("DOMAIN"))
+            or not self.request.headers.get("Host")
+            or self.request.host_name == domain
+            or self.request.host_name.endswith((".onion", ".i2p"))
+            or regex.fullmatch(r"/[\u2800-\u28FF]+/?", self.request.path)
+        ):
+            return False
+        port = urlsplit(f"//{self.request.headers['Host']}").port
+        self.redirect(
+            urlsplit(self.request.full_url())
+            ._replace(netloc=f"{domain}:{port}" if port else domain)
+            .geturl(),
+            permanent=True,
+        )
+        return True
+
+    @property
+    def redis(self) -> Redis[str]:
+        """
+        Get the Redis client from the settings.
+
+        This is None if Redis is not enabled.
+        """
+        return cast("Redis[str]", self.settings.get("REDIS"))
+
+    @property
+    def redis_prefix(self) -> str:
+        """Get the Redis prefix from the settings."""
+        return self.settings.get(  # type: ignore[no-any-return]
+            "REDIS_PREFIX", NAME
+        )
 
 
 class BaseRequestHandler(_RequestHandler):
@@ -206,28 +409,12 @@ class BaseRequestHandler(_RequestHandler):
 
         return super().finish()
 
-    @property
-    def apm_client(self) -> None | elasticapm.Client:
-        """Get the APM client from the settings."""
-        return self.settings.get("ELASTIC_APM", {}).get("CLIENT")  # type: ignore[no-any-return]
-
-    @property
-    def apm_enabled(self) -> bool:
-        """Return whether APM is enabled."""
-        return bool(self.settings.get("ELASTIC_APM", {}).get("ENABLED"))
-
     @override
     def compute_etag(self) -> None | str:
         """Compute ETag with Base85 encoding."""
         if not self.COMPUTE_ETAG:
             return None
         return f'"{hash_bytes(*self._write_buffer)}"'  # noqa: B907
-
-    @override
-    def data_received(  # noqa: D102
-        self, chunk: bytes
-    ) -> None | Awaitable[None]:
-        pass
 
     @override
     def decode_argument(  # noqa: D102
@@ -264,22 +451,6 @@ class BaseRequestHandler(_RequestHandler):
             return lambda spam: json.dumps(spam, option=option)
 
         return lambda spam: spam
-
-    @property
-    def elasticsearch(self) -> AsyncElasticsearch:
-        """
-        Get the Elasticsearch client from the settings.
-
-        This is None if Elasticsearch is not enabled.
-        """
-        return cast(AsyncElasticsearch, self.settings.get("ELASTICSEARCH"))
-
-    @property
-    def elasticsearch_prefix(self) -> str:
-        """Get the Elasticsearch prefix from the settings."""
-        return self.settings.get(  # type: ignore[no-any-return]
-            "ELASTICSEARCH_PREFIX", NAME
-        )
 
     @override
     def finish(  # noqa: D102
@@ -398,22 +569,6 @@ class BaseRequestHandler(_RequestHandler):
                 )
             ),
             **query_args,
-        )
-
-    def geoip(
-        self,
-        ip: None | str = None,
-        database: str = geoip.__defaults__[0],  # type: ignore[index]
-        *,
-        allow_fallback: bool = True,
-    ) -> Coroutine[None, None, None | dict[str, Any]]:
-        """Get GeoIP information."""
-        if not ip:
-            ip = self.request.remote_ip
-        if not EVENT_ELASTICSEARCH.is_set():
-            return geoip(ip, database)
-        return geoip(
-            ip, database, self.elasticsearch, allow_fallback=allow_fallback
         )
 
     @classmethod
@@ -627,22 +782,6 @@ class BaseRequestHandler(_RequestHandler):
         )
         return namespace
 
-    async def get_time(self) -> datetime:
-        """Get the start time of the request in the users' timezone."""
-        tz: tzinfo = timezone.utc
-        try:
-            geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-        except (ApiError, TransportError):
-            LOGGER.exception("Elasticsearch request failed")
-            if self.apm_client:
-                self.apm_client.capture_exception()  # type: ignore[no-untyped-call]
-        else:
-            if geoip and "timezone" in geoip:
-                tz = ZoneInfo(geoip["timezone"])
-        return datetime.fromtimestamp(
-            self.request._start_time, tz=tz  # pylint: disable=protected-access
-        )
-
     def get_user_id(self) -> str:
         """Get the user id saved in the cookie or create one."""
         cookie = self.get_secure_cookie(
@@ -727,25 +866,6 @@ class BaseRequestHandler(_RequestHandler):
                 self.request.path
             ).description
 
-    def is_authorized(
-        self, permission: Permission, allow_cookie_auth: bool = True
-    ) -> bool | None:
-        """Check whether the request is authorized."""
-        return is_authorized(self, permission, allow_cookie_auth)
-
-    @cached_property
-    def now(self) -> datetime:
-        """Get the current time."""
-        # pylint: disable=method-hidden
-        if pytest_is_running():
-            raise AssertionError("Now accessed before it was set")
-        if self.request.method in self.SUPPORTED_METHODS:
-            LOGGER.error("Now accessed before it was set", stacklevel=3)
-        return datetime.fromtimestamp(
-            self.request._start_time,  # pylint: disable=protected-access
-            tz=timezone.utc,
-        )
-
     @override
     async def options(self, *args: Any, **kwargs: Any) -> None:
         """Handle OPTIONS requests."""
@@ -783,7 +903,10 @@ class BaseRequestHandler(_RequestHandler):
     async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
         # pylint: disable=invalid-overridden-method
-        self.now = await self.get_time()
+        await super().prepare()
+
+        if self._finished:
+            return
 
         if not self.ALLOW_COMPRESSION:
             for transform in self._transforms:
@@ -791,18 +914,7 @@ class BaseRequestHandler(_RequestHandler):
                     # pylint: disable=protected-access
                     transform._gzipping = False
 
-        if crawler_secret := self.settings.get("CRAWLER_SECRET"):
-            self.crawler = crawler_secret in self.request.headers.get(
-                "User-Agent", ""
-            )
-
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
-
-        if (
-            self.request.method in {"GET", "HEAD"}
-            and self.redirect_to_canonical_domain()
-        ):
-            return
 
         if self.request.method == "GET" and (
             days := Random(self.now.timestamp()).randint(0, 31337)
@@ -825,114 +937,6 @@ class BaseRequestHandler(_RequestHandler):
                     self.MAX_BODY_SIZE,
                 )
                 raise HTTPError(413)
-
-            if not await self.ratelimit(True):
-                await self.ratelimit()
-
-    async def ratelimit(self, global_ratelimit: bool = False) -> bool:
-        """Take b1nzy to space using Redis."""
-        if (
-            not self.settings.get("RATELIMITS")
-            or self.request.method == "OPTIONS"
-            or self.is_authorized(Permission.RATELIMITS)
-            or self.crawler
-        ):
-            return False
-
-        if not EVENT_REDIS.is_set():
-            LOGGER.warning(
-                (
-                    "Ratelimits are enabled, but Redis is not available. "
-                    "This can happen shortly after starting the website."
-                ),
-            )
-            raise HTTPError(503)
-
-        if global_ratelimit:
-            ratelimited, headers = await ratelimit(
-                self.redis,
-                self.redis_prefix,
-                str(self.request.remote_ip),
-                bucket=None,
-                max_burst=99,  # limit = 100
-                count_per_period=20,  # 20 requests per second
-                period=1,
-                tokens=10 if self.settings.get("UNDER_ATTACK") else 1,
-            )
-        else:
-            method = (
-                "GET" if self.request.method == "HEAD" else self.request.method
-            )
-            if not (limit := getattr(self, f"RATELIMIT_{method}_LIMIT", 0)):
-                return False
-            ratelimited, headers = await ratelimit(
-                self.redis,
-                self.redis_prefix,
-                str(self.request.remote_ip),
-                bucket=getattr(
-                    self,
-                    f"RATELIMIT_{method}_BUCKET",
-                    self.__class__.__name__.lower(),
-                ),
-                max_burst=limit - 1,
-                count_per_period=getattr(  # request count per period
-                    self,
-                    f"RATELIMIT_{method}_COUNT_PER_PERIOD",
-                    30,
-                ),
-                period=getattr(
-                    self, f"RATELIMIT_{method}_PERIOD", 60  # period in seconds
-                ),
-                tokens=1 if self.request.method != "HEAD" else 0,
-            )
-
-        for header, value in headers.items():
-            self.set_header(header, value)
-
-        if ratelimited:
-            if self.now.date() == date(self.now.year, 4, 20):
-                self.set_status(420)
-                self.write_error(420)
-            else:
-                self.set_status(429)
-                self.write_error(429)
-
-        return ratelimited
-
-    def redirect_to_canonical_domain(self) -> bool:
-        """Redirect to the canonical domain."""
-        if (
-            not (domain := self.settings.get("DOMAIN"))
-            or not self.request.headers.get("Host")
-            or self.request.host_name == domain
-            or self.request.host_name.endswith((".onion", ".i2p"))
-            or regex.fullmatch(r"/[\u2800-\u28FF]+/?", self.request.path)
-        ):
-            return False
-        port = urlsplit(f"//{self.request.headers['Host']}").port
-        self.redirect(
-            urlsplit(self.request.full_url())
-            ._replace(netloc=f"{domain}:{port}" if port else domain)
-            .geturl(),
-            permanent=True,
-        )
-        return True
-
-    @property
-    def redis(self) -> Redis[str]:
-        """
-        Get the Redis client from the settings.
-
-        This is None if Redis is not enabled.
-        """
-        return cast("Redis[str]", self.settings.get("REDIS"))
-
-    @property
-    def redis_prefix(self) -> str:
-        """Get the Redis prefix from the settings."""
-        return self.settings.get(  # type: ignore[no-any-return]
-            "REDIS_PREFIX", NAME
-        )
 
     @override
     def render(  # noqa: D102

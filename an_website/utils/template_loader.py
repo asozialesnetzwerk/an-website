@@ -11,7 +11,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""A tornado template loader."""
+"""A Tornado template loader."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from tornado.template import BaseLoader, Template
 
 
 class TemplateLoader(BaseLoader):
-    """A tornado template loader."""
+    """A Tornado template loader."""
 
     root: Traversable
 

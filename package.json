@@ -12,7 +12,7 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^18.19.112",
+    "@types/node": "^18.19.113",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/parser": "^8.35.0",
     "@typescript/lib-dom": "npm:@types/web@^0.0.243",
