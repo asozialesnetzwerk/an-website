@@ -110,6 +110,8 @@ request_ctx_var: ContextVar[HTTPServerRequest] = ContextVar("current_request")
 class _RequestHandler(tornado.web.RequestHandler):
     """Base for Tornado request handlers."""
 
+    crawler: bool = False
+
     @override
     async def _execute(
         self, transforms: list[OutputTransform], *args: bytes, **kwargs: bytes
@@ -246,9 +248,8 @@ class _RequestHandler(tornado.web.RequestHandler):
         ):
             return
 
-        if self.request.method != "OPTIONS":
-            if not await self.ratelimit(True):
-                await self.ratelimit()
+        if self.request.method != "OPTIONS" and not await self.ratelimit(True):
+            await self.ratelimit()
 
     async def ratelimit(self, global_ratelimit: bool = False) -> bool:
         """Take b1nzy to space using Redis."""
@@ -383,7 +384,6 @@ class BaseRequestHandler(_RequestHandler):
     active_origin_trials: set[str]
     content_type: None | str = None
     apm_script: None | str
-    crawler: bool = False
     nonce: str
 
     def _finish(
@@ -902,7 +902,6 @@ class BaseRequestHandler(_RequestHandler):
     @override
     async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method
         await super().prepare()
 
         if self._finished:
@@ -926,17 +925,17 @@ class BaseRequestHandler(_RequestHandler):
         }:
             self.set_cookie("c", "s", expires_days=days / 24, path="/")
 
-        if self.request.method != "OPTIONS":
-            if (
-                self.MAX_BODY_SIZE is not None
-                and len(self.request.body) > self.MAX_BODY_SIZE
-            ):
-                LOGGER.warning(
-                    "%s > MAX_BODY_SIZE (%s)",
-                    len(self.request.body),
-                    self.MAX_BODY_SIZE,
-                )
-                raise HTTPError(413)
+        if (
+            self.request.method != "OPTIONS"
+            and self.MAX_BODY_SIZE is not None
+            and len(self.request.body) > self.MAX_BODY_SIZE
+        ):
+            LOGGER.warning(
+                "%s > MAX_BODY_SIZE (%s)",
+                len(self.request.body),
+                self.MAX_BODY_SIZE,
+            )
+            raise HTTPError(413)
 
     @override
     def render(  # noqa: D102
