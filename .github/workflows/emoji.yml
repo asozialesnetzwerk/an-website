@@ -7,7 +7,7 @@ jobs:
 
   check-emoji:
     name: Check for emoji in commit message
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     steps:
