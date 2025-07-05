@@ -440,7 +440,7 @@ async def make_api_request(
                         f"Network request failed after {max_retries + 1} "
                         f"attempts: {e}"
                     ),
-                )
+                ) from e
 
 
 def fix_author_name(name: str) -> str:
