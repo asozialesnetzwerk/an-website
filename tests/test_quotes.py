@@ -172,13 +172,9 @@ async def test_make_api_request_retry_logic() -> None:
         unittest.mock.patch.object(
             AsyncHTTPClient, "fetch", side_effect=mock_fetch_with_retries
         ),
-        unittest.mock.patch(
-            "asyncio.sleep", return_value=None
-        ) as mock_sleep,
+        unittest.mock.patch("asyncio.sleep", return_value=None) as mock_sleep,
     ):
-        await quotes.make_api_request(
-            "/test", entity_should_exist=False
-        )
+        await quotes.make_api_request("/test", entity_should_exist=False)
         assert call_count == 3  # Should have retried twice
         assert mock_sleep.call_count == 2  # Two sleeps between 3 attempts
         # Check exponential backoff
@@ -197,14 +193,10 @@ async def test_make_api_request_retry_logic() -> None:
         unittest.mock.patch.object(
             AsyncHTTPClient, "fetch", side_effect=mock_fetch_all_fail
         ),
-        unittest.mock.patch(
-            "asyncio.sleep", return_value=None
-        ) as mock_sleep,
+        unittest.mock.patch("asyncio.sleep", return_value=None) as mock_sleep,
     ):
         try:
-            await quotes.make_api_request(
-                "/test", entity_should_exist=False
-            )
+            await quotes.make_api_request("/test", entity_should_exist=False)
             raise AssertionError("Should have raised HTTPError")
         except HTTPError as e:
             assert e.status_code == 503
@@ -212,9 +204,7 @@ async def test_make_api_request_retry_logic() -> None:
             assert (
                 call_count == 4
             )  # Total of 4 attempts (1 initial + 3 retries)
-            assert (
-                mock_sleep.call_count == 3
-            )  # Three sleeps between 4 attempts
+            assert mock_sleep.call_count == 3  # Three sleeps between 4 attempts
             delays = [call.args[0] for call in mock_sleep.call_args_list]
             assert delays == [1, 2, 4]  # 2^0, 2^1, 2^2
 
