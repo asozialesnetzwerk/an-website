@@ -366,7 +366,7 @@ async def make_api_request(
     query = f"?{urlencode(args)}" if args else ""
     url = f"{API_URL}/{endpoint}{query}"
     body_str = urlencode(body) if body else body
-    
+
     max_retries = 3  # 3 additional attempts = 4 total attempts
     for attempt in range(max_retries + 1):
         try:
@@ -385,7 +385,11 @@ async def make_api_request(
                     else response.code
                 )
                 LOGGER.log(
-                    logging.ERROR if normed_response_code >= 500 else logging.WARNING,
+                    (
+                        logging.ERROR
+                        if normed_response_code >= 500
+                        else logging.WARNING
+                    ),
                     "%s request to %r with body=%r failed with code=%d and reason=%r",
                     method,
                     url,
@@ -394,7 +398,11 @@ async def make_api_request(
                     response.reason,
                 )
                 raise HTTPError(
-                    normed_response_code if normed_response_code in {400, 404} else 503,
+                    (
+                        normed_response_code
+                        if normed_response_code in {400, 404}
+                        else 503
+                    ),
                     reason=(
                         f"{API_URL}/{endpoint} returned: "
                         f"{response.code} {response.reason}"
@@ -404,7 +412,7 @@ async def make_api_request(
         except CurlError as e:
             # Retry on CurlError (which includes HTTP 599 timeouts and network issues)
             if attempt < max_retries:
-                delay = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                delay = 2**attempt  # Exponential backoff: 1s, 2s, 4s
                 LOGGER.warning(
                     "Request to %r failed with CurlError: %s. Retrying in %ds (attempt %d/%d)",
                     url,

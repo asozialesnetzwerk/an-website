@@ -147,77 +147,102 @@ async def test_argument_checking_create_pages(
 
 async def test_make_api_request_retry_logic() -> None:
     """Test the retry logic in make_api_request for CurlError scenarios."""
+    import unittest.mock
+
     from tornado.curl_httpclient import CurlError
     from tornado.httpclient import AsyncHTTPClient
     from tornado.web import HTTPError
-    import unittest.mock
-    
+
     # Test 1: Successful request after retries
     call_count = 0
-    
+
     def mock_fetch_with_retries(*args, **kwargs):
         nonlocal call_count
         call_count += 1
         if call_count <= 2:
             raise CurlError(599, "Timeout")
+
         # Return successful response on 3rd attempt
         class MockResponse:
             code = 200
             body = b'{"test": "data"}'
             reason = "OK"
+
         return MockResponse()
-    
-    with unittest.mock.patch.object(AsyncHTTPClient, 'fetch', side_effect=mock_fetch_with_retries):
-        with unittest.mock.patch('asyncio.sleep', return_value=None) as mock_sleep:
-            result = await quotes.make_api_request("/test", entity_should_exist=False)
+
+    with unittest.mock.patch.object(
+        AsyncHTTPClient, "fetch", side_effect=mock_fetch_with_retries
+    ):
+        with unittest.mock.patch(
+            "asyncio.sleep", return_value=None
+        ) as mock_sleep:
+            result = await quotes.make_api_request(
+                "/test", entity_should_exist=False
+            )
             assert call_count == 3  # Should have retried twice
             assert mock_sleep.call_count == 2  # Two sleeps between 3 attempts
             # Check exponential backoff
             delays = [call.args[0] for call in mock_sleep.call_args_list]
             assert delays == [1, 2]  # 2^0, 2^1
-    
-    # Test 2: All retries exhausted  
+
+    # Test 2: All retries exhausted
     call_count = 0
-    
+
     def mock_fetch_all_fail(*args, **kwargs):
-        nonlocal call_count 
+        nonlocal call_count
         call_count += 1
         raise CurlError(599, "Timeout")
-    
-    with unittest.mock.patch.object(AsyncHTTPClient, 'fetch', side_effect=mock_fetch_all_fail):
-        with unittest.mock.patch('asyncio.sleep', return_value=None) as mock_sleep:
+
+    with unittest.mock.patch.object(
+        AsyncHTTPClient, "fetch", side_effect=mock_fetch_all_fail
+    ):
+        with unittest.mock.patch(
+            "asyncio.sleep", return_value=None
+        ) as mock_sleep:
             try:
-                await quotes.make_api_request("/test", entity_should_exist=False)
+                await quotes.make_api_request(
+                    "/test", entity_should_exist=False
+                )
                 assert False, "Should have raised HTTPError"
             except HTTPError as e:
                 assert e.status_code == 503
                 assert "Network request failed after 4 attempts" in e.reason
-                assert call_count == 4  # Total of 4 attempts (1 initial + 3 retries)
-                assert mock_sleep.call_count == 3  # Three sleeps between 4 attempts
-                delays = [call.args[0] for call in mock_sleep.call_args_list]  
+                assert (
+                    call_count == 4
+                )  # Total of 4 attempts (1 initial + 3 retries)
+                assert (
+                    mock_sleep.call_count == 3
+                )  # Three sleeps between 4 attempts
+                delays = [call.args[0] for call in mock_sleep.call_args_list]
                 assert delays == [1, 2, 4]  # 2^0, 2^1, 2^2
 
     # Test 3: HTTP errors should not retry
     call_count = 0
-    
+
     def mock_fetch_http_error(*args, **kwargs):
         nonlocal call_count
         call_count += 1
+
         class Mock404Response:
             code = 404
-            body = b'Not Found'
+            body = b"Not Found"
             reason = "Not Found"
+
         return Mock404Response()
-    
-    with unittest.mock.patch.object(AsyncHTTPClient, 'fetch', side_effect=mock_fetch_http_error):
-        with unittest.mock.patch('asyncio.sleep') as mock_sleep:
+
+    with unittest.mock.patch.object(
+        AsyncHTTPClient, "fetch", side_effect=mock_fetch_http_error
+    ):
+        with unittest.mock.patch("asyncio.sleep") as mock_sleep:
             try:
                 await quotes.make_api_request("/test", entity_should_exist=True)
                 assert False, "Should have raised HTTPError"
             except HTTPError as e:
                 assert e.status_code == 404
                 assert call_count == 1  # Should not retry on HTTP errors
-                assert mock_sleep.call_count == 0  # No sleeps for non-retryable errors
+                assert (
+                    mock_sleep.call_count == 0
+                )  # No sleeps for non-retryable errors
 
 
 async def test_argument_checking_create_pages_continued(
