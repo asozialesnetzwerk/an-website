@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import unittest.mock
 import urllib.parse
 from datetime import datetime, timezone as tz
@@ -238,7 +237,9 @@ async def test_make_api_request_retry_logic() -> None:
         except HTTPError as e:
             assert e.status_code == 404
             assert call_count == 1  # Should not retry on HTTP errors
-            assert not mock_sleep.call_count  # No sleeps for non-retryable errors
+            assert (
+                not mock_sleep.call_count
+            )  # No sleeps for non-retryable errors
 
 
 async def test_argument_checking_create_pages_continued(
