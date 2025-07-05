@@ -385,11 +385,7 @@ async def make_api_request(
                     else response.code
                 )
                 LOGGER.log(
-                    (
-                        logging.ERROR
-                        if normed_response_code >= 500
-                        else logging.WARNING
-                    ),
+                    logging.ERROR if normed_response_code >= 500 else logging.WARNING,
                     "%s request to %r with body=%r failed with code=%d and "
                     "reason=%r",
                     method,
@@ -399,11 +395,7 @@ async def make_api_request(
                     response.reason,
                 )
                 raise HTTPError(
-                    (
-                        normed_response_code
-                        if normed_response_code in {400, 404}
-                        else 503
-                    ),
+                    normed_response_code if normed_response_code in {400, 404} else 503,
                     reason=(
                         f"{API_URL}/{endpoint} returned: "
                         f"{response.code} {response.reason}"
