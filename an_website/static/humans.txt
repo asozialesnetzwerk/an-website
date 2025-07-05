@@ -8,7 +8,9 @@
 	Location:NRW, Germany   
   
 /* THANKS */ 
-	CSS wizard: h4ckerle 
+	Contributor:​copilot-swe-agent[bot]   　
+     
+	CSS wizard:​  h4ckerle  　
  
 	Contributor:   binarynoise
   　
