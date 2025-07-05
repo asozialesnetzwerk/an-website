@@ -15,7 +15,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import unittest.mock
 import urllib.parse
 from datetime import datetime, timezone as tz
