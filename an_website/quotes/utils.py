@@ -390,7 +390,8 @@ async def make_api_request(
                         if normed_response_code >= 500
                         else logging.WARNING
                     ),
-                    "%s request to %r with body=%r failed with code=%d and reason=%r",
+                    "%s request to %r with body=%r failed with code=%d and "
+                    "reason=%r",
                     method,
                     url,
                     body_str,
@@ -410,11 +411,13 @@ async def make_api_request(
                 )
             return json.loads(response.body)
         except CurlError as e:
-            # Retry on CurlError (which includes HTTP 599 timeouts and network issues)
+            # Retry on CurlError (which includes HTTP 599 timeouts and
+            # network issues)
             if attempt < max_retries:
                 delay = 2**attempt  # Exponential backoff: 1s, 2s, 4s
                 LOGGER.warning(
-                    "Request to %r failed with CurlError: %s. Retrying in %ds (attempt %d/%d)",
+                    "Request to %r failed with CurlError: %s. Retrying in %ds "
+                    "(attempt %d/%d)",
                     url,
                     e,
                     delay,
@@ -433,7 +436,10 @@ async def make_api_request(
                 )
                 raise HTTPError(
                     503,
-                    reason=f"Network request failed after {max_retries + 1} attempts: {e}",
+                    reason=(
+                        f"Network request failed after {max_retries + 1} "
+                        f"attempts: {e}"
+                    ),
                 )
 
 
