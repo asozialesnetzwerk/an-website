@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import unittest.mock
 import urllib.parse
 from datetime import datetime, timezone as tz
 from functools import cache
@@ -23,6 +24,9 @@ from io import BytesIO
 import orjson as json
 import qoi_rs
 from PIL import Image
+from tornado.curl_httpclient import CurlError
+from tornado.httpclient import AsyncHTTPClient
+from tornado.web import HTTPError
 
 from an_website.quotes import create, utils as quotes
 from an_website.quotes.image import CONTENT_TYPES, FILE_EXTENSIONS
@@ -147,12 +151,6 @@ async def test_argument_checking_create_pages(
 
 async def test_make_api_request_retry_logic() -> None:
     """Test the retry logic in make_api_request for CurlError scenarios."""
-    import unittest.mock
-
-    from tornado.curl_httpclient import CurlError
-    from tornado.httpclient import AsyncHTTPClient
-    from tornado.web import HTTPError
-
     # Test 1: Successful request after retries
     call_count = 0
 
