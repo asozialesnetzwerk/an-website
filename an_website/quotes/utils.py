@@ -41,6 +41,7 @@ import elasticapm
 import orjson as json
 import typed_stream
 from redis.asyncio import Redis
+from tornado.curl_httpclient import CurlError
 from tornado.httpclient import AsyncHTTPClient
 from tornado.web import Application, HTTPError
 from UltraDict import UltraDict  # type: ignore[import-untyped]
@@ -365,37 +366,67 @@ async def make_api_request(
     query = f"?{urlencode(args)}" if args else ""
     url = f"{API_URL}/{endpoint}{query}"
     body_str = urlencode(body) if body else body
-    response = await AsyncHTTPClient().fetch(
-        url,
-        method=method,
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        body=body_str,
-        raise_error=False,
-        ca_certs=CA_BUNDLE_PATH,
-    )
-    if response.code != 200:
-        normed_response_code = (
-            400
-            if not entity_should_exist and response.code == 500
-            else response.code
-        )
-        LOGGER.log(
-            logging.ERROR if normed_response_code >= 500 else logging.WARNING,
-            "%s request to %r with body=%r failed with code=%d and reason=%r",
-            method,
-            url,
-            body_str,
-            response.code,
-            response.reason,
-        )
-        raise HTTPError(
-            normed_response_code if normed_response_code in {400, 404} else 503,
-            reason=(
-                f"{API_URL}/{endpoint} returned: "
-                f"{response.code} {response.reason}"
-            ),
-        )
-    return json.loads(response.body)
+    
+    max_retries = 3  # 3 additional attempts = 4 total attempts
+    for attempt in range(max_retries + 1):
+        try:
+            response = await AsyncHTTPClient().fetch(
+                url,
+                method=method,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                body=body_str,
+                raise_error=False,
+                ca_certs=CA_BUNDLE_PATH,
+            )
+            if response.code != 200:
+                normed_response_code = (
+                    400
+                    if not entity_should_exist and response.code == 500
+                    else response.code
+                )
+                LOGGER.log(
+                    logging.ERROR if normed_response_code >= 500 else logging.WARNING,
+                    "%s request to %r with body=%r failed with code=%d and reason=%r",
+                    method,
+                    url,
+                    body_str,
+                    response.code,
+                    response.reason,
+                )
+                raise HTTPError(
+                    normed_response_code if normed_response_code in {400, 404} else 503,
+                    reason=(
+                        f"{API_URL}/{endpoint} returned: "
+                        f"{response.code} {response.reason}"
+                    ),
+                )
+            return json.loads(response.body)
+        except CurlError as e:
+            # Retry on CurlError (which includes HTTP 599 timeouts and network issues)
+            if attempt < max_retries:
+                delay = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                LOGGER.warning(
+                    "Request to %r failed with CurlError: %s. Retrying in %ds (attempt %d/%d)",
+                    url,
+                    e,
+                    delay,
+                    attempt + 1,
+                    max_retries + 1,
+                )
+                await asyncio.sleep(delay)
+                continue
+            else:
+                # Final attempt failed, log and re-raise
+                LOGGER.error(
+                    "Request to %r failed after %d attempts with CurlError: %s",
+                    url,
+                    max_retries + 1,
+                    e,
+                )
+                raise HTTPError(
+                    503,
+                    reason=f"Network request failed after {max_retries + 1} attempts: {e}",
+                )
 
 
 def fix_author_name(name: str) -> str:
