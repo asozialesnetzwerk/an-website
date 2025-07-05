@@ -40,7 +40,7 @@
     "stylelint-prettier": "^5.0.3",
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
     "type-fest": "^4.41.0",
-    "typescript": "~5.8.3",
+    "typescript": "5.9.0-dev.20250703",
     "typescript-eslint": "^8.35.0",
     "typescript-eslint-language-service": "^5.0.5"
   },
