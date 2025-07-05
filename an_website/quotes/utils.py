@@ -426,21 +426,20 @@ async def make_api_request(
                 )
                 await asyncio.sleep(delay)
                 continue
-            else:
-                # Final attempt failed, log and re-raise
-                LOGGER.error(
-                    "Request to %r failed after %d attempts with CurlError: %s",
-                    url,
-                    max_retries + 1,
-                    e,
-                )
-                raise HTTPError(
-                    503,
-                    reason=(
-                        f"Network request failed after {max_retries + 1} "
-                        f"attempts: {e}"
-                    ),
-                ) from e
+            # Final attempt failed, log and re-raise
+            LOGGER.error(
+                "Request to %r failed after %d attempts with CurlError: %s",
+                url,
+                max_retries + 1,
+                e,
+            )
+            raise HTTPError(
+                503,
+                reason=(
+                    f"Network request failed after {max_retries + 1} "
+                    f"attempts: {e}"
+                ),
+            ) from e
 
 
 def fix_author_name(name: str) -> str:

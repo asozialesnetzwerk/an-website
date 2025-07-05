@@ -15,11 +15,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import unittest.mock
 import urllib.parse
 from datetime import datetime, timezone as tz
 from functools import cache
 from io import BytesIO
+from typing import Any
 
 import orjson as json
 import qoi_rs
@@ -144,8 +146,6 @@ async def test_argument_checking_create_pages(
     fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test whether the create handlers complain because of missing args."""
-    _wrong_quote = get_wrong_quote()
-
     await quotes.make_api_request("/test", entity_should_exist=False)
 
 
@@ -154,14 +154,16 @@ async def test_make_api_request_retry_logic() -> None:
     # Test 1: Successful request after retries
     call_count = 0
 
-    def mock_fetch_with_retries(*args, **kwargs):
+    def mock_fetch_with_retries(*args: Any, **kwargs: Any) -> Any:
         nonlocal call_count
         call_count += 1
         if call_count <= 2:
             raise CurlError(599, "Timeout")
 
         # Return successful response on 3rd attempt
-        class MockResponse:
+        class MockResponse:  # pylint: disable=too-few-public-methods
+            """Mock response for successful request."""
+
             code = 200
             body = b'{"test": "data"}'
             reason = "OK"
@@ -184,7 +186,7 @@ async def test_make_api_request_retry_logic() -> None:
     # Test 2: All retries exhausted
     call_count = 0
 
-    def mock_fetch_all_fail(*args, **kwargs):
+    def mock_fetch_all_fail(*args: Any, **kwargs: Any) -> None:
         nonlocal call_count
         call_count += 1
         raise CurlError(599, "Timeout")
@@ -200,7 +202,7 @@ async def test_make_api_request_retry_logic() -> None:
             raise AssertionError("Should have raised HTTPError")
         except HTTPError as e:
             assert e.status_code == 503
-            assert "Network request failed after 4 attempts" in e.reason
+            assert "Network request failed after 4 attempts" in str(e.reason)
             assert (
                 call_count == 4
             )  # Total of 4 attempts (1 initial + 3 retries)
@@ -211,11 +213,13 @@ async def test_make_api_request_retry_logic() -> None:
     # Test 3: HTTP errors should not retry
     call_count = 0
 
-    def mock_fetch_http_error(*args, **kwargs):
+    def mock_fetch_http_error(*args: Any, **kwargs: Any) -> Any:
         nonlocal call_count
         call_count += 1
 
-        class Mock404Response:
+        class Mock404Response:  # pylint: disable=too-few-public-methods
+            """Mock 404 response for HTTP error testing."""
+
             code = 404
             body = b"Not Found"
             reason = "Not Found"
@@ -234,9 +238,7 @@ async def test_make_api_request_retry_logic() -> None:
         except HTTPError as e:
             assert e.status_code == 404
             assert call_count == 1  # Should not retry on HTTP errors
-            assert (
-                mock_sleep.call_count == 0
-            )  # No sleeps for non-retryable errors
+            assert not mock_sleep.call_count  # No sleeps for non-retryable errors
 
 
 async def test_argument_checking_create_pages_continued(
