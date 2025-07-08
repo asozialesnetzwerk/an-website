@@ -428,7 +428,7 @@ async def make_api_request(
                         f"attempts: {e}"
                     ),
                 ) from e
-            
+
             delay = 2**attempt  # Exponential backoff: 1s, 2s, 4s
             LOGGER.warning(
                 "Request to %r failed with CurlError: %s. Retrying in %ds "
