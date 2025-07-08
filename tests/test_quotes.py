@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import unittest.mock
 import urllib.parse
 from datetime import datetime, timezone as tz
@@ -201,7 +202,9 @@ async def test_make_api_request_retry_logic() -> None:
             raise AssertionError("Should have raised HTTPError")
         except HTTPError as e:
             assert e.status_code == 503
-            assert "Network request failed after 4 attempts" in str(e.reason)
+            assert "Network request failed after 4 attempts" in str(
+                e.reason or ""
+            )
             assert (
                 call_count == 4
             )  # Total of 4 attempts (1 initial + 3 retries)

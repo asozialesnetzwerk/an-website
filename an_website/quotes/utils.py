@@ -413,33 +413,34 @@ async def make_api_request(
         except CurlError as e:
             # Retry on CurlError (which includes HTTP 599 timeouts and
             # network issues)
-            if attempt < max_retries:
-                delay = 2**attempt  # Exponential backoff: 1s, 2s, 4s
-                LOGGER.warning(
-                    "Request to %r failed with CurlError: %s. Retrying in %ds "
-                    "(attempt %d/%d)",
+            if attempt >= max_retries:
+                # Final attempt failed, log and re-raise
+                LOGGER.error(
+                    "Request to %r failed after %d attempts with CurlError: %s",
                     url,
-                    e,
-                    delay,
-                    attempt + 1,
                     max_retries + 1,
+                    e,
                 )
-                await asyncio.sleep(delay)
-                continue
-            # Final attempt failed, log and re-raise
-            LOGGER.error(
-                "Request to %r failed after %d attempts with CurlError: %s",
+                raise HTTPError(
+                    503,
+                    reason=(
+                        f"Network request failed after {max_retries + 1} "
+                        f"attempts: {e}"
+                    ),
+                ) from e
+            
+            delay = 2**attempt  # Exponential backoff: 1s, 2s, 4s
+            LOGGER.warning(
+                "Request to %r failed with CurlError: %s. Retrying in %ds "
+                "(attempt %d/%d)",
                 url,
-                max_retries + 1,
                 e,
+                delay,
+                attempt + 1,
+                max_retries + 1,
             )
-            raise HTTPError(
-                503,
-                reason=(
-                    f"Network request failed after {max_retries + 1} "
-                    f"attempts: {e}"
-                ),
-            ) from e
+            await asyncio.sleep(delay)
+            continue
 
 
 def fix_author_name(name: str) -> str:
