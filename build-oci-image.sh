@@ -32,13 +32,13 @@ TIMESTAMP=$(python3 -c "from datetime import datetime; print(int(datetime.fromis
 buildah build \
   --timestamp "${TIMESTAMP}" \
   --build-arg BASE="${BASE}" \
-  --annotation org.opencontainers.image.authors="contact@asozial.org" \
-  --annotation org.opencontainers.image.source="https://github.com/asozialesnetzwerk/an-website" \
+  --annotation org.opencontainers.image.title="an-website" \
   --annotation org.opencontainers.image.version="${VERSION}" \
   --annotation org.opencontainers.image.revision="${REVISION}" \
-  --annotation org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
   --annotation org.opencontainers.image.licenses="AGPL-3.0-or-later" \
-  --annotation org.opencontainers.image.title="an-website" \
+  --annotation org.opencontainers.image.authors="contact@asozial.org" \
+  --annotation org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
+  --annotation org.opencontainers.image.source="https://github.com/asozialesnetzwerk/an-website" \
   --annotation org.opencontainers.image.description="podman run --detach --name an-website --network slirp4netns:port_handler=slirp4netns --publish 8888:8888 --volume .:/data:z IMAGE" \
   --annotation org.opencontainers.image.base.digest="${DIGEST}" \
   --annotation org.opencontainers.image.base.name="${NAME}" \
