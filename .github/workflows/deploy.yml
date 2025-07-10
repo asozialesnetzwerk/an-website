@@ -13,7 +13,7 @@ env:
 jobs:
   prepare-build:
     name: Prepare building
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: write
     steps:
@@ -35,7 +35,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     needs:
@@ -62,7 +62,7 @@ jobs:
 
   build-source-tarball:
     name: Create minimal source tarball
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     needs:
@@ -93,7 +93,7 @@ jobs:
 
   test-distribution:
     name: Test distribution
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - build
     permissions: {}
@@ -156,7 +156,7 @@ jobs:
 
   test-source-tarball:
     name: Test building from source tarball
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     needs:
@@ -193,7 +193,7 @@ jobs:
 
   sdist-tests:
     name: Run tests in source distribution
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     needs:
@@ -240,7 +240,7 @@ jobs:
 
   tests:
     name: Run tests
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: read
     continue-on-error: ${{ matrix.python-version == 3.14 }}
@@ -311,7 +311,7 @@ jobs:
 
   release:
     name: Create release
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     permissions:
       contents: write
     needs:
@@ -361,7 +361,7 @@ jobs:
 
   pypi:
     name: Upload to PyPI
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - run-tests-in-oci-image
       - sdist-tests
@@ -392,7 +392,7 @@ jobs:
 
   sourcemaps:
     name: Upload sourcemaps
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
@@ -445,7 +445,7 @@ jobs:
 
   deploy:
     name: Deploy website
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sourcemaps
@@ -472,7 +472,7 @@ jobs:
 
   github-pages:
     name: GitHub Pages
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
@@ -530,7 +530,7 @@ jobs:
 
   build-oci-image:
     name: Build OCI image
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - build
     permissions:
@@ -542,7 +542,7 @@ jobs:
           go-version: ~1.20
       - name: Install netavark
         run: |
-          wget http://mirrors.kernel.org/ubuntu/pool/universe/n/netavark/netavark_1.4.0-4_amd64.deb
+          wget http://mirrors.kernel.org/ubuntu/pool/universe/n/netavark/netavark_1.4.0-4_arm64.deb
           sudo dpkg -i netavark_1.4.0-4_amd64.deb
       - name: Upgrade Buildah
         run: |
@@ -555,12 +555,14 @@ jobs:
           popd
       - name: Download youki
         run: |
-          wget https://github.com/containers/youki/releases/download/v${VERSION}/youki-${VERSION}-x86_64-musl.tar.gz
+          wget https://github.com/containers/youki/releases/download/v${VERSION}/youki-${VERSION}-aarch64-musl.tar.gz
           tar xOf youki-${VERSION}-x86_64-musl.tar.gz youki > /opt/youki
           rm -f youki-${VERSION}-x86_64-musl.tar.gz
           chmod +x /opt/youki
         env:
           VERSION: 0.5.3
+      - name: Install qemu-user-static
+        run: sudo apt-get install --update -y qemu-user-static
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -577,21 +579,21 @@ jobs:
       - name: Build image
         run: |
           cd an_website-*/
-          sudo ./build-oci-image.sh -t an-website
+          sudo ./build-oci-image.sh --all-platforms -t an-website
           cd ..
         env:
           BUILDAH_RUNTIME: /opt/youki
       - name: Save image
-        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:oci-archive.tar
+        run: sudo buildah push --all --compression-format=zstd:chunked --compression-level=20 an-website oci-archive:an-website.ociarchive
       - name: Upload as build artifact
         uses: actions/upload-artifact@v4
         with:
           name: oci-image
-          path: oci-archive.tar
+          path: an-website.ociarchive
 
   test-running-oci-image:
     name: Test running OCI image
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - build-oci-image
     steps:
@@ -601,11 +603,11 @@ jobs:
           name: oci-image
       - name: Run image
         timeout-minutes: 1
-        run: sudo podman run --network=host -t oci-archive:oci-archive.tar -c
+        run: sudo podman run --network=host -t oci-archive:an-website.ociarchive -c
 
   run-tests-in-oci-image:
     name: Run tests in OCI image
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - build-oci-image
     strategy:
@@ -628,11 +630,11 @@ jobs:
           name: oci-image
       - name: Run tests
         timeout-minutes: 20
-        run: sudo podman run --network=host -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine zstandard && /venv/bin/pytest --verbose /tests"
+        run: sudo podman run --network=host -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:an-website.ociarchive -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine zstandard && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
     name: Push OCI image
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-2vcpu-ubuntu-2404-arm
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
@@ -677,10 +679,10 @@ jobs:
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
       - name: Push image to ghcr.io
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:dev
+        run: skopeo copy --all --preserve-digests oci-archive:an-website.ociarchive docker://ghcr.io/${{ github.repository }}:dev
       - name: Push image as ${{ steps.version.outputs.version }} to ghcr.io
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
+        run: skopeo copy --all --preserve-digests oci-archive:an-website.ociarchive docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
         if: steps.version.outputs.version
       - name: Tag image as latest
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest
+        run: skopeo copy --all --preserve-digests oci-archive:an-website.ociarchive docker://ghcr.io/${{ github.repository }}:latest
         if: steps.version.outputs.version
