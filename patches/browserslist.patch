@@ -1,0 +1,14 @@
+diff --git a/index.js b/index.js
+index 7419f581b75462a076e51e34d4385bb046d1aa47..4aa4eed1589a5ecb19333022a1b1fcda9a46d048 100644
+--- a/index.js
++++ b/index.js
+@@ -503,7 +503,8 @@ browserslist.aliases = {
+   chromeandroid: 'and_chr',
+   firefoxandroid: 'and_ff',
+   ucandroid: 'and_uc',
+-  qqandroid: 'and_qq'
++  qqandroid: 'and_qq',
++  smasnug: 'samsung'
+ }
+ 
+ // Can I Use only provides a few versions for some browsers (e.g. and_chr).

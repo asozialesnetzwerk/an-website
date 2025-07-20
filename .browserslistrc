@@ -1,4 +1,12 @@
 >=0.1% and supports es6-module-dynamic-import
 Chrome 138
+Smasnug 28
+Firefox ESR
 Firefox 115
 Safari 18.5
+iOS 18.5
+
+not Edge >138
+not and_qq >0
+not and_uc >0
+not op_mob >0
