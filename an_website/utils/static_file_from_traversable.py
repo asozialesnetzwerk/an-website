@@ -154,16 +154,6 @@ class TraversableStaticFileHandler(_RequestHandler):
                 await self.flush()
             except iostream.StreamClosedError:
                 return
-            except httputil.HTTPOutputError:
-                LOGGER.error(
-                    "Headers %s; File %s; Size %s; Chunk %s %r",
-                    self.request.headers,
-                    absolute_path,
-                    size,
-                    len(chunk),
-                    chunk,
-                )
-                raise
 
         with contextlib.suppress(iostream.StreamClosedError):
             await self.finish()
