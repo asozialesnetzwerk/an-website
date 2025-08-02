@@ -156,10 +156,12 @@ class TraversableStaticFileHandler(_RequestHandler):
                 return
             except httputil.HTTPOutputError:
                 LOGGER.error(
-                    "Headers %s; File %s; Encoding %s",
-                    self.headers,
+                    "Headers %s; File %s; Size %s; Chunk %s %r",
+                    self.request.headers,
                     absolute_path,
-                    encoding,
+                    size,
+                    len(chunk),
+                    chunk
                 )
                 raise
 
