@@ -161,7 +161,7 @@ class TraversableStaticFileHandler(_RequestHandler):
                     absolute_path,
                     size,
                     len(chunk),
-                    chunk
+                    chunk,
                 )
                 raise
 
