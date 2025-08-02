@@ -60,7 +60,7 @@ class TraversableStaticFileHandler(_RequestHandler):
         return self.file_hashes.get(self.request.path)
 
     async def get(self, path: str, *, head: bool = False) -> None:  # noqa: C901
-        # pylint: disable=too-complex, too-many-branches
+        # pylint: disable=too-complex, too-many-branches, too-many-statements
         """Handle GET requests for files in the static file directory."""
         if self.request.path.endswith("/"):
             self.replace_path_with_redirect(self.request.path.rstrip("/"))
@@ -148,12 +148,24 @@ class TraversableStaticFileHandler(_RequestHandler):
             await self.finish()
             return
 
+        written: int = 0
         for chunk in self.get_content(absolute_path, start=start, end=end):
             self.write(chunk)
+            written += len(chunk)
             try:
                 await self.flush()
             except iostream.StreamClosedError:
                 return
+            except httputil.HTTPOutputError:
+                LOGGER.error(
+                    "Written %s; Size %s; Content-Length %s; Range %s; File %s",
+                    written,
+                    size,
+                    content_length,
+                    request_range,
+                    absolute_path,
+                )
+                raise
 
         with contextlib.suppress(iostream.StreamClosedError):
             await self.finish()
