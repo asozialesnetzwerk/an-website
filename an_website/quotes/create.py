@@ -299,6 +299,19 @@ class CreatePage2(QuoteReadyCheckHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""
+        if self.get_argument("nicht-erstellen", ""):
+            LOGGER.info(
+                "Versuch Zitat zu erstellen mit nicht-erstellen Parameter.\n"
+                "Pfad: %s\nBody: %s",
+                self.request.path,
+                self.request.body,
+            )
+            await self.render(
+                "pages/empty.html",
+                text="Kein Zitat erstellt.",
+            )
+            return
+
         quote_str = self.get_argument("quote-2", None)
         if not quote_str:
             raise MissingArgumentError("quote-2")
