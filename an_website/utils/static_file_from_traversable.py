@@ -148,22 +148,18 @@ class TraversableStaticFileHandler(_RequestHandler):
             await self.finish()
             return
 
-        written: int = 0
         for chunk in self.get_content(absolute_path, start=start, end=end):
             self.write(chunk)
-            written += len(chunk)
             try:
                 await self.flush()
             except iostream.StreamClosedError:
                 return
             except httputil.HTTPOutputError:
                 LOGGER.error(
-                    "Written %s; Size %s; Content-Length %s; Range %s; File %s",
-                    written,
-                    size,
-                    content_length,
-                    request_range,
+                    "Headers %s; File %s; Encoding %s",
+                    self.headers,
                     absolute_path,
+                    encoding,
                 )
                 raise
 
