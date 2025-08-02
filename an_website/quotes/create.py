@@ -232,6 +232,19 @@ class CreatePage1(QuoteReadyCheckHandler):
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""
+        if self.get_argument("keine-aktion", ""):
+            LOGGER.info(
+                "Versuch Zitat zu erstellen mit keine-aktion Parameter.\n"
+                "Pfad: %s\nBody: %s",
+                self.request.path,
+                self.request.body,
+            )
+            await self.render(
+                "pages/empty.html",
+                text="Kein Zitat erstellt.",
+            )
+            return
+
         quote_str = self.get_argument("quote-1", None)
         fake_author_str = self.get_argument("fake-author-1", None)
         if not (quote_str and fake_author_str):
@@ -273,6 +286,13 @@ class CreatePage1(QuoteReadyCheckHandler):
         )
 
         if 1 == len(quotes) == len(real_authors) == len(fake_authors):
+            LOGGER.info(
+                "Creating wrong quote using existing: %r (%r) - %r",
+                quotes[0],
+                real_authors[0],
+                fake_authors[0],
+            )
+
             wq_id = await create_wrong_quote(
                 real_authors[0],
                 fake_authors[0],
