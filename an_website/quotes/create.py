@@ -294,8 +294,9 @@ class CreatePage1(QuoteReadyCheckHandler):
 class CreatePage2(QuoteReadyCheckHandler):
     """The request handler for the second part of the create page."""
 
-    RATELIMIT_POST_LIMIT = 5
-    RATELIMIT_POST_COUNT_PER_PERIOD = 10
+    RATELIMIT_POST_LIMIT = 2
+    RATELIMIT_POST_COUNT_PER_PERIOD = 1
+    RATELIMIT_POST_PERIOD = 45
 
     async def post(self) -> None:
         """Handle POST requests to the create page."""
