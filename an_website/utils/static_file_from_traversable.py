@@ -154,6 +154,13 @@ class TraversableStaticFileHandler(_RequestHandler):
                 await self.flush()
             except iostream.StreamClosedError:
                 return
+            except httputil.HTTPOutputError:
+                LOGGER.exception(
+                    "Connection %s; %s",
+                    self.request.connection,
+                    getattr(self.request.connection, "__dict__", None),
+                )
+                raise
 
         with contextlib.suppress(iostream.StreamClosedError):
             await self.finish()
