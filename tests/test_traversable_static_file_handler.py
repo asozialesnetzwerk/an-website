@@ -46,7 +46,7 @@ async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811
 async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
     """Test requesting an OpenMoji svg."""
     response = assert_valid_response(
-        await fetch("/static/openmoji/svg/1F973.svg?v=15.0.0"),
+        await fetch("/static/openmoji/svg/1FAE9.svg?v=16.0.0"),
         content_type="image/svg+xml",
         codes={200},
     )
@@ -55,7 +55,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
     for encoding in ("gzip", "zstd"):
         compressed_response = await fetch(
-            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            "/static/openmoji/svg/1FAE9.svg?v=16.0.0",
             headers={"Accept-Encoding": encoding},
         )
         assert size > (size_compre := len(compressed_response.body))
@@ -70,7 +70,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
     part_response = assert_valid_response(
         await fetch(
-            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            "/static/openmoji/svg/1FAE9.svg?v=16.0.0",
             headers={"Range": "bytes=17-41"},
         ),
         content_type="image/svg+xml",
@@ -83,7 +83,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
     part_response = assert_valid_response(
         await fetch(
-            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            "/static/openmoji/svg/1FAE9.svg?v=16.0.0",
             headers={"Range": "bytes=0-3"},
         ),
         content_type="image/svg+xml",
@@ -97,7 +97,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
     part_response = assert_valid_response(
         await fetch(
-            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            "/static/openmoji/svg/1FAE9.svg?v=16.0.0",
             headers={"Range": f"bytes={size - 7}-{size}"},
         ),
         content_type="image/svg+xml",
@@ -113,7 +113,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
     part_response = assert_valid_response(
         await fetch(
-            "/static/openmoji/svg/1F973.svg?v=15.0.0",
+            "/static/openmoji/svg/1FAE9.svg?v=16.0.0",
             headers={"Range": "bytes=-7"},
         ),
         content_type="image/svg+xml",
