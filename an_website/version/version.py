@@ -73,7 +73,7 @@ def get_file_hashes() -> str:
 def get_hash_of_file_hashes() -> str:
     """Return a hash of the file hashes."""
     with HASH_OF_FILE_HASHES:
-        if HASH_OF_FILE_HASHES.value:
+        if HASH_OF_FILE_HASHES.raw != bytes(40):
             # .raw to fix bug with \x00 in hash
             return HASH_OF_FILE_HASHES.raw.decode("UTF-16-BE")
         hash_of_file_hashes = hash_bytes(get_file_hashes().encode("UTF-8"))

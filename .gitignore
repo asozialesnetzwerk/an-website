@@ -4,30 +4,22 @@
 /TESTDEPS.TXT
 /TIMESTMP.TXT
 /VERSIONS.TXT
+/an_website/static/commits.txt
 /an_website.egg-info
 /build
 /dist
-/an_website/static/commits.txt
 
-/deno
 /.venv
 /venv
 /logs
 /config.ini
 /.well-known
 
-# CringeJS
 **/node_modules
-
-# ESLint
 /.eslintcache
-
-# Coverage.py
 /.coverage
 /coverage.*
 /htmlcov
-
-# Perf8
 /perf8-report
 
 # JetBrains

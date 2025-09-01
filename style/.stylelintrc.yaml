@@ -8,7 +8,7 @@ rules:
   "plugin/no-unsupported-browser-features":
     - true
     - severity: "warning"
-      browsers: "Chrome 120, Firefox 115, Safari 15.6"
+      browsers: "Chrome 138, Firefox 140, Safari 18.5, iOS 18.5"
 reportDescriptionlessDisables: [true, { severity: "warning" }]
 reportInvalidScopeDisables: true
 reportNeedlessDisables: true

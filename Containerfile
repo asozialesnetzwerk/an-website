@@ -1,10 +1,10 @@
 # syntax=docker.io/docker/dockerfile:1.12
-ARG BASE=docker.io/library/python:3.12-slim-bookworm
+ARG BASE=docker.io/library/python:3.13-slim-trixie
 
 FROM $BASE AS builder
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends g++ git libcurl4-gnutls-dev libgnutls28-dev \
+ && apt-get install -y --no-install-recommends g++ git libcurl4-gnutls-dev \
  && rm -fr /var/lib/apt/lists/*
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
@@ -13,7 +13,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
 COPY pip-requirements.txt .
 RUN set -eux \
  && python -m venv venv \
- && /venv/bin/pip install Cython==3.* setuptools==68.* wheel==0.42.* \
+ && /venv/bin/pip install pip==25.2.* Cython==3.* setuptools==68.* wheel==0.45.* \
  && /venv/bin/pip install --no-build-isolation https://codeload.github.com/ronny-rentner/UltraDict/tar.gz/9f88a2f73e6b7faadb591971c6a17b360ebbc3bf \
  && /venv/bin/pip install git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f \
  && /venv/bin/pip install --no-binary pycurl -r pip-requirements.txt \
@@ -25,7 +25,7 @@ RUN /venv/bin/pip install --no-deps .
 FROM $BASE
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl libcurl3-gnutls libjxl0.7 \
+ && apt-get install -y --no-install-recommends curl libcurl3t64-gnutls libjxl0.11 \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
  && apt-get purge -y --autoremove curl \

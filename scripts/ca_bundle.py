@@ -16,7 +16,7 @@ from cryptography.x509 import (
     load_pem_x509_certificates,
 )
 
-DISTRUSTED = (
+IGNORE = {
     # Symantec
     "FF856A2D251DCD88D36656F450126798CFABAADE40799C722DE4D2B5DB36A73A",
     "37D51006C512EAAB626421F1EC8C92013FC5F82AE98EE533EB4619B8DEB4D06C",
@@ -48,13 +48,16 @@ DISTRUSTED = (
     "0C258A12A5674AEF25F28BA7DCFAECEEA348E541E6F5CC4EE63B71B361606AC3",
     "063E4AFAC491DFD332F3089B8542E94617D893D7FE944E10A7937EE29D9693C0",
     "136335439334A7698016A0D324DE72284E079D7B5220BB8FBD747816EEBEBACA",
-)
+}
+
+TRUST: set[str] = set()
 
 
 def main() -> None:
     """Do stuff."""
-    m = frozenset(
-        load_pem_x509_certificates(
+    TRUST.update(
+        cert.fingerprint(SHA256()).hex().upper()
+        for cert in load_pem_x509_certificates(
             # pylint: disable-next=consider-using-with
             urlopen("https://curl.se/ca/cacert.pem").read()  # nosec: B310
         )
@@ -65,17 +68,18 @@ def main() -> None:
             continue
         certs.append(load_pem_x509_certificate(path.read_bytes()))
     for cert in sorted(certs, key=lambda c: c.subject.rfc4514_string()):
-        if cert.fingerprint(SHA256()).hex().upper() in DISTRUSTED:
-            print("DISTRUSTED:", cert.subject.rfc4514_string(), file=sys.stderr)
-            continue
+        fingerprint = cert.fingerprint(SHA256()).hex().upper()
         if cert.not_valid_after_utc < datetime.now(UTC):
             print("EXPIRED:", cert.subject.rfc4514_string(), file=sys.stderr)
             continue
-        if cert not in m:
-            print("MOZILLA:", cert.subject.rfc4514_string(), file=sys.stderr)
+        if fingerprint in IGNORE:
+            print("IGNORED:", cert.subject.rfc4514_string(), file=sys.stderr)
+            continue
+        if fingerprint not in TRUST:
+            print("UNKNOWN:", cert.subject.rfc4514_string(), file=sys.stderr)
             continue
         pem = cert.public_bytes(Encoding.PEM)
-        print(cert.subject.rfc4514_string(), file=sys.stderr)
+        print("TRUSTED:", cert.subject.rfc4514_string(), file=sys.stderr)
         run(("openssl", "x509", "-text"), check=True, input=pem)  # nosec: B603
         print(flush=True)
 
