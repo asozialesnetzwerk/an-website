@@ -28,9 +28,7 @@ const startDisplayingUptime = () => {
             div_60 % 60, // minutes
             uptime % 60, // seconds
         ]
-            .map((n: number) =>
-                (floor(n) as unknown as string + "").padStart(2, "0")
-            )
+            .map((n: number) => floor(n).toString().padStart(2, "0"))
             .join(":");
         uptimeDiv.setAttribute(UPTIME_STRING, uptime as unknown as string);
     };

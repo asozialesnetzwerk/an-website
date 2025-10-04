@@ -111,7 +111,7 @@ function strToBigInt(str: string): bigint | number {
 const stateType = "currencyConverter";
 PopStateHandlers[stateType] = (e: PopStateEvent) => {
     setAllFields(
-        strToBigInt((e.state as { euro: string }).euro.toString()),
+        strToBigInt((e.state as { euro: string | number }).euro.toString()),
     );
 };
 
