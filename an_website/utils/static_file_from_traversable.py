@@ -294,4 +294,4 @@ class TraversableStaticFileHandler(_RequestHandler):
         self.write(str(status_code))
         self.write(" ")
         self.write(self._reason)
-        self.finish("\n")
+        _ = self.finish("\n")

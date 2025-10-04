@@ -15,7 +15,7 @@
             <span>
                  <a class="no-style-a button-container-a"
                     tooltip="Neues falsches Zitat hinzufügen"
-                    href="{{fix_url('/zitate/erstellen', **create_kwargs)}}">
+                    href="{{fix_url('/zitate/erstellen', query_args=create_kwargs)}}">
                      <img class="button-img" alt="Zitat hinzufügen."
                          src="{{fix_static('img/plus.svg')}}">
                  </a>
@@ -44,7 +44,7 @@
             korrekt. Wenn Du einen Fehler gefunden hast, kontaktiere uns bitte. Danke :)
         </div>
         {% if settings.get("CONTACT_USE_FORM") %}
-            <a href="{{fix_url('/kontakt', subject=f'Fehler bei {type} {id}', message=f'{text}\n({canonical_url})')}}"
+            <a href="{{fix_url('/kontakt', query_args={'subject': f'Fehler bei {type} {id}', 'message': f'{text}\n({canonical_url})'})}}"
                tooltip="Melde Fehler"
                tooltip-position="left"
                rel="nofollow"

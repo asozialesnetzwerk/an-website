@@ -29,7 +29,7 @@ import traceback
 import uuid
 from asyncio import Future
 from base64 import b64decode
-from collections.abc import Awaitable, Callable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine, Mapping
 from contextvars import ContextVar
 from datetime import date, datetime, timedelta, timezone, tzinfo
 from functools import cached_property, partial, reduce
@@ -482,7 +482,7 @@ class BaseRequestHandler(_RequestHandler):
             return self._finish(soup.get_text("\n", True))
 
         dictionary: dict[str, object] = {
-            "url": self.fix_url(),
+            "url": self.fix_url(include_protocol_and_host=True),
             "title": self.title,
             "short_title": (
                 self.short_title if self.title != self.short_title else None
@@ -514,7 +514,8 @@ class BaseRequestHandler(_RequestHandler):
         self,
         url: None | str | SplitResult = None,
         new_path: None | str = None,
-        **query_args: None | str | bool | float,
+        include_protocol_and_host: bool | str = False,
+        query_args: Mapping[str, None | str | bool | float] | None = None,
     ) -> str:
         """
         Fix a URL and return it.
@@ -522,6 +523,8 @@ class BaseRequestHandler(_RequestHandler):
         If the URL is from another website, link to it with the redirect page,
         otherwise just return the URL with no_3rd_party appended.
         """
+        query_args_d = dict(query_args or {})
+        del query_args
         if url is None:
             url = self.request.full_url()
         if isinstance(url, str):
@@ -533,7 +536,7 @@ class BaseRequestHandler(_RequestHandler):
             ):
                 return url.geturl()
             path = "/redirect"
-            query_args["to"] = url.geturl()
+            query_args_d["to"] = url.geturl()
             url = urlsplit(self.request.full_url())
         else:
             path = url.path if new_path is None else new_path
@@ -541,7 +544,7 @@ class BaseRequestHandler(_RequestHandler):
         if path == "/lolwut":
             path = path.upper()
         if path.startswith("/soundboard/files/") or path in FILE_HASHES_DICT:
-            query_args.update(
+            query_args_d.update(
                 dict.fromkeys(self.user_settings.iter_option_names())
             )
         else:
@@ -549,26 +552,34 @@ class BaseRequestHandler(_RequestHandler):
                 key,
                 value,
             ) in self.user_settings.as_dict_with_str_values().items():
-                query_args.setdefault(key, value)
+                query_args_d.setdefault(key, value)
             for key, value in self.user_settings.as_dict_with_str_values(
                 include_query_argument=False,
                 include_body_argument=self.request.path == "/einstellungen"
                 and self.get_bool_argument("save_in_cookie", False),
             ).items():
-                if value == query_args[key]:
-                    query_args[key] = None
+                if value == query_args_d[key]:
+                    query_args_d[key] = None
 
-        return add_args_to_url(
+        result = add_args_to_url(
             urlunsplit(
                 (
                     self.request.protocol,
                     self.request.host,
-                    "" if path == "/" else path,
+                    path,
                     url.query,
                     url.fragment,
                 )
             ),
-            **query_args,
+            **query_args_d,
+        )
+
+        return (
+            result
+            if include_protocol_and_host
+            else result.removeprefix(
+                f"{self.request.protocol}://{self.request.host}"
+            )
         )
 
     @classmethod
@@ -733,11 +744,16 @@ class BaseRequestHandler(_RequestHandler):
             as_html=self.content_type == "text/html",
             c=self.now.date() == date(self.now.year, 4, 1)
             or str_to_bool(self.get_cookie("c", "f") or "f", False),
-            canonical_url=self.fix_url(
+            canonical_url=self.request.protocol
+            + "://"
+            + (self.settings["DOMAIN"] or self.request.host)
+            + self.fix_url(
                 self.request.full_url().upper()
                 if self.request.path.upper().startswith("/LOLWUT")
                 else self.request.full_url().lower()
-            ).split("?")[0],
+            )
+            .split("?")[0]
+            .removesuffix("/"),
             description=self.description,
             display_theme=self.get_display_theme(),
             display_scheme=self.get_display_scheme(),

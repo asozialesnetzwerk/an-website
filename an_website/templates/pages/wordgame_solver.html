@@ -31,7 +31,7 @@
     <ul>
         {% for count, w in words %}
             <li>
-                <a href="{{fix_url('/wordspiel-helfer', word=w, before=new_before)}}">{{w}}</a>
+                <a href="{{fix_url('/wordspiel-helfer', query_args={'word': w, 'before': new_before})}}">{{w}}</a>
                 ({{count}})
             </li>
         {% end %}

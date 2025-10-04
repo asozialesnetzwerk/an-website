@@ -148,6 +148,8 @@ class CommitmentAPI(APIRequestHandler):
         return await self.finish_dict(
             hash=hash_,
             commit_message=commit[1],
-            permalink=self.fix_url("/api/commitment", hash=hash_),
+            permalink=self.fix_url(
+                "/api/commitment", query_args={"hash": hash_}
+            ),
             date=commit[0],
         )

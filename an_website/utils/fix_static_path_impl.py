@@ -61,7 +61,7 @@ def hash_file(path: Traversable) -> str:
 
 
 def create_file_hashes_dict(
-    filter_path_fun: Callable[[str], bool] | None = None
+    filter_path_fun: Callable[[str], bool] | None = None,
 ) -> Mapping[str, str]:
     """Create a dict of file hashes."""
     static = Path("/static")

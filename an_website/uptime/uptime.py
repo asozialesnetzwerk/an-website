@@ -186,16 +186,18 @@ class AvailabilityChartHandler(BaseRequestHandler):
             self.redirect(
                 self.fix_url(
                     self.request.full_url(),
-                    a=int(
-                        (
-                            get_availability_dict(*availability_data)[
-                                "percentage"
-                            ]
-                            or 0
+                    query_args={
+                        "a": int(
+                            (
+                                get_availability_dict(*availability_data)[
+                                    "percentage"
+                                ]
+                                or 0
+                            )
+                            * 100
                         )
-                        * 100
-                    )
-                    / (100 * 100),
+                        / (100 * 100),
+                    },
                 ),
                 permanent=False,
             )

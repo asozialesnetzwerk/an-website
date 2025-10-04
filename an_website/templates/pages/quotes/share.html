@@ -11,7 +11,7 @@
   <div>
     {% if settings.get("SHOW_SHARING_ON_MASTODON") %}
       <a id="mastodon"
-         href="{{fix_url('/troet', save='sure', text=f'{u_text}\n\n{u_url}\n\n#falscheZitate')}}"
+         href="{{fix_url('/troet', query_args={'save': 'sure', 'text': f'{u_text}\n\n{u_url}\n\n#falscheZitate'})}}"
          aria-label="Tröte auf Mastodon"
          tooltip="Tröt!"
          tooltip-position="bottom">

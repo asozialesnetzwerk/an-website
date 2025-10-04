@@ -93,20 +93,26 @@ class SettingsPage(HTMLRequestHandler):
 
             replace_url_with = self.fix_url(
                 self.request.full_url(),
-                access_token=None,
-                advanced_settings=None,
-                save_in_cookie=None,
-                **dict.fromkeys(self.user_settings.iter_option_names()),
+                include_protocol_and_host=True,
+                query_args={
+                    "access_token": None,
+                    "advanced_settings": None,
+                    "save_in_cookie": None,
+                    **dict.fromkeys(self.user_settings.iter_option_names()),
+                },
             )
         else:
             replace_url_with = self.fix_url(
                 self.request.full_url(),
-                access_token=access_token,
-                advanced_settings=advanced_settings,
-                save_in_cookie=False,
-                **self.user_settings.as_dict_with_str_values(
-                    include_cookie=False, include_query_argument=False
-                ),
+                include_protocol_and_host=True,
+                query_args={
+                    "access_token": access_token,
+                    "advanced_settings": advanced_settings,
+                    "save_in_cookie": False,
+                    **self.user_settings.as_dict_with_str_values(
+                        include_cookie=False, include_query_argument=False
+                    ),
+                },
             )
 
         if replace_url_with != self.request.full_url():

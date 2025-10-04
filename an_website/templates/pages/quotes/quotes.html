@@ -99,7 +99,7 @@
         {% if settings.get("CONTACT_USE_FORM") %}
             <a id="report"
                rel="nofollow"
-               href="{{fix_url('/kontakt', subject=f'Das falsche Zitat {wrong_quote.get_id_as_str()} hat ein Problem', message=str(wrong_quote))}}"
+               href="{{fix_url('/kontakt', query_args={'subject': f'Das falsche Zitat {wrong_quote.get_id_as_str()} hat ein Problem', 'message': str(wrong_quote)})}}"
                tooltip="Melde das Zitat.">
                 <img class="button-img report-img" alt="Zitat melden."
                      src="{{fix_static('img/report.svg')}}">

@@ -144,8 +144,14 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
         """Get the URL of the next quote."""
         return self.fix_url(
             f"/zitate/{self.next_id[0]}-{self.next_id[1]}",
-            r=None if self.rating_filter == "smart" else self.rating_filter,
-            **{"show-rating": self.get_show_rating() or None},  # type: ignore[arg-type]
+            query_args={
+                "r": (
+                    None
+                    if self.rating_filter == "smart"
+                    else self.rating_filter
+                ),
+                "show-rating": self.get_show_rating() or None,
+            },
         )
 
     def get_show_rating(self) -> bool:
@@ -225,7 +231,10 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
         self, quote_id: int, author_id: int, rating_param: None | str = None
     ) -> str:
         """Get the URL of a quote."""
-        return self.fix_url(f"/zitate/{quote_id}-{author_id}", r=rating_param)
+        return self.fix_url(
+            f"/zitate/{quote_id}-{author_id}",
+            query_args={"r": rating_param},
+        )
 
 
 def wrong_quote_to_json(
@@ -515,6 +524,6 @@ class QuoteRedirectAPI(APIRequestHandler, QuoteBaseHandler):
         return self.redirect(
             self.fix_url(
                 f"/api/zitate/{quote_id}-{author_id}{suffix}",
-                **kwargs,
+                query_args=kwargs,
             )
         )

@@ -1048,7 +1048,7 @@ def main(  # noqa: C901  # pragma: no cover
             del AUTHORS_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
             del QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
             del WRONG_QUOTES_CACHE.control.created_by_ultra  # type: ignore[attr-defined]
-        del geoip.__kwdefaults__["caches"].control.created_by_ultra
+        del (geoip.__kwdefaults__ or {})["caches"].control.created_by_ultra
 
         if unix_socket_path:
             sockets.append(
