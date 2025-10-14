@@ -63,7 +63,7 @@ pygments==2.19.2
 pylint==3.3.9
 pylint-pytest==1.1.8
 pyproject-hooks==1.2.0
-pyrepl@ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
+pyrepl @ git+https://github.com/pypy/pyrepl.git@502bcf766e22b7d3898ed318f4a02d575804eb6f
 pytest==8.2.0
 pytest-cov==4.1.0
 pytest-is-running==1.5.1
@@ -132,7 +132,7 @@ html2text==2025.4.15
 hy==1.1.0
 hyrule==1.0.0
 jsonpickle==4.1.1
-lxml==5.4.0
+lxml==6.0.2
 multidict==6.7.0
 openmoji-dist==16.0.0
 orjson==3.11.3
