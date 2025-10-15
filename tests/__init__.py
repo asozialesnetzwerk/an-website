@@ -44,7 +44,7 @@ from collections.abc import Awaitable, Callable, MutableMapping, Set
 from datetime import datetime, timezone
 from os import environ  # pylint: disable=ungrouped-imports
 from pathlib import Path
-from typing import Any, Final, cast
+from typing import Any, Final
 from urllib.parse import parse_qsl, urlsplit
 from zoneinfo import ZoneInfo
 
@@ -263,11 +263,7 @@ def assert_valid_response(
         needs_to_end_with_line_feed
         and response.request.method != "HEAD"
         and (
-            (
-                content_type := cast(
-                    str, response.headers.get("Content-Type", "")
-                )
-            )
+            (content_type := response.headers.get("Content-Type", ""))
             in TEXT_CONTENT_TYPES
             or content_type.startswith("text/")
             or content_type.endswith(("+xml", "+json"))

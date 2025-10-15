@@ -136,11 +136,12 @@ elif not (BUILDING or VERSION):
     BACKEND_REQUIRES.add(DULWICH)
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
 else:
+    from dulwich.objects import Commit
     from dulwich.repo import Repo
 
     repo = Repo(path(".").as_posix())
     path("REVISION.TXT").write_bytes(repo.head())
-    head = repo[repo.head()]
+    head = typing.cast(Commit, repo[repo.head()])
     dt = datetime.fromtimestamp(
         head.commit_time, timezone(timedelta(seconds=head.commit_timezone))
     )
