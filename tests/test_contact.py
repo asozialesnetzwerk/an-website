@@ -61,6 +61,7 @@ def test_add_geoip_info_to_message_recursive() -> None:
         contact.add_geoip_info_to_message(message, geoip)
 
 
+@pytest.mark.timeout(10)
 async def test_sending_email() -> None:
     """Test sending emails."""
     user = f"{random.randbytes(10).hex()}"
