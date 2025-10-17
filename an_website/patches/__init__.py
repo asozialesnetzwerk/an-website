@@ -77,10 +77,13 @@ def patch_asyncio() -> None:
     if os.environ.get("DISABLE_UVLOOP") not in {
         "y", "yes", "t", "true", "on", "1"  # fmt: skip
     }:
-        with suppress(ModuleNotFoundError):
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=DeprecationWarning)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            try:
                 policy = import_module("uvloop").EventLoopPolicy()
+            except ModuleNotFoundError:
+                pass
+            else:
                 asyncio.set_event_loop_policy(policy)
 
 
