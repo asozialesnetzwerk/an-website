@@ -364,7 +364,7 @@ def emoji2url(emoji: str) -> str:
     return f"/static/openmoji/svg/{code.upper()}.svg?v={OPENMOJI_VERSION}"
 
 
-if sys.flags.dev_mode or pytest_is_running():
+if sys.flags.dev_mode and not pytest_is_running():
     __origignal_emoji2url = emoji2url
 
     def emoji2url(emoji: str) -> str:  # pylint: disable=function-redefined
