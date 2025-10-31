@@ -1046,6 +1046,9 @@
   "application/jwt": {
     "source": "iana"
   },
+  "application/kb+jwt": {
+    "source": "iana"
+  },
   "application/kpml-request+xml": {
     "compressible": true,
     "source": "iana"
@@ -1912,6 +1915,10 @@
   "application/rpki-updown": {
     "source": "iana"
   },
+  "application/rs-metadata+xml": {
+    "compressible": true,
+    "source": "iana"
+  },
   "application/rsd+xml": {
     "compressible": true,
     "extensions": [
@@ -1995,6 +2002,13 @@
     "extensions": [
       "spp"
     ],
+    "source": "iana"
+  },
+  "application/sd-jwt": {
+    "source": "iana"
+  },
+  "application/sd-jwt+json": {
+    "compressible": true,
     "source": "iana"
   },
   "application/sdf+json": {
@@ -2208,6 +2222,9 @@
     "source": "iana"
   },
   "application/stratum": {
+    "source": "iana"
+  },
+  "application/suit-envelope+cose": {
     "source": "iana"
   },
   "application/swid+cbor": {
@@ -2649,12 +2666,22 @@
   "application/vnd.3gpp.s1ap": {
     "source": "iana"
   },
+  "application/vnd.3gpp.seal-app-comm-requirements-info+xml": {
+    "compressible": true,
+    "source": "iana"
+  },
+  "application/vnd.3gpp.seal-data-delivery-info+cbor": {
+    "source": "iana"
+  },
   "application/vnd.3gpp.seal-group-doc+xml": {
     "compressible": true,
     "source": "iana"
   },
   "application/vnd.3gpp.seal-info+xml": {
     "compressible": true,
+    "source": "iana"
+  },
+  "application/vnd.3gpp.seal-location-info+cbor": {
     "source": "iana"
   },
   "application/vnd.3gpp.seal-location-info+xml": {
@@ -2665,8 +2692,15 @@
     "compressible": true,
     "source": "iana"
   },
+  "application/vnd.3gpp.seal-mbs-usage-info+xml": {
+    "compressible": true,
+    "source": "iana"
+  },
   "application/vnd.3gpp.seal-network-qos-management-info+xml": {
     "compressible": true,
+    "source": "iana"
+  },
+  "application/vnd.3gpp.seal-network-resource-info+cbor": {
     "source": "iana"
   },
   "application/vnd.3gpp.seal-ue-config-info+xml": {
@@ -9126,6 +9160,9 @@
   "audio/vnd.audiokoz": {
     "source": "iana"
   },
+  "audio/vnd.blockfact.facta": {
+    "source": "iana"
+  },
   "audio/vnd.celp": {
     "source": "iana"
   },
@@ -11403,6 +11440,9 @@
     "source": "iana"
   },
   "video/vc2": {
+    "source": "iana"
+  },
+  "video/vnd.blockfact.factv": {
     "source": "iana"
   },
   "video/vnd.cctv": {

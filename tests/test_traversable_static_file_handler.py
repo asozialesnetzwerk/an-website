@@ -30,7 +30,7 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 )
 
 STATIC_DIR = ROOT_DIR / "static"
-CACHE_CONTROL = f"public, immutable, max-age={86400 * 365 * 10}"
+CACHE_CONTROL = f"public,immutable,max-age={86400 * 365 * 10}"
 
 
 async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811

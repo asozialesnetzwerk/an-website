@@ -282,7 +282,7 @@ class TraversableStaticFileHandler(_RequestHandler):
             if "v" in self.request.arguments:
                 self.set_header(  # never changes
                     "Cache-Control",
-                    f"public, immutable, max-age={86400 * 365 * 10}",
+                    f"public,immutable,max-age={86400 * 365 * 10}",
                 )
             else:
                 self.set_etag_header()

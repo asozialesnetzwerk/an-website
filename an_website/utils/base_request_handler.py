@@ -1101,17 +1101,17 @@ class BaseRequestHandler(_RequestHandler):
         )
         self.set_header("Referrer-Policy", "same-origin")
         self.set_header(
-            "Cross-Origin-Opener-Policy", "same-origin; report-to=default"
+            "Cross-Origin-Opener-Policy", "same-origin;report-to=default"
         )
         if self.request.path == "/kaenguru-comics-alt":  # TODO: improve this
             self.set_header(
                 "Cross-Origin-Embedder-Policy",
-                "credentialless; report-to=default",
+                "credentialless;report-to=default",
             )
         else:
             self.set_header(
                 "Cross-Origin-Embedder-Policy",
-                "require-corp; report-to=default",
+                "require-corp;report-to=default",
             )
         if self.settings.get("HSTS"):
             self.set_header("Strict-Transport-Security", "max-age=63072000")
@@ -1132,7 +1132,7 @@ class BaseRequestHandler(_RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
-        self.set_header("Vary", "Accept, Authorization, Cookie")
+        self.set_header("Vary", "Accept,Authorization,Cookie")
 
     set_default_headers.__doc__ = _RequestHandler.set_default_headers.__doc__
 

@@ -16,9 +16,9 @@ do
 done
 
 pip_install="python3 -m pip install --disable-pip-version-check --require-virtualenv --quiet"
-${pip_install} "pip>=24.0"; exit_code="$?"
+${pip_install} "pip==25.2.*"; exit_code="$?"
 if [ "${exit_code}" -ne 0 ] && [ "${exit_code}" -ne 3 ]; then
-  echo "Installing pip>=24.0 failed"
+  echo "Installing pip==25.2.* failed"
   exit 1
 fi
 ${pip_install} -r pip-dev-requirements.txt; exit_code="$?"

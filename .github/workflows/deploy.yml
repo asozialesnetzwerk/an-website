@@ -206,9 +206,6 @@ jobs:
           - 3.12.7  # EL10
           - 3.13
           - 3.14    # π
-        # license:
-        #   - basic
-        #   - trial
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
@@ -233,7 +230,9 @@ jobs:
           mv an_website-*/* .
           rmdir an_website-*
       - name: Install requirements
-        run: pip install -r pip-requirements.txt -r TESTDEPS.TXT
+        run: pip install -r pip-requirements.txt --no-deps
+      - name: Install TESTDEPS
+        run: pip install -r TESTDEPS.TXT
       - name: Run pytest
         timeout-minutes: 5
         run: pytest --durations=0 --verbose
@@ -251,9 +250,6 @@ jobs:
           - 3.12.7  # EL10
           - 3.13
           - 3.14    # π
-        # license:
-        #   - basic
-        #   - trial
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
@@ -269,10 +265,10 @@ jobs:
       # - name: Start Elasticsearch
       #   uses: elastic/elastic-github-actions/elasticsearch@2c3ec0418fabc996180995c47b86a65b581f1561
       #   with:
-      #     stack-version: 8.18.2
+      #     stack-version: 8.18.8
       #     security-enabled: false
       #     nodes: 3
-      #     license: ${{ matrix.license }}
+      #     license: trial
       #     plugins: |
       #       analysis-icu
       #       analysis-phonetic

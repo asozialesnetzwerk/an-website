@@ -1,4 +1,6 @@
-# syntax=docker.io/docker/dockerfile:1.12
+# syntax=docker.io/docker/dockerfile:1.18
+# check=error=true;experimental=InvalidDefinitionDescription
+
 ARG BASE=docker.io/library/python:3.13-slim-trixie
 
 FROM $BASE AS builder
