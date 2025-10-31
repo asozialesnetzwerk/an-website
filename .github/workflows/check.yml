@@ -271,6 +271,6 @@ jobs:
         env:
           SHELLCHECK_OPTS: -xo all
         with:
-          version: v0.10.0
+          version: v0.11.0
           check_together: yes
           ignore_names: screenfetch
