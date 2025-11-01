@@ -57,13 +57,16 @@ DEBUG_COLOR: Final[tuple[int, int, int]] = 245, 53, 170
 DEBUG_COLOR2: Final[tuple[int, int, int]] = 224, 231, 34
 TEXT_COLOR: Final[tuple[int, int, int]] = 230, 230, 230
 
-with (DIR / "files/oswald.regular.ttf").open("rb") as data:
-    FONT: Final = ImageFont.truetype(font=data, size=50)
-with (DIR / "files/oswald.regular.ttf").open("rb") as data:
-    FONT_SMALLER: Final = ImageFont.truetype(font=data, size=44)
-with (DIR / "files/oswald.regular.ttf").open("rb") as data:
-    HOST_NAME_FONT: Final = ImageFont.truetype(font=data, size=23)
-del data
+
+_FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
+
+FONT: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=50)
+FONT_SMALLER: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=44)
+HOST_NAME_FONT: Final = ImageFont.truetype(
+    font=io.BytesIO(_FONT_BYTES), size=23
+)
+
+del _FONT_BYTES
 
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
@@ -109,7 +112,7 @@ def load_png(filename: str) -> Image.Image:
     """Load a PNG image into memory."""
     with (DIR / "files" / f"{filename}.png").open("rb") as file:  # noqa: SIM117
         with Image.open(file, formats=("PNG",)) as image:
-            return image.copy()
+            return image.copy()  # type: ignore[no-any-return]
 
 
 BACKGROUND_IMAGE: Final = load_png("bg")
@@ -133,7 +136,7 @@ def get_lines_and_max_height(
         max_line_length = max(font.getlength(line) for line in lines)
         column_count -= 1
 
-    return lines, max(font.getbbox(line)[3] for line in lines)
+    return lines, int(max(font.getbbox(line)[3] for line in lines))
 
 
 def draw_text(  # pylint: disable=too-many-arguments
@@ -234,7 +237,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         quote_lines,
         y_start,
         QUOTE_MAX_WIDTH,
-        max_line_height,
+        int(max_line_height),
         font,
         0,
         1 if file_type == "4-color-gif" else 0,
@@ -256,7 +259,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             y_text + 20, IMAGE_HEIGHT - (220 if len(author_lines) < 3 else 280)
         ),
         AUTHOR_MAX_WIDTH,
-        max_line_height,
+        int(max_line_height),
         font,
         10,
         1 if file_type == "4-color-gif" else 0,
@@ -277,7 +280,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     # draw rating
     if rating:
         _, y_off, width, height = FONT_SMALLER.getbbox(str(rating))
-        y_rating = IMAGE_HEIGHT - 25 - height
+        y_rating = IMAGE_HEIGHT - 25 - int(height)
         draw_text(
             draw,
             str(rating),
@@ -291,8 +294,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         image.paste(
             icon,
             box=(
-                25 + 5 + width,
-                y_rating + y_off // 2,
+                25 + 5 + int(width),
+                y_rating + int(y_off / 2),
             ),
             mask=icon,
         )
@@ -303,8 +306,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         draw_text(
             draw,
             source,
-            IMAGE_WIDTH - 5 - width,
-            IMAGE_HEIGHT - 5 - height,
+            IMAGE_WIDTH - 5 - int(width),
+            IMAGE_HEIGHT - 5 - int(height),
             HOST_NAME_FONT,
             0,
         )
