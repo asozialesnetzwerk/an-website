@@ -35,7 +35,12 @@ class ShareQuote(QuoteReadyCheckHandler):
             "pages/quotes/share.html",
             text=quote(text, safe=""),
             u_text=text,
-            u_url=(url := self.fix_url(f"/zitate/{quote_id}-{author_id}")),
+            u_url=(
+                url := self.fix_url(
+                    f"/zitate/{quote_id}-{author_id}",
+                    include_protocol_and_host=True,
+                )
+            ),
             quote_url=quote(url, safe=""),
             wrong_quote=str(wrong_quote),
         )
