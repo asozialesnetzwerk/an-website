@@ -627,7 +627,7 @@ def setup_webhook_logging(  # pragma: no cover
     formatter.max_message_length = options.max_message_length
     formatter.get_context_line = lambda _: (
         f"Request: {request}"
-        if print("test") or (request := request_ctx_var.get(None))
+        if (request := request_ctx_var.get(None))
         else None
     )
     webhook_handler.setFormatter(formatter)

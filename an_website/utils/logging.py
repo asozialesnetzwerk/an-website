@@ -177,10 +177,15 @@ class WebhookFormatter(DatetimeFormatter):
             record.message += line
         if (
             self.get_context_line
-            and (line := self.get_context_line(record))
-            and len(record.message) + 2 + len(line) <= self.max_message_length
+            and (context_line := self.get_context_line(record))
+            and (
+                (len(record.message) + 2 + len(context_line))
+                <= self.max_message_length
+                if self.max_message_length
+                else True
+            )
         ):
-            record.message += f"\n\n{line}"
+            record.message += f"\n\n{context_line}"
         if self.escape_message:
             record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         return self.formatMessage(record)

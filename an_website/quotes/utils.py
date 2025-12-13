@@ -351,6 +351,7 @@ def get_authors(
     return authors
 
 
+# pylint: disable-next=too-many-arguments
 async def make_api_request(
     endpoint: str,
     args: Mapping[str, str] | None = None,
