@@ -90,6 +90,8 @@ async def create_wrong_quote(
     real_author_param: Author | str,
     fake_author_param: Author | str,
     quote_param: Quote | str,
+    *,
+    contributed_by: str | None = None,
 ) -> str:
     """Create a wrong quote and return the id in the q_id-a_id format."""
     if isinstance(fake_author_param, str):
@@ -112,6 +114,17 @@ async def create_wrong_quote(
         quote = await create_quote(quote_param, real_author)
     else:
         quote = quote_param
+
+    await make_api_request(
+        "wrongquotes",
+        method="POST",
+        body={
+            "author": fake_author.id,
+            "quote": quote.id,
+            "contributed_by": contributed_by or "Mithilfe von asozial.org",
+        },
+        entity_should_exist=False,
+    )
 
     return f"{quote.id}-{fake_author.id}"
 
@@ -245,6 +258,7 @@ class CreatePage1(QuoteReadyCheckHandler):
             )
             return
 
+        user_name = self.get_argument("user-name", None)
         quote_str = self.get_argument("quote-1", None)
         fake_author_str = self.get_argument("fake-author-1", None)
         if not (quote_str and fake_author_str):
@@ -258,10 +272,14 @@ class CreatePage1(QuoteReadyCheckHandler):
         fake_author: None | Author = get_author_by_name(fake_author_str)
 
         if quote and fake_author:
-            # if selected existing quote and existing
-            # fake author just redirect to the page of this quote
+            wq_id = await create_wrong_quote(
+                real_author_param=quote.author,
+                fake_author_param=fake_author,
+                quote_param=quote,
+                contributed_by=user_name,
+            )
             return self.redirect(
-                self.fix_url(f"/zitate/{quote.id}-{fake_author.id}"),
+                self.fix_url(f"/zitate/{wq_id}"),
                 status=303,
             )
 
@@ -297,6 +315,7 @@ class CreatePage1(QuoteReadyCheckHandler):
                 real_authors[0],
                 fake_authors[0],
                 quotes[0],
+                contributed_by=user_name,
             )
             return self.redirect(
                 self.fix_url(f"/zitate/{wq_id}"),
@@ -308,6 +327,7 @@ class CreatePage1(QuoteReadyCheckHandler):
             quotes=quotes,
             real_authors=real_authors,
             fake_authors=fake_authors,
+            user_name=user_name,
         )
 
 
@@ -365,6 +385,9 @@ class CreatePage2(QuoteReadyCheckHandler):
             real_author,
             fake_author_str,
             quote_str,
+            contributed_by=self.get_argument(
+                "user-name", "Nutzer von asozial.org"
+            ),
         )
         return self.redirect(
             self.fix_url(

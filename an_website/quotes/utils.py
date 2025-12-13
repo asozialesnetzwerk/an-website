@@ -358,7 +358,7 @@ async def make_api_request(
     *,
     entity_should_exist: bool,
     method: Literal["GET", "POST"] = "GET",
-    body: None | Mapping[str, str] = None,
+    body: None | Mapping[str, str | int] = None,
     request_timeout: float | None = None,
 ) -> Any:  # TODO: list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""

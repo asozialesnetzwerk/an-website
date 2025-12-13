@@ -46,6 +46,10 @@
             </select>
         </label>
 
+        {% if user_name %}
+            <input name="user-name" type="text" class="hidden", value="{{ user_name }}">
+        {% end %}
+
         <input type="text" class="hidden" name="nicht-erstellen" value="">
 
         <input id="submit-button"
