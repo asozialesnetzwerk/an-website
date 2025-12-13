@@ -358,6 +358,7 @@ async def make_api_request(
     entity_should_exist: bool,
     method: Literal["GET", "POST"] = "GET",
     body: None | Mapping[str, str] = None,
+    request_timeout: float | None = None,
 ) -> Any:  # TODO: list[dict[str, Any]] | dict[str, Any]:
     """Make API request and return the result as dict."""
     if pytest_is_running():
@@ -372,6 +373,7 @@ async def make_api_request(
         body=body_str,
         raise_error=False,
         ca_certs=CA_BUNDLE_PATH,
+        request_timeout=request_timeout,
     )
     if response.code != 200:
         normed_response_code = (
@@ -613,7 +615,9 @@ async def update_cache(
     if update_wrong_quotes:
         await parse_list_of_quote_data(
             wq_data := await make_api_request(
-                "wrongquotes", entity_should_exist=True
+                "wrongquotes",
+                entity_should_exist=True,
+                request_timeout=100,
             ),
             parse_wrong_quote,
         )
