@@ -31,9 +31,11 @@ from .utils import (
     QuoteReadyCheckHandler,
     fix_author_name,
     fix_quote_str,
+    get_wrong_quote,
     make_api_request,
     parse_author,
     parse_quote,
+    parse_wrong_quote,
 )
 
 LOGGER: Final = logging.getLogger(__name__)
@@ -115,18 +117,25 @@ async def create_wrong_quote(
     else:
         quote = quote_param
 
-    await make_api_request(
-        "wrongquotes",
-        method="POST",
-        body={
-            "author": fake_author.id,
-            "quote": quote.id,
-            "contributed_by": contributed_by or "Mithilfe von asozial.org",
-        },
-        entity_should_exist=False,
+    wrong_quote = await get_wrong_quote(
+        quote.id, fake_author.id, use_cache=True
     )
 
-    return f"{quote.id}-{fake_author.id}"
+    if wrong_quote.id == -1:
+        result = await make_api_request(
+            "wrongquotes",
+            method="POST",
+            body={
+                "author": fake_author.id,
+                "quote": quote.id,
+                "contributed_by": contributed_by or "Mithilfe von asozial.org",
+            },
+            entity_should_exist=False,
+        )
+        wrong_quote = parse_wrong_quote(result)
+        LOGGER.info("Successfully created wrong quote:\n\n%s", wrong_quote)
+
+    return wrong_quote.get_id_as_str()
 
 
 async def get_authors(author_name: str) -> list[Author | str]:
