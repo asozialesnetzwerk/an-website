@@ -19,7 +19,7 @@ import asyncio
 import logging
 import traceback
 from asyncio import AbstractEventLoop
-from collections.abc import Coroutine, Iterable
+from collections.abc import Callable, Coroutine, Iterable
 from concurrent.futures import Future
 from datetime import datetime, tzinfo
 from logging import LogRecord
@@ -150,6 +150,7 @@ class WebhookFormatter(DatetimeFormatter):
 
     escape_message = False
     max_message_length: int | None = None
+    get_context_line: Callable[[LogRecord], str | None] | None = None
 
     def format(self, record: LogRecord) -> str:
         """Format the specified record as text."""
@@ -166,10 +167,20 @@ class WebhookFormatter(DatetimeFormatter):
                 self.max_message_length is not None
                 and len(line) + len(record.message) > self.max_message_length
             ):
-                if len("...") + len(record.message) <= self.max_message_length:
-                    record.message += "..."
+                ellipsis = "…"
+                if (
+                    len(ellipsis) + len(record.message)
+                    <= self.max_message_length
+                ):
+                    record.message += ellipsis
                 break
             record.message += line
+        if (
+            self.get_context_line
+            and (line := self.get_context_line(record))
+            and len(record.message) + 2 + len(line) <= self.max_message_length
+        ):
+            record.message += f"\n\n{line}"
         if self.escape_message:
             record.message = json.dumps(record.message).decode("UTF-8")[1:-1]
         return self.formatMessage(record)

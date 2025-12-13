@@ -572,3 +572,8 @@ async def test_error_code_pages(fetch: FetchCallable) -> None:  # noqa: F811
     for code in range(200, 599):
         if code not in (204, 304):
             assert_valid_html_response(await fetch(f"/{code}.html"), {code})
+
+
+async def test_405(fetch: FetchCallable) -> None:  # noqa: F811
+    """DELETE is not supported."""
+    assert_valid_html_response(await fetch("/", method="DELETE"), {405})
