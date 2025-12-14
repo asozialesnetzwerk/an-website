@@ -133,7 +133,11 @@ async def create_wrong_quote(
             entity_should_exist=False,
         )
         wrong_quote = parse_wrong_quote(result)
-        LOGGER.info("Successfully created wrong quote:\n\n%s", wrong_quote)
+        LOGGER.info(
+            "Successfully created wrong quote: %s\n\n%s",
+            wrong_quote.get_id_as_str(True),
+            wrong_quote,
+        )
 
     return wrong_quote.get_id_as_str()
 
@@ -382,13 +386,6 @@ class CreatePage2(QuoteReadyCheckHandler):
         real_author = self.get_argument("real-author-2", None)
         if not real_author:
             raise MissingArgumentError("real-author-2")
-
-        LOGGER.info(
-            "Creating wrong quote: %r (%r) - %r",
-            quote_str,
-            real_author,
-            fake_author_str,
-        )
 
         wq_id = await create_wrong_quote(
             real_author,
