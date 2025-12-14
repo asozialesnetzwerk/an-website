@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import urllib.parse
 from datetime import datetime, timezone as tz
-from functools import cache
 from io import BytesIO
 
 import orjson as json
@@ -40,7 +39,6 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 )
 
 
-@cache
 def get_wrong_quote() -> quotes.WrongQuote:
     """Patch stuff."""
     return quotes.parse_wrong_quote(WRONG_QUOTE_DATA)
@@ -170,13 +168,13 @@ async def test_argument_checking_create_pages(
         await assert_valid_redirect(
             fetch,
             url,
-            "/zitate/1-1",
+            "/zitate/1-2",
             method="POST",
             headers={"Content-Type": "application/json"},
             body=json.dumps(
                 {
                     f"quote-{num}": wrong_quote.quote.quote.lower(),
-                    f"fake-author-{num}": wrong_quote.quote.author.name.upper(),
+                    f"fake-author-{num}": wrong_quote.author.name.upper(),
                 }
             ),
             codes={303},
