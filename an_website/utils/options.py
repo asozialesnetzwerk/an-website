@@ -103,7 +103,7 @@ class Option(ABC, Generic[T]):
         if not self.option_in_arguments(request_handler):
             return ""
         return (
-            f"<input class='hidden' name={self.name!r} "
+            f'<input class="hidden" name={self.name!r} '
             f"value={self.value_to_string(self.get_value(request_handler))!r}>"
         )
 
