@@ -288,7 +288,7 @@ function binarySearch<T>(arr: T[], toSearch: T): boolean {
 }
 
 const stateType = "HangmanSolverState";
-function updateCurrentState(event: Event | undefined = undefined) {
+function updateCurrentState(event: Event | undefined) {
     const newState = getState();
     setMultipleURLParams(
         Object.entries(newState).map(([key, value]) => [key, value.toString()]),

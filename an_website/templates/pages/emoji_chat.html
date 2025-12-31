@@ -9,15 +9,6 @@
 {% end %}
 
 {% block body %}
-    <section id="message-section">
-        {% for msg in messages %}
-            <div class="message">
-                {% for emoji in msg["author"] %}{% raw emoji2html(emoji) %}{% end %}:
-                {% for emoji in msg["content"] %}{% raw emoji2html(emoji) %}{% end %}
-            </div>
-        {% end %}
-    </section>
-
     <form method="post">
         <div tooltip="Nicht mit WebSocket verbunden (kein JS verfügbar)"
              tooltip-position="right"
@@ -27,4 +18,13 @@
         <input id="message-input" type="text" name="message">
         <button type="submit">Senden!</button>
     </form>
+
+    <section id="message-section">
+        {% for msg in reversed(messages) %}
+            <div class="message">
+                {% for emoji in msg["author"] %}{% raw emoji2html(emoji) %}{% end %}:
+                {% for emoji in msg["content"] %}{% raw emoji2html(emoji) %}{% end %}
+            </div>
+        {% end %}
+    </section>
 {% end %}

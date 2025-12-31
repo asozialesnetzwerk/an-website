@@ -173,7 +173,7 @@ async def request(  # noqa: C901
     if isinstance(body, memoryview):
         body = body.tobytes()
     if isinstance(body, Iterable) and not isinstance(body, (bytes, bytearray)):
-        body = b"".join(body)  # type: ignore[arg-type]
+        body = b"".join(body)
     https = url.scheme == "https"
     header_names = [x.strip().title() for x in headers.keys()]
     if "Host" not in header_names:

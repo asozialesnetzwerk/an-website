@@ -72,7 +72,7 @@ const MessageComponent = ({ msg }: { msg: Message }): JSX.Element => (
 );
 
 const appendMessage = (msg: Message) => {
-    messageSection.append(<MessageComponent msg={msg} />);
+    messageSection.prepend(<MessageComponent msg={msg} />);
 };
 
 const displayCurrentUser = (name: string[]) => {
