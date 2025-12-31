@@ -1,7 +1,11 @@
 // dprint-ignore-file
 {
   "ts-node": {"esm": true},
-  "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node18/tsconfig"],
+  "extends": [
+    "@tsconfig/node20/tsconfig",
+    "@tsconfig/node-ts/tsconfig",
+    "@tsconfig/strictest/tsconfig"
+  ],
   "include": ["scripts", "eslint.config.js", ".pnpmfile.cjs"],
   "exclude": ["scripts/deno"],
   "compilerOptions": {
@@ -11,10 +15,9 @@
     ],
     "isolatedModules": true,
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "erasableSyntaxOnly": true,
     "resolveJsonModule": true,
     "noUnusedLocals": false,
-    "module": "node18"
+    "module": "node18",
+    "checkJs": true
   }
 }

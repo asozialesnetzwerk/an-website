@@ -78,7 +78,9 @@ async def subscribe_to_redis_channel(
                 "type": "message",
                 "data": str(data),
                 "channel": channel,
-            } if channel == REDIS_CHANNEL:
+            } if (
+                channel == REDIS_CHANNEL
+            ):
                 await asyncio.gather(
                     *[conn.write_message(data) for conn in OPEN_CONNECTIONS]
                 )
@@ -86,7 +88,9 @@ async def subscribe_to_redis_channel(
                 "type": "subscribe",
                 "data": 1,
                 "channel": channel,
-            } if channel == REDIS_CHANNEL:
+            } if (
+                channel == REDIS_CHANNEL
+            ):
                 logging.info(
                     "Subscribed to Redis channel %r on worker %s",
                     channel,

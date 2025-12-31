@@ -43,42 +43,42 @@ class Service:
 
 
 SERVICES: tuple[Service, ...] = (
-    Service(
-        "Minceraft-Server",
-        (
-            "Der Survival-Minceraft-Server des Asozialen Netzwerks funktioniert"
-            " auch ohne einen Minceraft-Account und hat dafür eine Integration"
-            " mit ely.by, damit auch Spieler, die ihren Minceraft-Account nicht"
-            " verraten möchten, einen eigenen Skin nutzen können."
-        ),
-        {
-            "Domain": "minceraft.asozial.org",
-            "Version": "1.15.2 (unterstützt 1.7-1.20)",
-            "Karte": "https://minceraft.asozial.org",
-        },
-    ),
-    Service(
-        "SuperTuxKart-Server",
-        (
-            "Der SuperTuxKart-Server des Asozialen Netzwerks ist durchgehend "
-            "online."
-        ),
-        {
-            "Name": "Das Asoziale Netzwerk",
-            "SuperTuxKart-Download": "https://supertuxkart.net/Download",
-        },
-    ),
-    Service(
-        "Syncplay-Server",
-        (
-            "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
-            "zusammen Sachen gucken."
-        ),
-        {
-            "Domain": "syncplay.asozial.org:8999",
-            "Installations-Guide": "https://syncplay.pl/guide/install",
-        },
-    ),
+    # Service(
+    #     "Minceraft-Server",
+    #     (
+    #         "Der Survival-Minceraft-Server des Asozialen Netzwerks funktioniert"
+    #         " auch ohne einen Minceraft-Account und hat dafür eine Integration"
+    #         " mit ely.by, damit auch Spieler, die ihren Minceraft-Account nicht"
+    #         " verraten möchten, einen eigenen Skin nutzen können."
+    #     ),
+    #     {
+    #         "Domain": "minceraft.asozial.org",
+    #         "Version": "1.15.2 (unterstützt 1.7-1.20)",
+    #         "Karte": "https://minceraft.asozial.org",
+    #     },
+    # ),
+    # Service(
+    #     "SuperTuxKart-Server",
+    #     (
+    #         "Der SuperTuxKart-Server des Asozialen Netzwerks ist durchgehend "
+    #         "online."
+    #     ),
+    #     {
+    #         "Name": "Das Asoziale Netzwerk",
+    #         "SuperTuxKart-Download": "https://supertuxkart.net/Download",
+    #     },
+    # ),
+    # Service(
+    #     "Syncplay-Server",
+    #     (
+    #         "Mit dem Syncplay-Server des Asozialen Netzwerks kann man Online "
+    #         "zusammen Sachen gucken."
+    #     ),
+    #     {
+    #         "Domain": "syncplay.asozial.org:8999",
+    #         "Installations-Guide": "https://syncplay.pl/guide/install",
+    #     },
+    # ),
     # Service(
     #     "Matrix-Heimserver",
     #     (

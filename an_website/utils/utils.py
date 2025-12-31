@@ -20,7 +20,6 @@ import asyncio
 import bisect
 import contextlib
 import logging
-import pathlib
 import random
 import sys
 import time
@@ -132,8 +131,8 @@ class ArgparseNamespace(argparse.Namespace):
     # pylint: disable=too-few-public-methods
     __slots__ = ("config", "save_config_to", "version", "verbose")
 
-    config: list[pathlib.Path]
-    save_config_to: pathlib.Path | None
+    config: list[Path]
+    save_config_to: Path | None
     version: bool
     verbose: int
 
@@ -334,11 +333,11 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-c",
         "--config",
-        default=[pathlib.Path("config.ini")],
+        default=[Path("config.ini")],
         help="the path to the config file",
         metavar="PATH",
         nargs="*",
-        type=pathlib.Path,
+        type=Path,
     )
     parser.add_argument(
         "--save-config-to",
@@ -346,7 +345,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
         help="save the configuration to a file",
         metavar="Path",
         nargs="?",
-        type=pathlib.Path,
+        type=Path,
     )
     return parser
 
@@ -864,9 +863,9 @@ def strangle(string: str) -> float:
 def time_function[  # noqa: D103
     # pylint: disable-next=invalid-name
     T, **P  # fmt: skip
-](function: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> tuple[
-    T, float
-]:
+](
+    function: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> tuple[T, float]:
     """Run the function and return the result and the time it took in seconds."""
     timer = Timer()
     return function(*args, **kwargs), timer.stop()

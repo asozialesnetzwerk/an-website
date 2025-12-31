@@ -22,7 +22,6 @@ import json as stdlib_json  # pylint: disable=preferred-module
 import logging
 import os
 import sys
-import warnings
 from collections.abc import Callable
 from configparser import RawConfigParser
 from contextlib import suppress
@@ -32,6 +31,7 @@ from threading import Thread
 from types import MethodType
 from typing import Any
 from urllib.parse import urlsplit
+from warnings import catch_warnings, simplefilter
 
 import certifi
 import defusedxml  # type: ignore[import-untyped]
@@ -77,14 +77,12 @@ def patch_asyncio() -> None:
     if os.environ.get("DISABLE_UVLOOP") not in {
         "y", "yes", "t", "true", "on", "1"  # fmt: skip
     }:
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            try:
-                policy = import_module("uvloop").EventLoopPolicy()
-            except ModuleNotFoundError:
-                pass
-            else:
-                asyncio.set_event_loop_policy(policy)
+        with catch_warnings():
+            simplefilter("ignore", DeprecationWarning)
+            with suppress(ModuleNotFoundError):
+                asyncio.set_event_loop_policy(
+                    import_module("uvloop").EventLoopPolicy()
+                )
 
 
 def patch_certifi() -> None:

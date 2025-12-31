@@ -104,6 +104,13 @@ TEXT_CONTENT_TYPES: Final[set[str]] = {
     "application/yaml",
 }
 
+CLACKS_OVERHEADS = (
+    "GNU Aaron Swartz",
+    "GNU Carol Angie Deborah Maltesi",
+    "GNU Charlotte Angie",
+    "GNU Terry Pratchett",
+)
+
 request_ctx_var: ContextVar[HTTPServerRequest] = ContextVar("current_request")
 
 
@@ -224,8 +231,12 @@ class _RequestHandler(tornado.web.RequestHandler):
         # pylint: disable=method-hidden
         if pytest_is_running():
             raise AssertionError("Now accessed before it was set")
-        if self.request.method in self.SUPPORTED_METHODS:
-            LOGGER.error("Now accessed before it was set", stacklevel=3)
+        # if self.request.method in self.SUPPORTED_METHODS:  # Why?
+        LOGGER.error("Now accessed before it was set", stacklevel=3)
+        return self.now_utc
+
+    @cached_property
+    def now_utc(self) -> datetime:
         return datetime.fromtimestamp(
             self.request._start_time,  # pylint: disable=protected-access
             tz=timezone.utc,
@@ -1132,6 +1143,12 @@ class BaseRequestHandler(_RequestHandler):
                         f"X-Permission-{permission.name}",
                         bool_to_str(bool(self.is_authorized(permission))),
                     )
+        self.set_header(
+            "X-Clacks-Overhead",
+            CLACKS_OVERHEADS[
+                int(self.now_utc.microsecond) % len(CLACKS_OVERHEADS)
+            ],
+        )
         self.set_header("Vary", "Accept,Authorization,Cookie")
 
     set_default_headers.__doc__ = _RequestHandler.set_default_headers.__doc__

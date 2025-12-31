@@ -1,9 +1,9 @@
 // @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&dn=expat.txt MIT
 // @ts-nocheck
 /*
- * core-js 3.45.1
+ * core-js 3.46.0
  * © 2014-2025 Denis Pushkarev (zloirock.ru)
- * license: https://github.com/zloirock/core-js/blob/v3.45.1/LICENSE
+ * license: https://github.com/zloirock/core-js/blob/v3.46.0/LICENSE
  * source: https://github.com/zloirock/core-js
  *//*
  * modules:
@@ -836,10 +836,10 @@ var SHARED = '__core-js_shared__';
 var store = module.exports = globalThis[SHARED] || defineGlobalProperty(SHARED, {});
 
 (store.versions || (store.versions = [])).push({
-  version: '3.45.1',
+  version: '3.46.0',
   mode: IS_PURE ? 'pure' : 'global',
-  copyright: '© 2014-2025 Denis Pushkarev (zloirock.ru)',
-  license: 'https://github.com/zloirock/core-js/blob/v3.45.1/LICENSE',
+  copyright: '© 2014-2025 Denis Pushkarev (zloirock.ru), 2025 CoreJS Company (core-js.io)',
+  license: 'https://github.com/zloirock/core-js/blob/v3.46.0/LICENSE',
   source: 'https://github.com/zloirock/core-js'
 });
 
@@ -6340,6 +6340,7 @@ $({ target: 'Object', stat: true }, {
 
 
 var $ = __webpack_require__(1);
+var createProperty = __webpack_require__(180);
 var getBuiltIn = __webpack_require__(21);
 var uncurryThis = __webpack_require__(12);
 var aCallable = __webpack_require__(28);
@@ -6373,7 +6374,7 @@ $({ target: 'Object', stat: true, forced: DOES_NOT_WORK_WITH_PRIMITIVES }, {
       // in some IE versions, `hasOwnProperty` returns incorrect result on integer keys
       // but since it's a `null` prototype object, we can safely use `in`
       if (key in obj) push(obj[key], value);
-      else obj[key] = [value];
+      else createProperty(obj, key, [value]);
     });
     return obj;
   }

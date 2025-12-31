@@ -7,24 +7,27 @@
     "@eslint/eslintrc": "^2.1.4",
     "@eslint/js": "^8.57.1",
     "@pnpm/types": "^1000.9.0",
-    "@std/cli": "jsr:^1.0.23",
-    "@tsconfig/node18": "^18.2.4",
-    "@tsconfig/strictest": "^2.0.7",
+    "@std/cli": "jsr:^1.0.25",
+    "@tsconfig/node-ts": "^23.6.2",
+    "@tsconfig/node20": "^20.1.8",
+    "@tsconfig/strictest": "^2.0.8",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^24.9.2",
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
+    "@types/node": "^24.10.4",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
     "@typescript/lib-dom": "npm:@types/web@^0.0.265",
-    "browserslist": "~4.27.0",
+    "browserslist": "~4.28.1",
     "browserslist-to-esbuild": "^2.1.1",
-    "caniuse-lite": "1.0.30001751",
-    "core-js-builder": "3.46.0",
-    "core-js-compat": "3.46.0",
-    "dax-sh": "^0.43.2",
-    "doiuse": "^6.0.5",
-    "electron-to-chromium": "1.5.238",
-    "esbuild": "^0.25.11",
+    "caniuse-lite": "1.0.30001760",
+    "core-js-builder": "3.47.0",
+    "core-js-compat": "3.47.0",
+    "dax-sh": "^0.44.1",
+    "doiuse": "^6.0.6",
+    "electron": "^37.10.3",
+    "electron-chromedriver": "^37.10.3",
+    "electron-to-chromium": "1.5.263",
+    "esbuild": "^0.26.0",
     "eslint": "^8.57.1",
     "eslint-formatter-codeframe": "^7.32.2",
     "eslint-formatter-table": "^7.32.1",
@@ -32,16 +35,16 @@
     "eslint-plugin-deprecation": "^3.0.0",
     "gzip-size": "^7.0.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.6.2",
-    "stylelint": "^16.25.0",
+    "prettier": "^3.7.4",
+    "stylelint": "^16.26.1",
     "stylelint-config-idiomatic-order": "^10.0.0",
     "stylelint-config-standard-scss": "^16.0.0",
     "stylelint-no-unsupported-browser-features": "^8.0.5",
     "stylelint-prettier": "^5.0.3",
     "ts-node": "https://asozial.beer/ts-node-241116.tgz",
-    "type-fest": "^5.0.1",
-    "typescript": "6.0.0-dev.20250901",
-    "typescript-eslint": "^8.46.2",
+    "type-fest": "^5.3.1",
+    "typescript": "6.0.0-dev.20251201",
+    "typescript-eslint": "^8.50.1",
     "typescript-eslint-language-service": "^5.0.5"
   },
   "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd",
@@ -52,7 +55,7 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^24.11.0",
+      "version": "^24.12.0",
       "onFail": "download"
     },
     "packageManager": {
@@ -62,7 +65,9 @@
   },
   "pnpm": {
     "overrides": {
-      "webpack@4": "5"
+      "webpack@4": "5",
+      "electron>@types/node": "*",
+      "@electron/get>semver": "7"
     },
     "patchedDependencies": {
       "core-js-builder": "patches/core-js-builder.patch",
@@ -70,6 +75,8 @@
     },
     "onlyBuiltDependencies": [
       "core-js",
+      "electron",
+      "electron-chromedriver",
       "esbuild"
     ]
   }
