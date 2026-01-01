@@ -16,8 +16,7 @@
 from __future__ import annotations
 
 import gzip
-
-import zstandard
+import sys
 
 from an_website import DIR as ROOT_DIR
 from an_website.utils.fix_static_path_impl import recurse_directory
@@ -29,11 +28,19 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
     fetch,
 )
 
+if sys.version_info >= (3, 14):
+    from compression import zstd
+else:
+    from backports import zstd
+
+
 STATIC_DIR = ROOT_DIR / "static"
 CACHE_CONTROL = f"public,immutable,max-age={86400 * 365 * 10}"
 
 
-async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811
+async def test_well_known(
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+) -> None:
     """Test the /.well-known handler."""
     assert_valid_response(
         await fetch("/.well-known/test-file"),
@@ -43,7 +50,9 @@ async def test_well_known(fetch: FetchCallable) -> None:  # noqa: F811
     )
 
 
-async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
+async def test_openmoji(
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+) -> None:
     """Test requesting an OpenMoji svg."""
     response = assert_valid_response(
         await fetch("/static/openmoji/svg/1FAE9.svg?v=16.0.0"),
@@ -64,9 +73,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
         if encoding == "gzip":
             assert response.body == gzip.decompress(compressed_response.body)
         if encoding == "zstd":
-            assert response.body == zstandard.decompress(
-                compressed_response.body
-            )
+            assert response.body == zstd.decompress(compressed_response.body)
 
     part_response = assert_valid_response(
         await fetch(
@@ -129,7 +136,7 @@ async def test_openmoji(fetch: FetchCallable) -> None:  # noqa: F811
 
 
 async def test_static_file_compression(
-    fetch: FetchCallable,  # noqa: F811
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
 ) -> None:
     """Test fetching static files."""
     file_count, gzip_count, zstd_count = 0, 0, 0
@@ -189,7 +196,7 @@ async def test_static_file_compression(
                 decompressed_body = gzip.decompress(body)
             elif encoding == "zstd":
                 assert zstd_file
-                decompressed_body = zstandard.decompress(body)
+                decompressed_body = zstd.decompress(body)
             else:
                 raise AssertionError(f"Unknown encoding {encoding}")
 
@@ -201,7 +208,7 @@ async def test_static_file_compression(
 
 
 async def test_invalid_paths(
-    fetch: FetchCallable,  # noqa: F811
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
 ) -> None:
     """Test various different invalid paths."""
     response = await fetch("/static/humans.txt/")
@@ -220,7 +227,7 @@ async def test_invalid_paths(
 
 
 async def test_invalid_range(
-    fetch: FetchCallable,  # noqa: F811
+    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
 ) -> None:
     """Test invalid range requests."""
     for encoding in ("identity", "gzip", "zstd"):

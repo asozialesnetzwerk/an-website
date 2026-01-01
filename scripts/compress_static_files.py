@@ -110,14 +110,14 @@ class ZstdFileCompressor(FileCompressor):
     @override
     def compress_bytes(self, data: bytes) -> Iterable[bytes]:
         """Compress bytes."""
-        # pylint: disable-next=import-outside-toplevel
-        from zstandard import ZstdCompressionParameters, ZstdCompressor
+        if sys.version_info >= (3, 14):
+            # pylint: disable-next=import-outside-toplevel
+            from compression import zstd
+        else:
+            # pylint: disable-next=import-outside-toplevel
+            from backports import zstd
 
-        params = ZstdCompressionParameters.from_level(
-            22, source_size=len(data), threads=-1, write_checksum=1
-        )
-
-        yield ZstdCompressor(compression_params=params).compress(data)
+        yield zstd.compress(data, level=22)
 
     @classmethod
     @override
@@ -130,12 +130,14 @@ class ZstdFileCompressor(FileCompressor):
 
     def get_missing_dependencies(self) -> Iterable[str]:
         """Get the missing dependencies."""
+        if sys.version_info >= (3, 14):
+            return
         try:
-            # pylint: disable-next=import-outside-toplevel,unused-import
-            import zstandard  # noqa: F401
+            # pylint: disable-next=import-outside-toplevel
+            from backports import zstd as _  # noqa: F401
         except ModuleNotFoundError as exc:
-            assert exc.name == "zstandard"
-            yield "zstandard"
+            assert exc.name in {"backports", "zstd"}, f"{exc.name}"
+            yield "backports.zstd"
 
 
 def compress_dir(

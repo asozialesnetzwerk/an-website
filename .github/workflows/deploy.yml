@@ -291,7 +291,7 @@ jobs:
       - name: Install requirements
         run: pip install . && pip uninstall -y an-website
       - name: Install stuff needed for the tests
-        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine zstandard
+        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine "backports.zstd; python_version < '3.14'"
       # - name: Run pytest with -Xdev
       #   run: python3 -Xdev -Xwarn_default_encoding -m pytest
       - name: Run pytest
@@ -622,7 +622,7 @@ jobs:
           name: oci-image
       - name: Run tests
         timeout-minutes: 20
-        run: sudo podman run --network=host -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine zstandard && /venv/bin/pytest --verbose /tests"
+        run: sudo podman run --network=host -t -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -P '^pytest-(?!cov)' /pip-constraints.txt | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
 
   push-oci-image:
     name: Push OCI image

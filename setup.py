@@ -121,7 +121,12 @@ if path("pip-constraints.txt").exists() and (BUILDING or VERSION):
                 .read_text("UTF-8")
                 .splitlines()
                 if line.startswith(
-                    ("pytest", "html5lib==", "time-machine==", "zstandard==")
+                    (
+                        "pytest",
+                        "html5lib==",
+                        "time-machine==",
+                        "backports.zstd==",
+                    )
                 )
             )
         )

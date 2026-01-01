@@ -237,6 +237,7 @@ class _RequestHandler(tornado.web.RequestHandler):
 
     @cached_property
     def now_utc(self) -> datetime:
+        """Get the current time in the correct timezone."""
         return datetime.fromtimestamp(
             self.request._start_time,  # pylint: disable=protected-access
             tz=timezone.utc,

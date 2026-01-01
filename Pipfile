@@ -52,6 +52,7 @@ uvloop = "<2"
 
 [dev-packages]
 autoflake = "==2.*"
+"backports.zstd" = "<2"
 bandit = {version = "==1.*", extras = ["toml"]}
 black = {git = "git+https://github.com/psf/black.git", ref = "9c239d26c1f0de33a067faaef4a1e330df435cc6"}
 build = "<2"
@@ -98,4 +99,3 @@ types-redis = "==4.*"
 types-regex = "==2025.9.1.*"
 types-setuptools = "==80.*"
 zopflipy = "==1.*"
-zstandard = "<2"
