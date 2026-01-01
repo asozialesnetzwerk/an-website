@@ -43,7 +43,7 @@ EMOJIS_NO_FLAGS: Final[tuple[str, ...]] = tuple(
     if ord(emoji[0]) not in range(0x1F1E6, 0x1F200)
 )
 
-MAX_MESSAGE_SAVE_COUNT: Final = 100
+MAX_MESSAGE_SAVE_COUNT: Final = 200
 MAX_MESSAGE_LENGTH: Final = 20
 REDIS_CHANNEL: Final = f"{NAME}:emoji_chat_channel"
 

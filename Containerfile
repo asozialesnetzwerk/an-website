@@ -1,7 +1,7 @@
-# syntax=docker.io/docker/dockerfile:1.18
+# syntax=docker.io/docker/dockerfile:1.20
 # check=error=true;experimental=InvalidDefinitionDescription
 
-ARG BASE=docker.io/library/python:3.13-slim-trixie
+ARG BASE=docker.io/library/python:3.14-slim-trixie
 
 FROM $BASE AS builder
 RUN set -eux \
@@ -27,7 +27,7 @@ RUN /venv/bin/pip install --no-deps .
 FROM $BASE
 RUN set -eux \
  && apt-get update \
- && apt-get install -y --no-install-recommends curl libcurl3t64-gnutls libjxl0.11 \
+ && apt-get install -y --no-install-recommends curl libcurl3t64-gnutls \
  && rm -fr /var/lib/apt/lists/* \
  && curl -sSfLo uwufetch_2.1-linux.tar.gz https://github.com/TheDarkBug/uwufetch/releases/download/2.1/uwufetch_2.1-linux.tar.gz \
  && apt-get purge -y --autoremove curl \
