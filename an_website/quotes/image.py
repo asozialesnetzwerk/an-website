@@ -112,7 +112,7 @@ def load_png(filename: str) -> Image.Image:
     """Load a PNG image into memory."""
     with (DIR / "files" / f"{filename}.png").open("rb") as file:  # noqa: SIM117
         with Image.open(file, formats=("PNG",)) as image:
-            return image.copy()  # type: ignore[no-any-return]
+            return image.copy()
 
 
 BACKGROUND_IMAGE: Final = load_png("bg")
