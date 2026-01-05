@@ -25,6 +25,7 @@ import textwrap
 import time
 from collections import ChainMap
 from collections.abc import Iterable, Mapping, Set
+from itertools import pairwise
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
@@ -62,6 +63,7 @@ _FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
 
 FONT: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=50)
 FONT_SMALLER: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=44)
+FONT_SMALLEST: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=32)
 HOST_NAME_FONT: Final = ImageFont.truetype(
     font=io.BytesIO(_FONT_BYTES), size=23
 )
@@ -127,7 +129,7 @@ def get_lines_and_max_height(
     font: ImageFont.FreeTypeFont,
 ) -> tuple[list[str], int]:
     """Get the lines of the text and the max line height."""
-    column_count = 46
+    column_count = 80
     lines: list[str] = []
 
     max_line_length: float = max_width + 1
@@ -215,6 +217,8 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     )
     draw = ImageDraw.Draw(image, mode="RGB")
 
+    max_width = IMAGE_WIDTH if font is FONT_SMALLEST else QUOTE_MAX_WIDTH
+
     # draw quote
     quote_str = f"»{quote}«"
     width, max_line_height = font.getbbox(quote_str)[2:]
@@ -222,7 +226,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         quote_lines = [quote_str]
     else:
         quote_lines, max_line_height = get_lines_and_max_height(
-            quote_str, QUOTE_MAX_WIDTH, font
+            quote_str, max_width, font
         )
     if len(quote_lines) < 3:
         y_start = 175
@@ -236,11 +240,11 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         draw,
         quote_lines,
         y_start,
-        QUOTE_MAX_WIDTH,
+        max_width,
         int(max_line_height),
         font,
-        0,
-        1 if file_type == "4-color-gif" else 0,
+        padding_left=0,
+        stroke_width=1 if file_type == "4-color-gif" else 0,
     )
 
     # draw author
@@ -261,21 +265,29 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
         AUTHOR_MAX_WIDTH,
         int(max_line_height),
         font,
-        10,
-        1 if file_type == "4-color-gif" else 0,
+        padding_left=10,
+        stroke_width=1 if file_type == "4-color-gif" else 0,
     )
 
-    if y_text > IMAGE_HEIGHT and font is FONT:
-        LOGGER.info("Using smaller font for quote %s", source)
-        return create_image(
-            quote,
-            author,
-            rating,
-            source,
-            file_type,
-            FONT_SMALLER,
-            wq_id=wq_id,
-        )
+    if y_text > IMAGE_HEIGHT:
+        for prev, smaller in pairwise((FONT, FONT_SMALLER, FONT_SMALLEST)):
+            if font is not prev:
+                continue
+
+            LOGGER.info(
+                "Using smaller font (%s) for quote %s", smaller.size, source
+            )
+            return create_image(
+                quote,
+                author,
+                rating,
+                source,
+                file_type,
+                smaller,
+                wq_id=wq_id,
+            )
+
+        LOGGER.error("Quote doesn't fit on the image %r", quote)
 
     # draw rating
     if rating:
