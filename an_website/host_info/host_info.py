@@ -166,6 +166,6 @@ class UwUHostInfo(HTMLRequestHandler):
         await self.render(
             "ansi2html.html",
             ansi=uwufetch.split("\n\n"),
-            powered_by="https://github.com/TheDarkBug/uwufetch",
+            powered_by="https://github.com/ad-oliviero/uwufetch",
             powered_by_name="UwUFetch",
         )
