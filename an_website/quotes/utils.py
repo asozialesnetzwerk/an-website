@@ -393,10 +393,7 @@ async def make_api_request(
         )
         raise HTTPError(
             normed_response_code if normed_response_code in {400, 404} else 503,
-            reason=(
-                f"{API_URL}/{endpoint} returned: "
-                f"{response.code} {response.reason}"
-            ),
+            reason=f"{url} returned: {response.code} {response.reason}",
         )
     return json.loads(response.body)
 
@@ -601,7 +598,7 @@ async def update_cache_periodically(
             await asyncio.sleep(60 * 60)
 
 
-async def update_cache(
+async def update_cache(  # pylint: disable=too-complex
     app: Application,
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,
@@ -612,50 +609,63 @@ async def update_cache(
     redis: Redis[str] = cast("Redis[str]", app.settings.get("REDIS"))
     prefix: str = app.settings.get("REDIS_PREFIX", NAME).removesuffix("-dev")
     redis_available = EVENT_REDIS.is_set()
+    exceptions: list[Exception] = []
 
     if update_wrong_quotes:
-        await parse_list_of_quote_data(
-            wq_data := await make_api_request(
-                "wrongquotes",
-                entity_should_exist=True,
-                request_timeout=100,
-            ),
-            parse_wrong_quote,
-        )
-        if wq_data and redis_available:
-            await redis.setex(
-                f"{prefix}:cached-quote-data:wrongquotes",
-                60 * 60 * 24 * 30,
-                json.dumps(wq_data, option=ORJSON_OPTIONS),
+        try:
+            await parse_list_of_quote_data(
+                wq_data := await make_api_request(
+                    "wrongquotes",
+                    entity_should_exist=True,
+                    request_timeout=100,
+                ),
+                parse_wrong_quote,
             )
+            if wq_data and redis_available:
+                await redis.setex(
+                    f"{prefix}:cached-quote-data:wrongquotes",
+                    60 * 60 * 24 * 30,
+                    json.dumps(wq_data, option=ORJSON_OPTIONS),
+                )
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            exceptions.append(err)
 
     if update_quotes:
-        await parse_list_of_quote_data(
-            quotes_data := await make_api_request(
-                "quotes", entity_should_exist=True
-            ),
-            parse_quote,
-        )
-        if quotes_data and redis_available:
-            await redis.setex(
-                f"{prefix}:cached-quote-data:quotes",
-                60 * 60 * 24 * 30,
-                json.dumps(quotes_data, option=ORJSON_OPTIONS),
+        try:
+            await parse_list_of_quote_data(
+                quotes_data := await make_api_request(
+                    "quotes", entity_should_exist=True
+                ),
+                parse_quote,
             )
+            if quotes_data and redis_available:
+                await redis.setex(
+                    f"{prefix}:cached-quote-data:quotes",
+                    60 * 60 * 24 * 30,
+                    json.dumps(quotes_data, option=ORJSON_OPTIONS),
+                )
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            exceptions.append(err)
 
     if update_authors:
-        await parse_list_of_quote_data(
-            authors_data := await make_api_request(
-                "authors", entity_should_exist=True
-            ),
-            parse_author,
-        )
-        if authors_data and redis_available:
-            await redis.setex(
-                f"{prefix}:cached-quote-data:authors",
-                60 * 60 * 24 * 30,
-                json.dumps(authors_data, option=ORJSON_OPTIONS),
+        try:
+            await parse_list_of_quote_data(
+                authors_data := await make_api_request(
+                    "authors", entity_should_exist=True
+                ),
+                parse_author,
             )
+            if authors_data and redis_available:
+                await redis.setex(
+                    f"{prefix}:cached-quote-data:authors",
+                    60 * 60 * 24 * 30,
+                    json.dumps(authors_data, option=ORJSON_OPTIONS),
+                )
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            exceptions.append(err)
+
+    if exceptions:
+        raise ExceptionGroup("Cache could not be updated", exceptions)
 
     if (
         redis_available
