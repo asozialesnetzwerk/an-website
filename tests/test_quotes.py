@@ -319,7 +319,11 @@ async def test_quote_image_handlers(
                     assert img.getpixel((0, 0)) == (0, 0, 0), f"{name}"
                 if ext == "qoi":
                     img2 = qoi_rs.decode_pillow(image4)
-                    assert img.get_flattened_data() == img2.get_flattened_data()
+                    assert (
+                        img.get_flattened_data()
+                        == img2.get_flattened_data()
+                        == qoi_rs.decode_pillow(qoi_rs.encode_pillow(img2)).get_flattened_data()
+                    )
                     img2.close()
                     qimg = qoi_rs.decode(image4)
                     assert qimg.mode == "RGB"
