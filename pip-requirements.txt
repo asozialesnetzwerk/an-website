@@ -1,7 +1,7 @@
 accept-types==0.4.1
 aiodns==3.6.1; python_version >= '3.9'
 aiohappyeyeballs==2.6.1; python_version >= '3.9'
-aiohttp[speedups]==3.13.2; python_version >= '3.9'
+aiohttp[speedups]==3.13.3; python_version >= '3.9'
 aiosignal==1.4.0; python_version >= '3.9'
 ansi2html==1.9.2; python_version >= '3.7'
 attrs==25.4.0; python_version >= '3.9'
@@ -49,7 +49,7 @@ python-dateutil==2.9.0.post0; python_version >= '2.7' and python_version not in 
 python-geoip-geolite2-yplan==2019.1224
 python-geoip-yplan==1.2
 pyyaml==6.0.3; python_version >= '3.8'
-qoi-rs[pillow]==4.0.2; python_version >= '3.12'
+qoi-rs[pillow]==4.0.3; python_version >= '3.12'
 rapidfuzz==3.14.3; python_version >= '3.10'
 redis[hiredis]==5.3.1; python_version >= '3.8'
 regex==2025.9.1; python_version >= '3.9'
@@ -61,7 +61,7 @@ typed-stream==0.155.0; python_version >= '3.10'
 typing-extensions==4.15.0; python_version >= '3.9'
 tzdata==2025.3; python_version >= '2'
 ultradict==0.0.6; python_version >= '3.8'
-urllib3==2.6.2; python_version >= '3.9'
+urllib3==2.6.3; python_version >= '3.9'
 uvloop==0.22.1; python_full_version >= '3.8.1'
 wrapt==2.0.1; python_version >= '3.8'
 yarl==1.22.0; python_version >= '3.9'
