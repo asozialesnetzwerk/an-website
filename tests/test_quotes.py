@@ -322,7 +322,9 @@ async def test_quote_image_handlers(
                     assert (
                         img.get_flattened_data()
                         == img2.get_flattened_data()
-                        == qoi_rs.decode_pillow(qoi_rs.encode_pillow(img2)).get_flattened_data()
+                        == qoi_rs.decode_pillow(
+                            qoi_rs.encode_pillow(img2)
+                        ).get_flattened_data()
                     )
                     img2.close()
                     qimg = qoi_rs.decode(image4)
