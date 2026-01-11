@@ -32,7 +32,6 @@ from collections.abc import (
 )
 from dataclasses import dataclass
 from datetime import date
-from multiprocessing import Value
 from typing import Any, Final, Literal, cast
 from urllib.parse import urlencode
 
@@ -80,9 +79,6 @@ AUTHORS_CACHE: Final[UltraDictType[int, Author]] = UltraDict(
 WRONG_QUOTES_CACHE: Final[UltraDictType[tuple[int, int], WrongQuote]] = (
     UltraDict(buffer_size=1024**2, serializer=dill)
 )
-
-MAX_QUOTES_ID = Value("Q", 0)
-MAX_AUTHORS_ID = Value("Q", 0)
 
 
 @dataclass(init=False, slots=True)
@@ -437,7 +433,6 @@ def parse_author(json_data: Mapping[str, Any]) -> Author:
         if author is None:
             # pylint: disable-next=too-many-function-args
             author = Author(id_, name, None)
-            MAX_AUTHORS_ID.value = max(MAX_AUTHORS_ID.value, id_)
         elif author.name != name:
             author.name = name
             author.info = None  # reset info
@@ -474,7 +469,6 @@ def parse_quote(
         if quote is None:  # new quote
             # pylint: disable=too-many-function-args
             quote = Quote(quote_id, quote_str, author.id)
-            MAX_QUOTES_ID.value = max(MAX_QUOTES_ID.value, quote.id)
         else:  # quote was already saved
             quote.quote = quote_str
             quote.author_id = author.id
@@ -795,12 +789,12 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int | None:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.randint(1, MAX_QUOTES_ID.value)  # nosec: B311
+    return random.choice(tuple(QUOTES_CACHE))
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.randint(1, MAX_AUTHORS_ID.value)  # nosec: B311
+    return random.choice(tuple(AUTHORS_CACHE))
 
 
 def get_random_id() -> tuple[int, int]:

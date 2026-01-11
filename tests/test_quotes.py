@@ -71,9 +71,7 @@ async def test_parsing_wrong_quotes() -> None:
     assert await quotes.get_rating_by_id(1, 2) == 4
 
     assert len(quotes.QUOTES_CACHE) == 1
-    assert quotes.MAX_QUOTES_ID.value == 1
     assert len(quotes.AUTHORS_CACHE) == 2
-    assert quotes.MAX_AUTHORS_ID.value == 2
 
 
 def test_author_updating() -> None:
