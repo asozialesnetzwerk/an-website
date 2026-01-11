@@ -91,6 +91,12 @@ class QuotesObjBase(abc.ABC):
 
     id: int
 
+    @classmethod
+    @abc.abstractmethod
+    def fetch_all_endpoint(cls) -> Literal["quotes", "authors", "wrongquotes"]:
+        """Endpoint to fetch all of this type."""
+        raise NotImplementedError
+
     @abc.abstractmethod
     async def fetch_new_data(self) -> QuotesObjBase:
         """Fetch new data from the API."""
@@ -118,6 +124,11 @@ class Author(QuotesObjBase):
     def __str__(self) -> str:
         """Return the name of the author."""
         return self.name
+
+    @classmethod
+    def fetch_all_endpoint(cls) -> Literal["authors"]:
+        """Endpoint to fetch all authors."""
+        return "authors"
 
     async def fetch_new_data(self) -> Author:
         """Fetch new data from the API."""
@@ -165,6 +176,11 @@ class Quote(QuotesObjBase):
         """Get the corresponding author object."""
         return AUTHORS_CACHE[self.author_id]
 
+    @classmethod
+    def fetch_all_endpoint(cls) -> Literal["quotes"]:
+        """Endpoint to fetch all quotes."""
+        return "quotes"
+
     async def fetch_new_data(self) -> Quote:
         """Fetch new data from the API."""
         return parse_quote(
@@ -208,6 +224,11 @@ class WrongQuote(QuotesObjBase):
     def author(self) -> Author:
         """Get the corresponding author object."""
         return AUTHORS_CACHE[self.author_id]
+
+    @classmethod
+    def fetch_all_endpoint(cls) -> Literal["wrongquotes"]:
+        """Endpoint to fetch all wrong quotes."""
+        return "wrongquotes"
 
     async def fetch_new_data(self) -> WrongQuote:
         """Fetch new data from the API."""
@@ -504,10 +525,10 @@ def parse_wrong_quote(
     return wrong_quote
 
 
-async def parse_list_of_quote_data(
+async def parse_list_of_quote_data[Q: QuotesObjBase](  # noqa: D103
     json_list: str | Iterable[Mapping[str, Any]],
-    parse_fun: Callable[[Mapping[str, Any]], QuotesObjBase],
-) -> tuple[QuotesObjBase, ...]:
+    parse_fun: Callable[[Mapping[str, Any]], Q],
+) -> tuple[Q, ...]:
     """Parse a list of quote data."""
     if not json_list:
         return ()
@@ -598,7 +619,7 @@ async def update_cache_periodically(
             await asyncio.sleep(60 * 60)
 
 
-async def update_cache(  # pylint: disable=too-complex
+async def update_cache(  # pylint: disable=too-complex,too-many-branches,too-many-locals,too-many-statements  # noqa: B950,C901
     app: Application,
     update_wrong_quotes: bool = True,
     update_quotes: bool = True,
@@ -613,56 +634,64 @@ async def update_cache(  # pylint: disable=too-complex
 
     if update_wrong_quotes:
         try:
-            await parse_list_of_quote_data(
-                wq_data := await make_api_request(
-                    "wrongquotes",
-                    entity_should_exist=True,
-                    request_timeout=100,
-                ),
-                parse_wrong_quote,
-            )
-            if wq_data and redis_available:
-                await redis.setex(
-                    f"{prefix}:cached-quote-data:wrongquotes",
-                    60 * 60 * 24 * 30,
-                    json.dumps(wq_data, option=ORJSON_OPTIONS),
-                )
+            await _update_cache(WrongQuote, parse_wrong_quote, redis, prefix)
         except Exception as err:  # pylint: disable=broad-exception-caught
             exceptions.append(err)
+
+    deleted_quotes: set[int] = set()
 
     if update_quotes:
         try:
-            await parse_list_of_quote_data(
-                quotes_data := await make_api_request(
-                    "quotes", entity_should_exist=True
-                ),
-                parse_quote,
-            )
-            if quotes_data and redis_available:
-                await redis.setex(
-                    f"{prefix}:cached-quote-data:quotes",
-                    60 * 60 * 24 * 30,
-                    json.dumps(quotes_data, option=ORJSON_OPTIONS),
-                )
+            quotes = await _update_cache(Quote, parse_quote, redis, prefix)
         except Exception as err:  # pylint: disable=broad-exception-caught
             exceptions.append(err)
+        else:
+            with QUOTES_CACHE.lock:
+                all_quote_ids = {q.id for q in quotes}
+                max_quote_id = max(all_quote_ids)
+                old_ids_in_cache = {
+                    _id for _id in QUOTES_CACHE if _id <= max_quote_id
+                }
+                deleted_quotes = old_ids_in_cache - all_quote_ids
+                for _id in deleted_quotes:
+                    del QUOTES_CACHE[_id]
+
+                if len(QUOTES_CACHE) < len(quotes):
+                    LOGGER.error("Cache has less elements than just fetched")
+
+    deleted_authors: set[int] = set()
 
     if update_authors:
         try:
-            await parse_list_of_quote_data(
-                authors_data := await make_api_request(
-                    "authors", entity_should_exist=True
-                ),
-                parse_author,
-            )
-            if authors_data and redis_available:
-                await redis.setex(
-                    f"{prefix}:cached-quote-data:authors",
-                    60 * 60 * 24 * 30,
-                    json.dumps(authors_data, option=ORJSON_OPTIONS),
-                )
+            authors = await _update_cache(Author, parse_author, redis, prefix)
         except Exception as err:  # pylint: disable=broad-exception-caught
             exceptions.append(err)
+        else:
+            with AUTHORS_CACHE.lock:
+                all_author_ids = {q.id for q in authors}
+                max_author_id = max(all_author_ids)
+                old_ids_in_cache = {
+                    _id for _id in AUTHORS_CACHE if _id <= max_author_id
+                }
+                deleted_authors = old_ids_in_cache - all_author_ids
+                for _id in deleted_authors:
+                    del AUTHORS_CACHE[_id]
+
+                if len(AUTHORS_CACHE) < len(authors):
+                    LOGGER.error("Cache has less elements than just fetched")
+
+    if deleted_authors or deleted_quotes:
+        deleted_wrong_quotes: set[tuple[int, int]] = set()
+        with WRONG_QUOTES_CACHE.lock:
+            for qid, aid in tuple(WRONG_QUOTES_CACHE):
+                if qid in deleted_quotes or aid in deleted_authors:
+                    deleted_wrong_quotes.add((qid, aid))
+                    del WRONG_QUOTES_CACHE[(qid, aid)]
+        LOGGER.warning(
+            "Deleted %d wrong quotes: %r",
+            len(deleted_wrong_quotes),
+            deleted_wrong_quotes,
+        )
 
     if exceptions:
         raise ExceptionGroup("Cache could not be updated", exceptions)
@@ -678,6 +707,29 @@ async def update_cache(  # pylint: disable=too-complex
             60 * 60 * 24 * 30,
             int(time.time()),
         )
+
+
+async def _update_cache[Q: QuotesObjBase](
+    klass: type[Q],
+    parse: Callable[[Mapping[str, Any]], Q],
+    redis: Redis[str],
+    redis_prefix: str,
+) -> tuple[Q, ...]:
+    parsed_data = await parse_list_of_quote_data(
+        wq_data := await make_api_request(
+            klass.fetch_all_endpoint(),
+            entity_should_exist=True,
+            request_timeout=100,
+        ),
+        parse,
+    )
+    if wq_data and EVENT_REDIS.is_set():
+        await redis.setex(
+            f"{redis_prefix}:cached-quote-data:{klass.fetch_all_endpoint()}",
+            60 * 60 * 24 * 30,
+            json.dumps(wq_data, option=ORJSON_OPTIONS),
+        )
+    return parsed_data
 
 
 async def get_author_by_id(author_id: int) -> Author:
