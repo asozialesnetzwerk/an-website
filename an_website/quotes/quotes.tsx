@@ -21,7 +21,7 @@ function startQuotes() {
     const thisQuoteId = [
         (getElementById("top")!).getAttribute("quote-id")!,
     ];
-    const nextQuoteId = [nextButton.getAttribute("quote-id")!];
+    const nextQuoteId: [string] = [nextButton.getAttribute("quote-id")!];
     const params = location.search;
 
     const keys = (() => {
@@ -190,9 +190,19 @@ function startQuotes() {
 
     nextButton.onclick = () =>
         get(
-            `/api/zitate/${nextQuoteId[0]}`,
+            `/api/zitate/${nextQuoteId[0]}`.replace(/\/$/, ""),
             params,
             (data: POP_STATE_API_DATA) => {
+                if (![200, 420, 429, undefined].includes(data.status)) {
+                    if (nextQuoteId[0] === "") {
+                        alert("Zitat konnte nicht abgerufen werden.");
+                    } else {
+                        // Set nextQuoteId to empty string to get a random next quote
+                        nextQuoteId[0] = "";
+                        nextButton.click();
+                    }
+                    return;
+                }
                 if (!handleData(data)) {
                     return;
                 }
