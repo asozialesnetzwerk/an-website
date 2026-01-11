@@ -756,7 +756,7 @@ async def get_quote_by_id(quote_id: int) -> Quote:
 
 async def get_wrong_quote(
     quote_id: int, author_id: int, use_cache: bool = True
-) -> WrongQuote:
+) -> WrongQuote | None:
     """Get a wrong quote with a quote id and an author id."""
     wrong_quote = WRONG_QUOTES_CACHE.get((quote_id, author_id))
     if wrong_quote:
@@ -783,12 +783,14 @@ async def get_wrong_quote(
     if result:
         return parse_wrong_quote(result[0])
 
-    raise HTTPError(404, reason="Falsches Zitat nicht gefunden")
+    return None
 
 
-async def get_rating_by_id(quote_id: int, author_id: int) -> int:
+async def get_rating_by_id(quote_id: int, author_id: int) -> int | None:
     """Get the rating of a wrong quote."""
-    return (await get_wrong_quote(quote_id, author_id)).rating
+    if wq := await get_wrong_quote(quote_id, author_id):
+        return wq.rating
+    return None
 
 
 def get_random_quote_id() -> int:

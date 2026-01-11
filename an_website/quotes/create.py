@@ -121,6 +121,14 @@ async def create_wrong_quote(
         quote.id, fake_author.id, use_cache=True
     )
 
+    if not wrong_quote:
+        LOGGER.error(
+            "%r and %r were just created, wronquote should exist.",
+            quote,
+            fake_author,
+        )
+        raise HTTPError()
+
     if wrong_quote.id == -1:
         result = await make_api_request(
             "wrongquotes",

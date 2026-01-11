@@ -127,7 +127,7 @@ class QuoteBaseHandler(QuoteReadyCheckHandler):
     next_id: tuple[int, int]
     rating_filter: RatingFilter
 
-    def future_callback(self, future: Future[WrongQuote]) -> None:
+    def future_callback(self, future: Future[WrongQuote | None]) -> None:
         """Discard the future and log the exception if one occured."""
         self.FUTURES.discard(future)
         if exc := future.exception():
@@ -296,6 +296,8 @@ class QuoteById(QuoteBaseHandler):
             in {"application/pdf", "application/vnd.ms-excel"}
         ):
             wrong_quote = await get_wrong_quote(int_quote_id, int(author_id))
+            if not wrong_quote:
+                raise HTTPError(404, reason="Falsches Zitat nicht gefunden")
             return await self.finish(
                 await asyncio.to_thread(
                     create_image,
@@ -435,9 +437,15 @@ class QuoteById(QuoteBaseHandler):
         )
 
     async def render_wrong_quote(
-        self, wrong_quote: WrongQuote, vote: int
+        self, wrong_quote: WrongQuote | None, vote: int
     ) -> None:
         """Render the page with the wrong_quote and this vote."""
+        if not wrong_quote:
+            # TODO: maybe show 404 inside of the quotes ui
+            self.set_status(404, reason="Zitat nicht gefunden")
+            self.write_error(404)
+            return
+
         if self.content_type in APIRequestHandler.POSSIBLE_CONTENT_TYPES:
             return await self.finish(
                 wrong_quote_to_json(
@@ -448,6 +456,7 @@ class QuoteById(QuoteBaseHandler):
                     self.get_bool_argument("full", False),
                 )
             )
+
         await self.render(
             "pages/quotes/quotes.html",
             wrong_quote=wrong_quote,
@@ -491,9 +500,11 @@ class QuoteAPIHandler(APIRequestHandler, QuoteById):
     LONG_PATH: ClassVar[str] = "/api/zitate/%d-%d"
 
     async def render_wrong_quote(
-        self, wrong_quote: WrongQuote, vote: int
+        self, wrong_quote: WrongQuote | None, vote: int
     ) -> None:
         """Return the relevant data for the quotes page as JSON."""
+        if not wrong_quote:
+            return await super().render_wrong_quote(wrong_quote, vote)
         if self.content_type == "text/plain":
             return await self.finish(str(wrong_quote))
         return await self.finish(

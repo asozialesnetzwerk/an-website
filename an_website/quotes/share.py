@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from urllib.parse import quote
 
+from tornado.web import HTTPError
+
 from .utils import QuoteReadyCheckHandler, get_wrong_quote
 
 
@@ -28,6 +30,8 @@ class ShareQuote(QuoteReadyCheckHandler):
     ) -> None:
         """Handle GET requests to the share page."""
         wrong_quote = await get_wrong_quote(int(quote_id), int(author_id))
+        if not wrong_quote:
+            raise HTTPError(404, reason="Falsches Zitat nicht gefunden")
         if head:
             return
         text = f"»{wrong_quote.quote.quote}«\n- {wrong_quote.author.name}"
