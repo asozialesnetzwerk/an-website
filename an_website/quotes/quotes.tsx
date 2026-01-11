@@ -21,7 +21,7 @@ function startQuotes() {
     const thisQuoteId = [
         (getElementById("top")!).getAttribute("quote-id")!,
     ];
-    const nextQuoteId = [nextButton.getAttribute("quote-id")!];
+    const nextQuoteId: [string] = [nextButton.getAttribute("quote-id")!];
     const params = location.search;
 
     const keys = (() => {
@@ -202,7 +202,12 @@ function startQuotes() {
                 history.pushState(data, "Falsche Zitate", data.url);
                 setLastLocation(data.url);
             },
-        );
+        ).catch((e: unknown) => {
+            console.error("Could not fetch quote:", e);
+            // Set nextQuoteId to empty string to get a random next quote
+            nextQuoteId[0] = "";
+            nextButton.click();
+        });
 
     const vote = (vote: string): Promise<void> =>
         post(
