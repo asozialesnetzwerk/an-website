@@ -125,8 +125,14 @@ class _RequestHandler(tornado.web.RequestHandler):
     ) -> None:
         request_ctx_var.set(self.request)
 
-        # pylint: disable=invalid-overridden-method
         self.now = await self.get_time()
+
+        if self.request.method in {"GET", "HEAD", "OPTIONS"} and (
+            "Content-Type" in self.request.headers
+            or "Content-Length" in self.request.headers
+            or self.request.body
+        ):
+            raise HTTPError(400, "Unexpected body.")
 
         return await super()._execute(transforms, *args, **kwargs)
 
