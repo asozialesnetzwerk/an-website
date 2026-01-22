@@ -44,7 +44,12 @@ from emoji import EMOJI_DATA
 from pillow_jxl import JpegXLImagePlugin  # noqa: F401
 from setproctitle import setthreadtitle
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
-from tornado.httputil import HTTPFile, HTTPHeaders, HTTPServerRequest
+from tornado.httputil import (
+    HTTPFile,
+    HTTPHeaders,
+    HTTPInputError,
+    HTTPServerRequest,
+)
 from tornado.log import gen_log
 from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
 
@@ -221,7 +226,7 @@ def patch_tornado_arguments() -> None:  # noqa: C901
             try:
                 spam = orjson.loads(body)
             except Exception as exc:  # pylint: disable=broad-except
-                gen_log.warning("Invalid JSON body: %s", exc)
+                raise HTTPInputError(f"Invalid JSON body: {exc}") from exc
             else:
                 if not isinstance(spam, dict):
                     return
@@ -240,7 +245,7 @@ def patch_tornado_arguments() -> None:  # noqa: C901
             try:
                 spam = yaml.safe_load(body)
             except Exception as exc:  # pylint: disable=broad-except
-                gen_log.warning("Invalid YAML body: %s", exc)
+                raise HTTPInputError(f"Invalid YAML body: {exc}") from exc
             else:
                 if not isinstance(spam, dict):
                     return

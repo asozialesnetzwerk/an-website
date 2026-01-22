@@ -577,3 +577,33 @@ async def test_error_code_pages(fetch: FetchCallable) -> None:  # noqa: F811
 async def test_405(fetch: FetchCallable) -> None:  # noqa: F811
     """DELETE is not supported."""
     assert_valid_html_response(await fetch("/", method="DELETE"), {405})
+
+
+async def test_invalid_body(fetch: FetchCallable) -> None:  # noqa: F811
+    """Invalid bodies should lead to 400 responses."""
+    assert_valid_html_response(
+        await fetch(
+            "/", method="GET", headers={"Content-Type": "application/json"}
+        ),
+        {400},
+    )
+
+    assert_valid_html_response(
+        await fetch(
+            "/settings",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body="",
+        ),
+        {400},
+    )
+
+    assert_valid_html_response(
+        await fetch(
+            "/settings",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body="{",
+        ),
+        {400},
+    )
