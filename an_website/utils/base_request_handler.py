@@ -124,6 +124,10 @@ class _RequestHandler(tornado.web.RequestHandler):
         self, transforms: list[OutputTransform], *args: bytes, **kwargs: bytes
     ) -> None:
         request_ctx_var.set(self.request)
+
+        # pylint: disable=invalid-overridden-method
+        self.now = await self.get_time()
+
         return await super()._execute(transforms, *args, **kwargs)
 
     # pylint: disable-next=protected-access
@@ -246,9 +250,6 @@ class _RequestHandler(tornado.web.RequestHandler):
     @override
     async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
-        # pylint: disable=invalid-overridden-method
-        self.now = await self.get_time()
-
         if crawler_secret := self.settings.get("CRAWLER_SECRET"):
             self.crawler = crawler_secret in self.request.headers.get(
                 "User-Agent", ""
