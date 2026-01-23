@@ -74,7 +74,6 @@ if TYPE_CHECKING:
 
 LOGGER: Final = logging.getLogger(__name__)
 
-# pylint: disable-next=consider-alternative-union-syntax
 type Handler = Union[
     tuple[str, type[RequestHandler]],
     tuple[str, type[RequestHandler], dict[str, Any]],

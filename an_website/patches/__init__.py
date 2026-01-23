@@ -225,16 +225,13 @@ def patch_tornado_arguments() -> None:  # noqa: C901
                 return
             try:
                 spam = orjson.loads(body)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 raise HTTPInputError(f"Invalid JSON body: {exc}") from exc
-            else:
-                if not isinstance(spam, dict):
-                    return
-                for key, value in spam.items():
-                    if value is not None:
-                        arguments.setdefault(key, []).append(
-                            ensure_bytes(value)
-                        )
+            if not isinstance(spam, dict):
+                return
+            for key, value in spam.items():
+                if value is not None:
+                    arguments.setdefault(key, []).append(ensure_bytes(value))
         elif content_type.startswith("application/yaml"):
             if headers and "Content-Encoding" in headers:
                 gen_log.warning(
@@ -244,16 +241,13 @@ def patch_tornado_arguments() -> None:  # noqa: C901
                 return
             try:
                 spam = yaml.safe_load(body)
-            except Exception as exc:  # pylint: disable=broad-except
+            except Exception as exc:
                 raise HTTPInputError(f"Invalid YAML body: {exc}") from exc
-            else:
-                if not isinstance(spam, dict):
-                    return
-                for key, value in spam.items():
-                    if value is not None:
-                        arguments.setdefault(key, []).append(
-                            ensure_bytes(value)
-                        )
+            if not isinstance(spam, dict):
+                return
+            for key, value in spam.items():
+                if value is not None:
+                    arguments.setdefault(key, []).append(ensure_bytes(value))
         else:
             _(content_type, body, arguments, files, headers)
 

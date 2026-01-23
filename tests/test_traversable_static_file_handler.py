@@ -39,7 +39,7 @@ CACHE_CONTROL = f"public,immutable,max-age={86400 * 365 * 10}"
 
 
 async def test_well_known(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+    fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test the /.well-known handler."""
     assert_valid_response(
@@ -51,7 +51,7 @@ async def test_well_known(
 
 
 async def test_openmoji(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+    fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test requesting an OpenMoji svg."""
     response = assert_valid_response(
@@ -136,7 +136,7 @@ async def test_openmoji(
 
 
 async def test_static_file_compression(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+    fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test fetching static files."""
     file_count, gzip_count, zstd_count = 0, 0, 0
@@ -208,7 +208,7 @@ async def test_static_file_compression(
 
 
 async def test_invalid_paths(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+    fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test various different invalid paths."""
     response = await fetch("/static/humans.txt/")
@@ -227,7 +227,7 @@ async def test_invalid_paths(
 
 
 async def test_invalid_range(
-    fetch: FetchCallable,  # pylint: disable=redefined-outer-name # noqa: F811
+    fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test invalid range requests."""
     for encoding in ("identity", "gzip", "zstd"):

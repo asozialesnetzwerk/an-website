@@ -125,7 +125,6 @@ class _RequestHandler(tornado.web.RequestHandler):
     ) -> None:
         request_ctx_var.set(self.request)
 
-        # pylint: disable=invalid-overridden-method
         self.now = await self.get_time()
 
         return await super()._execute(transforms, *args, **kwargs)
@@ -247,7 +246,7 @@ class _RequestHandler(tornado.web.RequestHandler):
             tz=timezone.utc,
         )
 
-    @override
+    @override  # pylint: disable-next=invalid-overridden-method
     async def prepare(self) -> None:
         """Check authorization and call self.ratelimit()."""
         if crawler_secret := self.settings.get("CRAWLER_SECRET"):
