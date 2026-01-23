@@ -120,7 +120,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.14
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Install Flake8
@@ -139,7 +139,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.14
           cache: pip
           cache-dependency-path: Pipfile.lock
       - name: Cache
@@ -153,7 +153,7 @@ jobs:
       - name: Install requirements
         run: pip install -r pip-requirements.txt
       - name: Install Pylint + stuff required for checking the tests and setup.py
-        run: pip install -c pip-constraints.txt cryptography dulwich html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers zopflipy backports.zstd
+        run: pip install -c pip-constraints.txt cryptography dulwich html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers zopflipy
       - name: Run Pylint
         run: pylint -r y -d fixme .
         env:
