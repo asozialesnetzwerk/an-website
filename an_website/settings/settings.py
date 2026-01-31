@@ -95,7 +95,7 @@ class SettingsPage(HTMLRequestHandler):
                 self.request.full_url(),
                 include_protocol_and_host=True,
                 query_args={
-                    "access_token": None,
+                    "access_token": None,  # nosec B105:hardcoded_password_string
                     "advanced_settings": None,
                     "save_in_cookie": None,
                     **dict.fromkeys(self.user_settings.iter_option_names()),

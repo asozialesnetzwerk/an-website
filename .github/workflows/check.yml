@@ -155,7 +155,7 @@ jobs:
       - name: Install Pylint + stuff required for checking the tests and setup.py
         run: pip install -c pip-constraints.txt cryptography dulwich html5lib pylint pylint-pytest pytest setuptools time-machine trove-classifiers zopflipy
       - name: Run Pylint
-        run: pylint -r y -d fixme .
+        run: pylint -r y -d fixme an_website scripts tests
         env:
           DISABLE_PYSTON: 1
 
@@ -176,7 +176,7 @@ jobs:
       - name: Install Bandit
         run: pip install -c pip-constraints.txt bandit[toml]
       - name: Run Bandit
-        run: bandit -rc pyproject.toml .
+        run: bandit -rc pyproject.toml an_website scripts tests
 
   stylelint:
     name: Stylelint

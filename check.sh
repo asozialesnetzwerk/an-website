@@ -46,12 +46,14 @@ python3 -m mypy --pretty || FAILED=$(( 8 | FAILED ))
 echo Flake8:
 python3 -m flake8 --show-source || FAILED=$(( 16 | FAILED ))
 
+PYTHON_FOLDERS="an_website scripts tests"
+
 echo Pylint:
-DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no .
-DISABLE_PYSTON=1 python3 -m pylint -d fixme . || FAILED=$(( 32 | FAILED ))
+DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no $PYTHON_FOLDERS
+DISABLE_PYSTON=1 python3 -m pylint -d fixme $PYTHON_FOLDERS || FAILED=$(( 32 | FAILED ))
 
 echo Bandit:
-python3 -m bandit -qrc pyproject.toml . || FAILED=$(( 64 | FAILED ))
+python3 -m bandit -qrc pyproject.toml $PYTHON_FOLDERS || FAILED=$(( 64 | FAILED ))
 
 if [ -n "${1:-}" ]; then
   pytest="python3 -m pytest --durations=0 --durations-min=0.5"

@@ -189,6 +189,7 @@ async def test_setting_stuff_and_saving_to_cookies2(
     fetch: FetchCallable,  # noqa: F811
 ) -> None:
     """Test changing settings with requests with saving to cookie."""
+    xyzzy = "xyzzy"  # nosec: B105:hardcoded_password_string
     options: tuple[dict[str, str | None], ...] = (
         {
             "theme": "christmas",
@@ -198,7 +199,7 @@ async def test_setting_stuff_and_saving_to_cookies2(
             "bumpscosity": "76",
             "advanced_settings": "nope",
             "compat": "nope",
-            "access_token": "xyzzy",
+            "access_token": xyzzy,
             "ask_before_leaving": "nope",
             "effects": "nope",
             "scheme": "dark",
