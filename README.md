@@ -7,13 +7,12 @@
 [![Style: Black](https://img.shields.io/badge/Code%20Style-Black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/Imports-isort-1674b1.svg?labelColor=ef8336)](https://pycqa.github.io/isort)
 [![Coverage](https://asozialesnetzwerk.github.io/an-website/coverage/badge.svg)](https://asozialesnetzwerk.github.io/an-website/coverage)
-![Total lines](https://img.shields.io/tokei/lines/github/asozialesnetzwerk/an-website?label=Total%20lines)\
+[![Lines of Code](https://img.shields.io/endpoint?url=https%3A%2F%2Ftokei.kojix2.net%2Fbadge%2Fgithub%2Fasozialesnetzwerk%2Fan-website%2Flines&label=Total%20lines)](https://tokei.kojix2.net/github/asozialesnetzwerk/an-website)\
 [![Downloads](https://pepy.tech/badge/an-website)](https://pepy.tech/project/an-website)
 [![Downloads](https://pepy.tech/badge/an-website/month)](https://pepy.tech/project/an-website)
 [![Downloads](https://pepy.tech/badge/an-website/week)](https://pepy.tech/project/an-website)\
 [![Check](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/check.yml)
 [![Deploy](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/deploy.yml)
-[![Release](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml/badge.svg)](https://github.com/asozialesnetzwerk/an-website/actions/workflows/release.yml)
 
 ## Large Language Models
 
