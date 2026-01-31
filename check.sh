@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -feu
 
 for venv in venv .venv
 do
@@ -49,11 +49,14 @@ python3 -m flake8 --show-source || FAILED=$(( 16 | FAILED ))
 PYTHON_FOLDERS="an_website scripts tests"
 
 echo Pylint:
-DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no $PYTHON_FOLDERS
-DISABLE_PYSTON=1 python3 -m pylint -d fixme $PYTHON_FOLDERS || FAILED=$(( 32 | FAILED ))
+# shellcheck disable=SC2086
+DISABLE_PYSTON=1 python3 -m pylint -d all -e fixme --exit-zero --score=no --persistent=no ${PYTHON_FOLDERS}
+# shellcheck disable=SC2086
+DISABLE_PYSTON=1 python3 -m pylint -d fixme ${PYTHON_FOLDERS} || FAILED=$(( 32 | FAILED ))
 
 echo Bandit:
-python3 -m bandit -qrc pyproject.toml $PYTHON_FOLDERS || FAILED=$(( 64 | FAILED ))
+# shellcheck disable=SC2086
+python3 -m bandit -qrc pyproject.toml ${PYTHON_FOLDERS} || FAILED=$(( 64 | FAILED ))
 
 if [ -n "${1:-}" ]; then
   pytest="python3 -m pytest --durations=0 --durations-min=0.5"
