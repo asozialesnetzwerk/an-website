@@ -153,6 +153,11 @@ jobs:
           path: hashes.txt
           if-no-files-found: error
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
+      - name: Install Twine
+        run: pip install "twine==6.*"
+      - name: Check ${{ matrix.distribution.name }} with Twine
+        run: |
+          twine check --strict ${{ matrix.distribution.glob }}
 
   test-source-tarball:
     name: Test building from source tarball
