@@ -32,7 +32,7 @@ packaging = "==25.0"
 pillow = "==12.*"
 pillow-jxl-plugin = "==1.*"
 pycryptodome = "==3.*"
-pycurl = "==7.45.2"  # later may have broken wheels
+pycurl = "<8"
 pysocks = "==1.*"
 python-dateutil = "==2.*"
 python-geoip-geolite2-yplan = "==2019.1224"
