@@ -45,6 +45,43 @@
     </head>
     <body>
         {% if as_html %}
+            <noscript>
+                {% if display_scheme == "system" %}
+                    <style>
+                        @media (prefers-color-scheme: light) {
+                            .dark-only {
+                                display: none;
+                            }
+                        }
+                        @media (prefers-color-scheme: dark) {
+                            .light-only {
+                                display: none;
+                            }
+                        }
+                    </style>
+                    <a
+                        href="{{ fix_url(query_args={'scheme': 'light'}) }}"
+                        class="dark-only"
+                        style="position: absolute;top: var(--header-height);left: 0;margin: 0.1em"
+                    >Light</a>
+                    <a
+                        href="{{ fix_url(query_args={'scheme': 'dark'}) }}"
+                        class="light-only"
+                        style="position: absolute;top: var(--header-height);left: 0;margin: 0.1em"
+                    >Dark</a>
+                {% elif display_scheme == "dark" %}
+                    <a
+                        href="{{ fix_url(query_args={'scheme': 'light'}) }}"
+                        style="position: absolute;top: var(--header-height);left: 0;margin: 0.1em"
+                    >Light</a>
+                {% elif display_scheme == "light" %}
+                    <a
+                        href="{{ fix_url(query_args={'scheme': 'dark'}) }}"
+                        style="position: absolute;top: var(--header-height);left: 0;margin: 0.1em"
+                    >Dark</a>
+                {% end %}
+            </noscript>
+
             {% if effects %}
                 {% if display_theme == "christmas" %}
                     <div id="snow" aria-hidden="true">
