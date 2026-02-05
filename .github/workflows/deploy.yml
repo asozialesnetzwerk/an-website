@@ -154,10 +154,13 @@ jobs:
           if-no-files-found: error
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
       - name: Install Twine
-        run: pip install "twine==6.*"
+        run: pip install twine
       - name: Check ${{ matrix.distribution.name }} with Twine
-        run: |
-          twine check --strict ${{ matrix.distribution.glob }}
+        run: twine check --strict ${{ matrix.distribution.glob }}
+      - name: Install pydistcheck
+        run: pip install pydistcheck
+      - name: Check ${{ matrix.distribution.name }} with pydistcheck
+        run: pydistcheck --ignore mixed-file-extensions ${{ matrix.distribution.glob }}
 
   test-source-tarball:
     name: Test building from source tarball
