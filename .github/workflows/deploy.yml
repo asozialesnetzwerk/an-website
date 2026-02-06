@@ -161,6 +161,11 @@ jobs:
         run: pip install pydistcheck
       - name: Check ${{ matrix.distribution.name }} with pydistcheck
         run: pydistcheck --ignore mixed-file-extensions ${{ matrix.distribution.glob }}
+      - name: Check wheel contents
+        if: matrix.distribution.name == 'wheel'
+        run: |
+            pip install check-wheel-contents
+            check-wheel-contents ${{ matrix.distribution.glob }}
 
   test-source-tarball:
     name: Test building from source tarball
