@@ -96,6 +96,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs:
       - build
+      - build-source-tarball
     permissions: {}
     continue-on-error: ${{ matrix.python-version == 3.14 }}
     strategy:
@@ -110,6 +111,8 @@ jobs:
             glob: '*.whl'
           - name: sdist
             glob: '*.tar.gz'
+          - name: source-tarball
+            glob: an-website.tar.gz
     steps:
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -118,8 +121,14 @@ jobs:
           allow-prereleases: true
       - name: Download artifact
         uses: actions/download-artifact@v4
+        if: matrix.distribution.name != 'source-tarball'
         with:
           name: artifact
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        if: matrix.distribution.name == 'source-tarball'
+        with:
+          name: source-tarball
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Check dirty
