@@ -121,14 +121,8 @@ jobs:
           allow-prereleases: true
       - name: Download artifact
         uses: actions/download-artifact@v4
-        if: matrix.distribution.name != 'source-tarball'
         with:
-          name: artifact
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        if: matrix.distribution.name == 'source-tarball'
-        with:
-          name: source-tarball
+          name: ${{ matrix.distribution.name == 'source-tarball' && 'source-tarball' || 'artifact' }}
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Check dirty
@@ -164,8 +158,10 @@ jobs:
           name: file-hashes-${{ matrix.distribution.name }}-${{ matrix.python-version }}
       - name: Install Twine
         run: pip install twine
+        if: matrix.distribution.name != 'source-tarball'
       - name: Check ${{ matrix.distribution.name }} with Twine
         run: twine check --strict ${{ matrix.distribution.glob }}
+        if: matrix.distribution.name != 'source-tarball'
       - name: Install pydistcheck
         run: pip install pydistcheck
       - name: Check ${{ matrix.distribution.name }} with pydistcheck
