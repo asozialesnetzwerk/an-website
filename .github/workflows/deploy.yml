@@ -586,6 +586,10 @@ jobs:
       - name: Extract source distribution
         run: |
           tar xvf *.tar.gz
+      - name: Fix DNS on runner
+        run: |
+          sudo rm /etc/resolv.conf
+          echo "nameserver 9.9.9.9" | sudo tee /etc/resolv.conf
       - name: Build image
         run: |
           cd an_website-*/
