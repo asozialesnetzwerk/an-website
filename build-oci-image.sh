@@ -1,5 +1,7 @@
 #!/bin/sh
-set -eu
+set -xeu
+
+ping -c5 registry-1.docker.io ||:
 
 alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
 alias oras="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all ghcr.io/oras-project/oras:v1.3.0"
