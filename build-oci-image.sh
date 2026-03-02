@@ -1,11 +1,8 @@
 #!/bin/sh
 set -xeu
 
-DOCKER_REGISTRY_DOMAIN="registry-1.docker.io"
-DOCKER_REGISTRY_IP="$(dig +short "${DOCKER_REGISTRY_DOMAIN}" | shuf | head -n1)"
-
 alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
-alias oras="podman run -i --rm --add-host ${DOCKER_REGISTRY_DOMAIN}:${DOCKER_REGISTRY_IP} --security-opt=no-new-privileges --cap-drop=all ghcr.io/oras-project/oras:v1.3.0"
+alias oras="podman run -i --rm --netwok=host --security-opt=no-new-privileges --cap-drop=all ghcr.io/oras-project/oras:v1.3.0"
 
 TAG=3.14-slim-trixie
 REPOSITORY=library/python
