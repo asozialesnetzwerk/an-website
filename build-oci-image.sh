@@ -2,7 +2,7 @@
 set -xeu
 
 alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
-alias oras="podman run -i --rm --netwok=host --security-opt=no-new-privileges --cap-drop=all ghcr.io/oras-project/oras:v1.3.0"
+alias oras="podman run -i --rm --network=host --security-opt=no-new-privileges --cap-drop=all ghcr.io/oras-project/oras:v1.3.0"
 
 TAG=3.14-slim-trixie
 REPOSITORY=library/python
