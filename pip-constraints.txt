@@ -129,6 +129,7 @@ typing-inspection==0.4.2
 urllib3==2.6.3
 virtualenv==21.2.0
 webencodings==0.5.1
+zipapps==2025.9.4
 zopflipy==1.12
 accept-types==0.4.1
 aiodns==4.0.0

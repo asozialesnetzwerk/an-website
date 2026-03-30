@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ac244b219dc37ef3e201b662dcfbd8f17d564db9f866d38abde52035eb53460c"
+            "sha256": "454967de09c78497d0db600191beef32f41c2577aaacc0074c72c46bd52301d4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -4894,6 +4894,14 @@
                 "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"
             ],
             "version": "==0.5.1"
+        },
+        "zipapps": {
+            "hashes": [
+                "sha256:78c7c6ce2d5a1feb1382a72dafa3d2397af607ef682767d1cd71508da4dda360"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==2025.9.4"
         },
         "zopflipy": {
             "hashes": [

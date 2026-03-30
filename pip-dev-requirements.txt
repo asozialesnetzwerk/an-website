@@ -129,6 +129,7 @@ typing-inspection==0.4.2; python_version >= '3.9'
 urllib3==2.6.3; python_version >= '3.9'
 virtualenv==21.2.0; python_version >= '3.8'
 webencodings==0.5.1
+zipapps==2025.9.4; python_version >= '3.7'
 zopflipy==1.12; python_version >= '3.10'
 accept-types==0.4.1
 aiodns==4.0.0; python_version >= '3.10'

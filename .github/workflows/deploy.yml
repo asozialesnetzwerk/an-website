@@ -60,6 +60,42 @@ jobs:
         with:
           path: dist
 
+  build-zipapp:
+    name: Build ${{ matrix.os.arch }} zipapp
+    runs-on: ${{ matrix.os.label }}
+    permissions:
+      contents: read
+    needs:
+      - prepare-build
+    strategy:
+      matrix:
+        os:
+          - label: ubuntu-24.04
+            arch: x86_64
+          - label: ubuntu-24.04-arm
+            arch: aarch64
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Install libcurl4-openssl-dev for compiling PycURL
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
+      - name: Build ${{ matrix.os.arch }} zipapp
+        run: |
+            python3 -m venv venv
+            source venv/bin/activate
+            ./scripts/build-zipapp.sh
+      - name: Upload as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          path: dist
+          name: ${{ matrix.os.arch }}-zipapp
+
   build-source-tarball:
     name: Create minimal source tarball
     runs-on: ubuntu-24.04
@@ -318,6 +354,55 @@ jobs:
           include-hidden-files: true
           name: coverage-${{ matrix.python-version }}
 
+  test-zipapp:
+    name: Test ${{ matrix.os.arch }} zipapp
+    runs-on: ${{ matrix.os.label }}
+    needs:
+      - build-zipapp
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        redis-image:
+          - docker.io/redis/redis-stack-server:6.2.6-v20
+          #- docker.dragonflydb.io/dragonflydb/dragonfly
+        os:
+          - label: ubuntu-24.04
+            arch: x86_64
+          - label: ubuntu-24.04-arm
+            arch: aarch64
+    services:
+      redis:
+        image: ${{ matrix.redis-image }}
+        ports:
+          - 6379:6379
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ matrix.os.arch }}-zipapp
+      - name: Prepare
+        run: |
+            rm -fr an_website
+            mv an-website*.pyz an-website.pyz
+      - name: Test running ${{ matrix.os.arch }} zipapp
+        run: |
+            python3 an-website.pyz --version
+            chmod +x an-website.pyz
+            ./an-website.pyz -c
+      - name: Install stuff needed for the tests
+        run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine
+      - name: Run pytest
+        timeout-minutes: 5
+        run: PYTHONPATH="${HOME}/.cache/an-website/zipapps/an-website:an-website.pyz" pytest --durations=0 --verbose
+
   release:
     name: Create release
     runs-on: ubuntu-24.04
@@ -329,6 +414,7 @@ jobs:
       - test-source-tarball
       - test-running-oci-image
       - test-distribution
+      - test-zipapp
       - tests
     if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     steps:
@@ -344,6 +430,14 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: source-tarball
+      - name: Download x86_64 zipapp
+        uses: actions/download-artifact@v8
+        with:
+          name: x86_64-zipapp
+      - name: Download aarch64 zipapp
+        uses: actions/download-artifact@v8
+        with:
+          name: aarch64-zipapp
       - name: Version
         id: version
         shell: python
@@ -367,6 +461,7 @@ jobs:
           files: |
             *.tar.gz
             *.whl
+            *.pyz
 
   pypi:
     name: Upload to PyPI

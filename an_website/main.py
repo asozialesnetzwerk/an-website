@@ -903,7 +903,8 @@ def main(  # noqa: C901  # pragma: no cover
     )
 
     if args.version:
-        print("Version:", VERSION)
+        print("Version: ", end="", flush=True, file=sys.stderr)
+        print(VERSION, flush=True)
         if args.verbose:
             # pylint: disable-next=import-outside-toplevel
             from .version.version import (
