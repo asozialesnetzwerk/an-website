@@ -26,12 +26,15 @@ python3 -m zipapps \
   -p '/usr/bin/env python3' \
   -o 'build/an_website.pyz' \
   -up '$HOME/.cache/an-website/zipapps' \
+  --clear-zipapps-cache \
   --rm-patterns '**/__pycache__' \
   -m 'an_website.__main__:main' \
   -r 'pip-requirements.txt' . >&2
 
 mkdir -p dist
 
-mv build/an_website.pyz "dist/an-website-${VERSION}-${PYVERSION}-${ARCH}-${PLATFORM}.pyz"
+RESULT_FILE="./dist/an-website-${VERSION}-${PYVERSION}-${ARCH}-${PLATFORM}.pyz"
 
-echo "dist/an-website-${VERSION}-${PYVERSION}-${ARCH}.pyz"
+mv build/an_website.pyz "${RESULT_FILE}"
+
+echo "${RESULT_FILE}"

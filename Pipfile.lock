@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "454967de09c78497d0db600191beef32f41c2577aaacc0074c72c46bd52301d4"
+            "sha256": "bed486dd8240324fd062c8984230a6cb6b7919a29e32e70a9b06d51b83bf1f76"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -4896,12 +4896,9 @@
             "version": "==0.5.1"
         },
         "zipapps": {
-            "hashes": [
-                "sha256:78c7c6ce2d5a1feb1382a72dafa3d2397af607ef682767d1cd71508da4dda360"
-            ],
-            "index": "pypi",
+            "git": "git+https://github.com/Joshix-1/zipapps.git",
             "markers": "python_version >= '3.7'",
-            "version": "==2025.9.4"
+            "ref": "919d22965abd0383e1aa78e952e4ac80bff8fb43"
         },
         "zopflipy": {
             "hashes": [

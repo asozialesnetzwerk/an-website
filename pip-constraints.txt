@@ -129,7 +129,7 @@ typing-inspection==0.4.2
 urllib3==2.6.3
 virtualenv==21.2.0
 webencodings==0.5.1
-zipapps==2025.9.4
+zipapps @ git+https://github.com/Joshix-1/zipapps.git@919d22965abd0383e1aa78e952e4ac80bff8fb43
 zopflipy==1.12
 accept-types==0.4.1
 aiodns==4.0.0
