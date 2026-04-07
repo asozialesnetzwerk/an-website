@@ -18,7 +18,6 @@ This page is used to redirect users to third party websites.
 This page will ask users if they want to leave this website.
 """
 
-
 from urllib.parse import urlsplit
 
 from tornado.web import Application

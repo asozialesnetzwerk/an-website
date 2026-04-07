@@ -13,7 +13,6 @@
 
 """A very fast JSON implementation."""
 
-
 import inspect
 from collections.abc import Callable
 from json.encoder import JSONEncoder

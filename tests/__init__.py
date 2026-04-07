@@ -14,7 +14,6 @@
 
 """Utilities used by the tests of an-website."""
 
-
 import sys
 from os.path import abspath, dirname
 

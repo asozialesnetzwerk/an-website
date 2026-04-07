@@ -17,7 +17,6 @@ Get cool commit messages.
 Based on: https://github.com/ngerakines/commitment
 """
 
-
 import logging
 import random
 from collections.abc import Mapping

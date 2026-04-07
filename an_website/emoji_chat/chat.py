@@ -13,7 +13,6 @@
 
 """A 🆒 chat."""
 
-
 import asyncio
 import logging
 import random

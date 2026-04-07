@@ -13,7 +13,6 @@
 
 """Create the required stuff for the soundboard from the info in info.json."""
 
-
 from typing import Final
 
 from tornado.web import RedirectHandler

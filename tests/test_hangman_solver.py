@@ -13,7 +13,6 @@
 
 """The tests for the hangman solver."""
 
-
 import pytest
 from hangman_solver import HangmanResult
 from tornado.web import HTTPError

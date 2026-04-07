@@ -17,7 +17,6 @@ A page with wrong quotes.
 It displays funny, but wrong, quotes.
 """
 
-
 import asyncio
 import logging
 import random

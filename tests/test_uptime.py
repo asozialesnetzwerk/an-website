@@ -13,7 +13,6 @@
 
 """The tests for the uptime page."""
 
-
 from an_website import UPTIME
 from an_website.uptime import uptime
 from an_website.utils import utils

@@ -13,7 +13,6 @@
 
 """The tests for the backdoor."""
 
-
 import pickle  # nosec: B403
 from collections.abc import Callable
 from functools import partial

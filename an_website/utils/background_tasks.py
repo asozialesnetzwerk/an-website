@@ -12,7 +12,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """Tasks running in the background."""
 
-
 import asyncio
 import logging
 import os

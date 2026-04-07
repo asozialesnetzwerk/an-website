@@ -21,7 +21,6 @@ See: https://www.gnu.org/software/librejs/free-your-javascript.html#step3
 and https://www.gnu.org/licenses/javascript-labels.html
 """
 
-
 import logging
 from collections.abc import Mapping
 from functools import cache

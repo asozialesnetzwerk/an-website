@@ -13,7 +13,6 @@
 
 """The soundboard of the website."""
 
-
 from collections.abc import Callable, Iterable
 from functools import cache
 from typing import ClassVar

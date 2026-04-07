@@ -13,7 +13,6 @@
 
 """A provider of the Redis PubSub class."""
 
-
 import logging
 from collections.abc import Collection
 from dataclasses import dataclass

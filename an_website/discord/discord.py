@@ -13,7 +13,6 @@
 
 """A permanent redirect to an invite of the Discord guild."""
 
-
 import time
 from typing import Final
 

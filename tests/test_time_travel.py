@@ -13,7 +13,6 @@
 
 """Testing travelling through time."""
 
-
 from datetime import UTC, datetime, timedelta
 
 from lxml.html import document_fromstring

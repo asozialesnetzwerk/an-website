@@ -13,7 +13,6 @@
 
 """Parse data into classes."""
 
-
 import contextlib
 import functools
 import inspect

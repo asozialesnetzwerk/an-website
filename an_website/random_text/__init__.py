@@ -13,7 +13,6 @@
 
 """The random text API of the website."""
 
-
 from typing import Final
 
 from .. import DIR as ROOT_DIR

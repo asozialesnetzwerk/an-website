@@ -13,7 +13,6 @@
 
 """Logging stuff used by the website."""
 
-
 import asyncio
 import logging
 import traceback
@@ -48,7 +47,7 @@ def get_minimal_traceback(
     """Get a minimal traceback from the log record."""
     if not record.exc_info:
         return
-    (_, value, tb) = record.exc_info
+    _, value, tb = record.exc_info
     if not (value and tb):
         return
 

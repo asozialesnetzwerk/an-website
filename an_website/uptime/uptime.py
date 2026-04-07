@@ -13,7 +13,6 @@
 
 """The uptime page that shows the time the website is running."""
 
-
 import logging
 import math
 import time

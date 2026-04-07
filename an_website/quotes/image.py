@@ -13,7 +13,6 @@
 
 """A module that generates an image from a wrong quote."""
 
-
 import asyncio
 import io
 import logging

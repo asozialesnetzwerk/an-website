@@ -13,7 +13,6 @@
 
 """A 🆒 chat."""
 
-
 from ..utils.utils import ModuleInfo
 from .chat import (
     APIChatHandler,

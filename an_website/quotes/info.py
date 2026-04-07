@@ -13,7 +13,6 @@
 
 """Info page to show information about authors and quotes."""
 
-
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Final, cast

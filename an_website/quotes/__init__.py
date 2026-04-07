@@ -13,7 +13,6 @@
 
 """A page with wrong quotes."""
 
-
 from tornado.web import RedirectHandler
 
 from ..utils.utils import ModuleInfo, PageInfo

@@ -13,7 +13,6 @@
 
 """Show a list of all API endpoints."""
 
-
 from typing import ClassVar, cast
 
 import orjson as json

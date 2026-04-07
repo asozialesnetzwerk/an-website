@@ -13,7 +13,6 @@
 
 """Generate quotes and authors for users to make their own wrong quotes."""
 
-
 import random
 
 from ..utils.request_handler import APIRequestHandler

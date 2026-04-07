@@ -13,7 +13,6 @@
 
 """The tests for the request handlers of an-website."""
 
-
 import socket
 from datetime import datetime
 from urllib.parse import quote_from_bytes

@@ -13,7 +13,6 @@
 
 """The dataclass representing a quote of the day."""
 
-
 from dataclasses import dataclass
 from datetime import date, datetime, timezone  # noqa: F401
 from email.utils import format_datetime

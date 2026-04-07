@@ -13,7 +13,6 @@
 
 """A redirect to an external wiki about the AN."""
 
-
 from typing import Final
 
 from ..utils.request_handler import HTMLRequestHandler

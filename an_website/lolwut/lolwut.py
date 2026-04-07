@@ -13,7 +13,6 @@
 
 """The page that generates art."""
 
-
 from collections.abc import Awaitable
 from typing import ClassVar, Final
 

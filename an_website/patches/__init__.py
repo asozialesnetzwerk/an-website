@@ -14,7 +14,6 @@
 
 """Patches that improve everything."""
 
-
 import asyncio
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module

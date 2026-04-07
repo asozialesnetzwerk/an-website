@@ -16,7 +16,6 @@
 
 """Generates a humans.txt file."""
 
-
 import re  # pylint: disable=preferred-module
 import sys
 from collections.abc import Mapping, MutableSequence, Reversible, Set

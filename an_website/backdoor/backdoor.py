@@ -13,7 +13,6 @@
 
 """The backdoor API of the website."""
 
-
 import io
 import logging
 import pickle  # nosec: B403
@@ -123,7 +122,7 @@ class Backdoor(APIRequestHandler):
                 ),
                 pickle.HIGHEST_PROTOCOL,
             )
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return 5
 
     async def load_session(self) -> dict[str, Any]:

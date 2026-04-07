@@ -13,7 +13,6 @@
 
 """The main page of the website."""
 
-
 import contextlib
 
 from ..quotes.quote_of_the_day import QuoteOfTheDayBaseHandler

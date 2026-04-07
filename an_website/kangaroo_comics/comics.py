@@ -13,7 +13,6 @@
 
 """A page with the kangaroo comics by Zeit Online."""
 
-
 from ..utils.request_handler import HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 

@@ -13,7 +13,6 @@
 
 """A module providing THEMES."""
 
-
 from typing import Final
 
 from .. import STATIC_DIR

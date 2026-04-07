@@ -13,7 +13,6 @@
 
 """The tests for the currency converter."""
 
-
 import asyncio
 
 from an_website.currency_converter import converter

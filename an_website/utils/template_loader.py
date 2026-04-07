@@ -13,7 +13,6 @@
 
 """A Tornado template loader."""
 
-
 import os.path
 from importlib.resources.abc import Traversable
 from typing import override

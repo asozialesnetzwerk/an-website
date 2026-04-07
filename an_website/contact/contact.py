@@ -13,7 +13,6 @@
 
 """A page that allows users to contact the website operator."""
 
-
 import asyncio
 import logging
 import smtplib

@@ -13,7 +13,6 @@
 
 """The tests for the main module of an-website."""
 
-
 import asyncio
 import pathlib
 import typing

@@ -13,7 +13,6 @@
 
 """Test Christmas."""
 
-
 import time_machine
 
 from . import (  # noqa: F401  # pylint: disable=unused-import

@@ -13,7 +13,6 @@
 
 """The tests for the contact page."""
 
-
 import asyncio
 import random
 import sys

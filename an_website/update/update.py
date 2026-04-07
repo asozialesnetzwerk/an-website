@@ -13,7 +13,6 @@
 
 """The API for updating the website."""
 
-
 import asyncio
 import logging
 import os

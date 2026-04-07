@@ -13,7 +13,6 @@
 
 """A page that converts german currencies."""
 
-
 import random
 from typing import Final, TypeAlias, cast
 

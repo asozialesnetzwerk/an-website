@@ -13,7 +13,6 @@
 
 """The tests for the quotes pages."""
 
-
 import urllib.parse
 from io import BytesIO
 

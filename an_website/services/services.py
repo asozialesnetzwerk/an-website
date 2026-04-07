@@ -13,7 +13,6 @@
 
 """A page with a list of services that are cool and hosted by us."""
 
-
 import dataclasses
 
 from ..utils.request_handler import HTMLRequestHandler

@@ -17,7 +17,6 @@ Useful request handlers used by other modules.
 This should only contain request handlers and the get_module_info function.
 """
 
-
 import logging
 from collections.abc import Mapping
 from http.client import responses

@@ -13,7 +13,6 @@
 
 """The search page used to search the website."""
 
-
 import asyncio
 import logging
 from typing import Any, Final, Literal, TypeAlias, cast

@@ -13,7 +13,6 @@
 
 """The tests for the request handlers of an-website."""
 
-
 import itertools
 import urllib.parse
 from http.cookies import SimpleCookie

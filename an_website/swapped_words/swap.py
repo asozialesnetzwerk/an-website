@@ -13,7 +13,6 @@
 
 """A page that swaps words."""
 
-
 from asyncio import Future
 from base64 import b64decode, b64encode
 from dataclasses import dataclass

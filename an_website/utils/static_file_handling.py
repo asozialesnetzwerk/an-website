@@ -13,7 +13,6 @@
 
 """Useful stuff for handling static files."""
 
-
 import logging
 import sys
 from collections.abc import Mapping

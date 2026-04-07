@@ -15,7 +15,6 @@
 
 """The client for the backdoor API of the website."""
 
-
 import ast
 import asyncio
 import http.client
@@ -436,8 +435,7 @@ def main() -> int | str:  # noqa: C901
 
     if "--help" in sys.argv or "-h" in sys.argv:
         print(
-            dedent(
-                """\
+            dedent("""\
                 Accepted arguments:
 
                     --dev              use a separate config for a local dev instance
@@ -450,8 +448,7 @@ def main() -> int | str:  # noqa: C901
                     --timing           print the time it took to execute each command
 
                     --help or -h       show this help message
-                """
-            ),
+                """),
             end="",
             file=sys.stderr,
         )

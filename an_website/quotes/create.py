@@ -13,7 +13,6 @@
 
 """A page to create new wrong quotes."""
 
-
 import logging
 from dataclasses import dataclass
 from typing import Final, cast

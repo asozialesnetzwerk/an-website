@@ -13,7 +13,6 @@
 
 """A page that helps solving hangman puzzles."""
 
-
 from dataclasses import dataclass
 
 from hangman_solver import (

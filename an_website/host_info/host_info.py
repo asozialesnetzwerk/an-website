@@ -17,7 +17,6 @@ The host info page of the website.
 Only to inform, not to brag.
 """
 
-
 import shutil
 import sys
 from collections.abc import Mapping

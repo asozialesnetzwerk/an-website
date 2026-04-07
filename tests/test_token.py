@@ -13,7 +13,6 @@
 
 """The tests for the token module."""
 
-
 from datetime import datetime
 
 import pytest

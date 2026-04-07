@@ -15,7 +15,6 @@
 
 """This script is useful for creating commits."""
 
-
 import os
 import subprocess  # nosec: B404
 import sys

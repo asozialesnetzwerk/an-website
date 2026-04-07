@@ -13,7 +13,6 @@
 
 """The tests for the TraversableStaticFileHandler."""
 
-
 import gzip
 from compression import zstd
 

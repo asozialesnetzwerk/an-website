@@ -15,7 +15,6 @@
 
 """This script compresses static files in a folder in place."""
 
-
 import abc
 import sys
 from collections.abc import Collection, Iterable, Set

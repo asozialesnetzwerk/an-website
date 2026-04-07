@@ -13,7 +13,6 @@
 
 """Config file for the page that swaps words."""
 
-
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import TypeAlias

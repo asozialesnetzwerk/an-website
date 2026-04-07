@@ -13,7 +13,6 @@
 
 """The tests for the swapped words page."""
 
-
 from base64 import b64encode
 from datetime import datetime
 

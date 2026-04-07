@@ -13,7 +13,6 @@
 
 """A module with useful decorators."""
 
-
 import contextlib
 import logging
 from base64 import b64decode

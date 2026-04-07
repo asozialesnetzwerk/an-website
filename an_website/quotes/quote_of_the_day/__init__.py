@@ -13,7 +13,6 @@
 
 """Get a random quote for a given day."""
 
-
 import logging
 from datetime import date, datetime, timedelta, timezone
 from typing import ClassVar, Final

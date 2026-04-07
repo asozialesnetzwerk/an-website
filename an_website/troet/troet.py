@@ -13,7 +13,6 @@
 
 """Toot cool stuff to the world."""
 
-
 from urllib.parse import urlencode, urlsplit
 
 from ..utils.request_handler import HTMLRequestHandler

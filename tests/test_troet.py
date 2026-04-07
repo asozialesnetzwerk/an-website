@@ -13,7 +13,6 @@
 
 """The tests for the troet page."""
 
-
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,

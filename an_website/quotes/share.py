@@ -13,7 +13,6 @@
 
 """Share page to share quotes on multiple services."""
 
-
 from urllib.parse import quote
 
 from tornado.web import HTTPError

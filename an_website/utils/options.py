@@ -13,7 +13,6 @@
 
 """Options in this module are configurable when accessing the website."""
 
-
 import dataclasses
 import typing
 from abc import ABC

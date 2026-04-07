@@ -17,7 +17,6 @@
 
 """Nobody inspects the spammish repetition."""
 
-
 import os
 import sys
 import tarfile

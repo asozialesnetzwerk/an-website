@@ -13,7 +13,6 @@
 
 """The tests for the permission system of an-website."""
 
-
 import socket
 
 from . import (  # noqa: F401  # pylint: disable=unused-import

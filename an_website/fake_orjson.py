@@ -14,7 +14,6 @@
 
 """Nobody inspects the spammish repetition."""
 
-
 from collections.abc import Callable
 from dataclasses import fields, is_dataclass
 from datetime import date, datetime, time, timezone

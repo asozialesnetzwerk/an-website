@@ -13,7 +13,6 @@
 
 """The version page of the website."""
 
-
 from ctypes import c_char
 from multiprocessing import Array
 

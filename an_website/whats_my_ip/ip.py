@@ -13,7 +13,6 @@
 
 """A page that tells users their IP address."""
 
-
 from ipaddress import ip_address
 
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler

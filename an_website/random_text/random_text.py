@@ -13,7 +13,6 @@
 
 """The random text API of the website."""
 
-
 from dataclasses import dataclass
 from random import Random
 from typing import ClassVar

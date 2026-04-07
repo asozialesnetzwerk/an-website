@@ -13,7 +13,6 @@
 
 """A page that swaps words."""
 
-
 from .. import GH_ORG_URL
 from ..utils.utils import ModuleInfo, PageInfo
 from .swap import SwappedWords, SwappedWordsAPI

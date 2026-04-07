@@ -13,7 +13,6 @@
 
 """Stores that contain the ids of old quotes of the day."""
 
-
 import abc
 from datetime import date, datetime, timezone
 from typing import ClassVar, Final

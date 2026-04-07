@@ -2,13 +2,13 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.13.0
 astor==0.8.1
-astroid @ git+https://github.com/asozialesnetzwerk/astroid@956a42fee5850bebba5351c2c8cc7a791eb74170
+astroid @ git+https://github.com/asozialesnetzwerk/astroid@abf3e92dc0fefd340fc6444ee197f6f77700362c
 attrs==26.1.0
 authlib==1.6.9
 autoflake==2.3.3
 bandit==1.9.4
 beautifulsoup4==4.14.3
-black @ git+https://github.com/asozialesnetzwerk/black.git@9c239d26c1f0de33a067faaef4a1e330df435cc6
+black @ git+https://github.com/asozialesnetzwerk/black.git@dfa574189c1486ca0d8913f1b3244af214f7906e
 build==1.4.2
 certifi==2026.2.25
 cffi==2.0.0

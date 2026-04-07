@@ -13,7 +13,6 @@
 
 """A module with many useful things used by other modules."""
 
-
 import argparse
 import asyncio
 import bisect
@@ -225,9 +224,9 @@ def add_args_to_url(url: str | SplitResult, **kwargs: object) -> str:
     )
 
 
-def anonymize_ip[  # noqa: D103
-    A: (str, None, str | None)
-](address: A, *, ignore_invalid: bool = False) -> A:
+def anonymize_ip[A: (str, None, str | None)](  # noqa: D103
+    address: A, *, ignore_invalid: bool = False
+) -> A:
     """Anonymize an IP address."""
     if address is None:
         return None
@@ -456,7 +455,7 @@ async def geoip(
                     filter_path="docs.doc._source",
                 )
             )["docs"][0]["doc"]["_source"].get("geoip", {})
-        except (ApiError, TransportError):
+        except ApiError, TransportError:
             if allow_fallback and database in {
                 "GeoLite2-City.mmdb",
                 "GeoLite2-Country.mmdb",

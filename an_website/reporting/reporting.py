@@ -13,7 +13,6 @@
 
 """The Reporting API™️ of the website."""
 
-
 import logging
 from datetime import timedelta
 from typing import Any, ClassVar, Final, cast

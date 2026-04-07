@@ -13,7 +13,6 @@
 
 """The tests for the utils module."""
 
-
 from urllib.parse import urlsplit
 
 import pytest

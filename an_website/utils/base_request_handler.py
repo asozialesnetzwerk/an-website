@@ -18,7 +18,6 @@ The base request handler used by other modules.
 This should only contain the BaseRequestHandler class.
 """
 
-
 import contextlib
 import inspect
 import logging
@@ -186,7 +185,7 @@ class _RequestHandler(tornado.web.RequestHandler):
         tz: tzinfo = timezone.utc
         try:
             geoip = await self.geoip()  # pylint: disable=redefined-outer-name
-        except (ApiError, TransportError):
+        except ApiError, TransportError:
             LOGGER.exception("Elasticsearch request failed")
             if self.apm_client:
                 self.apm_client.capture_exception()  # type: ignore[no-untyped-call]

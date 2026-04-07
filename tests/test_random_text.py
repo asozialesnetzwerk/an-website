@@ -13,7 +13,6 @@
 
 """The tests for the random text API."""
 
-
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,

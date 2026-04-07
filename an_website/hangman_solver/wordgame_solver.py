@@ -13,7 +13,6 @@
 
 """The module for the wordgame solver."""
 
-
 from collections.abc import Collection
 
 from hangman_solver import Language, read_words_with_length

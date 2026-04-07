@@ -14,7 +14,6 @@
 
 """Nobody inspects the spammish repetition."""
 
-
 import contextlib
 import os
 import sys

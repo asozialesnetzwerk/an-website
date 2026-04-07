@@ -13,7 +13,6 @@
 
 """The utilities package with many helpful things used by other modules."""
 
-
 import sys
 
 from an_website.utils.static_file_from_traversable import (

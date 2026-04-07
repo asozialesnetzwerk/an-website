@@ -13,7 +13,6 @@
 
 """The ping API of the website."""
 
-
 from typing import ClassVar
 
 from ..utils.request_handler import APIRequestHandler

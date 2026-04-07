@@ -13,7 +13,6 @@
 
 """The settings page used to change settings."""
 
-
 import contextlib
 import types
 from base64 import b64encode

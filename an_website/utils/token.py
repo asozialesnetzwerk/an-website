@@ -13,7 +13,6 @@
 
 """A module providing special auth tokens."""
 
-
 import hmac
 import math
 from base64 import b64decode, b64encode

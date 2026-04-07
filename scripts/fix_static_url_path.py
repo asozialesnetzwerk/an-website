@@ -15,7 +15,6 @@
 
 """Fix static URL paths."""
 
-
 import os
 import sys
 import typing

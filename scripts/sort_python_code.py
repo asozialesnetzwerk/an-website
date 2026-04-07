@@ -15,7 +15,6 @@
 
 """Sort all the Python code in this repo."""
 
-
 import ast
 import os
 import sys

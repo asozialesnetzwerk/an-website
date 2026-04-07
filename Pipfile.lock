@@ -2717,7 +2717,7 @@
         "astroid": {
             "git": "git+https://github.com/asozialesnetzwerk/astroid",
             "markers": "python_full_version >= '3.10.0'",
-            "ref": "956a42fee5850bebba5351c2c8cc7a791eb74170"
+            "ref": "abf3e92dc0fefd340fc6444ee197f6f77700362c"
         },
         "attrs": {
             "hashes": [
@@ -2767,7 +2767,7 @@
         "black": {
             "git": "git+https://github.com/asozialesnetzwerk/black.git",
             "markers": "python_version >= '3.10'",
-            "ref": "9c239d26c1f0de33a067faaef4a1e330df435cc6"
+            "ref": "dfa574189c1486ca0d8913f1b3244af214f7906e"
         },
         "build": {
             "hashes": [
