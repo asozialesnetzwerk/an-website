@@ -9,7 +9,7 @@ autoflake==2.3.3
 bandit==1.9.4
 beautifulsoup4==4.14.3
 black @ git+https://github.com/asozialesnetzwerk/black.git@dfa574189c1486ca0d8913f1b3244af214f7906e
-build==1.4.4
+build==1.5.0
 certifi==2026.2.25
 cffi==2.0.0
 cfgv==3.5.0
@@ -22,7 +22,7 @@ dill==0.4.1
 distlib==0.4.0
 docutils==0.22.4
 dparse==0.6.4
-dulwich==1.2.0
+dulwich==1.2.1
 filelock==3.29.0
 flake8==7.3.0
 flake8-bugbear==25.11.29
@@ -58,11 +58,11 @@ mdurl==0.1.2
 more-itertools==11.0.2
 mypy==1.20.2
 mypy-extensions==1.1.0
-nh3==0.3.4
+nh3==0.3.5
 nltk==3.9.4
 nodeenv==1.10.0
 packaging==26.0
-pathspec==1.1.0
+pathspec==1.1.1
 pep8-naming==0.15.1
 pipenv==2026.5.2
 platformdirs==4.9.6
@@ -110,9 +110,9 @@ tornado==6.5.5
 tqdm==4.67.3
 trove-classifiers==2025.11.14.15
 twine==6.2.0
-typer==0.24.2
+typer==0.25.1
 types-beautifulsoup4==4.12.0.20250516
-types-cffi==2.0.0.20260408
+types-cffi==2.0.0.20260429
 types-html5lib==1.1.11.20260408
 types-lxml==2026.2.16
 types-orjson==3.6.2
@@ -127,9 +127,9 @@ types-webencodings==0.5.0.20260408
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 urllib3==2.6.3
-virtualenv==21.2.4
+virtualenv==21.3.0
 webencodings==0.5.1
-zipapps==2026.4.2
+zipapps==2026.4.17
 zopflipy==1.12
 accept-types==0.4.1
 aiodns==4.0.0

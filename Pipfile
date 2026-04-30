@@ -21,7 +21,7 @@ emoji = "==2.*"
 get-version = "==3.*"
 hangman-solver-rs = "<2"
 html2text = "==2025.4.15"
-hyrule = "==1.*"
+hyrule = {version = "1.*", markers = "python_version < '3.15'"}
 jsonpickle = "==4.*"
 lxml = "==6.*"
 # more-itertools = "==10.*"

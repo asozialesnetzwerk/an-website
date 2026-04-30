@@ -1067,9 +1067,7 @@ def main(  # noqa: C901  # pragma: no cover
     # if not forking allow loop to be set in advance by external code
     loop: None | asyncio.AbstractEventLoop
     try:
-        with catch_warnings():  # TODO: remove after dropping support for 3.13
-            simplefilter("ignore", DeprecationWarning)
-            loop = asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
         if loop.is_closed():
             loop = None
     except RuntimeError:

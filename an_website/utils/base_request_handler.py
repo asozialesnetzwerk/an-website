@@ -1181,7 +1181,10 @@ class BaseRequestHandler(_RequestHandler):
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
 
-        if self.now.date() == date(self.now.year, 4, 27):
+        if (
+            self.now.date() == date(self.now.year, 4, 27)
+            or self.user_settings.stanley
+        ):
             if isinstance(chunk, bytes):
                 with contextlib.suppress(UnicodeDecodeError):
                     chunk = chunk.decode("UTF-8")
