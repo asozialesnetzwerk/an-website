@@ -353,14 +353,14 @@ def get_wrong_quotes(
     """Get cached wrong quotes."""
     if shuffle and sort:
         raise ValueError("Sort and shuffle can't be both true.")
-    wqs: list[WrongQuote] = list(WRONG_QUOTES_CACHE.values())
-    if filter_fun or filter_real_quotes:
-        for i in reversed(range(len(wqs))):
-            if (filter_fun and not filter_fun(wqs[i])) or (
-                filter_real_quotes
-                and wqs[i].quote.author_id == wqs[i].author_id
-            ):
-                del wqs[i]
+
+    iterable: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
+    if filter_fun:
+        iterable = filter(filter_fun, iterable)  # pylint: disable=bad-builtin
+    if filter_real_quotes:
+        iterable = (wq for wq in iterable if wq.quote.author_id != wq.author_id)
+    wqs = list(iterable)
+
     if shuffle:
         random.shuffle(wqs)
     elif sort:

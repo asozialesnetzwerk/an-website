@@ -202,14 +202,13 @@ class QuoteMainPage(QuoteBaseHandler, QuoteOfTheDayBaseHandler):
             self.redirect(self.fix_url(f"/zitate/{quote}-{author}"))
             return
 
+        wrong_quotes = (
+            get_wrong_quotes(lambda wq: wq.rating > 0) or get_wrong_quotes()
+        )
         await self.render(
             "pages/quotes/main_page.html",
             funny_quote_url=self.id_to_url(
-                *(
-                    get_wrong_quotes(lambda wq: wq.rating > 0, shuffle=True)[
-                        0
-                    ].get_id()
-                ),
+                *random.choice(wrong_quotes).get_id(),
                 rating_param="w",
             ),
             random_quote_url=self.id_to_url(*self.next_id),
