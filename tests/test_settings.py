@@ -175,6 +175,7 @@ async def test_setting_stuff_and_saving_to_cookies(
             elif morsel.key == "bumpscosity":
                 assert morsel.value == "0"
             elif morsel.key == "stanley":
+                # pylint: disable-next=use-implicit-booleaness-not-comparison-to-string
                 assert morsel.value == ""
             elif morsel.key in {
                 "advanced_settings",
