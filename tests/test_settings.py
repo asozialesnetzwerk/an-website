@@ -119,12 +119,12 @@ async def test_setting_stuff_and_saving_to_cookies(
     for request_body in (
         json.dumps(
             {
-                "theme": "pink",
-                "no_3rd_party": "sure",
-                "dynload": "sure",
-                "save_in_cookie": "sure",
-                "openmoji": "img",
                 "bumpscosity": "0",
+                "dynload": "sure",
+                "no_3rd_party": "sure",
+                "openmoji": "img",
+                "save_in_cookie": "sure",
+                "theme": "pink",
             }
         ),
         "theme=pink&no_3rd_party=s&dynload=s&save_in_cookie=s&openmoji=i&bumpscosity=0",
@@ -162,8 +162,9 @@ async def test_setting_stuff_and_saving_to_cookies(
                 "effects",
                 "no_3rd_party",
                 "openmoji",
-                "theme",
                 "scheme",
+                "stanley",
+                "theme",
             }
             if morsel.key == "theme":
                 assert morsel.value == "pink"
@@ -173,10 +174,12 @@ async def test_setting_stuff_and_saving_to_cookies(
                 assert morsel.value == "img"
             elif morsel.key == "bumpscosity":
                 assert morsel.value == "0"
+            elif morsel.key == "stanley":
+                assert morsel.value == ""
             elif morsel.key in {
                 "advanced_settings",
-                "compat",
                 "ask_before_leaving",
+                "compat",
             }:
                 assert morsel.value == "nope"
             else:
@@ -190,41 +193,44 @@ async def test_setting_stuff_and_saving_to_cookies2(
     xyzzy = "xyzzy"  # nosec: B105:hardcoded_password_string
     options: tuple[dict[str, str | None], ...] = (
         {
-            "theme": "christmas",
-            "no_3rd_party": "nope",
-            "dynload": "nope",
-            "openmoji": "glyf_colr1",
-            "bumpscosity": "76",
-            "advanced_settings": "nope",
-            "compat": "nope",
             "access_token": xyzzy,
+            "advanced_settings": "nope",
             "ask_before_leaving": "nope",
-            "effects": "nope",
-            "scheme": "dark",
-        },
-        {
-            "theme": "pink",
-            "no_3rd_party": "sure",
-            "dynload": "sure",
-            "openmoji": "img",
-            "bumpscosity": "0",
-            "advanced_settings": None,
-            "compat": "sure",
-            "ask_before_leaving": "sure",
-            "effects": "sure",
-            "scheme": "system",
-        },
-        {
-            "bumpscosity": "100",
-            "theme": "default",
-            "no_3rd_party": "nope",
-            "dynload": None,
-            "openmoji": "img",
-            "advanced_settings": "sure",
+            "bumpscosity": "76",
             "compat": "nope",
-            "ask_before_leaving": "nope",
+            "dynload": "nope",
             "effects": "nope",
+            "no_3rd_party": "nope",
+            "openmoji": "glyf_colr1",
+            "scheme": "dark",
+            "stanley": "nope",
+            "theme": "christmas",
+        },
+        {
+            "advanced_settings": None,
+            "ask_before_leaving": "sure",
+            "bumpscosity": "0",
+            "compat": "sure",
+            "dynload": "sure",
+            "effects": "sure",
+            "no_3rd_party": "sure",
+            "openmoji": "img",
+            "scheme": "system",
+            "stanley": "",
+            "theme": "pink",
+        },
+        {
+            "advanced_settings": "sure",
+            "ask_before_leaving": "nope",
+            "bumpscosity": "100",
+            "compat": "nope",
+            "dynload": None,
+            "effects": "nope",
+            "no_3rd_party": "nope",
+            "openmoji": "img",
             "scheme": "light",
+            "stanley": "nope",
+            "theme": "default",
         },
     )
     cookies: list[str | None] = [
@@ -274,5 +280,5 @@ async def test_setting_stuff_and_saving_to_cookies2(
                 assert morsel.value == "eHl6enk="
             else:
                 assert morsel.value == (
-                    data[morsel.key] or "nope"
+                    "nope" if data[morsel.key] is None else data[morsel.key]
                 ), f"{morsel.value} != {data[morsel.key]}"

@@ -1156,6 +1156,25 @@ class BaseRequestHandler(_RequestHandler):
 
     set_default_headers.__doc__ = _RequestHandler.set_default_headers.__doc__
 
+    def stanley(self) -> bool:
+        """Stanley."""
+        return self.user_settings.stanley is not False and (
+            self.now.date() == date(self.now.year, 4, 27)
+            or self.user_settings.stanley is True
+        )
+
+    def sub_stanley(self, text: str) -> str:
+        """Sub Stanley."""
+        return regex.sub(
+            r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",
+            lambda match: (
+                "Stanley"
+                if Random(match[0]).randrange(5) == self.now.year % 5
+                else match[0]
+            ),
+            text,
+        )
+
     @classmethod
     def supports_head(cls) -> bool:
         """Check whether this request handler supports HEAD requests."""
@@ -1181,23 +1200,12 @@ class BaseRequestHandler(_RequestHandler):
         if isinstance(chunk, dict):
             chunk = self.dump(chunk)
 
-        if (
-            self.now.date() == date(self.now.year, 4, 27)
-            or self.user_settings.stanley
-        ):
+        if self.stanley():
             if isinstance(chunk, bytes):
                 with contextlib.suppress(UnicodeDecodeError):
                     chunk = chunk.decode("UTF-8")
             if isinstance(chunk, str):
-                chunk = regex.sub(
-                    r"\b\p{Lu}\p{Ll}{4}\p{Ll}*\b",
-                    lambda match: (
-                        "Stanley"
-                        if Random(match[0]).randrange(5) == self.now.year % 5
-                        else match[0]
-                    ),
-                    chunk,
-                )
+                chunk = self.sub_stanley(chunk)
 
         super().write(chunk)
 

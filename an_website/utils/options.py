@@ -40,6 +40,10 @@ type ColourScheme = Literal["light", "dark", "system", "random"]
 COLOUR_SCHEMES: Final[tuple[ColourScheme, ...]] = typing.get_args(
     ColourScheme.__value__  # pylint: disable=no-member
 )
+type Trilean = Literal[True, None, False]
+TRILEAN_VALUES: Final[tuple[Trilean, ...]] = typing.get_args(
+    Trilean.__value__  # pylint: disable=no-member
+)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -155,16 +159,36 @@ def parse_string(value: str, _: str) -> str:
     return value
 
 
+def parse_trilean(value: str, default: Trilean) -> Trilean:
+    """Parse the value from a string."""
+    return str_to_bool(value, default) if value else None
+
+
+def trilean_to_string(value: Trilean) -> str:
+    """Convert the value to a string."""
+    return "" if value is None else bool_to_str(value)
+
+
 StringOption = partial(Option[str], parse_from_string=parse_string)
 BoolOption = partial(
     Option[bool], parse_from_string=str_to_bool, value_to_string=bool_to_str
 )
 IntOption = partial(Option[int], parse_from_string=parse_int)
+TrileanOption = partial(
+    Option[Trilean],
+    is_valid=TRILEAN_VALUES.__contains__,
+    parse_from_string=parse_trilean,
+    value_to_string=trilean_to_string,
+)
 
 
 def false(_: RequestHandler) -> Literal[False]:
     """Return False."""
     return False
+
+
+def null(_: RequestHandler) -> None:
+    """Return None."""
 
 
 def true(_: RequestHandler) -> Literal[True]:
@@ -203,7 +227,9 @@ class Options:
     )
     compat: Option[bool] = BoolOption(name="compat", get_default_value=false)
     dynload: Option[bool] = BoolOption(name="dynload", get_default_value=false)
-    stanley: Option[bool] = BoolOption(name="stanley", get_default_value=false)
+    stanley: Option[Trilean] = TrileanOption(
+        name="stanley", get_default_value=null
+    )
     effects: Option[bool] = BoolOption(
         name="effects",
         get_default_value=lambda handler: (
