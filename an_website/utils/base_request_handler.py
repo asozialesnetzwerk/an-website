@@ -1158,9 +1158,9 @@ class BaseRequestHandler(_RequestHandler):
 
     def stanley(self) -> bool:
         """Stanley."""
-        return (
+        return self.user_settings.stanley is not False and (
             self.now.date() == date(self.now.year, 4, 27)
-            or self.user_settings.stanley
+            or self.user_settings.stanley is True
         )
 
     def sub_stanley(self, text: str) -> str:

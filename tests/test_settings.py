@@ -174,11 +174,13 @@ async def test_setting_stuff_and_saving_to_cookies(
                 assert morsel.value == "img"
             elif morsel.key == "bumpscosity":
                 assert morsel.value == "0"
+            elif morsel.key == "stanley":
+                # pylint: disable-next=use-implicit-booleaness-not-comparison-to-string
+                assert morsel.value == ""
             elif morsel.key in {
                 "advanced_settings",
                 "ask_before_leaving",
                 "compat",
-                "stanley",
             }:
                 assert morsel.value == "nope"
             else:
@@ -215,7 +217,7 @@ async def test_setting_stuff_and_saving_to_cookies2(
             "no_3rd_party": "sure",
             "openmoji": "img",
             "scheme": "system",
-            "stanley": "sure",
+            "stanley": "",
             "theme": "pink",
         },
         {
