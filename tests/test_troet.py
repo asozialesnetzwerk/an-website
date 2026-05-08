@@ -13,6 +13,8 @@
 
 """The tests for the troet page."""
 
+import time_machine as tm
+
 from . import (  # noqa: F401  # pylint: disable=unused-import
     FetchCallable,
     app,
@@ -27,6 +29,10 @@ async def test_troet_page(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the troet page."""
     assert_valid_html_response(await fetch("/troet"))
 
+
+@tm.travel(0, tick=False)
+async def test_troet_page1(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the troet page."""
     for save in ("sure", "nope"):
         response = assert_valid_html_response(
             await fetch(f"/troet?text=xyz&save={save}")
@@ -35,6 +41,10 @@ async def test_troet_page(fetch: FetchCallable) -> None:  # noqa: F811
         assert b'<textarea name="text">xyz</textarea>' in response.body
         assert "Set-Cookie" not in response.headers
 
+
+@tm.travel(0, tick=False)
+async def test_troet_page2(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the troet page."""
     response = assert_valid_html_response(
         await fetch("/troet?instance=http://example.invalid&save=nope")
     )
@@ -42,6 +52,10 @@ async def test_troet_page(fetch: FetchCallable) -> None:  # noqa: F811
     assert b'value="http://example.invalid"' in response.body
     assert "Set-Cookie" not in response.headers
 
+
+@tm.travel(0, tick=False)
+async def test_troet_page3(fetch: FetchCallable) -> None:  # noqa: F811
+    """Test the troet page."""
     response = assert_valid_html_response(
         await fetch("/troet?instance=example.test&save=sure")
     )
