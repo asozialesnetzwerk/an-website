@@ -621,9 +621,12 @@ def main() -> int | str:  # noqa: C901
                 "    import io\n"
                 "    import pydoc\n"
                 "    helper_output = io.StringIO()\n"
-                "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
+                "    class InputIO(io.StringIO):\n"
+                "        def read(self, size=None):raise EOFError()\n"
+                "        def readline(self, size=None):raise EOFError()\n"
+                "    pydoc.Helper(InputIO(), helper_output)(*args, **kwargs)\n"
                 "    return 'PagerTuple', helper_output.getvalue()\n"
-            f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
+                f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
                 "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n"
                 "del _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab",
                 # fmt: on
