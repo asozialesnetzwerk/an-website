@@ -20,7 +20,6 @@ Loads config and modules and starts Tornado.
 
 import asyncio
 import atexit
-import importlib
 import logging
 import os
 import platform
@@ -36,8 +35,10 @@ from asyncio.runners import _cancel_all_tasks  # type: ignore[attr-defined]
 from base64 import b64encode
 from collections.abc import Callable, Iterable, Mapping, MutableSequence
 from configparser import ConfigParser
+from contextlib import suppress
 from functools import partial
 from hashlib import sha256
+from importlib import import_module
 from multiprocessing.process import _children  # type: ignore[attr-defined]
 from pathlib import Path
 from socket import socket
@@ -193,7 +194,7 @@ def get_module_infos_from_module(
 ) -> None | list[ModuleInfo]:
     """Get the module infos based on a module."""
     import_timer = Timer()
-    module = importlib.import_module(
+    module = import_module(
         f".{module_name}",
         package="an_website",
     )
@@ -887,8 +888,30 @@ def supervise(loop: AbstractEventLoop) -> None:
         time.sleep(1)
 
 
+type EventLoopFactory = Callable[[], asyncio.AbstractEventLoop]
+
+
+def get_default_event_loop_factory() -> EventLoopFactory:
+    """Get the preferred event loop factory."""
+    loop_factory = asyncio.new_event_loop
+
+    if os.environ.get("DISABLE_UVLOOP") not in {
+        "y",
+        "yes",
+        "t",
+        "true",
+        "on",
+        "1",
+    }:
+        with suppress(ModuleNotFoundError):
+            loop_factory = import_module("uvloop").new_event_loop
+
+    return loop_factory
+
+
 def main(  # noqa: C901  # pragma: no cover
     config: BetterConfigParser | None = None,
+    loop_factory: None | EventLoopFactory = None,
 ) -> int | str:
     """
     Start everything.
@@ -897,6 +920,9 @@ def main(  # noqa: C901  # pragma: no cover
     """
     # pylint: disable=too-complex, too-many-branches
     # pylint: disable=too-many-locals, too-many-statements
+    if loop_factory is None:
+        loop_factory = get_default_event_loop_factory()
+
     setproctitle(NAME)
 
     install_signal_handler()
@@ -1074,7 +1100,7 @@ def main(  # noqa: C901  # pragma: no cover
         loop = None
 
     if loop is None:
-        loop = asyncio.new_event_loop()
+        loop = loop_factory()
         asyncio.set_event_loop(loop)
 
     if not loop.get_task_factory():

@@ -14,21 +14,17 @@
 
 """Patches that improve everything."""
 
-import asyncio
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
 import logging
-import os
 from collections.abc import Callable
 from configparser import RawConfigParser
 from contextlib import suppress
-from importlib import import_module
 from pathlib import Path
 from threading import Thread
 from types import MethodType
 from typing import Any
 from urllib.parse import urlsplit
-from warnings import catch_warnings, simplefilter
 
 import certifi
 import defusedxml  # type: ignore[import-untyped]
@@ -59,7 +55,6 @@ from . import braille, json  # noqa: F401  # pylint: disable=reimported
 def apply() -> None:
     """Improve."""
     multiprocessing_importlib_resources._patch()
-    patch_asyncio()
     patch_certifi()
     patch_configparser()
     patch_emoji()
@@ -75,19 +70,6 @@ def apply() -> None:
     patch_tornado_httpclient()
     patch_tornado_logs()
     patch_tornado_redirect()
-
-
-def patch_asyncio() -> None:
-    """Make stuff faster."""
-    if os.environ.get("DISABLE_UVLOOP") not in {
-        "y", "yes", "t", "true", "on", "1"  # fmt: skip
-    }:
-        with catch_warnings():
-            simplefilter("ignore", DeprecationWarning)
-            with suppress(ModuleNotFoundError):
-                asyncio.set_event_loop_policy(
-                    import_module("uvloop").EventLoopPolicy()
-                )
 
 
 def patch_certifi() -> None:
