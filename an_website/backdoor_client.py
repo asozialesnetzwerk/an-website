@@ -56,9 +56,11 @@ try:
 except ModuleNotFoundError:
     socks = None  # pylint: disable=invalid-name
 
+loop_factory: Callable[[], asyncio.AbstractEventLoop] = asyncio.new_event_loop
+
 if os.environ.get("DISABLE_UVLOOP") not in {"y", "yes", "t", "true", "on", "1"}:
     with suppress(ModuleNotFoundError):
-        asyncio.set_event_loop_policy(import_module("uvloop").EventLoopPolicy())
+        loop_factory = import_module("uvloop").new_event_loop
 
 E = eval(  # pylint: disable=eval-used  # nosec: B307
     "eval(repr((_:=[],_.append(_))[0]))[0][0]"
@@ -242,7 +244,7 @@ def detect_mode(code: str) -> str:
         return "exec"
 
 
-def send(
+async def send(
     url: str | SplitResult,
     key: str,
     code: str,
@@ -272,15 +274,15 @@ def send(
         headers["X-Future-Feature"] += ", barry_as_FLUFL"
     if session:
         headers["X-Backdoor-Session"] = session
-    response = asyncio.run(
-        request(
-            "POST",
-            url._replace(path=f"{url.path.removesuffix('/')}/{mode}"),
-            headers,
-            body,
-            proxy,
-        )
+
+    response = await request(
+        "POST",
+        url._replace(path=f"{url.path.removesuffix('/')}/{mode}"),
+        headers,
+        body,
+        proxy,
     )
+
     try:
         return (
             response[0],  # status
@@ -312,7 +314,7 @@ def lisp_always_active() -> bool:
     )
 
 
-def run_and_print(  # noqa: C901
+async def run_and_print(  # noqa: C901
     url: str,
     key: str,
     code: str,
@@ -331,17 +333,18 @@ def run_and_print(  # noqa: C901
     if lisp or lisp_always_active():
         code = hy.disassemble(hy.read(code), True)
     try:
-        response = send(
-            url,
-            key,
-            code,
-            detect_mode(code),
-            session,
-            proxy,
-        )
+        mode = detect_mode(code)
     except SyntaxError as exc:
         print("".join(traceback.format_exception_only(exc)).strip())
         return
+    response = await send(
+        url,
+        key,
+        code,
+        mode,
+        session,
+        proxy,
+    )
     if time_requests:
         took = time.monotonic() - start_time
         if took > 1:
@@ -595,90 +598,96 @@ def main() -> int | str:  # noqa: C901
     else:
         proxy = None
 
-    def send_to_remote(code: str, *, mode: str) -> Any:
-        """Send code to the remote backdoor and return the unpickled body."""
-        return send(
-            url,
-            key,
-            code,
-            mode,
-            session,
-            proxy,
-        )[2]
+    with asyncio.Runner(loop_factory=loop_factory) as runner:
 
-    if "--no-patch-help" not in sys.argv:
+        def send_to_remote(code: str, *, mode: str) -> Any:
+            """Send code to the remote backdoor and return the unpickled body."""
+            return runner.run(
+                send(
+                    url,
+                    key,
+                    code,
+                    mode,
+                    session,
+                    proxy,
+                )
+            )[2]
+
+        if "--no-patch-help" not in sys.argv:
+            body = send_to_remote(
+                # fmt: off
+                "class _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab:\n"
+                "  def __call__(self, *args, **kwargs):\n"
+                "    import io\n"
+                "    import pydoc\n"
+                "    helper_output = io.StringIO()\n"
+                "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
+                "    return 'PagerTuple', helper_output.getvalue()\n"
+            f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
+                "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n"
+                "del _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab",
+                # fmt: on
+                mode="exec",
+            )
+            if not (isinstance(body, dict) and body["success"]):
+                print("\033[91mPatching help() failed!\033[0m")
+
+        if "--lisp" in sys.argv:
+            if not hy:
+                sys.exit("\033[91mHy is not installed!\033[0m")
+            body = send_to_remote("__import__('hy')", mode="exec")
+            if not (isinstance(body, dict) and body["success"]):
+                print("\033[91mInjecting Hy builtins failed!\033[0m")
+
         body = send_to_remote(
-            # fmt: off
-            "class _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab:\n"
-            "  def __call__(self, *args, **kwargs):\n"
-            "    import io\n"
-            "    import pydoc\n"
-            "    helper_output = io.StringIO()\n"
-            "    pydoc.Helper(io.StringIO(), helper_output)(*args, **kwargs)\n"
-            "    return 'PagerTuple', helper_output.getvalue()\n"
-           f"  __str__ = __repr__ = lambda _:{repr(help)!r}\n"  # noqa: E131
-            "help = _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab()\n"
-            "del _HelpHelper_92005ecf3788faea8346a7919fba0232188561ab",
-            # fmt: on
+            "import sys\nprint('Python', sys.version, 'on', sys.platform)",
             mode="exec",
         )
-        if not (isinstance(body, dict) and body["success"]):
-            print("\033[91mPatching help() failed!\033[0m")
+        if isinstance(body, dict) and body["success"] and body["output"]:
+            print(f"\033[92mConnection to {url} was successful.\033[0m")
+            print(body["output"].strip())
+        else:
+            print("\033[91mGetting remote information failed.\033[0m")
+        print(
+            'Type "copyright", "credits" or '
+            'use the "help" function for more information.'
+        )
 
-    if "--lisp" in sys.argv:
-        if not hy:
-            sys.exit("\033[91mHy is not installed!\033[0m")
-        body = send_to_remote("__import__('hy')", mode="exec")
-        if not (isinstance(body, dict) and body["success"]):
-            print("\033[91mInjecting Hy builtins failed!\033[0m")
+        def _run_and_print(  # type: ignore[no-any-unimported]
+            self: ReaderConsole,
+            code: str,
+        ) -> None:
+            # pylint: disable=unused-argument
+            try:
+                runner.run(
+                    run_and_print(
+                        url,
+                        key,
+                        shellify(code),
+                        "--lisp" in sys.argv,
+                        session,
+                        proxy,
+                        "--timing" in sys.argv,
+                    )
+                )
+            except Exception:  # pylint: disable=broad-except
+                print(
+                    "\033[91mAn unexpected error occurred. "
+                    "Please contact a developer.\033[0m"
+                )
+                traceback.print_exc()
 
-    body = send_to_remote(
-        "import sys\nprint('Python', sys.version, 'on', sys.platform)",
-        mode="exec",
-    )
-    if isinstance(body, dict) and body["success"] and body["output"]:
-        print(f"\033[92mConnection to {url} was successful.\033[0m")
-        print(body["output"].strip())
-    else:
-        print("\033[91mGetting remote information failed.\033[0m")
-    print(
-        'Type "copyright", "credits" or '
-        'use the "help" function for more information.'
-    )
-
-    def _run_and_print(  # type: ignore[no-any-unimported]
-        self: ReaderConsole,
-        code: str,
-    ) -> None:
-        # pylint: disable=unused-argument
+        # patch the reader console to use our function
+        rc_execute = ReaderConsole.execute
         try:
-            run_and_print(
-                url,
-                key,
-                shellify(code),
-                "--lisp" in sys.argv,
-                session,
-                proxy,
-                "--timing" in sys.argv,
-            )
-        except Exception:  # pylint: disable=broad-except
-            print(
-                "\033[91mAn unexpected error occurred. "
-                "Please contact a developer.\033[0m"
-            )
-            traceback.print_exc()
-
-    # patch the reader console to use our function
-    rc_execute = ReaderConsole.execute
-    try:
-        ReaderConsole.execute = _run_and_print
-        # run the reader
-        _main(print_banner=False, clear_main=False)
-    except EOFError:
-        pass
-    finally:
-        # restore the original method
-        ReaderConsole.execute = rc_execute
+            ReaderConsole.execute = _run_and_print
+            # run the reader
+            _main(print_banner=False, clear_main=False)
+        except EOFError:
+            pass
+        finally:
+            # restore the original method
+            ReaderConsole.execute = rc_execute
 
     return 0
 
