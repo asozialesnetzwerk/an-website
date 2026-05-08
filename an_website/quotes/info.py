@@ -20,7 +20,7 @@ from urllib.parse import quote as quote_url
 
 import orjson as json
 import regex
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPClientError
 from tornado.web import HTTPError
 
 from .. import CA_BUNDLE_PATH, EVENT_REDIS
@@ -144,6 +144,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
 
     async def get(self, id_str: str, *, head: bool = False) -> None:
         """Handle GET requests to the author info page."""
+        # pylint: disable=too-complex
         author_id: int = int(id_str)
         author = await get_author_by_id(author_id)
         if author is None:
@@ -170,7 +171,10 @@ class AuthorsInfoPage(HTMLRequestHandler):
                 else:
                     author.info = (info[0], info[1], creation_date)
             else:
-                author.info = await search_wikipedia(fixed_author_name)
+                try:
+                    author.info = await search_wikipedia(fixed_author_name)
+                except HTTPClientError as err:
+                    LOGGER.error(err, "Searching wikipedia failed")
                 if author.info is None or author.info[1] is None:
                     # nothing found
                     LOGGER.info("No information found about %s", repr(author))
