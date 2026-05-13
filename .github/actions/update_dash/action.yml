@@ -1,0 +1,23 @@
+name: Update dash
+description: Install a newer dash version
+inputs:
+  version:
+    description: The version to install
+    required: false
+    # 5.13 is required for POSIX.1-2024
+    default: v0.5.13.4
+runs:
+  using: composite
+  steps:
+    - name: Update dash
+      shell: bash
+      run: |
+        set -xeu
+        cd /opt
+        git clone -b '${{ inputs.version }}' --depth 1 'git://git.kernel.org/pub/scm/utils/dash/dash.git'
+        cd dash
+        ./autogen.sh
+        ./configure
+        make
+        sudo rm /bin/dash
+        sudo ln -s "$(pwd)/src/dash" /bin/dash

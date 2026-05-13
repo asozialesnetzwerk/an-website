@@ -111,7 +111,9 @@ class ZstdFileCompressor(FileCompressor):
         # pylint: disable-next=import-outside-toplevel
         from compression import zstd
 
-        yield zstd.compress(data, level=22)
+        _min, max_lvl = zstd.CompressionParameter.compression_level.bounds()
+
+        yield zstd.compress(data, level=max_lvl)
 
     @classmethod
     @override

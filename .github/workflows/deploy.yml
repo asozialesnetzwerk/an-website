@@ -25,10 +25,10 @@ jobs:
           fetch-tags: true
       - name: Check if already released
         if: github.event_name == 'schedule'
-        run: test -z $(git tag --list "v*" --points-at)
+        run: test -z "$(git tag --list "v*" --points-at)"
       - name: Create tag
         if: github.event_name == 'schedule'
-        run: git tag $(date -u '+v%y.%m')
+        run: git tag "$(date -u '+v%y.%m')"
       - name: Push tag
         if: github.event_name == 'schedule'
         run: git push --tags
@@ -75,16 +75,18 @@ jobs:
           - label: ubuntu-24.04-arm
             arch: aarch64
     steps:
+      - name: Install libcurl4-openssl-dev for compiling PycURL
+        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Update dash
+        uses: ./.github/actions/update_dash
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: 3.14
-      - name: Install libcurl4-openssl-dev for compiling PycURL
-        run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Build ${{ matrix.os.arch }} zipapp
         run: |
             python3 -m venv venv
@@ -112,19 +114,63 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Run setup.py
-        run: pip install --no-deps .
-      - name: Write version to file
-        run: "pip show an_website | grep -P '^Version: ' | cut '-d ' -f2 > VERSIONS.TXT"
-      - name: Create tar
-        run: git ls-files | xargs tar cf an-website.tar an_website/static/commits.txt REVISION.TXT TIMESTMP.TXT VERSIONS.TXT
-      - name: Compress tar
-        run: pigz -11 an-website.tar
+      - name: Update dash
+        uses: ./.github/actions/update_dash
+      - name: Build source tarball
+        run: ./scripts/build-source-tarball.sh
       - name: Upload as build artifact
         uses: actions/upload-artifact@v6
         with:
           path: an-website.tar.gz
           name: source-tarball
+
+  version:
+    name: Determine version
+    runs-on: ubuntu-24.04
+    permissions: {}
+    needs:
+      - build
+    outputs:
+      gh-version: ${{ steps.gh-version.outputs.gh-version }}
+      py-version: ${{ steps.py-version.outputs.py-version }}
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: artifact
+      - name: Install required library
+        run: pip install packaging==26.0
+      - name: PyPI version
+        shell: python
+        id: py-version
+        run: |
+          import os
+          from pathlib import Path
+          from subprocess import run
+
+          from packaging.utils import parse_sdist_filename
+
+          command = "ls an_website-*.tar.gz"
+          result = run(command, shell=True, capture_output=True)
+          filename = result.stdout.decode("UTF-8").strip()
+          _, version = parse_sdist_filename(filename)
+          path = Path(os.getenv("GITHUB_OUTPUT"))
+          path.write_text(f"py-version={version}\n")
+      - name: GitHub version
+        shell: python
+        id: gh-version
+        run: |
+          import os
+          from pathlib import Path
+          from time import strftime, gmtime
+
+          path = Path(os.getenv("GITHUB_OUTPUT"))
+          if "${{ github.event_name }}" == "schedule":
+            path.write_text(f"gh-version={strftime('v%y.%m', gmtime())}\n")
+          elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
+            path.write_text("gh-version=${{ github.ref_name }}\n")
+          else:
+            path.write_text("gh-version=\n")
 
   test-distribution:
     name: Test distribution
@@ -435,6 +481,7 @@ jobs:
       - test-distribution
       - test-zipapp
       - tests
+      - version
     if: github.event_name == 'schedule' || (github.ref_type == 'tag' && github.event_name == 'push')
     steps:
       - name: Setup Python
@@ -454,25 +501,10 @@ jobs:
         with:
           pattern: '*-zipapp'
           merge-multiple: true
-      - name: Version
-        id: version
-        shell: python
-        run: |
-          import os
-          from pathlib import Path
-          from time import strftime, gmtime
-
-          path = Path(os.getenv("GITHUB_OUTPUT"))
-          if "${{ github.event_name }}" == "schedule":
-            path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
-          elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
-            path.write_text("version=${{ github.ref_name }}\n")
-          else:
-            assert 6 * 9 == 42
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ needs.version.outputs.gh-version }}
           generate_release_notes: true
           files: |
             *.tar.gz
@@ -519,9 +551,8 @@ jobs:
       - test-distribution
       - tests
       - test-source-tarball
+      - version
     permissions: {}
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -531,24 +562,6 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: artifact
-      - name: Install required library
-        run: pip install packaging==24.2
-      - name: Version
-        id: version
-        shell: python
-        run: |
-          import os
-          from pathlib import Path
-          from subprocess import run
-
-          from packaging.utils import parse_sdist_filename
-
-          command = "ls an_website-*.tar.gz"
-          result = run(command, shell=True, capture_output=True)
-          filename = result.stdout.decode("UTF-8").strip()
-          _, version = parse_sdist_filename(filename)
-          path = Path(os.getenv("GITHUB_OUTPUT"))
-          path.write_text(f"version={version}\n")
       - name: Unpack source distribution
         run: tar xvf an_website-*.tar.gz
       - name: Upload sourcemaps
@@ -559,7 +572,7 @@ jobs:
               -H "Authorization: ApiKey ${{ secrets.SOURCEMAP_API_KEY }}" \
               -H "kbn-xsrf: true" \
               -F service_name="an-website" \
-              -F service_version="${{ steps.version.outputs.version }}" \
+              -F service_version="${{ needs.version.outputs.py-version }}" \
               -F bundle_filepath="/{}" \
               -F sourcemap=@{}.map \;
 
@@ -569,6 +582,7 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sourcemaps
+      - version
     permissions: {}
     environment:
       name: production
@@ -588,7 +602,7 @@ jobs:
         uses: ./.github/actions/check_deployment
         with:
           origin: https://asozial.org
-          version: ${{ needs.sourcemaps.outputs.version }}
+          version: ${{ needs.version.outputs.py-version }}
 
   github-pages:
     name: GitHub Pages
@@ -891,6 +905,7 @@ jobs:
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
+      - version
     if: github.event_name == 'push' || github.event_name == 'schedule'
     permissions:
       packages: write
@@ -922,19 +937,6 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: oci-image${{ matrix.variant.tag-suffix }}
-      - name: Version
-        id: version
-        shell: python
-        run: |
-          import os
-          from pathlib import Path
-          from time import strftime, gmtime
-
-          path = Path(os.getenv("GITHUB_OUTPUT"))
-          if "${{ github.event_name }}" == "schedule":
-            path.write_text(f"version={strftime('v%y.%m', gmtime())}\n")
-          elif "${{ github.event_name }}" == "push" and "${{ github.ref_type }}" == "tag":
-            path.write_text("version=${{ github.ref_name }}\n")
       - name: Log in to ghcr.io
         uses: redhat-actions/podman-login@v1
         with:
@@ -943,9 +945,29 @@ jobs:
           registry: ghcr.io/${{ github.repository }}
       - name: Push image to ghcr.io
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:dev${{ matrix.variant.tag-suffix }}
-      - name: Push image as ${{ steps.version.outputs.version }} to ghcr.io
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}${{ matrix.variant.tag-suffix }}
-        if: steps.version.outputs.version
+      - name: Push image as ${{ needs.version.outputs.gh-version }} to ghcr.io
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ needs.version.outputs.gh-version }}${{ matrix.variant.tag-suffix }}
+        if: needs.version.outputs.gh-version
       - name: Tag image as latest
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest${{ matrix.variant.tag-suffix }}
-        if: steps.version.outputs.version
+        if: needs.version.outputs.gh-version
+
+  verify-release:
+    name: Verify release
+    runs-on: ubuntu-24.04
+    needs:
+      - pypi
+      - release
+      - version
+    permissions: {}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          filter: blob:none
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Update dash
+        uses: ./.github/actions/update_dash
+      - name: Verify release
+        run: ./scripts/verify-release.sh "${{ needs.version.outputs.gh-version }}"

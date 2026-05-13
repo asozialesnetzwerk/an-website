@@ -1,6 +1,8 @@
 #!/bin/sh
 
 set -eu
+# shellcheck disable=SC3040
+set -o pipefail
 
 if [ -z "${VIRTUAL_ENV:-}" ] ; then
   echo 'Will not run outside of a venv.' >&2
