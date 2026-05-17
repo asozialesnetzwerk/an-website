@@ -732,34 +732,42 @@ def setup_apm(app: Application) -> None:  # pragma: no cover
 
 def setup_app_search(app: Application) -> None:  # pragma: no cover
     """Setup Elastic App Search."""  # noqa: D401
-    with catch_warnings():
-        simplefilter("ignore", DeprecationWarning)
-        # pylint: disable-next=import-outside-toplevel
-        from elastic_enterprise_search import (  # type: ignore[import-untyped]
-            AppSearch,
-        )
-
     config: BetterConfigParser = app.settings["CONFIG"]
     host = config.get("APP_SEARCH", "HOST", fallback=None)
     key = config.get("APP_SEARCH", "SEARCH_KEY", fallback=None)
     verify_certs = config.getboolean(
         "APP_SEARCH", "VERIFY_CERTS", fallback=True
     )
-    app.settings["APP_SEARCH"] = (
-        AppSearch(
-            host,
-            bearer_auth=key,
-            verify_certs=verify_certs,
-            ca_certs=CA_BUNDLE_PATH,
-        )
-        if host
-        else None
-    )
     app.settings["APP_SEARCH_HOST"] = host
     app.settings["APP_SEARCH_KEY"] = key
     app.settings["APP_SEARCH_ENGINE"] = config.get(
         "APP_SEARCH", "ENGINE_NAME", fallback=NAME.removesuffix("-dev")
     )
+
+    app_search: object = None
+    try:
+        with catch_warnings():
+            simplefilter("ignore", DeprecationWarning)
+            # pylint: disable-next=import-outside-toplevel
+            from elastic_enterprise_search import (  # type: ignore[import-untyped]
+                AppSearch,
+            )
+    except ModuleNotFoundError:
+        LOGGER.log(
+            logging.ERROR if host else logging.INFO,
+            "elastic-enterprise-search is not installed",
+            exc_info=True,
+        )
+    else:
+        if host:
+            app_search = AppSearch(
+                host,
+                bearer_auth=key,
+                verify_certs=verify_certs,
+                ca_certs=CA_BUNDLE_PATH,
+            )
+
+    app.settings["APP_SEARCH"] = app_search
 
 
 def setup_redis(app: Application) -> None | Redis[str]:
