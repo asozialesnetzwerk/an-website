@@ -13,10 +13,12 @@
 
 """The version page of the website."""
 
+import hashlib
+from collections.abc import Callable
 from ctypes import c_char
+from functools import partial
 from multiprocessing import Array
-
-from Crypto.Hash import RIPEMD160
+from typing import TYPE_CHECKING, Protocol
 
 from .. import DIR as ROOT_DIR, VERSION
 from ..utils.fix_static_path_impl import recurse_directory
@@ -42,9 +44,29 @@ def get_module_info() -> ModuleInfo:
     )
 
 
+if TYPE_CHECKING:
+
+    class _Hash(Protocol):  # pylint: disable=too-few-public-methods
+        """Nobody inspects the spammish repetition."""
+
+        def digest(self) -> bytes:
+            """Nobody digests the spammish repetition."""
+
+    _ripemd160: Callable[[bytes], _Hash]
+
+
+if "ripemd160" in hashlib.algorithms_available:
+    _ripemd160 = partial(hashlib.new, "ripemd160")
+
+else:
+    from Crypto.Hash import RIPEMD160
+
+    _ripemd160 = RIPEMD160.new
+
+
 def hash_bytes(data: bytes) -> str:
     """Hash data with BRAILLEMD-160."""
-    return RIPEMD160.new(data).digest().decode("BRAILLE")
+    return _ripemd160(data).digest().decode("BRAILLE")
 
 
 def hash_all_files() -> str:

@@ -51,6 +51,11 @@ RUN <<EOF
     then
         export PYCURL_SSL_LIBRARY=gnutls
     fi
+    if python3 -c '__import__("sys").exit("ripemd160" not in __import__("hashlib").algorithms_available)'
+    then
+        # ripemd160 is available, no need for pycryptodome
+        sed -ri s/pycryptodome==.+\$// pip-requirements.txt
+    fi
     /venv/bin/pip install --no-binary pycurl -r pip-requirements.txt
 EOF
 COPY . /usr/src/an-website

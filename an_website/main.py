@@ -47,7 +47,6 @@ from warnings import catch_warnings, simplefilter
 from zoneinfo import ZoneInfo
 
 import regex
-from Crypto.Hash import RIPEMD160
 from ecs_logging import StdlibFormatter
 from elasticapm.contrib.tornado import ElasticAPM
 from redis.asyncio import (
@@ -472,8 +471,11 @@ def apply_config_to_app(app: Application, config: BetterConfigParser) -> None:
         "GENERAL", "AUTH_TOKEN_SECRET", fallback=None
     )
     if not app.settings["AUTH_TOKEN_SECRET"]:
+        # pylint: disable-next=import-outside-toplevel
+        from .version.version import hash_bytes
+
         node = uuid.getnode().to_bytes(6, "big")
-        secret = RIPEMD160.new(node).digest().decode("BRAILLE")
+        secret = hash_bytes(node)
         LOGGER.warning(
             "AUTH_TOKEN_SECRET is unset, implicitly setting it to %r",
             secret,
