@@ -17,6 +17,7 @@ import argparse
 import asyncio
 import bisect
 import contextlib
+import io
 import logging
 import random
 import sys
@@ -771,6 +772,10 @@ def size_of_file(file: Traversable) -> int:
         return file.stat().st_size
 
     with file.open("rb") as data:
+        if data.seekable():
+            data.seek(0, io.SEEK_END)
+            return data.tell()
+
         return sum(map(len, data))  # pylint: disable=bad-builtin
 
 
