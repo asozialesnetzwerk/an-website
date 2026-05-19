@@ -22,6 +22,8 @@ from elastic_transport import ObjectApiResponse
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from tornado.web import Application
 
+from an_website.utils.elastic_transport_async_http_node import TornadoAsyncNode
+
 from .. import CA_BUNDLE_PATH, DIR
 from .better_config_parser import BetterConfigParser
 from .fix_static_path_impl import recurse_directory
@@ -183,6 +185,8 @@ def setup_elasticsearch(app: Application) -> None | AsyncElasticsearch:
             None if None in basic_auth else cast(tuple[str, str], basic_auth)
         ),
         ca_certs=CA_BUNDLE_PATH,
+        http_compress=True,
+        node_class=TornadoAsyncNode,
         **kwargs,
     )
     app.settings["ELASTICSEARCH"] = elasticsearch

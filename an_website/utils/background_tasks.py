@@ -55,26 +55,23 @@ async def check_elasticsearch(
         es: AsyncElasticsearch = cast(
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
-        try:
-            await es.transport.perform_request("HEAD", "/")
-        except Exception:  # pylint: disable=broad-except
+        if not await es.ping():
             EVENT_ELASTICSEARCH.clear()
             LOGGER.exception(
                 "Connecting to Elasticsearch failed on worker: %s", worker
             )
-        else:
-            if not EVENT_ELASTICSEARCH.is_set():
-                try:
-                    await setup_elasticsearch_configs(
-                        es, app.settings["ELASTICSEARCH_PREFIX"]
-                    )
-                except Exception:  # pylint: disable=broad-except
-                    LOGGER.exception(
-                        "An exception occured while configuring Elasticsearch on worker: %s",  # noqa: B950
-                        worker,
-                    )
-                else:
-                    EVENT_ELASTICSEARCH.set()
+        elif not EVENT_ELASTICSEARCH.is_set():
+            try:
+                await setup_elasticsearch_configs(
+                    es, app.settings["ELASTICSEARCH_PREFIX"]
+                )
+            except Exception:  # pylint: disable=broad-except
+                LOGGER.exception(
+                    "An exception occured while configuring Elasticsearch on worker: %s",  # noqa: B950
+                    worker,
+                )
+            else:
+                EVENT_ELASTICSEARCH.set()
         await asyncio.sleep(20)
 
 

@@ -3,7 +3,6 @@ python_version = "3.14"
 
 [packages]
 accept-types = "<2"
-aiohttp = {version = "==3.*", extras = ["speedups"]}
 ansi2html = "==1.*"
 beautifulsoup4 = "==4.*"
 # big = {version = "<2", extras = ["time"]}
@@ -15,7 +14,7 @@ dill = "<2"
 ecs-logging = "==2.*"
 elastic-apm = "==6.*"
 elastic-enterprise-search = "==8.*"
-elasticsearch = {version = "==8.*", extras = ["async"]}
+elasticsearch = {version = "==8.*" }
 emoji = "==2.*"
 # frozendict = "==2.*"
 get-version = "==3.*"
@@ -68,6 +67,7 @@ flake8-rst-docstrings = "<2"
 flake8-scream = "<2"
 flake8-simplify = "<2"
 html5lib = "==1.*"
+idna = "==3.*"
 isort = "==8.*"
 mypy = "==1.*"
 pep8-naming = "<2"

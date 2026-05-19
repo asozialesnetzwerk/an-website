@@ -102,10 +102,14 @@ jobs:
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install requirements
         run: pip install -r pip-requirements.txt
-      - name: Install mypy + stuff required for checking the tests and setup.py
-        run: |
-          pip install -c pip-constraints.txt dulwich html5lib mypy numpy pytest pytest-is-running time-machine trove-classifiers zipapps zopflipy
-          grep "^types-" pip-constraints.txt | xargs pip install
+      - name: Install types
+        run: grep "^types-" pip-constraints.txt | xargs pip install -c pip-constraints.txt
+      - name: Install mypy
+        run: pip install -c pip-constraints.txt mypy pytest-is-running
+      - name: Run mypy on an-website
+        run: mypy -p an_website --exclude an_website/backdoor_client.py
+      - name: Install mypy + stuff required for checking the tests, setup.py and backdoor client
+        run: pip install -c pip-constraints.txt dulwich html5lib idna numpy pytest time-machine trove-classifiers zipapps zopflipy
       - name: Run mypy
         run: mypy
 
