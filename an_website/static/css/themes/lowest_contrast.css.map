@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../style/themes/lowest_contrast.css"],
+  "sourcesContent": [":root,\nhtml *,\n* {\n    background-color: #fff !important;\n    color: #fff !important;\n    filter: grayscale(1) brightness(100) !important;\n}\n\n@media (prefers-color-scheme: dark) {\n    :root,\n    html *,\n    * {\n        background-color: #000 !important;\n        color: #000 !important;\n        filter: brightness(0) !important;\n    }\n}\n"],
+  "mappings": "AAAA,MACA,KAAK,EACL,EACI,iBAAkB,eAClB,MAAO,eACP,OAAQ,UAAU,GAAG,WAAW,cACpC,CAEA,OAAO,qBAAuB,MAC1B,MACA,KAAK,EACL,EACI,iBAAkB,eAClB,MAAO,eACP,OAAQ,WAAW,YACvB,CACJ",
+  "names": []
+}

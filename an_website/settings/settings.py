@@ -22,7 +22,7 @@ from tornado.web import HTTPError
 
 from ..utils.options import COLOUR_SCHEMES, Options
 from ..utils.request_handler import HTMLRequestHandler
-from ..utils.themes import THEMES
+from ..utils.themes import NAMED_THEMES
 from ..utils.utils import (
     BUMPSCOSITY_VALUES,
     ModuleInfo,
@@ -151,7 +151,7 @@ class SettingsPage(HTMLRequestHandler):
             no_3rd_party_default=Options.no_3rd_party.get_default_value(self),
             save_in_cookie=save_in_cookie,
             show_token_input=show_token_input,
-            themes=THEMES,
+            themes=NAMED_THEMES,
             colour_schemes=COLOUR_SCHEMES,
             token=token,
             **kwargs,

@@ -1,0 +1,17 @@
+:root,
+html *,
+* {
+    background-color: #fff !important;
+    color: #fff !important;
+    filter: grayscale(1) brightness(100) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root,
+    html *,
+    * {
+        background-color: #000 !important;
+        color: #000 !important;
+        filter: brightness(0) !important;
+    }
+}

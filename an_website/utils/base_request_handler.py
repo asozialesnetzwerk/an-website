@@ -74,7 +74,7 @@ from .. import (
 from .decorators import is_authorized
 from .options import ColourScheme, Options
 from .static_file_handling import FILE_HASHES_DICT, fix_static_path
-from .themes import THEMES
+from .themes import RANDOM_THEMES
 from .utils import (
     ModuleInfo,
     Permission,
@@ -631,11 +631,7 @@ class BaseRequestHandler(_RequestHandler):
         if theme != "random":
             return theme
 
-        ignore_themes = ("random", "christmas")
-
-        return random_choice(  # nosec: B311
-            tuple(theme for theme in THEMES if theme not in ignore_themes)
-        )
+        return random_choice(RANDOM_THEMES)  # nosec: B311
 
     def get_error_message(self, **kwargs: Any) -> str:
         """

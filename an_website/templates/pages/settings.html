@@ -73,9 +73,9 @@
         <label class="form-element">
             Thema
             <select name="theme">
-                {% for _ in themes %}
+                {% for _, name in themes %}
                     <option {% if _ == theme %} selected {% end %}
-                            value="{{_}}">{{ _.title() }}</option>
+                            value="{{_}}">{{ name }}</option>
                 {% end %}
             </select>
         </label>

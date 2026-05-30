@@ -13,18 +13,26 @@
 
 """A module providing THEMES."""
 
+from collections.abc import Iterable, Sequence
 from typing import Final
 
 from .. import STATIC_DIR
 
 
-def get_themes() -> tuple[str, ...]:
+def get_themes() -> Iterable[str]:
     """Get a list of available themes."""
-    files = (STATIC_DIR / "css/themes").iterdir()
-    return (
-        *(file.name[:-4] for file in files if file.name.endswith(".css")),
-        "random",  # add random to the list of themes
-    )
+    for file in (STATIC_DIR / "css/themes").iterdir():
+        if file.is_file() and file.name.endswith(".css"):
+            yield file.name[:-4]
+    yield "random"  # add random to the list of themes
 
 
-THEMES: Final[tuple[str, ...]] = get_themes()
+THEMES: Final[Sequence[str]] = tuple(sorted(get_themes()))
+NAMED_THEMES: Final[Sequence[tuple[str, str]]] = tuple(
+    (theme, theme.replace("_", " ").title())
+    for theme in THEMES
+    if theme != "lowest_contrast"
+)
+RANDOM_THEMES: Final[Sequence[str]] = tuple(
+    theme for theme, _ in NAMED_THEMES if theme not in {"random", "christmas"}
+)
