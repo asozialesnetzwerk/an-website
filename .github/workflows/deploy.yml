@@ -967,6 +967,10 @@ jobs:
           filter: blob:none
           fetch-depth: 0
           fetch-tags: true
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
       - name: Update dash
         uses: ./.github/actions/update_dash
       - name: Verify release
