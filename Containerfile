@@ -1,4 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1.23
+# syntax=docker.io/docker/dockerfile:1.24
 # check=error=true;experimental=InvalidDefinitionDescription
 
 ARG VARIANT=slim-trixie

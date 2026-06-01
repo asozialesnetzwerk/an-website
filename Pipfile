@@ -13,7 +13,7 @@ dill = "<2"
 ecs-logging = "==2.*"
 elastic-apm = "==6.*"
 elastic-enterprise-search = "==8.*"
-elasticsearch = {version = "==8.*"}
+elasticsearch = "==8.*"
 emoji = "==2.*"
 get-version = "==3.*"
 hangman-solver-rs = "<2"
@@ -53,7 +53,7 @@ bandit = {version = "==1.*", extras = ["toml"]}
 black = {git = "git+https://github.com/asozialesnetzwerk/black.git", ref = "an-website"}
 build = "==1.*"
 coverage = "==7.*"
-cryptography = "==46.*"
+cryptography = "==48.*"
 dulwich = "==1.*"
 flake8 = "==7.*"
 flake8-bugbear = "*"
@@ -68,7 +68,7 @@ idna = "==3.*"
 isort = "==8.*"
 mypy = "==1.*"
 pep8-naming = "<2"
-pipenv = {version = "2024.4.1", extras = ["safety"]}  # TODO: fork?
+pipenv = "2024.4.1"  # TODO: fork?
 pre-commit = "==3.*"
 pylint = "==4.*"
 pylint-pytest = "==1.*"
