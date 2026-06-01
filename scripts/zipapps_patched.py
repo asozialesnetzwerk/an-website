@@ -67,7 +67,7 @@ class ZipFile(zopfli.ZipFile):
         )
 
 
-zipfile.ZipFile = ZipFile  # type: ignore[assignment, misc]
+if __name__ == "__main__":
+    zipfile.ZipFile = ZipFile  # type: ignore[assignment, misc]
 
-
-main()
+    main()
