@@ -62,7 +62,12 @@ async def create_quote(quote_str: str, author: Author) -> Quote:
 
     result = parse_quote(data)
 
-    LOGGER.info("Created quote %d: %r", result.id, result.quote)
+    LOGGER.info(
+        "Created quote %d: %r - %r",
+        result.id,
+        result.quote,
+        result.author.name,
+    )
 
     return result
 
