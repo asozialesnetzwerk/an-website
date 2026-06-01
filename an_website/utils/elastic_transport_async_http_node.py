@@ -19,13 +19,33 @@ from elastic_transport import (
     ApiResponse,
     ApiResponseMeta,
     BaseAsyncNode,
+    ConnectionError,
+    ConnectionTimeout,
     HttpHeaders,
     NodeConfig,
+    TlsError,
+    TransportError,
 )
 from elastic_transport.client_utils import DefaultType
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest
+from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
+
+try:
+    import pycurl
+
+    # pylint: disable-next=ungrouped-imports
+    from tornado.curl_httpclient import CurlError
+except ImportError:
+    CurlError = None  # type: ignore[misc, assignment]
+    pycurl = None  # type: ignore[assignment]
+
 
 LOGGER: Final = logging.getLogger(__name__)
+
+
+class TornadoConnectionError(ConnectionError):
+    """An error occured while connecting."""
+
+    __str__ = TransportError.__str__
 
 
 class TornadoAsyncNode(BaseAsyncNode):
@@ -86,10 +106,29 @@ class TornadoAsyncNode(BaseAsyncNode):
             request_timeout=request_timeout,
         )
 
-        response = await self._client.fetch(
-            request,
-            raise_error=False,
-        )
+        try:
+            response = await self._client.fetch(
+                request,
+                raise_error=False,
+            )
+        except HTTPClientError as e:
+            err: TransportError | None = None
+            if CurlError is not None and isinstance(e, CurlError):
+                assert pycurl is not None, "pycurl is present if CurlError is"
+                curl_errno: int = e.errno  # pylint: disable=no-member
+                if curl_errno == pycurl.E_COULDNT_CONNECT:
+                    err = ConnectionError("Could not connect to server")
+                elif curl_errno == pycurl.E_OPERATION_TIMEOUTED:
+                    err = ConnectionTimeout("Timeout was reached")
+                elif curl_errno == pycurl.E_SSL_CONNECT_ERROR:
+                    err = TlsError("SSL connect error")
+                elif e.code == 599:
+                    # TODO: maybe use curl_easy_strerror to get a string
+                    # added in pycurl 17ecb45612b99232cc0908ffa535f960eb485800
+                    err = TornadoConnectionError(f"{e.message} ({curl_errno})")
+            err = err or TornadoConnectionError(str(e))
+            err.errors = (e,)
+            raise err from e
 
         LOGGER.debug(
             "%s %s [status:%s duration:%fs]",
