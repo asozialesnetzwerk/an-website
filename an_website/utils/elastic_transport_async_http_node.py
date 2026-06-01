@@ -19,7 +19,7 @@ from elastic_transport import (
     ApiResponse,
     ApiResponseMeta,
     BaseAsyncNode,
-    ConnectionError,
+    ConnectionError as ESConnectionError,
     ConnectionTimeout,
     HttpHeaders,
     NodeConfig,
@@ -42,7 +42,7 @@ except ImportError:
 LOGGER: Final = logging.getLogger(__name__)
 
 
-class TornadoConnectionError(ConnectionError):
+class TornadoConnectionError(ESConnectionError):
     """An error occured while connecting."""
 
     __str__ = TransportError.__str__
@@ -117,7 +117,7 @@ class TornadoAsyncNode(BaseAsyncNode):
                 assert pycurl is not None, "pycurl is present if CurlError is"
                 curl_errno: int = e.errno  # pylint: disable=no-member
                 if curl_errno == pycurl.E_COULDNT_CONNECT:
-                    err = ConnectionError("Could not connect to server")
+                    err = ESConnectionError("Could not connect to server")
                 elif curl_errno == pycurl.E_OPERATION_TIMEOUTED:
                     err = ConnectionTimeout("Timeout was reached")
                 elif curl_errno == pycurl.E_SSL_CONNECT_ERROR:
