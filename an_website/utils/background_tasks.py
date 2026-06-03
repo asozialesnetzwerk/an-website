@@ -57,7 +57,7 @@ async def check_elasticsearch(
         )
         if not await es.ping():
             EVENT_ELASTICSEARCH.clear()
-            LOGGER.exception(
+            LOGGER.error(
                 "Connecting to Elasticsearch failed on worker: %s", worker
             )
         elif not EVENT_ELASTICSEARCH.is_set():
