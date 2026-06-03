@@ -49,6 +49,9 @@
         {% raw emoji2html("✨") %}
     {% elif now.month == 5 and now.day == 20 %}
         {% raw emoji2html("🐝") %}
+    {% elif now.month == 6 and now.day == 3 %}
+        <a href="{{fix_url('https://www.un.org/en/observances/bicycle-day')}}"
+            class="no-style-a-emoji">{% raw emoji2html(("🚲", "🚴")[now.microsecond % 2]) %}</a>
     {% elif now.month == 6 and now.day == 24 %}
         {% raw emoji2html("🛸") %}
     {% elif now.month == 6 and now.day == 28 %}
