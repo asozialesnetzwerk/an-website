@@ -23,7 +23,7 @@ rm -fr "${TMP_DIR}/venv"
 rmdir "${TMP_DIR}"
 
 # create tar ball
-git archive \
+git -c tar.umask=0022 archive \
   --prefix an_website/static/ --add-file an_website/static/commits.txt --prefix '' \
   --add-file REVISION.TXT \
   --add-file TIMESTMP.TXT \
