@@ -30,7 +30,10 @@ REPOSITORY="asozialesnetzwerk/an-website"
 RELEASE_JSON="${TMP_DIR}/release-${TAG}.json"
 wget -O "${RELEASE_JSON}" "https://api.github.com/repos/${REPOSITORY}/releases/tags/${TAG}"
 SOURCE_TARBALL_URL="$(jq -r '.assets.[] | select(.name == "an-website.tar.gz") | .browser_download_url' < "${RELEASE_JSON}")"
-
+SOURCE_TARBALL_DIGEST="$(jq -r '.assets.[] | select(.name == "an-website.tar.gz") | .digest' < "${RELEASE_JSON}")"
+SOURCE_TARBALL_HASH="$(printf '%s' "${SOURCE_TARBALL_DIGEST}" | cut -d: -f2)"
+SOURCE_TARBALL_HASH_ALG="$(printf '%s' "${SOURCE_TARBALL_DIGEST}" | cut -d: -f1)"
+[ "${SOURCE_TARBALL_HASH_ALG}" = "sha256" ]
 
 # create venv
 python3 -m venv "${TMP_DIR}/venv"
@@ -46,8 +49,13 @@ mkdir "${TMP_DIR}/source-tarball"
 mkdir "${TMP_DIR}/source-tarball-build-sdist-temp"
 cd "${TMP_DIR}/source-tarball-build-sdist-temp"
 wget "${SOURCE_TARBALL_URL}"
+printf '%s' "${SOURCE_TARBALL_HASH} an-website.tar.gz" | sha256sum -c --strict
 tar xf "an-website.tar.gz"
+mv "an-website.tar.gz" "${TMP_DIR}"
 "${build}" -so "${TMP_DIR}/source-tarball/" .
+# python3 -m venv "${TMP_DIR}/venv2"
+# env "VENV=${TMP_DIR}/venv2" sh -c '. "${VENV}/bin/activate" && exec ./scripts/build-zipapp.sh'
+# mv "${TMP_DIR}"/source-tarball-build-sdist-temp/dist/*.pyz "${TMP_DIR}/source-tarball/"
 cd "${DIR}"
 
 VERSION="$(cat "${TMP_DIR}/source-tarball-build-sdist-temp/VERSIONS.TXT")"
@@ -58,12 +66,15 @@ VERSION="$(cat "${TMP_DIR}/source-tarball-build-sdist-temp/VERSIONS.TXT")"
 AN_WEBSITE_DIR="${TMP_DIR}/an-website"
 if [ -d .git ]
 then
-  git clone --filter=tree:0 -b "${TAG}" . "${AN_WEBSITE_DIR}"
+  git clone --hardlinks -b "${TAG}" . "${AN_WEBSITE_DIR}"
 else
   git clone --filter=tree:0 -b "${TAG}" "https://github.com/${REPOSITORY}" "${AN_WEBSITE_DIR}"
 fi
 cd "${AN_WEBSITE_DIR}"
 "${build}" .
+# python3 -m venv "${TMP_DIR}/venv3"
+# env "VENV=${TMP_DIR}/venv3" sh -c '. "${VENV}/bin/activate" && exec ./scripts/build-zipapp.sh'
+./scripts/build-source-tarball.sh
 cd "${DIR}"
 
 # build/download from pypi
@@ -81,6 +92,7 @@ WHEEL_DIGEST="$(jq -r ".assets.[] | select(.name == \"${WHEEL_FILENAME}\") | .di
 WHEEL_HASH="$(printf '%s' "${WHEEL_DIGEST}" | cut -d: -f2)"
 WHEEL_HASH_ALG="$(printf '%s' "${WHEEL_DIGEST}" | cut -d: -f1)"
 [ "${WHEEL_HASH_ALG}" = "sha256" ] && printf '%s' "${WHEEL_HASH} an_website-${VERSION}-py3-none-any.whl" | sha256sum -c --strict
+
 SDIST_FILENAME="an_website-${VERSION}.tar.gz"
 SDIST_URL="$(jq -r ".assets.[] | select(.name == \"${SDIST_FILENAME}\") | .browser_download_url" < "${RELEASE_JSON}")"
 wget "${SDIST_URL}"
@@ -88,20 +100,35 @@ SDIST_DIGEST="$(jq -r ".assets.[] | select(.name == \"${SDIST_FILENAME}\") | .di
 SDIST_HASH="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f2)"
 SDIST_HASH_ALG="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f1)"
 [ "${SDIST_HASH_ALG}" = "sha256" ] && printf '%s' "${SDIST_HASH} ${SDIST_FILENAME}" | sha256sum -c --strict
+
+# PYZIP_SUFFIX="$(uname -m)-linux.pyz"
+# PYZIP_URL="$(jq -r ".assets.[] | select(.name | endswith(\"${PYZIP_SUFFIX}\")) | .browser_download_url" < "${RELEASE_JSON}")"
+# wget "${PYZIP_URL}"
+# PYZIP_DIGEST="$(jq -r ".assets.[] | select(.name | endswith(\"${PYZIP_SUFFIX}\")) | .digest" < "${RELEASE_JSON}")"
+# PYZIP_HASH="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f2)"
+# PYZIP_HASH_ALG="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f1)"
+# [ "${PYZIP_HASH_ALG}" = "sha256" ] && printf '%s' "${SDIST_HASH} ${SDIST_FILENAME}" | sha256sum -c --strict
 cd "${DIR}"
 
 # store lists of files
 printf '%s\0' "${TMP_DIR}"/github/*.tar.gz "${TMP_DIR}"/pypi/*.tar.gz "${TMP_DIR}"/source-tarball/*.tar.gz "${AN_WEBSITE_DIR}"/dist/*.tar.gz > "${TMP_DIR}/ALL_SDISTS"
 printf '%s\0' "${TMP_DIR}"/github/*.whl    "${TMP_DIR}"/pypi/*.whl    "${TMP_DIR}"/source-tarball/*.whl    "${AN_WEBSITE_DIR}"/dist/*.whl    > "${TMP_DIR}/ALL_WHEELS"
+printf '%s\0' "${TMP_DIR}/an-website.tar.gz" "${AN_WEBSITE_DIR}/an-website.tar.gz" > "${TMP_DIR}/BALLS"
+# printf '%s\0' "${TMP_DIR}"/github/*.pyz                               "${TMP_DIR}"/source-tarball/*.pyz    "${AN_WEBSITE_DIR}"/dist/*.pyz    > "${TMP_DIR}/ALL_PYZIPS"
 
 # check if files could be reproduced
 SUCCESS=1
+# xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${PYZIP_HASH}" < "${TMP_DIR}/ALL_PYZIPS" || :
+# shellcheck disable=SC2016
+xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${WHEEL_HASH}" < "${TMP_DIR}/ALL_WHEELS" || SUCCESS=0
 # shellcheck disable=SC2016
 xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${SDIST_HASH}" < "${TMP_DIR}/ALL_SDISTS" || SUCCESS=0
 # shellcheck disable=SC2016
-xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${WHEEL_HASH}" < "${TMP_DIR}/ALL_WHEELS" || SUCCESS=0
+xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${SDIST_HASH}" < "${TMP_DIR}/BALLS" || SUCCESS=0
 
 # hash all files
+# xargs -0 sha256sum < "${TMP_DIR}/ALL_PYZIPS"
+xargs -0 sha256sum < "${TMP_DIR}/BALLS"
 xargs -0 sha256sum < "${TMP_DIR}/ALL_SDISTS"
 xargs -0 sha256sum < "${TMP_DIR}/ALL_WHEELS"
 
