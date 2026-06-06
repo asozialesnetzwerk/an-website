@@ -9,6 +9,8 @@ if [ -z "${VIRTUAL_ENV:-}" ] ; then
   exit 1
 fi
 
+export SOURCE_DATE_EPOCH=0
+
 PYVERSION="$(python3 -c 'import sys;print(sys.implementation.name, end="-");print(*sys.version_info[:2], sep=".")')"
 PLATFORM="$(python3 -c 'import sys;print(sys.platform)')"
 ARCH="$(uname -m)"
@@ -20,7 +22,7 @@ pip3 install -U dulwich get_version setuptools -c pip-constraints.txt >&2
 
 VERSION="$(./setup.py --version)"
 
-pip3 install -U zipapps zopflipy -c pip-constraints.txt >&2
+pip3 install -U zipapps zopflipy time-machine -c pip-constraints.txt >&2
 
 # shellcheck disable=SC2016
 ./scripts/zipapps_patched.py \

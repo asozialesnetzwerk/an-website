@@ -56,7 +56,7 @@ RUN <<EOF
         # ripemd160 is available, no need for pycryptodome
         sed -ri s/pycryptodome==.+\$// pip-requirements.txt
     fi
-    /venv/bin/pip install --no-binary pycurl -r pip-requirements.txt
+    /venv/bin/pip install --no-deps --no-binary pycurl -r pip-requirements.txt
 EOF
 COPY . /usr/src/an-website
 WORKDIR /usr/src/an-website
