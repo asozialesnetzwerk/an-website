@@ -41,6 +41,10 @@ jobs:
     needs:
       - prepare-build
     steps:
+      - name: Update Zstandard
+        run: |
+          sudo add-apt-repository -y ppa:asozial/ppa
+          sudo apt-get install -y libzstd1
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -52,7 +56,7 @@ jobs:
       - name: Install build frontend
         run: pip install "build==1.*"
       - name: Build
-        run: python -m build
+        run: pyproject-build
       - name: Hash
         run: sha256sum dist/*
       - name: Upload as build artifact
@@ -75,23 +79,25 @@ jobs:
           - label: ubuntu-24.04-arm
             arch: aarch64
     steps:
+      - name: Update dash and Zstandard
+        run: |
+          sudo add-apt-repository -y ppa:asozial/ppa
+          sudo apt-get install -y dash libzstd1
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Update dash
-        uses: ./.github/actions/update_dash
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: 3.14
       - name: Build ${{ matrix.os.arch }} zipapp
         run: |
-            python3 -m venv venv
-            source venv/bin/activate
-            ./scripts/build-zipapp.sh
+          python3 -m venv venv
+          source venv/bin/activate
+          ./scripts/build-zipapp.sh
       - name: Upload as build artifact
         uses: actions/upload-artifact@v6
         with:
@@ -106,16 +112,18 @@ jobs:
     needs:
       - prepare-build
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: 3.14
+      - name: Update dash
+        run: |
+          sudo add-apt-repository -y ppa:asozial/ppa
+          sudo apt-get install -y dash
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - name: Update dash
-        uses: ./.github/actions/update_dash
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
       - name: Build source tarball
         run: ./scripts/build-source-tarball.sh
       - name: Upload as build artifact
@@ -249,8 +257,8 @@ jobs:
       - name: Check wheel contents
         if: matrix.distribution.name == 'wheel'
         run: |
-            pip install check-wheel-contents
-            check-wheel-contents ${{ matrix.distribution.glob }}
+          pip install check-wheel-contents
+          check-wheel-contents ${{ matrix.distribution.glob }}
 
   test-source-tarball:
     name: Test building from source tarball
@@ -265,6 +273,10 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: source-tarball
+      - name: Update Zstandard
+        run: |
+          sudo add-apt-repository -y ppa:asozial/ppa
+          sudo apt-get install -y libzstd1
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -450,16 +462,16 @@ jobs:
           name: ${{ matrix.os.arch }}-zipapp
       - name: Prepare
         run: |
-            rm -fr an_website
-            mv an-website*.pyz an-website.pyz
+          rm -fr an_website
+          mv an-website*.pyz an-website.pyz
       - name: Test running ${{ matrix.os.arch }} zipapp
         run: |
-            set -xeu
-            python3 an-website.pyz --version
-            test \! -d ~/.cache/an-website/zipapps
-            chmod +x an-website.pyz
-            CLEAR_ZIPAPPS_CACHE= ./an-website.pyz -c
-            test -d ~/.cache/an-website/zipapps
+          set -xeu
+          python3 an-website.pyz --version
+          test \! -d ~/.cache/an-website/zipapps
+          chmod +x an-website.pyz
+          CLEAR_ZIPAPPS_CACHE= ./an-website.pyz -c
+          test -d ~/.cache/an-website/zipapps
       - name: Install stuff needed for the tests
         run: grep "^pytest-" pip-constraints.txt | xargs pip install -c pip-constraints.txt html5lib pytest time-machine
       - name: Run pytest
@@ -801,12 +813,12 @@ jobs:
           print(run(["sudo", "buildah", "manifest", "create", *annotations, "an-website"]))
       - name: Add images to manifest
         run: |
-            set -x
-            for file in oci-archive-*
-            do
-              sudo buildah pull "oci-archive:$file"
-              sudo buildah manifest add an-website "oci-archive:$file"
-            done
+          set -x
+          for file in oci-archive-*
+          do
+            sudo buildah pull "oci-archive:$file"
+            sudo buildah manifest add an-website "oci-archive:$file"
+          done
       - name: Push manifest
         run: sudo buildah manifest push --compression-level 20 --add-compression zstd:chunked --compression-format zstd:chunked --all an-website "oci-archive:oci-archive.tar"
       - name: Upload as build artifact
@@ -876,10 +888,6 @@ jobs:
         ports:
           - 6379:6379
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: 3.14
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -887,6 +895,10 @@ jobs:
             .github
             tests
             pip-constraints.txt
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
       - name: Start wrong quotes api
         uses: ./.github/actions/start_wrong_quotes_api
       - name: Download artifact
@@ -961,6 +973,10 @@ jobs:
       - version
     permissions: {}
     steps:
+      - name: Update dash and Zstandard
+        run: |
+          sudo add-apt-repository -y ppa:asozial/ppa
+          sudo apt-get install -y dash libzstd1
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -971,7 +987,5 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: 3.14
-      - name: Update dash
-        uses: ./.github/actions/update_dash
       - name: Verify release
         run: ./scripts/verify-release.sh "${{ needs.version.outputs.gh-version }}"
