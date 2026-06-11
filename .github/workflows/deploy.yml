@@ -13,7 +13,7 @@ env:
 jobs:
   prepare-build:
     name: Prepare building
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:
@@ -35,16 +35,12 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     needs:
       - prepare-build
     steps:
-      - name: Update Zstandard
-        run: |
-          sudo add-apt-repository -y ppa:asozial/ppa
-          sudo apt-get install -y libzstd1
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -74,15 +70,11 @@ jobs:
     strategy:
       matrix:
         os:
-          - label: ubuntu-24.04
+          - label: ubuntu-26.04
             arch: x86_64
-          - label: ubuntu-24.04-arm
+          - label: ubuntu-26.04-arm
             arch: aarch64
     steps:
-      - name: Update dash and Zstandard
-        run: |
-          sudo add-apt-repository -y ppa:asozial/ppa
-          sudo apt-get install -y dash libzstd1
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Checkout repository
@@ -106,16 +98,12 @@ jobs:
 
   build-source-tarball:
     name: Create minimal source tarball
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     needs:
       - prepare-build
     steps:
-      - name: Update dash
-        run: |
-          sudo add-apt-repository -y ppa:asozial/ppa
-          sudo apt-get install -y dash
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -134,7 +122,7 @@ jobs:
 
   version:
     name: Determine version
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions: {}
     needs:
       - build
@@ -182,7 +170,7 @@ jobs:
 
   test-distribution:
     name: Test distribution
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - build
       - build-source-tarball
@@ -262,7 +250,7 @@ jobs:
 
   test-source-tarball:
     name: Test building from source tarball
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     needs:
@@ -273,10 +261,6 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: source-tarball
-      - name: Update Zstandard
-        run: |
-          sudo add-apt-repository -y ppa:asozial/ppa
-          sudo apt-get install -y libzstd1
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
@@ -302,7 +286,7 @@ jobs:
 
   sdist-tests:
     name: Run tests in source distribution
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     needs:
@@ -355,7 +339,7 @@ jobs:
 
   tests:
     name: Run tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     continue-on-error: ${{ matrix.python-version == 3.15 }}
@@ -438,9 +422,9 @@ jobs:
           - docker.io/redis/redis-stack-server:6.2.6-v20
           #- docker.dragonflydb.io/dragonflydb/dragonfly
         os:
-          - label: ubuntu-24.04
+          - label: ubuntu-26.04
             arch: x86_64
-          - label: ubuntu-24.04-arm
+          - label: ubuntu-26.04-arm
             arch: aarch64
     services:
       redis:
@@ -482,7 +466,7 @@ jobs:
 
   release:
     name: Create release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     needs:
@@ -525,7 +509,7 @@ jobs:
 
   pypi:
     name: Upload to PyPI
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - run-tests-in-oci-image
       - sdist-tests
@@ -556,7 +540,7 @@ jobs:
 
   sourcemaps:
     name: Upload sourcemaps
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
@@ -590,7 +574,7 @@ jobs:
 
   deploy:
     name: Deploy website
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sourcemaps
@@ -618,7 +602,7 @@ jobs:
 
   github-pages:
     name: GitHub Pages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: github.event_name == 'push' || github.event_name == 'schedule'
     needs:
       - sdist-tests
@@ -686,9 +670,9 @@ jobs:
             variant: alpine
             tag-suffix: -alpine
         os:
-          - label: ubuntu-24.04
+          - label: ubuntu-26.04
             arch: x86_64
-          - label: ubuntu-24.04-arm
+          - label: ubuntu-26.04-arm
             arch: aarch64
     runs-on: ${{ matrix.os.label }}
     needs:
@@ -702,15 +686,6 @@ jobs:
           go-version: ~1.26
       - name: Install Netavark
         run: sudo apt-get install --update -y netavark
-      - name: Upgrade Buildah
-        run: |
-          sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
-          git clone -b v1.42.1 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
-          pushd ~/go/src/github.com/containers/buildah
-          make buildah docs
-          sudo make install
-          buildah version
-          popd
       - name: Download youki
         run: |
           wget "https://github.com/youki-dev/youki/releases/download/v${VERSION}/youki-${VERSION}-${{ matrix.os.arch }}-musl.tar.gz"
@@ -748,7 +723,7 @@ jobs:
 
   combine-oci-images:
     name: Combine ${{ matrix.variant.distro }} OCI images
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - build-oci-image
     permissions:
@@ -770,15 +745,6 @@ jobs:
           go-version: ~1.26
       - name: Install Netavark
         run: sudo apt-get install --update -y netavark
-      - name: Upgrade Buildah
-        run: |
-          sudo apt-get install -y libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme-dev libseccomp-dev libselinux1-dev
-          git clone -b v1.42.1 --depth=1 https://github.com/containers/buildah.git ~/go/src/github.com/containers/buildah
-          pushd ~/go/src/github.com/containers/buildah
-          make buildah docs
-          sudo make install
-          buildah version
-          popd
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
@@ -840,9 +806,9 @@ jobs:
             variant: alpine
             tag-suffix: -alpine
         os:
-          - label: ubuntu-24.04
+          - label: ubuntu-26.04
             arch: x86_64
-          - label: ubuntu-24.04-arm
+          - label: ubuntu-26.04-arm
             arch: aarch64
     permissions:
       contents: read
@@ -878,9 +844,9 @@ jobs:
             variant: alpine
             tag-suffix: -alpine
         os:
-          - label: ubuntu-24.04
+          - label: ubuntu-26.04
             arch: x86_64
-          - label: ubuntu-24.04-arm
+          - label: ubuntu-26.04-arm
             arch: aarch64
     services:
       redis:
@@ -913,7 +879,7 @@ jobs:
 
   push-oci-image:
     name: Push ${{ matrix.variant.distro }} OCI image
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
@@ -936,15 +902,6 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: ~1.26
-      - name: Upgrade Skopeo
-        run: |
-          sudo apt-get install --update -y libdevmapper-dev libgpgme-dev
-          git clone -b v1.21.0 --depth=1 https://github.com/containers/skopeo.git ~/go/src/github.com/containers/skopeo
-          pushd ~/go/src/github.com/containers/skopeo
-          make bin/skopeo
-          sudo make install DISABLE_DOCS=1
-          skopeo --version
-          popd
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
@@ -966,17 +923,13 @@ jobs:
 
   verify-release:
     name: Verify release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs:
       - pypi
       - release
       - version
     permissions: {}
     steps:
-      - name: Update dash and Zstandard
-        run: |
-          sudo add-apt-repository -y ppa:asozial/ppa
-          sudo apt-get install -y dash libzstd1
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
