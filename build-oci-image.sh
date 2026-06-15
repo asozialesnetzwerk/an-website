@@ -31,6 +31,7 @@ REVISION=$(cat REVISION.TXT)
 TIMESTAMP=$(python3 -c "from datetime import datetime; print(int(datetime.fromisoformat(\"$(cat TIMESTMP.TXT || true)\").timestamp()))")
 
 buildah build \
+  --network=host \
   --timestamp "${TIMESTAMP}" \
   --build-arg "BASE=${BASE}" \
   --build-arg "VARIANT=${VARIANT}" \
