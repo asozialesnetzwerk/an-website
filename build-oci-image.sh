@@ -2,7 +2,7 @@
 set -xeu
 
 alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
-alias oras="podman run -i --rm ghcr.io/oras-project/oras:v1.3.0"
+alias oras="podman run -i --rm --network=host ghcr.io/oras-project/oras:v1.3.2"
 
 VARIANT=${VARIANT:-slim-trixie}
 TAG=3.14-${VARIANT}
@@ -31,6 +31,7 @@ REVISION=$(cat REVISION.TXT)
 TIMESTAMP=$(python3 -c "from datetime import datetime; print(int(datetime.fromisoformat(\"$(cat TIMESTMP.TXT || true)\").timestamp()))")
 
 buildah build \
+  --network=host \
   --timestamp "${TIMESTAMP}" \
   --build-arg "BASE=${BASE}" \
   --build-arg "VARIANT=${VARIANT}" \
