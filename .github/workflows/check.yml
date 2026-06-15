@@ -12,7 +12,7 @@ jobs:
 
   fix_stupid_mistakes:
     name: Fix stupid mistakes
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: github.ref_type == 'branch'
     permissions:
       contents: write
@@ -80,7 +80,7 @@ jobs:
 
   mypy:
     name: mypy
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -115,7 +115,7 @@ jobs:
 
   flake8:
     name: Flake8
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -134,7 +134,7 @@ jobs:
 
   pylint:
     name: Pylint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -165,7 +165,7 @@ jobs:
 
   bandit:
     name: Bandit
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -184,7 +184,7 @@ jobs:
 
   stylelint:
     name: Stylelint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -212,7 +212,7 @@ jobs:
 
   eslint:
     name: ESLint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -240,7 +240,7 @@ jobs:
 
   tsc:
     name: tsc
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -264,7 +264,7 @@ jobs:
 
   shellcheck:
     name: ShellCheck
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -281,7 +281,7 @@ jobs:
 
   docker:
     name: Check Containerfile
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
