@@ -128,7 +128,7 @@ NICHT_WITZIG_IMAGE: Final = load_png("StempelNichtWitzig")
 
 def get_line_width(text: str, font: ImageFont.FreeTypeFont) -> float:
     """Get the width of a line."""
-    width = 0
+    width = .0
     for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
         token_font = (
             EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
