@@ -27,6 +27,7 @@ from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
 import emoji
+import openmoji_dist
 import qoi_rs
 from openmoji_dist import get_openmoji_font_data
 from PIL import Image, ImageDraw, ImageFont
@@ -129,7 +130,9 @@ def get_line_width(text: str, font: ImageFont.FreeTypeFont) -> float:
     """Get the width of a line."""
     width = 0
     for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
-        token_font = EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
+        token_font = (
+            EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
+        )
         width += token_font.getlength(token)
 
     return width
@@ -389,6 +392,19 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             source,
             IMAGE_WIDTH - 5 - int(width),
             IMAGE_HEIGHT - 5 - int(height),
+            host_name_font,
+            0,
+        )
+
+    if Stream(emoji.analyze(quote + author, join_emoji=False)).limit(1).count():
+        host_name_font = TEXT_FONT.font_variant(size=12)
+        attribution = openmoji_dist.ATTRIBUTION
+        width, _height = host_name_font.getbbox(attribution)[2:]
+        draw_text(
+            draw,
+            attribution,
+            IMAGE_WIDTH - 5 - int(width),
+            5,
             host_name_font,
             0,
         )
