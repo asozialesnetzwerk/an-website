@@ -81,7 +81,6 @@ class TornadoAsyncNode(BaseAsyncNode):
             self.__client.close()
             self.__client = None
 
-    # pylint: disable-next=too-many-arguments
     async def perform_request(  # type: ignore[override]
         self,
         method: str,

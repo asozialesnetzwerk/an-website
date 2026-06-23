@@ -131,7 +131,7 @@ class SettingsPage(HTMLRequestHandler):
             },
         )
 
-    def render_settings(  # pylint: disable=too-many-arguments
+    def render_settings(
         self,
         *,
         save_in_cookie: bool,

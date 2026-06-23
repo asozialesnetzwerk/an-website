@@ -180,13 +180,20 @@ def draw_text(  # pylint: disable=too-many-arguments
     display_bounds: bool = sys.flags.dev_mode,
 ) -> None:
     """Draw a text on an image."""
+
     curr_x: float = x
     for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
-        token_font = (
-            EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
-        )
+        token_font: ImageFont.FreeTypeFont
+        delta_y: int
+        if is_emoji:
+            token_font = EMOJI_FONT.font_variant(size=font.size)
+            delta_y = int(0.067 * font.size)
+        else:
+            token_font = font
+            delta_y = 0
+
         image.text(
-            (curr_x, y),
+            (curr_x, y + delta_y),
             token,
             font=token_font,
             fill=TEXT_COLOR,
@@ -195,16 +202,27 @@ def draw_text(  # pylint: disable=too-many-arguments
             spacing=54,
             embedded_color=is_emoji,
         )
-        curr_x += token_font.getlength(token)
 
-    if display_bounds:
-        x_off, y_off, right, bottom = font.getbbox(
-            text, stroke_width=stroke_width
-        )
-        image.rectangle((x, y, curr_x, y + bottom), outline=DEBUG_COLOR)
-        image.rectangle(
-            (x + x_off, y + y_off, curr_x, y + bottom), outline=DEBUG_COLOR2
-        )
+        if display_bounds:
+            x_off, y_off, right, bottom = token_font.getbbox(
+                token,
+                stroke_width=stroke_width,
+            )
+            image.rectangle(
+                (curr_x, y + delta_y, curr_x + right, y + delta_y + bottom),
+                outline=DEBUG_COLOR,
+            )
+            image.rectangle(
+                (
+                    curr_x + x_off,
+                    y + delta_y + y_off,
+                    curr_x + right,
+                    y + delta_y + bottom,
+                ),
+                outline=DEBUG_COLOR2,
+            )
+
+        curr_x += token_font.getlength(token)
 
 
 def draw_lines(  # pylint: disable=too-many-arguments

@@ -121,7 +121,7 @@ class BlockOfCode:
     node: None | FunctionOrClassDef
     uses: tuple[str, ...]
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         lines: Sequence[str],
         node: None | FunctionOrClassDef,

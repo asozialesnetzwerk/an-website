@@ -229,7 +229,6 @@ class _RequestHandler(tornado.web.RequestHandler):
     @cached_property
     def now(self) -> datetime:
         """Get the current time."""
-        # pylint: disable=method-hidden
         if pytest_is_running():
             raise AssertionError("Now accessed before it was set")
         # if self.request.method in self.SUPPORTED_METHODS:  # Why?
