@@ -27,6 +27,7 @@ from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
 import emoji
+import emoji.tokenizer
 import openmoji_dist
 import qoi_rs
 from openmoji_dist import get_openmoji_font_data
@@ -128,7 +129,7 @@ NICHT_WITZIG_IMAGE: Final = load_png("StempelNichtWitzig")
 
 def get_line_width(text: str, font: ImageFont.FreeTypeFont) -> float:
     """Get the width of a line."""
-    width = .0
+    width = 0.0
     for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
         token_font = (
             EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
@@ -396,7 +397,13 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             0,
         )
 
-    if Stream(emoji.analyze(quote + author, join_emoji=False)).limit(1).count():
+    if (
+        Stream(emoji.tokenizer.tokenize(quote, False))
+        .chain(emoji.tokenizer.tokenize(author, False))
+        .exclude(lambda t: isinstance(t.value, str))
+        .limit(1)
+        .count()
+    ):
         host_name_font = TEXT_FONT.font_variant(size=12)
         attribution = openmoji_dist.ATTRIBUTION
         width, _height = host_name_font.getbbox(attribution)[2:]
