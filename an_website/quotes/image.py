@@ -23,17 +23,16 @@ import textwrap
 import time
 from collections import ChainMap
 from collections.abc import Iterable, Mapping, Set
-from itertools import pairwise
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
+import emoji
 import qoi_rs
+from openmoji_dist import get_openmoji_font_data
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import new as create_empty_image
 from tornado.web import HTTPError
 from typed_stream import Stream
-
-from an_website.quotes.readonly_bytes_io import ReadonlyBytesIO
 
 from .. import EPOCH
 from ..utils import static_file_handling
@@ -59,14 +58,19 @@ DEBUG_COLOR: Final[tuple[int, int, int]] = 245, 53, 170
 DEBUG_COLOR2: Final[tuple[int, int, int]] = 224, 231, 34
 TEXT_COLOR: Final[tuple[int, int, int]] = 230, 230, 230
 
-
-_TEXT_FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
-TEXT_FONT: Final = ImageFont.truetype(
-    font=io.BytesIO(_TEXT_FONT_BYTES), size=50
-)
 FONT_SIZES: Final[tuple[int, ...]] = (50, 44, 32)
 
-del _TEXT_FONT_BYTES
+_TEXT_FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
+_EMOJI_FONT_BYTES = (get_openmoji_font_data() / "glyf_colr0.ttf").read_bytes()
+
+TEXT_FONT: Final = ImageFont.truetype(
+    font=io.BytesIO(_TEXT_FONT_BYTES), size=FONT_SIZES[0]
+)
+EMOJI_FONT: Final = ImageFont.truetype(
+    font=io.BytesIO(_EMOJI_FONT_BYTES), size=FONT_SIZES[0]
+)
+
+del _TEXT_FONT_BYTES, _EMOJI_FONT_BYTES
 
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
@@ -139,6 +143,32 @@ def get_lines_and_max_height(
     return lines, int(max(font.getbbox(line)[3] for line in lines))
 
 
+def split_text_into_emoji_and_non_emoji_parts(
+    text: str,
+) -> Iterable[tuple[str, bool]]:
+    """Return tuple of strings and is_emoji bools."""
+    it = iter(emoji.analyze(text, non_emoji=True, join_emoji=True))
+
+    try:
+        first = next(it)
+    except StopIteration:
+        return
+
+    chars = [first.chars]
+    is_emoji = isinstance(first.value, emoji.EmojiMatch)
+
+    for value in it:
+        if is_emoji != isinstance(value.value, emoji.EmojiMatch):
+            yield ("".join(chars), is_emoji)
+            chars.clear()
+            is_emoji = not is_emoji
+
+        chars.append(value.chars)
+
+    if chars:
+        yield ("".join(chars), is_emoji)
+
+
 def draw_text(  # pylint: disable=too-many-arguments
     image: ImageDraw.ImageDraw,
     text: str,
@@ -150,22 +180,30 @@ def draw_text(  # pylint: disable=too-many-arguments
     display_bounds: bool = sys.flags.dev_mode,
 ) -> None:
     """Draw a text on an image."""
-    image.text(
-        (x, y),
-        text,
-        font=font,
-        fill=TEXT_COLOR,
-        align="right",
-        stroke_width=stroke_width,
-        spacing=54,
-    )
+    curr_x: float = x
+    for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
+        token_font = (
+            EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
+        )
+        image.text(
+            (curr_x, y),
+            token,
+            font=token_font,
+            fill=TEXT_COLOR,
+            align="right",
+            stroke_width=stroke_width,
+            spacing=54,
+            embedded_color=is_emoji,
+        )
+        curr_x += token_font.getlength(token)
+
     if display_bounds:
         x_off, y_off, right, bottom = font.getbbox(
             text, stroke_width=stroke_width
         )
-        image.rectangle((x, y, x + right, y + bottom), outline=DEBUG_COLOR)
+        image.rectangle((x, y, curr_x, y + bottom), outline=DEBUG_COLOR)
         image.rectangle(
-            (x + x_off, y + y_off, x + right, y + bottom), outline=DEBUG_COLOR2
+            (x + x_off, y + y_off, curr_x, y + bottom), outline=DEBUG_COLOR2
         )
 
 
