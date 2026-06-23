@@ -125,6 +125,16 @@ WITZIG_IMAGE: Final = load_png("StempelWitzig")
 NICHT_WITZIG_IMAGE: Final = load_png("StempelNichtWitzig")
 
 
+def get_line_width(text: str, font: ImageFont.FreeTypeFont) -> float:
+    """Get the width of a line."""
+    width = 0
+    for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
+        token_font = EMOJI_FONT.font_variant(size=font.size) if is_emoji else font
+        width += token_font.getlength(token)
+
+    return width
+
+
 def get_lines_and_max_height(
     text: str,
     max_width: int,
@@ -137,7 +147,7 @@ def get_lines_and_max_height(
     max_line_length: float = max_width + 1
     while max_line_length > max_width:  # pylint: disable=while-used
         lines = textwrap.wrap(text, width=column_count)
-        max_line_length = max(font.getlength(line) for line in lines)
+        max_line_length = max(get_line_width(line, font) for line in lines)
         column_count -= 1
 
     return lines, int(max(font.getbbox(line)[3] for line in lines))
@@ -169,7 +179,7 @@ def split_text_into_emoji_and_non_emoji_parts(
         yield ("".join(chars), is_emoji)
 
 
-def draw_text(  # pylint: disable=too-many-arguments
+def draw_text(  # pylint: disable=too-many-arguments, too-many-locals
     image: ImageDraw.ImageDraw,
     text: str,
     x: int,
@@ -180,8 +190,8 @@ def draw_text(  # pylint: disable=too-many-arguments
     display_bounds: bool = sys.flags.dev_mode,
 ) -> None:
     """Draw a text on an image."""
-
     curr_x: float = x
+
     for token, is_emoji in split_text_into_emoji_and_non_emoji_parts(text):
         token_font: ImageFont.FreeTypeFont
         delta_y: int
@@ -237,7 +247,7 @@ def draw_lines(  # pylint: disable=too-many-arguments
 ) -> int:
     """Draw the lines on the image and return the last y position."""
     for line in lines:
-        width = font.getlength(line)
+        width = get_line_width(line, font)
         draw_text(
             image,
             line,
