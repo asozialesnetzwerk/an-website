@@ -31,6 +31,9 @@ import qoi_rs
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import new as create_empty_image
 from tornado.web import HTTPError
+from typed_stream import Stream
+
+from an_website.quotes.readonly_bytes_io import ReadonlyBytesIO
 
 from .. import EPOCH
 from ..utils import static_file_handling
@@ -57,16 +60,13 @@ DEBUG_COLOR2: Final[tuple[int, int, int]] = 224, 231, 34
 TEXT_COLOR: Final[tuple[int, int, int]] = 230, 230, 230
 
 
-_FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
-
-FONT: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=50)
-FONT_SMALLER: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=44)
-FONT_SMALLEST: Final = ImageFont.truetype(font=io.BytesIO(_FONT_BYTES), size=32)
-HOST_NAME_FONT: Final = ImageFont.truetype(
-    font=io.BytesIO(_FONT_BYTES), size=23
+_TEXT_FONT_BYTES = (DIR / "files/oswald.regular.ttf").read_bytes()
+TEXT_FONT: Final = ImageFont.truetype(
+    font=io.BytesIO(_TEXT_FONT_BYTES), size=50
 )
+FONT_SIZES: Final[tuple[int, ...]] = (50, 44, 32)
 
-del _FONT_BYTES
+del _TEXT_FONT_BYTES
 
 FILE_EXTENSIONS: Final[Mapping[str, str]] = {
     "bmp": "bmp",
@@ -202,7 +202,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     rating: None | int,
     source: None | str,
     file_type: str = "png",
-    font: ImageFont.FreeTypeFont = FONT,
+    font_size: int = FONT_SIZES[0],
     *,
     include_kangaroo: bool = True,
     wq_id: None | str = None,
@@ -215,7 +215,13 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     )
     draw = ImageDraw.Draw(image, mode="RGB")
 
-    max_width = IMAGE_WIDTH if font is FONT_SMALLEST else QUOTE_MAX_WIDTH
+    max_width = IMAGE_WIDTH if font_size <= FONT_SIZES[-1] else QUOTE_MAX_WIDTH
+
+    font = (
+        TEXT_FONT.font_variant(size=font_size)
+        if TEXT_FONT.size != font_size
+        else TEXT_FONT
+    )
 
     # draw quote
     quote_str = f"»{quote}«"
@@ -268,20 +274,17 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
     )
 
     if y_text > IMAGE_HEIGHT:
-        for prev, smaller in pairwise((FONT, FONT_SMALLER, FONT_SMALLEST)):
-            if font is not prev:
-                continue
-
-            LOGGER.info(
-                "Using smaller font (%s) for quote %s", smaller.size, source
-            )
+        for smaller in Stream(FONT_SIZES).drop_while(
+            lambda size: size >= font_size
+        ):
+            LOGGER.info("Using smaller font (%s) for quote %s", smaller, source)
             return create_image(
                 quote,
                 author,
                 rating,
                 source,
                 file_type,
-                smaller,
+                font_size=smaller,
                 wq_id=wq_id,
             )
 
@@ -289,14 +292,15 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     # draw rating
     if rating:
-        _, y_off, width, height = FONT_SMALLER.getbbox(str(rating))
+        font_smaller = TEXT_FONT.font_variant(size=44)
+        _, y_off, width, height = font_smaller.getbbox(str(rating))
         y_rating = IMAGE_HEIGHT - 25 - int(height)
         draw_text(
             draw,
             str(rating),
             25,
             y_rating,
-            FONT_SMALLER,  # always use same font for rating
+            font_smaller,  # always use same font for rating
             1,
         )
         # draw rating image
@@ -312,13 +316,14 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
 
     # draw host name
     if source:
-        width, height = HOST_NAME_FONT.getbbox(source)[2:]
+        host_name_font = TEXT_FONT.font_variant(size=23)
+        width, height = host_name_font.getbbox(source)[2:]
         draw_text(
             draw,
             source,
             IMAGE_WIDTH - 5 - int(width),
             IMAGE_HEIGHT - 5 - int(height),
-            HOST_NAME_FONT,
+            host_name_font,
             0,
         )
 
