@@ -26,8 +26,6 @@ from collections.abc import Iterable, Mapping, Set
 from tempfile import TemporaryDirectory
 from typing import Any, ClassVar, Final
 
-import emoji
-import emoji.tokenizer
 import openmoji_dist
 import qoi_rs
 from openmoji_dist import get_openmoji_font_data
@@ -38,6 +36,10 @@ from typed_stream import Stream
 
 from .. import EPOCH
 from ..utils import static_file_handling
+from ..utils.emoji import (
+    split_text_into_emoji_and_non_emoji_parts,
+    text_contains_emoji,
+)
 from .utils import (
     DIR,
     QuoteReadyCheckHandler,
@@ -155,32 +157,6 @@ def get_lines_and_max_height(
         column_count -= 1
 
     return lines, int(max(font.getbbox(line)[3] for line in lines))
-
-
-def split_text_into_emoji_and_non_emoji_parts(
-    text: str,
-) -> Iterable[tuple[str, bool]]:
-    """Return tuple of strings and is_emoji bools."""
-    it = iter(emoji.analyze(text, non_emoji=True, join_emoji=True))
-
-    try:
-        first = next(it)
-    except StopIteration:
-        return
-
-    chars = [first.chars]
-    is_emoji = isinstance(first.value, emoji.EmojiMatch)
-
-    for value in it:
-        if is_emoji != isinstance(value.value, emoji.EmojiMatch):
-            yield ("".join(chars), is_emoji)
-            chars.clear()
-            is_emoji = not is_emoji
-
-        chars.append(value.chars)
-
-    if chars:
-        yield ("".join(chars), is_emoji)
 
 
 def draw_text(  # pylint: disable=too-many-arguments, too-many-locals
@@ -397,13 +373,7 @@ def create_image(  # noqa: C901  # pylint: disable=too-complex
             0,
         )
 
-    if (
-        Stream(emoji.tokenizer.tokenize(quote, False))
-        .chain(emoji.tokenizer.tokenize(author, False))
-        .exclude(lambda t: isinstance(t.value, str))
-        .limit(1)
-        .count()
-    ):
+    if text_contains_emoji(quote) or text_contains_emoji(author):
         host_name_font = TEXT_FONT.font_variant(size=12)
         attribution = openmoji_dist.ATTRIBUTION
         width, _height = host_name_font.getbbox(attribution)[2:]

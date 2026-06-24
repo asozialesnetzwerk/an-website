@@ -21,11 +21,7 @@ import qoi_rs
 from PIL import Image
 
 from an_website.quotes import create, utils as quotes
-from an_website.quotes.image import (
-    CONTENT_TYPES,
-    FILE_EXTENSIONS,
-    split_text_into_emoji_and_non_emoji_parts,
-)
+from an_website.quotes.image import CONTENT_TYPES, FILE_EXTENSIONS
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
     WRONG_QUOTE_DATA,
@@ -387,18 +383,3 @@ async def test_quote_apis(fetch: FetchCallable) -> None:  # noqa: F811
 
         for author in response["authors"]:
             assert author == quotes.AUTHORS_CACHE[author["id"]].to_json()
-
-
-def test_split_text_into_emoji_and_non_emoji_parts() -> None:
-    """Test split_text_into_emoji_and_non_emoji_parts."""
-
-    def split(text: str) -> tuple[tuple[str, bool], ...]:
-        return tuple(split_text_into_emoji_and_non_emoji_parts(text))
-
-    assert split("abc") == (("abc", False),)
-    assert split("abc🤓def") == (("abc", False), ("🤓", True), ("def", False))
-    assert split("abc🏃🏽‍♀‍➡") == (("abc", False), ("🏃🏽‍♀‍➡", True))
-    assert split("🫃🏼🧑🏻‍🎄👨🏽‍❤️‍👨🏻 ") == (
-        ("🫃🏼🧑🏻‍🎄👨🏽‍❤️‍👨🏻", True),
-        (" ", False),
-    )

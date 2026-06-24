@@ -24,9 +24,10 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Final
 
-import emoji
 from tornado.web import HTTPError
 from typed_stream import Stream
+
+from an_website.utils.emoji import text_contains_emoji
 
 from .. import DIR as ROOT_DIR
 from ..utils.data_parsing import parse_args
@@ -105,7 +106,7 @@ class CommitmentAPI(APIRequestHandler):
                     [
                         (com, (_, msg))
                         for com, (_, msg) in COMMITS.items()
-                        if not args.require_emoji or any(emoji.analyze(msg))
+                        if not args.require_emoji or text_contains_emoji(msg)
                     ]
                 )
             )
@@ -123,7 +124,7 @@ class CommitmentAPI(APIRequestHandler):
                 (com, (_, msg))
                 for com, (_, msg) in COMMITS.items()
                 if com.startswith(args.hash)
-                if not args.require_emoji or any(emoji.analyze(msg))
+                if not args.require_emoji or text_contains_emoji(msg)
             )
             .limit(2)
             .collect()
