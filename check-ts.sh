@@ -1,13 +1,11 @@
 #!/bin/sh
 set -eu
+# shellcheck disable=SC3040
+set -o pipefail
 
 pnpm install -q
 
 FAILED=0
-
-if [ "${USE_BUN:-}" = "1" ]; then
-  alias pnpm="bunx --bun"
-fi
 
 echo tsc:
 pnpm tsc || FAILED=$(( 2 | FAILED ))

@@ -1,5 +1,7 @@
 #!/bin/sh
 set -feu
+# shellcheck disable=SC3040
+set -o pipefail
 
 for venv in venv .venv
 do

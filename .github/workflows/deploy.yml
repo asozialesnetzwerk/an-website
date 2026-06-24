@@ -646,7 +646,7 @@ jobs:
         run: |
           coverage html -d github-pages/coverage
           coverage json -o github-pages/coverage.json
-          ./generate-badge.sh > github-pages/coverage/badge.svg
+          ./scripts/generate-badge.sh > github-pages/coverage/badge.svg
           rm -f github-pages/coverage/.gitignore
       - name: Generate commitment.txt
         run: git log "--pretty=%H %ct %s" > github-pages/commitment.txt
@@ -704,7 +704,7 @@ jobs:
       - name: Build image
         run: |
           cd an_website-*/
-          sudo env 'VARIANT=${{ matrix.variant.variant }}' ./build-oci-image.sh --runtime /opt/youki -t an-website
+          sudo env 'VARIANT=${{ matrix.variant.variant }}' ./scripts/build-oci-image.sh --runtime /opt/youki -t an-website
           cd ..
           sudo buildah inspect an-website
       - name: Save image

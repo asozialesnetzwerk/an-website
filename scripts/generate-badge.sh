@@ -1,8 +1,10 @@
 #!/bin/sh
 set -eu
+# shellcheck disable=SC3040
+set -o pipefail
 
 ###
-# This script is used in the GitHub Actions workflows "Deploy" and "Release"
+# This script is used in the GitHub Actions "Deploy" workflow
 ###
 
 # get the total coverage percentage and round it to 2 decimals

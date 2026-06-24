@@ -1,5 +1,7 @@
 #!/bin/sh
 set -eu
+# shellcheck disable=SC3040
+set -o pipefail
 
 export PIPENV_VERBOSITY=-1
 

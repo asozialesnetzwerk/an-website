@@ -10,6 +10,14 @@ parserOptions:
   projectService: true
   ecmaFeatures:
     jsx: true
+ignorePatterns:
+  - '/an_website/static/js'
+  - '/an_website/vendored'
+  - '/build'
+  - '/perf8-report'
+  - '/scripts/deno'
+  - '/scripts/vendored'
+  - '**/site-packages'
 overrides:
   - files: "an_website/**"
     rules:

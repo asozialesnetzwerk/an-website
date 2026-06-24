@@ -1,4 +1,0 @@
-telemetry = false
-[install]
-frozenLockfile = true
-saveTextLockfile = true
