@@ -10,8 +10,8 @@ certifi==2026.2.25
 cffi==2.0.0
 cfgv==3.5.0
 charset-normalizer==3.4.7
-click==8.4.1
-coverage==7.14.1
+click==8.4.2
+coverage==7.14.3
 cryptography==48.0.1
 cssselect==1.4.0
 dill==0.4.1
@@ -45,7 +45,7 @@ mdurl==0.1.2
 more-itertools==11.1.0
 mypy==1.20.2
 mypy-extensions==1.1.0
-nh3==0.3.5
+nh3==0.3.6
 nodeenv==1.10.0
 packaging==26.0
 pathspec==1.1.1
@@ -108,12 +108,12 @@ zipapps==2026.4.17
 zopflipy==1.12
 accept-types==0.4.1
 ansi2html==1.9.2
-blake3==1.0.8
+blake3==1.0.9
 defity==0.7.0
 defusedxml==0.7.1
 dunamai==1.26.1
 ecs-logging==2.3.0
-elastic-apm==6.26.1
+elastic-apm==6.26.2
 elastic-enterprise-search==8.18.0
 elastic-transport==8.17.1
 elasticsearch==8.19.3
@@ -148,4 +148,4 @@ typed-stream==0.155.1
 tzdata==2026.2
 ultradict==0.0.6
 uvloop==0.22.1
-wrapt==2.2.1
+wrapt==2.2.2
