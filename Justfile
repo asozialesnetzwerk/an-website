@@ -42,9 +42,9 @@ build_js *args:
 
 [positional-arguments]
 esbuild *args:
-    deno run -A https://deno.land/x/esbuild@v0.28.0/mod.js \
+    deno run -A https://deno.land/x/esbuild@v0.28.1/mod.js \
         --charset=utf8 --supported:destructuring=true \
-        "--target=$(just target),chrome103,edge143,firefox115,ios11,safari16.6" \
+        "--target=$(just target),chrome103,edge147,firefox115,ios11,safari16.6" \
         "$@"
 
 target:

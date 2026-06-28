@@ -36,7 +36,7 @@
     margin: 0;
     /* stylelint-disable-next-line comment-empty-line-before */
     /* Workaround for Chromium's selective color inversion */
-    background: linear-gradient(white, white);
+    background: linear-gradient(snow, snow);
     filter: drop-shadow(0 0 10px var(--text-color));
 }
 

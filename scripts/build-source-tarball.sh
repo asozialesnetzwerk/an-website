@@ -22,7 +22,7 @@ rm -fr "${TMP_DIR}/venv"
 # delete empty temp dir
 rmdir "${TMP_DIR}"
 
-# create tar ball
+# create tarball
 git -c tar.umask=0022 archive \
   --prefix an_website/static/ --add-file an_website/static/commits.txt --prefix '' \
   --add-file REVISION.TXT \
@@ -31,5 +31,5 @@ git -c tar.umask=0022 archive \
   -o an-website.tar \
   HEAD
 
-# compress tar ball
+# compress tarball
 pigz -m -11 an-website.tar

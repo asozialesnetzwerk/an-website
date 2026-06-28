@@ -704,7 +704,7 @@ jobs:
       - name: Build image
         run: |
           cd an_website-*/
-          sudo env 'VARIANT=${{ matrix.variant.variant }}' ./scripts/build-oci-image.sh --runtime /opt/youki -t an-website
+          sudo env 'VARIANT=${{ matrix.variant.variant }}' ./build-oci-image.sh --runtime /opt/youki -t an-website
           cd ..
           sudo buildah inspect an-website
       - name: Save image

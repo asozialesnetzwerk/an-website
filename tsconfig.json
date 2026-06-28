@@ -1,8 +1,9 @@
 // dprint-ignore-file
 {
+  "$schema": "https://www.schemastore.org/tsconfig",
   "ts-node": {"esm": true},
   "extends": [
-    "@tsconfig/node24/tsconfig",
+    "@tsconfig/node26/tsconfig",
     "@tsconfig/node-ts/tsconfig",
     "@tsconfig/strictest/tsconfig"
   ],
@@ -14,7 +15,6 @@
       {"name": "typescript-eslint-language-service"}
     ],
     "types": ["node"],
-    "isolatedModules": true,
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "noUnusedLocals": false,

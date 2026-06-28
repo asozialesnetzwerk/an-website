@@ -1,7 +1,5 @@
 #!/bin/sh
 set -xeu
-# shellcheck disable=SC3040
-set -o pipefail
 
 alias yq="podman run -i --rm --security-opt=no-new-privileges --cap-drop=all --network=none docker.io/mikefarah/yq:4"
 alias oras="podman run -i --rm --network=host ghcr.io/oras-project/oras:v1.3.2"

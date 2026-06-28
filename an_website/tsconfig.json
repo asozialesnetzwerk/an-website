@@ -1,5 +1,6 @@
 // dprint-ignore-file
 {
+  "$schema": "https://www.schemastore.org/tsconfig",
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
     "target": "ES2022",
@@ -13,7 +14,7 @@
     "lib": ["esnext", "dom", "dom.iterable"],
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
-    "types": [],
+    "types": ["typed-query-selector"],
     "paths": {
       "@utils/utils.js": ["./utils/utils.ts"],
       "@utils/jsx-runtime": ["./utils/utils.ts"]
