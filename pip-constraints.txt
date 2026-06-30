@@ -17,7 +17,7 @@ cssselect==1.4.0
 dill==0.4.1
 distlib==0.4.3
 docutils==0.23
-dulwich==1.2.6
+dulwich==1.2.7
 filelock==3.29.4
 flake8==7.3.0
 flake8-bugbear==25.11.29
@@ -38,7 +38,7 @@ jaraco.context==6.1.2
 jaraco.functools==4.5.0
 jeepney==0.9.0
 keyring==25.7.0
-librt==0.11.0
+librt==0.12.0
 markdown-it-py==4.2.0
 mccabe==0.7.0
 mdurl==0.1.2
