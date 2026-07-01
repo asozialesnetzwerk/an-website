@@ -468,7 +468,7 @@ class QuoteById(QuoteBaseHandler):
             wrong_quote=wrong_quote,
             next_href=self.get_next_url(),
             next_id=f"{self.next_id[0]}-{self.next_id[1]}",
-            description=str(wrong_quote),
+            description=None,
             rating_filter=self.rating_filter,
             rating=await self.get_rating_str(wrong_quote),
             show_rating=self.get_show_rating(),
