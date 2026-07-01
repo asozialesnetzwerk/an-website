@@ -291,3 +291,26 @@ jobs:
         uses: docker/setup-docker-action@v5
       - name: Check Containerfile
         run: docker build --check -f Containerfile .
+
+  verify-latest-release:
+    name: Verify latest release
+    runs-on: ubuntu-26.04
+    permissions: {}
+    if: github.ref_type == 'branch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          filter: blob:none
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Verify release
+        run: |
+            set -xeuo pipefail
+            TAG="$(git describe --tags --abbrev=0)"
+            git fetch origin "${TAG}"
+            ./scripts/verify-release.sh "${TAG}"

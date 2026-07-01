@@ -102,12 +102,13 @@ SDIST_HASH_ALG="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f1)"
 [ "${SDIST_HASH_ALG}" = "sha256" ] && printf '%s' "${SDIST_HASH} ${SDIST_FILENAME}" | sha256sum -c --strict
 
 # PYZIP_SUFFIX="$(uname -m)-linux.pyz"
+# PYZIP_FILENAME="$(jq -r ".assets.[] | select(.name | endswith(\"${PYZIP_SUFFIX}\")) | .name" < "${RELEASE_JSON}")"
 # PYZIP_URL="$(jq -r ".assets.[] | select(.name | endswith(\"${PYZIP_SUFFIX}\")) | .browser_download_url" < "${RELEASE_JSON}")"
 # wget "${PYZIP_URL}"
 # PYZIP_DIGEST="$(jq -r ".assets.[] | select(.name | endswith(\"${PYZIP_SUFFIX}\")) | .digest" < "${RELEASE_JSON}")"
-# PYZIP_HASH="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f2)"
-# PYZIP_HASH_ALG="$(printf '%s' "${SDIST_DIGEST}" | cut -d: -f1)"
-# [ "${PYZIP_HASH_ALG}" = "sha256" ] && printf '%s' "${SDIST_HASH} ${SDIST_FILENAME}" | sha256sum -c --strict
+# PYZIP_HASH="$(printf '%s' "${PYZIP_DIGEST}" | cut -d: -f2)"
+# PYZIP_HASH_ALG="$(printf '%s' "${PYZIP_DIGEST}" | cut -d: -f1)"
+# [ "${PYZIP_HASH_ALG}" = "sha256" ] && printf '%s' "${PYZIP_HASH} ${PYZIP_FILENAME}" | sha256sum -c --strict
 cd "${DIR}"
 
 # store lists of files
@@ -118,13 +119,15 @@ printf '%s\0' "${TMP_DIR}/an-website.tar.gz" "${AN_WEBSITE_DIR}/an-website.tar.g
 
 # check if files could be reproduced
 SUCCESS=1
-# xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${PYZIP_HASH}" < "${TMP_DIR}/ALL_PYZIPS" || :
+# xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${PYZIP_HASH}" < "${TMP_DIR}/ALL_PYZIPS" || SUCCESS=0
 # shellcheck disable=SC2016
 xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${WHEEL_HASH}" < "${TMP_DIR}/ALL_WHEELS" || SUCCESS=0
 # shellcheck disable=SC2016
 xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${SDIST_HASH}" < "${TMP_DIR}/ALL_SDISTS" || SUCCESS=0
 # shellcheck disable=SC2016
-xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${SDIST_HASH}" < "${TMP_DIR}/BALLS" || SUCCESS=0
+xargs -0n1 sh -c 'set -xeu && [ "$0  $1" = "$(sha256sum -z "$1")" ]' "${SOURCE_TARBALL_HASH}" < "${TMP_DIR}/BALLS" || SUCCESS=0
+
+printf "SUCESS=%s\n" "${SUCCESS}"
 
 # hash all files
 # xargs -0 sha256sum < "${TMP_DIR}/ALL_PYZIPS"
