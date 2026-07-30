@@ -21,7 +21,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Final, Protocol, assert_type, cast
 
 import typed_stream
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import ApiError, AsyncElasticsearch, TransportError
 from redis.asyncio import Redis
 from tornado.web import Application
 
@@ -47,6 +47,23 @@ class BackgroundTask(Protocol):
         """The name of the task."""
 
 
+async def _try_ping_elastic_search(es: AsyncElasticsearch) -> Exception | None:
+    """Return an exception if the info() API failed.
+
+    See: AsyncElasticsearch.ping for a similar implementation.
+    """
+    try:
+        await es.perform_request(
+            "HEAD",
+            "/",
+            headers={"accept": "application/json"},
+            endpoint_id="ping",
+        )
+        return None
+    except (ApiError, TransportError) as exc:
+        return exc
+
+
 async def check_elasticsearch(
     app: Application, worker: int | None
 ) -> None:  # pragma: no cover
@@ -55,10 +72,12 @@ async def check_elasticsearch(
         es: AsyncElasticsearch = cast(
             AsyncElasticsearch, app.settings.get("ELASTICSEARCH")
         )
-        if not await es.ping():
+        if exc := await _try_ping_elastic_search(es):
             EVENT_ELASTICSEARCH.clear()
             LOGGER.error(
-                "Connecting to Elasticsearch failed on worker: %s", worker
+                "Connecting to Elasticsearch failed on worker: %s",
+                worker,
+                exc_info=exc,
             )
         elif not EVENT_ELASTICSEARCH.is_set():
             try:
@@ -72,7 +91,7 @@ async def check_elasticsearch(
                 )
             else:
                 EVENT_ELASTICSEARCH.set()
-        await asyncio.sleep(20)
+        await asyncio.sleep(25)
 
 
 async def check_if_ppid_changed(ppid: int) -> None:
