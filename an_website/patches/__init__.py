@@ -27,7 +27,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import certifi
-import defusedxml  # type: ignore[import-untyped]
+import defusedxml
 import jsonpickle  # type: ignore[import-untyped]
 import multiprocessing_importlib_resources
 import orjson
@@ -349,5 +349,5 @@ def patch_tornado_redirect() -> None:
 
 def patch_xml() -> None:
     """Make XML safer."""
-    defusedxml.defuse_stdlib()
-    defusedxml.xmlrpc.monkey_patch()
+    defusedxml.defuse_stdlib()  # type: ignore[attr-defined]
+    defusedxml.xmlrpc.monkey_patch()  # type: ignore[attr-defined]
