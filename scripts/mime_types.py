@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S PYTHONPATH=. python3
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -26,7 +26,7 @@ from an_website.backdoor_client import request
 
 DEBIAN_MEDIA_TYPES_VERSION: Final[str] = "debian/14.0.0"
 
-JSHTTP_MIME_DB_VERSION: Final[str] = "80b4e6ee439509e9fac9ca3c6befd159519e7ccc"
+JSHTTP_MIME_DB_VERSION: Final[str] = "c03ddfcab556ab61768dd77d9c52b8fbdb17b4dc"
 
 REPO_ROOT: Final[Path] = Path(__file__).absolute().parent.parent
 
