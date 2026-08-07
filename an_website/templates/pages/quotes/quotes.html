@@ -5,6 +5,13 @@
     {% include "./link_rss.html" %}
     <script defer type="module" src="{{fix_static('js/quotes/quotes.js')}}"></script>
     <meta name="fediverse:creator" content="@asozialer_bot@fosspri.de">
+
+    <meta content="{{ fix_url(f'{wrong_quote.get_path()}.gif') }}" property="og:image">
+    <meta content="image/gif" property="og:image:type">
+    <meta content="1000" property="og:image:width">
+    <meta content="750" property="og:image:height">
+    <meta content="{{ f'{wrong_quote.quote}\n\n- {wrong_quote.author}' }}" property="og:image:alt">
+    <meta content="summary_large_image" property="twitter:card">
 {% end %}
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css"
