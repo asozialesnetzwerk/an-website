@@ -27,10 +27,9 @@ from typing import Final
 from tornado.web import HTTPError
 from typed_stream import Stream
 
-from an_website.utils.emoji import text_contains_emoji
-
 from .. import DIR as ROOT_DIR
 from ..utils.data_parsing import parse_args
+from ..utils.emoji import text_contains_emoji
 from ..utils.request_handler import APIRequestHandler
 from ..utils.utils import ModuleInfo
 
@@ -58,7 +57,10 @@ def get_module_info() -> ModuleInfo:
 def parse_commits_txt(data: str) -> Commits:
     """Parse the contents of commits.txt."""
     return {
-        split[0]: (datetime.fromtimestamp(int(split[1]), UTC), split[2])
+        split[0]: (
+            datetime.fromtimestamp(int(split[1]), UTC),
+            split[2] if len(split) >= 3 else "",
+        )
         for line in data.splitlines()
         if (split := line.rstrip().split(" ", 2))
     }
@@ -106,6 +108,7 @@ class CommitmentAPI(APIRequestHandler):
                     [
                         (com, (_, msg))
                         for com, (_, msg) in COMMITS.items()
+                        if msg
                         if not args.require_emoji or text_contains_emoji(msg)
                     ]
                 )
