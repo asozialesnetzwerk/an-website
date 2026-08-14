@@ -501,14 +501,16 @@ class BaseRequestHandler(_RequestHandler):
                 for element in soup.find_all(name="main")[0].contents
             ).strip(),
             "scripts": [
-                {"script": script.string} | script.attrs
+                {"script": script.string, **script.attrs}
                 for script in soup.find_all("script")
             ],
             "stylesheets": [
-                stylesheet.get("href").strip()
+                stylesheet.get("href")
                 for stylesheet in soup.find_all("link", rel="stylesheet")
             ],
-            "css": "\n".join(style.string for style in soup.find_all("style")),
+            "css": "\n".join(
+                (style.string or "") for style in soup.find_all("style")
+            ),
         }
 
         return self._finish(dictionary)
