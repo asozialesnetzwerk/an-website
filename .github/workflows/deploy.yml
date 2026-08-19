@@ -175,13 +175,14 @@ jobs:
       - build
       - build-source-tarball
     permissions: {}
-    continue-on-error: ${{ matrix.python-version == 3.15 }}
+    continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.14  # π
-          - 3.15
+          - '3.14'  # π
+          - '3.15'
+          - '3.15t'
         distribution:
           - name: wheel
             glob: '*.whl'
@@ -209,6 +210,9 @@ jobs:
       - name: Uninstall an-website
         run: pip uninstall -y an-website
         timeout-minutes: 1
+      - name: Install additional build-dependencies                                                                                                              │
+        run: |
+            sudo apt-get install -y libxslt-dev
       - name: Install ${{ matrix.distribution.name }}
         run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
@@ -291,13 +295,14 @@ jobs:
       contents: read
     needs:
       - build
-    continue-on-error: ${{ matrix.python-version == 3.15 }}
+    continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.14  # π
-          - 3.15
+          - '3.14'  # π
+          - '3.15'
+          - '3.15t'
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
@@ -327,6 +332,10 @@ jobs:
           rm *.tar.gz *.whl
           mv an_website-*/* .
           rmdir an_website-*
+      - name: Install additional build-dependencies                                                                                                              │
+        run: |
+            sudo apt-get install -y libxslt-dev
+        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install requirements
         run: pip install -r pip-requirements.txt --no-deps
       - name: Install TESTDEPS
@@ -342,13 +351,14 @@ jobs:
     runs-on: ubuntu-26.04
     permissions:
       contents: read
-    continue-on-error: ${{ matrix.python-version == 3.15 }}
+    continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
-          - 3.14  # π
-          - 3.15
+          - '3.14'  # π
+          - '3.15'
+          - '3.15t'
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
@@ -389,6 +399,10 @@ jobs:
         uses: ./.github/actions/start_wrong_quotes_api
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
+      - name: Install additional build-dependencies                                                                                                              │
+        run: |
+            sudo apt-get install -y libxslt-dev
+        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install requirements
         run: pip install . && pip uninstall -y an-website
       - name: Install stuff needed for the tests
