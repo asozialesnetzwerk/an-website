@@ -173,8 +173,8 @@ class AuthorsInfoPage(HTMLRequestHandler):
             else:
                 try:
                     author.info = await search_wikipedia(fixed_author_name)
-                except HTTPClientError as err:
-                    LOGGER.error(err, "Searching wikipedia failed")
+                except HTTPClientError:
+                    LOGGER.exception("Searching wikipedia failed")
                 if author.info is None or author.info[1] is None:
                     # nothing found
                     LOGGER.info("No information found about %s", repr(author))
