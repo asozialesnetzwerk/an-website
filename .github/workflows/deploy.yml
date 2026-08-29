@@ -210,13 +210,9 @@ jobs:
       - name: Uninstall an-website
         run: pip uninstall -y an-website
         timeout-minutes: 1
-      - name: Install additional build-dependencies
+      - name: Install additional build-dependencies                                                                                                              │
         run: |
             sudo apt-get install -y libxslt-dev
-        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
-      - name: Install orjson
-        run: ORJSON_BUILD_FREETHREADED=1 pip install ${{ matrix.distribution.glob }}
-        if: endsWith(matrix.python-version, 't')
       - name: Install ${{ matrix.distribution.name }}
         run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
@@ -336,13 +332,10 @@ jobs:
           rm *.tar.gz *.whl
           mv an_website-*/* .
           rmdir an_website-*
-      - name: Install additional build-dependencies
+      - name: Install additional build-dependencies                                                                                                              │
         run: |
             sudo apt-get install -y libxslt-dev
         if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
-      - name: Install orjson
-        run: ORJSON_BUILD_FREETHREADED=1 pip install -c pip-constraints.txt orjson
-        if: endsWith(matrix.python-version, 't')
       - name: Install requirements
         run: pip install -r pip-requirements.txt --no-deps
       - name: Install TESTDEPS
@@ -406,13 +399,10 @@ jobs:
         uses: ./.github/actions/start_wrong_quotes_api
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
-      - name: Install additional build-dependencies
+      - name: Install additional build-dependencies                                                                                                              │
         run: |
             sudo apt-get install -y libxslt-dev
         if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
-      - name: Install orjson
-        run: ORJSON_BUILD_FREETHREADED=1 pip install -c pip-constraints.txt orjson
-        if: endsWith(matrix.python-version, 't')
       - name: Install requirements
         run: pip install . && pip uninstall -y an-website
       - name: Install stuff needed for the tests
