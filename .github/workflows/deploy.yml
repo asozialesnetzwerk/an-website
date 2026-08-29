@@ -211,8 +211,8 @@ jobs:
         run: pip uninstall -y an-website
         timeout-minutes: 1
       - name: Install additional build-dependencies                                                                                                              │
-        run: |
-            sudo apt-get install -y libxslt-dev
+        run: sudo apt-get install -y libxslt-dev
+        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install ${{ matrix.distribution.name }}
         run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
@@ -333,8 +333,7 @@ jobs:
           mv an_website-*/* .
           rmdir an_website-*
       - name: Install additional build-dependencies                                                                                                              │
-        run: |
-            sudo apt-get install -y libxslt-dev
+        run: sudo apt-get install -y libxslt-dev
         if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install requirements
         run: pip install -r pip-requirements.txt --no-deps
@@ -400,8 +399,7 @@ jobs:
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install additional build-dependencies                                                                                                              │
-        run: |
-            sudo apt-get install -y libxslt-dev
+        run: sudo apt-get install -y libxslt-dev
         if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install requirements
         run: pip install . && pip uninstall -y an-website
