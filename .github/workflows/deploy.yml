@@ -122,7 +122,7 @@ jobs:
 
   version:
     name: Determine version
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-slim
     permissions: {}
     needs:
       - build
@@ -170,19 +170,22 @@ jobs:
 
   test-distribution:
     name: Test distribution
-    runs-on: ubuntu-26.04
+    runs-on: ${{ matrix.os.label }}
     needs:
       - build
       - build-source-tarball
     permissions: {}
-    continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - label: ubuntu-slim
+            arch: x86_64
+          - label: ubuntu-26.04-arm
+            arch: aarch64
         python-version:
+          # only supported versions
           - '3.14'  # π
-          - '3.15'
-          - '3.15t'
         distribution:
           - name: wheel
             glob: '*.whl'
@@ -195,7 +198,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
@@ -210,9 +212,6 @@ jobs:
       - name: Uninstall an-website
         run: pip uninstall -y an-website
         timeout-minutes: 1
-      - name: Install additional build-dependencies                                                                                                              │
-        run: sudo apt-get install -y libxslt-dev
-        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install ${{ matrix.distribution.name }}
         run: pip install ${{ matrix.distribution.glob }}
       - name: Test help
@@ -295,14 +294,12 @@ jobs:
       contents: read
     needs:
       - build
-    continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
     strategy:
       fail-fast: false
       matrix:
         python-version:
+          # only supported versions
           - '3.14'  # π
-          - '3.15'
-          - '3.15t'
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
@@ -313,7 +310,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          allow-prereleases: true
       - name: Checkout .github
         uses: actions/checkout@v6
         with:
@@ -332,9 +328,6 @@ jobs:
           rm *.tar.gz *.whl
           mv an_website-*/* .
           rmdir an_website-*
-      - name: Install additional build-dependencies                                                                                                              │
-        run: sudo apt-get install -y libxslt-dev
-        if: matrix.python-version == '3.15' || matrix.python-version == '3.15t'
       - name: Install requirements
         run: pip install -r pip-requirements.txt --no-deps
       - name: Install TESTDEPS
@@ -347,7 +340,7 @@ jobs:
 
   tests:
     name: Run tests
-    runs-on: ubuntu-26.04
+    runs-on: ${{ matrix.os.label }}
     permissions:
       contents: read
     continue-on-error: ${{ endsWith(matrix.python-version, 't') }}
@@ -355,9 +348,15 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
+          # all versions
           - '3.14'  # π
           - '3.15'
           - '3.15t'
+        os:
+          - label: ubuntu-26.04
+            arch: x86_64
+          - label: ubuntu-26.04-arm
+            arch: aarch64
     services:
       redis:
         image: docker.io/redis/redis-stack-server:6.2.6-v20
