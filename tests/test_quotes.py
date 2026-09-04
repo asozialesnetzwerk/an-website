@@ -324,9 +324,18 @@ async def test_quote_image_handlers(
                     )
                     img2.close()
                     qimg = qoi_rs.decode(image4)
-                    assert qimg.mode == "RGB"
+                    qimg2 = qoi_rs.decode(image4)
+                    rgb: qoi_rs.types.Mode = "RGB"
+                    assert qimg.mode == rgb
+                    srgb: qoi_rs.types.ColourSpace = "SRGB"
+                    assert qimg.colour_space == srgb
                     assert qimg.width == 1000
                     assert qimg.height == 750
+                    assert hash(qimg) == hash(qimg2)
+                    assert qimg == qimg2 and (qimg != qimg2) is False
+                    assert id(qimg) != id(qimg2) and qimg is not qimg2
+                    assert isinstance(qimg, qoi_rs.Image)
+                    assert isinstance(qimg, qoi_rs.Image)
             finally:
                 img.close()
 
