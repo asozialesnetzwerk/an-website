@@ -1,0 +1,33 @@
+name: Mirroring
+
+on:
+  push:
+    tags: [ v* ]
+    branches: [ main ]
+
+jobs:
+  mirror:
+    name: Mirror repository
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - name: Setup SSH
+        run: |
+            mkdir -p ~/.ssh
+            printf '%s' "${CODEBERG_SSH_PRIVATE_KEY}" > ~/.ssh/codeberg
+            chmod 600 ~/.ssh/codeberg
+            cat > ~/.ssh/config << EOF
+            Host codeberg.org
+              User git
+              IdentityFile ~/.ssh/codeberg
+            EOF
+            ssh-keyscan codeberg.org >> ~/.ssh/known_hosts
+        env:
+          CODEBERG_SSH_PRIVATE_KEY: ${{ secrets.CODEBERG_SSH_PRIVATE_KEY }}
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Add Codeberg remote
+        run: git remote add codeberg ssh://git@codeberg.org/asozialesnetzwerk/an-website.git
+      - name: Push to Codeberg
+        run: git push -f codeberg '${{ github.sha }}:${{ github.ref }}'
