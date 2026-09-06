@@ -113,10 +113,10 @@ def _parse_int(data: Any, *, strict: bool) -> int:
     if isinstance(data, float) and int(data) == data:
         return int(data)
     if strict:
-        raise ValueError(f"{data!r} is not a number.")
+        raise ValueError(f"{data!r} is not an int.")
     if isinstance(data, str):
         return int(data, base=0)
-    if isinstance(data, bool):
+    if isinstance(data, (bool, float)):
         return int(data)
     raise ValueError(f"Cannot parse {data!r} into int.")
 
@@ -125,15 +125,13 @@ def _parse_float(data: Any, *, strict: bool) -> float:
     """Parse data into float."""
     if isinstance(data, float):
         return data
-    if isinstance(data, int):
+    if isinstance(data, int) and not isinstance(data, bool):
         return float(data)
     if strict:
         raise ValueError(f"{data!r} is not a number.")
-    if isinstance(data, str):
-        return int(data)
-    if isinstance(data, bool):
-        return int(data)
-    raise ValueError(f"Cannot parse {data!r} into int.")
+    if isinstance(data, (str, bool)):
+        return float(data)
+    raise ValueError(f"Cannot parse {data!r} into float.")
 
 
 def _parse_list(
@@ -153,7 +151,7 @@ def _parse_class(type_: type[T], data: Mapping[str, Any], *, strict: bool) -> T:
     signature = inspect.signature(type_.__init__, eval_str=True)
     args: list[Any] = []
     kwargs: dict[str, Any] = {}
-    in_positional = False
+    in_positional = True
 
     def add(_name: str, _value: Any) -> None:
         if in_positional:
@@ -167,7 +165,7 @@ def _parse_class(type_: type[T], data: Mapping[str, Any], *, strict: bool) -> T:
             first = False
             continue
         if param.kind in {Parameter.VAR_KEYWORD, Parameter.KEYWORD_ONLY}:
-            in_positional = True
+            in_positional = False
         if arg_name not in data:
             if param.default == Parameter.empty:
                 raise ValueError(f"Missing required argument {arg_name!r}")
