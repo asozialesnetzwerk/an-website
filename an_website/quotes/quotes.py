@@ -255,6 +255,7 @@ def wrong_quote_to_json(
         "rating": rating,
         "vote": vote,
         "next": f"{next_q}-{next_a}",
+        "path": wq_.get_path(),
     }
 
 

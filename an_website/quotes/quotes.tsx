@@ -140,6 +140,7 @@ function startQuotes() {
         real_author: string;
         real_author_id: number;
         next: string;
+        path: string;
     }
 
     function handleData(
@@ -229,7 +230,7 @@ function startQuotes() {
                     }
 
                     data.stateType = "quotes";
-                    data.url = `/zitate/${data.id}${params}`;
+                    data.url = `${data.path}${params}`;
                     history.pushState(data, "Falsche Zitate", data.url);
                     setLastLocation(data.url);
                 },
