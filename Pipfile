@@ -40,8 +40,7 @@ rapidfuzz = "==3.*"
 redis = {version = "==5.*, !=5.3.0", extras = ["hiredis"]}
 regex = "==2026.7.19"
 setproctitle = "==1.*"
-# starting with tornado 6.5.9 there are many claude slop commits
-tornado = "==6.*, <= 6.5.8"
+windhose = "*"
 typed-stream = "<2"
 tzdata = "*"
 UltraDict = "<2"

@@ -30,7 +30,7 @@ flake8-simplify==0.30.0
 html5lib==1.1
 id==1.6.1
 identify==2.6.19
-idna==3.19
+idna==3.20
 iniconfig==2.3.0
 isort==8.0.1
 jaraco.classes==3.4.0
@@ -51,7 +51,7 @@ packaging==26.0
 pathspec==1.1.1
 pep8-naming==0.15.1
 pipenv==2024.4.1
-platformdirs==4.11.9
+platformdirs==4.11.11
 pluggy==1.6.0
 pre-commit==3.8.0
 pycodestyle==2.14.0
@@ -67,7 +67,7 @@ pytest==9.1.1
 pytest-cov==7.1.0
 pytest-is-running==1.5.1
 pytest-tornasync==0.6.0.post2
-python-discovery==1.6.0
+python-discovery==1.6.1
 pytokens==0.4.1
 pyyaml==6.0.3
 readme-renderer==46.0
@@ -84,7 +84,7 @@ soupsieve==2.9.2
 stevedore==5.9.1
 time-machine==3.5.1
 tomlkit==0.15.1
-tornado==6.5.8
+tornado==6.5.10
 trove-classifiers==2026.5.22.10
 twine==6.2.0
 types-cffi==1.17.0.20250915
@@ -101,7 +101,7 @@ types-setuptools==80.10.0.20260124
 types-webencodings==0.5.0.20251108
 typing-extensions==4.16.0
 urllib3==2.8.0
-virtualenv==21.7.10
+virtualenv==21.8.1
 webencodings==0.6.1
 zipapps==2026.4.17
 zopflipy==1.13
@@ -116,7 +116,7 @@ elastic-apm==6.26.2
 elastic-enterprise-search==8.18.0
 elastic-transport==8.19.0
 elasticsearch==8.19.3
-emoji==2.15.0
+emoji==2.16.0
 funcparserlib==1.0.1
 get-version==3.5.5
 hangman-solver-rs==1.1.0
@@ -147,4 +147,5 @@ typed-stream==1.0.0
 tzdata==2026.4
 ultradict==0.0.6
 uvloop==0.22.1
+windhose==1.0.0
 wrapt==2.2.2
