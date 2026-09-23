@@ -16,7 +16,6 @@
 
 import http.client
 import json as stdlib_json  # pylint: disable=preferred-module
-import logging
 from collections.abc import Callable
 from configparser import RawConfigParser
 from contextlib import suppress
@@ -46,7 +45,7 @@ from tornado.httputil import (
     ParseBodyConfig,
 )
 from tornado.log import gen_log
-from tornado.web import GZipContentEncoding, RedirectHandler, RequestHandler
+from tornado.web import GZipContentEncoding, RequestHandler
 
 from .. import CA_BUNDLE_PATH, MEDIA_TYPES
 from . import braille, json  # noqa: F401  # pylint: disable=reimported
@@ -64,12 +63,10 @@ def apply() -> None:
     patch_threading()
     patch_xml()
 
-    patch_tornado_418()
     patch_tornado_arguments()
     patch_tornado_gzip()
     patch_tornado_httpclient()
     patch_tornado_logs()
-    patch_tornado_redirect()
 
 
 def patch_certifi() -> None:
@@ -161,19 +158,6 @@ def patch_threading() -> None:
         _bootstrap(self)
 
     Thread._bootstrap = bootstrap  # type: ignore[attr-defined]
-
-
-def patch_tornado_418() -> None:
-    """Add support for RFC 7168."""
-    RequestHandler.SUPPORTED_METHODS += (
-        "PROPFIND",
-        "BREW",
-        "WHEN",
-    )
-    _ = RequestHandler._unimplemented_method
-    RequestHandler.propfind = _  # type: ignore[attr-defined]
-    RequestHandler.brew = _  # type: ignore[attr-defined]
-    RequestHandler.when = _  # type: ignore[attr-defined]
 
 
 def patch_tornado_arguments() -> None:  # noqa: C901
@@ -307,44 +291,6 @@ def patch_tornado_logs() -> None:
             ),
         )
     )
-
-
-def patch_tornado_redirect() -> None:
-    """Use modern redirect codes and support HEAD requests."""
-
-    def redirect(
-        self: RequestHandler,
-        url: str,
-        permanent: bool = False,
-        status: None | int = None,
-    ) -> None:
-        if url == self.request.full_url():
-            logging.getLogger(
-                f"{self.__class__.__module__}.{self.__class__.__qualname__}"
-            ).critical("Infinite redirect to %r detected", url)
-        if self._headers_written:
-            # pylint: disable=broad-exception-raised
-            raise Exception("Cannot redirect after headers have been written")
-        if status is None:
-            status = 308 if permanent else 307
-        else:
-            assert isinstance(status, int) and 300 <= status <= 399  # type: ignore[redundant-expr]  # noqa: B950
-        self.set_status(status)
-        self.set_header("Location", url)
-        self.finish()  # type: ignore[unused-awaitable]
-
-    if RequestHandler.redirect.__doc__:
-        # fmt: off
-        redirect.__doc__ = (
-            RequestHandler.redirect.__doc__
-            .replace("301", "308")
-            .replace("302", "307")
-        )
-        # fmt: on
-
-    RequestHandler.redirect = redirect  # type: ignore[method-assign]
-
-    RedirectHandler.head = RedirectHandler.get
 
 
 def patch_xml() -> None:
