@@ -137,7 +137,7 @@ def app() -> Application:
     es = elasticsearch_setup.setup_elasticsearch(app)
     redis = main.setup_redis(app)
 
-    loop = asyncio.get_event_loop_policy().get_event_loop()
+    loop = asyncio.get_event_loop()
 
     if es:
         try:

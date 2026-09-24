@@ -25,11 +25,15 @@
 
 """Vendored pytest-tornasync pytest plugin."""
 
+import asyncio
+import contextlib
 import socket
-from collections.abc import Iterable
+import traceback
+from asyncio import AbstractEventLoop
+from collections.abc import Awaitable, Generator, Iterable
 from contextlib import closing
 from inspect import iscoroutinefunction
-from typing import Any, Final, cast
+from typing import Final
 
 import pytest
 import tornado.ioloop
@@ -48,7 +52,10 @@ from pytest import (
 from tornado.curl_httpclient import CurlAsyncHTTPClient
 from tornado.httpserver import HTTPServer
 
+from an_website.main import get_default_event_loop_factory
+
 ASYNC_TEST_TIMEOUT: Final[int] = 20
+CLOSE_CONNS_TIMEOUT: Final[int] = 5
 APP_FIXTURE_NAME: Final[str] = "app"
 
 
@@ -60,7 +67,7 @@ def pytest_addoption(
 
 
 # SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_pycollect_makeitem
-@pytest.mark.tryfirst
+@pytest.hookimpl(tryfirst=True)
 def pytest_pycollect_makeitem(
     collector: Module | Class, name: str, obj: object
 ) -> None | Item | Collector | list[Item | Collector]:
@@ -71,8 +78,16 @@ def pytest_pycollect_makeitem(
     return None
 
 
+async def run_with_timeout[T](  # noqa: D103
+    future: Awaitable[T], *, timeout: int
+) -> T:
+    """Await a future with a timeout."""
+    async with asyncio.timeout(timeout):
+        return await future
+
+
 # SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_pyfunc_call
-@pytest.mark.tryfirst
+@pytest.hookimpl(tryfirst=True)
 def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
     """Call underlying test function."""
     funcargs = pyfuncitem.funcargs
@@ -83,26 +98,38 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
         pyfuncitem.obj(**testargs)
         return True
 
-    loop: tornado.ioloop.IOLoop
-    try:
-        loop = cast(Any, funcargs["io_loop"])
-    except KeyError:
-        loop = tornado.ioloop.IOLoop.current()
-
-    loop.run_sync(
-        lambda: pyfuncitem.obj(**testargs), timeout=ASYNC_TEST_TIMEOUT
+    future = run_with_timeout(
+        pyfuncitem.obj(**testargs), timeout=ASYNC_TEST_TIMEOUT
     )
+
+    try:
+        loop = asyncio.get_event_loop()
+    except Exception:  # pylint: disable=broad-exception-caught
+        traceback.print_exc()
+        # Create new event loop as no event loop is running
+        with contextlib.contextmanager(_io_loop)() as loop:
+            loop.run_until_complete(future)
+    else:
+        # if io_loop fixture argument is present, it should be the running loop
+        if (_l := funcargs.get("io_loop")) is not None:
+            assert _l is loop
+
+        loop.run_until_complete(future)
+
     return True
 
 
-@pytest.fixture
-def io_loop() -> Iterable[tornado.ioloop.IOLoop]:
+def _io_loop() -> Generator[AbstractEventLoop, None, None]:
     """Create new io loop for each test, and tear it down after."""
-    loop = tornado.ioloop.IOLoop()
-    loop.make_current()
+    loop = get_default_event_loop_factory()()
+    asyncio.set_event_loop(loop)
     yield loop
-    loop.clear_current()
-    loop.close(all_fds=True)
+    asyncio.set_event_loop(None)
+    loop.stop()
+    loop.close()
+
+
+io_loop = pytest.fixture(_io_loop)
 
 
 @pytest.fixture
@@ -114,7 +141,7 @@ def http_server_port() -> tuple[socket.socket, int]:
 @pytest.fixture
 def http_server(
     request: FixtureRequest,
-    io_loop: tornado.ioloop.IOLoop,
+    io_loop: AbstractEventLoop,
     http_server_port: tuple[socket.socket, int],
 ) -> Iterable[object]:
     """Start a tornado HTTP server that listens on all available interfaces.
@@ -134,14 +161,16 @@ def http_server(
     server.stop()
 
     if hasattr(server, "close_all_connections"):
-        io_loop.run_sync(
-            server.close_all_connections,
-            timeout=ASYNC_TEST_TIMEOUT,
+        future = run_with_timeout(
+            server.close_all_connections(), timeout=CLOSE_CONNS_TIMEOUT
         )
+        io_loop.run_until_complete(future)
 
 
 @pytest.fixture
 def http_client(http_server: HTTPServer) -> Iterable[CurlAsyncHTTPClient]:
     """Create an asynchronous HTTP client that can fetch from anywhere."""
-    with closing(CurlAsyncHTTPClient(max_clients=1)) as client:
+    with closing(
+        CurlAsyncHTTPClient(max_clients=1, force_instance=True)
+    ) as client:
         yield client
