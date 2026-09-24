@@ -20,3 +20,4 @@ per-file-ignores =
     an_website/patches/json.py:B950
     an_website/__main__.py:E402
     tests/__init__.py:E402
+    tests/pytest_tornasync.py:B950
