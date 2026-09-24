@@ -35,9 +35,9 @@ import pytest
 import tornado.ioloop
 import tornado.simple_httpclient
 import tornado.testing
-from coverage.collector import Collector
 from pytest import (
     Class,
+    Collector,
     FixtureRequest,
     Function,
     Item,
@@ -45,8 +45,7 @@ from pytest import (
     Parser,
     PytestPluginManager,
 )
-from tornado.concurrent import Future
-from tornado.httpclient import AsyncHTTPClient, HTTPResponse
+from tornado.curl_httpclient import CurlAsyncHTTPClient
 from tornado.httpserver import HTTPServer
 
 ASYNC_TEST_TIMEOUT: Final[int] = 20
@@ -141,59 +140,8 @@ def http_server(
         )
 
 
-class AsyncHTTPServerClient(tornado.simple_httpclient.SimpleAsyncHTTPClient):
-    """Wrapper around AsyncHTTPClient."""
-
-    _http_server: HTTPServer
-
-    # pylint: disable-next=redefined-outer-name,arguments-differ
-    def initialize(self, *, http_server: HTTPServer) -> None:  # type: ignore[override]
-        """Initialize self."""
-        super().initialize()
-        self._http_server = http_server
-
-    # pylint: disable-next=arguments-differ
-    def fetch(  # type: ignore[override]
-        self,
-        request: str,
-        **kwargs: Any,
-    ) -> Future[HTTPResponse]:
-        """
-        Fetch local path.
-
-        Fetch `path` from test server, passing `kwargs` to the `fetch`
-        of the underlying `tornado.simple_httpclient.SimpleAsyncHTTPClient`.
-        """
-        return super().fetch(self.get_url(request), **kwargs)
-
-    def get_protocol(self) -> str:
-        """Get the protocol."""
-        # pylint: disable=no-self-use
-        return "http"
-
-    def get_http_port(self) -> None | int:
-        """Get the HTTP port."""
-        # pylint: disable-next=protected-access
-        for sock in self._http_server._sockets.values():
-            return cast(int, sock.getsockname()[1])
-        return None
-
-    def get_url(self, path: str) -> str:
-        """Get the full URL for a given path."""
-        return f"{self.get_protocol()}://127.0.0.1:{self.get_http_port()}{path}"
-
-
 @pytest.fixture
-def http_server_client(
-    http_server: HTTPServer,
-) -> Iterable[AsyncHTTPServerClient]:
-    """Create an asynchronous HTTP client that can fetch from `http_server`."""
-    with closing(AsyncHTTPServerClient(http_server=http_server)) as client:
-        yield client
-
-
-@pytest.fixture
-def http_client(http_server: HTTPServer) -> Iterable[AsyncHTTPClient]:
+def http_client(http_server: HTTPServer) -> Iterable[CurlAsyncHTTPClient]:
     """Create an asynchronous HTTP client that can fetch from anywhere."""
-    with closing(tornado.httpclient.AsyncHTTPClient()) as client:
+    with closing(CurlAsyncHTTPClient(max_clients=1)) as client:
         yield client
