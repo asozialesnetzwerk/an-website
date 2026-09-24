@@ -80,7 +80,6 @@ pyrepl = {git = "git+https://github.com/asozialesnetzwerk/pyrepl", ref = "an-web
 pytest = "==9.*"
 pytest-cov = "==7.*"
 pytest-is-running = "==1.*"
-pytest-tornasync = "<2"
 setuptools = "==80.*"  # TODO: switch to fork
 time-machine = "==3.*"
 trove-classifiers = "2026.5.22.10"

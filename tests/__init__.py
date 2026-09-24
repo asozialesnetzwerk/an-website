@@ -67,6 +67,8 @@ from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.better_config_parser import BetterConfigParser
 
+pytest_plugins = ["tests.pytest_tornasync"]
+
 # Same as in ../scripts/fix_static_url_path.py
 ERROR_QUERY: Final[str] = "XXX-COULD-NOT-ADD-HASH-XXX"
 

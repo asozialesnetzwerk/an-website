@@ -18,7 +18,7 @@ dill==0.4.1
 distlib==0.4.3
 docutils==0.23
 dulwich==1.2.15
-filelock==4.0.1
+filelock==4.0.3
 flake8==7.4.1
 flake8-bugbear==26.9.9
 flake8-comprehensions==3.17.0
@@ -66,7 +66,6 @@ pyrepl @ git+https://github.com/asozialesnetzwerk/pyrepl@502bcf766e22b7d3898ed31
 pytest==9.1.1
 pytest-cov==7.1.0
 pytest-is-running==1.5.1
-pytest-tornasync==0.6.0.post2
 python-discovery==1.6.1
 pytokens==0.4.1
 pyyaml==6.0.3
@@ -80,11 +79,10 @@ secretstorage==3.5.0
 setuptools==80.10.2
 six==1.17.0
 snowballstemmer==3.1.1
-soupsieve==2.9.2
+soupsieve==2.10
 stevedore==5.9.1
 time-machine==3.5.1
 tomlkit==0.15.1
-tornado==6.5.10
 trove-classifiers==2026.5.22.10
 twine==6.2.0
 types-cffi==1.17.0.20250915
@@ -101,7 +99,7 @@ types-setuptools==80.10.0.20260124
 types-webencodings==0.5.0.20251108
 typing-extensions==4.16.0
 urllib3==2.8.0
-virtualenv==21.11.1
+virtualenv==21.12.0
 webencodings==0.6.1
 zipapps==2026.4.17
 zopflipy==1.13
