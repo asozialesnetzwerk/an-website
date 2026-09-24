@@ -99,7 +99,7 @@ types-setuptools==80.10.0.20260124
 types-webencodings==0.5.0.20251108
 typing-extensions==4.16.0
 urllib3==2.8.0
-virtualenv==21.12.0
+virtualenv==21.12.1
 webencodings==0.6.1
 zipapps==2026.4.17
 zopflipy==1.13
@@ -145,5 +145,5 @@ typed-stream==1.0.0
 tzdata==2026.4
 ultradict==0.0.6
 uvloop==0.22.1
-windhose==2.0.0
+windhose==2.0.1
 wrapt==2.2.2

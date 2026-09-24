@@ -14,3 +14,4 @@ include TIMESTMP.TXT
 include tests/__init__.py
 include tests/commitment.txt
 include tests/config.ini
+include tests/pytest_tornasync.py
