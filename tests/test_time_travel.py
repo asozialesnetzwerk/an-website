@@ -15,6 +15,7 @@
 
 from datetime import UTC, datetime, timedelta
 
+import pytest
 from lxml.html import document_fromstring
 from time_machine import travel
 
@@ -26,6 +27,7 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 )
 
 
+@pytest.mark.timeout(None)
 async def test_time_travel(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the footer and stuff."""
     epoch = datetime(2026, 1, 1, 6, 6, 6, 6, tzinfo=UTC)

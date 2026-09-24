@@ -42,12 +42,11 @@ import tornado.testing
 from pytest import (
     Class,
     Collector,
+    Config,
     FixtureRequest,
     Function,
     Item,
     Module,
-    Parser,
-    PytestPluginManager,
 )
 from tornado.curl_httpclient import CurlAsyncHTTPClient
 from tornado.httpserver import HTTPServer
@@ -57,13 +56,15 @@ from an_website.main import get_default_event_loop_factory
 ASYNC_TEST_TIMEOUT: Final[int] = 20
 CLOSE_CONNS_TIMEOUT: Final[int] = 5
 APP_FIXTURE_NAME: Final[str] = "app"
+TIMEOUT_MARKER: Final[str] = "timeout"
 
 
-# SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_addoption
-def pytest_addoption(
-    parser: Parser, pluginmanager: PytestPluginManager
-) -> None:
-    """Register argparse-style options."""
+# SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_configure
+def pytest_configure(config: Config) -> None:
+    """Register an additional marker."""
+    config.addinivalue_line(
+        "markers", f"{TIMEOUT_MARKER}(seconds): Set the timeout of the test"
+    )
 
 
 # SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_pycollect_makeitem
@@ -98,9 +99,16 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
         pyfuncitem.obj(**testargs)
         return True
 
-    future = run_with_timeout(
-        pyfuncitem.obj(**testargs), timeout=ASYNC_TEST_TIMEOUT
-    )
+    markers = list(pyfuncitem.iter_markers(TIMEOUT_MARKER))
+    if markers:
+        [marker] = markers
+        [timeout] = marker.args
+    else:
+        timeout = ASYNC_TEST_TIMEOUT
+
+    future = pyfuncitem.obj(**testargs)
+    if timeout is not None:
+        future = run_with_timeout(future, timeout=timeout)
 
     try:
         loop = asyncio.get_event_loop()
@@ -119,7 +127,7 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
     return True
 
 
-def _io_loop() -> Generator[AbstractEventLoop, None, None]:
+def _io_loop() -> Generator[AbstractEventLoop]:
     """Create new io loop for each test, and tear it down after."""
     loop = get_default_event_loop_factory()()
     asyncio.set_event_loop(loop)
