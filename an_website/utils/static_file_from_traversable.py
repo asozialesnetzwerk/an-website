@@ -14,10 +14,17 @@
 
 """A static file handler for the Traversable abc."""
 
+import asyncio
 import contextlib
 import logging
 import sys
-from collections.abc import Awaitable, Iterable, Mapping, Sequence
+from collections.abc import (
+    AsyncIterable,
+    Awaitable,
+    Iterable,
+    Mapping,
+    Sequence,
+)
 from importlib.resources.abc import Traversable
 from types import MappingProxyType
 from typing import Any, Final, Literal, override
@@ -147,8 +154,11 @@ class TraversableStaticFileHandler(_RequestHandler):
             await self.finish()
             return
 
-        for chunk in self.get_content(absolute_path, start=start, end=end):
+        async for chunk in self.get_content(
+            absolute_path, start=start, end=end
+        ):
             self.write(chunk)
+            del chunk  # delete chunk asap
             try:
                 await self.flush()
             except iostream.StreamClosedError:
@@ -199,12 +209,12 @@ class TraversableStaticFileHandler(_RequestHandler):
         return absolute_path, encoding
 
     @classmethod
-    def get_content(
+    async def get_content(
         cls,
         abspath: Traversable,
         start: int | None = None,
         end: int | None = None,
-    ) -> Iterable[bytes]:
+    ) -> AsyncIterable[bytes]:
         """Read the content of a file in chunks."""
         with abspath.open("rb") as file:
             if start is not None:
@@ -225,6 +235,11 @@ class TraversableStaticFileHandler(_RequestHandler):
                 else:
                     assert not remaining
                     return
+                del chunk
+                # sleep to make sure we do not block the event loop for too long
+                # if the connection is too fast `self.flush()` may not suspend
+                if remaining:
+                    await asyncio.sleep(0)
 
     @classmethod
     def get_content_type(
