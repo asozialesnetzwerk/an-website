@@ -26,7 +26,6 @@
 """Vendored pytest-tornasync pytest plugin."""
 
 import asyncio
-import contextlib
 import socket
 import traceback
 from asyncio import AbstractEventLoop
@@ -71,11 +70,26 @@ def pytest_pycollect_makeitem(
 
 
 async def run_with_timeout[T](  # noqa: D103
-    future: Awaitable[T], *, timeout: int
+    future: Awaitable[T], *, timeout: int | None
 ) -> T:
     """Await a future with a timeout."""
+    if timeout is None:
+        return await future
+
     async with asyncio.timeout(timeout):
         return await future
+
+
+def _get_timeout(pyfuncitem: Function) -> int | None:
+    """Get the timeout based on the timeout marker."""
+    markers = list(pyfuncitem.iter_markers(TIMEOUT_MARKER))
+    if markers:
+        [marker] = markers
+        [timeout] = marker.args
+    else:
+        timeout = ASYNC_TEST_TIMEOUT
+
+    return timeout
 
 
 # SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_pyfunc_call
@@ -90,29 +104,23 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
         pyfuncitem.obj(**testargs)
         return True
 
-    markers = list(pyfuncitem.iter_markers(TIMEOUT_MARKER))
-    if markers:
-        [marker] = markers
-        [timeout] = marker.args
-    else:
-        timeout = ASYNC_TEST_TIMEOUT
-
-    future = pyfuncitem.obj(**testargs)
-    if timeout is not None:
-        future = run_with_timeout(future, timeout=timeout)
-
+    loops: Iterable[AbstractEventLoop]
     try:
-        loop = asyncio.get_event_loop()
+        loops = [asyncio.get_event_loop()]
     except Exception:  # pylint: disable=broad-exception-caught
         traceback.print_exc()
-        # Create new event loop as no event loop is running
-        with contextlib.contextmanager(_io_loop)() as loop:
-            loop.run_until_complete(future)
-    else:
+        loops = _io_loop()
+
+    for i, loop in enumerate(loops):
+        assert not i, "we have only one loop"
+
         # if io_loop fixture argument is present, it should be the running loop
         if (_l := funcargs.get("io_loop")) is not None:
             assert _l is loop
 
+        future = run_with_timeout(
+            pyfuncitem.obj(**testargs), timeout=_get_timeout(pyfuncitem)
+        )
         loop.run_until_complete(future)
 
     return True
@@ -120,12 +128,14 @@ def pytest_pyfunc_call(pyfuncitem: Function) -> object | None:
 
 def _io_loop() -> Generator[AbstractEventLoop]:
     """Create new io loop for each test, and tear it down after."""
-    loop = get_default_event_loop_factory()()
-    asyncio.set_event_loop(loop)
-    yield loop
-    asyncio.set_event_loop(None)
-    loop.stop()
-    loop.close()
+    loop_factory = get_default_event_loop_factory()
+
+    try:
+        with asyncio.Runner(loop_factory=loop_factory) as runner:
+            asyncio.set_event_loop(loop := runner.get_loop())
+            yield loop
+    finally:
+        asyncio.set_event_loop(None)
 
 
 io_loop = pytest.fixture(_io_loop)
