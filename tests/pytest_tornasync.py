@@ -42,7 +42,6 @@ import tornado.testing
 from pytest import (
     Class,
     Collector,
-    Config,
     FixtureRequest,
     Function,
     Item,
@@ -57,14 +56,6 @@ ASYNC_TEST_TIMEOUT: Final[int] = 20
 CLOSE_CONNS_TIMEOUT: Final[int] = 5
 APP_FIXTURE_NAME: Final[str] = "app"
 TIMEOUT_MARKER: Final[str] = "timeout"
-
-
-# SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_configure
-def pytest_configure(config: Config) -> None:
-    """Register an additional marker."""
-    config.addinivalue_line(
-        "markers", f"{TIMEOUT_MARKER}(seconds): Set the timeout of the test"
-    )
 
 
 # SEE: https://docs.pytest.org/en/stable/reference/reference.html#pytest.hookspec.pytest_pycollect_makeitem
