@@ -288,7 +288,7 @@ class Backdoor(APIRequestHandler):
         """Serialize the data and return it."""
         try:
             if self.content_type == "application/json":
-                return cast(bytes, jsonpickle.encode(data))
+                return cast(bytes, jsonpickle.encode(data, keys=True))
             protocol = protocol or self.get_protocol_version()
             if self.content_type == "application/vnd.uqfoundation.dill":
                 return cast(bytes, dill.dumps(data, protocol))
