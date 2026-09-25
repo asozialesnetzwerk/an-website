@@ -314,9 +314,11 @@ async def test_colour_scheme(fetch: FetchCallable) -> None:  # noqa: F811
         if scheme != "system":
             assert f"?scheme={scheme}" in body
         html = HTMLParser(namespaceHTMLElements=False).parse(response.body)
-        assert html.find(
-            f".[@data-scheme={"light" if scheme == "random" else scheme!r}]"
-        ), f"{scheme} should be specified in html"
+        assert len(
+            html.find(
+                f".[@data-scheme={"light" if scheme == "random" else scheme!r}]"
+            )
+        ) in {1, 2}, f"{scheme} should be specified in html"
 
 
 @travel(datetime.fromtimestamp(1990), tick=False)

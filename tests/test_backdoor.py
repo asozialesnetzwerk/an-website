@@ -129,7 +129,10 @@ async def test_backdoor(fetch: FetchCallable) -> None:  # noqa: F811
             _request_and_parse,
             accept="application/json",
             loads=partial(
-                jsonpickle.loads, on_missing="error", classes=type(...)
+                jsonpickle.loads,
+                on_missing="error",
+                classes=type(...),
+                keys=True,
             ),
         ),
     ):
