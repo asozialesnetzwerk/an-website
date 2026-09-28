@@ -159,7 +159,7 @@ class AuthorsInfoPage(HTMLRequestHandler):
                 result = await self.redis.get(
                     self.get_redis_info_key(fixed_author_name)
                 )
-            if result and (len(info := result.split("|", maxsplit=1)) > 1):
+            if result and len(info := result.split("|", maxsplit=1)):
                 remaining_ttl = await self.redis.ttl(
                     self.get_redis_info_key(fixed_author_name)
                 )
@@ -176,7 +176,6 @@ class AuthorsInfoPage(HTMLRequestHandler):
                 except HTTPClientError:
                     LOGGER.exception("Searching wikipedia failed")
                 if author.info is None or author.info[1] is None:
-                    # nothing found
                     LOGGER.info("No information found about %s", repr(author))
                 elif EVENT_REDIS.is_set():
                     await self.redis.setex(
