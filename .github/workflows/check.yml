@@ -77,6 +77,14 @@ jobs:
           commit_message: "🤦"
           commit_user_name: Bot
           commit_user_email:
+      - name: Check dependency deny list
+        run: |
+            set -xeu
+            [ $(grep hangman-solver-rs pip-*.txt | wc -l) -eq 3 ]
+            for dep in numpy tornado
+            do
+              grep -in $dep pip-*.txt && exit 1 || true
+            done
 
   mypy:
     name: mypy
