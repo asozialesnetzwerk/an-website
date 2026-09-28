@@ -106,7 +106,7 @@ def get_version() -> str:
 
 VERSION: Final[str] = get_version()
 
-GH_ORG_URL: Final[str] = "https://github.com/asozialesnetzwerk"
+GH_ORG_URL: Final[str] = "https://codeberg.org/asozialesnetzwerk"
 GH_REPO_URL: Final[str] = f"{GH_ORG_URL}/{NAME}"
 GH_PAGES_URL: Final[str] = f"https://github.asozial.org/{NAME}"
 

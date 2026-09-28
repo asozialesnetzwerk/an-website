@@ -30,7 +30,7 @@ from . import (  # noqa: F401  # pylint: disable=unused-import
 @pytest.mark.timeout(None)
 async def test_time_travel(fetch: FetchCallable) -> None:  # noqa: F811
     """Test the footer and stuff."""
-    epoch = datetime(2026, 1, 1, 6, 6, 6, 6, tzinfo=UTC)
+    epoch = datetime(2024, 7, 1, 6, 6, 6, 6, tzinfo=UTC)
 
     for i in range(1000):
         now = epoch + timedelta(hours=12 * i)
@@ -44,7 +44,7 @@ async def test_time_travel(fetch: FetchCallable) -> None:  # noqa: F811
         footer = doc.find("*/footer")
         assert footer is not None
         assert "Mit Liebe gebacken" in footer.text_content()
-        assert " GitHub" in footer.text_content()
+        assert " Codeberg" in footer.text_content()
 
         assert footer is not None, f"{response.body!r}"
 
@@ -53,4 +53,4 @@ async def test_time_travel(fetch: FetchCallable) -> None:  # noqa: F811
         assert emoji.tag in {"a", "span"}
         assert emoji.text_content()
         assert "Mit Liebe gebacken" not in emoji.text_content()
-        assert "Sektion GitHub" not in emoji.text_content()
+        assert "Sektion Codeberg" not in emoji.text_content()
