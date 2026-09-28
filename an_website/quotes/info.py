@@ -175,15 +175,16 @@ class AuthorsInfoPage(HTMLRequestHandler):
                     author.info = await search_wikipedia(fixed_author_name)
                 except HTTPClientError:
                     LOGGER.exception("Searching wikipedia failed")
-                if author.info is None or author.info[1] is None:
+                if author.info is None:
                     LOGGER.info("No information found about %s", repr(author))
                 elif EVENT_REDIS.is_set():
+                    value = author.info[0]
+                    if author.info[1]:
+                        value += "|" + author.info[1]
                     await self.redis.setex(
                         self.get_redis_info_key(fixed_author_name),
                         AUTHOR_INFO_NEW_TTL,
-                        # value to save (the author info)
-                        # type is ignored, because author.info[1] is not None
-                        "|".join(author.info[0:2]),  # type: ignore[arg-type]
+                        value,  # value to save (the author info)
                     )
 
         wqs = get_wrong_quotes(
