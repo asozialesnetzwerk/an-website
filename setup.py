@@ -32,6 +32,9 @@ from pathlib import Path
 from warnings import filterwarnings
 
 from setuptools import setup
+from setuptools.command.build_py import (  # type: ignore[attr-defined]
+    _IncludePackageDataAbuse,
+)
 
 BACKEND_REQUIRES: set[str] = set()
 DULWICH = "dulwich"
@@ -43,6 +46,7 @@ ZOPFLIPY = "zopflipy"
 WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
+_IncludePackageDataAbuse.warn = lambda *_: None
 
 HELP = "--help" in sys.argv[1:]
 VERSION = "--version" in sys.argv[1:]
