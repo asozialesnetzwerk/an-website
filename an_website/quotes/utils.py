@@ -23,6 +23,7 @@ import sys
 import time
 from collections.abc import (
     Callable,
+    Container,
     Iterable,
     Mapping,
     MutableMapping,
@@ -62,6 +63,9 @@ API_URL: str = "https://zitate.prapsschnalinen.de/api"
 
 WRONGQUOTE_DELETED: Final[int] = -2
 WRONGQUOTE_UNKNOWN: Final[int] = -1
+
+SPAM_QUOTES: Final[Container[int]] = range(1368, 1428 + 1)
+SPAM_AUTHORS: Final[Container[int]] = range(1859, 1947 + 1)
 
 
 # pylint: disable-next=too-few-public-methods
@@ -349,12 +353,20 @@ def get_wrong_quotes(
     sort: bool = False,  # sorted by rating
     filter_real_quotes: bool = True,
     shuffle: bool = False,
+    include_spam: bool = False,
 ) -> Sequence[WrongQuote]:
     """Get cached wrong quotes."""
     if shuffle and sort:
         raise ValueError("Sort and shuffle can't be both true.")
 
     iterable: Iterable[WrongQuote] = WRONG_QUOTES_CACHE.values()
+    if not include_spam:
+        iterable = (
+            wq
+            for wq in iterable
+            if wq.author_id not in SPAM_AUTHORS
+            if wq.quote_id not in SPAM_QUOTES
+        )
     if filter_fun:
         iterable = filter(filter_fun, iterable)  # pylint: disable=bad-builtin
     if filter_real_quotes:
@@ -812,12 +824,22 @@ async def get_rating_by_id(quote_id: int, author_id: int) -> int | None:
 
 def get_random_quote_id() -> int:
     """Get random quote id."""
-    return random.choice(tuple(QUOTES_CACHE))
+    return random.choice(
+        tuple(
+            quote_id for quote_id in QUOTES_CACHE if quote_id not in SPAM_QUOTES
+        )
+    )
 
 
 def get_random_author_id() -> int:
     """Get random author id."""
-    return random.choice(tuple(AUTHORS_CACHE))
+    return random.choice(
+        tuple(
+            author_id
+            for author_id in AUTHORS_CACHE
+            if author_id not in SPAM_AUTHORS
+        )
+    )
 
 
 def get_random_id() -> tuple[int, int]:
