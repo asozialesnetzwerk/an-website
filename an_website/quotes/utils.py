@@ -64,8 +64,30 @@ API_URL: str = "https://zitate.prapsschnalinen.de/api"
 WRONGQUOTE_DELETED: Final[int] = -2
 WRONGQUOTE_UNKNOWN: Final[int] = -1
 
-SPAM_QUOTES: Final[Container[int]] = range(1368, 1428 + 1)
-SPAM_AUTHORS: Final[Container[int]] = range(1859, 1947 + 1)
+SPAM_QUOTES: Final[Container[int]] = frozenset(
+    {
+        *range(1368, 1428 + 1),
+        # curl -sSf https://zitate.prapsschnalinen.de/api/quotes \
+        #    | jq '.[] | select(.quote | match("https://")) | .id'
+        *{1154, 1193, 1237, 1268, 1269, 1313, 1314, 1328, 1329},
+        *{1433, 1434, 1447, 1448, 1458, 1459, 1490, 1491, 1647},
+        *{1651, 1652, 1653, 1655, 1657, 1658, 1659, 1660},
+    }
+)
+SPAM_AUTHORS: Final[Container[int]] = frozenset(
+    {
+        *range(1859, 1947 + 1),
+        # curl -sSf https://zitate.prapsschnalinen.de/api/wrongquotes \
+        # | jq '.[] | select(.quote.quote | match("https://"))
+        #           | [.author, .quote.author].[]
+        #           | select(.author | length == 6) | .id' \
+        # | sort -hu
+        *{1595, 1596, 1639, 1640, 1701, 1702, 1755, 1756, 1809, 1810},
+        *{1818, 1819, 1954, 1955, 1982, 1983, 1995, 1996, 2032, 2033},
+        *{2297, 2298, 2303, 2304, 2305, 2306, 2307, 2308, 2309, 2310},
+        *{2312, 2313, 2315, 2316, 2317, 2318, 2319, 2320},
+    }
+)
 
 
 # pylint: disable-next=too-few-public-methods
