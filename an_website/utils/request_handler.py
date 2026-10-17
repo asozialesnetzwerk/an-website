@@ -192,4 +192,4 @@ class ZeroDivision(BaseRequestHandler):
         self.now = await self.get_time()
         self.handle_accept_header(self.POSSIBLE_CONTENT_TYPES)
         if self.request.method != "OPTIONS":
-            420 / 0  # pylint: disable=pointless-statement
+            420 / 0  # pylint: disable=pointless-statement  # noqa: B018
