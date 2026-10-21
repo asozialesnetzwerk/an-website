@@ -4,11 +4,13 @@
         {% if as_html %}
             <title>{{title}}</title>
             <meta charset="UTF-8">
-            <meta name="description" content="{{ description }}">
+            {% if description %}
+                <meta name="description" content="{{ description }}">
+                <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
+            {% end %}
             <meta name="keywords" content="{{keywords}}">
             <meta name="theme-color" content="#A00000">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <meta property="og:description" content="{% block description %}{{ description }}{% end %}">
             <meta property="og:locale" content="de_DE">
             <meta property="og:site_name" content="Asoziale Webseite">
             <meta property="og:title" content="{{title}}">
