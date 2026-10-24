@@ -302,7 +302,7 @@ jobs:
           - '3.14'  # π
     services:
       redis:
-        image: docker.io/redis/redis-stack-server:6.2.6-v20
+        image: ghcr.io/asozialesnetzwerk/redis-cell:nightly
         ports:
           - 6379:6379
     steps:
@@ -359,7 +359,7 @@ jobs:
             arch: aarch64
     services:
       redis:
-        image: docker.io/redis/redis-stack-server:6.2.6-v20
+        image: ghcr.io/asozialesnetzwerk/redis-cell:nightly
         ports:
           - 6379:6379
     steps:
@@ -430,7 +430,7 @@ jobs:
       fail-fast: false
       matrix:
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v20
+          - ghcr.io/asozialesnetzwerk/redis-cell:nightly
           #- docker.dragonflydb.io/dragonflydb/dragonfly
         os:
           - label: ubuntu-26.04
@@ -833,7 +833,7 @@ jobs:
       fail-fast: false
       matrix:
         redis-image:
-          - docker.io/redis/redis-stack-server:6.2.6-v20
+          - ghcr.io/asozialesnetzwerk/redis-cell:nightly
           #- docker.dragonflydb.io/dragonflydb/dragonfly
         variant:
           - distro: Debian
