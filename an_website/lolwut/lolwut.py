@@ -25,17 +25,21 @@ from ..utils.base_request_handler import BaseRequestHandler
 from ..utils.request_handler import APIRequestHandler, HTMLRequestHandler
 from ..utils.utils import ModuleInfo
 
+PATH_ARGS_PATTERN: Final[str] = r"(?:(?:\d+/)*\d+|8/IT)"
+
 
 def get_module_info() -> ModuleInfo:
     """Create and return the ModuleInfo for this module."""
-    args = r"(?:\d+/)*\d+"
     return ModuleInfo(
         handlers=(
             (r"/LOLWUT", LOLWUT),
-            (rf"/LOLWUT/({args})", LOLWUT),
+            (rf"/LOLWUT/({PATH_ARGS_PATTERN})", LOLWUT),
             (r"/api/LOLWUT", LOLWUTAPI),
-            (rf"/api/LOLWUT/({args})", LOLWUTAPI),
-            (rf"(?i)(?:/api)?/lolwut(?:/{args})?", LOLWUTRedirectHandler),
+            (rf"/api/LOLWUT/({PATH_ARGS_PATTERN})", LOLWUTAPI),
+            (
+                rf"(?i)(?:/api)?/lolwut(?:/{PATH_ARGS_PATTERN})?",
+                LOLWUTRedirectHandler,
+            ),
         ),
         name="LOLWUT",
         description="LOLWUT; präsentiert von Redis",
@@ -97,7 +101,9 @@ class LOLWUTAPI(APIRequestHandler):
 class LOLWUTRedirectHandler(BaseRequestHandler):
     """Redirect to the LOLWUT page."""
 
-    REPL_PATTERN: Final = regex.compile(r"/lolwut(/|\?|$)", regex.IGNORECASE)
+    REPL_PATTERN: Final = regex.compile(
+        rf"/lolwut(?:/{PATH_ARGS_PATTERN})?(?:\?|$)", regex.IGNORECASE
+    )
 
     def get(self) -> None:
         """Handle requests to the LOLWUT page."""
@@ -113,4 +119,4 @@ class LOLWUTRedirectHandler(BaseRequestHandler):
     @staticmethod
     def repl_match(match: regex.Match[str]) -> str:
         """Return the correct replacement for the given match."""
-        return f"/LOLWUT{match.group(1)}"
+        return match.group(0).upper()
