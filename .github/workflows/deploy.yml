@@ -337,6 +337,7 @@ jobs:
         run: pytest --durations=0 --verbose
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          REDIS_URL: redis://localhost
 
   tests:
     name: Run tests
@@ -411,6 +412,7 @@ jobs:
         run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          REDIS_URL: redis://localhost
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v6
         with:
@@ -474,6 +476,7 @@ jobs:
         run: PYTHONPATH="${HOME}/.cache/an-website/zipapps/an-website:an-website.pyz" pytest --durations=0 --verbose
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          REDIS_URL: redis://localhost
 
   release:
     name: Create release
@@ -872,9 +875,10 @@ jobs:
           name: oci-image${{ matrix.variant.tag-suffix }}
       - name: Run tests
         timeout-minutes: 20
-        run: sudo podman run --network=host -t -e "WRONG_QUOTES_API_URL=$WRONG_QUOTES_API_URL" -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -v '^pytest-cov' /pip-constraints.txt | grep '^pytest-' | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
+        run: sudo podman run --network=host -t -e "WRONG_QUOTES_API_URL=$WRONG_QUOTES_API_URL" -e "REDIS_URL=$REDIS_URL" -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -v '^pytest-cov' /pip-constraints.txt | grep '^pytest-' | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          REDIS_URL: redis://localhost
 
   push-oci-image:
     name: Push ${{ matrix.variant.distro }} OCI image

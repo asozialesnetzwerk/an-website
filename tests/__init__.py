@@ -18,7 +18,7 @@ import os
 import sys
 from os.path import abspath, dirname
 
-from an_website.utils.utils import str_to_bool
+from .redis_utils import redis_info
 
 # add parent dir to sys.path
 # this makes importing an_website possible
@@ -60,12 +60,13 @@ from openmoji_dist import VERSION as OPENMOJI_VERSION
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPResponse
 from tornado.web import Application
 
-# pylint: disable=ungrouped-imports
+# pylint: disable-next=ungrouped-imports
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, UPTIME, main
 from an_website.quotes import utils as quote_utils
 from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
 from an_website.utils.better_config_parser import BetterConfigParser
+from an_website.utils.utils import str_to_bool
 
 pytest_plugins = ["tests.pytest_tornasync"]
 
@@ -104,6 +105,8 @@ destination = environ.get("DELOREAN_DESTINATION", "1985-10-26 01:24:00")
 delorean = tm.travel(datetime.fromisoformat(destination).replace(tzinfo=hill_valley))
 # fmt: on
 
+REDIS_INFO = redis_info()
+
 
 def pytest_sessionstart(*_: object) -> None:
     """Travel to the past."""
@@ -119,11 +122,16 @@ def pytest_sessionfinish(*_: object) -> None:
 
 
 @pytest.fixture
-def app() -> Application:
+def app() -> Application:  # pylint: disable=too-complex
     """Create the application."""
     assert NAME.endswith("-test")
 
     config = BetterConfigParser.from_path(Path(DIR, "config.ini"))
+
+    if REDIS_INFO:
+        config.set("REDIS", "enabled", "true")
+        for key, value in REDIS_INFO.connection_kwargs.items():
+            config.set("REDIS", key, str(value))
 
     main.ignore_modules(config)
     app = main.make_app(config)  # pylint: disable=redefined-outer-name
@@ -136,6 +144,9 @@ def app() -> Application:
 
     es = elasticsearch_setup.setup_elasticsearch(app)
     redis = main.setup_redis(app)
+
+    if REDIS_INFO:
+        assert redis
 
     loop = asyncio.get_event_loop()
 

@@ -162,7 +162,7 @@ async def test_not_found_handler(fetch: FetchCallable) -> None:  # noqa: F811
     assert_valid_html_response(await fetch("/wp-login.php"), {469})
 
 
-@pytest.mark.timeout(40)
+@pytest.mark.timeout(60)
 async def test_page_crawling(
     fetch: FetchCallable,  # noqa: F811
     http_server_port: tuple[socket.socket, int],
