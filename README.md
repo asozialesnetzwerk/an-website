@@ -53,6 +53,27 @@ You need:
 
 ## How to run (production)
 
+### Container
+
+Run the website with something like the following:
+
+```sh
+podman run --rm --pull=newer \
+    --name an-website \
+    --publish 8888:8888 \
+    --volume .:/data:z \
+    ghcr.io/asozialesnetzwerk/an-website:dev
+```
+
+Run redis with included redis-cell with e.g.:
+
+```sh
+podman run --rm --pull=newer \
+    --name redis-cell \
+    --publish 6379:6379 \
+    ghcr.io/asozialesnetzwerk/redis-cell:nightly
+```
+
 ### Linux
 
 You need:
