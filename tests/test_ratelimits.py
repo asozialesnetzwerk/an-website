@@ -24,7 +24,7 @@ assert app and fetch  # type: ignore[truthy-bool]
 
 
 @pytest.mark.timeout(30)
-async def test_ratelimits(
+async def test_global_ratelimits(
     fetch: FetchCallable,  # noqa: F811
     app: Application,  # noqa: F811
 ) -> None:
@@ -41,13 +41,55 @@ async def test_ratelimits(
             response = await fetch("/LOLWUT")
             if response.code != 200:
                 break
+
+        assert_valid_html_response(response, {420, 429})
+
+        assert response.headers["X-Ratelimit-Global"] == "true"
+
+        await sleep(int(response.headers["Retry-After"]))
+        assert_valid_html_response(
+            await fetch("/LOLWUT"),
+            {200},
+        )
     finally:
         app.settings["RATELIMITS"] = False
 
-    assert_valid_html_response(response, {420, 429})
 
-    await sleep(int(response.headers["Retry-After"]))
-    assert_valid_html_response(
-        await fetch("/LOLWUT", follow_redirects=True),
-        {200},
-    )
+@pytest.mark.timeout(30)
+async def test_ratelimits(
+    fetch: FetchCallable,  # noqa: F811
+    app: Application,  # noqa: F811
+) -> None:
+    """Test ratelimits.."""
+    if not REDIS_INFO:
+        pytest.skip("redis not available")
+    if not REDIS_INFO.has_redis_cell:
+        pytest.skip("redis-cell not available")
+
+    app.settings["RATELIMITS"] = True
+
+    try:  # pylint: disable=too-many-try-statements
+        while True:  # pylint: disable=while-used
+            response = await fetch("/host-info")
+            if response.code != 200:
+                break
+
+        assert_valid_html_response(response, {420, 429})
+
+        assert "X-Ratelimit-Global" not in response.headers
+        for header in (
+            "X-RateLimit-Limit",
+            "X-RateLimit-Remaining",
+            "X-RateLimit-Reset",
+            "X-RateLimit-Reset-After",
+            "X-RateLimit-Bucket",
+        ):
+            assert header in response.headers, f"{header} in {response.headers}"
+
+        await sleep(int(response.headers["Retry-After"]))
+        assert_valid_html_response(
+            await fetch("/host-info"),
+            {200},
+        )
+    finally:
+        app.settings["RATELIMITS"] = False

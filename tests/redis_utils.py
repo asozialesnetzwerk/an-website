@@ -27,6 +27,7 @@ class RedisInfo:
     has_redis_cell: bool
     url: str
     connection_kwargs: dict[str, object]
+    version: str
 
 
 def redis_info() -> None | RedisInfo:
@@ -48,4 +49,5 @@ def redis_info() -> None | RedisInfo:
         has_redis_cell=has_redis_cell,
         url=redis_url,
         connection_kwargs=conn.get_connection_kwargs(),  # type: ignore[no-untyped-call]
+        version=conn.info()["redis_version"],
     )

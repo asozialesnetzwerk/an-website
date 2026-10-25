@@ -754,13 +754,11 @@ class BaseRequestHandler(_RequestHandler):
             canonical_url=self.request.protocol
             + "://"
             + (self.settings["DOMAIN"] or self.request.host)
-            + self.fix_url(
-                self.request.full_url().upper()
+            + (
+                self.request.path.upper()
                 if self.request.path.upper().startswith("/LOLWUT")
-                else self.request.full_url().lower()
-            )
-            .split("?")[0]
-            .removesuffix("/"),
+                else self.request.path.lower()
+            ).rstrip("/"),
             description=self.description,
             display_theme=self.get_display_theme(),
             display_scheme=self.get_display_scheme(),
