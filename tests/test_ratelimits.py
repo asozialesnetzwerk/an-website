@@ -13,6 +13,8 @@
 
 """Rate the limits."""
 
+from asyncio import sleep
+
 import pytest
 from tornado.web import Application
 
@@ -36,10 +38,16 @@ async def test_ratelimits(
 
     try:
         while True:  # pylint: disable=while-used
-            response = await fetch("/LOLWUT", follow_redirects=True)
+            response = await fetch("/LOLWUT")
             if response.code != 200:
                 break
     finally:
         app.settings["RATELIMITS"] = False
 
     assert_valid_html_response(response, {420, 429})
+
+    await sleep(int(response.headers["Retry-After"]))
+    assert_valid_html_response(
+        await fetch("/LOLWUT", follow_redirects=True),
+        {200},
+    )
