@@ -39,7 +39,7 @@ patches.apply()
 
 import asyncio
 import socket
-from collections.abc import Awaitable, Callable, MutableMapping, Set
+from collections.abc import Awaitable, Callable, Container, MutableMapping, Set
 from datetime import datetime, timezone
 from os import environ  # pylint: disable=ungrouped-imports
 from pathlib import Path
@@ -295,12 +295,14 @@ def assert_valid_response(
     return response
 
 
+# pylint: disable-next=too-many-arguments,too-many-locals
 async def check_html_page(
     fetch: FetchCallable,  # pylint: disable=redefined-outer-name
     url: str | HTTPResponse,
     codes: Set[int] = frozenset({200, 503}),
     *,
     recursive: int = 0,
+    additional_ignored_urls: Container[str] = (),
     # pylint: disable=dangerous-default-value
     checked_urls: set[str] = set(),  # noqa: B006
 ) -> HTTPResponse:
@@ -353,6 +355,8 @@ async def check_html_page(
             link.startswith(scheme_and_netloc)
             and (link.removeprefix(scheme_and_netloc) or "/")
             not in checked_urls
+            and (link.removeprefix(scheme_and_netloc) or "/")
+            not in additional_ignored_urls
         ):
             checked_urls.add(link.removeprefix(scheme_and_netloc) or "/")
             resp = await fetch(link)
@@ -366,7 +370,7 @@ async def check_html_page(
             ):
                 assert resp.code == 307
                 continue
-            assert resp.code in {307, *codes, 503}
+            assert resp.code in {307, *codes, 503}, f"{resp.effective_url}"
             resp = assert_valid_response(
                 await fetch(link, follow_redirects=True),
                 content_type=None,  # ignore Content-Type

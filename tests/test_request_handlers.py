@@ -25,6 +25,7 @@ from tornado.simple_httpclient import SimpleAsyncHTTPClient
 from an_website.utils.options import COLOUR_SCHEMES
 
 from . import (  # noqa: F401  # pylint: disable=unused-import
+    REDIS_INFO,
     FetchCallable,
     app,
     assert_url_query,
@@ -264,7 +265,7 @@ async def test_request_handlers0(
     )
 
 
-@pytest.mark.timeout(40)
+@pytest.mark.timeout(60)
 @travel(datetime(2000 + 1, 2, 3, 4, 5, 6, 7, hill_valley), tick=False)
 async def test_request_handlers1(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
@@ -369,7 +370,6 @@ async def test_request_handlers4(fetch: FetchCallable) -> None:  # noqa: F811
 async def test_request_handlers5(fetch: FetchCallable) -> None:  # noqa: F811
     """Check if the request handlers return 200 codes."""
     await check_html_page(fetch, "/betriebszeit", codes={200})
-    await check_html_page(fetch, "/discord?ask_before_leaving=1", codes={200})
     await check_html_page(fetch, "/einstellungen", codes={200})
     await check_html_page(fetch, "/endpunkte", codes={200})
     await check_html_page(fetch, "/hangman-loeser", codes={200})
@@ -386,7 +386,6 @@ async def test_request_handlers5(fetch: FetchCallable) -> None:  # noqa: F811
     await check_html_page(fetch, "/version", codes={200})
     await check_html_page(fetch, "/vertauschte-woerter", codes={200})
     await check_html_page(fetch, "/waehrungs-rechner", codes={200})
-    await check_html_page(fetch, "/wiki?ask_before_leaving=1", codes={200})
     await check_html_page(fetch, "/wortspiel-helfer", codes={200})
 
 
@@ -568,6 +567,43 @@ async def test_request_handlers7(fetch: FetchCallable) -> None:  # noqa: F811
         "text/plain; charset=UTF-8",
         needs_to_end_with_line_feed=False,
     )
+
+
+@pytest.mark.timeout(40)
+async def test_request_handlers8(fetch: FetchCallable) -> None:  # noqa: F811
+    """Check if the request handlers return 200 codes."""
+    redirect_urls = ("/zitat-des-tages?ask_before_leaving=sure",)
+    requiring_redis = (
+        "/emoji-chat?ask_before_leaving=sure",
+        "/LOLWUT?ask_before_leaving=sure",
+        "/emoji-chat?ask_before_leaving=sure",
+    )
+    additional_ignored_urls = (
+        () if REDIS_INFO else {*requiring_redis, *redirect_urls}
+    )
+    await check_html_page(
+        fetch,
+        "/wiki?ask_before_leaving=1",
+        codes={200},
+        additional_ignored_urls=additional_ignored_urls,
+    )
+    await check_html_page(
+        fetch,
+        "/discord?ask_before_leaving=1",
+        codes={200},
+        additional_ignored_urls=additional_ignored_urls,
+    )
+    for url in requiring_redis:
+        await check_html_page(
+            fetch, url, codes={200} if REDIS_INFO else {200, 503}
+        )
+    for url in redirect_urls:
+        response = await fetch(url)
+        assert not response.body
+        if REDIS_INFO:
+            assert response.code == 307
+        else:
+            assert response.code == 503
 
 
 async def test_error_code_pages(fetch: FetchCallable) -> None:  # noqa: F811

@@ -44,6 +44,7 @@ You need:
 ### How to check
 
 - `./check.sh`
+- `REDIS_URL=redis://localhost ./check.sh test`
 
 ### How to run
 

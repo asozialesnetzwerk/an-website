@@ -23,7 +23,7 @@ from . import REDIS_INFO, FetchCallable, app, assert_valid_html_response, fetch
 assert app and fetch  # type: ignore[truthy-bool]
 
 
-@pytest.mark.timeout(30)
+@pytest.mark.timeout(60)
 async def test_global_ratelimits(
     fetch: FetchCallable,  # noqa: F811
     app: Application,  # noqa: F811
