@@ -69,7 +69,7 @@ def test_copying_case() -> None:
         lower = string.lower()
         upper = string.upper()
         title = string.title()
-        for string in (  # pylint: disable=redefined-loop-name
+        for string in (  # pylint: disable=redefined-loop-name  # noqa: B045
             lower,
             upper,
             title,
