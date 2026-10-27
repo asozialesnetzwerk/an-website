@@ -62,6 +62,7 @@ from tornado.web import Application
 
 # pylint: disable-next=ungrouped-imports
 from an_website import EVENT_ELASTICSEARCH, EVENT_REDIS, NAME, UPTIME, main
+from an_website.emoji_chat.chat import subscribe_to_redis_channel
 from an_website.quotes import utils as quote_utils
 from an_website.utils import elasticsearch_setup
 from an_website.utils.base_request_handler import TEXT_CONTENT_TYPES
@@ -145,10 +146,13 @@ def app() -> Application:  # pylint: disable=too-complex
     es = elasticsearch_setup.setup_elasticsearch(app)
     redis = main.setup_redis(app)
 
+    loop = asyncio.get_event_loop()
+
     if REDIS_INFO:
         assert redis
-
-    loop = asyncio.get_event_loop()
+        app.settings["_REDIS_CHANNEL_TASK"] = loop.create_task(
+            subscribe_to_redis_channel(app, None)
+        )
 
     if es:
         try:

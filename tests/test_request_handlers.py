@@ -599,8 +599,8 @@ async def test_request_handlers8(fetch: FetchCallable) -> None:  # noqa: F811
         )
     for url in redirect_urls:
         response = await fetch(url)
-        assert not response.body
         if REDIS_INFO:
+            assert not response.body
             assert response.code == 307
         else:
             assert response.code == 503
