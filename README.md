@@ -70,8 +70,10 @@ Run redis with included redis-cell with e.g.:
 
 ```sh
 podman run --rm --pull=newer \
-    --name redis-cell \
+    --name an-website-redis-redis \
     --publish 6379:6379 \
+    -v 'an_website-redis-data:/data' \
+    -e 'REDIS_ARGS=--appendonly yes' \
     ghcr.io/asozialesnetzwerk/redis-cell:nightly
 ```
 
