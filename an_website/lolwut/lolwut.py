@@ -72,7 +72,7 @@ class LOLWUT(HTMLRequestHandler):
         await self.render(
             "ansi2html.html",
             ansi=art,
-            powered_by="https://redis.io",
+            powered_by="https://github.com/asozialesnetzwerk/redis",
             powered_by_name="Redis",
         )
 
