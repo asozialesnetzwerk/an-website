@@ -38,7 +38,7 @@ def get_module_info() -> ModuleInfo:
         keywords=("Soundboard", "Känguru", "Witzig", "Sprüche"),
         handlers=(
             (
-                r"/soundboard/files/(.*mp3)",
+                r"/soundboard/files/(.*)",
                 TraversableStaticFileHandler,
                 {"root": DIR / "files", "hashes": {}},
             ),
