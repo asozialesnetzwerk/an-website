@@ -77,8 +77,8 @@ function parse_HTTP_list (header)
         end
     end
 
-    -- sort on qvalue and return simple ordered, indexed list
-    table.sort(tokens, function (v1,v2) return v1[1] > v2[1] end)
+    -- sort on qvalue and return simple ordered, indexed list. prefer zstd if no q is provided
+    table.sort(tokens, function (v1,v2) return v1[1] > v2[1] or (v1[1] == v2[1] and v1[2] == "zstd") end)
     local v
     local list = {}
     for _, v in ipairs(tokens) do
@@ -89,65 +89,15 @@ function parse_HTTP_list (header)
 end
 
 
-function negotiate_language (path)
-
-    local langs = parse_HTTP_list(lighty.request["Accept-Language"])
-    if not langs[1] then return 0 end
-
-    -- split path into basepath and ext
-    -- basepath ends in '.' for use below, and if present, ext begins with '.'
-    local ext = string.match(path, "(%.[^/]+)$")
-    local basepath
-    if (ext) then
-        basepath = path:sub(1, -#ext)
-    else
-        basepath = path .. "."
-        ext = ""
-    end
-
-    -- check if basepath .. lang .. ext exists
-    local lang
-    for _, lang in ipairs(langs) do
-        local attr = nil
-        if (string.find(lang, "/", 1, 1)) then
-            -- skip lang containing '/'
-            -- security: avoid path traversal
-            -- since lang is used in filenames, lang must not contain '/'
-        else
-        if (lang == "en-US" or lang == "en") then
-            -- (optional optimization; remove condition if should not apply)
-            -- skip if default file is for "en-US" and "en"
-            -- (assumes Accept-Language contains only en-US and/or en,
-            --  or they are last, i.e. other languages are preferred)
-        else
-            path = basepath .. lang .. ext
-            attr = lighty.stat(path)
-        end
-        end
-        if (attr and attr["is_file"]) then
-            lighty.env["physical.path"] = path
-            lighty.env["physical.rel-path"] = (#ext)
-              and lighty.env["physical.rel-path"]:sub(1, -#ext) .. lang .. ext
-              or lighty.env["physical.rel-path"] .. "." .. lang
-            return 0
-        end
-    end
-
-    return 0
-
-end
-
-
 local encoding_exts =
   {
-    ["br"]    = ".br"                          -- brotli
-   ,["gzip"]  = ".gz",  ["x-gzip"]  = ".gz"    -- gzip
--- ,["bzip2"] = ".bz2", ["x-bzip2"] = ".bz2"   -- bzip2
+    ["zstd"]    = ".zst"      -- zstd
+   ,["gzip"]  = ".gz"         -- gzip
   }
 
-function negotiate_encoding (path, content_type)
+function negotiate_encoding(path, content_type)
 
-    local encs = parse_HTTP_list(lighty.request["Accept-Encoding"])
+    local encs = parse_HTTP_list(lighty.r.req_header["Accept-Encoding"])
     if not encs[1] then return 0 end
 
     -- check if pre-encoded file exists with mapped extension
@@ -159,10 +109,9 @@ function negotiate_encoding (path, content_type)
             path = basepath .. ext
             local attr = lighty.stat(path)
             if (attr and attr["is_file"]) then
-                lighty.env["physical.path"] = path
-                lighty.env["physical.rel-path"] =
-                  lighty.env["physical.rel-path"] .. ext
-                lighty.header["Content-Encoding"] = enc
+                lighty.r.req_attr["physical.path"] = path
+                lighty.r.req_attr["physical.rel-path"] = lighty.r.req_attr["physical.rel-path"] .. ext
+                lighty.r.resp_header["Content-Encoding"] = enc
                 if (content_type) then
                     lighty.header["Content-Type"] = content_type
                 else
@@ -182,29 +131,14 @@ end
 -- content negotiation
 --
 
--- check that default content file exists (or index-file)
-local attr = lighty.stat(lighty.env["physical.path"])
+-- check that default content file exists (no index-file support)
+local attr = lighty.stat(lighty.r.req_attr["physical.path"])
 if (not attr) then return 0 end
 if (not attr["is_file"]) then
-    if (attr["is_dir"]) then
-        -- check for index file (code below checks only for index.html)
-        local path = lighty.env["physical.path"]
-        local indexfile =
-          string.sub(path, -1) == "/" and "index.html" or "/index.html"
-        path = path .. indexfile
-        attr = lighty.stat(path)
-        if (not attr or not attr["is_file"]) then return 0 end
-        -- (below assignments not required; merely shortcut mod_indexfile)
-        lighty.env["physical.path"] = path
-        lighty.env["physical.rel-path"] =
-          lighty.env["physical.rel-path"] .. indexfile
-    else
-        return 0
-    end
+    return 0
 end
 
-negotiate_language(lighty.env["physical.path"])
-
-negotiate_encoding(lighty.env["physical.path"], attr["content-type"])
+-- try to server already compressed files
+negotiate_encoding(lighty.r.req_attr["physical.path"], attr["content-type"])
 
 return 0

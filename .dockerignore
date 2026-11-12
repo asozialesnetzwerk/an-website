@@ -6,6 +6,7 @@
 !TIMESTMP.TXT
 !VERSIONS.TXT
 !pip-requirements.txt
+!scripts/vendored/content-negotiation.lua
 **/tsconfig.json
 **/.eslintrc.*
 **/*.py[cod]
