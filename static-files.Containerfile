@@ -5,8 +5,8 @@ ARG AN_WEBSITE=ghcr.io/asozialesnetzwerk/an-website:dev
 ARG BASE=docker.io/library/debian:trixie-slim
 
 FROM $AN_WEBSITE AS static_files
-SHELL [ "/venv/bin/python", "-c" ]
 RUN <<EOF
+/venv/bin/python -c '
 from os import mkdir
 from pathlib import Path
 from shutil import copytree as copy_files
@@ -37,6 +37,8 @@ paths.sort(key=lambda t: len(t[1]))
 for path, dest in paths:
     print("COPYING", path, "to", dest)
     copy_files(path, dest)
+
+'
 EOF
 
 FROM $BASE
