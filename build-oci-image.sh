@@ -9,6 +9,8 @@ TAG="3.14-${VARIANT}"
 TITLE="${TITLE:-an-website}"
 IMAGE_NAME="${IMAGE_NAME:-an-website}"
 GIT_REPOSITORY=https://github.com/asozialesnetzwerk/an-website
+INTERNAL_PORT="${INTERNAL_PORT:-8888}"
+EXTERNAL_PORT="${EXTERNAL_PORT:-8888}"
 
 BASE_IMAGE="${BASE_IMAGE:-docker.io/library/python:${TAG}}"
 
@@ -36,7 +38,7 @@ buildah build \
   --annotation org.opencontainers.image.vendor="Das Asoziale Netzwerk" \
   --annotation org.opencontainers.image.source="${GIT_REPOSITORY}" \
   --annotation org.opencontainers.image.url="${GIT_REPOSITORY}/pkgs/container/${IMAGE_NAME}" \
-  --annotation org.opencontainers.image.description="podman run --detach --name ${IMAGE_NAME} --network slirp4netns:port_handler=slirp4netns --publish 8888:8888 --volume .:/data:z IMAGE" \
+  --annotation org.opencontainers.image.description="podman run --detach --name ${IMAGE_NAME} --network slirp4netns:port_handler=slirp4netns --publish ${EXTERNAL_PORT}:${INTERNAL_PORT} --volume .:/data:z IMAGE" \
   --annotation org.opencontainers.image.base.digest="${DIGEST}" \
   --annotation org.opencontainers.image.base.name="${BASE_IMAGE}" \
   "$@" .

@@ -929,7 +929,7 @@ jobs:
       - name: Build image
         run: |
           cd an_website-*/
-          sudo env 'BASE_IMAGE=docker.io/library/debian:trixie-slim' 'TITLE=an-website static files' 'IMAGE_NAME=an-website-static-files' ./build-oci-image.sh --build-arg AN_WEBSITE=an-website --runtime /opt/youki -f static-files.Containerfile -t static-files
+          sudo env 'BASE_IMAGE=docker.io/library/debian:trixie-slim' 'TITLE=an-website static files' 'IMAGE_NAME=an-website-static-files' 'INTERNAL_PORT=80' 'EXTERNAL_PORT=8889' ./build-oci-image.sh --build-arg AN_WEBSITE=an-website --runtime /opt/youki -f static-files.Containerfile -t static-files
           cd ..
           sudo buildah inspect static-files
       - name: Save image
