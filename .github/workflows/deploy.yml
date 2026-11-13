@@ -1024,9 +1024,15 @@ jobs:
           name: static-files-oci-image
       - name: Test static files
         run: |
+          sudo podman pull oci-archive:an-website.tar
+          sudo podman pull oci-archive:oci-archive.tar
+
           sudo podman run -dp 8888:8888 oci-archive:an-website.tar --elastic-apm-enabled=1 --port 8888
-          wget -rl 3 localhost:8888
           sudo podman run -dp 8000:80 oci-archive:oci-archive.tar
+
+          sleep 10
+
+          wget -rl 3 localhost:8888
 
           get_urls()
           {
