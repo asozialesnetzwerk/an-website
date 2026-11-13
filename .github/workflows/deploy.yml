@@ -1036,7 +1036,7 @@ jobs:
             sleep 1
           done
 
-          wget -rl 3 localhost:8888
+          wget -rl 3 http://localhost:8888?ask_before_leaving=1
 
           while ! nc -q0 localhost 8000 < /dev/null > /dev/null 2>&1; do
             sleep 1
