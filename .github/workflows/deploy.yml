@@ -996,13 +996,62 @@ jobs:
           name: static-files-oci-image
           path: oci-archive.tar
 
+  test-static-files-oci-image:
+    name: Test the ${{ matrix.os.arch }} static-files OCI image
+    runs-on: ${{ matrix.os.label }}
+    strategy:
+      matrix:
+        os:
+          - label: ubuntu-26.04
+            arch: x86_64
+          - label: ubuntu-26.04-arm
+            arch: aarch64
+    permissions:
+      contents: read
+    needs:
+      - combine-oci-images
+      - combine-static-files-oci-images
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: oci-image-alpine
+      - name: Copy oci-archive
+        run: cp oci-archive.tar an-website.tar
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: static-files-oci-image
+      - name: Test static files
+        run: |
+          sudo podman run -dp 8888:8888 oci-archive:an-website.tar --elastic-apm-enabled=1 --port 8888
+          wget -rl 3 localhost:8888
+          sudo podman run -dp 8000:80 oci-archive:oci-archive.tar
+
+          get_urls()
+          {
+            find localhost:8888 -type f -print | grep -E 'localhost:8888(/static|/soundboard/files|/@apm-rum)/' | sed 's|^localhost:8888|http://localhost:8000|g'
+          }
+
+          get_urls | wget -xi -
+          cd localhost:8000
+          find . -type f -exec sh -c 'PAGER=cat git diff --exit-code --no-index "$1" "../localhost:8888/$1"' '' '{}' ';'
+          cd -
+          rm -fr localhost:8000
+
+          get_urls | wget --compression=gzip -xi -
+          cd localhost:8000
+          find . -type f -exec sh -c 'PAGER=cat git diff --exit-code --no-index "$1" "../localhost:8888/$1"' '' '{}' ';'
+          cd -
+          rm -fr localhost:8000
+
   push-oci-image:
     name: Push ${{ matrix.variant.name }} OCI image
     runs-on: ubuntu-26.04
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
-      - combine-static-files-oci-images
+      - test-static-files-oci-image
       - version
     if: github.event_name == 'push' || github.event_name == 'schedule'
     permissions:
