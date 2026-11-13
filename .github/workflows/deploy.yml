@@ -880,12 +880,129 @@ jobs:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
           REDIS_URL: redis://localhost
 
+  build-static-files-oci-image:
+    name: Build ${{ matrix.os.arch }} static-files OCI image
+    strategy:
+      matrix:
+        os:
+          - label: ubuntu-26.04
+            arch: x86_64
+          - label: ubuntu-26.04-arm
+            arch: aarch64
+    runs-on: ${{ matrix.os.label }}
+    needs:
+      - build-oci-image
+    permissions:
+      packages: write
+    steps:
+      - name: Download youki
+        run: |
+          wget "https://github.com/youki-dev/youki/releases/download/v${VERSION}/youki-${VERSION}-${{ matrix.os.arch }}-musl.tar.gz"
+          tar xOf "youki-${VERSION}-${{ matrix.os.arch }}-musl.tar.gz" youki > /opt/youki
+          rm -f "youki-${VERSION}-${{ matrix.os.arch }}-musl.tar.gz"
+          chmod +x /opt/youki
+        env:
+          VERSION: 0.6.0
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Install Setuptools
+        run: pip install "setuptools==80.10.2"
+      - name: Download an-website image
+        uses: actions/download-artifact@v8
+        with:
+          pattern: slim-trixie-oci-image-${{ matrix.os.arch }}
+          merge-multiple: false
+      - name: Tag the an-website image
+        run: |
+          set -xeu
+          IMG=$(sudo buildah pull oci-archive:oci-archive-${{ matrix.os.arch }}.tar)
+          sudo buildah tag "$IMG" an-website
+      - name: Download source distribution
+        uses: actions/download-artifact@v8
+        with:
+          name: artifact
+      - name: Extract source distribution
+        run: |
+          tar xvf *.tar.gz
+      - name: Build image
+        run: |
+          cd an_website-*/
+          sudo env 'BASE_IMAGE=docker.io/library/debian:trixie-slim' 'TITLE=an-website static files' 'IMAGE_NAME=an-website-static-files' ./build-oci-image.sh --build-arg AN_WEBSITE=an-website --runtime /opt/youki -f static-files.Containerfile -t static-files
+          cd ..
+          sudo buildah inspect static-files
+      - name: Save image
+        run: sudo buildah push --all --format=oci --compression-format=zstd:chunked --compression-level=20 static-files "oci-archive:static-files-${{ matrix.os.arch }}.tar"
+      - name: Upload as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: static-files-${{ matrix.os.arch }}
+          path: static-files-${{ matrix.os.arch }}.tar
+
+  combine-static-files-oci-images:
+    name: Combine static file OCI images
+    runs-on: ubuntu-26.04
+    needs:
+      - build-static-files-oci-image
+    permissions:
+      packages: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          pattern: static-files-*
+          merge-multiple: true
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.14
+      - name: Create manifest with annotations
+        shell: python
+        run: |
+          import json, subprocess, sys
+
+          def run(command: list[str]) -> str:
+            print("+", *command, file=sys.stderr, flush=True)
+            return subprocess.run(command, check=True, text=True, stdout=subprocess.PIPE).stdout.strip()
+
+          image = run(["sudo", "buildah", "pull", "oci-archive:static-files-x86_64.tar"])
+
+          manifest = json.loads(run(["sudo", "buildah", "inspect", image]))
+
+          annotations = []
+
+          for (key, value) in manifest["ImageAnnotations"].items():
+            if not key.startswith("org.opencontainers.image."):
+              continue
+            if key == "org.opencontainers.image.base.digest":
+              continue
+            annotations.extend(["--annotation", f"{key}={value}"])
+
+          print(run(["sudo", "buildah", "manifest", "create", *annotations, "static-files"]))
+      - name: Add images to manifest
+        run: |
+          set -x
+          for file in static-files-*
+          do
+            sudo buildah pull "oci-archive:$file"
+            sudo buildah manifest add static-files "oci-archive:$file"
+          done
+      - name: Push manifest
+        run: sudo buildah manifest push --compression-level 20 --add-compression zstd:chunked --compression-format zstd:chunked --all static-files "oci-archive:oci-archive.tar"
+      - name: Upload as build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: static-files-oci-image
+          path: oci-archive.tar
+
   push-oci-image:
-    name: Push ${{ matrix.variant.distro }} OCI image
+    name: Push ${{ matrix.variant.name }} OCI image
     runs-on: ubuntu-26.04
     needs:
       - run-tests-in-oci-image
       - test-running-oci-image
+      - combine-static-files-oci-images
       - version
     if: github.event_name == 'push' || github.event_name == 'schedule'
     permissions:
@@ -894,17 +1011,23 @@ jobs:
       fail-fast: false
       matrix:
         variant:
-          - distro: Debian
-            variant: slim-trixie
+          - name: static files
+            artifact: static-files-oci-image
             tag-suffix: ''
+            image-name-suffix: '-static-files'
           - distro: Alpine
-            variant: alpine
+            artifact: oci-image-alpine
             tag-suffix: -alpine
+            image-name-suffix: ''
+          - distro: Debian
+            artifact: oci-image
+            tag-suffix: ''
+            image-name-suffix: ''
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
-          name: oci-image${{ matrix.variant.tag-suffix }}
+          name: ${{ matrix.variant.artifact }}
       - name: Log in to ghcr.io
         uses: redhat-actions/podman-login@v1
         with:
@@ -912,12 +1035,12 @@ jobs:
           password: ${{ github.token }}
           registry: ghcr.io/${{ github.repository }}
       - name: Push image to ghcr.io
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:dev${{ matrix.variant.tag-suffix }}
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}${{ matrix.variant.image-name-suffix }}:dev${{ matrix.variant.tag-suffix }}
       - name: Push image as ${{ needs.version.outputs.gh-version }} to ghcr.io
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:${{ needs.version.outputs.gh-version }}${{ matrix.variant.tag-suffix }}
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}${{ matrix.variant.image-name-suffix }}:${{ needs.version.outputs.gh-version }}${{ matrix.variant.tag-suffix }}
         if: needs.version.outputs.gh-version
       - name: Tag image as latest
-        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}:latest${{ matrix.variant.tag-suffix }}
+        run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}${{ matrix.variant.image-name-suffix }}:latest${{ matrix.variant.tag-suffix }}
         if: needs.version.outputs.gh-version
 
   verify-release:
