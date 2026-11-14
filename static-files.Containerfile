@@ -12,6 +12,7 @@ from pathlib import Path
 from shutil import copytree as copy_files
 
 from an_website.main import get_all_handlers, get_module_infos
+from an_website.utils.static_file_handling import CONTENT_TYPES
 from an_website.utils.static_file_from_traversable import TraversableStaticFileHandler
 
 mkdir("/static")
@@ -38,13 +39,31 @@ for path, dest in paths:
     print("COPYING", path, "to", dest)
     copy_files(path, dest)
 
+mimetypes: dict[str, str] = {
+    "": "application/octet-stream",
+}
+
+for p in Path("/static").rglob("*"):
+    if p.suffix in mimetypes:
+        continue
+    mtype = CONTENT_TYPES[p.suffix.removeprefix(".") if p.suffix != ".map" else "json"]
+    if mtype.startswith("text/"):
+        mtype += "; charset=UTF-8"
+    print(p.suffix, "=>", mtype, sep="\t")
+    mimetypes[p.suffix] = mtype
+
+Path("/mimetypes.conf").write_text(f"""
+mimetype.assign = (
+    {",\n    ".join((f"\"{ext}\" => \"{typ}\"" for (ext, typ) in sorted(mimetypes.items(), key=lambda x: (-len(x[0]), x[0]))))}
+)
+""")
 '
 EOF
 
 FROM $BASE
 COPY --from=static_files /static /static
-COPY ./scripts/vendored/content-negotiation.lua /
-RUN <<EOF
+COPY ./scripts/vendored/content-negotiation.lua /opt/
+RUN --mount=type=bind,from=static_files,source=/mimetypes.conf,target=/mimetypes.conf <<EOF
     set -xeu
     apt-get update
     apt-get install -y --no-install-recommends lighttpd lighttpd-mod-magnet
@@ -59,15 +78,26 @@ if query["v"] then
     lighty.r.resp_header["Last-Modified"] = nil
     lighty.r.resp_header["ETag"] = nil
 end
-' > /version-query.lua
+' > /opt/version-query.lua
 
     printf '%s\n' \
-        'server.port = 80' \
-        'server.modules += ("mod_magnet")' \
+        'server.modules += ("mod_magnet", "mod_staticfile")' \
         'server.document-root = "/static/"' \
-        'magnet.attract-physical-path-to = ( "/content-negotiation.lua"  )' \
-        'magnet.attract-response-start-to = ( "/version-query.lua" )' \
-        > /lighttpd.conf
+        'magnet.attract-physical-path-to = ( "/opt/content-negotiation.lua"  )' \
+        'magnet.attract-response-start-to = ( "/opt/version-query.lua" )' \
+        'server.port = 80' \
+        'server.bind = "/run/lighttpd.sock"' \
+        'server.socket-perms = "0666"' \
+        'server.compat-module-load = "disable"' \
+        'server.max-read-idle = 60' \
+        'server.max-write-idle = 360' \
+        'server.max-keep-alive-idle = 5 # in seconds' \
+        "$(cat /mimetypes.conf)" \
+        > /etc/lighttpd/lighttpd.conf
+
+    lighttpd -tf /etc/lighttpd/lighttpd.conf
+    lighttpd -pf /etc/lighttpd/lighttpd.conf
 EOF
 EXPOSE 80
-ENTRYPOINT ["lighttpd", "-D", "-f", "/lighttpd.conf"]
+VOLUME /run
+ENTRYPOINT ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]

@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Generate content_types.json and media_types.json."""
+"""Generate mime-db.json and media-types.json."""
 
 import asyncio
 import json  # pylint: disable=preferred-module
