@@ -1036,7 +1036,9 @@ jobs:
             sleep 1
           done
 
-          wget -rl 3 http://localhost:8888?ask_before_leaving=1
+          wget -rl 3 'http://localhost:8888?ask_before_leaving=1' || true
+
+          [ $(find localhost:8888 -type f | wc -l) -gt 100 ]
 
           while ! nc -q0 localhost 8000 < /dev/null > /dev/null 2>&1; do
             sleep 1
@@ -1048,12 +1050,14 @@ jobs:
           }
 
           get_urls | wget -xi -
+          [ $(find localhost:8000 -type f | wc -l) -gt 42 ]
           cd localhost:8000
           find . -type f -exec sh -c 'PAGER=cat git diff --exit-code --no-index "$1" "../localhost:8888/$1"' '' '{}' ';'
           cd -
           rm -fr localhost:8000
 
           get_urls | wget --compression=gzip -xi -
+          [ $(find localhost:8000 -type f | wc -l) -gt 42 ]
           cd localhost:8000
           find . -type f -exec sh -c 'PAGER=cat git diff --exit-code --no-index "$1" "../localhost:8888/$1"' '' '{}' ';'
           cd -
