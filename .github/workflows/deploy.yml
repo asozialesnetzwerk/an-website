@@ -1074,7 +1074,8 @@ jobs:
 
           for url in $(get_files0)
           do
-            [ "$(curl --compressed --unix-socket ./lighttpd.sock "$url")" = "$(cat $url)" ]
+            [ "$(curl -sSf --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
+            [ "$(curl -sSf --compressed --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
           done
 
   push-oci-image:
