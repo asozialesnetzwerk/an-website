@@ -1072,11 +1072,10 @@ jobs:
           cd -
           rm -fr 127.0.0.1:8000
 
-          for url in $(get_files0)
-          do
+          while IFS= read -r -d $'\0' url <&3; do
             [ "$(curl -sSf --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
             [ "$(curl -sSf --compressed --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
-          done
+          done 3< <(get_files0)
 
   push-oci-image:
     name: Push ${{ matrix.variant.name }} OCI image
