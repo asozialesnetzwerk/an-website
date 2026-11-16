@@ -1073,8 +1073,10 @@ jobs:
           rm -fr 127.0.0.1:8000
 
           while IFS= read -r -d $'\0' url <&3; do
-            [ "$(curl -sSf --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
-            [ "$(curl -sSf --compressed --unix-socket ./lighttpd.sock "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
+            [ "$(curl -sSf                                            "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
+            [ "$(curl -sSf                               --compressed "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
+            [ "$(curl -sSf --unix-socket ./lighttpd.sock              "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
+            [ "$(curl -sSf --unix-socket ./lighttpd.sock --compressed "$url" | sha256sum)" = "$(cat "$url" | sha256sum)" ]
           done 3< <(get_files0)
 
   push-oci-image:
