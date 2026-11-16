@@ -1072,7 +1072,7 @@ jobs:
           cd -
           rm -fr 127.0.0.1:8000
 
-          for $url in $(get_files0)
+          for url in $(get_files0)
           do
             [ "$(curl --compressed --unix-socket ./lighttpd.sock "$url")" = "$(cat $url)" ]
           done
