@@ -1023,14 +1023,17 @@ jobs:
         with:
           name: static-files-oci-image
       - name: Test static files
+        timeout-minutes: 10
         run: |
           set -xeu
+
+          ls -l an-website.tar oci-archive.tar
+          sha256sum an-website.tar oci-archive.tar
 
           sudo podman pull oci-archive:an-website.tar
           sudo podman pull oci-archive:oci-archive.tar
 
           sudo podman run -dp 8888:8888 oci-archive:an-website.tar --elastic-apm-enabled=1 --port 8888
-          sudo podman run -dp 8000:80 -v .:/run oci-archive:oci-archive.tar
 
           while ! nc -q1 127.0.0.1 8888 < /dev/null > /dev/null 2>&1; do
             sleep 1
@@ -1039,6 +1042,8 @@ jobs:
           sh -c 'wget -rl 3 "http://127.0.0.1:8888?ask_before_leaving=1" || true'
 
           [ $(find 127.0.0.1:8888 -type f | wc -l) -gt 100 ]
+
+          sudo podman run -dp 8000:80 -v .:/run oci-archive:oci-archive.tar
 
           while ! nc -q1 127.0.0.1 8000 < /dev/null > /dev/null 2>&1; do
             sleep 1

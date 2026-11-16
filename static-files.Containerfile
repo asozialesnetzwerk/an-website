@@ -81,13 +81,13 @@ end
 ' > /opt/version-query.lua
 
     printf '%s\n' \
+        'server.port = 80' \
+        'server.bind = "*"' \
         'server.modules += ("mod_magnet", "mod_staticfile")' \
         'server.document-root = "/static/"' \
         'magnet.attract-physical-path-to = ( "/opt/content-negotiation.lua"  )' \
         'magnet.attract-response-start-to = ( "/opt/version-query.lua" )' \
-        'server.port = 80' \
-        'server.bind = "/run/lighttpd.sock"' \
-        'server.socket-perms = "0666"' \
+        '$SERVER["socket"] == "/run/lighttpd.sock" { server.socket-perms = "0666" }' \
         'server.compat-module-load = "disable"' \
         'server.max-read-idle = 60' \
         'server.max-write-idle = 360' \
@@ -95,7 +95,7 @@ end
         "$(cat /mimetypes.conf)" \
         > /etc/lighttpd/lighttpd.conf
 
-    lighttpd -tf /etc/lighttpd/lighttpd.conf
+    lighttpd -ttf /etc/lighttpd/lighttpd.conf
     lighttpd -pf /etc/lighttpd/lighttpd.conf
 EOF
 EXPOSE 80
