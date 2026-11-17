@@ -81,13 +81,14 @@ end
 ' > /opt/version-query.lua
 
     printf '%s\n' \
+        'server.modules += ("mod_magnet", "mod_staticfile")' \
         'server.port = 80' \
         'server.bind = "*"' \
-        'server.modules += ("mod_magnet", "mod_staticfile")' \
+        '$SERVER["socket"] == "[::]:80" {  }' \
+        '$SERVER["socket"] == "/run/lighttpd.sock" { server.socket-perms = "0666" }' \
         'server.document-root = "/static/"' \
         'magnet.attract-physical-path-to = ( "/opt/content-negotiation.lua"  )' \
         'magnet.attract-response-start-to = ( "/opt/version-query.lua" )' \
-        '$SERVER["socket"] == "/run/lighttpd.sock" { server.socket-perms = "0666" }' \
         'server.compat-module-load = "disable"' \
         'server.max-read-idle = 60' \
         'server.max-write-idle = 360' \
