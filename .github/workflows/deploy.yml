@@ -1116,7 +1116,7 @@ jobs:
         with:
           username: ${{ github.actor }}
           password: ${{ github.token }}
-          registry: ghcr.io/${{ github.repository }}
+          registry: ghcr.io/${{ github.repository }}${{ matrix.variant.image-name-suffix }}
       - name: Push image to ghcr.io
         run: skopeo copy --all --preserve-digests oci-archive:oci-archive.tar docker://ghcr.io/${{ github.repository }}${{ matrix.variant.image-name-suffix }}:dev${{ matrix.variant.tag-suffix }}
       - name: Push image as ${{ needs.version.outputs.gh-version }} to ghcr.io
