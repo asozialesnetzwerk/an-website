@@ -1,10 +1,13 @@
 {
   "background_color": "#A00000",
   "display": "standalone",
-  "display_override": ["tabbed", "minimal-ui"],
+  "display_override": [
+    "tabbed",
+    "minimal-ui"
+  ],
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "/static/favicon.png",
       "type": "image/png",
       "sizes": "256x256"
     }
