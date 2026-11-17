@@ -316,6 +316,9 @@ jobs:
           sparse-checkout: .github
       - name: Start wrong quotes api
         uses: ./.github/actions/start_wrong_quotes_api
+      - name: Start restmail service on localhost
+        uses: ./.github/actions/start_restmail
+        timeout-minutes: 5
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
@@ -337,6 +340,7 @@ jobs:
         run: pytest --durations=0 --verbose
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          RESTMAIL_HOST: http://localhost:8080
           REDIS_URL: redis://localhost
 
   tests:
@@ -396,6 +400,9 @@ jobs:
           cache-dependency-path: Pipfile.lock
       - name: Start wrong quotes api
         uses: ./.github/actions/start_wrong_quotes_api
+      - name: Start restmail service on localhost
+        uses: ./.github/actions/start_restmail
+        timeout-minutes: 5
       - name: Install libcurl4-openssl-dev for compiling PycURL
         run: sudo apt-get install --update -y libcurl4-openssl-dev
       - name: Install additional build-dependencies                                                                                                              │
@@ -412,6 +419,7 @@ jobs:
         run: pytest --durations=0 --verbose --cov --cov-report=term:skip-covered
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          RESTMAIL_HOST: http://localhost:8080
           REDIS_URL: redis://localhost
       - name: Upload coverage as artifact
         uses: actions/upload-artifact@v6
@@ -453,6 +461,9 @@ jobs:
           python-version: 3.14
       - name: Start wrong quotes api
         uses: ./.github/actions/start_wrong_quotes_api
+      - name: Start restmail service on localhost
+        uses: ./.github/actions/start_restmail
+        timeout-minutes: 5
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
@@ -476,6 +487,7 @@ jobs:
         run: PYTHONPATH="${HOME}/.cache/an-website/zipapps/an-website:an-website.pyz" pytest --durations=0 --verbose
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          RESTMAIL_HOST: http://localhost:8080
           REDIS_URL: redis://localhost
 
   release:
@@ -869,15 +881,19 @@ jobs:
           python-version: 3.14
       - name: Start wrong quotes api
         uses: ./.github/actions/start_wrong_quotes_api
+      - name: Start restmail service on localhost
+        uses: ./.github/actions/start_restmail
+        timeout-minutes: 5
       - name: Download artifact
         uses: actions/download-artifact@v8
         with:
           name: oci-image${{ matrix.variant.tag-suffix }}
       - name: Run tests
         timeout-minutes: 20
-        run: sudo podman run --network=host -t -e "WRONG_QUOTES_API_URL=$WRONG_QUOTES_API_URL" -e "REDIS_URL=$REDIS_URL" -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -v '^pytest-cov' /pip-constraints.txt | grep '^pytest-' | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
+        run: sudo podman run --network=host -t -e "WRONG_QUOTES_API_URL=$WRONG_QUOTES_API_URL" -e "RESTMAIL_HOST=$RESTMAIL_HOST" -e "REDIS_URL=$REDIS_URL" -v ./pip-constraints.txt:/pip-constraints.txt:z,ro -v ./tests:/tests:z,ro --entrypoint=/bin/sh oci-archive:oci-archive.tar -c "grep -v '^pytest-cov' /pip-constraints.txt | grep '^pytest-' | xargs /venv/bin/pip install --disable-pip-version-check -c /pip-constraints.txt html5lib pytest time-machine && /venv/bin/pytest --verbose /tests"
         env:
           WRONG_QUOTES_API_URL: http://127.0.0.1:5000/api
+          RESTMAIL_HOST: http://localhost:8080
           REDIS_URL: redis://localhost
 
   build-static-files-oci-image:

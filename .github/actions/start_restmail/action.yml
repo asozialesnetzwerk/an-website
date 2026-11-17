@@ -1,0 +1,49 @@
+name: Install and start restmail service
+description: Start restmail
+inputs:
+  git_repo:
+    description: The git repo
+    required: false
+    default: https://github.com/mozilla/restmail.net.git
+  rev:
+    description: The branch to checkout
+    required: false
+    default: master
+  redis_port:
+    description: The port redis should use (to avoid conflicts)
+    required: false
+    default: 6367
+  web_port:
+    description: The web-port restmail should listen on
+    required: false
+    default: 8080
+runs:
+  using: composite
+  steps:
+    - name: Start redis at port ${{ inputs.redis_port }}
+      shell: bash
+      run: |
+        set -xeu
+        podman run -dp ${{ inputs.redis_port }}:6379 ghcr.io/asozialesnetzwerk/redis:nightly
+        while ! nc -q1 127.0.0.1 ${{ inputs.redis_port }} < /dev/null > /dev/null 2>&1; do
+          sleep 1
+        done
+
+    - name: Install and start restmail service
+      shell: bash
+      run: |
+        set -xeu
+        git clone -b ${{ inputs.rev }} "${{ inputs.git_repo }}" /opt/restmail.net
+        pushd /opt/restmail.net
+        sudo npm install
+        sudo sh -c 'EMAIL_PORT=25 REDIS_PORT=${{ inputs.redis_port }} WEB_PORT=${{ inputs.web_port }} node bin/emailserver.js' &
+        sudo sh -c 'EMAIL_PORT=25 REDIS_PORT=${{ inputs.redis_port }} WEB_PORT=${{ inputs.web_port }} node bin/webserver.js' &
+        disown
+        popd
+        printf "%s\n" "127.0.0.1 restmail.net" | sudo tee -a /etc/hosts
+        while ! nc -q1 127.0.0.1 ${{ inputs.web_port }} < /dev/null > /dev/null 2>&1; do
+          sleep 1
+        done
+        while ! nc -q1 127.0.0.1 25 < /dev/null > /dev/null 2>&1; do
+          sleep 1
+        done

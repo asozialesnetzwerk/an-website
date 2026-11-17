@@ -14,6 +14,7 @@
 """The tests for the contact page."""
 
 import asyncio
+import os
 import random
 import sys
 from email.message import Message
@@ -23,6 +24,10 @@ import pytest
 from tornado.httpclient import AsyncHTTPClient
 
 from an_website.contact import contact
+
+RESTMAIL_HOST = os.environ.get("RESTMAIL_HOST", "https://restmail.net").rstrip(
+    "/"
+)
 
 
 def test_add_geoip_info_to_message() -> None:
@@ -76,9 +81,7 @@ async def test_sending_email() -> None:
         port=25,
     )
 
-    response = await AsyncHTTPClient().fetch(
-        f"https://restmail.net/mail/{user}"
-    )
+    response = await AsyncHTTPClient().fetch(f"{RESTMAIL_HOST}/mail/{user}")
 
     for email in json.loads(response.body):
         if (  # pylint: disable=too-many-boolean-expressions
