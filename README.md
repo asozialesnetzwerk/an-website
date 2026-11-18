@@ -77,6 +77,13 @@ podman run --rm --pull=newer \
     ghcr.io/asozialesnetzwerk/redis-cell:nightly
 ```
 
+You can also try the experimental and untested docker compose approach which
+starts the website on port 1610:
+
+```sh
+docker compose up
+```
+
 ### Linux
 
 You need:
@@ -95,7 +102,8 @@ How:
 - [Create a virtual environment](https://docs.python.org/3/library/venv.html)
 - Install an-website in the venv (`pip install an-website`)
 - create a `config.ini` and configure it
-- run it (`an-website` / `python -m an_website`) with Supervisord
+- run it (`an-website` / `python -m an_website`) with Supervisord (see
+  [an_website.ini](./example-configurations/supervisord/an_website.ini))
 
 ### FreeBSD
 

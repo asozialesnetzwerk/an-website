@@ -1,0 +1,49 @@
+name: an-website
+services:
+  an-website:
+    image: ghcr.io/asozialesnetzwerk/an-website:dev-alpine
+    command:
+      - --redis-port=6379
+      - --redis-host=redis
+      - --unix-socket-path=/run
+    restart: always
+    volumes:
+      - .:/data
+      - sockets:/run
+    links:
+     - redis
+    networks:
+      default: {}
+      redis: {}
+
+  static-files:
+    image: ghcr.io/asozialesnetzwerk/an-website-static-files:dev
+    restart: always
+    networks: {}
+    volumes:
+      - sockets:/run
+
+  redis:
+    image: ghcr.io/asozialesnetzwerk/redis-cell:nightly-alpine
+    volumes:
+      - redis-data:/data
+    networks:
+      redis: {}
+
+  nginx:
+    build:
+      no_cache: true
+      dockerfile: ./example-configurations/nginx.Containerfile
+    ports:
+      - 1610:80
+    volumes:
+      - sockets:/run
+
+volumes:
+  redis-data: {}
+  sockets: {}
+
+networks:
+  default: {}
+  redis:
+    internal: true
