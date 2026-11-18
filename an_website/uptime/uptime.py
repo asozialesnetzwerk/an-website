@@ -200,13 +200,18 @@ class AvailabilityChartHandler(BaseRequestHandler):
                 permanent=False,
             )
             return
+        try:
+            availability_value = float(availability)
+        except ValueError:
+            self.write_error(400)
+            return
         self.set_header(
             "Cache-Control", f"public, min-fresh={60 * 60 * 24 * 14}, immutable"
         )
         if head:
             return
         await self.finish(
-            AVAILABILITY_CHART % (math.pi * 10 * float(availability))
+            AVAILABILITY_CHART % (math.pi * 10 * availability_value)
         )
 
 
