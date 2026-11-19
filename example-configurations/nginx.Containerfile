@@ -17,7 +17,7 @@ http {
     }
 
     server {
-        listen 80;
+        listen 1610;
 
         gzip off;
 
@@ -76,4 +76,4 @@ http {
 nginx -t
 EOF
 
-EXPOSE 80
+EXPOSE 1610

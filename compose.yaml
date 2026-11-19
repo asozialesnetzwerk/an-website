@@ -10,8 +10,8 @@ services:
     volumes:
       - .:/data
       - sockets:/run
-    links:
-     - redis
+    depends_on:
+      - redis
     networks:
       default: {}
       redis: {}
@@ -35,7 +35,10 @@ services:
       no_cache: true
       dockerfile: ./example-configurations/nginx.Containerfile
     ports:
-      - 1610:80
+      - 1610:1610
+    depends_on:
+      - an-website
+      - static-files
     volumes:
       - sockets:/run
 
