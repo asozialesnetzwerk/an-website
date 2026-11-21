@@ -78,7 +78,7 @@ pre-commit = "==3.*"
 pylint = "==4.*"
 pylint-pytest = "==1.*"
 pyrepl = {git = "git+https://github.com/asozialesnetzwerk/pyrepl", ref = "an-website"}
-pytest = "==9.*"
+pytest = "==9.*, < 9.2.0" # 9.2.0 breaks pylint-pytest==1.1.9.post1
 pytest-cov = "==7.*"
 pytest-is-running = "==1.*"
 setuptools = "==80.*"  # TODO: switch to fork
