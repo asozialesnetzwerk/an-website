@@ -47,3 +47,6 @@ modules = "setup"
 
 [tool.pytest.ini_options]
 markers = ["timeout(seconds): Set the timeout of the test"]
+testpaths = [
+  "tests",
+]
