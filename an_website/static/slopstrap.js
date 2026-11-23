@@ -867,6 +867,8 @@
     // 🎚️ Sync initial Slop Intensity Level if declared on <html>!
     const initialLevel = document.documentElement.getAttribute('data-slop-level');
     if (initialLevel) setLevel(initialLevel);
+
+    slopify();
   }
 
   // 🚦 Auto-bootstrap as soon as the DOM is ready (zero config required! ✨)
