@@ -1,3 +1,30 @@
+/* theme based on slop strap */
+:root {
+    /* no light colors, only dark: */
+    --main-light: var(--main-dark);
+    --main-2-light: var(--main-2-dark);
+    --text-color-light: var(--text-color-dark);
+    --secondary-text-color-light: var(--secondary-text-color-dark);
+    --bg-light: var(--bg-dark);
+    --secondary-bg-light: var(--secondary-bg-dark);
+    --tertiary-bg-light: var(--tertiary-bg-dark);
+    --contrast-light: var(--contrast-dark);
+    --contrast-2-light: var(--contrast-2-dark);
+
+    /* dark colors: */
+    --main-dark: var(--slop-indigo);
+    --main-2-dark: var(--slop-purple);
+    --text-color-dark: var(--slop-text);
+    --secondary-text-color-dark: var(--slop-text-muted);
+    --bg-dark: var(--slop-bg);
+    --secondary-bg-dark: var(--slop-bg-elevated);
+    --tertiary-bg-dark: var(--slop-surface);
+    --contrast-dark: var(--slop-violet);
+    --contrast-2-dark: var(--slop-blue);
+
+    --header-height: 12rem;
+}
+
 /* ==========================================================================
    ✨🚀⚡ SLOPSTRAP v4.2.0 — The Enterprise-Grade Vibecoded CSS Framework™ ⚡🚀✨
    --------------------------------------------------------------------------
@@ -70,26 +97,7 @@
   --slop-border-width: 4px;                   /* 🌈 Fat left-border thickness! */
 }
 
-/* 🎚️ Slop Intensity Presets — Dial up synthetic convergence on demand! 🚀 */
-[data-slop-level="1"] { /* 🌱 Level 1: Subtle YC Startup */
-  --slop-glow-strength: 0.45;
-  --slop-orb-opacity: 0.14;
-  --slop-ping-speed: 2.6s;
-  --slop-border-width: 3px;
-}
-[data-slop-level="2"] { /* ⚡ Level 2: Cursor One-Shot */
-  --slop-glow-strength: 0.85;
-  --slop-orb-opacity: 0.25;
-  --slop-ping-speed: 1.8s;
-  --slop-border-width: 4px;
-}
-[data-slop-level="3"] { /* 🔥 Level 3: Peak Vibecoded (Recommended!) */
-  --slop-glow-strength: 1.2;
-  --slop-orb-opacity: 0.36;
-  --slop-ping-speed: 1.35s;
-  --slop-border-width: 4px;
-}
-[data-slop-level="4"] { /* 🚨 Level 4: CRITICAL SLOP OVERDRIVE! */
+* { /* 🚨 Level 4: CRITICAL SLOP OVERDRIVE! */
   --slop-glow-strength: 1.8;
   --slop-orb-opacity: 0.52;
   --slop-ping-speed: 0.75s;

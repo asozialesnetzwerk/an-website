@@ -36,6 +36,9 @@
             {% if dynload %}
                 <script defer type="module" src="{{fix_static('js/utils/dynload.js')}}"></script>
             {% end %}
+            {% if theme == "slopstrap" %}
+                <script defer src="{{fix_static('js/vendored/slopstrap.js')}}"></script>
+            {% end %}
         {% end %}
         {% block head %} {% end %}
         {% if as_html %}
