@@ -46,7 +46,7 @@
         {% end %}
         {% block stylesheets %}{% end %}
     </head>
-    <body>{% if effects %}<style>@view-transition{navigation:auto;}</style>{% end %}
+    <body{% if theme == "slopstrap" %} data-slop-auto{% end %} >{% if effects %}<style>@view-transition{navigation:auto;}</style>{% end %}
 
         {% if as_html %}
             {% if effects %}
@@ -61,6 +61,13 @@
                id="skip-to-content"
                data-elastic-exclude>Skip to content.</a>
             {% include "header.html" %}
+        {% end %}
+
+        {% if theme == "slopstrap" %}
+            <div id="loading-div">
+                <div>Loading...</div>
+                <noscript><div>Please activate Javascript</div></noscript>
+            </div>
         {% end %}
 
         <main data-elastic-include
