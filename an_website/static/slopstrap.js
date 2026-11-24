@@ -868,7 +868,7 @@
     const initialLevel = document.documentElement.getAttribute('data-slop-level');
     if (initialLevel) setLevel(initialLevel);
 
-    slopify();
+    setTimeout(() => document.getElementById('loading-div')?.remove(), 500);
   }
 
   // 🚦 Auto-bootstrap as soon as the DOM is ready (zero config required! ✨)

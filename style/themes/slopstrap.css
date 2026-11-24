@@ -25,6 +25,28 @@
     --header-height: 12rem;
 }
 
+#title-container {
+    height: calc(var(--header-height) - 2rem);
+}
+
+#loading-div {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+
+    background-color: var(--bg);
+
+    height: 100dvh;
+    width: 100dvw;
+}
+
 /* ==========================================================================
    ✨🚀⚡ SLOPSTRAP v4.2.0 — The Enterprise-Grade Vibecoded CSS Framework™ ⚡🚀✨
    --------------------------------------------------------------------------
