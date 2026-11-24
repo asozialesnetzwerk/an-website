@@ -210,7 +210,7 @@ class Options:
         name="theme",
         is_valid=THEMES.__contains__,
         get_default_value=lambda handler: (
-            "default"
+            "slopstrap"
             # pylint: disable-next=misplaced-comparison-constant
             if handler.now.month != 4 or 2 <= handler.now.day
             else "fun"
