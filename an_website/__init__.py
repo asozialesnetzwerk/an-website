@@ -86,9 +86,11 @@ EPOCH_MS: Final[int] = EPOCH * 1000
 
 DIR: Final[Traversable] = files(__name__)
 
-MEDIA_TYPES: Final[Mapping[str, MediaType]] = json.loads(
-    (DIR / "vendored" / "mime-db.json").read_bytes()
-) if (DIR / "vendored" / "mime-db.json").is_file() else {}
+MEDIA_TYPES: Final[Mapping[str, MediaType]] = (
+    json.loads((DIR / "vendored" / "mime-db.json").read_bytes())
+    if (DIR / "vendored" / "mime-db.json").is_file()
+    else {}
+)
 
 NAME = "an-website"  # pylint: disable=invalid-name
 
