@@ -2,6 +2,8 @@ name: an-website
 services:
   an-website:
     image: ghcr.io/asozialesnetzwerk/an-website:dev-alpine
+    build:
+      dockerfile: Containerfile
     command:
       - --redis-port=6379
       - --redis-host=redis
@@ -18,6 +20,8 @@ services:
 
   static-files:
     image: ghcr.io/asozialesnetzwerk/an-website-static-files:dev
+    build:
+      dockerfile: static-files.Containerfile
     restart: always
     networks: {}
     volumes:
