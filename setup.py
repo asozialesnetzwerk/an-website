@@ -48,6 +48,7 @@ WHEEL_BUILD_DEPS: Set[str] = {TIME_MACHINE}
 filterwarnings("ignore", "", UserWarning, "setuptools.dist")
 _IncludePackageDataAbuse.warn = lambda *_: None
 
+EGG = "egg_info" in sys.argv[1:]
 HELP = "--help" in sys.argv[1:]
 VERSION = "--version" in sys.argv[1:]
 BUILDING = not HELP and {"sdist", "bdist_wheel"} & {*sys.argv[1:]}
@@ -108,7 +109,7 @@ def path(path: str | PathLike[str]) -> Path:
     return Path(__file__).resolve().parent / path
 
 
-if path("pip-constraints.txt").exists() and (BUILDING or VERSION):
+if path("pip-constraints.txt").exists() and (BUILDING or VERSION or EGG):
     path("CNSTRNTS.TXT").write_text(
         "\n".join(sorted(get_constraints()[dep] for dep in WHEEL_BUILD_DEPS))
         + "\n",
