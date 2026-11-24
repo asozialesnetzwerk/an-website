@@ -1,11 +1,15 @@
 *
+!.git
 !setup.py
 !README.md
 !an_website
 !CNSTRNTS.TXT
 !TIMESTMP.TXT
 !VERSIONS.TXT
+!pip-constraints.txt
 !pip-requirements.txt
+!pip-dev-requirements.txt
+!scripts/compress_static_files.py
 !scripts/vendored/content-negotiation.lua
 **/tsconfig.json
 **/.eslintrc.*

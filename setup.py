@@ -142,6 +142,7 @@ if not path(".git").exists():
 elif not (BUILDING or VERSION):
     BACKEND_REQUIRES.add(DULWICH)
     BACKEND_REQUIRES.add(TROVE_CLASSIFIERS)
+    BACKEND_REQUIRES.add(ZOPFLIPY)
 else:
     from dulwich.objects import Commit
     from dulwich.repo import Repo
@@ -213,7 +214,6 @@ if BUILDING:
 
 compress_script_path = path("scripts/compress_static_files.py")
 if compress_script_path.exists():
-    BACKEND_REQUIRES.add(ZOPFLIPY)
     compress_spec = spec_from_file_location(
         "compress_static_files", compress_script_path
     )
