@@ -13,7 +13,7 @@
 
 """A module providing THEMES."""
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Sequence, Set
 from typing import Final
 
 from .. import STATIC_DIR
@@ -28,10 +28,11 @@ def get_themes() -> Iterable[str]:
 
 
 THEMES: Final[Sequence[str]] = tuple(sorted(get_themes()))
+EVIL_THEMES: Final[Set[str]] = frozenset(("lowest_contrast", "slopstrap"))
 NAMED_THEMES: Final[Sequence[tuple[str, str]]] = tuple(
     (theme, theme.replace("_", " ").title())
     for theme in THEMES
-    if theme != "lowest_contrast"
+    if theme not in EVIL_THEMES
 )
 RANDOM_THEMES: Final[Sequence[str]] = tuple(
     theme for theme, _ in NAMED_THEMES if theme not in {"random", "christmas"}
