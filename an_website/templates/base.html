@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html prefix="og: https://ogp.me/ns#" lang="{{lang}}" data-scheme="{{display_scheme}}" data-effects="{{ int(effects) }}">
+<html
+    prefix="og: https://ogp.me/ns#"
+    lang="{{lang}}"
+    {% if theme == "slopstrap" %} data-slop-level="4" {% end %}
+    data-scheme="{{display_scheme}}"
+    data-effects="{{ int(effects) }}">
     <head>
         {% if as_html %}
             <title>{{title}}</title>
