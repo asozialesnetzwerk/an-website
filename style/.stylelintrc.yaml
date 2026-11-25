@@ -14,3 +14,4 @@ reportInvalidScopeDisables: true
 reportNeedlessDisables: true
 ignoreFiles:
   - "snow.css*"
+  - "themes/slopstrap.css"

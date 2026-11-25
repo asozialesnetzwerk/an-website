@@ -12,6 +12,7 @@ parserOptions:
     jsx: true
 ignorePatterns:
   - '/an_website/static/js'
+  - '/an_website/static/slopstrap.js'
   - '/an_website/vendored'
   - '/build'
   - '/perf8-report'
