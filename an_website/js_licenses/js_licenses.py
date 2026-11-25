@@ -22,7 +22,7 @@ and https://www.gnu.org/licenses/javascript-labels.html
 """
 
 import logging
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from functools import cache
 from typing import Final
 
@@ -61,13 +61,13 @@ LICENSES: Final[Mapping[str, str]] = {
 
 
 @cache
-def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
+def get_js_filenames_and_licenses() -> Sequence[tuple[str, str, str]]:
     """
     Get the names of the JS files in this project.
 
     Returns a list of tuples with filename, license and license URL.
     """
-    js_files_dir = STATIC_DIR / "js"
+    js_files_dir = STATIC_DIR
     licenses_list: list[tuple[str, str, str]] = []
     for filename in recurse_directory(
         js_files_dir, lambda path: path.name.endswith(".js")
@@ -91,7 +91,9 @@ def get_js_filenames_and_licenses() -> list[tuple[str, str, str]]:
             .split(" ")
         )
         licenses_list.append((filename, name.strip(), LICENSES[magnet.strip()]))
-    return licenses_list
+
+    licenses_list.sort()
+    return tuple(licenses_list)
 
 
 class JSLicenses(HTMLRequestHandler):

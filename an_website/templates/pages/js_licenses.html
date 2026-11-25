@@ -6,7 +6,7 @@
 {% end %}
 
 {% block body %}
-    <table class="table">
+    <table class="table" id="jslicense-labels1">
         <thead>
             <tr>
                 <th>Skript</th>
@@ -17,7 +17,7 @@
             {% for path, license, license_url in js_files %}
                 <tr>
                     <td>
-                        <a href="{{fix_static(f'js/{path}')}}"
+                        <a href="{{fix_static(path)}}"
                            no-dynload >{{ path }}</a>
                     </td>
                     <td>
