@@ -65,6 +65,16 @@ function dynLoadOnData(
 
     startViewTransition(() => {
         updateHtml(data);
+
+        console.log("Slopifying", contentContainer);
+        // slopify if slopstrap is available!
+        (window as unknown as {
+            Slopstrap: undefined | {
+                slopify: undefined | ((a: HTMLElement) => void);
+            };
+        })
+            .Slopstrap
+            ?.slopify?.(contentContainer);
     });
 
     return true;
